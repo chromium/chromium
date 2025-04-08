@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 
 namespace page_actions {
 
-FakeTabInterface::FakeTabInterface(content::WebContents* contents)
-    : contents_(contents) {}
+FakeTabInterface::FakeTabInterface(TestingProfile* testing_profile) {
+  CHECK(testing_profile);
+  web_contents_ = web_contents_factory_.CreateWebContents(testing_profile);
+  contents_ = web_contents_.get();
+}
 
 FakeTabInterface::~FakeTabInterface() = default;
 

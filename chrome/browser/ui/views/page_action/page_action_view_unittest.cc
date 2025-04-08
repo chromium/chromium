@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
+#include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
 #include "chrome/test/base/testing_profile.h"
@@ -60,8 +61,11 @@ class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
               (const, override));
 };
 
-class AlwaysActiveTabInterface : public tabs::MockTabInterface {
+class AlwaysActiveTabInterface : public FakeTabInterface {
  public:
+  explicit AlwaysActiveTabInterface(TestingProfile* profile)
+      : FakeTabInterface(profile) {}
+
   ~AlwaysActiveTabInterface() override = default;
   bool IsActivated() const override { return true; }
 };
@@ -86,9 +90,8 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
             .icon_label_bubble_delegate = &icon_label_view_delegate_,
         });
 
-    profile_ = std::make_unique<TestingProfile>();
     pinned_actions_model_ =
-        std::make_unique<PinnedToolbarActionsModel>(profile_.get());
+        std::make_unique<PinnedToolbarActionsModel>(&profile_);
   }
 
   void TearDown() override {
@@ -97,7 +100,6 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
     action_item_ = nullptr;
     actions::ActionManager::Get().ResetActions();
     pinned_actions_model_.reset();
-    profile_.reset();
   }
 
   std::unique_ptr<PageActionController> NewPageActionController(
@@ -111,6 +113,9 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   PageActionView* page_action_view() { return test_page_action_view_.get(); }
   actions::ActionItem* action_item() { return action_item_; }
 
+ protected:
+  TestingProfile profile_;
+
  private:
   std::unique_ptr<PageActionView> page_action_view_;
   std::unique_ptr<PageActionView> test_page_action_view_;
@@ -119,7 +124,6 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
 
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
-  std::unique_ptr<TestingProfile> profile_;
 
   // Must exist in order to create PageActionView during the test.
   views::LayoutProvider layout_provider_;
@@ -199,7 +203,7 @@ class PageActionViewTest : public ChromeViewsTestBase {
 // view.
 TEST_F(PageActionViewWithControllerTest, ViewIgnoresInactiveController) {
   // Use an always-active tab to ensure consistent visibility updates.
-  AlwaysActiveTabInterface tab;
+  AlwaysActiveTabInterface tab(&profile_);
   auto controller_a = NewPageActionController(tab);
   auto controller_b = NewPageActionController(tab);
   actions::ActionItem* item = action_item();
@@ -235,7 +239,7 @@ TEST_F(PageActionViewWithControllerTest, NoActiveController) {
   EXPECT_FALSE(view->GetVisible());
 
   // Use an always-active tab to ensure consistent visibility updates.
-  AlwaysActiveTabInterface tab;
+  AlwaysActiveTabInterface tab(&profile_);
   auto controller = NewPageActionController(tab);
   view->OnNewActiveController(controller.get());
   controller->Show(0);

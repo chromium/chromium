@@ -18,12 +18,12 @@
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
+#include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
-#include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -86,14 +86,11 @@ class PageActionControllerTest : public ::testing::Test {
   PageActionControllerTest() = default;
 
   void SetUp() override {
-    test_web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     pinned_actions_model_ =
         std::make_unique<PinnedToolbarActionsModel>(&profile_);
     controller_ = std::make_unique<PageActionController>(
         GetPageActionControllerTestProperties(), pinned_actions_model_.get());
-    tab_interface_ =
-        std::make_unique<FakeTabInterface>(test_web_contents_.get());
+    tab_interface_ = std::make_unique<FakeTabInterface>(&profile_);
     tab_interface_->Activate();
   }
 
@@ -124,8 +121,6 @@ class PageActionControllerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   TestingProfile profile_;
-  content::RenderViewHostTestEnabler test_render_host_factories_;
-  std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<PageActionController> controller_;
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
   std::unique_ptr<ActionItem> action_item_;
@@ -378,26 +373,20 @@ class PageActionControllerMockModelTest : public ::testing::Test {
   PageActionControllerMockModelTest()
       : controller_(GetPageActionControllerTestProperties(),
                     /*pinned_actions_model=*/nullptr,
-                    &model_factory_) {
-    test_web_contents_ =
-        content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    tab_interface_ =
-        std::make_unique<FakeTabInterface>(test_web_contents_.get());
-  }
+                    &model_factory_),
+        tab_interface_(&profile_) {}
 
   PageActionController& controller() { return controller_; }
   MockPageActionModelFactory& models() { return model_factory_; }
-  FakeTabInterface& tab_interface() { return *tab_interface_; }
+  FakeTabInterface& tab_interface() { return tab_interface_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
 
   TestingProfile profile_;
-  content::RenderViewHostTestEnabler test_render_host_factories_;
-  std::unique_ptr<content::WebContents> test_web_contents_;
   MockPageActionModelFactory model_factory_;
   PageActionController controller_;
-  std::unique_ptr<FakeTabInterface> tab_interface_;
+  FakeTabInterface tab_interface_;
 };
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
