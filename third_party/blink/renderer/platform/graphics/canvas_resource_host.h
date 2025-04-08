@@ -126,8 +126,7 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
  protected:
-  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
-      RasterModeHint hint) = 0;
+  virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() = 0;
 
  private:
   bool is_displayed_ = false;

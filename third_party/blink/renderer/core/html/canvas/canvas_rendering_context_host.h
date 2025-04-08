@@ -139,9 +139,8 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   scoped_refptr<StaticBitmapImage> CreateTransparentImage(
       const gfx::Size&) const;
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
-      RasterModeHint hint) final;
-  void CreateCanvasResourceProvider2D(RasterModeHint hint);
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl() final;
+  void CreateCanvasResourceProvider2D();
   void CreateCanvasResourceProviderWebGL();
   void CreateCanvasResourceProviderWebGPU();
 

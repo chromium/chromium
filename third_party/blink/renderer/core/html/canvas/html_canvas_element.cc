@@ -2188,14 +2188,10 @@ CanvasResourceProvider* HTMLCanvasElement::GetOrCreateCanvasResourceProvider() {
 CanvasResourceProvider*
 HTMLCanvasElement::RecreateCanvasResourceProviderFor2DContext(
     CanvasHibernationHandler& hibernation_handler) {
-  bool want_acceleration = ShouldTryToUseGpuRaster();
-  RasterModeHint adjusted_hint = want_acceleration ? RasterModeHint::kPreferGPU
-                                                   : RasterModeHint::kPreferCPU;
-
   // We call GetOrCreateCanvasResourceProviderImpl directly here to prevent a
   // circular callstack.
   CanvasResourceProvider* resource_provider =
-      GetOrCreateCanvasResourceProviderImpl(adjusted_hint);
+      GetOrCreateCanvasResourceProviderImpl();
   if (!resource_provider || !resource_provider->IsValid()) {
     return nullptr;
   }
