@@ -188,8 +188,7 @@ base::expected<FilterData, SourceRegistrationError> FilterData::FromJSON(
   }
 
   if (dict->contains(kSourceTypeFilterKey)) {
-    return base::unexpected(
-        SourceRegistrationError::kFilterDataKeyReserved);
+    return base::unexpected(SourceRegistrationError::kFilterDataKeyReserved);
   }
 
   const auto map_errors = [](FilterValuesError error) {

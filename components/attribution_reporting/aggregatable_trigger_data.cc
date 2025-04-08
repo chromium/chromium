@@ -42,8 +42,9 @@ base::expected<absl::uint128, TriggerRegistrationError> ParseKeyPiece(
 base::expected<AggregatableTriggerData::Keys, TriggerRegistrationError>
 ParseSourceKeys(base::Value::Dict& registration) {
   base::Value* v = registration.Find(kSourceKeys);
-  if (!v)
+  if (!v) {
     return AggregatableTriggerData::Keys();
+  }
 
   base::Value::List* l = v->GetIfList();
   if (!l) {
@@ -63,8 +64,9 @@ ParseSourceKeys(base::Value::Dict& registration) {
 
 void SerializeSourceKeysIfNotEmpty(base::Value::Dict& dict,
                                    const AggregatableTriggerData::Keys& keys) {
-  if (keys.empty())
+  if (keys.empty()) {
     return;
+  }
 
   auto list = base::Value::List::with_capacity(keys.size());
   for (const std::string& key : keys) {
@@ -98,8 +100,7 @@ AggregatableTriggerData::AggregatableTriggerData(absl::uint128 key_piece,
                                                  FilterPair filters)
     : key_piece_(key_piece),
       source_keys_(std::move(source_keys)),
-      filters_(std::move(filters)) {
-}
+      filters_(std::move(filters)) {}
 
 AggregatableTriggerData::~AggregatableTriggerData() = default;
 

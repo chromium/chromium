@@ -230,8 +230,7 @@ base::expected<uint32_t, RandomizedResponseError> GetNumStatesCached(
 
 RandomizedResponseData::RandomizedResponseData(double rate,
                                                RandomizedResponse response)
-    : rate_(rate),
-      response_(std::move(response)) {
+    : rate_(rate), response_(std::move(response)) {
   DCHECK_GE(rate_, 0);
   DCHECK_LE(rate_, 1);
 }
