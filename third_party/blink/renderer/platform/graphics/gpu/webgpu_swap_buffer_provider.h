@@ -98,8 +98,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
       const gfx::ColorSpace& dst_color_space,
       WebGraphicsContext3DVideoFramePool::FrameReadyCallback callback);
 
-  scoped_refptr<WebGPUMailboxTexture> GetLastWebGPUMailboxTexture() const;
-
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;
 
@@ -176,7 +174,6 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   // Pool of SwapBuffers which manages creation, release and recycling of
   // SwapBuffer resources.
   std::unique_ptr<gpu::SharedImagePool<SwapBuffer>> swap_buffer_pool_;
-  scoped_refptr<SwapBuffer> last_swap_buffer_;
   scoped_refptr<SwapBuffer> current_swap_buffer_;
 
   scoped_refptr<gpu::ClientSharedImage> front_buffer_shared_image_;
