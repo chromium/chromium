@@ -5,12 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_VIEW_VISIBILITY_CONSUMER_H_
 #define IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_VIEW_VISIBILITY_CONSUMER_H_
 
+enum class BrowserViewVisibilityState;
+
 /// Consumer protocol that gets notified when the browser view's visibility has
 /// changed.
 @protocol BrowserViewVisibilityConsumer
 
 /// Method that responds to browser view visibility changes.
-- (void)browserViewDidChangeVisibility;
+- (void)browserViewDidTransitionFromVisibilityState:
+    (BrowserViewVisibilityState)previousState;
 
 @end
 

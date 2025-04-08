@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_coordinator.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
+#import "ios/chrome/browser/browser_view/public/browser_view_visibility_state.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
@@ -2354,16 +2355,19 @@ enum class ToolbarKind {
 
 #pragma mark - BrowserViewVisibilityConsumer
 
-- (void)browserViewDidChangeVisibility {
+- (void)browserViewDidTransitionFromVisibilityState:
+    (BrowserViewVisibilityState)previousState {
   CHECK(self.browser);
   raw_ptr<TabBasedIPHBrowserAgent> tabBasedIPHBrowserAgent =
       TabBasedIPHBrowserAgent::FromBrowser(self.browser);
   if (!tabBasedIPHBrowserAgent) {
     return;
   }
-  if (self.viewController.viewVisible) {
+
+  if (self.viewController.visibilityState ==
+      BrowserViewVisibilityState::kVisible) {
     tabBasedIPHBrowserAgent->RootViewForInProductHelpDidAppear();
-  } else {
+  } else if (previousState == BrowserViewVisibilityState::kVisible) {
     tabBasedIPHBrowserAgent->RootViewForInProductHelpWillDisappear();
   }
 }
@@ -3784,7 +3788,8 @@ enum class ToolbarKind {
 #pragma mark - BubblePresenterDelegate
 
 - (BOOL)rootViewVisibleForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  return self.viewController.viewVisible;
+  return self.viewController.visibilityState ==
+         BrowserViewVisibilityState::kVisible;
 }
 
 - (BOOL)isNTPActiveForBubblePresenter:(BubblePresenter*)bubblePresenter {
