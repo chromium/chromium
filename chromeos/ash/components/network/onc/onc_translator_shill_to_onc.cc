@@ -14,7 +14,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -895,14 +894,21 @@ void ShillToONCTranslator::TranslateEap() {
 
   if (subject_alternative_name_match) {
     base::Value::List deserialized_dicts;
-    std::string error_msg;
     for (const base::Value& san : *subject_alternative_name_match) {
-      JSONStringValueDeserializer deserializer(san.GetString());
-      auto deserialized_dict =
-          deserializer.Deserialize(/*error_code=*/nullptr, &error_msg);
-      if (!deserialized_dict) {
+      const std::string* san_string = san.GetIfString();
+      if (!san_string) {
+        LOG(ERROR) << "SAN entry is not a string: " << san;
+        continue;
+      }
+      base::JSONReader::Result deserialized_dict =
+          base::JSONReader::ReadAndReturnValueWithError(*san_string);
+      if (!deserialized_dict.has_value()) {
         LOG(ERROR) << "failed to deserialize " << san << " with error "
-                   << error_msg;
+                   << deserialized_dict.error().ToString();
+        continue;
+      }
+      if (!deserialized_dict->is_dict()) {
+        LOG(ERROR) << "failed to deserialize " << san << " as a dictionary";
         continue;
       }
       deserialized_dicts.Append(std::move(*deserialized_dict));

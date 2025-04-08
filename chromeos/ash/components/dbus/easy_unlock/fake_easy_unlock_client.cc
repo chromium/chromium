@@ -4,10 +4,10 @@
 
 #include "chromeos/ash/components/dbus/easy_unlock/fake_easy_unlock_client.h"
 
-#include <memory>
+#include <optional>
 #include <utility>
 
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/strings/stringprintf.h"
 
 namespace {
@@ -24,16 +24,11 @@ const char kEc256PublicKeyKey[] = "ec_p256_public_key";
 // Extracts key pair index from a key in format "<key_type>: <key_pair_index>}".
 int ExtractKeyPairIndexFromKey(const std::string& key,
                                const std::string& key_type) {
-  JSONStringValueDeserializer deserializer(key);
-  std::unique_ptr<base::Value> json_value =
-      deserializer.Deserialize(NULL, NULL);
+  std::optional<base::Value::Dict> json_value = base::JSONReader::ReadDict(key);
   if (!json_value)
     return -1;
 
-  if (!json_value->is_dict())
-    return -1;
-
-  return json_value->GetDict().FindInt(key_type).value_or(-1);
+  return json_value->FindInt(key_type).value_or(-1);
 }
 
 }  // namespace
