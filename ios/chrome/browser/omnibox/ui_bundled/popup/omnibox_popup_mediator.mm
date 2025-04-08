@@ -15,11 +15,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/omnibox/browser/actions/omnibox_action_concepts.h"
-#import "components/omnibox/browser/autocomplete_controller.h"
-#import "components/omnibox/browser/autocomplete_match.h"
-#import "components/omnibox/browser/autocomplete_match_classification.h"
 #import "components/omnibox/browser/autocomplete_result.h"
-#import "components/omnibox/browser/remote_suggestions_service.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "components/strings/grit/components_strings.h"
@@ -31,9 +27,6 @@
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper_delegate.h"
-#import "ios/chrome/browser/omnibox/model/autocomplete_suggestion_group_impl.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_image_fetcher.h"
 #import "ios/chrome/browser/omnibox/model/suggest_action.h"
@@ -66,10 +59,6 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
 /// Index of the group containing AutocompleteSuggestion, first group to be
 /// highlighted on down arrow key.
 @property(nonatomic, assign) NSInteger preselectedGroupIndex;
-
-// Autocomplete controller backing this mediator.
-// It is observed through OmniboxPopupViewIOS.
-@property(nonatomic, assign) AutocompleteController* autocompleteController;
 
 // Whether the omnibox has a thumbnail.
 @property(nonatomic, assign) BOOL hasThumbnail;

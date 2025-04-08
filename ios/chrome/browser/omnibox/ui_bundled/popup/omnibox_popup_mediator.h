@@ -10,7 +10,6 @@
 #include <memory>
 
 #import "components/history/core/browser/top_sites.h"
-#import "components/omnibox/browser/autocomplete_result.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
