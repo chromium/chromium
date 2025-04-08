@@ -191,6 +191,7 @@
 #import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_data.h"
+#import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/navigation_util.h"
@@ -469,7 +470,15 @@ void OnListFamilyMembersResponse(
 
 @end
 
-@implementation SceneController
+@implementation SceneController {
+  // JavaScript image transcoder to locally re-encode images to search.
+  std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
+
+  // A property to track the image to search after dismissing the tab switcher.
+  // This is used to ensure that the image search is only triggered when the BVC
+  // is active.
+  NSData* _imageSearchData;
+}
 
 @synthesize startupParameters = _startupParameters;
 @synthesize startupParametersAreBeingHandled =
@@ -1275,6 +1284,8 @@ void OnListFamilyMembersResponse(
 
   [self.sceneState.profileState removeObserver:self];
   _sceneURLLoadingService.reset();
+
+  _imageTranscoder = nullptr;
 }
 
 // Formats string for display on iPadOS application switcher with the
@@ -2881,9 +2892,33 @@ using UserFeedbackDataCallback =
 
 // Starts a lens search for share extension.
 - (void)searchShareExtensionImageWithLens {
+  CHECK(_imageSearchData);
+  if (!_imageTranscoder) {
+    _imageTranscoder = std::make_unique<web::JavaScriptImageTranscoder>();
+  }
+  __weak __typeof(self) weakSelf = self;
+
+  _imageTranscoder->TranscodeImage(
+      _imageSearchData, @"image/jpeg", nil, nil, nil,
+      base::BindOnce(
+          [](SceneController* controller, NSData* safeImageData,
+             NSError* error) {
+            [controller triggerLensSearchWithImageData:safeImageData
+                                                 error:error];
+          },
+          weakSelf));
+}
+
+// Triggers a lens seach based on a given trusted image data.
+- (void)triggerLensSearchWithImageData:(NSData*)imageData
+                                 error:(NSError*)error {
+  if (error) {
+    return;
+  }
+
   id<LensCommands> lensHandler = HandlerForProtocol(
       self.currentInterface.browser->GetCommandDispatcher(), LensCommands);
-  UIImage* image = [UIImage imageWithData:_startupParameters.imageSearchData];
+  UIImage* image = [UIImage imageWithData:imageData];
   SearchImageWithLensCommand* command = [[SearchImageWithLensCommand alloc]
       initWithImage:image
          // TODO(crbug.com/403235333): Add Lens entry point for Share extension.
@@ -3386,6 +3421,7 @@ using UserFeedbackDataCallback =
   WrangledBrowser* targetInterface = targetMode == ApplicationMode::NORMAL
                                          ? self.mainInterface
                                          : self.incognitoInterface;
+  _imageSearchData = [self.startupParameters imageSearchData];
   ProceduralBlock startupCompletion =
       [self completionBlockForTriggeringAction:[self.startupParameters
                                                        postOpeningAction]];
