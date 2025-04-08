@@ -7,6 +7,8 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_resources("java_resources") {
   sources = [
+    "res/color-night/infobar_color.xml",
+    "res/color/infobar_color.xml",
     "res/drawable-hdpi/infobar_shadow_left.9.png",
     "res/drawable-hdpi/infobar_shadow_top.png",
     "res/drawable-mdpi/infobar_shadow_left.9.png",
@@ -25,7 +27,6 @@ android_resources("java_resources") {
     "res/layout/infobar_control_spinner_drop_down.xml",
     "res/layout/infobar_control_spinner_view.xml",
     "res/layout/infobar_control_toggle.xml",
-    "res/values-night/dimens.xml",
     "res/values/dimens.xml",
     "res/values/ids.xml",
   ]

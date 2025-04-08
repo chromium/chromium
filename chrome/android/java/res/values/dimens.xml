@@ -341,15 +341,13 @@ found in the LICENSE file.
     <dimen name="long_screenshots_button_size">40dp</dimen>
     <dimen name="long_screenshots_button_padding">8dp</dimen>
     <dimen name="long_screenshots_button_margin">17dp</dimen>
+    <dimen name="long_screenshots_button_elev">6dp</dimen>
 
     <!-- IPH shared highlighting builder padding top -->
     <dimen name="iph_shared_highlighting_padding_top">120dp</dimen>
 
     <dimen name="sharing_hub_tile_width">69sp</dimen>
     <dimen name="sharing_hub_tile_margin">8sp</dimen>
-
-    <!-- Distilled page pref dimensions -->
-    <dimen name="distilled_page_pref_background_elev">@dimen/default_elevation_0</dimen>
 
     <!-- Virtual card enrollment dialog -->
     <dimen name="virtual_card_enrollment_dialog_padding">24dp</dimen>

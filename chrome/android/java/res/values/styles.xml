@@ -251,6 +251,18 @@ found in the LICENSE file.
         </item>
     </style>
 
+    <style name="TextAppearance.DistilledPagePrefTextSizeSmall">
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="TextAppearance.DistilledPagePrefTextSizeMedium">
+        <item name="android:textSize">17sp</item>
+    </style>
+
+    <style name="TextAppearance.DistilledPagePrefTextSizeLarge">
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <!-- Button bar styles -->
     <style name="ButtonBarTopSpacerLight">
         <item name="android:layout_width">0dp</item>

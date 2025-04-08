@@ -13,7 +13,7 @@ found in the LICENSE file.
   android:minHeight="@dimen/tab_card_label_height"
   android:paddingHorizontal="4dp"
   android:visibility="gone"
-  android:elevation="@dimen/default_elevation_3"
+  android:elevation="@dimen/tab_card_label_elev"
   android:clipToOutline="true"
   android:background="@drawable/tab_label_background"
   android:orientation="horizontal">

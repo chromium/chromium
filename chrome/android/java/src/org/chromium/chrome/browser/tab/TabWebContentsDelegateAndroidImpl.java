@@ -521,7 +521,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public int getBackForwardTransitionFallbackUXPageBackgroundColor() {
-        return ChromeColors.getSurfaceColor(mTab.getContext(), R.dimen.default_elevation_3);
+        return SemanticColorUtils.getColorSurfaceContainerHigh(mTab.getContext());
     }
 
     @Override

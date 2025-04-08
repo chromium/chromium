@@ -102,6 +102,7 @@ found in the LICENSE file.
     <dimen name="tab_card_label_icon_radius">8dp</dimen>
     <dimen name="tab_card_label_height">24dp</dimen>
     <dimen name="tab_card_label_list_margin_end">9dp</dimen>
+    <dimen name="tab_card_label_elev">6dp</dimen>
 
     <!-- Dimens for TabGroupSync features -->
     <dimen name="tab_group_row_height">96dp</dimen>
