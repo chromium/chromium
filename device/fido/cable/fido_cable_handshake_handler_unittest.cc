@@ -148,7 +148,7 @@ std::vector<uint8_t> ConstructAuthenticatorHelloReply(
     return std::vector<uint8_t>();
 
   std::array<uint8_t, 32> authenticator_hello_mac;
-  if (!hmac.Sign(fido_parsing_utils::ConvertToStringView(hello_msg),
+  if (!hmac.Sign(base::as_string_view(hello_msg),
                  authenticator_hello_mac.data(),
                  authenticator_hello_mac.size())) {
     return std::vector<uint8_t>();
@@ -184,9 +184,8 @@ class FakeCableAuthenticator {
  public:
   FakeCableAuthenticator() {
     handshake_key_ = crypto::HkdfSha256(
-        fido_parsing_utils::ConvertToStringView(kTestSessionPreKey),
-        fido_parsing_utils::ConvertToStringView(kTestNonce),
-        kCableHandshakeKeyInfo, 32);
+        base::as_string_view(kTestSessionPreKey),
+        base::as_string_view(kTestNonce), kCableHandshakeKeyInfo, 32);
   }
 
   // Receives handshake message from the client, check its validity and if the
@@ -208,9 +207,8 @@ class FakeCableAuthenticator {
 
     const auto client_hello = handshake_message.first(42u);
     if (!hmac.VerifyTruncated(
-            fido_parsing_utils::ConvertToStringView(client_hello),
-            fido_parsing_utils::ConvertToStringView(
-                handshake_message.subspan<42>()))) {
+            base::as_string_view(client_hello),
+            base::as_string_view(handshake_message.subspan<42>()))) {
       return false;
     }
 
