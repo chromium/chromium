@@ -10,13 +10,11 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_prefs_helper.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/manifest_handlers/shared_module_info.h"
@@ -25,6 +23,11 @@
 namespace extensions {
 
 namespace {
+
+ExtensionService* GetExtensionService(
+    content::BrowserContext* browser_context) {
+  return ExtensionSystem::Get(browser_context)->extension_service();
+}
 
 class ExtensionLoadedObserver : public ExtensionRegistryObserver {
  public:
@@ -83,7 +86,8 @@ void ChromeTestExtensionLoader::LoadUnpackedExtensionAsync(
     base::OnceCallback<void(const Extension*)> callback) {
   auto observer =
       std::make_unique<ExtensionLoadedObserver>(extension_registry_, file_path);
-  UnpackedInstaller::Create(extension_service_)->Load(file_path);
+  UnpackedInstaller::Create(GetExtensionService(browser_context_))
+      ->Load(file_path);
   ExtensionLoadedObserver::ObserveOnce(std::move(observer),
                                        std::move(callback));
 }
@@ -122,28 +126,10 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadExtension(
   // TODO(crbug.com/40160904): Fix CrxInstaller to enable this for
   // packed extensions.
   if (!is_unpacked) {
-    // Trying to reload a shared module (as we do when adjusting extension
-    // permissions) causes ExtensionService to crash. Only adjust permissions
-    // for non-shared modules.
-    // TODO(devlin): That's not good; we shouldn't be crashing.
-    if (!SharedModuleInfo::IsSharedModule(extension.get())) {
-      CheckPermissions(extension.get());
-      // Make |extension| null since it may have been reloaded invalidating
-      // pointers to it.
-      extension = nullptr;
-    }
-
-    if (install_param_.has_value()) {
-      DCHECK(!install_param_->empty());
-      SetInstallParam(ExtensionPrefs::Get(browser_context_), extension_id_,
-                      *install_param_);
-      // Reload the extension so listeners of the loaded notification have
-      // access to the install param.
-      TestExtensionRegistryObserver registry_observer(extension_registry_,
-                                                      extension_id_);
-      extension_service_->ReloadExtension(extension_id_);
-      registry_observer.WaitForExtensionLoaded();
-    }
+    AdjustPackedExtension(*extension);
+    // Make `extension` null since it may have been reloaded invalidating
+    // pointers to it.
+    extension = nullptr;
   }
 
   extension = extension_registry_->enabled_extensions().GetByID(extension_id_);
@@ -259,43 +245,12 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadCrx(
   return extension;
 }
 
-void ChromeTestExtensionLoader::CheckPermissions(const Extension* extension) {
-  std::string id = extension->id();
-
-  // If the client explicitly set |allow_file_access_|, use that value. Else
-  // use the default as per the extensions manifest location.
-  if (!allow_file_access_) {
-    allow_file_access_ =
-        Manifest::ShouldAlwaysAllowFileAccess(extension->location());
-  }
-
-  // |extension| may be reloaded subsequently, invalidating the pointer. Hence
-  // make it null.
-  extension = nullptr;
-
-  // Toggling incognito or file access will reload the extension, so wait for
-  // the reload.
-  if (*allow_file_access_ != util::AllowFileAccess(id, browser_context_)) {
-    TestExtensionRegistryObserver registry_observer(extension_registry_, id);
-    util::SetAllowFileAccess(id, browser_context_, *allow_file_access_);
-    registry_observer.WaitForExtensionLoaded();
-  }
-
-  if (allow_incognito_access_.has_value() &&
-      *allow_incognito_access_ !=
-          util::IsIncognitoEnabled(id, browser_context_)) {
-    TestExtensionRegistryObserver registry_observer(extension_registry_, id);
-    util::SetIsIncognitoEnabled(id, browser_context_, true);
-    registry_observer.WaitForExtensionLoaded();
-  }
-}
-
 scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
     const base::FilePath& file_path) {
   scoped_refptr<const Extension> extension;
   TestExtensionRegistryObserver registry_observer(extension_registry_);
   scoped_refptr<UnpackedInstaller> installer =
-      UnpackedInstaller::Create(extension_service_);
+      UnpackedInstaller::Create(GetExtensionService(browser_context_));
   installer->set_require_modern_manifest_version(
       require_modern_manifest_version_);
   if (allow_file_access_.has_value()) {

@@ -26,12 +26,9 @@ class BrowserContext;
 }
 
 namespace extensions {
+class ExtensionRegistrar;
 class ExtensionRegistry;
 class ExtensionSystem;
-
-#if !BUILDFLAG(IS_ANDROID)
-class ExtensionService;
-#endif
 
 // A test class to help with loading packed or unpacked extensions. Designed to
 // be used by both browser tests and unit tests. Note that this should be used
@@ -116,10 +113,6 @@ class ChromeTestExtensionLoader {
   // Loads the unpacked extension pointed to by |unpacked_path|.
   scoped_refptr<const Extension> LoadUnpacked(
       const base::FilePath& unpacked_path);
-
-  // Checks that the permissions of the loaded extension are correct
-  // and updates them if necessary.
-  void CheckPermissions(const Extension* extension);
 #else
   // Attempts to parse and load an extension from the given `file_path` and add
   // it to the extensions system (which will also activate the extension).
@@ -128,6 +121,13 @@ class ChromeTestExtensionLoader {
   scoped_refptr<const Extension> LoadExtensionFromDirectory(
       const base::FilePath& file_path);
 #endif
+
+  // Adjusts any state necessary for packed extensions before proceeding.
+  void AdjustPackedExtension(const Extension& extension);
+
+  // Checks that the permissions of the loaded extension are correct
+  // and updates them if necessary.
+  void CheckPermissions(const Extension& extension);
 
   // Verifies that the permissions of the loaded extension are correct.
   // Returns false if they are not.
@@ -142,9 +142,7 @@ class ChromeTestExtensionLoader {
   // The associated context and services.
   raw_ptr<content::BrowserContext> browser_context_ = nullptr;
   raw_ptr<ExtensionSystem> extension_system_ = nullptr;
-#if !BUILDFLAG(IS_ANDROID)
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
-#endif
+  raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
   raw_ptr<ExtensionRegistry> extension_registry_ = nullptr;
 
   // A temporary directory for packing extensions.

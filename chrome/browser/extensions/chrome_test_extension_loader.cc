@@ -8,17 +8,23 @@
 
 #include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/browser/install_prefs_helper.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/manifest_handlers/shared_module_info.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_notification_observer.h"
 #include "extensions/test/test_content_script_load_waiter.h"
@@ -30,11 +36,8 @@ ChromeTestExtensionLoader::ChromeTestExtensionLoader(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context),
       extension_system_(ExtensionSystem::Get(browser_context)),
-#if !BUILDFLAG(IS_ANDROID)
-      extension_service_(extension_system_->extension_service()),
-#endif
-      extension_registry_(ExtensionRegistry::Get(browser_context)) {
-}
+      extension_registrar_(ExtensionRegistrar::Get(browser_context)),
+      extension_registry_(ExtensionRegistry::Get(browser_context)) {}
 
 ChromeTestExtensionLoader::~ChromeTestExtensionLoader() {
   // If there was a temporary directory created for a CRX, we need to clean it
@@ -92,6 +95,60 @@ bool ChromeTestExtensionLoader::WaitForExtensionReady(
   }
 
   return true;
+}
+
+void ChromeTestExtensionLoader::AdjustPackedExtension(
+    const Extension& extension) {
+  // Trying to reload a shared module (as we do when adjusting extension
+  // permissions) causes things to crash. Only adjust permissions for non-shared
+  // modules.
+  // TODO(devlin): That's not good; we shouldn't be crashing.
+  if (!SharedModuleInfo::IsSharedModule(&extension)) {
+    CheckPermissions(extension);
+  }
+
+  if (install_param_.has_value()) {
+    DCHECK(!install_param_->empty());
+    SetInstallParam(ExtensionPrefs::Get(browser_context_), extension_id_,
+                    *install_param_);
+    // Reload the extension so listeners of the loaded notification have
+    // access to the install param.
+    TestExtensionRegistryObserver registry_observer(extension_registry_,
+                                                    extension_id_);
+    extension_registrar_->ReloadExtension(
+        extension_id_, ExtensionRegistrar::LoadErrorBehavior::kNoisy);
+    registry_observer.WaitForExtensionLoaded();
+  }
+}
+
+void ChromeTestExtensionLoader::CheckPermissions(const Extension& extension) {
+  std::string id = extension.id();
+
+  // If the client explicitly set |allow_file_access_|, use that value. Else
+  // use the default as per the extensions manifest location.
+  if (!allow_file_access_) {
+    allow_file_access_ =
+        Manifest::ShouldAlwaysAllowFileAccess(extension.location());
+  }
+
+  // Note: `extension` may be invalidated below since we reload the extension
+  // (resulting in a different object being constructed).
+
+  // Toggling incognito or file access will reload the extension, so wait for
+  // the reload.
+  if (*allow_file_access_ != util::AllowFileAccess(id, browser_context_)) {
+    TestExtensionRegistryObserver registry_observer(extension_registry_, id);
+    util::SetAllowFileAccess(id, browser_context_, *allow_file_access_);
+    registry_observer.WaitForExtensionLoaded();
+  }
+
+  if (allow_incognito_access_.has_value() &&
+      *allow_incognito_access_ !=
+          util::IsIncognitoEnabled(id, browser_context_)) {
+    TestExtensionRegistryObserver registry_observer(extension_registry_, id);
+    util::SetIsIncognitoEnabled(id, browser_context_, true);
+    registry_observer.WaitForExtensionLoaded();
+  }
 }
 
 bool ChromeTestExtensionLoader::VerifyPermissions(const Extension* extension) {
