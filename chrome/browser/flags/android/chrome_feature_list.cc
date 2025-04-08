@@ -236,6 +236,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTGoogleBottomBarVariantLayouts,
     &kCCTOpenInBrowserButtonIfAllowedByEmbedder,
     &kCCTOpenInBrowserButtonIfEnabledByEmbedder,
+    &kCCTPredictiveBackGesture,
     &kCCTPrewarmTab,
     &kCCTReportParallelRequestStatus,
     &kCCTReportPrerenderEvents,
@@ -707,6 +708,10 @@ BASE_FEATURE(kCCTOpenInBrowserButtonIfAllowedByEmbedder,
 BASE_FEATURE(kCCTOpenInBrowserButtonIfEnabledByEmbedder,
              "CCTOpenInBrowserButtonIfEnabledByEmbedder",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCCTPredictiveBackGesture,
+             "CCTPredictiveBackGesture",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabClosureMethodRefactor,
              "TabClosureMethodRefactor",

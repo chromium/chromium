@@ -7520,6 +7520,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kCCTOpenInBrowserButtonIfEnabledByEmbedder)},
+    {"cct-predictive-back-gesture",
+     flag_descriptions::kCCTPredictiveBackGestureName,
+     flag_descriptions::kCCTPredictiveBackGestureDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kCCTPredictiveBackGesture)},
     {"cct-revamped-branding", flag_descriptions::kCCTRevampedBrandingName,
      flag_descriptions::kCCTRevampedBrandingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTRevampedBranding)},

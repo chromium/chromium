@@ -4485,6 +4485,12 @@ const char kCCTOpenInBrowserButtonIfEnabledByEmbedderName[] =
 const char kCCTOpenInBrowserButtonIfEnabledByEmbedderDescription[] =
     "Open in Browser Button in CCT if enabled by Embedder";
 
+const char kCCTPredictiveBackGestureName[] =
+    "Enable predictive back gesture in CCT";
+const char kCCTPredictiveBackGestureDescription[] =
+    "When enabled, the OS will handle the back swipe for the last remaining "
+    "CCT.";
+
 const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =

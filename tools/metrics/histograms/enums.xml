@@ -9607,10 +9607,12 @@ from previous Chrome versions.
   <int value="-1808998588" label="CertDualVerificationTrial:enabled"/>
   <int value="-1808576075" label="SystemTrayUnified:enabled"/>
   <int value="-1808556124" label="SanitizerAPI:disabled"/>
+  <int value="-1808509756" label="CCTPredictiveBackGesture:disabled"/>
   <int value="-1808477331" label="MidiManagerCros:disabled"/>
   <int value="-1808445397" label="ShareByDefaultInCCT:disabled"/>
   <int value="-1807797669" label="google-doodle-url"/>
   <int value="-1807092388" label="ReduceUserAgentPlatformOsCpu:enabled"/>
+  <int value="-1806998617" label="CCTPredictiveBackGesture:enabled"/>
   <int value="-1806739839"
       label="UseLookalikesForNavigationSuggestions:disabled"/>
   <int value="-1806173068" label="UseSharedImagesForPepperVideo:enabled"/>
