@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroup
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -22,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.Objects;
 
 /** Contains the logic to set the state of the model and react to actions. */
 @NullMarked
@@ -88,6 +90,8 @@ class TabGroupListBottomSheetRowMediator {
 
     private void addToGroup(List<Tab> tabs) {
         RecordUserAction.record("TabGroupParity.BottomSheetRowSelection.ExistingGroup");
+
+        assert !tabs.isEmpty();
         String syncId = mSavedTabGroup.syncId;
         if (syncId == null || mTabGroupSyncService == null) {
             return;
@@ -105,11 +109,29 @@ class TabGroupListBottomSheetRowMediator {
             return;
         }
 
-        Tab tab = mTabGroupModelFilter.getTabModel().getTabById(localId);
-        if (tab == null) {
+        // No-op if the tabs to be moved are already in the group.
+        if (areTabsAlreadyInGroup(tabs)) {
             return;
         }
 
-        mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, tab, true);
+        Tab destTab = mTabGroupModelFilter.getTabModel().getTabById(localId);
+        if (destTab == null) {
+            return;
+        }
+
+        mTabGroupModelFilter.mergeListOfTabsToGroup(tabs, destTab, true);
+    }
+
+    private boolean areTabsAlreadyInGroup(List<Tab> tabsToBeMoved) {
+        @Nullable LocalTabGroupId tabGroupLocalId = mSavedTabGroup.localId;
+        assert tabGroupLocalId != null;
+
+        boolean areTabsAlreadyInGroup = true;
+        for (int i = 0; i < tabsToBeMoved.size(); i++) {
+            Tab tabToBeMoved = tabsToBeMoved.get(0);
+            areTabsAlreadyInGroup &=
+                    Objects.equals(tabGroupLocalId.tabGroupId, tabToBeMoved.getTabGroupId());
+        }
+        return areTabsAlreadyInGroup;
     }
 }
