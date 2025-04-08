@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_
 #define CHROME_BROWSER_CONTEXTUAL_CUEING_ZERO_STATE_SUGGESTIONS_PAGE_DATA_H_
 
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/callback_list.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -26,8 +31,9 @@ class ZeroStateSuggestionsRequest;
 
 namespace contextual_cueing {
 
-using GlicSuggestionsCallback =
-    base::OnceCallback<void(std::optional<std::vector<std::string>>)>;
+using GlicSuggestionsCallbackList =
+    base::OnceCallbackList<void(std::optional<std::vector<std::string>>)>;
+using GlicSuggestionsCallback = GlicSuggestionsCallbackList::CallbackType;
 
 // Processes zero state suggestions for GLIC, scoped to the given page.
 class ZeroStateSuggestionsPageData
@@ -61,6 +67,7 @@ class ZeroStateSuggestionsPageData
 
   // Called when a zero state suggestions server response is received.
   void OnModelExecutionResponse(
+      bool is_fre,
       optimization_guide::OptimizationGuideModelExecutionResult result,
       std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
@@ -70,17 +77,21 @@ class ZeroStateSuggestionsPageData
   bool annotated_page_content_done_ = false;
   std::optional<optimization_guide::AIPageContentResult>
       annotated_page_content_;
+
+  // Tracks the state for a request.
+  base::TimeTicks begin_time_;
   std::optional<optimization_guide::proto::ZeroStateSuggestionsRequest>
       suggestions_request_;
+  base::OnceCallbackList<void(std::optional<std::vector<std::string>>)>
+      suggestions_callbacks_;
 
-  // Timestamp of when `this` is created, i.e. before any fetch or request
-  // is sent.
-  base::TimeTicks begin_time_;
+  // Cached suggestions by FRE state.
+  std::optional<std::vector<std::string>> cached_fre_suggestions_;
+  std::optional<std::vector<std::string>> cached_non_fre_suggestions_;
 
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
       nullptr;
-  GlicSuggestionsCallback suggestions_callback_;
   base::WeakPtrFactory<ZeroStateSuggestionsPageData> weak_ptr_factory_{this};
 
   PAGE_USER_DATA_KEY_DECL();

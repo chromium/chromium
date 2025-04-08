@@ -226,10 +226,6 @@ void ContextualCueingService::OnSuggestionsReceived(
     content::WebContents* web_contents,
     GlicSuggestionsCallback callback,
     std::optional<std::vector<std::string>> suggestions) {
-  if (ZeroStateSuggestionsPageData::GetForPage(
-          web_contents->GetPrimaryPage())) {
-    ZeroStateSuggestionsPageData::DeleteForPage(web_contents->GetPrimaryPage());
-  }
   std::move(callback).Run(suggestions);
 }
 
