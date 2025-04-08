@@ -327,6 +327,22 @@ source_set("unit_tests") {
   ]
 }
 
+source_set("eg2_utils") {
+  testonly = true
+  sources = [
+    "tab_groups_eg_utils.h",
+    "tab_groups_eg_utils.mm",
+  ]
+  deps = [
+    ":tab_groups_constant",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
+}
+
 source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
@@ -335,11 +351,10 @@ source_set("eg2_tests") {
     "shared_tab_groups_panel_egtest.mm",
     "tab_group_sync_egtest.mm",
     "tab_group_sync_signin_egtest.mm",
-    "tab_groups_eg_utils.h",
-    "tab_groups_eg_utils.mm",
     "tab_groups_egtest.mm",
   ]
   deps = [
+    ":eg2_utils",
     ":eg_test_support+eg2",
     ":tab_groups_constant",
     "//base/test:test_support",
