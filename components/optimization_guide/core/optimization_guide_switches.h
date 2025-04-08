@@ -13,7 +13,9 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "url/gurl.h"
 
 namespace optimization_guide {
 namespace proto {
@@ -165,6 +167,10 @@ bool ShouldGetFreeDiskSpaceWithUserVisiblePriorityTask();
 // Returns true if Google API key configuration check should be skipped.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldSkipGoogleApiKeyConfigurationCheck();
+
+// Return the URL endpoint used for the model execution service.
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+GURL GetModelExecutionServiceURL();
 
 }  // namespace switches
 }  // namespace optimization_guide

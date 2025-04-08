@@ -133,7 +133,8 @@ class LoadingPredictor : public KeyedService,
   // perform preresolve and preconnect actions. When `traffic_annotation` is
   // set, it will use the value over the default
   // `kLoadingPredictorPreconnectTrafficAnnotation`, later passed on to //net.
-  void PreconnectURLIfAllowed(
+  // Virtual for testing.
+  virtual void PreconnectURLIfAllowed(
       const GURL& url,
       bool allow_credentials,
       const net::NetworkAnonymizationKey& network_anonymization_key,

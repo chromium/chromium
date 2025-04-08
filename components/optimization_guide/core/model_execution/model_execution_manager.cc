@@ -74,17 +74,6 @@ class ScopedModelExecutionResponseLogger {
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 };
 
-// Returns the URL endpoint for the model execution service.
-GURL GetModelExecutionServiceURL() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(
-          switches::kOptimizationGuideServiceModelExecutionURL)) {
-    return GURL(command_line->GetSwitchValueASCII(
-        switches::kOptimizationGuideServiceModelExecutionURL));
-  }
-  return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
-}
-
 void RecordSessionUsedRemoteExecutionHistogram(ModelBasedCapabilityKey feature,
                                                bool is_remote) {
   base::UmaHistogramBoolean(
@@ -138,14 +127,13 @@ ModelExecutionManager::ModelExecutionManager(
     : model_quality_uploader_service_(model_quality_uploader_service),
       optimization_guide_logger_(optimization_guide_logger),
       model_execution_service_url_(net::AppendOrReplaceQueryParameter(
-          GetModelExecutionServiceURL(),
+          switches::GetModelExecutionServiceURL(),
           "key",
           features::GetOptimizationGuideServiceAPIKey())),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
       on_device_model_service_controller_(
-          std::move(on_device_model_service_controller)) {
-}
+          std::move(on_device_model_service_controller)) {}
 
 ModelExecutionManager::~ModelExecutionManager() {
 }

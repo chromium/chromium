@@ -281,5 +281,15 @@ bool ShouldSkipGoogleApiKeyConfigurationCheck() {
   return command_line->HasSwitch(kGoogleApiKeyConfigurationCheckOverride);
 }
 
+GURL GetModelExecutionServiceURL() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          switches::kOptimizationGuideServiceModelExecutionURL)) {
+    return GURL(command_line->GetSwitchValueASCII(
+        switches::kOptimizationGuideServiceModelExecutionURL));
+  }
+  return GURL(kOptimizationGuideServiceModelExecutionDefaultURL);
+}
+
 }  // namespace switches
 }  // namespace optimization_guide

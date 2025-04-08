@@ -7,6 +7,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/predictors/loading_predictor.h"
+#include "chrome/browser/predictors/loading_predictor_config.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -36,7 +39,8 @@ class ContextualCueingServiceTest : public testing::Test {
     InitializeFeatureList();
     service_ = std::make_unique<ContextualCueingService>(
         &page_content_extraction_service_,
-        /*optimization_guide_keyed_service=*/nullptr);
+        /*optimization_guide_keyed_service=*/nullptr,
+        /*loading_predictor=*/nullptr);
   }
 
   ContextualCueingService* service() { return service_.get(); }
@@ -267,6 +271,69 @@ TEST_F(ContextualCueingServiceTestPerDomainLimits, PerDomainLimits) {
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
   EXPECT_EQ(service()->CanShowNudge(GURL(kBarURL)), NudgeDecision::kSuccess);
   EXPECT_EQ(service()->CanShowNudge(GURL(kBazURL)), NudgeDecision::kSuccess);
+}
+
+class FakeLoadingPredictor : public predictors::LoadingPredictor {
+ public:
+  FakeLoadingPredictor(predictors::LoadingPredictorConfig& config,
+                       Profile* profile)
+      : predictors::LoadingPredictor(config, profile) {}
+
+  void PreconnectURLIfAllowed(
+      const GURL& url,
+      bool allow_credentials,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation =
+          predictors::kLoadingPredictorPreconnectTrafficAnnotation,
+      const content::StoragePartitionConfig* storage_partition_config =
+          nullptr) override {
+    EXPECT_EQ(url.spec(), "https://mes.com/");
+    preconnect_invoked = true;
+  }
+
+  bool preconnect_invoked = false;
+};
+
+class ContextualCueingServiceTestZeroStateSuggestions
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  ContextualCueingServiceTestZeroStateSuggestions() {
+    scoped_feature_list_.InitAndEnableFeature(kGlicZeroStateSuggestions);
+  }
+
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        optimization_guide::switches::
+            kOptimizationGuideServiceModelExecutionURL,
+        "https://mes.com/");
+    ChromeRenderViewHostTestHarness::SetUp();
+
+    predictors::LoadingPredictorConfig predictor_config;
+    loading_predictor_ =
+        std::make_unique<FakeLoadingPredictor>(predictor_config, profile());
+    service_ = std::make_unique<ContextualCueingService>(
+        &page_content_extraction_service_,
+        /*optimization_guide_keyed_service=*/nullptr, loading_predictor_.get());
+  }
+
+  void TearDown() override {
+    loading_predictor_->Shutdown();
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  std::unique_ptr<FakeLoadingPredictor> loading_predictor_;
+  std::unique_ptr<ContextualCueingService> service_;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  page_content_annotations::PageContentExtractionService
+      page_content_extraction_service_;
+};
+
+TEST_F(ContextualCueingServiceTestZeroStateSuggestions, Preconnect) {
+  service_->PrepareToFetchContextualGlicZeroStateSuggestions(web_contents());
+  EXPECT_TRUE(loading_predictor_->preconnect_invoked);
 }
 
 }  // namespace

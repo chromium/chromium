@@ -11,8 +11,11 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_page_data.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -47,11 +50,14 @@ namespace contextual_cueing {
 ContextualCueingService::ContextualCueingService(
     page_content_annotations::PageContentExtractionService*
         page_content_extraction_service,
-    OptimizationGuideKeyedService* optimization_guide_keyed_service)
+    OptimizationGuideKeyedService* optimization_guide_keyed_service,
+    predictors::LoadingPredictor* loading_predictor)
     : recent_nudge_tracker_(kNudgeCapCount.Get(), kNudgeCapTime.Get()),
       recent_visited_origins_(kVisitedDomainsLimit.Get()),
       page_content_extraction_service_(page_content_extraction_service),
-      optimization_guide_keyed_service_(optimization_guide_keyed_service) {
+      optimization_guide_keyed_service_(optimization_guide_keyed_service),
+      loading_predictor_(loading_predictor),
+      mes_url_(optimization_guide::switches::GetModelExecutionServiceURL()) {
   CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) ||
         base::FeatureList::IsEnabled(
             contextual_cueing::kGlicZeroStateSuggestions));
@@ -183,6 +189,14 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
     content::WebContents* web_contents) {
   // This call preflights grabbing the page content.
   ZeroStateSuggestionsPageData::CreateForPage(web_contents->GetPrimaryPage());
+
+  if (loading_predictor_) {
+    net::NetworkAnonymizationKey anonymization_key =
+        net::NetworkAnonymizationKey::CreateSameSite(
+            net::SchemefulSite(mes_url_));
+    loading_predictor_->PreconnectURLIfAllowed(
+        mes_url_, /*allow_credentials=*/true, anonymization_key);
+  }
 }
 
 void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
