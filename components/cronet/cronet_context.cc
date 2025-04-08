@@ -212,7 +212,7 @@ CronetContext::CronetContext(
           new NetworkTasks(std::move(context_config), std::move(callback))),
       network_task_runner_(network_task_runner) {
   if (!network_task_runner_) {
-    network_thread_ = std::make_unique<base::Thread>("network");
+    network_thread_ = std::make_unique<base::Thread>("CronetNet");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
     network_thread_->StartWithOptions(std::move(options));
@@ -711,7 +711,7 @@ int CronetContext::default_load_flags() const {
 base::Thread* CronetContext::GetFileThread() {
   DCHECK(OnInitThread());
   if (!file_thread_) {
-    file_thread_ = std::make_unique<base::Thread>("Network File Thread");
+    file_thread_ = std::make_unique<base::Thread>("CronetFile");
     file_thread_->Start();
   }
   return file_thread_.get();
