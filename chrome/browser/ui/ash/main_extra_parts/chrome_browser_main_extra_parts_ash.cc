@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/auth/active_session_fingerprint_client_impl.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
@@ -453,6 +454,8 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
     graduation_manager_ =
         std::make_unique<ash::graduation::GraduationManagerImpl>();
   }
+
+  browser_controller_ = std::make_unique<ash::BrowserControllerImpl>();
 
   if (ash::features::IsWelcomeExperienceEnabled()) {
     peripherals_app_delegate_ =
