@@ -14,6 +14,8 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.app.role.RoleManager;
+import android.content.pm.ActivityInfo;
+import android.content.pm.ResolveInfo;
 import android.os.Build;
 
 import org.junit.After;
@@ -31,6 +33,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowRoleManager;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -40,9 +43,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserPromoTriggerStateListener;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
-import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultInfo;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -60,6 +60,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.Q)
 public class DefaultBrowserPromoUtilsTest {
     @Mock private DefaultBrowserPromoImpressionCounter mCounter;
+    @Mock private DefaultBrowserStateProvider mProvider;
     @Mock private Tracker mMockTracker;
     @Mock private Profile mProfile;
     @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
@@ -94,11 +95,8 @@ public class DefaultBrowserPromoUtilsTest {
             mShadowRoleManager.addAvailableRole(RoleManager.ROLE_BROWSER);
         }
 
-        mUtils = new DefaultBrowserPromoUtils(mCounter);
+        mUtils = new DefaultBrowserPromoUtils(mCounter, mProvider);
         setDepsMockWithDefaultValues();
-
-        DefaultBrowserInfo.setDefaultInfoForTests(
-                createDefaultInfo(DefaultBrowserState.NO_DEFAULT));
     }
 
     @After
@@ -111,8 +109,6 @@ public class DefaultBrowserPromoUtilsTest {
 
     @Test
     public void testBasicPromo() {
-        DefaultBrowserInfo.setDefaultInfoForTests(
-                createDefaultInfo(DefaultBrowserState.NO_DEFAULT));
         Assert.assertTrue(
                 "Should promo disambiguation sheet on Q.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
@@ -122,8 +118,6 @@ public class DefaultBrowserPromoUtilsTest {
     // --- Q above ---
     @Test
     public void testPromo_Q_No_Default() {
-        DefaultBrowserInfo.setDefaultInfoForTests(
-                createDefaultInfo(DefaultBrowserState.NO_DEFAULT));
         Assert.assertTrue(
                 "Should promo role manager when there is no default browser on Q+.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
@@ -132,8 +126,8 @@ public class DefaultBrowserPromoUtilsTest {
 
     @Test
     public void testPromo_Q_Other_Default() {
-        DefaultBrowserInfo.setDefaultInfoForTests(
-                createDefaultInfo(DefaultBrowserState.OTHER_DEFAULT));
+        when(mProvider.getDefaultWebBrowserActivityResolveInfo())
+                .thenReturn(createResolveInfo("android", 1));
         Assert.assertTrue(
                 "Should promo role manager when there is another default browser on Q+.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
@@ -146,6 +140,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(
                 "Should Not show role manager promo when Role already held on Q+.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     @Test
@@ -154,6 +149,7 @@ public class DefaultBrowserPromoUtilsTest {
         Assert.assertFalse(
                 "Should Not show role manager promo when Role is not available on Q+.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
+        Assert.assertTrue(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
 
     // --- P below ---
@@ -188,8 +184,6 @@ public class DefaultBrowserPromoUtilsTest {
     @Test
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_DEFAULT_BROWSER_PROMO})
     public void testNoPromo_featureDisabled() {
-        DefaultBrowserInfo.setDefaultInfoForTests(
-                createDefaultInfo(DefaultBrowserState.NO_DEFAULT));
         Assert.assertFalse(
                 "Should not promo when the feature is disabled.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
@@ -208,8 +202,11 @@ public class DefaultBrowserPromoUtilsTest {
 
     @Test
     public void testNoPromo_isOtherChromeDefault() {
-        DefaultBrowserInfo.setDefaultInfoForTests(
-                createDefaultInfo(DefaultBrowserState.OTHER_CHROME_DEFAULT));
+        when(mProvider.getDefaultWebBrowserActivityResolveInfo())
+                .thenReturn(
+                        createResolveInfo(
+                                DefaultBrowserStateProvider.CHROME_STABLE_PACKAGE_NAME, 1));
+        when(mProvider.isCurrentDefaultBrowserChrome(any())).thenCallRealMethod();
         Assert.assertFalse(
                 "Should not promo when another chrome channel browser has been default.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
@@ -218,8 +215,10 @@ public class DefaultBrowserPromoUtilsTest {
 
     @Test
     public void testNoPromo_isCurrentChromeDefault() {
-        DefaultBrowserInfo.setDefaultInfoForTests(
-                createDefaultInfo(DefaultBrowserState.CHROME_DEFAULT));
+        when(mProvider.getDefaultWebBrowserActivityResolveInfo())
+                .thenReturn(
+                        createResolveInfo(
+                                ContextUtils.getApplicationContext().getPackageName(), 1));
         Assert.assertFalse(
                 "Should not promo when chrome has been default.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
@@ -227,10 +226,10 @@ public class DefaultBrowserPromoUtilsTest {
     }
 
     @Test
-    public void testNoPromo_defaultBrowserInfoNotFetched() {
-        DefaultBrowserInfo.setDefaultInfoForTests(null);
+    public void testNoPromo_webBrowserActivityNotExist() {
+        when(mProvider.getDefaultWebBrowserActivityResolveInfo()).thenReturn(null);
         Assert.assertFalse(
-                "Should not promo when unable to fetch default info.",
+                "Should not promo when web browser activity does not exist.",
                 mUtils.shouldShowRoleManagerPromo(mActivity));
         Assert.assertFalse(mUtils.shouldShowNonRoleManagerPromo(mActivity));
     }
@@ -335,16 +334,24 @@ public class DefaultBrowserPromoUtilsTest {
         when(mCounter.getLastPromoInterval()).thenReturn(1000);
         when(mCounter.getMinPromoInterval()).thenReturn(10);
 
+        when(mProvider.shouldShowPromo()).thenCallRealMethod();
+        when(mProvider.isChromeStable()).thenReturn(false);
+        when(mProvider.isChromePreStableInstalled()).thenReturn(false);
+        when(mProvider.isCurrentDefaultBrowserChrome(any())).thenReturn(false);
+        // No Default
+        when(mProvider.getDefaultWebBrowserActivityResolveInfo())
+                .thenReturn(createResolveInfo("android", 0));
+        when(mProvider.getCurrentDefaultBrowserState(any())).thenCallRealMethod();
+
         when(mProfile.isOffTheRecord()).thenReturn(false);
     }
 
-    private DefaultInfo createDefaultInfo(@DefaultBrowserState int defaultState) {
-        return new DefaultBrowserInfo.DefaultInfo(
-                defaultState,
-                /* isChromeSystem= */ true,
-                /* isDefaultSystem= */ true,
-                /* browserCount= */ 2,
-                /* systemCount= */ 0,
-                /* isChromePreStableInstalled */ false);
+    private ResolveInfo createResolveInfo(String packageName, int match) {
+        ResolveInfo resolveInfo = new ResolveInfo();
+        ActivityInfo activityInfo = new ActivityInfo();
+        activityInfo.packageName = packageName;
+        resolveInfo.activityInfo = activityInfo;
+        resolveInfo.match = match;
+        return resolveInfo;
     }
 }
