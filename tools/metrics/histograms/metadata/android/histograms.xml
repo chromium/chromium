@@ -7359,6 +7359,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.SendBrowsingIntent"
+    enum="WebViewSendIntentState" expires_after="2026-04-01">
+  <owner>pbirk@google.com</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records whether WebView handled a navigation by sending a browsing intent or
+    not. The default behavior is to send a browsing intent for navigations and
+    redirects, but this behavior is disabled if the application provides a
+    WebViewClient of any kind.
+
+    The aim of this histogram is to determine if any applications use the
+    default behavior.
+
+    This histogram is emitted when WebViewClient.shouldOverrideUrlLoading is
+    called.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SetAcceptThirdPartyCookies"
     enum="BooleanAccepted" expires_after="2025-06-13">
   <owner>jdeabreu@chromium.org</owner>

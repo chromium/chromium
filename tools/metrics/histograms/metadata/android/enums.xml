@@ -2346,6 +2346,16 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Text dark, night mode off"/>
 </enum>
 
+<!-- LINT.IfChange(WebViewSendIntentState) -->
+
+<enum name="WebViewSendIntentState">
+  <int value="0" label="Did not invoke sendBrowsingIntent"/>
+  <int value="1" label="Invoked sendBrowsingIntent"/>
+  <int value="2" label="New activity started"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/java/src/org/chromium/android_webview/AwContentsClient.java:SendIntentState) -->
+
 <enum name="WebViewShouldInterceptRequestOverridden">
   <int value="0"
       label="shouldInterceptRequest is not overridden by WebViewClient."/>
