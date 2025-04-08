@@ -257,6 +257,10 @@ void PinnedToolbarActionsContainer::UpdateAllIcons() {
   for (PinnedActionToolbarButton* const pinned_button : pinned_buttons_) {
     pinned_button->UpdateIcon();
   }
+  for (PinnedActionToolbarButton* const popped_out_button :
+       popped_out_buttons_) {
+    popped_out_button->UpdateIcon();
+  }
 }
 
 void PinnedToolbarActionsContainer::OnThemeChanged() {
@@ -436,6 +440,11 @@ PinnedActionToolbarButton* PinnedToolbarActionsContainer::AddPoppedOutButtonFor(
   auto popped_out_button = CreateOrGetButtonForAction(id);
   auto* button = popped_out_button.get();
   popped_out_buttons_.push_back(AddChildView(std::move(popped_out_button)));
+  // If the added button was previously a cached permanent button then the icon
+  // may not be correct for the current state (i.e. touch ui).
+  if (button->IsPermanent()) {
+    button->UpdateIcon();
+  }
   ReorderViews();
   return button;
 }
@@ -497,9 +506,15 @@ void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     pinned_buttons_.push_back(*iter);
     popped_out_buttons_.erase(iter);
   } else {
-    auto button = CreateOrGetButtonForAction(id);
-    button->SetPinned(true);
-    pinned_buttons_.push_back(AddChildView(std::move(button)));
+    auto pinned_button = CreateOrGetButtonForAction(id);
+    auto* button = pinned_button.get();
+    pinned_button->SetPinned(true);
+    pinned_buttons_.push_back(AddChildView(std::move(pinned_button)));
+    // If the added button was previously a cached permanent button then the
+    // icon may not be correct for the current state (i.e. touch ui).
+    if (button->IsPermanent()) {
+      button->UpdateIcon();
+    }
   }
 }
 

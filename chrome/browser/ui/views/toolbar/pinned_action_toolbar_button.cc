@@ -225,7 +225,9 @@ void PinnedActionToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
 
 void PinnedActionToolbarButton::UpdateIcon() {
   const std::optional<VectorIcons>& icons = GetVectorIcons();
-  if (!icons.has_value()) {
+  // If the button is a cached permanent button the color provider will not be
+  // available.
+  if (!icons.has_value() || !GetColorProvider()) {
     return;
   }
 
