@@ -1256,6 +1256,11 @@ const char kShopCardName[] = "Enables ShopCard";
 const char kShopCardDescription[] =
     "Enables being able to show ShopCard in the Magic Stack";
 
+const char kShopCardImpressionLimitsName[] =
+    "Enables ShopCard Impression limits";
+const char kShopCardImpressionLimitsDescription[] =
+    "Limits the number of times ShopCards can be shown in the Magic Stack";
+
 const char kShowAutofillTypePredictionsName[] = "Show Autofill predictions";
 const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
