@@ -51,7 +51,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -1740,7 +1740,7 @@ public class CompositorViewHolder extends FrameLayout
     /**
      * @return Whether a11y is set up.
      */
-    @EnsuresNonNull({"mNodeProvider", "mAccessibilityView"})
+    @EnsuresNonNullIf({"mNodeProvider", "mAccessibilityView"})
     private boolean isA11ySetUp() {
         return mNodeProvider != null && mAccessibilityView != null;
     }
