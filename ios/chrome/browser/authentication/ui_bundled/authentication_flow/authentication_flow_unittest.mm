@@ -234,7 +234,8 @@ class AuthenticationFlowTest : public PlatformTest,
   // "profile switch" happens, but the second part of the flow may happen in a
   // different profile).
   void SignIn(id<SystemIdentity> identity,
-              signin_metrics::AccessPoint access_point) {
+              signin_metrics::AccessPoint access_point,
+              bool adds_history_screen_post_profile_switch = true) {
     signin_result_ = signin::Tribool::kUnknown;
     // Can't use a RunLoop multiple times, create a new one.
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -331,9 +332,16 @@ class AuthenticationFlowTest : public PlatformTest,
                                   atAccessPoint:access_point
                                  currentProfile:personal_profile_.get()]);
     }
-    OCMExpect([performer_mock_ completePostSignInActions:PostSignInActionSet()
+
+    PostSignInActionSet postSignInActions;
+    if (should_switch_profile && adds_history_screen_post_profile_switch) {
+      postSignInActions.Put(
+          PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch);
+    }
+    OCMExpect([performer_mock_ completePostSignInActions:postSignInActions
                                             withIdentity:identity
-                                                 browser:final_browser]);
+                                                 browser:final_browser
+                                             accessPoint:access_point]);
 
     [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
     // The completion block should not be called synchronously.
@@ -477,12 +485,14 @@ TEST_P(AuthenticationFlowTest, TestShowManagedConfirmationOnlyOnce) {
 
   // Second signin from the account menu, don't show the dialog.
   SignOutPersonalProfile();
-  SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu);
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kAccountMenu,
+         /*adds_history_screen_post_profile_switch=*/false);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
   // Signin from a different UI surface, show the dialog again.
   SignOutPersonalProfile();
-  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser);
+  SignIn(managed_identity1_, signin_metrics::AccessPoint::kSupervisedUser,
+         /*adds_history_screen_post_profile_switch=*/false);
   EXPECT_EQ(1, managed_confirmation_dialog_shown_count_);
 
   // Signin with a different account, show the dialog again.

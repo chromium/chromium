@@ -382,7 +382,8 @@ enum class AuthenticationFlowInProfileState {
   signInCompletion(SigninCoordinatorResult::SigninCoordinatorResultSuccess);
   [_performer completePostSignInActions:_postSignInActions
                            withIdentity:_identityToSignIn
-                                browser:_browser];
+                                browser:_browser
+                            accessPoint:_accessPoint];
   [self continueFlow];
 }
 

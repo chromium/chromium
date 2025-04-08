@@ -50,7 +50,9 @@ enum class PostSignInAction {
   // Enables SelectableType::kReadingList for the account that just signed-in
   // from the reading list manager.
   kEnableUserSelectableTypeReadingList,
-  kLastType = kEnableUserSelectableTypeReadingList
+  // Shows the history sync screen after a profile switch.
+  kShowHistorySyncScreenAfterProfileSwitch,
+  kLastType = kShowHistorySyncScreenAfterProfileSwitch
 };
 
 using PostSignInActionSet = base::EnumSet<PostSignInAction,

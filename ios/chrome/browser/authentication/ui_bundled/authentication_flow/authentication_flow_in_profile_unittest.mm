@@ -149,7 +149,8 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignIn) {
   // Expect sign-in completed while running the run loop.
   OCMExpect([performer_mock_ completePostSignInActions:PostSignInActionSet()
                                           withIdentity:identity1_
-                                               browser:browser_.get()]);
+                                               browser:browser_.get()
+                                           accessPoint:access_point]);
   EXPECT_EQ(future.Take(),
             SigninCoordinatorResult::SigninCoordinatorResultSuccess);
 }
@@ -172,7 +173,8 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWhileBeingSignedIn) {
   // Expect sign-in completed while running the run loop.
   OCMExpect([performer_mock_ completePostSignInActions:PostSignInActionSet()
                                           withIdentity:identity1_
-                                               browser:browser_.get()]);
+                                               browser:browser_.get()
+                                           accessPoint:access_point]);
   // Note: No call to `-[AuthenticationFlowPerformer
   // signInIdentity:atAccessPoint:currentProfile:]` since the profile is already
   // signed in with the right identity.
@@ -219,7 +221,8 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
   // Expect sign-in completed while running the run loop.
   OCMExpect([performer_mock_ completePostSignInActions:PostSignInActionSet()
                                           withIdentity:identity1_
-                                               browser:browser_.get()]);
+                                               browser:browser_.get()
+                                           accessPoint:access_point]);
   [GetAuthenticationFlowPerformerDelegate() didSignOutForAccountSwitch];
   EXPECT_EQ(future.Take(),
             SigninCoordinatorResult::SigninCoordinatorResultSuccess);
@@ -283,7 +286,8 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithManagedIdentity) {
   // Expect sign-in completed while running the run loop.
   OCMExpect([performer_mock_ completePostSignInActions:PostSignInActionSet()
                                           withIdentity:managed_identity_
-                                               browser:browser_.get()]);
+                                               browser:browser_.get()
+                                           accessPoint:access_point]);
   // Simulate the user policy fetch request.
   [GetAuthenticationFlowPerformerDelegate() didFetchUserPolicyWithSuccess:YES];
   EXPECT_EQ(future.Take(),

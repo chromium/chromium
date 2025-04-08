@@ -120,7 +120,8 @@ using OnProfileSwitchCompletion =
 // the user.
 - (void)completePostSignInActions:(PostSignInActionSet)postSignInActions
                      withIdentity:(id<SystemIdentity>)identity
-                          browser:(Browser*)browser;
+                          browser:(Browser*)browser
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint;
 
 // Shows `error` to the user and calls `callback` on dismiss.
 - (void)showAuthenticationError:(NSError*)error

@@ -246,6 +246,12 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
+      performAction:grey_tap()];
+
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 
   // We should still be in a new managed profile.
@@ -430,6 +436,12 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
+      performAction:grey_tap()];
+
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 
   // We should be in a new managed profile.
@@ -498,6 +510,12 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   // Confirm the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
@@ -665,6 +683,12 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
 
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
+      performAction:grey_tap()];
+
   [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
 }
 
@@ -709,6 +733,12 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   // Confirm the enterprise onboarding screen.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
       performAction:grey_tap()];
 
   // Ensure the enterprise onboarding screen did disapepar.
@@ -930,31 +960,17 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
+
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
+      performAction:grey_tap()];
+
   // Confirm profile switched.
   GREYAssert([[ChromeEarlGrey currentProfileName]
                  isEqualToString:[ChromeEarlGrey currentProfileName]],
              @"Profile should be personal");
-
-  // Dismiss the identity confirmation snackbar, as it covers "confirm" remove
-  // idenity button.
-  NSString* snackbarMessage = l10n_util::GetNSStringF(
-      IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-      base::SysNSStringToUTF16(managedIdentity.userGivenName));
-  id<GREYMatcher> snackbar_matcher =
-      grey_allOf(grey_text(snackbarMessage), grey_sufficientlyVisible(), nil);
-  ConditionBlock wait_for_appearance = ^{
-    NSError* error;
-    [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-        assertWithMatcher:grey_notNil()
-                    error:&error];
-
-    return error == nil;
-  };
-  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10),
-                                                          wait_for_appearance),
-             @"Snackbar did not appear.");
-  [[EarlGrey selectElementWithMatcher:snackbar_matcher]
-      performAction:grey_tap()];
 
   // Remove `managedIdentity` from device.
   OpenManageAccountsView();
@@ -1018,6 +1034,13 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           PromoScreenPrimaryButtonMatcher()]
       performAction:grey_tap()];
+
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
+      performAction:grey_tap()];
+
   // Confirm profile switched.
   GREYAssert(![[ChromeEarlGrey currentProfileName]
                  isEqualToString:personalProfileName],

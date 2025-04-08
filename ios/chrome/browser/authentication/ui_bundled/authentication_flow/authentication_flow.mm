@@ -264,9 +264,6 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
 // Whether this flow is curently handling an error.
 @property(nonatomic, assign) BOOL handlingError;
 
-// The actions to perform following account sign-in.
-@property(nonatomic, assign) PostSignInActionSet postSignInActions;
-
 @end
 
 @implementation AuthenticationFlow {
@@ -315,6 +312,9 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   // For metrics: Whether there was a managed primary account at the beginning
   // of the flow. Set to nullopt if there was no primary account at all.
   std::optional<bool> _wasPrimaryAccountManaged;
+
+  // The actions to perform following account sign-in.
+  PostSignInActionSet _postSignInActions;
 }
 
 @synthesize handlingError = _handlingError;
@@ -738,7 +738,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
              isManagedIdentity:isManagedIdentity
                    accessPoint:_accessPoint
           precedingHistorySync:_precedingHistorySync
-             postSignInActions:self.postSignInActions];
+             postSignInActions:_postSignInActions];
   [authenticationFlowInProfile startSignInWithCompletion:_signInCompletion];
   _signInCompletion = nil;
   [self continueFlow];
@@ -870,6 +870,18 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       AreSeparateProfilesForManagedAccountsEnabled() &&
       (!keepBrowsingDataSeparate ||
        _accessPoint == signin_metrics::AccessPoint::kStartPage);
+
+  // When we show the managed profile screen, the profile is a new one, ensure
+  // the history sync screen is shown then in case a separate profile is
+  // created because the caller who would show the history sync screen gets
+  // destroyed.
+  // TODO(crbug.com/403183877): Make sure that only one entity is responsible
+  // for showing the sync screen.
+  if (AreSeparateProfilesForManagedAccountsEnabled() &&
+      !_shouldConvertPersonalProfileToManaged) {
+    _postSignInActions.Put(
+        PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch);
+  }
 
   [self continueFlow];
 }

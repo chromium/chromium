@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -51,6 +52,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -359,7 +361,8 @@ void HandleSignoutForSnackbar(
 
 - (void)completePostSignInActions:(PostSignInActionSet)postSignInActions
                      withIdentity:(id<SystemIdentity>)identity
-                          browser:(Browser*)browser {
+                          browser:(Browser*)browser
+                      accessPoint:(signin_metrics::AccessPoint)accessPoint {
   DCHECK(browser);
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
@@ -381,6 +384,12 @@ void HandleSignoutForSnackbar(
     syncService->GetUserSettings()->SetSelectedType(
         syncer::UserSelectableType::kReadingList, true);
     clearSelectableType = syncer::UserSelectableType::kReadingList;
+  }
+
+  if (postSignInActions.Has(
+          PostSignInAction::kShowHistorySyncScreenAfterProfileSwitch)) {
+    [self showHistorySyncScreenAfterProfileSwitch:browser
+                                      accessPoint:accessPoint];
   }
 
   if (postSignInActions.Has(
@@ -750,6 +759,28 @@ void HandleSignoutForSnackbar(
   [self managedConfirmationDidAccept:accepted
                              browser:browser
             keepBrowsingDataSeparate:keepBrowsingDataSeparate];
+}
+
+- (void)showHistorySyncScreenAfterProfileSwitch:(Browser*)browser
+                                    accessPoint:(signin_metrics::AccessPoint)
+                                                    accessPoint {
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kHistorySync
+               identity:nil
+            accessPoint:accessPoint
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+             completion:nil];
+  command.optionalHistorySync = YES;
+
+  UIViewController* viewController =
+      browser->GetSceneState().rootViewController;
+  while (viewController.presentedViewController) {
+    viewController = viewController.presentedViewController;
+  }
+
+  [browser->GetSceneState().controller showSignin:command
+                               baseViewController:viewController];
 }
 
 @end
