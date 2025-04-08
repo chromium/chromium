@@ -448,6 +448,30 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTabFailsWithUnsupportedScheme) {
   RunTestSequence(CheckTabCount(1));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testCreateTabInBackground) {
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents),
+                  CheckTabCount(1));
+
+  // Creating a new tab via the glic API in the foreground should change the
+  // active tab.
+  ExecuteJsTest();
+  RunTestSequence(CheckTabCount(2));
+  tabs::TabInterface* active_tab =
+      InProcessBrowserTest::browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_THAT(active_tab->GetContents()->GetURL().spec(),
+              testing::EndsWith("#foreground"));
+
+  // Creating a new tab via the glic API in the background should not change the
+  // active tab.
+  ContinueJsTest();
+  RunTestSequence(CheckTabCount(3));
+  active_tab =
+      InProcessBrowserTest::browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_THAT(active_tab->GetContents()->GetURL().spec(),
+              testing::EndsWith("#foreground"));
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testOpenGlicSettingsPage) {
   ExecuteJsTest();
 

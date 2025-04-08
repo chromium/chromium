@@ -184,6 +184,18 @@ class ApiTests extends ApiTestFixtureBase {
     this.assertCreateTabWithUnsupportedSchemeFails('file:///tmp/test.html');
   }
 
+  async testCreateTabInBackground() {
+    assertTrue(!!this.host.createTab);
+
+    await this.host.createTab(
+        location.href + '#foreground', {openInBackground: false});
+
+    await this.advanceToNextStep();
+
+    await this.host.createTab(
+        location.href + '#background', {openInBackground: true});
+  }
+
   async testOpenGlicSettingsPage() {
     assertTrue(!!this.host.openGlicSettingsPage);
     this.host.openGlicSettingsPage();
