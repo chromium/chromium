@@ -30,6 +30,7 @@ interface BasicInfo {
 interface WebContentsInfo {
   enabled: boolean;
   search_content_filtering: 'on'|'off';
+  browser_content_filtering: 'on'|'off';
 }
 
 type UserSettings = Record<string, any>;
@@ -105,12 +106,19 @@ function initialize() {
   function changeSearchContentFilters(newState: 'on'|'off') {
     chrome.send('changeSearchContentFilters', [newState]);
   }
+  function changeBrowserContentFilters(newState: 'on'|'off') {
+    chrome.send('changeBrowserContentFilters', [newState]);
+  }
 
   getRequiredElement('try-url').addEventListener('submit', submitURL);
   getRequiredElement('search-content-filters-enabled-on')
       .addEventListener('click', () => changeSearchContentFilters('on'));
   getRequiredElement('search-content-filters-enabled-off')
       .addEventListener('click', () => changeSearchContentFilters('off'));
+  getRequiredElement('browser-content-filters-enabled-on')
+      .addEventListener('click', () => changeBrowserContentFilters('on'));
+  getRequiredElement('browser-content-filters-enabled-off')
+      .addEventListener('click', () => changeBrowserContentFilters('off'));
 
   addWebUiListener('basic-info-received', receiveBasicInfo);
   addWebUiListener('user-settings-received', receiveUserSettings);
@@ -197,29 +205,41 @@ function receiveFilteringResult(result: Result) {
 }
 
 function receiveWebContentsFilterInfo(result: WebContentsInfo) {
-  getRequiredElement<HTMLInputElement>('search-content-filters-enabled-on')
-      .readOnly = !result.enabled;
-  getRequiredElement<HTMLInputElement>('search-content-filters-enabled-off')
-      .readOnly = !result.enabled;
-  getRequiredElement<HTMLInputElement>('search-content-filters-enabled-on')
-      .disabled = !result.enabled;
-  getRequiredElement<HTMLInputElement>('search-content-filters-enabled-off')
-      .disabled = !result.enabled;
+  /**
+   * Synchronizes the UI with WebContentsInfo result coming from the handler.
+   *
+   * @param toggleIdPrefix the HTML layout should contain two radio toggles
+   *     grouped under this `name` attribute, one each for `-on` and `-off`
+   *     options.
+   * @param value determines whether on or off radio should be checked.
+   */
+  function updateToggles(toggleIdPrefix: string, value: 'on'|'off') {
+    const onToggleId = `${toggleIdPrefix}-on`;
+    const offToggleId = `${toggleIdPrefix}-off`;
 
-  switch (result.search_content_filtering) {
-    case 'on':
-      getRequiredElement<HTMLInputElement>('search-content-filters-enabled-on')
-          .checked = true;
-      getRequiredElement<HTMLInputElement>('search-content-filters-enabled-off')
-          .checked = false;
-      break;
-    case 'off':
-      getRequiredElement<HTMLInputElement>('search-content-filters-enabled-on')
-          .checked = false;
-      getRequiredElement<HTMLInputElement>('search-content-filters-enabled-off')
-          .checked = true;
-      break;
+    getRequiredElement<HTMLInputElement>(onToggleId).readOnly = !result.enabled;
+    getRequiredElement<HTMLInputElement>(offToggleId).readOnly =
+        !result.enabled;
+    getRequiredElement<HTMLInputElement>(onToggleId).disabled = !result.enabled;
+    getRequiredElement<HTMLInputElement>(offToggleId).disabled =
+        !result.enabled;
+
+    switch (value) {
+      case 'on':
+        getRequiredElement<HTMLInputElement>(onToggleId).checked = true;
+        getRequiredElement<HTMLInputElement>(offToggleId).checked = false;
+        break;
+      case 'off':
+        getRequiredElement<HTMLInputElement>(onToggleId).checked = false;
+        getRequiredElement<HTMLInputElement>(offToggleId).checked = true;
+        break;
+    }
   }
+
+  updateToggles(
+      'search-content-filters-enabled', result.search_content_filtering);
+  updateToggles(
+      'browser-content-filters-enabled', result.browser_content_filtering);
 }
 
 document.addEventListener('DOMContentLoaded', initialize);

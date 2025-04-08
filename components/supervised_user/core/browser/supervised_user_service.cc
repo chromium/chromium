@@ -22,6 +22,7 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
@@ -39,11 +40,13 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using base::UserMetricsAction;
+namespace supervised_user {
 
 namespace {
+using base::UserMetricsAction;
+
 // Helper that extracts custodian data from given preferences.
-std::optional<supervised_user::Custodian> GetCustodianFromPrefs(
+std::optional<Custodian> GetCustodianFromPrefs(
     const PrefService& user_prefs,
     std::string_view email_address_pref,
     std::string_view name_pref,
@@ -58,12 +61,10 @@ std::optional<supervised_user::Custodian> GetCustodianFromPrefs(
       profile_image_url.empty()) {
     return std::nullopt;
   }
-  return supervised_user::Custodian((name.empty() ? email : name), email,
-                                    gaia_id, profile_image_url);
+  return Custodian((name.empty() ? email : name), email, gaia_id,
+                   profile_image_url);
 }
 }  // namespace
-
-namespace supervised_user {
 
 Custodian::Custodian(std::string_view name,
                      std::string_view email_address,
@@ -95,7 +96,12 @@ void SupervisedUserService::Init() {
       prefs::kSupervisedUserId,
       base::BindRepeating(&SupervisedUserService::OnSupervisedUserIdChanged,
                           base::Unretained(this)));
-  SetActive(supervised_user::IsSubjectToParentalControls(user_prefs_.get()));
+  pref_change_registrar_.Add(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      base::BindRepeating(
+          &SupervisedUserService::OnIncognitoModeAvailabilityChanged,
+          base::Unretained(this)));
+  SetActive(IsSubjectToParentalControls(user_prefs_.get()));
 }
 
 SupervisedUserURLFilter* SupervisedUserService::GetURLFilter() const {
@@ -250,22 +256,29 @@ void SupervisedUserService::OnCustodianInfoChanged() {
 }
 
 void SupervisedUserService::OnSupervisedUserIdChanged() {
-  bool is_child =
-      supervised_user::IsSubjectToParentalControls(user_prefs_.get());
-  if (is_child) {
-    // When supervision is enabled, close any incognito windows/tabs that may
-    // be open for this profile. These windows cannot be created after the
-    // user is signed in, and closing existing ones avoids unexpected
-    // behavior due to baked-in assumptions in the SupervisedUser code.
+  SetActive(IsSubjectToParentalControls(user_prefs_.get()));
+}
+
+void SupervisedUserService::OnIncognitoModeAvailabilityChanged() {
+  // This is called in the following cases:
+  // 1) When kSupervisedUserId changes state and indicates child account, the
+  // `setings_service_`::SetActive(true) call notifies all subscribers that
+  // settings have changed. SupervisedUserPrefStore is one of these subscribers,
+  // and it unconditionally disables the incognito mode.
+  // 2) When incognito mode is explicitly disabled, regardless kSupervisedUserId
+  // status.
+  // 3) Backing policy pref is updated independently from supervised user
+  // features. Closing incognito tabs in this situation seems the right thing to
+  // do and closing incognito tabs is idempotent.
+  if (platform_delegate_->ShouldCloseIncognitoTabs()) {
     platform_delegate_->CloseIncognitoTabs();
   }
-  SetActive(is_child);
 }
 
 void SupervisedUserService::OnDefaultFilteringBehaviorChanged() {
   int behavior_value =
       user_prefs_->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior);
-  supervised_user::FilteringBehavior behavior =
+  FilteringBehavior behavior =
       SupervisedUserURLFilter::BehaviorFromInt(behavior_value);
   url_filter_->SetDefaultFilteringBehavior(behavior);
 
@@ -334,7 +347,7 @@ void SupervisedUserService::Shutdown() {
   }
   DCHECK(!did_shutdown_);
   did_shutdown_ = true;
-  if (supervised_user::IsSubjectToParentalControls(user_prefs_.get())) {
+  if (IsSubjectToParentalControls(user_prefs_.get())) {
     base::RecordAction(UserMetricsAction("ManagedUsers_QuitBrowser"));
   }
   SetActive(false);

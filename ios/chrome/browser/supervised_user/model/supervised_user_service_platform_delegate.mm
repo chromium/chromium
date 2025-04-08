@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_service_platform_delegate.h"
 
 #import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -33,6 +34,10 @@ std::string SupervisedUserServicePlatformDelegate::GetCountryCode() const {
 version_info::Channel SupervisedUserServicePlatformDelegate::GetChannel()
     const {
   return ::GetChannel();
+}
+
+bool SupervisedUserServicePlatformDelegate::ShouldCloseIncognitoTabs() const {
+  return IsIncognitoModeDisabled(profile_->GetPrefs());
 }
 
 void SupervisedUserServicePlatformDelegate::CloseIncognitoTabs() {

@@ -40,6 +40,7 @@ source_set("model") {
     "//components/supervised_user/core/common",
     "//components/variations/service",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",

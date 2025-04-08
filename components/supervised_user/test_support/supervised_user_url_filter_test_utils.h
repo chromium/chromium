@@ -25,6 +25,7 @@ class FakePlatformDelegate : public SupervisedUserService::PlatformDelegate {
  public:
   std::string GetCountryCode() const override;
   version_info::Channel GetChannel() const override;
+  bool ShouldCloseIncognitoTabs() const override;
   void CloseIncognitoTabs() override;
 };
 
