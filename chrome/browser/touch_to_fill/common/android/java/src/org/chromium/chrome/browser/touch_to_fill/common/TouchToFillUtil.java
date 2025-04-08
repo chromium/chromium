@@ -11,9 +11,11 @@ import android.graphics.drawable.RippleDrawable;
 import android.util.TypedValue;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** This helper class contains shared utilities used for the touch-to-fill functionality. */
+@NullMarked
 public class TouchToFillUtil {
     private TouchToFillUtil() {}
 
