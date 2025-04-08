@@ -62,9 +62,11 @@ std::unique_ptr<KeyedService> BuildTestShareKitService(
   ProfileIOS* profile = static_cast<ProfileIOS*>(context);
   data_sharing::DataSharingService* data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
+  TabGroupService* tab_group_service =
+      TabGroupServiceFactory::GetForProfile(profile);
 
   return std::make_unique<TestShareKitService>(data_sharing_service, nullptr,
-                                               nullptr);
+                                               nullptr, tab_group_service);
 }
 
 std::unique_ptr<KeyedService> BuildFakeTabGroupSyncService(
@@ -78,7 +80,14 @@ std::unique_ptr<KeyedService> BuildTestSyncService(web::BrowserState* context) {
 
 std::unique_ptr<KeyedService> BuildMockCollaborationService(
     web::BrowserState* context) {
-  return std::make_unique<MockCollaborationService>();
+  ServiceStatus collaboration_status;
+  collaboration_status.collaboration_status =
+      CollaborationStatus::kEnabledCreateAndJoin;
+  std::unique_ptr<MockCollaborationService> mock_collaboration_service =
+      std::make_unique<MockCollaborationService>();
+  ON_CALL(*mock_collaboration_service.get(), GetServiceStatus())
+      .WillByDefault(Return(collaboration_status));
+  return std::move(mock_collaboration_service);
 }
 
 std::unique_ptr<KeyedService> BuildTestFaviconLoader(
@@ -122,6 +131,9 @@ class IOSCollaborationControllerDelegateTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         IOSChromeFaviconLoaderFactory::GetInstance(),
         base::BindRepeating(&BuildTestFaviconLoader));
+    test_profile_builder.AddTestingFactory(
+        TabGroupServiceFactory::GetInstance(),
+        TabGroupServiceFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         TabGroupServiceFactory::GetInstance(),
         TabGroupServiceFactory::GetDefaultFactory());

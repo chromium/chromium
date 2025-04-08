@@ -93,8 +93,7 @@ IOSCollaborationControllerDelegate::IOSCollaborationControllerDelegate(
       tab_group_service_(tab_group_service) {
   CHECK(browser_);
   CHECK(base_view_controller_);
-  // TODO(crbug.com/399289392): uncomment once downstream is landed.
-  //  CHECK(tab_group_service_);
+  CHECK(tab_group_service_);
   ProfileIOS* profile = browser_->GetProfile();
 
   share_kit_service_ = ShareKitServiceFactory::GetForProfile(profile);
@@ -263,10 +262,9 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
 
   tab_group_service_registration_id_ =
       std::make_optional(tab_group->tab_group_id());
-  // TODO(crbug.com/399289392): uncomment once downstream is landed.
-  //  tab_group_service_->RegisterCollaborationControllerDelegate(
-  //      tab_group_service_registration_id_.value(),
-  //      weak_ptr_factory_.GetWeakPtr());
+  tab_group_service_->RegisterCollaborationControllerDelegate(
+      tab_group_service_registration_id_.value(),
+      weak_ptr_factory_.GetWeakPtr());
 
   auto callback = base::BindOnce(
       &IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup,
@@ -349,9 +347,8 @@ void IOSCollaborationControllerDelegate::PromoteCurrentScreen() {
 
 void IOSCollaborationControllerDelegate::OnFlowFinished() {
   if (tab_group_service_registration_id_) {
-    // TODO(crbug.com/399289392): uncomment once downstream is landed.
-    //    tab_group_service_->UnregisterCollaborationControllerDelegate(
-    //        tab_group_service_registration_id_.value());
+    tab_group_service_->UnregisterCollaborationControllerDelegate(
+        tab_group_service_registration_id_.value());
   }
   if (dismiss_join_screen_callback_) {
     // The dismissal should be handled before the end of the flow.

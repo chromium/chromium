@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -102,10 +103,8 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
     mode_holder_ = [[TabGridModeHolder alloc] init];
     tab_group_ = web_state_list->GetGroupOfWebStateAt(1);
     tab_group_consumer_ = OCMProtocolMock(@protocol(TabGroupConsumer));
-    tab_group_sync_service_ =
-        std::make_unique<tab_groups::FakeTabGroupSyncService>();
-    share_kit_service_ =
-        std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
+    share_kit_service_ = std::make_unique<TestShareKitService>(
+        nullptr, nullptr, nullptr, tab_group_service_);
     collaboration_service_ =
         std::make_unique<collaboration::MockCollaborationService>();
     data_sharing_service_ = std::make_unique<
@@ -153,7 +152,6 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
   id<TabGroupConsumer> tab_group_consumer_;
   raw_ptr<const TabGroup> tab_group_;
   std::unique_ptr<WebStateListBuilderFromDescription> builder_;
-  std::unique_ptr<tab_groups::FakeTabGroupSyncService> tab_group_sync_service_;
   std::unique_ptr<ShareKitService> share_kit_service_;
   std::unique_ptr<collaboration::MockCollaborationService>
       collaboration_service_;

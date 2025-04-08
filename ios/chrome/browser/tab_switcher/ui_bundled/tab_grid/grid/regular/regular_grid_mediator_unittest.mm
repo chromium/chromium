@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -66,10 +67,8 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
 
     GridMediatorTestClass::SetUp();
     mode_holder_ = [[TabGridModeHolder alloc] init];
-    tab_group_sync_service_ =
-        std::make_unique<tab_groups::FakeTabGroupSyncService>();
-    share_kit_service_ =
-        std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
+    share_kit_service_ = std::make_unique<TestShareKitService>(
+        nullptr, nullptr, nullptr, tab_group_service_);
     collaboration_service_ =
         std::make_unique<collaboration::MockCollaborationService>();
 
@@ -96,7 +95,6 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   TestRegularGridMediator* mediator_ = nullptr;
-  std::unique_ptr<tab_groups::FakeTabGroupSyncService> tab_group_sync_service_;
   std::unique_ptr<ShareKitService> share_kit_service_;
   std::unique_ptr<collaboration::MockCollaborationService>
       collaboration_service_;

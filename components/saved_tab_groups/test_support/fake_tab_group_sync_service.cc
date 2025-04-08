@@ -26,7 +26,9 @@ FakeTabGroupSyncService::FakeTabGroupSyncService() = default;
 FakeTabGroupSyncService::~FakeTabGroupSyncService() = default;
 
 void FakeTabGroupSyncService::SetTabGroupSyncDelegate(
-    std::unique_ptr<TabGroupSyncDelegate> delegate) {}
+    std::unique_ptr<TabGroupSyncDelegate> delegate) {
+  delegate_ = std::move(delegate);
+}
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void FakeTabGroupSyncService::SaveGroup(SavedTabGroup group) {

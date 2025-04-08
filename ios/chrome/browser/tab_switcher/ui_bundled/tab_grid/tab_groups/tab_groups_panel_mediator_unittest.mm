@@ -17,6 +17,7 @@
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/share_kit/model/test_share_kit_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -120,8 +121,10 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
     browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_.get());
     mode_holder_ = [[TabGridModeHolder alloc] init];
-    share_kit_service_ =
-        std::make_unique<TestShareKitService>(nullptr, nullptr, nullptr);
+    tab_group_service_ = std::make_unique<TabGroupService>(
+        profile_.get(), &tab_group_sync_service_);
+    share_kit_service_ = std::make_unique<TestShareKitService>(
+        nullptr, nullptr, nullptr, tab_group_service_.get());
     collaboration_service_ = std::make_unique<MockCollaborationService>();
     messaging_service_ = std::make_unique<MockMessagingBackendService>();
     data_sharing_service_ = std::make_unique<
@@ -135,6 +138,7 @@ class TabGroupsPanelMediatorTest : public PlatformTest {
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;
   ::testing::NiceMock<MockTabGroupSyncService> tab_group_sync_service_;
+  std::unique_ptr<TabGroupService> tab_group_service_;
   TabGridModeHolder* mode_holder_;
   std::unique_ptr<ShareKitService> share_kit_service_;
   std::unique_ptr<MockCollaborationService> collaboration_service_;

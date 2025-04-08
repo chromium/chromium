@@ -94,13 +94,14 @@ GroupData CreateGroupData(MemberRole member_role,
 TestShareKitService::TestShareKitService(
     data_sharing::DataSharingService* data_sharing_service,
     collaboration::CollaborationService* collaboration_service,
-    tab_groups::TabGroupSyncService* tab_group_sync_service)
+    tab_groups::TabGroupSyncService* tab_group_sync_service,
+    TabGroupService* tab_group_service)
     : data_sharing_service_(data_sharing_service),
       tab_group_sync_service_(tab_group_sync_service) {
   if (data_sharing_service_) {
     std::unique_ptr<data_sharing::DataSharingUIDelegateIOS> ui_delegate =
         std::make_unique<data_sharing::DataSharingUIDelegateIOS>(
-            this, collaboration_service);
+            this, collaboration_service, tab_group_service);
     data_sharing_service_->SetUIDelegate(std::move(ui_delegate));
 
     std::unique_ptr<data_sharing::DataSharingSDKDelegateIOS> sdk_delegate =

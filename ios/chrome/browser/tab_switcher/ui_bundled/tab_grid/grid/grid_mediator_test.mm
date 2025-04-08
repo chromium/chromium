@@ -6,10 +6,15 @@
 
 #import "base/containers/contains.h"
 #import "base/test/ios/wait_util.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/sessions/model/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_tab_restore_service_factory.h"
@@ -67,10 +72,28 @@ constexpr web::ContentWorld kContentWorlds[] = {
     web::ContentWorld::kIsolatedWorld,
 };
 
-// Returns a `MockTabGroupSyncService`.
-std::unique_ptr<KeyedService> CreateMockTabGroupSyncService(
+// Returns a `FakeTabGroupSyncService`.
+std::unique_ptr<KeyedService> CreateFakeTabGroupSyncService(
     web::BrowserState* context) {
-  return std::make_unique<tab_groups::MockTabGroupSyncService>();
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+
+  std::unique_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service =
+      std::make_unique<tab_groups::FakeTabGroupSyncService>();
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+  std::unique_ptr<tab_groups::TabGroupLocalUpdateObserver>
+      local_update_observer =
+          std::make_unique<tab_groups::TabGroupLocalUpdateObserver>(
+              browser_list, tab_group_sync_service.get());
+
+  std::unique_ptr<tab_groups::IOSTabGroupSyncDelegate> delegate =
+      std::make_unique<tab_groups::IOSTabGroupSyncDelegate>(
+          browser_list, tab_group_sync_service.get(),
+          std::move(local_update_observer));
+
+  tab_group_sync_service->SetTabGroupSyncDelegate(std::move(delegate));
+
+  return std::move(tab_group_sync_service);
 }
 }  // namespace
 
@@ -98,10 +121,13 @@ void GridMediatorTestClass::SetUp() {
                             TestSessionRestorationService::GetTestingFactory());
   builder.AddTestingFactory(
       tab_groups::TabGroupSyncServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateMockTabGroupSyncService));
+      base::BindRepeating(&CreateFakeTabGroupSyncService));
   builder.AddTestingFactory(TipsManagerIOSFactory::GetInstance(),
                             TipsManagerIOSFactory::GetDefaultFactory());
   profile_ = std::move(builder).Build();
+  tab_group_sync_service_ = static_cast<tab_groups::FakeTabGroupSyncService*>(
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
+  tab_group_service_ = TabGroupServiceFactory::GetForProfile(profile_.get());
   // Price Drops are only available to signed in MSBB users.
   profile_->GetPrefs()->SetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);

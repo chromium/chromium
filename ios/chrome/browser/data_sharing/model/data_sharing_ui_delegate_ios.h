@@ -22,11 +22,10 @@ namespace data_sharing {
 // IOS implementation of DataSharingUIDelegate.
 class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
  public:
-  // TODO(crbug.com/399289392): make tab_group_service nonnull.
   explicit DataSharingUIDelegateIOS(
       ShareKitService* share_kit_service,
       collaboration::CollaborationService* collaboration_service,
-      TabGroupService* tab_group_service = nullptr);
+      TabGroupService* tab_group_service);
   ~DataSharingUIDelegateIOS() override;
 
   DataSharingUIDelegateIOS(const DataSharingUIDelegateIOS&) = delete;

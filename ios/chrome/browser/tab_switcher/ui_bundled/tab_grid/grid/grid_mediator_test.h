@@ -28,9 +28,14 @@ class GURL;
 class IOSChromeScopedTestingLocalState;
 class PlatformTest;
 @class SceneState;
+class TabGroupService;
 class TestProfileIOS;
 class TestSceneUrlLoadingService;
 class UrlLoadingBrowserAgent;
+
+namespace tab_groups {
+class FakeTabGroupSyncService;
+}
 
 namespace web {
 class FakeWebState;
@@ -72,6 +77,8 @@ class GridMediatorTestClass : public PlatformTest {
   std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
   raw_ptr<UrlLoadingBrowserAgent> loader_;
   FakeURLLoadingDelegate* url_loading_delegate_;
+  raw_ptr<tab_groups::FakeTabGroupSyncService> tab_group_sync_service_;
+  raw_ptr<TabGroupService> tab_group_service_;
 };
 
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_GRID_GRID_MEDIATOR_TEST_H_

@@ -124,6 +124,8 @@ class FakeTabGroupSyncService : public TabGroupSyncService {
   // Notifies observers when `group` is shared.
   void NotifyObserversOfTabGroupShared(SavedTabGroup& group);
 
+  std::unique_ptr<TabGroupSyncDelegate> delegate_;
+
   base::ObserverList<TabGroupSyncService::Observer> observers_;
   std::vector<SavedTabGroup> groups_;
 };

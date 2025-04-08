@@ -15,6 +15,8 @@
 #import "components/saved_tab_groups/public/types.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service.h"
 
+class TabGroupService;
+
 namespace collaboration {
 class CollaborationService;
 }  // namespace collaboration
@@ -29,7 +31,8 @@ class TestShareKitService : public ShareKitService {
   TestShareKitService(
       data_sharing::DataSharingService* data_sharing_service,
       collaboration::CollaborationService* collaboration_service,
-      tab_groups::TabGroupSyncService* tab_group_sync_service);
+      tab_groups::TabGroupSyncService* tab_group_sync_service,
+      TabGroupService* tab_group_service);
   TestShareKitService(const TestShareKitService&) = delete;
   TestShareKitService& operator=(const TestShareKitService&) = delete;
   ~TestShareKitService() override;
