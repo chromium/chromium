@@ -521,6 +521,11 @@ void ScopedStyleResolver::QuietlySwapActiveStyleSheets(
   for (auto& [style_sheet, rule_set] : active_style_sheets_) {
     AddRuleSetToRuleSetGroupList(rule_set, rule_set_groups_);
   }
+  // Any @layer rules within the new list of active stylesheets
+  // must be collected in the cross-sheet layer map. Otherwise,
+  // CascadeLayerSeeker will not be able to figure out the layer
+  // order during rule collection.
+  RebuildCascadeLayerMap(active_style_sheets_);
 }
 
 void ScopedStyleResolver::Trace(Visitor* visitor) const {
