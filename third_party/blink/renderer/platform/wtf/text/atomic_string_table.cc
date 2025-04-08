@@ -106,9 +106,12 @@ struct StringViewLookupTranslator {
     if (buf.Is8Bit()) {
       return StringHasher::ComputeHashAndMaskTop8Bits(
           (const char*)buf.Characters8(), buf.length());
+    } else if (IsOnly8Bit(buf.Characters16(), buf.length())) {
+      return StringHasher::ComputeHashAndMaskTop8Bits<ConvertTo8BitHashReader>(
+          (const char*)buf.Characters16(), buf.length());
     } else {
       return StringHasher::ComputeHashAndMaskTop8Bits(
-          (const char*)buf.Characters16(), buf.length());
+          (const char*)buf.Characters16(), buf.length() * 2);
     }
   }
 
