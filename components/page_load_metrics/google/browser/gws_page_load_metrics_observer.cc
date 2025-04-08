@@ -57,6 +57,8 @@ const char kHistogramGWSNavigationStartToOnComplete[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToOnComplete";
 const char kHistogramGWSCreateStreamDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.CreateStreamDelay";
+const char kHistogramGWSConnectedCallbackDelay[] =
+    HISTOGRAM_PREFIX "NavigationTiming.ConnectedCallbackDelay";
 const char kHistogramGWSInitializeStreamDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.InitializeStreamDelay";
 
@@ -414,6 +416,8 @@ void GWSPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
       timing.final_request_ssl_delay);
   PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSCreateStreamDelay,
                             timing.create_stream_delay);
+  PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSConnectedCallbackDelay,
+                            timing.connected_callback_delay);
   PAGE_LOAD_SHORT_HISTOGRAM(internal::kHistogramGWSInitializeStreamDelay,
                             timing.initialize_stream_delay);
 

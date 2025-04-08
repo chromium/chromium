@@ -24,6 +24,9 @@ struct NET_EXPORT LoadTimingInternalInfo {
   // The time taken for HTTP stream creating to finish.
   base::TimeDelta create_stream_delay;
 
+  // The time taken for HTTP transaction connected callback.
+  base::TimeDelta connected_callback_delay;
+
   // The time taken for HTTP stream initialization to finish if the
   // initialization was blocked.
   base::TimeDelta initialize_stream_delay;

@@ -3039,6 +3039,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.NetworkTransaction.ConnectedCallbackDelay" units="ms"
+    expires_after="2025-10-01">
+  <owner>hayato@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Measures the time taken to call http network transaction connected callback.
+    Recorded every time the connected callback is called and completed. Emitted
+    when the callback is completed.
+  </summary>
+</histogram>
+
 <histogram
     name="Net.NetworkTransaction.Create{StreamType}Time{HostType}.{Protocol}"
     units="ms" expires_after="2025-09-14">

@@ -584,6 +584,12 @@ void HttpNetworkTransaction::PopulateLoadTimingInternalInfo(
     load_timing_internal_info->create_stream_delay =
         create_stream_end_time_ - create_stream_start_time_;
   }
+  if (!connected_callback_start_time_.is_null() &&
+      !connected_callback_end_time_.is_null()) {
+    CHECK_LE(connected_callback_start_time_, connected_callback_end_time_);
+    load_timing_internal_info->connected_callback_delay =
+        connected_callback_end_time_ - connected_callback_start_time_;
+  }
   if (!initialize_stream_start_time_.is_null() &&
       !initialize_stream_end_time_.is_null()) {
     CHECK_LE(initialize_stream_start_time_, initialize_stream_end_time_);
@@ -671,6 +677,14 @@ int HttpNetworkTransaction::ResumeNetworkStart() {
 
 void HttpNetworkTransaction::ResumeAfterConnected(int result) {
   DCHECK_EQ(next_state_, STATE_CONNECTED_CALLBACK_COMPLETE);
+
+  connected_callback_end_time_ = base::TimeTicks::Now();
+  CHECK(!connected_callback_start_time_.is_null());
+  CHECK_LE(connected_callback_start_time_, connected_callback_end_time_);
+  base::UmaHistogramTimes(
+      "Net.NetworkTransaction.ConnectedCallbackDelay",
+      connected_callback_end_time_ - connected_callback_start_time_);
+
   OnIOComplete(result);
 }
 
@@ -1141,6 +1155,11 @@ int HttpNetworkTransaction::DoConnectedCallback() {
     stream_->GetSSLInfo(&ssl_info);
     is_issued_by_known_root = ssl_info.is_issued_by_known_root;
   }
+
+  connected_callback_start_time_ = base::TimeTicks::Now();
+  // Reset `connected_callback_end_time_` to prevent an inconsistent state in
+  // case that `DoConnectedCallback` is called multiple times.
+  connected_callback_end_time_ = base::TimeTicks();
 
   return connected_callback_.Run(
       TransportInfo(type, remote_endpoint_,

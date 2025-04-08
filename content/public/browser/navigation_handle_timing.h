@@ -145,6 +145,9 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   // CreateStream related delay information.
   base::TimeDelta create_stream_delay;
 
+  // HttpNetwork::Transaction connected callback delay information.
+  base::TimeDelta connected_callback_delay;
+
   // InitializeStream related delay information.
   base::TimeDelta initialize_stream_delay;
 };

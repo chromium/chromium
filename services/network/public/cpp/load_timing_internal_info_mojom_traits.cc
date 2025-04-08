@@ -20,6 +20,14 @@ StructTraits<network::mojom::LoadTimingInternalInfoDataView,
 const base::TimeDelta&
 StructTraits<network::mojom::LoadTimingInternalInfoDataView,
              net::LoadTimingInternalInfo>::
+    connected_callback_delay(const net::LoadTimingInternalInfo& info) {
+  return info.connected_callback_delay;
+}
+
+// static
+const base::TimeDelta&
+StructTraits<network::mojom::LoadTimingInternalInfoDataView,
+             net::LoadTimingInternalInfo>::
     initialize_stream_delay(const net::LoadTimingInternalInfo& info) {
   return info.initialize_stream_delay;
 }
