@@ -178,6 +178,11 @@ std::unique_ptr<views::View>
 SaveOrUpdateAutofillAiDataBubbleView::GetAttributeValueView(
     const SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateDetails&
         detail) {
+  const bool existing_entity_added_or_updated_attribute =
+      !controller_->IsSavePrompt() &&
+      detail.update_type !=
+          SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
+              kNewEntityAttributeUnchanged;
   std::unique_ptr<views::BoxLayoutView> atribute_value_row_wrapper =
       GetEntityAttributeAndValueLayout(
           views::BoxLayout::CrossAxisAlignment::kEnd);
@@ -185,7 +190,9 @@ SaveOrUpdateAutofillAiDataBubbleView::GetAttributeValueView(
       views::Builder<views::Label>()
           .SetText(detail.attribute_value)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
-          .SetTextStyle(views::style::STYLE_BODY_3_MEDIUM)
+          .SetTextStyle(existing_entity_added_or_updated_attribute
+                            ? views::style::STYLE_BODY_4_MEDIUM
+                            : views::style::STYLE_BODY_4)
           .SetAccessibleRole(ax::mojom::Role::kDefinition)
           .SetMultiLine(true)
           .SetAllowCharacterBreak(true)
@@ -194,11 +201,6 @@ SaveOrUpdateAutofillAiDataBubbleView::GetAttributeValueView(
   attribute_values_observation_.AddObservation(label.get());
 
   // Only update dialogs have a dot circle in front of added or updated values.
-  const bool existing_entity_added_or_updated_attribute =
-      !controller_->IsSavePrompt() &&
-      detail.update_type !=
-          SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
-              kNewEntityAttributeUnchanged;
   if (!existing_entity_added_or_updated_attribute) {
     atribute_value_row_wrapper->AddChildView(std::move(label));
     return atribute_value_row_wrapper;
