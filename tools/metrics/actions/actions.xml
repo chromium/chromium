@@ -39780,6 +39780,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromHistorySyncOptinExpansionPillOnInactivity">
+  <owner>ernn@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when a user taps on the identity pill to enable history sync after
+    having the browser being inactive for some time.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromHistorySyncOptinExpansionPillOnStartup">
+  <owner>ernn@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded when a user taps on the identity pill to enable history sync after
+    a profile startup.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromMachineLogon">
   <owner>rogerta@chromium.org</owner>
   <owner>tienmai@chromium.org</owner>
