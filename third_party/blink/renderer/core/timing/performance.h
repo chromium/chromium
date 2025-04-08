@@ -204,6 +204,8 @@ class CORE_EXPORT Performance : public EventTarget {
 
   void NotifyNavigationTimingToObservers();
 
+  bool IsContainerTimingBufferFull() const;
+  void AddToContainerTimingBuffer(PerformanceContainerTiming&);
   void NotifyObserversOfContainerTiming();
 
   bool IsElementTimingBufferFull() const;
@@ -402,6 +404,8 @@ class CORE_EXPORT Performance : public EventTarget {
   bool resource_timing_buffer_full_event_pending_ = false;
   PerformanceEntryVector event_timing_buffer_;
   unsigned event_timing_buffer_max_size_;
+  PerformanceEntryVector container_timing_buffer_;
+  unsigned container_timing_buffer_max_size_;
   PerformanceEntryVector element_timing_buffer_;
   unsigned element_timing_buffer_max_size_;
   PerformanceEntryVector layout_shift_buffer_;
