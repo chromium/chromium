@@ -310,7 +310,6 @@ bool OverscrollControllerAndroid::OnTouchEvent(
     return false;
   }
 
-  bool handled = false;
   switch (event.GetAction()) {
     case ui::MotionEventAndroid::Action::DOWN:
       last_pos_ = gfx::Vector2dF(event.GetXPix(0), event.GetYPix(0));
@@ -319,21 +318,23 @@ bool OverscrollControllerAndroid::OnTouchEvent(
     case ui::MotionEventAndroid::Action::MOVE: {
       gfx::Vector2dF curr_pointer(event.GetXPix(0), event.GetYPix(0));
       gfx::Vector2dF scroll_delta = curr_pointer - last_pos_;
-      handled = refresh_effect_->WillHandleScrollUpdate(scroll_delta);
+      refresh_effect_->WillHandleScrollUpdate(scroll_delta);
       last_pos_ = curr_pointer;
     } break;
 
     case ui::MotionEventAndroid::Action::UP: {
+      bool handled = IsHandlingInputSequence();
       refresh_effect_->OnScrollEnd(gfx::Vector2dF());
       last_pos_.set_x(0);
       last_pos_.set_y(0);
-    } break;
+      return handled;
+    }
 
     default:
       break;
   }
 
-  return handled;
+  return IsHandlingInputSequence();
 }
 
 void OverscrollControllerAndroid::OnInputEvent(
