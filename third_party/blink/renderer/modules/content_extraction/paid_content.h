@@ -25,8 +25,11 @@ class PaidContent final {
   bool IsPaidElement(const Element* element) const;
 
  private:
+  // Whether to check for microdata annotations while walking.
+  HeapHashMap<WeakMember<Document>, bool> check_microdata_;
+
   // Appends elements found by the cssSelector in the hasPart object.
-  void AppendHasPartElements(Document& document, JSONObject& hasPart_obj);
+  bool AppendHasPartElements(Document& document, JSONObject& hasPart_obj);
 
   // List of nodes marked as isAccessibleForFree=false.
   HeapVector<Member<Element>> paid_elements_;

@@ -2437,10 +2437,15 @@ bool ContainsRole(const Vector<mojom::blink::AIPageContentAnnotatedRole>& roles,
 TEST_F(AIPageContentAgentTest, PaidContent) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(), R"HTML(
+  <head>
+  <script></script>
+  <script type='unrelated'></script>
+  <script type="application/ld+json">{this: "will fail parsing",}</script>
+  <script type="application/ld+json">"not": "an object"</script>
   <script type="application/ld+json">{
     "@context": "http://schema.org",
     "@type": "NewsArticle",
-    "mainEntityOfPage": "https://www.evergreengazette.com/dailyplanet.com/world/world-news/",
+    "mainEntityOfPage": "https://www.evergreengazette.com/world/world-news/",
     "headline": "City Council Debates Future of Automated Transit System",
     "alternativeHeadline": "City Council Debates Future of Automated Transit System",
     "dateModified": "2025-03-25T19:17:05.541Z",
@@ -2567,7 +2572,10 @@ TEST_F(AIPageContentAgentTest, PaidContentRootOnly) {
       <script type="application/ld+json">{
         "@context": "http://schema.org",
         "@type": "NewsArticle",
-        "isAccessibleForFree": "False"
+        "isAccessibleForFree": "False",
+        "hasPart": {
+          "@type": "unrelated"
+        }
       }</script>
       <body>
         Content
@@ -2598,7 +2606,7 @@ TEST_F(AIPageContentAgentTest, PaidContentRootOnly) {
                    mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
 }
 
-TEST_F(AIPageContentAgentTest, DISABLED_PaidContentMicrodata) {
+TEST_F(AIPageContentAgentTest, PaidContentMicrodata) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(), R"HTML(
       <script type="application/ld+json">{
@@ -2609,8 +2617,12 @@ TEST_F(AIPageContentAgentTest, DISABLED_PaidContentMicrodata) {
       <body>
         Content
         <div class="paidContent">
-        <meta itemprop="isAccessibleForFree" content="false">
-        Paid Content
+          <meta itemprop="isAccessibleForFree" content="false">
+          Paid Content
+        </div>
+        <div class="paidContent">
+          <meta itemprop="unrelated">
+          Content
         </div>
       </body>
   )HTML",
@@ -2794,6 +2806,119 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframe) {
   EXPECT_TRUE(
       ContainsRole(children[1]->content_attributes->annotated_roles,
                    mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+}
+
+TEST_F(AIPageContentAgentTest, PaidContentSubframeMicrodata) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"HTML(
+      <script type="application/ld+json">{
+        "@context": "https://schema.org",
+        "@type": "NewsArticle",
+        "isAccessibleForFree": true
+      }</script>
+      <body>
+        Free Content
+        <div class="paidContent">
+          <meta itemprop="isAccessibleForFree" content="false">
+          Microdata not checked
+        </div>
+        <iframe srcdoc='
+          <script type="application/ld+json">{
+            "@context": "http://schema.org",
+            "@type": "NewsArticle",
+            "isAccessibleForFree": false
+          }</script>
+          <body>
+            Content
+            <div class="paidContent">
+              <meta itemprop="isAccessibleForFree" content="false">
+              Paid Content
+            </div>
+          </body>
+        '></iframe>
+        <iframe srcdoc='
+          <body>
+            Content
+            <div class="paidContent">
+              <meta itemprop="isAccessibleForFree" content="false">
+              Microdata not checked
+            </div>
+          </body>
+        '></iframe>
+        <iframe srcdoc='
+          <script type="application/ld+json">{
+            "@context": "http://schema.org",
+            "@type": "NewsArticle",
+            "isAccessibleForFree": false
+          }</script>
+          <body>
+            Content
+            <div class="paidContent">
+              <meta itemprop="isAccessibleForFree" content="false">
+              Paid Content
+            </div>
+          </body>
+        '></iframe>
+      </body>
+  )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  // The root node does not contain paid content.
+  EXPECT_FALSE(content->frame_data->contains_paid_content);
+
+  const auto& root = *content->root_node;
+  auto& nodes = root.children_nodes;
+
+  EXPECT_FALSE(ContainsRole(nodes[0]->content_attributes->annotated_roles,
+                 mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_FALSE(ContainsRole(nodes[1]->content_attributes->annotated_roles,
+                 mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  const auto& iframe1 = nodes[2];
+  EXPECT_EQ(iframe1->content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+  EXPECT_TRUE(iframe1->content_attributes->iframe_data->local_frame_data
+                  ->contains_paid_content);
+
+  const auto& children1 = iframe1->children_nodes[0]->children_nodes;
+  EXPECT_FALSE(
+      ContainsRole(children1[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(children1[1]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  const auto& iframe2 = nodes[3];
+  EXPECT_EQ(iframe2->content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+  EXPECT_FALSE(iframe2->content_attributes->iframe_data->local_frame_data
+                   ->contains_paid_content);
+
+  const auto& children2 = iframe2->children_nodes[0]->children_nodes;
+  EXPECT_FALSE(
+      ContainsRole(children2[0]->content_attributes->annotated_roles,
+                  mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_FALSE(
+      ContainsRole(children2[1]->content_attributes->annotated_roles,
+                  mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+
+  const auto& iframe3 = nodes[4];
+  EXPECT_EQ(iframe3->content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kIframe);
+  EXPECT_TRUE(iframe3->content_attributes->iframe_data->local_frame_data
+                    ->contains_paid_content);
+
+  const auto& children3 = iframe3->children_nodes[0]->children_nodes;
+  EXPECT_FALSE(
+      ContainsRole(children3[0]->content_attributes->annotated_roles,
+                  mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_TRUE(
+      ContainsRole(children3[1]->content_attributes->annotated_roles,
+                  mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
 }
 
 void CheckMatchesNode(
