@@ -8,7 +8,21 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/skia/include/gpu/graphite/Context.h"
+#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
+#include "third_party/skia/include/gpu/graphite/Recorder.h"
+
+class SkSurface;
+class SkTraceMemoryDump;
+
+namespace skgpu ::graphite {
+class BackendTexture;
+class Context;
+struct InsertRecordingInfo;
+class PrecompileContext;
+class Recorder;
+struct RecorderOptions;
+}  // namespace skgpu::graphite
 
 namespace gpu {
 
@@ -30,6 +44,101 @@ class GPU_GLES2_EXPORT GraphiteSharedContext
   GraphiteSharedContext& operator=(const GraphiteSharedContext&) = delete;
   GraphiteSharedContext& operator=(GraphiteSharedContext&&) = delete;
 
+  // Wrapper function implementations for skgpu::graphite:Context
+  skgpu::BackendApi backend() const;
+
+  std::unique_ptr<skgpu::graphite::Recorder> makeRecorder(
+      const skgpu::graphite::RecorderOptions& = {});
+
+  std::unique_ptr<skgpu::graphite::PrecompileContext> makePrecompileContext();
+
+  bool insertRecording(const skgpu::graphite::InsertRecordingInfo&);
+  bool submit(skgpu::graphite::SyncToCpu = skgpu::graphite::SyncToCpu::kNo);
+
+  bool hasUnfinishedGpuWork() const;
+
+  void asyncRescaleAndReadPixels(const SkImage* src,
+                                 const SkImageInfo& dstImageInfo,
+                                 const SkIRect& srcRect,
+                                 SkImage::RescaleGamma rescaleGamma,
+                                 SkImage::RescaleMode rescaleMode,
+                                 SkImage::ReadPixelsCallback callback,
+                                 SkImage::ReadPixelsContext context);
+  void asyncRescaleAndReadPixels(const SkSurface* src,
+                                 const SkImageInfo& dstImageInfo,
+                                 const SkIRect& srcRect,
+                                 SkImage::RescaleGamma rescaleGamma,
+                                 SkImage::RescaleMode rescaleMode,
+                                 SkImage::ReadPixelsCallback callback,
+                                 SkImage::ReadPixelsContext context);
+
+  void asyncRescaleAndReadPixelsYUV420(const SkImage* src,
+                                       SkYUVColorSpace yuvColorSpace,
+                                       sk_sp<SkColorSpace> dstColorSpace,
+                                       const SkIRect& srcRect,
+                                       const SkISize& dstSize,
+                                       SkImage::RescaleGamma rescaleGamma,
+                                       SkImage::RescaleMode rescaleMode,
+                                       SkImage::ReadPixelsCallback callback,
+                                       SkImage::ReadPixelsContext context);
+  void asyncRescaleAndReadPixelsYUV420(const SkSurface* src,
+                                       SkYUVColorSpace yuvColorSpace,
+                                       sk_sp<SkColorSpace> dstColorSpace,
+                                       const SkIRect& srcRect,
+                                       const SkISize& dstSize,
+                                       SkImage::RescaleGamma rescaleGamma,
+                                       SkImage::RescaleMode rescaleMode,
+                                       SkImage::ReadPixelsCallback callback,
+                                       SkImage::ReadPixelsContext context);
+
+  void asyncRescaleAndReadPixelsYUVA420(const SkImage* src,
+                                        SkYUVColorSpace yuvColorSpace,
+                                        sk_sp<SkColorSpace> dstColorSpace,
+                                        const SkIRect& srcRect,
+                                        const SkISize& dstSize,
+                                        SkImage::RescaleGamma rescaleGamma,
+                                        SkImage::RescaleMode rescaleMode,
+                                        SkImage::ReadPixelsCallback callback,
+                                        SkImage::ReadPixelsContext context);
+  void asyncRescaleAndReadPixelsYUVA420(const SkSurface* src,
+                                        SkYUVColorSpace yuvColorSpace,
+                                        sk_sp<SkColorSpace> dstColorSpace,
+                                        const SkIRect& srcRect,
+                                        const SkISize& dstSize,
+                                        SkImage::RescaleGamma rescaleGamma,
+                                        SkImage::RescaleMode rescaleMode,
+                                        SkImage::ReadPixelsCallback callback,
+                                        SkImage::ReadPixelsContext context);
+
+  void checkAsyncWorkCompletion();
+
+  void deleteBackendTexture(const skgpu::graphite::BackendTexture&);
+
+  void freeGpuResources();
+
+  void performDeferredCleanup(std::chrono::milliseconds msNotUsed);
+
+  // TODO(crbug.com/407874799): Some of the methods below (maybe above as well)
+  // may be safe to use without locks. Review and delete unneeded locks in
+  // those methods once we start to run with |is_thread_safe| set to true.
+  size_t currentBudgetedBytes() const;
+
+  size_t currentPurgeableBytes() const;
+
+  size_t maxBudgetedBytes() const;
+
+  void setMaxBudgetedBytes(size_t bytes);
+
+  void dumpMemoryStatistics(SkTraceMemoryDump* traceMemoryDump) const;
+
+  bool isDeviceLost() const;
+
+  int maxTextureSize() const;
+
+  bool supportsProtectedContent() const;
+
+  skgpu::GpuStatsFlags supportedGpuStats() const;
+
  private:
   friend class base::RefCountedThreadSafe<GraphiteSharedContext>;
   ~GraphiteSharedContext();
@@ -37,6 +146,7 @@ class GPU_GLES2_EXPORT GraphiteSharedContext
   class AutoLock;
 
   // The lock for protecting skgpu::graphite::Context.
+  // Valid only when |is_thread_safe| is set to true in Ctor.
   mutable std::optional<base::Lock> lock_;
 
   const std::unique_ptr<skgpu::graphite::Context> graphite_context_;
