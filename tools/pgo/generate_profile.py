@@ -308,7 +308,10 @@ def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
             _android_browser_installed = True
 
         if args.android_hostname:
-            cmd += [f"--android={args.android_hostname}"]
+            cmd += [
+                "--connect-to-device-over-network",
+                f"--device={args.android_hostname}",
+            ]
 
         _LOGGER.debug(
             f"Running benchmark on Android with command: {' '.join(cmd)}")
