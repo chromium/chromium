@@ -6162,7 +6162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManualFallback.VisibleSuggestions.OpenProfiles"
-    units="Suggestions" expires_after="2025-04-15">
+    units="Suggestions" expires_after="2025-08-24">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions@google.com</owner>
   <summary>
