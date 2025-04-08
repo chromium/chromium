@@ -22,6 +22,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/installer_paths.h"
 #include "chrome/updater/app/app.h"
@@ -112,6 +114,18 @@ namespace {
   }
   VLOG(1) << __func__ << ": Ran: " << command_line.GetCommandLineString()
           << ": " << output << ": " << exit_code;
+
+  // Wait until the enterprise companion install is completely removed. For
+  // instance, enterprise companion spawns a separate cmd script on Windows to
+  // complete the uninstall.
+  for (const auto deadline = base::TimeTicks::Now() + base::Seconds(20);
+       enterprise_companion::FindExistingInstall() &&
+       (base::TimeTicks::Now() < deadline);
+       base::PlatformThread::Sleep(base::Milliseconds(100))) {
+  }
+  VLOG(1) << __func__ << ": !enterprise_companion::FindExistingInstall(): "
+          << !enterprise_companion::FindExistingInstall();
+
   return exit_code == 0 ? kErrorOk : kErrorFailedToUninstallCompanionApp;
 }
 
