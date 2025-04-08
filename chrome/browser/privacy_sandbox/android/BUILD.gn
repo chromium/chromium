@@ -268,7 +268,6 @@ android_resources("java_resources") {
     "java/res/layout/privacy_sandbox_notice_restricted.xml",
     "java/res/layout/privacy_sandbox_notice_row.xml",
     "java/res/layout/privacy_sandbox_notice_row_dropdown.xml",
-    "java/res/layout/privacy_sandbox_notice_row_dropdown_v3.xml",
     "java/res/layout/privacy_sandbox_notice_row_v3.xml",
     "java/res/layout/topics_explanation_summary.xml",
     "java/res/raw/keep_topic_taxonomy.xml",

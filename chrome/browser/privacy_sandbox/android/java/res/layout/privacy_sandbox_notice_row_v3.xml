@@ -233,7 +233,7 @@ found in the LICENSE file.
                 android:gravity="center_vertical"
                 android:minHeight="@dimen/privacy_sandbox_dropdown_button_height_v3"
                 android:text="@string/privacy_sandbox_m1_notice_row_dropdown_title_v3"
-                style="@style/TextAppearance.TextMediumThick.Secondary" />
+                style="@style/TextAppearance.TextMedium.Secondary" />
 
             <org.chromium.ui.widget.CheckableImageView
                 android:id="@+id/dropdown_element_expand_arrow"

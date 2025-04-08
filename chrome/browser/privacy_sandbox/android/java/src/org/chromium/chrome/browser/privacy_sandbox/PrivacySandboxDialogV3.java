@@ -43,27 +43,9 @@ import java.util.Arrays;
 import java.util.List;
 
 // TODO(crbug.com/392943234): Update this class's naming and description when naming is finalized.
-/**
- * The {@code PrivacySandboxDialogV3} class is responsible for parsing XML layout files, handling
- * click events, and element visibility for Privacy Sandbox dialogs.
- *
- * <p>The class primarily looks for specifically named elements that serve as interactive controls
- * or important display areas within the dialog.
- *
- * <p><b>Supported XML elements (by {@code android:id}):</b>
- *
- * <ul>
- *   <li>{@code ack_button}: The acknowledgement button component.
- *   <li>{@code no_button}: The `no` action button component.
- *   <li>{@code settings_button}: The settings button component.
- *   <li>{@code more_button}: The button that scrolls the screen down when clicked.
- *   <li>{@code dropdown_element}: The dropdown element component.
- *   <li>{@code privacy_policy_back_button}: The back button component specifically within the
- *       privacy policy view.
- *   <li>{@code privacy_policy_text}: The text view component displaying the privacy policy content.
- * </ul>
- */
+/** Handles logic for the Privacy Sandbox Ads consents/notices dialogs. */
 public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterface.OnShowListener {
+
     @IntDef({
         PrivacySandboxDialogType.UNKNOWN,
         PrivacySandboxDialogType.EEA_CONSENT,
@@ -110,15 +92,14 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
     private WebContents mWebContents;
     private WebContentsObserver mWebContentsObserver;
 
-    private @IdRes int mPrivacyPolicyTextIdRes = R.id.privacy_policy_text;
-    private @StringRes int mPrivacyPolicyString =
-            R.string.privacy_sandbox_m1_privacy_policy_text_v3;
-
-    private ActivityWindowAndroid mActivityWindowAndroid;
-    private Profile mProfile;
+    private TextViewWithLeading mLearnMoreText;
+    private @IdRes int mLearnMoreTextIdRes = R.id.learn_more_text;
+    private @StringRes int mLearnMoreLinkString =
+            R.string.privacy_sandbox_m1_consent_learn_more_card_v3;
 
     // TODO(crbug.com/392943234): Update the constructor to accept a layoutRes required for the
     // dialog.
+    // TODO(crbug.com/392943234): Write a java doc that defines the IDS this dialog expects.
     public PrivacySandboxDialogV3(
             Activity activity,
             Profile profile,
@@ -132,15 +113,12 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
         mDialogType = dialogType;
         mSurfaceType = surfaceType;
 
-        mActivityWindowAndroid = activityWindowAndroid;
-        mProfile = profile;
-
         fetchDialogContent(activity);
         mScrollView = mContentView.findViewById(R.id.privacy_sandbox_dialog_scroll_view);
         mOnClickListener = getOnClickListener();
         registerDialogButtons();
         registerDropdownElements(activity);
-        registerPrivacyPolicy();
+        registerPrivacyPolicy(profile, activityWindowAndroid);
         setOnShowListener(this);
         setCancelable(false);
     }
@@ -302,7 +280,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
     private void inflateDropdownContent() {
         mDropdownContentContainer.setVisibility(View.VISIBLE);
-        // TODO(crbug.com/392943234): Take in the dropdown resource as input within the constructor
         @LayoutRes int resourceToInflate;
         switch (mDialogType) {
             case PrivacySandboxDialogType.EEA_CONSENT:
@@ -312,8 +289,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
                 resourceToInflate = R.layout.privacy_sandbox_notice_eea_dropdown_v3;
                 break;
             case PrivacySandboxDialogType.ROW_NOTICE:
-                resourceToInflate = R.layout.privacy_sandbox_notice_row_dropdown_v3;
-                break;
             case PrivacySandboxDialogType.RESTRICTED_NOTICE:
             default:
                 // TODO(crbug.com/392943234): Don't default to the eea dropdown.
@@ -322,9 +297,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
         }
         LayoutInflater.from(getContext()).inflate(resourceToInflate, mDropdownContentContainer);
         mScrollView.post(() -> mScrollView.scrollTo(0, mDropdownElement.getTop()));
-
-        // Attempt to register the privacy policy if it exists in the dropdown content.
-        registerPrivacyPolicy();
     }
 
     private void handleDropdownClick(View view) {
@@ -374,7 +346,8 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
         }
     }
 
-    private void registerPrivacyPolicy() {
+    private void registerPrivacyPolicy(
+            Profile profile, ActivityWindowAndroid activityWindowAndroid) {
         mPrivacyPolicyView = mContentView.findViewById(R.id.privacy_policy_view);
         if (mPrivacyPolicyView == null) {
             return;
@@ -384,25 +357,24 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
                 .findViewById(R.id.privacy_policy_back_button)
                 .setOnClickListener(mOnClickListener);
         mIsPrivacyPageLoaded = false;
-        createPrivacyPolicyLink(mProfile, mActivityWindowAndroid);
+        createPrivacyPolicyLink(profile, activityWindowAndroid);
     }
 
     private void createPrivacyPolicyLink(
             Profile profile, ActivityWindowAndroid activityWindowAndroid) {
-        // TODO(crbug.com/392943234): Remove dependency on the StringRes `mPrivacyPolicyString`.
-        TextViewWithLeading privacyPolicyText = mContentView.findViewById(mPrivacyPolicyTextIdRes);
-        if (privacyPolicyText == null) {
+        mLearnMoreText = mContentView.findViewById(mLearnMoreTextIdRes);
+        if (mLearnMoreText == null) {
             return;
         }
-        privacyPolicyText.setText(
+        mLearnMoreText.setText(
                 SpanApplier.applySpans(
-                        getContext().getString(mPrivacyPolicyString),
+                        getContext().getString(mLearnMoreLinkString),
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
                                 new ChromeClickableSpan(
                                         getContext(), this::onPrivacyPolicyClicked))));
-        privacyPolicyText.setMovementMethod(LinkMovementMethod.getInstance());
+        mLearnMoreText.setMovementMethod(LinkMovementMethod.getInstance());
         if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
             mWebContents = WebContentsFactory.createWebContents(profile, true, false);
             mWebContentsObserver =
