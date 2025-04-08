@@ -1127,6 +1127,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="573974402615125334">የትር ቡድኖች ውስጥ ለማጋራት፣ ለመቀላቀል እና ለመተባበር ታሪክዎን እና ትሮችዎን ያሥምሩ</translation>
 <translation id="5740123193752401435">ትሮችን ይፈልጉ…</translation>
 <translation id="5744274077973758795">የ<ph name="FEATURE_NAME" /> ማሳወቂያዎች በርተዋል</translation>
+<translation id="5745598824054949526">ምንም ጽሑፍ አልተገኘም</translation>
 <translation id="574762237186762643">ክስተቶች</translation>
 <translation id="5749158352074143502">በዚህ ትር ላይ ይቀጥሉ</translation>
 <translation id="5753021559215751319">የይለፍ ቃሉን አስቀምጥ</translation>
@@ -1290,6 +1291,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="6410883413783534063">በተመሳሳይ ጊዜ የተለያዩ ገጾችን ለመጎብኘት ትሮችን ይክፈቱ</translation>
 <translation id="6416807286621280684">የእርስዎ ክትትል የተደረገባቸው ጥቅሎች እና የማድረስ ዝማኔዎች።</translation>
 <translation id="6418346271604475326">ፒዲኤፍ በመዘጋጀት ላይ</translation>
+<translation id="6421038304268477484">የተተረጎመ ጽሑፍ</translation>
 <translation id="6429213933892582367">የይለፍ ቃል አማራጮችን ይክፈቱ</translation>
 <translation id="6434591244308415567">አንድ ስህተት አጋጥሟል። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="6435307030888827407">ዘግተው እንደወጡ ይቆዩ</translation>
@@ -1968,6 +1970,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9097506547406246598">መከተል አልተቻለም። የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> የይለፍ ቃላት ይሰረዙ?</translation>
 <translation id="9099233023029360602">በእያንዳንዱ ጊዜ የትኛውን መለያ ጥቅም ላይ እንደሚውል ጠይቅ</translation>
+<translation id="9099821309562615674">እየተረጎሙት ያለው ጽሑፍ ግልጽ እና በክፈፍ ውስጥ እንደሆነ ያረጋግጡ።</translation>
 <translation id="9100610230175265781">የይለፍ ሐረግ ያስፈልጋል</translation>
 <translation id="91023216973987714">የመክፈያ ዘዴዎች</translation>
 <translation id="9106655997975673326">ከ«<ph name="SOURCE_DEVICE" />»</translation>

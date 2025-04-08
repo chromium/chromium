@@ -1127,6 +1127,7 @@
 <translation id="573974402615125334">Каб абагульваць групы ўкладак, далучацца да іх і сумесна працаваць з імі, уключыце сінхранізацыю гісторыі і ўкладак</translation>
 <translation id="5740123193752401435">Пошук укладак…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" />: апавяшчэнні ўключаны</translation>
+<translation id="5745598824054949526">Тэкст не знойдзены</translation>
 <translation id="574762237186762643">Падзеі</translation>
 <translation id="5749158352074143502">Працягвайце працу з гэтай укладкай</translation>
 <translation id="5753021559215751319">Захаваць пароль</translation>
@@ -1290,6 +1291,7 @@
 <translation id="6410883413783534063">Каб праглядаць некалькі старонак адначасова, карыстайцеся ўкладкамі</translation>
 <translation id="6416807286621280684">Абнаўленне інфармацыі пра пасылкі, якія вы адсочваеце, і дастаўку.</translation>
 <translation id="6418346271604475326">PDF рыхтуецца</translation>
+<translation id="6421038304268477484">Перакладзены тэкст</translation>
 <translation id="6429213933892582367">Адкрыйце раздзел Password Options ("Налады пароляў").</translation>
 <translation id="6434591244308415567">Адбылася памылка. Паўтарыце спробу пазней.</translation>
 <translation id="6435307030888827407">Не ўваходзіць</translation>
@@ -1968,6 +1970,7 @@
 <translation id="9097506547406246598">Не ўдалося адпісацца. Нешта пайшло не так.</translation>
 <translation id="9098541895599151034">Выдаліць паролі (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Кожны раз пытацца, які ўліковы запіс выкарыстоўваць</translation>
+<translation id="9099821309562615674">Упэўніцеся, што тэкст, які вы хочаце перакласці, знаходзіцца ў кадры і добра бачны.</translation>
 <translation id="9100610230175265781">Патрабуецца фраза-пароль</translation>
 <translation id="91023216973987714">Спосабы аплаты</translation>
 <translation id="9106655997975673326">З прылады "<ph name="SOURCE_DEVICE" />"</translation>

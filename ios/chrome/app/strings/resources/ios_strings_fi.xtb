@@ -1127,6 +1127,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="573974402615125334">Synkronoi historia ja välilehdet, jotta voit jakaa välilehtiryhmiä, liittyä niihin ja yhteiskäyttää niitä</translation>
 <translation id="5740123193752401435">Hae välilehtiä…</translation>
 <translation id="5744274077973758795">Ilmoitukset laitettu päälle: <ph name="FEATURE_NAME" /></translation>
+<translation id="5745598824054949526">Tekstiä ei löydy</translation>
 <translation id="574762237186762643">Tapahtumat</translation>
 <translation id="5749158352074143502">Jatka tällä välilehdellä</translation>
 <translation id="5753021559215751319">Tallenna salasana</translation>
@@ -1290,6 +1291,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6410883413783534063">Avaa välilehtiä, jotta voit selata useita sivuja yhtä aikaa</translation>
 <translation id="6416807286621280684">Seuratut paketit ja toimituspäivitykset.</translation>
 <translation id="6418346271604475326">Valmistellaan</translation>
+<translation id="6421038304268477484">Käännetty teksti</translation>
 <translation id="6429213933892582367">Avaa Salasana-asetukset</translation>
 <translation id="6434591244308415567">Tapahtui virhe, yritä myöhemmin uudelleen.</translation>
 <translation id="6435307030888827407">Pysy uloskirjautuneena</translation>
@@ -1968,6 +1970,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="9097506547406246598">Seuraamista ei voi lopettaa. Jotain meni pieleen.</translation>
 <translation id="9098541895599151034">Poistetaanko <ph name="NUMBER_OF_ACCOUNTS" /> salasanaa?</translation>
 <translation id="9099233023029360602">Kysy joka kerta, mitä tiliä käytetään</translation>
+<translation id="9099821309562615674">Varmista, että käännettävä teksti näkyy selkeästi ja kokonaan</translation>
 <translation id="9100610230175265781">Tunnuslause tarvitaan</translation>
 <translation id="91023216973987714">Maksutavat</translation>
 <translation id="9106655997975673326">Laite: <ph name="SOURCE_DEVICE" /></translation>

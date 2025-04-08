@@ -1127,6 +1127,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="573974402615125334">Para compartir, unirte y colaborar en grupos de pestañas, sincroniza tu historial y tus pestañas</translation>
 <translation id="5740123193752401435">Buscar pestañas…</translation>
 <translation id="5744274077973758795">Notificaciones de <ph name="FEATURE_NAME" /> activadas</translation>
+<translation id="5745598824054949526">No se ha encontrado texto</translation>
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5749158352074143502">Continuar con esta pestaña</translation>
 <translation id="5753021559215751319">Guardar contraseña</translation>
@@ -1290,6 +1291,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6410883413783534063">Abre pestañas para visitar varias páginas al mismo tiempo</translation>
 <translation id="6416807286621280684">Novedades sobre el seguimiento de tus envíos y paquetes.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
+<translation id="6421038304268477484">Texto traducido</translation>
 <translation id="6429213933892582367">Abre Opciones de las contraseñas</translation>
 <translation id="6434591244308415567">Se ha producido un error. Vuelve a intentarlo más tarde.</translation>
 <translation id="6435307030888827407">Mantener sesión cerrada</translation>
@@ -1968,6 +1970,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="9097506547406246598">No se puede dejar de seguir. Algo ha fallado.</translation>
 <translation id="9098541895599151034">¿Eliminar <ph name="NUMBER_OF_ACCOUNTS" /> contraseñas?</translation>
 <translation id="9099233023029360602">Preguntar qué cuenta usar cada vez</translation>
+<translation id="9099821309562615674">Asegúrate de que el texto que quieres traducir se vea bien y esté encuadrado</translation>
 <translation id="9100610230175265781">La frase de contraseña es obligatoria</translation>
 <translation id="91023216973987714">Métodos de pago</translation>
 <translation id="9106655997975673326">De <ph name="SOURCE_DEVICE" /></translation>

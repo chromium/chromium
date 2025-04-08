@@ -14,6 +14,7 @@
 Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək.</translation>
 <translation id="1329584516321524826">İndicə yenilənib</translation>
 <translation id="1340839264183302272">Qrupdan çıxın</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_ONE" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}other{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_MANY" /> tabdan ibarət paylaşılan <ph name="TITLE_OF_GROUP" /> tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="1419023007528516122">Bununla qrup cihazdan həmişəlik silinəcək</translation>
 <translation id="1486715732399361704">Bütün tab qruplarını burada tapa bilərsiniz</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> dəqiqə əvvəl yaradıldı}other{<ph name="NUM_MINS_MANY" /> dəqiqə əvvəl yaradıldı}}</translation>
@@ -108,6 +109,7 @@ Silsəniz, hər kəs "<ph name="TITLE_OF_GROUP" />" tab qrupuna girişi dərhal 
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Tabı bağlayın}other{Tabları bağlayın}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> qrup yaddaşda saxlanılıb (tablar bağlanacaq və qruplar silinəcək)</translation>
 <translation id="492284538114688557">Qiymət endirimi aşkarlandı</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_ONE" /> tabdan ibarət paylaşılan tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}other{<ph name="CARD_LABEL" /> etiketi ilə <ph name="TABS_COUNT_MANY" /> tabdan ibarət paylaşılan tab qrupunu genişləndirin. Rəng: <ph name="COLOR_NAME" />.}}</translation>
 <translation id="5007392906805964215">Nəzərdən keçirin</translation>
 <translation id="5073204694187207510">Tam ekran cədvəlini gizlədin</translation>
 <translation id="5076161749301278626">Mağaza rəyləri göstərilsin?</translation>

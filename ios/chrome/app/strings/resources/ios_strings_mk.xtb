@@ -1127,6 +1127,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="573974402615125334">За да споделувате, да се придружувате и да соработувате во групи картички, синхронизирајте ги историјата и картичките</translation>
 <translation id="5740123193752401435">Пребарувајте картички…</translation>
 <translation id="5744274077973758795">Известувањата за <ph name="FEATURE_NAME" /> се вклучени</translation>
+<translation id="5745598824054949526">Не е најден текст</translation>
 <translation id="574762237186762643">Настани</translation>
 <translation id="5749158352074143502">Продолжете со картичкава</translation>
 <translation id="5753021559215751319">Зачувај ја лозинката</translation>
@@ -1290,6 +1291,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6410883413783534063">Отворете картички за да посетувате различни страници во исто време</translation>
 <translation id="6416807286621280684">Известувања за следените пакети и доставувањата.</translation>
 <translation id="6418346271604475326">Се подготвува PDF</translation>
+<translation id="6421038304268477484">Преведен текст</translation>
 <translation id="6429213933892582367">Отворете „Опции за лозинки“</translation>
 <translation id="6434591244308415567">Грешка. Обидете се повторно подоцна.</translation>
 <translation id="6435307030888827407">Останете одјавени</translation>
@@ -1968,6 +1970,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="9097506547406246598">Не може да се отследи. Нешто тргна наопаку.</translation>
 <translation id="9098541895599151034">Да се избришат <ph name="NUMBER_OF_ACCOUNTS" /> лозинки?</translation>
 <translation id="9099233023029360602">Прашувај ме која сметка да се користи секој пат</translation>
+<translation id="9099821309562615674">Погрижете се текстот што го преведувате да биде јасен и врамен.</translation>
 <translation id="9100610230175265781">Потребна е лозинка-фраза</translation>
 <translation id="91023216973987714">Начини на плаќање</translation>
 <translation id="9106655997975673326">Од „<ph name="SOURCE_DEVICE" />“</translation>

@@ -477,6 +477,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3208584281581115441">İndi yoxlayın</translation>
 <translation id="3211426585530211793">Silinmiş <ph name="ITEM_TITLE" /></translation>
 <translation id="3220943972464248773">Parollarınızı sinxronlaşdırmaq üçün kimliyinizi doğrulayın</translation>
+<translation id="323213525320714789">TƏRTİBATÇI</translation>
 <translation id="3232293466644486101">Baxış datasını silin…</translation>
 <translation id="3232754137068452469">Veb Tətbiq</translation>
 <translation id="3236059992281584593">1 dəqiqə qaldı</translation>
@@ -615,6 +616,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="3856096718352044181">Bunun etibarlı təminatçı olduğunu doğrulayın, ya da daha sonra təkrar cəhd edin</translation>
 <translation id="3858860766373142691">Ad</translation>
 <translation id="3863527519275151528">Bildiriş emal olunur</translation>
+<translation id="3866863539038222107">Yoxlayın</translation>
 <translation id="3870908470613821006">Hər kəs "<ph name="GROUP_NAME" />" tab qrupuna girişi dərhal itirəcək və o, bütün cihazlardan silinəcək</translation>
 <translation id="3873174561423636563">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> <ph name="FIELDS_STRING" /> kimi məlumatlarınızı bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />xidmət şərtlərinə<ph name="END_LINK1" /> baxın.</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>

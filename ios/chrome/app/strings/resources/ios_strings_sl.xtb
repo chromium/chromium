@@ -1127,6 +1127,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="573974402615125334">Če želite deliti, se pridružiti in sodelovati v skupinah zavihkov, sinhronizirajte zgodovino in zavihke</translation>
 <translation id="5740123193752401435">Iskanje zavihkov …</translation>
 <translation id="5744274077973758795">Obvestila funkcije <ph name="FEATURE_NAME" /> so vklopljena</translation>
+<translation id="5745598824054949526">Besedila ni bilo mogoče najti</translation>
 <translation id="574762237186762643">Dogodki</translation>
 <translation id="5749158352074143502">Nadaljuj s tem zavihkom</translation>
 <translation id="5753021559215751319">Shrani geslo</translation>
@@ -1290,6 +1291,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6410883413783534063">Odprite zavihke, če želite obiskati različne strani hkrati</translation>
 <translation id="6416807286621280684">Paketi, ki jim sledite, in obvestila o dostavi.</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
+<translation id="6421038304268477484">Prevedeno besedilo</translation>
 <translation id="6429213933892582367">Odprite »Password Options« (Možnosti gesla).</translation>
 <translation id="6434591244308415567">Prišlo je do napake. Poskusite znova pozneje.</translation>
 <translation id="6435307030888827407">Ostanite odjavljeni</translation>
@@ -1968,6 +1970,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="9097506547406246598">Spremljanja ni mogoče preklicati. Prišlo je do napake.</translation>
 <translation id="9098541895599151034">Želite izbrisati toliko gesel: <ph name="NUMBER_OF_ACCOUNTS" />?</translation>
 <translation id="9099233023029360602">Vsakič vprašaj, kateri račun naj se uporabi</translation>
+<translation id="9099821309562615674">Zagotovite, da je besedilo, ki ga želite prevesti, jasno in v okvirju.</translation>
 <translation id="9100610230175265781">Zahtevano je geslo</translation>
 <translation id="91023216973987714">Plačilna sredstva</translation>
 <translation id="9106655997975673326">Iz naprave »<ph name="SOURCE_DEVICE" />«</translation>

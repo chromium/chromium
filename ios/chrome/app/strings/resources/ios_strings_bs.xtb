@@ -1127,7 +1127,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="573974402615125334">Da dijelite grupe kartica, pridružujete im se i sarađujete u njima, sinhronizirajte historiju i kartice</translation>
 <translation id="5740123193752401435">Pretraživanje kartica…</translation>
 <translation id="5744274077973758795">Obavještenja funkcije <ph name="FEATURE_NAME" /> su uključena</translation>
-<translation id="5745598824054949526">Tekst nije pronađen</translation>
+<translation id="5745598824054949526">Nije pronađen nijedan tekst</translation>
 <translation id="574762237186762643">Događaji</translation>
 <translation id="5749158352074143502">Nastavi s ovom karticom</translation>
 <translation id="5753021559215751319">Sačuvaj lozinku</translation>
@@ -1970,7 +1970,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="9097506547406246598">Nije moguće prestati pratiti. Nešto nije uredu.</translation>
 <translation id="9098541895599151034">Izbrisati <ph name="NUMBER_OF_ACCOUNTS" /> lozinku/e/i?</translation>
 <translation id="9099233023029360602">Svaki put pitaj koji račun koristiti</translation>
-<translation id="9099821309562615674">Tekst koji želite prevesti treba biti čitljiv i nalaziti se u kadru.</translation>
+<translation id="9099821309562615674">Pobrinite se da je tekst koji prevodite jasan i unutar okvira.</translation>
 <translation id="9100610230175265781">Potreban je pristupni izraz</translation>
 <translation id="91023216973987714">Načini plaćanja</translation>
 <translation id="9106655997975673326">S uređaja "<ph name="SOURCE_DEVICE" />"</translation>

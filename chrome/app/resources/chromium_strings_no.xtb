@@ -77,6 +77,7 @@
 <translation id="2018879682492276940">Installasjonen mislyktes. Prøv igjen.</translation>
 <translation id="2020032459870799438">For å sjekke om de andre passordene dine er trygge mot databrudd og andre sikkerhetsproblemer, <ph name="BEGIN_LINK" />logg på Chromium<ph name="END_LINK" />.</translation>
 <translation id="2049376729098081731">Velg om Chromium-loggen skal inkluderes for å gi opplevelser i Google-tjenester mer personlig preg</translation>
+<translation id="2054039611381840095">For å få fremtidige Chromium-oppdateringer må du ha macOS 12 eller nyere. Denne datamaskinen bruker macOS 11.</translation>
 <translation id="2086476982681781442">Chromium har blokkert denne nedlastingen fordi filen er villedende og kan gjøre uventede endringer på enheten din</translation>
 <translation id="2088953378266246249">Informasjon om hvordan Chromium administrerer rotsertifikatene sine</translation>
 <translation id="2099452623287920103">Passordene dine og andre Chromium-data du har lagret i Google-kontoen din, blir fjernet fra denne enheten. For å bruke dem i Chromium igjen, logg på igjen.</translation>

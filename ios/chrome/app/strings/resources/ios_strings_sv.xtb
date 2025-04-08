@@ -1127,6 +1127,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="573974402615125334">Om du vill dela, gå med i och samarbeta i flikgrupper måste du synkronisera din historik och dina flikar</translation>
 <translation id="5740123193752401435">Sök bland flikar …</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" />-aviseringar aktiverade</translation>
+<translation id="5745598824054949526">Ingen text hittades</translation>
 <translation id="574762237186762643">Händelser</translation>
 <translation id="5749158352074143502">Fortsätt med den här fliken</translation>
 <translation id="5753021559215751319">Spara lösenord</translation>
@@ -1290,6 +1291,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6410883413783534063">Öppna flikar för att besöka olika sidor samtidigt</translation>
 <translation id="6416807286621280684">Dina spårade paket och uppdateringar av leveranser.</translation>
 <translation id="6418346271604475326">Förbereder PDF</translation>
+<translation id="6421038304268477484">Översatt text</translation>
 <translation id="6429213933892582367">Öppna Lösenordsalternativ</translation>
 <translation id="6434591244308415567">Ett fel uppstod. Försök igen senare.</translation>
 <translation id="6435307030888827407">Förbli utloggad</translation>
@@ -1968,6 +1970,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="9097506547406246598">Det gick inte att sluta följa detta. Något gick fel.</translation>
 <translation id="9098541895599151034">Vill du radera <ph name="NUMBER_OF_ACCOUNTS" /> lösenord?</translation>
 <translation id="9099233023029360602">Fråga alltid vilket konto som ska användas</translation>
+<translation id="9099821309562615674">Se till att texten du översätter är tydlig och i bild.</translation>
 <translation id="9100610230175265781">Lösenfras krävs</translation>
 <translation id="91023216973987714">Betalningsmetoder</translation>
 <translation id="9106655997975673326">Från <ph name="SOURCE_DEVICE" /></translation>
