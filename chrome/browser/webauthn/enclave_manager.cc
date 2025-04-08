@@ -1898,18 +1898,13 @@ class EnclaveManager::StateMachine {
       case trusted_vault::TrustedVaultRegistrationStatus::kSuccess:
       case trusted_vault::TrustedVaultRegistrationStatus::kAlreadyRegistered:
         user_->set_joined(true);
+        manager_->WriteState(&local_state_);
+        state_ = State::kNextAction;
         break;
       default:
-        user_->mutable_wrapped_security_domain_secrets()->clear();
+        manager_->ClearRegistration();
+        state_ = State::kStop;
         break;
-    }
-
-    manager_->WriteState(&local_state_);
-
-    if (user_->joined()) {
-      state_ = State::kNextAction;
-    } else {
-      state_ = State::kStop;
     }
   }
 
@@ -3494,7 +3489,7 @@ bool EnclaveManager::RunWhenStoppedForTesting(base::OnceClosure on_stop) {
   return true;
 }
 
-EnclaveLocalState& EnclaveManager::local_state_for_testing() const {
+EnclaveLocalState& EnclaveManager::local_state_for_testing() {
   return *local_state_;
 }
 
@@ -3529,6 +3524,10 @@ void EnclaveManager::ClearRegistrationForTesting() {
 // static
 void EnclaveManager::EnableInvariantChecksForTesting(bool enabled) {
   g_invariant_override_ = !enabled;
+}
+
+void EnclaveManager::ConsiderPinRenewalForTesting() {
+  ConsiderPinRenewal();
 }
 
 unsigned EnclaveManager::renewal_checks_for_testing() const {
@@ -3937,7 +3936,7 @@ void EnclaveManager::ConsiderPinRenewal() {
                                 PinRenewalEvent::kConsidered);
 
   renewal_checks_++;
-  if (!user_ || !user_->registered() || !user_->has_wrapped_pin()) {
+  if (!user_ || !is_ready() || !user_->has_wrapped_pin()) {
     base::UmaHistogramEnumeration(kPinRenewalHistogram,
                                   PinRenewalEvent::kNothingToRenew);
     return;

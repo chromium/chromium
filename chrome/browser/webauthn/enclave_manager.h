@@ -320,7 +320,7 @@ class EnclaveManager : public EnclaveManagerInterface {
   // `on_stop` when stopped. Otherwise return false.
   bool RunWhenStoppedForTesting(base::OnceClosure on_stop);
 
-  webauthn_pb::EnclaveLocalState& local_state_for_testing() const;
+  webauthn_pb::EnclaveLocalState& local_state_for_testing();
 
   // Release the cached HW and UV key references.
   void ClearCachedKeysForTesting();
@@ -334,6 +334,9 @@ class EnclaveManager : public EnclaveManagerInterface {
 
   // Toggle invariant checks.
   static void EnableInvariantChecksForTesting(bool enable);
+
+  // Check whether the GPM PIN Vault should be renewed, and do so if needed.
+  void ConsiderPinRenewalForTesting();
 
   unsigned renewal_checks_for_testing() const;
   unsigned renewal_attempts_for_testing() const;

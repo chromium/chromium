@@ -8,11 +8,13 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request.h"
 
@@ -68,6 +70,10 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     pretend_there_are_members_ = true;
+  }
+
+  void fail_join_requests_matching(JoinMemberMatcher matcher) override {
+    join_member_fail_matcher_ = std::move(matcher);
   }
 
   void ResetSecurityDomain() override { members_.clear(); }
@@ -201,6 +207,10 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
     trusted_vault_pb::JoinSecurityDomainsRequest proto_request;
     CHECK(proto_request.ParseFromString(std::string(GetBody(request))));
 
+    if (join_member_fail_matcher_.Run(proto_request)) {
+      return std::make_pair(net::HTTP_INTERNAL_SERVER_ERROR, "");
+    }
+
     // Only the passkeys security domain is handled by this code.
     CHECK_EQ(proto_request.security_domain().name(), kSecurityDomainName);
 
@@ -264,6 +274,10 @@ class FakeSecurityDomainServiceImpl : public FakeSecurityDomainService {
   const int epoch_;
   bool fail_all_requests_ = false;
   bool pretend_there_are_members_ = false;
+  JoinMemberMatcher join_member_fail_matcher_ = base::BindRepeating(
+      [](const trusted_vault_pb::JoinSecurityDomainsRequest& _) {
+        return false;
+      });
   std::vector<trusted_vault_pb::SecurityDomainMember> members_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FakeSecurityDomainServiceImpl> weak_ptr_factory_{this};

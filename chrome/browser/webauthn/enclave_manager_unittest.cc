@@ -29,6 +29,7 @@
 #include "base/notreached.h"
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -271,7 +272,7 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   }
 
  protected:
-  base::flat_set<std::string> GaiaAccountsInState() const {
+  base::flat_set<std::string> GaiaAccountsInState() {
     const webauthn_pb::EnclaveLocalState& state =
         manager_.local_state_for_testing();
     base::flat_set<std::string> ret;
@@ -1659,6 +1660,107 @@ TEST_F(EnclaveManagerTest, MAYBE_HardwareKeyLost) {
                                               key_future_deleted.GetCallback());
   EXPECT_TRUE(key_future_deleted.Wait());
   EXPECT_FALSE(key_future_deleted.Get().has_value());
+}
+
+// Tests that Chrome resets the local state if joining the physical device to
+// the security domain failed.
+// Regression test for crbug.com/404563934.
+TEST_F(EnclaveManagerTest, JoiningSecurityDomainFailed) {
+  const std::string kPin = "123456";
+  ASSERT_TRUE(Register());
+
+  // Fail the request to join the physical device.
+  security_domain_service_->fail_join_requests_matching(base::BindRepeating(
+      [](const trusted_vault_pb::JoinSecurityDomainsRequest& request) {
+        return request.security_domain_member().member_type() ==
+               trusted_vault_pb::SecurityDomainMember::
+                   MEMBER_TYPE_PHYSICAL_DEVICE;
+      }));
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(kPin, setup_future.GetCallback());
+  ASSERT_TRUE(setup_future.Wait());
+  ASSERT_FALSE(setup_future.Get());
+
+  const auto& local_state = manager_.local_state_for_testing()
+                                .mutable_users()
+                                ->find(gaia_id_.ToString())
+                                ->second;
+  EXPECT_FALSE(local_state.has_wrapped_pin());
+  EXPECT_FALSE(local_state.registered());
+  EXPECT_FALSE(local_state.joined());
+}
+
+// Tests that attempting to renew a PIN does not make Chrome crash if joining
+// the physical device to the security domain failed.
+// Regression test for crbug.com/404563934.
+TEST_F(EnclaveManagerTest, RenewPinAfterJoiningFailed) {
+  const std::string kPin = "123456";
+  ASSERT_TRUE(Register());
+
+  // Fail the request to join the physical device. This used to leave Chrome in
+  // an inconsistent state with a wrapped PIN but no wrapped security domain
+  // secret.
+  security_domain_service_->fail_join_requests_matching(base::BindRepeating(
+      [](const trusted_vault_pb::JoinSecurityDomainsRequest& request) {
+        return request.security_domain_member().member_type() ==
+               trusted_vault_pb::SecurityDomainMember::
+                   MEMBER_TYPE_PHYSICAL_DEVICE;
+      }));
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(kPin, setup_future.GetCallback());
+  ASSERT_TRUE(setup_future.Wait());
+  ASSERT_FALSE(setup_future.Get());
+
+  // Force considering a PIN renewal.
+  manager_.local_state_for_testing()
+      .mutable_users()
+      ->find(gaia_id_.ToString())
+      ->second.set_last_refreshed_pin_epoch_secs(0);
+  manager_.ConsiderPinRenewalForTesting();
+  base::test::RunUntil([this]() { return manager_.is_idle(); });
+
+  // Chrome should not have attempted to renew the PIN.
+  EXPECT_EQ(manager_.local_state_for_testing()
+                .mutable_users()
+                ->find(gaia_id_.ToString())
+                ->second.last_refreshed_pin_epoch_secs(),
+            0);
+}
+
+// Tests that attempting to renew a PIN does not make Chrome crash if there is
+// no wrapped security domain secret. It used to be possible to end up in this
+// state, so we need to make sure clients who got into it don't crash after
+// startup.
+// Regression test for crbug.com/404563934.
+TEST_F(EnclaveManagerTest, RenewPinWithoutWrappedSecurityDomainSecret) {
+  const std::string kPin = "123456";
+  ASSERT_TRUE(Register());
+
+  BoolFuture setup_future;
+  manager_.SetupWithPIN(kPin, setup_future.GetCallback());
+  ASSERT_TRUE(setup_future.Wait());
+  ASSERT_TRUE(setup_future.Get());
+
+  // Remove the security domain secrets.
+  manager_.local_state_for_testing()
+      .mutable_users()
+      ->find(gaia_id_.ToString())
+      ->second.clear_wrapped_security_domain_secrets();
+
+  // Force considering a PIN renewal.
+  manager_.local_state_for_testing()
+      .mutable_users()
+      ->find(gaia_id_.ToString())
+      ->second.set_last_refreshed_pin_epoch_secs(0);
+  manager_.ConsiderPinRenewalForTesting();
+  base::test::RunUntil([this]() { return manager_.is_idle(); });
+
+  // Chrome should not have attempted to renew the PIN.
+  EXPECT_EQ(manager_.local_state_for_testing()
+                .mutable_users()
+                ->find(gaia_id_.ToString())
+                ->second.last_refreshed_pin_epoch_secs(),
+            0);
 }
 
 class EnclaveManagerMockTimeTest : public EnclaveManagerTest {
