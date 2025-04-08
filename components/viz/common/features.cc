@@ -280,17 +280,6 @@ BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
              "AllowForceMergeRenderPassWithRequireOverlayQuads",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-
-// If enabled, CompositorFrameSinkClient::OnBeginFrame is also treated as the
-// DidReceiveCompositorFrameAck. Both in providing the Ack for the previous
-// frame, and in returning resources. While enabled we attempt to not send
-// separate Ack and ReclaimResources signals. However if while sending an
-// OnBeginFrame there is a pending Ack, then if the Ack arrives before the next
-// OnBeginFrame we will send the Ack immediately, rather than batching it.
-BASE_FEATURE(kOnBeginFrameAcks,
-             "OnBeginFrameAcks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // if enabled, Any CompositorFrameSink of type video that defines a preferred
 // framerate that is below the display framerate will throttle OnBeginFrame
 // callbacks to match the preferred framerate.
@@ -555,10 +544,6 @@ int MaxOverlaysConsidered() {
 
 bool ShouldOnBeginFrameThrottleVideo() {
   return base::FeatureList::IsEnabled(features::kOnBeginFrameThrottleVideo);
-}
-
-bool IsOnBeginFrameAcksEnabled() {
-  return base::FeatureList::IsEnabled(features::kOnBeginFrameAcks);
 }
 
 bool IsOcclusionCullingForTextureQuadsEnabled() {

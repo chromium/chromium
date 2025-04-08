@@ -294,7 +294,7 @@ TEST_F(CanvasResourceDispatcherTest, UsesRealOnBeginFrameWhenActive) {
   // Verify that the client's BeginFrame is called in response to a real OBF.
   EXPECT_CALL(Dispatcher()->MockClient(), BeginFrame()).Times(1);
   Dispatcher()->OnBeginFrame(/*begin_frame_args=*/{}, /*timing details*/ {},
-                             /*frame_ack=*/false, /*resources=*/{});
+                             /*resources=*/{});
 }
 
 TEST_F(CanvasResourceDispatcherTest,

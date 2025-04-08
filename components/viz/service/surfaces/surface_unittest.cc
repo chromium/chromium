@@ -42,31 +42,7 @@ class SurfaceTest : public testing::Test {
   FrameSinkManagerImpl frame_sink_manager_;
 };
 
-// Supports testing features::OnBeginFrameAcks, which changes the expectations
-// of what IPCs are sent to the CompositorFrameSinkClient. When enabled
-// OnBeginFrame also handles ReturnResources as well as
-// DidReceiveCompositorFrameAck.
-class OnBeginFrameAcksSurfaceTest : public SurfaceTest,
-                                    public testing::WithParamInterface<bool> {
- public:
-  OnBeginFrameAcksSurfaceTest();
-  ~OnBeginFrameAcksSurfaceTest() override = default;
-
-  bool BeginFrameAcksEnabled() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-OnBeginFrameAcksSurfaceTest::OnBeginFrameAcksSurfaceTest() {
-  if (BeginFrameAcksEnabled()) {
-    scoped_feature_list_.InitAndEnableFeature(features::kOnBeginFrameAcks);
-  } else {
-    scoped_feature_list_.InitAndDisableFeature(features::kOnBeginFrameAcks);
-  }
-}
-
-TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
+TEST_F(SurfaceTest, PresentationCallback) {
   constexpr gfx::Size kSurfaceSize(300, 300);
   constexpr gfx::Rect kDamageRect(0, 0);
   const LocalSurfaceId local_surface_id(6, base::UnguessableToken::Create());
@@ -74,9 +50,6 @@ TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
   MockCompositorFrameSinkClient client;
   auto support = std::make_unique<CompositorFrameSinkSupport>(
       &client, &frame_sink_manager_, kArbitraryFrameSinkId, kIsRoot);
-  if (BeginFrameAcksEnabled()) {
-    support->SetWantsBeginFrameAcks();
-  }
   uint32_t frame_token = kInvalidFrameToken;
   {
     CompositorFrame frame =
@@ -86,8 +59,7 @@ TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
             .Build();
     frame_token = frame.metadata.frame_token;
     ASSERT_NE(frame_token, kInvalidFrameToken);
-    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_))
-        .Times(BeginFrameAcksEnabled() ? 0 : 1);
+    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_)).Times(1);
     support->SubmitCompositorFrame(local_surface_id, std::move(frame));
     testing::Mock::VerifyAndClearExpectations(&client);
   }
@@ -100,22 +72,13 @@ TEST_P(OnBeginFrameAcksSurfaceTest, PresentationCallback) {
             .AddRenderPass(gfx::Rect(kSurfaceSize), kDamageRect)
             .SetBeginFrameSourceId(kBeginFrameSourceId)
             .Build();
-    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_))
-        .Times(BeginFrameAcksEnabled() ? 0 : 1);
+    EXPECT_CALL(client, DidReceiveCompositorFrameAck(testing::_)).Times(1);
     support->SubmitCompositorFrame(local_surface_id, std::move(frame));
     ASSERT_EQ(1u, support->timing_details().size());
     EXPECT_EQ(frame_token, support->timing_details().begin()->first);
     testing::Mock::VerifyAndClearExpectations(&client);
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         OnBeginFrameAcksSurfaceTest,
-                         testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "BeginFrameAcks"
-                                             : "CompositoFrameAcks";
-                         });
 
 TEST_F(SurfaceTest, SurfaceIds) {
   for (size_t i = 0; i < 3; ++i) {

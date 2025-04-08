@@ -114,7 +114,6 @@ class SynchronousLayerTreeFrameSink
   void OnBeginFrame(
       const viz::BeginFrameArgs& args,
       const HashMap<uint32_t, viz::FrameTimingDetails>& timing_details,
-      bool frame_ack,
       Vector<viz::ReturnedResource> resources) override;
   void ReclaimResources(Vector<viz::ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override;

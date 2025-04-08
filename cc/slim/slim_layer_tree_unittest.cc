@@ -48,8 +48,7 @@ class SlimLayerTreeTest : public testing::Test {
         BEGINFRAME_FROM_HERE,
         /*source_id=*/1, ++sequence_id_, frame_time, frame_time + interval,
         interval, viz::BeginFrameArgs::NORMAL);
-    sink->OnBeginFrame(begin_frame_args, /*timing_details=*/{},
-                       /*frame_ack=*/false, {});
+    sink->OnBeginFrame(begin_frame_args, /*timing_details=*/{}, {});
   }
 
   base::WeakPtr<TestFrameSinkImpl> SetupLayerTreeForDraw() {

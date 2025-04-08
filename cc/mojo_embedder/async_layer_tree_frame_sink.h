@@ -97,15 +97,6 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
     // `auto_needs_begin_frame` is.
     bool auto_needs_begin_frame = false;
 
-    // Notifies the client wants to throttle sending
-    // `DidReceiveCompositorFrameAck` and `ReclaimResources`. Instead merging
-    // them into OnBeginFrame. This is set to `true` by default. Users of
-    // |this| can optionally opt out from this by setting this to `false`.
-    //
-    // Note: on the server side, this throttle is also controlled with the
-    // `features::kOnBeginFrameAcks` in addition to this control variable.
-    bool wants_begin_frame_acks = true;
-
     // If it has value(n), internal begin frame source will be used when n
     // consecutive "did not produce frame" are observed. It will stop using
     // internal begin frame source when there's a submitted compositor frame.
@@ -170,7 +161,6 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
       std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& begin_frame_args,
                     const viz::FrameTimingDetailsMap& timing_details,
-                    bool frame_ack,
                     std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
@@ -222,8 +212,6 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
 
   // Please see comment of `InitParams::auto_needs_begin_frame`.
   const bool auto_needs_begin_frame_;
-  // Please see comment of `InitParams::wants_begin_frame_acks`.
-  const bool wants_begin_frame_acks_;
 
   viz::HitTestRegionList last_hit_test_data_;
 

@@ -10,7 +10,6 @@
 #include "base/not_fatal_until.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/resources/release_callback.h"
@@ -388,14 +387,9 @@ bool CanvasResourceDispatcher::HasTooManyPendingFrames() const {
 void CanvasResourceDispatcher::OnBeginFrame(
     const viz::BeginFrameArgs& begin_frame_args,
     const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-    bool frame_ack,
     WTF::Vector<viz::ReturnedResource> resources) {
-  if (features::IsOnBeginFrameAcksEnabled()) {
-    if (frame_ack) {
-      DidReceiveCompositorFrameAck(std::move(resources));
-    } else if (!resources.empty()) {
-      ReclaimResources(std::move(resources));
-    }
+  if (!resources.empty()) {
+    ReclaimResources(std::move(resources));
   }
   current_begin_frame_ack_ = viz::BeginFrameAck(begin_frame_args, false);
   if (HasTooManyPendingFrames() ||

@@ -53,7 +53,6 @@ class PLATFORM_EXPORT BeginFrameProvider
   }
   void OnBeginFrame(const viz::BeginFrameArgs&,
                     const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&,
-                    bool frame_ack,
                     WTF::Vector<viz::ReturnedResource> resources) final;
   void OnBeginFramePausedChanged(bool paused) final {}
   void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) final {

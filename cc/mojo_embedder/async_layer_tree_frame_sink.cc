@@ -80,7 +80,6 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
       pipes_(std::move(params->pipes)),
       wants_animate_only_begin_frames_(params->wants_animate_only_begin_frames),
       auto_needs_begin_frame_(params->auto_needs_begin_frame),
-      wants_begin_frame_acks_(params->wants_begin_frame_acks),
       use_begin_frame_presentation_feedback_(
           params->use_begin_frame_presentation_feedback),
       num_did_not_produce_frame_before_internal_begin_frame_source_(
@@ -132,9 +131,6 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
 
   if (wants_animate_only_begin_frames_) {
     compositor_frame_sink_->SetWantsAnimateOnlyBeginFrames();
-  }
-  if (wants_begin_frame_acks_) {
-    compositor_frame_sink_ptr_->SetWantsBeginFrameAcks();
   }
   if (auto_needs_begin_frame_) {
     compositor_frame_sink_ptr_->SetAutoNeedsBeginFrame();
@@ -366,7 +362,6 @@ void AsyncLayerTreeFrameSink::DidReceiveCompositorFrameAck(
 void AsyncLayerTreeFrameSink::OnBeginFrame(
     const viz::BeginFrameArgs& args,
     const viz::FrameTimingDetailsMap& timing_details,
-    bool frame_ack,
     std::vector<viz::ReturnedResource> resources) {
   viz::BeginFrameArgs adjusted_args = args;
   adjusted_args.client_arrival_time = base::TimeTicks::Now();
@@ -389,12 +384,8 @@ void AsyncLayerTreeFrameSink::OnBeginFrame(
         data->set_surface_frame_trace_id(adjusted_args.trace_id);
       });
 
-  if (features::IsOnBeginFrameAcksEnabled()) {
-    if (frame_ack) {
-      DidReceiveCompositorFrameAck(std::move(resources));
-    } else if (!resources.empty()) {
-      ReclaimResources(std::move(resources));
-    }
+  if (!resources.empty()) {
+    ReclaimResources(std::move(resources));
   }
 
   bool timing_export =

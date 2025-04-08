@@ -69,7 +69,7 @@ viz::mojom::blink::BeginFrameInfoPtr MakeBeginFrameInfo(uint32_t sink_id) {
                                   base::TimeTicks(), base::TimeDelta(),
                                   viz::BeginFrameArgs::NORMAL),
       WTF::HashMap<uint32_t, viz::FrameTimingDetails>(),
-      /*frame_ack=*/false, WTF::Vector<viz::ReturnedResource>());
+      WTF::Vector<viz::ReturnedResource>());
 }
 
 class MockFrameSinkBundleClient

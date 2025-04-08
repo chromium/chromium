@@ -38,12 +38,6 @@ interface CompositorFrameSink {
   // will receive such BeginFrames.
   SetWantsAnimateOnlyBeginFrames();
 
-  // Lets the display compositor know that the client wants merged OnBeginFrame,
-  // DidReceiveCompositorFrameAck, and ReclaimResources. Only supported when
-  // features::OnBeginFrameAcks is enabled. Only clients that opt in will
-  // receive such BeginFrames, others will still receive the signals separately.
-  SetWantsBeginFrameAcks();
-
   // Lets the display compositor know that the client wants to use unsolicited
   // compositor frame submission to indicate that it wants to receive subsequent
   // BeginFrame events, as if SetNeedsBeginFrame(true) is called.
@@ -119,13 +113,10 @@ interface CompositorFrameSinkClient {
   // Notification for the client to generate a CompositorFrame. The client is
   // required to respond with either SubmitCompositorFrame() or
   // DidNotProduceFrame(). If the client is unresponsive then begin frames will
-  // be throttled and eventually stopped entirely. We also return whether this
-  // OnBeginFrame is to act as DidReceiveCompositorFrameAck. We also return a
-  // list of resources, previously sent to SubmitCompositorFrame, to be reused
-  // or freed.
+  // be throttled and eventually stopped entirely. We also return a list of
+  // resources, previously sent to SubmitCompositorFrame, to be reused or freed.
   OnBeginFrame(BeginFrameArgs args,
                map<uint32, FrameTimingDetails> details,
-               bool frame_ack,
                array<ReturnedResource> resources);
 
   // Inform the client that OnBeginFrame may not be called for some time.
