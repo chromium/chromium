@@ -928,7 +928,7 @@
   {
     "name": "block-telephony-device-phone-mute",
     "owners": [ "jingyliang@chromium.org", "chromeos-tango@google.com" ],
-    "expiry_milestone": 135
+    "expiry_milestone": 145
   },
   {
     "name": "block-tpcs-incognito",
