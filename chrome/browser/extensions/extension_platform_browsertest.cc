@@ -294,6 +294,9 @@ void ExtensionPlatformBrowserTest::TearDownOnMainThread() {
   }
 #endif
 
+  // Stop observing any notifications when we're tearing down the test.
+  test_notification_observer_.reset();
+
   registry_observation_.Reset();
   PlatformBrowserTest::TearDownOnMainThread();
 }
