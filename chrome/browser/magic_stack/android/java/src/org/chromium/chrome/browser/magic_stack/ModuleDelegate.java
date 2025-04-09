@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.magic_stack;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -16,6 +16,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** The interface for magic stack which owns a list of modules. */
+@NullMarked
 public interface ModuleDelegate {
     /**
      * Module types that are shown in the magic stack on the home surfaces.
@@ -55,7 +56,7 @@ public interface ModuleDelegate {
      * Called when a module has a PropertyModel ready. This could be called multiple times from the
      * same module.
      */
-    void onDataReady(@ModuleType int moduleType, @NonNull PropertyModel propertyModel);
+    void onDataReady(@ModuleType int moduleType, PropertyModel propertyModel);
 
     /** Called when a module has no data to show. */
     void onDataFetchFailed(@ModuleType int moduleType);
@@ -75,7 +76,7 @@ public interface ModuleDelegate {
      * @param gurl The URL to open.
      * @param moduleType The type of the module clicked.
      */
-    void onUrlClicked(@NonNull GURL gurl, @ModuleType int moduleType);
+    void onUrlClicked(GURL gurl, @ModuleType int moduleType);
 
     /**
      * Called when the user clicks a module to select a Tab.
@@ -96,8 +97,7 @@ public interface ModuleDelegate {
     ModuleProvider getModuleProvider(@ModuleType int moduleType);
 
     /** Gets the local Tab that is showing on the magic stack. */
-    @Nullable
-    Tab getTrackingTab();
+    @Nullable Tab getTrackingTab();
 
     /** Called before build and show modules. */
     void prepareBuildAndShow();

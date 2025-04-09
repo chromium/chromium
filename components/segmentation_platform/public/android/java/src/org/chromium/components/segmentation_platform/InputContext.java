@@ -187,7 +187,7 @@ public class InputContext {
     }
 
     /** Merge all inputs from another InputContext object. */
-    public void mergeFrom(InputContext other) {
+    public void mergeFrom(@Nullable InputContext other) {
         if (other == null) return;
 
         for (Entry<String, ProcessedValue> entry : other.mMetadata.entrySet()) {

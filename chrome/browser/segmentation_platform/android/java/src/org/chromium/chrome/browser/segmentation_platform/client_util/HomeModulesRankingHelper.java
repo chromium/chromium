@@ -8,7 +8,6 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.segmentation_platform.ClassificationResult;
@@ -32,7 +31,7 @@ public final class HomeModulesRankingHelper {
     public static void fetchModulesRank(
             Profile profile,
             InputContext freshnessAndEphemeralInputs,
-            Callback<@Nullable List<String>> callback) {
+            Callback<List<String>> callback) {
         HomeModulesRankingHelperJni.get()
                 .getClassificationResult(
                         profile,

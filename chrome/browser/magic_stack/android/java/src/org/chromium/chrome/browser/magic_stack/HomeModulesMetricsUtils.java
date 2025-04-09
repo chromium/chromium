@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.AUXILIARY_SEARCH;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_EDUCATIONAL_TIP;
@@ -19,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
@@ -27,6 +29,7 @@ import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import java.util.HashSet;
 
 /** The utility class for logging the magic stack's metrics. */
+@NullMarked
 public class HomeModulesMetricsUtils {
     @VisibleForTesting public static final String HISTOGRAM_PREFIX = "MagicStack.Clank.NewTabPage";
     @VisibleForTesting public static final String HISTOGRAM_MAGIC_STACK_MODULE = ".Module.";
@@ -126,7 +129,7 @@ public class HomeModulesMetricsUtils {
                 return "QuickDeletePromo";
             default:
                 assert false : "Module type not supported!";
-                return null;
+                return assumeNonNull(null);
         }
     }
 

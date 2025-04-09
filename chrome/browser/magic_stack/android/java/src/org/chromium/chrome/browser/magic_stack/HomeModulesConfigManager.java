@@ -11,6 +11,7 @@ import android.content.Context;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -29,6 +30,7 @@ import java.util.Set;
  *
  * <p>This class serves as a single chrome home modules setting logic gateway.
  */
+@NullMarked
 public class HomeModulesConfigManager {
     /** An interface to use for getting home modules related updates. */
     interface HomeModulesStateListener {

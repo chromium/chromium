@@ -5,7 +5,6 @@
 package org.chromium.components.segmentation_platform;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.segmentation_platform.prediction_status.PredictionStatus;
 
 import java.util.List;
@@ -14,13 +13,13 @@ import java.util.List;
 public class ClassificationResult {
     public final @PredictionStatus int status;
 
-    public final @Nullable List<String> orderedLabels;
+    public final List<String> orderedLabels;
 
     public final long requestId;
 
     public ClassificationResult(int status, String[] orderedLabels, long requestId) {
         this.status = status;
-        this.orderedLabels = orderedLabels == null ? null : List.of(orderedLabels);
+        this.orderedLabels = List.of(orderedLabels);
         this.requestId = requestId;
     }
 }

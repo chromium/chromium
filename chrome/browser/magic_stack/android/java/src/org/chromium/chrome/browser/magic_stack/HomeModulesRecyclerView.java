@@ -6,17 +6,21 @@ package org.chromium.chrome.browser.magic_stack;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A custom RecyclerView implementation for the home modules. */
+@NullMarked
 public class HomeModulesRecyclerView extends RecyclerView {
 
     /* Whether the activity is running on a tablet.*/
@@ -31,7 +35,7 @@ public class HomeModulesRecyclerView extends RecyclerView {
     /* The internal padding between two modules in pixel. */
     private int mModuleInternalPaddingPx;
 
-    public HomeModulesRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public HomeModulesRecyclerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
@@ -52,12 +56,13 @@ public class HomeModulesRecyclerView extends RecyclerView {
     }
 
     @Override
-    public void onDraw(@NonNull Canvas c) {
+    public void onDraw(Canvas c) {
         super.onDraw(c);
         // Don't need to change the width of a child view on phones since there is only one item
         // shown per screen, and it never changes.
         if (!mIsTablet) return;
 
+        assumeNonNull(getAdapter());
         int itemCount = getAdapter().getItemCount();
         int measuredWidth = getMeasuredWidth();
         for (int i = 0; i < getChildCount(); i++) {

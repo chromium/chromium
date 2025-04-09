@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.magic_stack;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.HomeModulesContextMenuManager.ContextMenuItemId;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 
 /** The interface for a module which is shown or hidden on the magic stack. */
+@NullMarked
 public interface ModuleProvider {
     int INVALID_RESOURCE_ID = -1;
 
