@@ -132,6 +132,7 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
             .SetText(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE))
             .SetTextStyle(views::style::STYLE_BODY_4)
+            .SetEnabledColor(ui::kColorSysOnSurfaceSubtle)
             .SetAccessibleRole(ax::mojom::Role::kDetails)
             .SetMultiLine(true)
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
@@ -185,6 +186,8 @@ SaveOrUpdateAutofillAiDataBubbleView::GetAttributeValueView(
       detail.update_type !=
           SaveOrUpdateAutofillAiDataController::EntityAttributeUpdateType::
               kNewEntityAttributeUnchanged;
+  const bool should_value_have_medium_weight =
+      controller_->IsSavePrompt() || existing_entity_added_or_updated_attribute;
   std::unique_ptr<views::BoxLayoutView> atribute_value_row_wrapper =
       GetEntityAttributeAndValueLayout(
           views::BoxLayout::CrossAxisAlignment::kEnd);
@@ -192,11 +195,12 @@ SaveOrUpdateAutofillAiDataBubbleView::GetAttributeValueView(
       views::Builder<views::Label>()
           .SetText(detail.attribute_value)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT)
-          .SetTextStyle(existing_entity_added_or_updated_attribute
+          .SetTextStyle(should_value_have_medium_weight
                             ? views::style::STYLE_BODY_4_MEDIUM
                             : views::style::STYLE_BODY_4)
           .SetAccessibleRole(ax::mojom::Role::kDefinition)
           .SetMultiLine(true)
+          .SetEnabledColor(ui::kColorSysOnSurface)
           .SetAllowCharacterBreak(true)
           .SetMaximumWidth(GetEntityAttributeAndValueLabelMaxWidth())
           .Build();
@@ -268,6 +272,7 @@ SaveOrUpdateAutofillAiDataBubbleView::BuildEntityAttributeRow(
   entity_attribute_wrapper->AddChildView(
       views::Builder<views::Label>()
           .SetText(detail.attribute_name)
+          .SetEnabledColor(ui::kColorSysOnSurfaceSubtle)
           .SetTextStyle(views::style::STYLE_BODY_4)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .SetAccessibleRole(ax::mojom::Role::kTerm)
