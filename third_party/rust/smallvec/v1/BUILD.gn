@@ -24,7 +24,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.14.0"
+  cargo_pkg_version = "1.15.0"
   cargo_pkg_authors = "The Servo Project Developers"
   cargo_pkg_name = "smallvec"
   cargo_pkg_description = "'Small vector' optimization: store up to a small number of items on the stack"

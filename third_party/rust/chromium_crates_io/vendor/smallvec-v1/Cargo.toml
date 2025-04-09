@@ -12,7 +12,7 @@
 [package]
 edition = "2018"
 name = "smallvec"
-version = "1.14.0"
+version = "1.15.0"
 authors = ["The Servo Project Developers"]
 build = false
 autolib = false
@@ -42,6 +42,21 @@ rustdoc-args = [
     "--generate-link-to-definition",
 ]
 
+[features]
+const_generics = []
+const_new = ["const_generics"]
+debugger_visualizer = []
+drain_filter = []
+drain_keep_rest = ["drain_filter"]
+impl_bincode = [
+    "bincode",
+    "unty",
+]
+may_dangle = []
+specialization = []
+union = []
+write = []
+
 [lib]
 name = "smallvec"
 path = "src/lib.rs"
@@ -64,6 +79,11 @@ path = "benches/bench.rs"
 version = "1"
 optional = true
 
+[dependencies.bincode]
+version = "2"
+optional = true
+default-features = false
+
 [dependencies.malloc_size_of]
 version = "0.1"
 optional = true
@@ -74,22 +94,17 @@ version = "1"
 optional = true
 default-features = false
 
-[dev-dependencies.bincode]
+[dependencies.unty]
+version = "0.0.4"
+optional = true
+default-features = false
+
+[dev-dependencies.bincode1]
 version = "1.0.1"
+package = "bincode"
 
 [dev-dependencies.debugger_test]
 version = "0.1.0"
 
 [dev-dependencies.debugger_test_parser]
 version = "0.1.0"
-
-[features]
-const_generics = []
-const_new = ["const_generics"]
-debugger_visualizer = []
-drain_filter = []
-drain_keep_rest = ["drain_filter"]
-may_dangle = []
-specialization = []
-union = []
-write = []

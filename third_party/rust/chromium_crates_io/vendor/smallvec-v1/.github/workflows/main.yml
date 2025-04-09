@@ -17,9 +17,9 @@ jobs:
         os: [ubuntu-latest]
         include:
           - toolchain: stable
-            fuzz: 1
+            fuzz: 0
           - toolchain: beta
-            fuzz: 1
+            fuzz: 0
           - os: windows-latest
             toolchain: nightly
 

@@ -413,7 +413,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 [policy."small_ctor:0.1.2"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."smallvec:1.14.0"]
+[policy."smallvec:1.15.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."stable_deref_trait:1.2.0"]
