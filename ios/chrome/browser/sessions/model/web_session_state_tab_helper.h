@@ -83,8 +83,6 @@ class WebSessionStateTabHelper
   // Allows observing Objective-C object for Scroll and Zoom events.
   __strong id<CRWWebViewScrollViewProxyObserver> scroll_observer_;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   base::WeakPtrFactory<WebSessionStateTabHelper> weak_ptr_factory_{this};
 };
 

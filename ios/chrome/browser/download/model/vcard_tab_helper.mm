@@ -59,5 +59,3 @@ void VcardTabHelper::OnDownloadDataRead(std::unique_ptr<web::DownloadTask> task,
   DCHECK(task);
   [delegate_ openVcardFromData:data];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(VcardTabHelper)

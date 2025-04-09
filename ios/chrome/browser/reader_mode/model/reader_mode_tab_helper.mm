@@ -301,5 +301,3 @@ void ReaderModeTabHelper::PageDistillationCompleted(
         base::SysUTF8ToNSString(distiller_result->distilled_content().html()));
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ReaderModeTabHelper)

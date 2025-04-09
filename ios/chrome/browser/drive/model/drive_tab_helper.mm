@@ -76,7 +76,3 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
       drive_service->GetSuggestedFolderName());
   download_task_obs_.Observe(task);
 }
-
-#pragma mark - web::WebStateUserData
-
-WEB_STATE_USER_DATA_KEY_IMPL(DriveTabHelper)

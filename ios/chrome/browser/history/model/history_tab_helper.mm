@@ -357,5 +357,3 @@ history::HistoryService* HistoryTabHelper::GetHistoryService() {
   return ios::HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(HistoryTabHelper)

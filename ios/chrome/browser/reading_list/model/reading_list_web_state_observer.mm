@@ -281,5 +281,3 @@ void ReadingListWebStateObserver::LoadOfflineReadingListEntry() {
   reading_list_model_->SetReadStatusIfExists(entry->URL(), true);
   UMA_HISTOGRAM_BOOLEAN("ReadingList.OfflineVersionDisplayed", true);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ReadingListWebStateObserver)

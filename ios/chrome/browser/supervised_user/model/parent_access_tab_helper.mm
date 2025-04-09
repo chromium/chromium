@@ -102,5 +102,3 @@ void ParentAccessTabHelper::ShouldAllowRequest(
   [delegate_ hideParentAccessBottomSheetWithResult:result errorType:errorType];
   std::move(callback).Run(PolicyDecision::Allow());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ParentAccessTabHelper)

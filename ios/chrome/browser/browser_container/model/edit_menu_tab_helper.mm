@@ -19,5 +19,3 @@ void EditMenuTabHelper::SetEditMenuBuilder(id<EditMenuBuilder> builder) {
 void EditMenuTabHelper::BuildEditMenu(id<UIMenuBuilder> builder) const {
   [edit_menu_builder_ buildEditMenuWithBuilder:builder];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(EditMenuTabHelper)

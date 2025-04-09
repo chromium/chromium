@@ -120,5 +120,3 @@ void SessionRestorationWebStateObserver::MarkDirty() {
 
   callback_.Run(web_state_.get());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(SessionRestorationWebStateObserver)

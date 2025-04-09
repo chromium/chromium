@@ -364,5 +364,3 @@ bool FontSizeTabHelper::IsGoogleCachedAMPPage() const {
 
   return true;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(FontSizeTabHelper)

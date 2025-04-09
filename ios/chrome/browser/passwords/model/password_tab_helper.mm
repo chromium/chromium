@@ -85,5 +85,3 @@ void PasswordTabHelper::ShouldAllowRequest(
 }
 
 void PasswordTabHelper::WebStateDestroyed() {}
-
-WEB_STATE_USER_DATA_KEY_IMPL(PasswordTabHelper)

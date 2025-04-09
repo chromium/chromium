@@ -109,7 +109,6 @@ class SupervisedUserErrorContainer
   void MaybeUpdatePendingApprovals();
   void URLFilterCheckCallback(
       supervised_user::SupervisedUserURLFilter::Result result);
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // Handler used to request showing the parent access bottom sheet.
   __weak id<ParentAccessCommands> commands_handler_;

@@ -114,8 +114,6 @@ class FollowTabHelper : public web::WebStateObserver,
 
   base::CancelableTaskTracker history_task_tracker_;
   base::WeakPtrFactory<FollowTabHelper> weak_ptr_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_FOLLOW_MODEL_FOLLOW_TAB_HELPER_H_

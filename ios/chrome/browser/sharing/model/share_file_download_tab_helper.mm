@@ -186,5 +186,3 @@ bool ShareFileDownloadTabHelper::ShouldDownload(web::WebState* web_state) {
           mime_type == content_type::kMimeTypeMicrosoftExcel ||
           mime_type == content_type::kMimeTypeMicrosoftExcelOpenXML);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ShareFileDownloadTabHelper)

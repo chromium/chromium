@@ -59,8 +59,6 @@ class DriveTabHelper : public web::LazyWebStateUserData<DriveTabHelper>,
   // Drive upload task associated with the observed download task. Should be
   // started as soon as the download task is completed.
   std::unique_ptr<DriveUploadTask> upload_task_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_TAB_HELPER_H_

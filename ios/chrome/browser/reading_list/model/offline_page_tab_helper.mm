@@ -448,5 +448,3 @@ void OfflinePageTabHelper::CheckLoadingProgress(const GURL& url) {
     timer_->Stop();
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(OfflinePageTabHelper)

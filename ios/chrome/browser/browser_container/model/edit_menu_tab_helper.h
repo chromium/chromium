@@ -34,8 +34,6 @@ class EditMenuTabHelper : public web::WebStateUserData<EditMenuTabHelper> {
   friend class web::WebStateUserData<EditMenuTabHelper>;
 
   __weak id<EditMenuBuilder> edit_menu_builder_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_CONTAINER_MODEL_EDIT_MENU_TAB_HELPER_H_

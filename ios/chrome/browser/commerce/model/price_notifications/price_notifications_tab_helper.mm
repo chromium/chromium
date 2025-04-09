@@ -99,5 +99,3 @@ void PriceNotificationsTabHelper::DidFinishNavigation(
 void PriceNotificationsTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state_observation_.Reset();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(PriceNotificationsTabHelper)

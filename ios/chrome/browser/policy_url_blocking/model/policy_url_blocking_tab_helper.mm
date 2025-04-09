@@ -34,5 +34,3 @@ void PolicyUrlBlockingTabHelper::ShouldAllowRequest(
 
   std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(PolicyUrlBlockingTabHelper)

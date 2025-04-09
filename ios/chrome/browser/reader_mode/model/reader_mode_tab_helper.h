@@ -57,8 +57,6 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   base::OneShotTimer trigger_reader_mode_timer_;
   GURL overridden_url_for_debug_;
   base::WeakPtrFactory<ReaderModeTabHelper> weak_ptr_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_TAB_HELPER_H_

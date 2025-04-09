@@ -68,8 +68,6 @@ class AboutThisSiteTabHelper
   GURL previous_main_frame_url_;
 
   base::WeakPtrFactory<AboutThisSiteTabHelper> weak_ptr_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_PAGE_INFO_MODEL_ABOUT_THIS_SITE_TAB_HELPER_H_

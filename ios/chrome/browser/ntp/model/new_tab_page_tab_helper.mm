@@ -135,5 +135,3 @@ void NewTabPageTabHelper::SetActive(bool active) {
 
   [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(NewTabPageTabHelper)

@@ -51,7 +51,6 @@ class TranslateOverlayTabHelper
 
  private:
   friend class web::WebStateUserData<TranslateOverlayTabHelper>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // Observes a Translate InfoBar for changes to the TranslateStep.
   class TranslateStepObserver

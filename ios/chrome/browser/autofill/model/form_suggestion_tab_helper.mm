@@ -29,5 +29,3 @@ void FormSuggestionTabHelper::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
   controller_ = nil;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(FormSuggestionTabHelper)

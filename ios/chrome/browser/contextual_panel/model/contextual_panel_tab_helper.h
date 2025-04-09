@@ -137,8 +137,6 @@ class ContextualPanelTabHelper
   // Fire any metrics that should fire when all requests are finished.
   void FireRequestsFinishedMetrics();
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   // Whether the Contextual Panel is currently opened for the current tab.
   bool is_contextual_panel_currently_opened_ = false;
 

@@ -628,5 +628,3 @@ bool AutofillBottomSheetTabHelper::HasReachedPasswordGenerationDismissLimit() {
              prefs::kIosPasswordGenerationBottomSheetDismissCount) >=
          kPasswordGenerationBottomSheetMaxDismissCount;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AutofillBottomSheetTabHelper)

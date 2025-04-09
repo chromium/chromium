@@ -29,8 +29,6 @@ void OverlayRequestQueue::CreateForWebState(web::WebState* web_state) {
 
 #pragma mark - OverlayRequestQueueImpl::Container
 
-WEB_STATE_USER_DATA_KEY_IMPL(OverlayRequestQueueImpl::Container)
-
 OverlayRequestQueueImpl::Container::Container(web::WebState* web_state)
     : web_state_(web_state) {}
 OverlayRequestQueueImpl::Container::~Container() = default;

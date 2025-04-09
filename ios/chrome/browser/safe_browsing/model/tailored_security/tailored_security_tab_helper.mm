@@ -47,8 +47,6 @@ TailoredSecurityTabHelper::~TailoredSecurityTabHelper() {
   }
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(TailoredSecurityTabHelper)
-
 #pragma mark - TailoredSecurityServiceObserver
 
 void TailoredSecurityTabHelper::OnTailoredSecurityBitChanged(

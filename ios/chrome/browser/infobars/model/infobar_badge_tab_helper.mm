@@ -20,8 +20,6 @@ InfobarType GetInfobarType(infobars::InfoBar* infobar) {
 
 #pragma mark - InfobarBadgeTabHelper
 
-WEB_STATE_USER_DATA_KEY_IMPL(InfobarBadgeTabHelper)
-
 InfobarBadgeTabHelper::InfobarBadgeTabHelper(web::WebState* web_state)
     : infobar_accept_observer_(this),
       infobar_manager_observer_(this, web_state, &infobar_accept_observer_),

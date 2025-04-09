@@ -103,5 +103,3 @@ void OptimizationGuideValidationTabHelper::
       "OptimizationGuide.MetadataFetchValidation.Result",
       string_metadata && string_metadata->value() == expected_metadata);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(OptimizationGuideValidationTabHelper)

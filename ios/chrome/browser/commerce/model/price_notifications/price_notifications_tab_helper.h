@@ -56,7 +56,6 @@ class PriceNotificationsTabHelper
 
   // The handler that displays the price tracking bubble IPH.
   __weak id<HelpCommands> help_handler_ = nil;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
+
 #endif  // IOS_CHROME_BROWSER_COMMERCE_MODEL_PRICE_NOTIFICATIONS_PRICE_NOTIFICATIONS_TAB_HELPER_H_

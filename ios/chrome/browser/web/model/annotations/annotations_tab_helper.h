@@ -72,8 +72,6 @@ class AnnotationsTabHelper : public web::AnnotationsTextObserver,
       web::WebState* web_state,
       web::PageLoadCompletionStatus load_completion_status) override;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
  private:
   friend class WebStateUserData<AnnotationsTabHelper>;
 

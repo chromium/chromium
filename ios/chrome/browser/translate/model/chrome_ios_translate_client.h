@@ -101,8 +101,6 @@ class ChromeIOSTranslateClient
 
   // Metrics recorder for page load events.
   std::unique_ptr<translate::TranslateMetricsLogger> translate_metrics_logger_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_TRANSLATE_MODEL_CHROME_IOS_TRANSLATE_CLIENT_H_

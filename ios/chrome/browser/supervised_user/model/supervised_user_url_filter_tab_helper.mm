@@ -90,5 +90,3 @@ void SupervisedUserURLFilterTabHelper::ShouldAllowRequest(
       supervised_user::FilteringContext::kNavigationThrottle,
       request_info.transition_type);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(SupervisedUserURLFilterTabHelper)

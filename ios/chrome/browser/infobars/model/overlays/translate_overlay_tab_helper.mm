@@ -36,8 +36,6 @@ base::RepeatingCallback<bool(OverlayRequest*)> ConfigAndInfoBarMatcher(
 }
 }  // namespace
 
-WEB_STATE_USER_DATA_KEY_IMPL(TranslateOverlayTabHelper)
-
 TranslateOverlayTabHelper::TranslateOverlayTabHelper(web::WebState* web_state)
     : translate_step_observer_(this),
       translate_infobar_observer_(web_state, this),

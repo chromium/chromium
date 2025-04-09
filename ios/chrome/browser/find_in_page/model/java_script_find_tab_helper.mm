@@ -108,5 +108,3 @@ void JavaScriptFindTabHelper::DidFinishNavigation(
     StopFinding();
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(JavaScriptFindTabHelper)

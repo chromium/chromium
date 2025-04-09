@@ -73,8 +73,6 @@ class PasswordTabHelper : public web::WebStateObserver,
 
   // The Objective-C password controller instance.
   __strong PasswordController* controller_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_PASSWORD_TAB_HELPER_H_

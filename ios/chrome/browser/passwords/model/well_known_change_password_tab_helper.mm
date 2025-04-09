@@ -156,5 +156,3 @@ void WellKnownChangePasswordTabHelper::RecordMetric(
       .SetWellKnownChangePasswordResult(static_cast<int64_t>(result))
       .Record(ukm::UkmRecorder::Get());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(WellKnownChangePasswordTabHelper)

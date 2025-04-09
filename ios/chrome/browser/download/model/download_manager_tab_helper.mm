@@ -255,5 +255,3 @@ void DownloadManagerTabHelper::ShowRestrictDownloadSnackbar() {
                 messageAction:nil
              completionAction:nil];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(DownloadManagerTabHelper)

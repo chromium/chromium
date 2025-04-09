@@ -17,8 +17,6 @@ using infobars::InfoBarManager;
 
 #pragma mark - InfobarOverlayTabHelper
 
-WEB_STATE_USER_DATA_KEY_IMPL(InfobarOverlayTabHelper)
-
 InfobarOverlayTabHelper::InfobarOverlayTabHelper(web::WebState* web_state)
     : request_inserter_(InfobarOverlayRequestInserter::FromWebState(web_state)),
       request_scheduler_(web_state, this) {}

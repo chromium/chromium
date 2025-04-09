@@ -101,8 +101,6 @@ class DownloadManagerTabHelper
   bool delegate_started_ = false;
 
   base::WeakPtrFactory<DownloadManagerTabHelper> weak_ptr_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_MANAGER_TAB_HELPER_H_

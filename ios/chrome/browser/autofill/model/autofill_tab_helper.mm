@@ -109,5 +109,3 @@ void AutofillTabHelper::OnDidDoubleRegistration(
     driver->Unregister();
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AutofillTabHelper)

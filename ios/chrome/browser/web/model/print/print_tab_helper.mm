@@ -32,5 +32,3 @@ void PrintTabHelper::Print() {
 
   [printer_ printWebState:web_state_];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(PrintTabHelper)

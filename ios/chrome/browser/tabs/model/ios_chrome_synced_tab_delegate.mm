@@ -241,5 +241,3 @@ IOSChromeSyncedTabDelegate::ReadPlaceholderTabSnapshotIfItShouldSync(
   NOTREACHED() << "ReadPlaceholderTabSnapshotIfItShouldSync is not supported "
                   "for the iOS platform.";
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(IOSChromeSyncedTabDelegate)

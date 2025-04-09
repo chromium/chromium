@@ -71,5 +71,3 @@ void DataSharingTabHelper::ShouldAllowRequest(
 
   std::move(callback).Run(PolicyDecision::Allow());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(DataSharingTabHelper)

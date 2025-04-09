@@ -46,8 +46,6 @@ class ParentAccessTabHelper
   id<ParentAccessTabHelperDelegate> delegate_;
 
   friend class web::WebStateUserData<ParentAccessTabHelper>;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_SUPERVISED_USER_MODEL_PARENT_ACCESS_TAB_HELPER_H_

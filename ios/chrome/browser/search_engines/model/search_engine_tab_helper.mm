@@ -247,5 +247,3 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
   // any OpenSearch document derived engines, which outrank this one.
   url_service->Add(std::make_unique<TemplateURL>(data));
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(SearchEngineTabHelper)

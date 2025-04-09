@@ -18,8 +18,6 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 
-WEB_STATE_USER_DATA_KEY_IMPL(SupervisedUserErrorContainer)
-
 namespace {
 
 const char* BoolToString(bool value) {

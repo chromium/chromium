@@ -360,5 +360,3 @@ void DocumentDownloadTabHelper::OnPreviousTaskDeleted() {
   }
   AttachFullscreen();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(DocumentDownloadTabHelper)
