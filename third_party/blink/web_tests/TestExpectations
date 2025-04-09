@@ -3279,7 +3279,6 @@ crbug.com/345868498 [ Mac14 ] external/wpt/xhr/access-control-basic-cors-safelis
 crbug.com/345868498 [ Mac14 ] external/wpt/xhr/event-loadstart.any.html [ Timeout ]
 crbug.com/345868498 [ Mac14 ] external/wpt/xhr/send-data-blob.htm [ Timeout ]
 crbug.com/345868498 [ Mac14 ] external/wpt/xhr/send-usp.any.worker.html [ Timeout ]
-crbug.com/358041221 [ Mac14 ] virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/no-vary-search/prefetch-single-with-hint.https.html?22-22 [ Timeout ]
 crbug.com/345868499 [ Mac14 ] virtual/scalefactor200/external/wpt/css/filter-effects/effect-reference-lighting-no-light.tentative.html [ Failure Timeout ]
 crbug.com/345585682 external/wpt/html/rendering/widgets/input-number-text-size.tentative.html [ Failure ]
 crbug.com/343886935 external/wpt/webrtc/RTCPeerConnection-addTcpIceCandidate.html [ Skip Timeout ]
@@ -4695,8 +4694,6 @@ crbug.com/851363 http/tests/devtools/sxg/sxg-prefetch.js [ Failure Pass ]
 # Prefetching inspector protocol test is flaky
 crbug.com/40854799 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
 crbug.com/40854799 virtual/prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
-crbug.com/40854799 virtual/prefetch-reusable/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
-crbug.com/40854799 virtual/prefetch-reusable/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
 crbug.com/40854799 virtual/prefetch-serviceworker/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
 crbug.com/40854799 virtual/prefetch-serviceworker/http/tests/inspector-protocol/prefetch/request-will-be-sent-redirect.https.js [ Failure Pass ]
 crbug.com/40854799 virtual/prerender2-fallback-prefetch-spec-rules-prefetch/http/tests/inspector-protocol/prefetch/request-will-be-sent.https.js [ Failure Pass ]
@@ -7629,7 +7626,6 @@ crbug.com/326065727 [ Win11-arm64 ] external/wpt/html/cross-origin-embedder-poli
 crbug.com/326065972 [ Win11-arm64 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-video.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326067001 [ Win11-arm64 ] external/wpt/fedcm/fedcm-authz/fedcm-userinfo-after-resolve.https.html [ Failure Pass Timeout ] # Flaky
 crbug.com/326067598 [ Win11-arm64 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/set-automatic-beacon.https.html [ Failure Pass Timeout ] # Flaky
-crbug.com/326066872 [ Win11-arm64 ] virtual/prefetch-reusable/external/wpt/speculation-rules/prefetch/navigation-timing-requestStart-responseStart.https.html?prefetch=true [ Failure Pass Timeout ] # Flaky
 crbug.com/40943541 [ Win11-arm64 ] external/wpt/webtransport/echo-large-bidirectional-streams.https.any.html [ Failure Pass Timeout ] # Flaky
 
 # Flaky tests: 2024-02-21

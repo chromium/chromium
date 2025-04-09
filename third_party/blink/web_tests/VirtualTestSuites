@@ -1596,22 +1596,6 @@
     "expires": "Oct 1, 2025"
   },
   {
-    "prefix": "prefetch-reusable",
-    "owners": ["hiroshige@chromium.org"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/speculation-rules/prefetch",
-      "http/tests/inspector-protocol/prefetch"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchReusable,PrefetchCookieIndices,CookieIndicesHeader",
-      "--disable-features=PrefetchServiceWorker",
-      "--bypass-prefetch-proxy-for-host=not-web-platform.test"
-    ],
-    "expires": "Oct 1, 2025"
-  },
-  {
     "prefix": "prefetch-serviceworker",
     "owners": ["hiroshige@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
@@ -1621,7 +1605,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,PrefetchReusable,Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,Prerender2FallbackPrefetchSpecRules,PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "Oct 1, 2025"
@@ -1654,7 +1638,7 @@
       "http/tests/inspector-protocol/prerender/prefetch-events-for-ahead-of-prerender.js"
     ],
     "args": [
-      "--enable-features=PrefetchReusable,Prerender2FallbackPrefetchSpecRules:kPrerender2FallbackPrefetchSchedulerPolicy/Burst"
+      "--enable-features=Prerender2FallbackPrefetchSpecRules:kPrerender2FallbackPrefetchSchedulerPolicy/Burst"
     ],
     "owners": ["kenoss@chromium.org"],
     "expires": "May 12, 2025"
@@ -1672,7 +1656,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,PrefetchReusable,Prerender2FallbackPrefetchSpecRules",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,Prerender2FallbackPrefetchSpecRules",
       "--disable-features=PrefetchServiceWorker",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test",
       "--disable-threaded-compositing", "--disable-threaded-animation"
