@@ -284,6 +284,17 @@ class GlicWindowController : public views::WidgetObserver,
 
   void AddAccelerators();
 
+  // Sets the floating attributes of the glic window.
+  //
+  // When set to true, the glic window is set to have a `kFloatingWindow`
+  // z-order, and on the Mac is set to be "activation independent" (to allow the
+  // user to interact with it without causing Chromium to be activated), and
+  // visible on every space (including fullscreen ones).
+  //
+  // When set to false, the glic window is set to have a `kNormal` z-order, and
+  // on the Mac, all special activation and visibility properties are cleared.
+  void SetGlicWindowToFloatingMode(bool floating);
+
   gfx::Rect GetInitialBounds(Browser* browser);
 
   // Get the default detached bounds relative to browser.
@@ -398,8 +409,6 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Returns true of the window is showing and the content is loaded.
   bool IsWindowOpenAndReady();
-
-  void UpdateWindowBehaviorToMode(mojom::WebClientMode mode);
 
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>

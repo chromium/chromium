@@ -40,6 +40,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/controls/webview/webview.h"
@@ -714,13 +715,7 @@ void GlicWindowController::SetupGlicWidget(Browser* browser) {
   AddAccelerators();
 
   if (AlwaysDetached()) {
-    // When detached mode is on, there's no need for a holder window so it's
-    // simplified to just setting the z-order.
-    GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
-#if BUILDFLAG(IS_MAC)
-    GetGlicWidget()->SetActivationIndependence(true);
-    GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
-#endif
+    SetGlicWindowToFloatingMode(true);
   } else if (!browser) {
     // Detached window when no always detach. Be sure to reparent the widget and
     // set its state first before showing it.
@@ -739,6 +734,16 @@ void GlicWindowController::SetupGlicWidget(Browser* browser) {
 
   // Immediately hook up the WebView to the WebContents.
   GetGlicView()->SetWebContents(contents_->web_contents());
+}
+
+void GlicWindowController::SetGlicWindowToFloatingMode(bool floating) {
+  GetGlicWidget()->SetZOrderLevel(floating ? ui::ZOrderLevel::kFloatingWindow
+                                           : ui::ZOrderLevel::kNormal);
+#if BUILDFLAG(IS_MAC)
+  GetGlicWidget()->SetActivationIndependence(floating);
+  GetGlicWidget()->SetVisibleOnAllWorkspaces(floating);
+  GetGlicWidget()->SetCanAppearInExistingFullscreenSpaces(floating);
+#endif
 }
 
 gfx::Rect GlicWindowController::GetInitialBounds(Browser* browser) {
@@ -1013,13 +1018,7 @@ void GlicWindowController::AttachToBrowser(Browser& browser,
 
   NotifyIfPanelStateChanged();
 
-  // When attached to a browser window, the glic widget mustn't float and when
-  // interacted with must behave like any other widget.
-  GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kNormal);
-#if BUILDFLAG(IS_MAC)
-  GetGlicWidget()->SetActivationIndependence(false);
-  GetGlicWidget()->SetVisibleOnAllWorkspaces(false);
-#endif
+  SetGlicWindowToFloatingMode(false);
 
   browser_close_subscription_ = browser.RegisterBrowserDidClose(
       base::BindRepeating(&GlicWindowController::AttachedBrowserDidClose,
@@ -1062,8 +1061,9 @@ void GlicWindowController::EnableDragResize(bool enabled) {
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
-    UpdateWindowBehaviorToMode(enabled ? mojom::WebClientMode::kText
-                                       : mojom::WebClientMode::kAudio);
+    // Drag-resizability implies text mode, which isn't floating, while
+    // non-resizability implies audio mode, which is floating.
+    SetGlicWindowToFloatingMode(!enabled);
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
@@ -1409,15 +1409,7 @@ void GlicWindowController::MaybeCreateHolderWindowAndReparent(
 #endif
   NotifyIfPanelStateChanged();
 
-  // When the glic window is in a detached state, elevate its z-order to be
-  // always on top. On the Mac, mark it as "activation independent" so that
-  // interacting with it does not activate Chrome.
-  GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
-#if BUILDFLAG(IS_MAC)
-  GetGlicWidget()->SetActivationIndependence(true);
-  GetGlicWidget()->SetVisibleOnAllWorkspaces(true);
-  GetGlicWidget()->SetCanAppearInExistingFullscreenSpaces(true);
-#endif
+  SetGlicWindowToFloatingMode(true);
 }
 
 void GlicWindowController::AddStateObserver(StateObserver* observer) {
@@ -1579,17 +1571,6 @@ void GlicWindowController::SetWindowState(State new_state) {
 bool GlicWindowController::IsWindowOpenAndReady() {
   return web_client_ && state_ == State::kOpen &&
          webui_state_ == mojom::WebUiState::kReady;
-}
-
-void GlicWindowController::UpdateWindowBehaviorToMode(
-    mojom::WebClientMode mode) {
-  GetGlicWidget()->SetZOrderLevel(mode == mojom::WebClientMode::kText
-                                      ? ui::ZOrderLevel::kNormal
-                                      : ui::ZOrderLevel::kFloatingWindow);
-#if BUILDFLAG(IS_MAC)
-  GetGlicWidget()->SetVisibleOnAllWorkspaces(mode ==
-                                             mojom::WebClientMode::kAudio);
-#endif
 }
 
 }  // namespace glic
