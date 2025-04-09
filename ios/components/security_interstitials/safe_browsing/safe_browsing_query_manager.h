@@ -225,8 +225,6 @@ class SafeBrowsingQueryManager
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
   // The weak pointer factory.
   base::WeakPtrFactory<SafeBrowsingQueryManager> weak_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_SAFE_BROWSING_QUERY_MANAGER_H_

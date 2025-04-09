@@ -59,7 +59,6 @@ class HttpsOnlyModeContainer
  private:
   explicit HttpsOnlyModeContainer(web::WebState* web_state);
   friend class web::WebStateUserData<HttpsOnlyModeContainer>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // Parameters associated with the currently displayed blocking page. These are
   // cleared immediately on next navigation.

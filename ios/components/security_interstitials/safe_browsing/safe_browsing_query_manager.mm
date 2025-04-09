@@ -15,8 +15,6 @@
 
 using security_interstitials::UnsafeResource;
 
-WEB_STATE_USER_DATA_KEY_IMPL(SafeBrowsingQueryManager)
-
 namespace {
 // Creates a unique ID for a new Query.
 size_t CreateQueryID() {

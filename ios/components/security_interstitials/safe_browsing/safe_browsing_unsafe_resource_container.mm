@@ -18,8 +18,6 @@ using security_interstitials::UnsafeResource;
 
 #pragma mark - SafeBrowsingUnsafeResourceContainer
 
-WEB_STATE_USER_DATA_KEY_IMPL(SafeBrowsingUnsafeResourceContainer)
-
 SafeBrowsingUnsafeResourceContainer::SafeBrowsingUnsafeResourceContainer(
     web::WebState* web_state)
     : web_state_(web_state) {}

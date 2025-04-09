@@ -7,8 +7,6 @@
 #import "base/memory/ptr_util.h"
 #import "ios/web/public/web_state.h"
 
-WEB_STATE_USER_DATA_KEY_IMPL(HttpsOnlyModeContainer)
-
 HttpsOnlyModeContainer::HttpsOnlyModeContainer(web::WebState* web_state) {}
 
 HttpsOnlyModeContainer::HttpsOnlyModeContainer(HttpsOnlyModeContainer&& other) =
