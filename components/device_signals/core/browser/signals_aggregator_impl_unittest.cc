@@ -236,16 +236,25 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_Supported) {
   EXPECT_CALL(mock_permission_service_, CanCollectSignals())
       .WillOnce(Return(UserPermission::kGranted));
 
+  EXPECT_CALL(mock_permission_service_, CanCollectReportSignals())
+      .WillOnce(Return(UserPermission::kGranted));
+
   auto expected_signal_name = SignalName::kSystemSettings;
-  SignalsAggregationRequest request;
+  SignalsAggregationRequest request, report_request;
   request.signal_names.emplace(expected_signal_name);
+  report_request.signal_names.emplace(expected_signal_name);
+  report_request.trigger = Trigger::kSignalsReport;
 
   EXPECT_CALL(*settings_signal_collector_,
               IsSignalSupported(expected_signal_name))
-      .Times(1);
+      .Times(2);
   EXPECT_CALL(
       *settings_signal_collector_,
       GetSignal(expected_signal_name, UserPermission::kGranted, request, _, _))
+      .Times(1);
+  EXPECT_CALL(*settings_signal_collector_,
+              GetSignal(expected_signal_name, UserPermission::kGranted,
+                        report_request, _, _))
       .Times(1);
 
   EXPECT_CALL(*files_signal_collector_, GetSignal(_, _, _, _, _)).Times(0);
@@ -256,14 +265,19 @@ TEST_F(SignalsAggregatorImplTest, GetSignals_SingleSignal_Supported) {
   SignalsAggregationResponse response = future.Get();
   EXPECT_FALSE(response.top_level_error.has_value());
 
+  base::test::TestFuture<SignalsAggregationResponse> report_future;
+  aggregator_->GetSignals(std::move(report_request),
+                          report_future.GetCallback());
+
+  SignalsAggregationResponse report_response = report_future.Get();
+  EXPECT_FALSE(report_response.top_level_error.has_value());
+
   histogram_tester_.ExpectUniqueSample(
-      "Enterprise.DeviceSignals.Collection.SignalsCount", 1, 1);
+      "Enterprise.DeviceSignals.Collection.SignalsCount", 1, 2);
   histogram_tester_.ExpectUniqueSample(
-      "Enterprise.DeviceSignals.Collection.SignalsCount", 1, 1);
+      "Enterprise.DeviceSignals.Collection.Request", expected_signal_name, 2);
   histogram_tester_.ExpectUniqueSample(
-      "Enterprise.DeviceSignals.Collection.Request", expected_signal_name, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "Enterprise.DeviceSignals.UserPermission", UserPermission::kGranted, 1);
+      "Enterprise.DeviceSignals.UserPermission", UserPermission::kGranted, 2);
 }
 
 // Tests how the aggregator behaves when encountering user permission errors

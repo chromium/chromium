@@ -24,8 +24,9 @@ namespace device_signals {
 // Possible values for the trigger which generated the device signals.
 enum class Trigger {
   kUnspecified = 0,
-  kBrowserNavigation = 1,
-  kLoginScreen = 2,
+  kBrowserNavigation = 1,  // Ash only
+  kLoginScreen = 2,        // Ash only
+  kSignalsReport = 3,
 };
 
 // Enum of names representing signals bundles that can be aggregated via the
@@ -302,9 +303,13 @@ struct SignalsAggregationRequest {
 
   // Parameters required when requesting the collection of signals living on
   // the device's file system.
-  std::vector<GetFileSystemInfoOptions> file_system_signal_parameters{};
+  std::vector<GetFileSystemInfoOptions> file_system_signal_parameters;
 
-  std::vector<GetSettingsOptions> settings_signal_parameters{};
+  std::vector<GetSettingsOptions> settings_signal_parameters;
+
+  // Trigger source of the report, for non-ash platforms the default is
+  // `kUnspecified`.
+  Trigger trigger = Trigger::kUnspecified;
 };
 
 // Response from a signal collection request sent through the SignalsAggregator.

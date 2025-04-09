@@ -23,6 +23,7 @@ class MockUserPermissionService : public UserPermissionService {
               (const override));
 
   MOCK_METHOD(UserPermission, CanCollectSignals, (), (const override));
+  MOCK_METHOD(UserPermission, CanCollectReportSignals, (), (const override));
 };
 
 }  // namespace device_signals
