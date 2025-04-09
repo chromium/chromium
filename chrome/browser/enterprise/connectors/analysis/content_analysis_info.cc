@@ -5,7 +5,6 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 
 #include "components/enterprise/connectors/core/reporting_utils.h"
-#include "components/safe_browsing/core/common/features.h"
 
 namespace enterprise_connectors {
 
@@ -41,13 +40,6 @@ void ContentAnalysisInfo::InitializeRequest(
 
   for (const auto& tag : settings().tags) {
     request->add_tag(tag.first);
-  }
-
-  if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
-    for (const auto& ip_address :
-         enterprise_connectors::GetLocalIpAddresses()) {
-      request->add_local_ips(ip_address);
-    }
   }
 
   request->set_blocking(settings().block_until_verdict !=

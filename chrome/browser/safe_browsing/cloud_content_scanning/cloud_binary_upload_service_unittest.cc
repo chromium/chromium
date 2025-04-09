@@ -179,6 +179,8 @@ class CloudBinaryUploadServiceTest : public ::testing::Test {
     // Since we have mocked the MultipartUploadRequest, we don't need a
     // URLLoaderFactory, so pass nullptr here.
     service_ = std::make_unique<CloudBinaryUploadService>(nullptr, &profile_);
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kLocalIpAddressInEvents);
   }
   ~CloudBinaryUploadServiceTest() override {
     MultipartUploadRequest::RegisterFactoryForTests(nullptr);

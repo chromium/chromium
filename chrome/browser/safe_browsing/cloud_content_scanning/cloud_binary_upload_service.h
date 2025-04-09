@@ -108,6 +108,12 @@ class CloudBinaryUploadService : public BinaryUploadService {
   void OnGetAccessToken(Request::Id request_id,
                         const std::string& access_token);
 
+  // Set the local IP addresses in the request. This is performed in a separate
+  // callback to avoid blocking the UI thread and is only used for enterprise
+  // requests.
+  void OnIpAddressesFetched(Request::Id request_id,
+                            std::vector<std::string> ip_addresses);
+
   // Convenience callback method that calls both OnGetContentAnalysisResponse
   // and OnContentUploaded. Since the multipart uploader does not send separate
   // requests for metadata and content, it only needs one callback that finishes
