@@ -36,6 +36,7 @@ public class SigninAndHistorySyncBundleHelperTest {
                         .signinTitleId(1)
                         .signinSubtitleId(2)
                         .signinLogoId(3)
+                        .shouldDisableSignin(true)
                         .signinDismissTextId(4)
                         .historySyncTitleId(5)
                         .historySyncSubtitleId(6)

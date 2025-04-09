@@ -29,6 +29,7 @@ final class SigninAndHistorySyncBundleHelper {
     private static final String SIGNIN_CONFIG_SUBTITLE_ID = "Signin.SigninConfig.SubtitleId";
     private static final String SIGNIN_CONFIG_DISMISS_TEXT_ID = "Signin.SigninConfig.DismissTextId";
     private static final String SIGNIN_CONFIG_LOGO_ID = "Signin.SigninConfig.LogoId";
+    private static final String SIGNIN_CONFIG_DISABLE_SIGNIN = "Signin.SigninConfig.DisableSignin";
 
     // Fields of {@link HistorySyncConfig}.
     private static final String HISTORY_SYNC_CONFIG_TITLE_ID = "Signin.HistorySyncConfig.TitleId";
@@ -60,6 +61,7 @@ final class SigninAndHistorySyncBundleHelper {
         bundle.putInt(SIGNIN_CONFIG_SUBTITLE_ID, config.signinConfig.subtitleId);
         bundle.putInt(SIGNIN_CONFIG_DISMISS_TEXT_ID, config.signinConfig.dismissTextId);
         bundle.putInt(SIGNIN_CONFIG_LOGO_ID, config.signinConfig.logoId);
+        bundle.putBoolean(SIGNIN_CONFIG_DISABLE_SIGNIN, config.signinConfig.shouldDisableSignin);
         bundle.putInt(HISTORY_SYNC_CONFIG_TITLE_ID, config.historySyncConfig.titleId);
         bundle.putInt(HISTORY_SYNC_CONFIG_SUBTITLE_ID, config.historySyncConfig.subtitleId);
         bundle.putInt(HISTORY_OPT_IN_MODE, config.historyOptInMode);
@@ -74,6 +76,7 @@ final class SigninAndHistorySyncBundleHelper {
         builder.signinSubtitleId(bundle.getInt(SIGNIN_CONFIG_SUBTITLE_ID, 0));
         builder.signinDismissTextId(bundle.getInt(SIGNIN_CONFIG_DISMISS_TEXT_ID, 0));
         builder.signinLogoId(bundle.getInt(SIGNIN_CONFIG_LOGO_ID, 0));
+        builder.shouldDisableSignin(bundle.getBoolean(SIGNIN_CONFIG_DISABLE_SIGNIN, false));
         builder.historySyncTitleId(bundle.getInt(HISTORY_SYNC_CONFIG_TITLE_ID, 0));
         builder.historySyncSubtitleId(bundle.getInt(HISTORY_SYNC_CONFIG_SUBTITLE_ID, 0));
         builder.historyOptInMode(bundle.getInt(HISTORY_OPT_IN_MODE, 0));

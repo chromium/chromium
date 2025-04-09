@@ -18,14 +18,22 @@ public final class FullscreenSigninConfig {
     public final @StringRes int subtitleId;
     public final @StringRes int dismissTextId;
     public final @DrawableRes int logoId;
+    public final boolean shouldDisableSignin;
 
-    /** Constructor of FullscreenSigninConfig using default values. */
-    public FullscreenSigninConfig() {
+    /**
+     * Constructor of FullscreenSigninConfig using default values.
+     *
+     * @param shouldDisableSignin Whether the sign-in should always be disabled for sign-in flows
+     *     started by the caller. The sign-in screen will show a generic title and a continue
+     *     button.
+     */
+    public FullscreenSigninConfig(boolean shouldDisableSignin) {
         this(
                 /* titleId= */ R.string.signin_fre_title,
                 /* subtitleId= */ R.string.signin_fre_subtitle,
                 /* dismissTextId= */ R.string.signin_fre_dismiss_button,
-                /* logoId= */ 0);
+                /* logoId= */ 0,
+                /* shouldDisableSignin= */ shouldDisableSignin);
     }
 
     /**
@@ -36,16 +44,21 @@ public final class FullscreenSigninConfig {
      * @param dismissTextId the resource ID of the dismiss button string.
      * @param logoId the resource ID of the logo drawable. Can be set to 0 to use the default
      *     sign-in logo.
+     * @param shouldDisableSignin Whether the sign-in should always be disabled for sign-in flows
+     *     started by the caller. The sign-in screen will show a generic title and a continue
+     *     button.
      */
     public FullscreenSigninConfig(
             @StringRes int titleId,
             @StringRes int subtitleId,
             @StringRes int dismissTextId,
-            @DrawableRes int logoId) {
+            @DrawableRes int logoId,
+            boolean shouldDisableSignin) {
         this.titleId = titleId;
         this.subtitleId = subtitleId;
         this.dismissTextId = dismissTextId;
         this.logoId = logoId;
+        this.shouldDisableSignin = shouldDisableSignin;
     }
 
     @Override
@@ -58,11 +71,12 @@ public final class FullscreenSigninConfig {
         return titleId == other.titleId
                 && subtitleId == other.subtitleId
                 && dismissTextId == other.dismissTextId
-                && logoId == other.logoId;
+                && logoId == other.logoId
+                && shouldDisableSignin == other.shouldDisableSignin;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(titleId, subtitleId, dismissTextId, logoId);
+        return Objects.hash(titleId, subtitleId, dismissTextId, logoId, shouldDisableSignin);
     }
 }

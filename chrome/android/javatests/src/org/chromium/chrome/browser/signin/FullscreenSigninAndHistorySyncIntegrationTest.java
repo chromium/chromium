@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.signin;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
+import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -79,7 +80,6 @@ import org.chromium.components.signin.metrics.SyncButtonClicked;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.test.util.BlankUiTestActivity;
-import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -87,12 +87,7 @@ import org.chromium.ui.test.util.ViewUtils;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "This test relies on native initialization")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// The upgrade promo does not get displayed when Google Play Services are not available or on
-// Android Automotive.
-@Restriction({
-    DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
-    GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02
-})
+@Restriction({GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02})
 public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -579,7 +574,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @LargeTest
     @Policies.Add({@Policies.Item(key = "RandomPolicy", string = "true")})
-    public void testFragmentWhenSigninIsDisabledByPolicy() {
+    public void testSigninDisabledByPolicy() {
         HistogramWatcher policyLoadedHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.Timestamps.Android.Fullscreen.PoliciesLoaded");
@@ -590,6 +585,24 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         // Management notice shouldn't be shown in the upgrade promo.
         onView(withId(R.id.fre_browser_managed_by)).check(matches(not(isDisplayed())));
         policyLoadedHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testSigninDisabledByConfig() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        FullscreenSigninAndHistorySyncConfig config =
+                new FullscreenSigninAndHistorySyncConfig.Builder()
+                        .shouldDisableSignin(true)
+                        .build();
+
+        launchActivity(/* shouldReplaceProgressBars= */ true, config);
+
+        ViewUtils.waitForVisibleView(withText(R.string.continue_button));
+        onView(allOf(withId(R.id.title), withText(R.string.fre_welcome)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(R.id.subtitle))).check(matches(not(isDisplayed())));
+        onView(withText(TestAccounts.ACCOUNT1.getEmail())).check(doesNotExist());
     }
 
     @Test

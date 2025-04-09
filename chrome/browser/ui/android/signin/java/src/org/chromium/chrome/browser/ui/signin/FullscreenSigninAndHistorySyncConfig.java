@@ -31,6 +31,7 @@ public final class FullscreenSigninAndHistorySyncConfig {
         private @StringRes int mSigninSubtitleId = R.string.signin_fre_subtitle;
         private @StringRes int mSigninDismissTextId = R.string.signin_fre_dismiss_button;
         private @DrawableRes int mSigninLogoId;
+        private boolean mShouldDisableSignin;
         private @StringRes int mHistorySyncTitleId;
         private @StringRes int mHistorySyncSubtitleId;
         private @HistorySyncConfig.OptInMode int mHistoryOptInMode =
@@ -64,6 +65,12 @@ public final class FullscreenSigninAndHistorySyncConfig {
             return this;
         }
 
+        // Set whether sign-in should be disabled. See {@link FullscreenSigninConfig}
+        public Builder shouldDisableSignin(boolean shouldDisableSignin) {
+            mShouldDisableSignin = shouldDisableSignin;
+            return this;
+        }
+
         public Builder historySyncTitleId(@StringRes int historySyncTitleId) {
             assert historySyncTitleId != 0;
             mHistorySyncTitleId = historySyncTitleId;
@@ -87,7 +94,8 @@ public final class FullscreenSigninAndHistorySyncConfig {
                             /* titleId= */ mSigninTitleId,
                             /* subtitleId= */ mSigninSubtitleId,
                             /* dismissTextId= */ mSigninDismissTextId,
-                            /* logoId= */ mSigninLogoId);
+                            /* logoId= */ mSigninLogoId,
+                            /* shouldDisableSignin= */ mShouldDisableSignin);
             final HistorySyncConfig historySyncConfig =
                     new HistorySyncConfig(
                             /* titleId= */ mHistorySyncTitleId,
