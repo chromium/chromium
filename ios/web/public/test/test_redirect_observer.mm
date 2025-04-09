@@ -60,6 +60,4 @@ void TestRedirectObserver::WebStateDestroyed(web::WebState* web_state) {
   web_state->RemoveObserver(this);
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(TestRedirectObserver)
-
 }  // namespace web

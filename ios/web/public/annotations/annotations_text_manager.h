@@ -61,8 +61,6 @@ class AnnotationsTextManager : public WebStateUserData<AnnotationsTextManager> {
   // Sets the supported typed for the annotation extraction.
   virtual void SetSupportedTypes(NSTextCheckingType supported_types) = 0;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
  protected:
   ~AnnotationsTextManager() override = default;
 };

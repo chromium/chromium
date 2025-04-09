@@ -27,8 +27,6 @@ class FindInPageManager : public AbstractFindInPageManager,
   FindInPageManager(const FindInPageManager&) = delete;
   FindInPageManager& operator=(const FindInPageManager&) = delete;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
  protected:
   ~FindInPageManager() override = default;
 };

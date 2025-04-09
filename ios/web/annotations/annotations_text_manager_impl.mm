@@ -148,6 +148,4 @@ void AnnotationsTextManagerImpl::OnClick(WebState* web_state,
   }
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(AnnotationsTextManager)
-
 }  // namespace web
