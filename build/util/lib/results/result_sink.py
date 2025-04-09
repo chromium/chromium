@@ -209,11 +209,11 @@ class ResultSinkClient(object):
 
     Args:
       invocation: a dict representation of luci.resultsink.v1.Invocation proto
-      update_mask: a dict representation of google.protobuf.FieldMask proto
+      update_mask: a string representation of google.protobuf.FieldMask proto
     """
     req = {
         'invocation': invocation,
-        'update_mask': update_mask,
+        'updateMask': update_mask,
     }
     res = self.session.post(url=self.update_invocation_url,
                             data=json.dumps(req))
@@ -234,12 +234,24 @@ class ResultSinkClient(object):
         this is considered as deleting the key from the resultdb record side
         If None, the keys in "extended_properties" dict will be used.
     """
+    # Sink server by default decodes payload with protojson, i.e. codecJSONV2
+    # in https://source.chromium.org/search?q=f:server.go%20func:requestCodec
+    # which requires loweCamelCase names in the json request.
+    # For the value for update mask, see "JSON Encoding of Field Masks" in
+    # https://protobuf.dev/reference/protobuf/google.protobuf/#field-masks
+    invocation = {'extendedProperties': extended_properties}
     if not keys:
       keys = extended_properties.keys()
-    mask_paths = ['extended_properties.%s' % key for key in keys]
-    invocation = {'extended_properties': extended_properties}
-    update_mask = {'paths': mask_paths}
+    mask_paths = ['extendedProperties.%s' % _ToCamelCase(key) for key in keys]
+    update_mask = ','.join(mask_paths)
     self.UpdateInvocation(invocation, update_mask)
+
+
+def _ToCamelCase(s):
+  """Converts the string s from snake_case to lowerCamelCase."""
+
+  elems = s.split('_')
+  return elems[0] + ''.join(elem.capitalize() for elem in elems[1:])
 
 
 def _TruncateToUTF8Bytes(s, length):
