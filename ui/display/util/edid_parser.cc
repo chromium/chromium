@@ -210,7 +210,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   }
   // ICC filename is generated based on these ids. We always read this as big
   // endian so that the file name matches bytes 8-11 as they appear in EDID.
-  manufacturer_id_ = base::numerics::U16FromBigEndian(
+  manufacturer_id_ = base::U16FromBigEndian(
       base::span(edid).subspan<kManufacturerOffset, kManufacturerLength>());
 
   if (edid.size() < kProductIdOffset + kProductIdLength) {
@@ -225,7 +225,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   // used to produce display IDs and we need these to stay consistent. We'll
   // have to keep parsing it incorrectly until we migrate to EDID-based display
   // IDs. See also (googlers-only) http://b/193019614.
-  product_id_ = base::numerics::U16FromBigEndian(
+  product_id_ = base::U16FromBigEndian(
       base::span(edid).subspan<kProductIdOffset, kProductIdLength>());
 
   //   Bytes 12-15: display serial number, in little-endian (LSB). This field is
@@ -251,8 +251,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
                                   GetSerialNumberType(serial_number_bytes));
   }
 
-  const uint32_t serial_number =
-      base::numerics::U32FromLittleEndian(serial_number_bytes);
+  const uint32_t serial_number = base::U32FromLittleEndian(serial_number_bytes);
   if (serial_number) {
     block_zero_serial_number_hash_ =
         base::MD5String(base::NumberToString(serial_number));

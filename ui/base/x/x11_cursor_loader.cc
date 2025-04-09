@@ -618,8 +618,7 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
         !end.IsValid() || end.ValueOrDie() > src.size()) {
       return false;
     }
-    dest = base::numerics::U32FromLittleEndian(
-        src.subspan(offset).first<sizeof(dest)>());
+    dest = base::U32FromLittleEndian(src.subspan(offset).first<sizeof(dest)>());
     offset += sizeof(dest);
     return true;
   };
