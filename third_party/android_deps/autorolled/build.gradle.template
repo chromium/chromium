@@ -69,6 +69,8 @@ dependencies.constraints {
 dependencies {
     // Use testCompile to have is_robolectric = true set on targets.
     testCompileLatest "org.robolectric:robolectric:+"
+
+    compileLatest 'com.google.protobuf:protobuf-javalite:+'
 }
 
 task setUpRepository(type: BuildConfigGenerator) {
