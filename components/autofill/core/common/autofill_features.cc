@@ -460,6 +460,15 @@ BASE_FEATURE(kAutofillDetectFieldVisibility,
              "AutofillDetectFieldVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// LINT.IfChange(autofill_disallow_slash_dot_labels)
+// Kill switch that adds '/' and '.' to the list of characters of which a label
+// must not consist exclusively.
+// TODO(crbug.com/396325496): Clean up after after M138 branch (May 26, 2025).
+BASE_FEATURE(kAutofillDisallowSlashDotLabels,
+             "AutofillDisallowSlashDotLabels",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+// LINT.ThenChange(//components/autofill/ios/form_util/resources/autofill_form_features.ts:autofill_disallow_slash_dot_labels)
+
 // If enabled, new heuristics are applied for disambiguating multiple possible
 // types in a form field. Otherwise, only the already established heuristic for
 // disambiguating address and credit card names is used.

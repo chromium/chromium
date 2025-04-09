@@ -58,12 +58,13 @@ class AutofillFormInjectorTest : public PlatformTest {
 TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
   ScopedFeatureList features;
   features.InitWithFeatures(
-      /* enabled_features= */ {kAutofillIsolatedWorldForJavascriptIos,
-                               autofill::features::kAutofillAcrossIframesIos,
-                               autofill::features::
-                                   kAutofillAcrossIframesIosThrottling,
-                               kAutofillFixPaymentSheetSpam,
-                               kAutofillCorrectUserEditedBitInParsedField},
+      /* enabled_features= */
+      {kAutofillIsolatedWorldForJavascriptIos,
+       autofill::features::kAutofillAcrossIframesIos,
+       autofill::features::kAutofillAcrossIframesIosThrottling,
+       autofill::features::kAutofillDisallowSlashDotLabels,
+       kAutofillFixPaymentSheetSpam,
+       kAutofillCorrectUserEditedBitInParsedField},
       /* disabled_features= */ {});
 
   AutofillFormFeaturesInjector injector(&fake_web_state_,
@@ -81,6 +82,8 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
                     u"setAutofillAcrossIframes(true);",
                     u"__gCrWeb.autofill_form_features."
                     u"setAutofillAcrossIframesThrottling(true);",
+                    u"__gCrWeb.autofill_form_features."
+                    u"setAutofillDisallowSlashDotLabels(true);",
                     u"__gCrWeb.autofill_form_features."
                     u"setAutofillFixPaymentSheetSpam(true);",
                     u"__gCrWeb.autofill_form_features."
