@@ -1397,6 +1397,18 @@ BASE_FEATURE(kLCPTimingPredictorPrerender2,
              "LCPTimingPredictorPrerender2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(int,
+                   kLCPTimingPredictorSlidingWindowSize,
+                   &kLCPTimingPredictorPrerender2,
+                   "lcp_timing_predictor_sliding_window_size",
+                   1000);
+
+BASE_FEATURE_PARAM(int,
+                   kLCPTimingPredictorMaxHistogramBuckets,
+                   &kLCPTimingPredictorPrerender2,
+                   "lcp_timing_predictor_max_histogram_buckets",
+                   10);
+
 BASE_FEATURE(kLCPPAutoPreconnectLcpOrigin,
              "LCPPAutoPreconnectLcpOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);

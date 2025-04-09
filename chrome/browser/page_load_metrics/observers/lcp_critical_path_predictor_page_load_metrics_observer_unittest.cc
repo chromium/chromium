@@ -47,6 +47,16 @@ class PredictorInitializer : public TestObserver {
   raw_ptr<ResourcePrefetchPredictor> predictor_;
   base::RunLoop run_loop_;
 };
+
+std::optional<std::string>& GetLcpElementLocatorForCriticalPathPredictor(
+    LcppDataInputs& inputs) {
+  static const bool kCriticalPathPredictorImageOnly =
+      (blink::features::kLCPCriticalPathPredictorRecordedLcpElementTypes
+           .Get() == blink::features::LcppRecordedLcpElementTypes::kImageOnly);
+  return kCriticalPathPredictorImageOnly ? inputs.lcp_element_locator_image
+                                         : inputs.lcp_element_locator;
+}
+
 }  // namespace predictors
 
 class LcpCriticalPathPredictorPageLoadMetricsObserverTest
@@ -206,6 +216,7 @@ class LcpCriticalPathPredictorPageLoadMetricsObserverTest
     CHECK(predictor);
     predictors::LcppDataInputs lcpp_data_inputs;
     lcpp_data_inputs.lcp_element_locator = "lcp_previous";
+    lcpp_data_inputs.lcp_element_locator_image = "lcp_previous";
     predictor->LearnLcpp(/*initiator_origin=*/std::nullopt, main_frame_url,
                          lcpp_data_inputs);
 
@@ -410,7 +421,7 @@ TEST(MaybeReportConfidenceUMAsTest, ImageLoadingPriority) {
       stat.set_other_bucket_frequency(5);  // 50%
     }
     predictors::LcppDataInputs lcpp_data_inputs;
-    lcpp_data_inputs.lcp_element_locator = "#a";
+    GetLcpElementLocatorForCriticalPathPredictor(lcpp_data_inputs) = "#a";
     internal::MaybeReportConfidenceUMAsForTesting(
         GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
     // "#a" will an actual positive sample.
@@ -454,7 +465,7 @@ TEST(MaybeReportConfidenceUMAsTest, ImageLoadingPriority) {
       stat.set_other_bucket_frequency(5);
     }
     predictors::LcppDataInputs lcpp_data_inputs;
-    lcpp_data_inputs.lcp_element_locator = "#c";
+    GetLcpElementLocatorForCriticalPathPredictor(lcpp_data_inputs) = "#c";
     internal::MaybeReportConfidenceUMAsForTesting(
         GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
     // "#c" is an actual positive sample.
@@ -507,7 +518,7 @@ TEST(MaybeReportConfidenceUMAsTest, ImageLoadingPriority) {
       stat.set_other_bucket_frequency(0);
     }
     predictors::LcppDataInputs lcpp_data_inputs;
-    lcpp_data_inputs.lcp_element_locator = "#a";
+    GetLcpElementLocatorForCriticalPathPredictor(lcpp_data_inputs) = "#a";
     internal::MaybeReportConfidenceUMAsForTesting(
         GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
     int total_frequency = 1000;
@@ -567,7 +578,7 @@ TEST(MaybeReportConfidenceUMAsTest, ImageLoadingPriority) {
       stat.set_other_bucket_frequency(0);
     }
     predictors::LcppDataInputs lcpp_data_inputs;
-    lcpp_data_inputs.lcp_element_locator = "#b";
+    GetLcpElementLocatorForCriticalPathPredictor(lcpp_data_inputs) = "#b";
     internal::MaybeReportConfidenceUMAsForTesting(
         GURL("https://a.com"), lcpp_stat_prelearn, lcpp_data_inputs);
     // "#a" is an actual positive sample.

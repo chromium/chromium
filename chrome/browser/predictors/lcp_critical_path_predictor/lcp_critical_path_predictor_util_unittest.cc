@@ -1373,6 +1373,7 @@ class LcppDataMapTest : public testing::Test {
       const std::vector<GURL>& lcp_influencer_scripts = {}) {
     predictors::LcppDataInputs inputs;
     inputs.lcp_element_locator = lcp_element_locator;
+    inputs.lcp_element_locator_image = lcp_element_locator;
     inputs.lcp_influencer_scripts = lcp_influencer_scripts;
     return LearnLcpp(initiator_origin, url, inputs);
   }
@@ -1441,6 +1442,12 @@ class LcppDataMapTest : public testing::Test {
                                            ->add_lcp_element_locator_buckets();
     bucket.set_lcp_element_locator(lcp_element_locator);
     bucket.set_frequency(frequency);
+
+    LcpElementLocatorBucket& bucket_all =
+        *stat.mutable_lcp_element_locator_stat_all()
+             ->add_lcp_element_locator_buckets();
+    bucket_all.set_lcp_element_locator(lcp_element_locator);
+    bucket_all.set_frequency(frequency);
     return stat;
   }
 
@@ -1477,6 +1484,11 @@ class LcppDataMapFeatures
                    kSlidingWindowSize},
                   {blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets
                        .name,
+                   kMaxHistogramBuckets}}},
+                {blink::features::kLCPTimingPredictorPrerender2,
+                 {{blink::features::kLCPTimingPredictorSlidingWindowSize.name,
+                   kSlidingWindowSize},
+                  {blink::features::kLCPTimingPredictorMaxHistogramBuckets.name,
                    kMaxHistogramBuckets}}},
                 {blink::features::kLCPScriptObserver,
                  {{blink::features::kLCPScriptObserverSlidingWindowSize.name,
@@ -1557,6 +1569,7 @@ TEST_P(LcppDataMapFeatures, Base) {
 
   predictors::LcppDataInputs inputs;
   inputs.lcp_element_locator = "/#foo";
+  inputs.lcp_element_locator_image = "/#foo";
   GURL url = GURL("https://a.test");
   lcpp_data_map_->LearnLcpp(/*initiator_origin=*/std::nullopt, url, inputs);
 
@@ -1567,6 +1580,11 @@ TEST_P(LcppDataMapFeatures, Base) {
   InitializeLcpElementLocatorBucket(expected, "/#foo", 1);
   EXPECT_EQ(expected.lcpp_stat(), *stat) << *stat;
 }
+
+#define EXPECT_DATA_EQ(expected, actual)                   \
+  EXPECT_EQ(expected, actual) << "expected:\n"             \
+                              << expected << "\nactual:\n" \
+                              << actual;
 
 TEST_P(LcppDataMapFeatures, LearnLcpp) {
   LoadingPredictorConfig config;
@@ -1600,7 +1618,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
   {
     LcppData data = CreateLcppData("a.test", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 3);
-    EXPECT_EQ(data, GetDataMap().at("a.test"));
+    EXPECT_DATA_EQ(data, GetDataMap().at("a.test"));
     EXPECT_DOUBLE_EQ(3, SumOfElementLocatorFrequency(data));
   }
 
@@ -1611,7 +1629,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
     LcppData data = CreateLcppData("a.test", 10);
     InitializeLcpElementLocatorBucket(data, "/#a", 3);
     InitializeLcpElementLocatorBucket(data, "/#b", 2);
-    EXPECT_EQ(data, GetDataMap().at("a.test"));
+    EXPECT_DATA_EQ(data, GetDataMap().at("a.test"));
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
@@ -1621,7 +1639,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
     InitializeLcpElementLocatorBucket(data, "/#a", 2.4);
     InitializeLcpElementLocatorBucket(data, "/#b", 1.6);
     InitializeLcpElementLocatorOtherBucket(data, 1);
-    EXPECT_EQ(data, GetDataMap().at("a.test"));
+    EXPECT_DATA_EQ(data, GetDataMap().at("a.test"));
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
@@ -1631,7 +1649,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
     InitializeLcpElementLocatorBucket(data, "/#a", 1.92);
     InitializeLcpElementLocatorBucket(data, "/#b", 1.28);
     InitializeLcpElementLocatorOtherBucket(data, 1.8);
-    EXPECT_EQ(data, GetDataMap().at("a.test"));
+    EXPECT_DATA_EQ(data, GetDataMap().at("a.test"));
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
@@ -1644,7 +1662,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
     InitializeLcpElementLocatorBucket(data, "/#d", 1);
     InitializeLcpElementLocatorBucket(data, "/#c", 0.8);
     InitializeLcpElementLocatorOtherBucket(data, 3.2);
-    EXPECT_EQ(data, GetDataMap().at("a.test"));
+    EXPECT_DATA_EQ(data, GetDataMap().at("a.test"));
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
   }
 
@@ -1664,7 +1682,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
         {GURL("https://a.test/script1.js"), GURL("https://a.test/script2.js")},
         2);
     InitializeLcpInfluencerScriptUrlsOtherBucket(data, 0);
-    EXPECT_EQ(data, GetDataMap().at("a.test"));
+    EXPECT_DATA_EQ(data, GetDataMap().at("a.test"));
     EXPECT_DOUBLE_EQ(5, SumOfElementLocatorFrequency(data));
     EXPECT_DOUBLE_EQ(4, SumOfInfluencerUrlFrequency(data));
   }
@@ -1684,7 +1702,7 @@ TEST_P(LcppDataMapFeatures, LearnLcpp) {
     InitializeLcpInfluencerScriptUrlsBucket(
         data, {GURL("https://a.test/script4.js")}, 1);
     InitializeLcpInfluencerScriptUrlsOtherBucket(data, 3.2);
-    EXPECT_EQ(data, GetDataMap().at("a.test"));
+    EXPECT_DATA_EQ(data, GetDataMap().at("a.test"));
     EXPECT_DOUBLE_EQ(5, SumOfInfluencerUrlFrequency(data));
   }
 }

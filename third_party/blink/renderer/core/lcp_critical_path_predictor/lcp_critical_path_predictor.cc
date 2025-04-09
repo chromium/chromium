@@ -193,27 +193,16 @@ void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
       MayRunPredictedCallbacks(nullptr);
     }
 
-    features::LcppRecordedLcpElementTypes recordable_lcp_element_type =
-        features::kLCPCriticalPathPredictorRecordedLcpElementTypes.Get();
-    const bool is_image_element = IsA<HTMLImageElement>(lcp_element);
-    const bool is_recordable_type =
-        (recordable_lcp_element_type ==
-         features::LcppRecordedLcpElementTypes::kAll) ||
-        (recordable_lcp_element_type ==
-             features::LcppRecordedLcpElementTypes::kImageOnly &&
-         is_image_element);
-
     base::UmaHistogramCounts10000(
         "Blink.LCPP.LCPElementLocatorSize",
         base::checked_cast<int>(lcp_element_locator_string.size()));
     const bool is_recordable =
-        is_recordable_type &&
         (lcp_element_locator_string.size() <=
          features::kLCPCriticalPathPredictorMaxElementLocatorLength.Get());
     GetHost().OnLcpUpdated(mojom::blink::LcpElement::New(
         is_recordable ? std::optional<std::string>(lcp_element_locator_string)
                       : std::nullopt,
-        is_image_element,
+        IsA<HTMLImageElement>(lcp_element),
         predicted_lcp_index == kNotFound
             ? std::nullopt
             : std::optional<wtf_size_t>(predicted_lcp_index)));

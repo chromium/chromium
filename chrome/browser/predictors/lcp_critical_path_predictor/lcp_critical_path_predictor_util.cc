@@ -406,7 +406,7 @@ class LcppFrequencyStatDataUpdater {
  private:
   LcppFrequencyStatDataUpdater(int sliding_window_size,
                                int max_histogram_buckets,
-                               std::map<std::string, double> histogram,
+                               const std::map<std::string, double>& histogram,
                                double other_bucket_frequency)
       : sliding_window_size_(sliding_window_size),
         max_histogram_buckets_(max_histogram_buckets),
@@ -422,22 +422,40 @@ class LcppFrequencyStatDataUpdater {
   std::vector<std::string> dropped_entries_;
 };
 
-bool RecordLcpElementLocatorHistogram(int sliding_window_size,
-                                      int max_histogram_buckets,
-                                      const std::string& lcp_element_locator,
-                                      LcppStat& stat) {
-  if (lcp_element_locator.size() >
+bool UpdateLcpElementLocatorStat(
+    int sliding_window_size,
+    int max_histogram_buckets,
+    const std::optional<std::string>& lcp_element_locator,
+    LcpElementLocatorStat* lcp_element_locator_stat) {
+  if (!lcp_element_locator ||
+      lcp_element_locator->size() >
           ResourcePrefetchPredictorTables::kMaxStringLength ||
-      lcp_element_locator.empty()) {
+      lcp_element_locator->empty()) {
     return false;
   }
+
   LcppFrequencyStatDataUpdater updater =
       LcppFrequencyStatDataUpdater::FromLcpElementLocatorStat(
           sliding_window_size, max_histogram_buckets,
-          stat.lcp_element_locator_stat());
-  updater.Update(lcp_element_locator);
-  *stat.mutable_lcp_element_locator_stat() = updater.ToLcpElementLocatorStat();
+          *lcp_element_locator_stat);
+  updater.Update(*lcp_element_locator);
+  *lcp_element_locator_stat = updater.ToLcpElementLocatorStat();
   return true;
+}
+
+bool RecordLcpElementLocatorHistogram(const LcppDataInputs& inputs,
+                                      LcppStat& stat) {
+  bool updated = UpdateLcpElementLocatorStat(
+      blink::features::kLCPCriticalPathPredictorSlidingWindowSize.Get(),
+      blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get(),
+      GetLcpElementLocatorForCriticalPathPredictor(inputs),
+      stat.mutable_lcp_element_locator_stat());
+
+  updated |= UpdateLcpElementLocatorStat(
+      blink::features::kLCPTimingPredictorSlidingWindowSize.Get(),
+      blink::features::kLCPTimingPredictorMaxHistogramBuckets.Get(),
+      inputs.lcp_element_locator, stat.mutable_lcp_element_locator_stat_all());
+  return updated;
 }
 
 bool RecordLcpInfluencerScriptUrlsHistogram(
@@ -779,8 +797,9 @@ bool RecordLcpElementLocatorHistogramForTesting(  // IN-TEST
     int max_histogram_buckets,
     const std::string& lcp_element_locator,
     LcppStat& stat) {
-  return RecordLcpElementLocatorHistogram(
-      sliding_window_size, max_histogram_buckets, lcp_element_locator, stat);
+  return UpdateLcpElementLocatorStat(sliding_window_size, max_histogram_buckets,
+                                     lcp_element_locator,
+                                     stat.mutable_lcp_element_locator_stat());
 }
 
 std::optional<blink::mojom::LCPCriticalPathPredictorNavigationTimeHint>
@@ -1000,10 +1019,7 @@ LcppDataInputs::~LcppDataInputs() = default;
 bool UpdateLcppStatWithLcppDataInputs(const LcppDataInputs& inputs,
                                       LcppStat& stat) {
   bool data_updated = false;
-  data_updated |= RecordLcpElementLocatorHistogram(
-      blink::features::kLCPCriticalPathPredictorSlidingWindowSize.Get(),
-      blink::features::kLCPCriticalPathPredictorMaxHistogramBuckets.Get(),
-      inputs.lcp_element_locator, stat);
+  data_updated |= RecordLcpElementLocatorHistogram(inputs, stat);
   data_updated |= RecordLcpInfluencerScriptUrlsHistogram(
       blink::features::kLCPScriptObserverSlidingWindowSize.Get(),
       blink::features::kLCPScriptObserverMaxHistogramBuckets.Get(),
@@ -1174,6 +1190,15 @@ bool IsSameSite(const GURL& url1, const GURL& url2) {
          net::registry_controlled_domains::SameDomainOrHost(
              url1, url2,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+
+const std::optional<std::string>& GetLcpElementLocatorForCriticalPathPredictor(
+    const LcppDataInputs& inputs) {
+  static const bool kCriticalPathPredictorImageOnly =
+      (blink::features::kLCPCriticalPathPredictorRecordedLcpElementTypes
+           .Get() == blink::features::LcppRecordedLcpElementTypes::kImageOnly);
+  return kCriticalPathPredictorImageOnly ? inputs.lcp_element_locator_image
+                                         : inputs.lcp_element_locator;
 }
 
 LcppDataMap::LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,

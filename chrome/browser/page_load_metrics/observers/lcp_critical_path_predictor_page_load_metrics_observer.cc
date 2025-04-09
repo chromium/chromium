@@ -216,8 +216,10 @@ void MaybeReportConfidenceUMAs(
   const predictors::LcppStat& prelearn =
       lcpp_stat_prelearn ? *lcpp_stat_prelearn : predictors::LcppStat();
 
+  const auto& locator =
+      GetLcpElementLocatorForCriticalPathPredictor(lcpp_data_inputs);
   const std::string& actual_lcp_element_locator =
-      lcpp_data_inputs.lcp_element_locator;
+      locator ? *locator : std::string();
   if (!actual_lcp_element_locator.empty()) {
     const auto record_frequency_of_actual_positives = [](double frequency) {
       // The maximum count is defined by
@@ -767,6 +769,9 @@ void LcpCriticalPathPredictorPageLoadMetricsObserver::OnLcpUpdated(
       lcpp_data_inputs_.emplace();
     }
     lcpp_data_inputs_->lcp_element_locator = *lcp_element->locator;
+    if (lcp_element->is_image) {
+      lcpp_data_inputs_->lcp_element_locator_image = *lcp_element->locator;
+    }
   }
   is_lcp_element_image_ = lcp_element->is_image;
   predicted_lcp_indexes_.push_back(lcp_element->predicted_index);

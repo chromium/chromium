@@ -54,6 +54,15 @@ LcpCriticalPathPredictorPageLoadMetricsObserver* LCPCriticalPathPredictorHost::
 
 void LCPCriticalPathPredictorHost::OnLcpUpdated(
     blink::mojom::LcpElementPtr lcp_element) {
+  if (lcp_element->locator &&
+      lcp_element->locator->size() >
+          blink::features::kLCPCriticalPathPredictorMaxElementLocatorLength
+              .Get()) {
+    ReportBadMessageAndDeleteThis(
+        std::string("element_locator_string must be less than ") +
+        blink::features::kLCPCriticalPathPredictorMaxElementLocatorLength.name);
+    return;
+  }
   if (auto* plmo = GetLcpCriticalPathPredictorPageLoadMetricsObserver()) {
     plmo->OnLcpUpdated(std::move(lcp_element));
   }
