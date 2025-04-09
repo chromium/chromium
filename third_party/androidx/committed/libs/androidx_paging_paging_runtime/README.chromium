@@ -1,7 +1,7 @@
-Name: Grid Layout
-Short Name: gridlayout
-URL: https://developer.android.com/jetpack/androidx/releases/gridlayout#1.1.0
-Version: 1.1.0
+Name: Paging-Runtime
+Short Name: paging-runtime
+URL: https://developer.android.com/jetpack/androidx/releases/paging#3.4.0-SNAPSHOT
+Version: 3.4.0-SNAPSHOT
 License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
@@ -10,7 +10,7 @@ Shipped: yes
 License Android Compatible: yes
 
 Description:
-Android Support Grid Layout
+Android Paging-Runtime
 
 Local Modifications:
 No modifications.

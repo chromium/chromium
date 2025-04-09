@@ -176,7 +176,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_asynclayoutinflater_asynclayoutinflater_java") {
-    aar_path = "../androidx/cipd/libs/androidx_asynclayoutinflater_asynclayoutinflater/asynclayoutinflater-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_asynclayoutinflater_asynclayoutinflater/asynclayoutinflater-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_asynclayoutinflater_asynclayoutinflater/androidx_asynclayoutinflater_asynclayoutinflater.info"
     enable_bytecode_checks = false
     deps = [
@@ -189,7 +189,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_asynclayoutinflater_asynclayoutinflater_appcompat_java") {
-    aar_path = "../androidx/cipd/libs/androidx_asynclayoutinflater_asynclayoutinflater_appcompat/asynclayoutinflater-appcompat-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_asynclayoutinflater_asynclayoutinflater_appcompat/asynclayoutinflater-appcompat-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_asynclayoutinflater_asynclayoutinflater_appcompat/androidx_asynclayoutinflater_asynclayoutinflater_appcompat.info"
     enable_bytecode_checks = false
     deps = [
@@ -644,7 +644,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_dynamicanimation_dynamicanimation_java") {
-    aar_path = "../androidx/cipd/libs/androidx_dynamicanimation_dynamicanimation/dynamicanimation-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_dynamicanimation_dynamicanimation/dynamicanimation-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_dynamicanimation_dynamicanimation/androidx_dynamicanimation_dynamicanimation.info"
     enable_bytecode_checks = false
     deps = [
@@ -736,7 +736,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_gridlayout_gridlayout_java") {
-    aar_path = "../androidx/cipd/libs/androidx_gridlayout_gridlayout/gridlayout-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_gridlayout_gridlayout/gridlayout-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_gridlayout_gridlayout/androidx_gridlayout_gridlayout.info"
     enable_bytecode_checks = false
     deps = [
@@ -1070,6 +1070,29 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_java_group("androidx_navigation_navigation_runtime_java") {
     deps = [ ":androidx_navigation_navigation_runtime_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_paging_paging_compose_java") {
+    deps = [ ":androidx_paging_paging_compose_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_paging_paging_runtime_java") {
+    aar_path = "../androidx/cipd/libs/androidx_paging_paging_runtime/paging-runtime-3.4.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_paging_paging_runtime/androidx_paging_paging_runtime.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_core_core_ktx_java",
+      ":androidx_lifecycle_lifecycle_livedata_ktx_java",
+      ":androidx_lifecycle_lifecycle_runtime_ktx_java",
+      ":androidx_lifecycle_lifecycle_viewmodel_ktx_java",
+      ":androidx_paging_paging_common_java",
+      ":androidx_paging_paging_common_ktx_java",
+      ":androidx_recyclerview_recyclerview_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
@@ -2000,6 +2023,7 @@ if (!limit_android_deps) {
       ":androidx_annotation_annotation_java",
       ":androidx_collection_collection_java",
       ":androidx_compose_runtime_runtime_java",
+      ":androidx_savedstate_savedstate_compose_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
@@ -2635,6 +2659,27 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt(
+      "androidx_lifecycle_lifecycle_livedata_ktx_java") {
+    aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_livedata_ktx/lifecycle-livedata-ktx-2.9.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_livedata_ktx/androidx_lifecycle_lifecycle_livedata_ktx.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_lifecycle_lifecycle_livedata_core_ktx_java",
+      ":androidx_lifecycle_lifecycle_livedata_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_lifecycle_lifecycle_process_java") {
     aar_path = "../androidx/cipd/libs/androidx_lifecycle_lifecycle_process/lifecycle-process-2.9.0-SNAPSHOT.aar"
     info_path = "../androidx/committed/libs/androidx_lifecycle_lifecycle_process/androidx_lifecycle_lifecycle_process.info"
@@ -2971,6 +3016,74 @@ if (!limit_android_deps) {
       ":androidx_navigation_navigation_common_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_paging_paging_common_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_paging_paging_common_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_paging_paging_common_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_paging_paging_common_android/paging-common-android-3.4.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_paging_paging_common_android/androidx_paging_paging_common_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_arch_core_core_common_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_prebuilt("androidx_paging_paging_common_ktx_java") {
+    jar_path = "../androidx/cipd/libs/androidx_paging_paging_common_ktx/paging-common-ktx-3.4.0-SNAPSHOT.jar"
+    output_name = "androidx_paging_paging_common_ktx"
+    supports_android = true
+    requires_android = true
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_paging_paging_common_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_paging_paging_compose_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_paging_paging_compose_android/paging-compose-android-3.4.0-SNAPSHOT.aar"
+    info_path = "../androidx/committed/libs/androidx_paging_paging_compose_android/androidx_paging_paging_compose_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_compose_foundation_foundation_java",
+      ":androidx_compose_runtime_runtime_java",
+      ":androidx_paging_paging_common_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }
