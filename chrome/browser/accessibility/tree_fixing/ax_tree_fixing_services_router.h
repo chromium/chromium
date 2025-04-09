@@ -89,6 +89,7 @@ class AXTreeFixingServicesRouter
     void TryIdentifyMainNode();
     void OnMainNodeIdentified(const ui::AXTreeID& tree_id,
                               ui::AXNodeID node_id);
+    void OnHeadingsIdentified();
 
     uint32_t retry_attempts_ = 0;
     raw_ptr<AXTreeFixingServicesRouter> router_;

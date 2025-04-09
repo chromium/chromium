@@ -38,6 +38,12 @@ void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
     DocumentOnLoadCompletedInPrimaryMainFrame() {
   retry_attempts_ = 0;
   TryIdentifyMainNode();
+  router_->IdentifyHeadings(
+      web_contents()->RequestAXTreeSnapshotWithinBrowserProcess(),
+      web_contents(),
+      base::BindOnce(&AXTreeFixingServicesRouter::
+                         AXTreeFixingWebContentsObserver::OnHeadingsIdentified,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
@@ -68,6 +74,11 @@ void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
   retry_attempts_ = 0;
   web_contents()->ApplyAXTreeFixingResult(tree_id, node_id,
                                           ax::mojom::Role::kMain);
+}
+
+void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
+    OnHeadingsIdentified() {
+  // TODO: Apply headings to tree.
 }
 
 AXTreeFixingServicesRouter::AXTreeFixingServicesRouter(Profile* profile)
