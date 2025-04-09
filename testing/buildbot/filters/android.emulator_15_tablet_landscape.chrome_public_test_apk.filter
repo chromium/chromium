@@ -48,6 +48,7 @@
 
 # crbug.com/401321001
 -org.chromium.chrome.browser.safety_hub.SafetyHubTest.testSafeBrowsingLearnMoreLink_OpensInCct
+-org.chromium.chrome.browser.safety_hub.SafetyHubTest.testHelpCenterArticle
 
 # crbug.com/408282366
 -org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping
@@ -56,3 +57,9 @@
 
 # crbug.com/409145689
 -org.chromium.chrome.browser.settings.MainSettingsFragmentTest.testPlusAddressesEnabled
+
+# crbug.com/409579286
+-org.chromium.chrome.browser.video.VideoTest.testLoadMediaUrl
+
+# crbug.com/409581327
+-org.chromium.chrome.browser.webid.DigitalCredentialProviderTest.testRequestMDoc
