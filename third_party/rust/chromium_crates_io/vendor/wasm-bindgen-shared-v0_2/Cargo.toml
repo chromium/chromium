@@ -12,6 +12,9 @@
 name = "wasm-bindgen-shared"
 version = "0.2.100"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 
 [dependencies.unicode-ident]

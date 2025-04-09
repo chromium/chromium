@@ -12,6 +12,9 @@
 name = "icu_collator"
 version = "2.0.0-beta2"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "compiled_data" = []
 "datagen" = []

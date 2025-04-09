@@ -12,6 +12,9 @@
 name = "{{this.name}}"
 version = "{{this.version}}"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 {{#each this.features}}
 "{{this}}" = []

@@ -12,6 +12,9 @@
 name = "link-cplusplus"
 version = "1.0.10"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "default" = []
 "libc++" = []

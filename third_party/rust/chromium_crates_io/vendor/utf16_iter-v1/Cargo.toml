@@ -12,5 +12,8 @@
 name = "utf16_iter"
 version = "1.0.5"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 

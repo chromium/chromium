@@ -12,6 +12,9 @@
 name = "icu_datetime_data"
 version = "2.0.0-beta2"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 
 [dependencies.icu_locale]

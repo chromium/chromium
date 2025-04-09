@@ -12,6 +12,9 @@
 name = "zerocopy-derive"
 version = "0.8.24"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 
 [dependencies.proc-macro2]

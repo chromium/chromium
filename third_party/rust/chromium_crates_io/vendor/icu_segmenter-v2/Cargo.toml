@@ -12,6 +12,9 @@
 name = "icu_segmenter"
 version = "2.0.0-beta2"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "auto" = []
 "compiled_data" = []

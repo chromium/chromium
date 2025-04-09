@@ -12,8 +12,9 @@ use crate::inherit::{
 use crate::paths::{self, get_vendor_dir_for_package};
 use crate::readme;
 use crate::util::{
-    create_dirs_if_needed, get_guppy_package_graph, init_handlebars, remove_checksums_from_lock,
-    run_command, without_cargo_config_toml,
+    create_dirs_if_needed, get_guppy_package_graph, init_handlebars,
+    init_handlebars_with_template_path, remove_checksums_from_lock, run_command,
+    without_cargo_config_toml,
 };
 use crate::vet::create_vet_config;
 use crate::VendorCommandArgs;
@@ -98,30 +99,46 @@ fn download_crates(args: &VendorCommandArgs, paths: &paths::ChromiumPaths) -> Re
             continue;
         }
 
-        let crate_dir = get_vendor_dir_for_package(p.name(), p.version());
+        // In theory we could use a different `crate_dir` for placeholders (e.g.
+        // `some-crate-v1-placeholder` rather than `some-crate-v1`), but always using
+        // the same name simplifies other tooling (e.g. how
+        // `create_update_cl.py` calculates the vendored directory).
+        let crate_dirname = get_vendor_dir_for_package(p.name(), p.version());
+        let crate_path = {
+            let vendor_dir = paths.third_party_cargo_root.join("vendor");
+            vendor_dir.join(&crate_dirname)
+        };
 
         // Keep directories corresponding to packages from the dependency tree.
-        dirs_to_remove.remove(&crate_dir);
+        dirs_to_remove.remove(&crate_dirname);
 
-        let is_already_vendored = get_package_id_from_vendored_dir(&vendor_dir.join(&crate_dir))
-            .filter(|vendored| vendored.name() == p.name() && vendored.version() == p.version())
-            .is_some();
-        if is_already_vendored {
+        let is_already_right_version =
+            get_package_id_from_vendored_dir(&crate_path).is_some_and(|vendored| {
+                let expected_name = p.name();
+                let expected_version = p.version();
+                vendored.name() == expected_name && vendored.version() == expected_version
+            });
+        let is_already_right_placeholder_status = {
+            let expecting_placeholder = is_removed(p.id());
+            let vendored_is_placeholder = is_placeholder_crate(&crate_path);
+            expecting_placeholder == vendored_is_placeholder
+        };
+        if is_already_right_version && is_already_right_placeholder_status {
             continue;
         }
 
         if is_removed(p.id()) {
-            println!("Generating placeholder for removed crate {}", &crate_dir);
-            generate_placeholder_crate(p, paths, &config)?;
+            println!("Generating placeholder for removed crate {}", &crate_dirname);
+            generate_placeholder_crate(p, &crate_path)?;
         } else {
-            println!("Downloading {}", &crate_dir);
+            println!("Downloading {}", &crate_dirname);
             download_crate(p.name(), p.version(), paths)?;
             let skip_patches = match &args.no_patches {
                 Some(v) => v.is_empty() || v.iter().any(|x| *x == p.name()),
                 None => false,
             };
             if skip_patches {
-                log::warn!("Skipped applying patches for {}", &crate_dir);
+                log::warn!("Skipped applying patches for {}", &crate_dirname);
             } else {
                 apply_patches(p.name(), p.version(), paths)?
             }
@@ -143,9 +160,11 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
     // no parent.
     let third_party_dir = paths.third_party_config_file.parent().unwrap();
     let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
-    let readme_handlebars = init_handlebars(&readme_template_path).context("init_handlebars")?;
+    let readme_handlebars = init_handlebars_with_template_path(&readme_template_path)
+        .context("init_handlebars for `README.chromium`")?;
     let vet_template_path = third_party_dir.join(&config.vet_config.config_template);
-    let vet_handlebars = init_handlebars(&vet_template_path).context("init_handlebars")?;
+    let vet_handlebars = init_handlebars_with_template_path(&vet_template_path)
+        .context("init_handlebars for `supply-chain/config.toml`")?;
 
     // Fetch the package graph again based on the locally vendored crates, to ensure
     // that locally applied patches which impact the package graph are considered.
@@ -452,28 +471,17 @@ fn get_placeholder_crate_metadata<'a>(
 
 fn generate_placeholder_crate(
     package: guppy::graph::PackageMetadata<'_>,
-    paths: &paths::ChromiumPaths,
-    config: &config::BuildConfig,
+    crate_dir: &Path,
 ) -> Result<()> {
-    let removed_cargo_template_path = paths
-        .third_party_config_file
-        .parent()
-        .unwrap()
-        .join(&config.gn_config.removed_cargo_template);
-    let removed_cargo_template =
-        init_handlebars(&removed_cargo_template_path).context("loading removed_cargo_template")?;
-    let removed_librs_template_path = paths
-        .third_party_config_file
-        .parent()
-        .unwrap()
-        .join(&config.gn_config.removed_librs_template);
-    let removed_librs_template =
-        init_handlebars(&removed_librs_template_path).context("loading removed_librs_template")?;
+    const CARGO_TOML_TEMPLATE: &str = "template name: Cargo.toml";
+    const LIB_RS_TEMPLATE: &str = "template name: lib.rs.hbs";
+    let mut handlebars = init_handlebars();
+    handlebars
+        .register_template_string(CARGO_TOML_TEMPLATE, include_str!("removed_Cargo.toml.hbs"))?;
+    handlebars.register_template_string(LIB_RS_TEMPLATE, include_str!("removed_lib.rs.hbs"))?;
 
-    let vendor_dir = paths.third_party_cargo_root.join("vendor");
-    let crate_dir = vendor_dir.join(get_vendor_dir_for_package(package.name(), package.version()));
-    create_dirs_if_needed(&crate_dir).context("creating crate dir")?;
-    for x in std::fs::read_dir(&crate_dir)? {
+    create_dirs_if_needed(crate_dir).context("creating crate dir")?;
+    for x in std::fs::read_dir(crate_dir)? {
         let entry = x?;
         if entry.metadata()?.is_dir() {
             std::fs::remove_dir_all(entry.path())
@@ -487,7 +495,7 @@ fn generate_placeholder_crate(
     let placeholder_crate = get_placeholder_crate_metadata(package);
 
     {
-        let rendered = removed_cargo_template.render("template", &placeholder_crate)?;
+        let rendered = handlebars.render(CARGO_TOML_TEMPLATE, &placeholder_crate)?;
         let file_path = crate_dir.join("Cargo.toml");
         let file = std::fs::File::create(&file_path).with_context(|| {
             format!("Could not create Cargo.toml output file {}", file_path.to_string_lossy())
@@ -499,7 +507,7 @@ fn generate_placeholder_crate(
 
     create_dirs_if_needed(&crate_dir.join("src")).context("creating src dir")?;
     {
-        let rendered = removed_librs_template.render("template", &placeholder_crate)?;
+        let rendered = handlebars.render(LIB_RS_TEMPLATE, &placeholder_crate)?;
         let file_path = crate_dir.join("src").join("lib.rs");
         let file = std::fs::File::create(&file_path).with_context(|| {
             format!("Could not create lib.rs output file {}", file_path.to_string_lossy())
@@ -515,56 +523,79 @@ fn generate_placeholder_crate(
     Ok(())
 }
 
+fn parse_cargo_toml_file(file: &Path) -> Result<toml::Table> {
+    // Using manual, non-strongly-typed TOML parsing (instead of going through
+    // `cargo metadata` or `guppy`) to work even if `Cargo.lock` is absent
+    // (in this situation `cargo --locked --offline` would complain).
+    let file_contents = std::fs::read_to_string(file)?;
+    let toml_table = file_contents.parse::<toml::value::Table>()?;
+    Ok(toml_table)
+}
+
 /// Parses `dir/Cargo.toml` to extract package name and version.
 ///
 /// This is intended to be used during the vendoring process, to determine
 /// if an existing `third_party/rust/chromium_crates_io/vendor/foo` directory
 /// contains an up-to-date version of a crate.
 fn get_package_id_from_vendored_dir(dir: &Path) -> Option<deps::PackageId> {
-    // Using manual, non-strongly-typed TOML parsing (instead of going through
-    // `cargo metadata` or `guppy`) to work even if `Cargo.lock` is absent
-    // (in this situation `cargo --locked --offline` would complain).
-    let file_contents = std::fs::read_to_string(dir.join("Cargo.toml")).ok()?;
-    let toml = file_contents.parse::<toml::value::Table>().ok()?;
+    let toml = parse_cargo_toml_file(&dir.join("Cargo.toml")).ok()?;
     let package = toml.get("package")?.as_table()?;
     let name = package.get("name")?.as_str()?;
     let version = package.get("version")?.as_str()?.parse().ok()?;
     Some(deps::PackageId::new(name.to_string(), version))
 }
 
+/// Checks if `dir` contains a "placeholder" crate (one crated by `fn
+/// generate_placeholder_crate`).
+fn is_placeholder_crate(dir: &Path) -> bool {
+    fn try_is_placeholder_crate(dir: &Path) -> Option<bool> {
+        let toml = parse_cargo_toml_file(&dir.join("Cargo.toml")).ok()?;
+        let package = toml.get("package")?.as_table()?;
+        let metadata = package.get("metadata")?.as_table()?;
+        let gnrt_metadata = metadata.get("gnrt")?.as_table()?;
+        gnrt_metadata.get("is_placeholder")?.as_bool()
+    }
+    try_is_placeholder_crate(dir).unwrap_or(false)
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
 
+    use anyhow::anyhow;
     use semver::Version;
     use tempfile::TempDir;
 
+    fn write_placeholder_crate_for_tests(
+        cargo_metadata: &str,
+        package_name: &str,
+        path: &Path,
+    ) -> Result<()> {
+        let graph = guppy::CargoMetadata::parse_json(cargo_metadata)?.build_graph()?;
+        let package = graph
+            .resolve_package_name(package_name)
+            .packages(guppy::graph::DependencyDirection::Forward)
+            .exactly_one()
+            .map_err(|_err| anyhow!("Expected exactly 1 package named `{package_name}`"))?;
+        generate_placeholder_crate(package, path)
+    }
+
     #[test]
-    fn test_get_package_id_from_vendored_dir_for_happy_case() {
-        // Create a dir with only `Cargo.toml` and `src/lib.rs`, because these are the
-        // only files that exist in "placeholder" crates (ones that `gnrt`
-        // conjures to replace crates trimmed from the dependency tree).
-        let crate_dir = TempDir::with_prefix("gnrt_unittests").unwrap();
-        std::fs::write(
-            crate_dir.path().join("Cargo.toml"),
-            r#"
-            [package]
-            name = "some_package"
-            version = "1.2.3"
-        "#,
-        )
-        .unwrap();
-        let src_dir = crate_dir.path().join("src");
-        std::fs::create_dir(&src_dir).unwrap();
-        std::fs::write(src_dir.join("lib.rs"), "").unwrap();
+    fn test_placeholder_crate_detection() {
+        let temp_dir = TempDir::with_prefix("gnrt_unittests").unwrap();
+        let crate_dir = temp_dir.path();
+        assert!(!is_placeholder_crate(crate_dir));
+
+        write_placeholder_crate_for_tests(SAMPLE_CARGO_METADATA2, "quote", crate_dir).unwrap();
 
         // Check that `get_package_id_from_vendored_dir` can detect the crate name and
-        // version.
-        let Some(package_id) = get_package_id_from_vendored_dir(crate_dir.path()) else {
+        // version and that `is_placeholder_crate` returns true now.
+        assert!(is_placeholder_crate(crate_dir));
+        let Some(package_id) = get_package_id_from_vendored_dir(crate_dir) else {
             panic!("`None` returned from get_package_id_from_vendored_dir");
         };
-        assert_eq!(package_id.name(), "some_package");
-        assert_eq!(*package_id.version(), Version::new(1, 2, 3));
+        assert_eq!(package_id.name(), "quote");
+        assert_eq!(*package_id.version(), Version::new(1, 0, 39));
     }
 
     #[test]

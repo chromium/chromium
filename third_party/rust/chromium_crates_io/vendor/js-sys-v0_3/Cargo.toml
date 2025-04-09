@@ -12,6 +12,9 @@
 name = "js-sys"
 version = "0.3.77"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "default" = []
 "std" = []

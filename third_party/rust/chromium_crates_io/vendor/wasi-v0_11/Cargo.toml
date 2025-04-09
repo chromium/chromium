@@ -12,6 +12,9 @@
 name = "wasi"
 version = "0.11.0+wasi-snapshot-preview1"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "compiler_builtins" = []
 "core" = []

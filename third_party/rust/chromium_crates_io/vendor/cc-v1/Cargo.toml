@@ -12,6 +12,9 @@
 name = "cc"
 version = "1.2.18"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "jobserver" = []
 "parallel" = []

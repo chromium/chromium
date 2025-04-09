@@ -9,7 +9,7 @@ use crate::gn;
 use crate::paths;
 use crate::util::{
     check_exit_ok, check_spawn, check_wait_with_output, create_dirs_if_needed,
-    get_guppy_package_graph, init_handlebars,
+    get_guppy_package_graph, init_handlebars_with_template_path,
 };
 use crate::GenCommandArgs;
 
@@ -36,7 +36,7 @@ fn generate_for_std(args: GenCommandArgs, paths: &paths::ChromiumPaths) -> Resul
     let template_path =
         paths.std_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
 
-    let handlebars = init_handlebars(&template_path)?;
+    let handlebars = init_handlebars_with_template_path(&template_path)?;
 
     // The Rust source tree, containing the standard library and vendored
     // dependencies.
@@ -211,7 +211,7 @@ fn generate_for_third_party(args: GenCommandArgs, paths: &paths::ChromiumPaths) 
 
     let template_path =
         paths.third_party_config_file.parent().unwrap().join(&config.gn_config.build_file_template);
-    let handlebars = init_handlebars(&template_path)?;
+    let handlebars = init_handlebars_with_template_path(&template_path)?;
 
     println!("Generating third-party GN rules from {}", paths.third_party_cargo_root.display());
 

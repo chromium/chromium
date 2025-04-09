@@ -155,17 +155,23 @@ pub fn remove_checksums_from_lock(cargo_root: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn init_handlebars(template_path: &Path) -> Result<handlebars::Handlebars> {
+pub fn init_handlebars<'reg>() -> handlebars::Handlebars<'reg> {
     let mut handlebars = handlebars::Handlebars::new();
 
     // Don't escape output strings; the default is to escape for HTML output. Do
     // not auto-escape for GN either, so that non-string GN may also be passed.
     handlebars.register_escape_fn(handlebars::no_escape);
-    handlebars.register_template_file("template", template_path).context("loading gn template")?;
 
     // Install helper to escape inputs pasted in GN `".."` strings.
     handlebars_helper!(gn_escape: |x: String| escape_for_handlebars(&x));
     handlebars.register_helper("gn_escape", Box::new(gn_escape));
+
+    handlebars
+}
+
+pub fn init_handlebars_with_template_path(template_path: &Path) -> Result<handlebars::Handlebars> {
+    let mut handlebars = init_handlebars();
+    handlebars.register_template_file("template", template_path).context("loading gn template")?;
     Ok(handlebars)
 }
 

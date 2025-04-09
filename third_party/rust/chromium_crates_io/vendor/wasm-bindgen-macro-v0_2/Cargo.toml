@@ -12,6 +12,9 @@
 name = "wasm-bindgen-macro"
 version = "0.2.100"
 
+[package.metadata.gnrt]
+is_placeholder = true
+
 [features]
 "strict-macro" = []
 "xxx_debug_only_print_generated_code" = []
