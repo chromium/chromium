@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">ການພັດທະນາທີ່ດິນ</translation>
 <translation id="1824402189105105503">ມ້ວນທີແປດ</translation>
 <translation id="1826516787628120939">ກໍາລັງກວດເບິ່ງ</translation>
+<translation id="1832730227369924598">ການຊິ້ງເດັສ</translation>
 <translation id="1834452765064623979">ການກໍ່ສ້າງ ແລະ ການບໍາລຸງຮັກສາ</translation>
 <translation id="1838374766361614909">ລຶບ​ການ​ຊອກ​ຫາ</translation>
 <translation id="1839331950812095887">ສອງສາມຄຳທີ່ສະຫຼຸບຄວາມຄິດຂອງທ່ານ</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">ເກົ່າ</translation>
 <translation id="2413528052993050574">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນອາດຈະຖືກຖອນຄືນແລ້ວ. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="2414886740292270097">ມືດ</translation>
+<translation id="2418292431699242678">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເປີດໃຊ້ການຊິ້ງຕໍ່ໄປນີ້ລະຫວ່າງເຊດຊັນກ່ອນໜ້າ ແລະ ປັດຈຸບັນຂອງທ່ານໃນອຸປະກອນ ChromeOS ໃດໆດັ່ງນີ້:</translation>
 <translation id="2429716554270894715">ຜ້າ (ກັນນ້ຳ)</translation>
 <translation id="2436186046335138073">ອະນຸຍາດໃຫ້ <ph name="HANDLER_HOSTNAME" /> ເປີດທຸກລິ້ງ <ph name="PROTOCOL" /> ບໍ?</translation>
 <translation id="2436976580469434549">ສິນລະປະຜ້າແພ ແລະ ເສັ້ນໃຍ</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">ກຳລັງຕິດຕາມລາຄາ</translation>
 <translation id="3037605927509011580">ອ່າ, ຖ່າຍຮູບ!</translation>
 <translation id="3039406992698062762">ການທ່ອງທ່ຽວແບບຄອບຄົວ</translation>
+<translation id="3040636468789770340">ຄຸກກີ້ (ສະຖານະທີ່ເຂົ້າສູ່ລະບົບຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຫຼ້າສຸດ)</translation>
 <translation id="3041176923638368519">ເບິ່ງຂໍ້ກຳນົດສິດທິປະໂຫຍດບັດ</translation>
 <translation id="3041612393474885105">ຂໍ້ມູນໃບຢັ້ງຢືນ</translation>
 <translation id="3045769629416806687">ກິລາຜາດໂຜນ</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">ໄຟລ໌ໃນເຄື່ອງຂອງທ່ານຈະຖືກລຶບໃນ <ph name="MINUTES" /> ນາທີ</translation>
 <translation id="3872834068356954457">ວິທະຍາສາດ</translation>
 <translation id="3875783148670536197">ສະແດງວິທີໃຫ້ຂ້ອຍເບິ່ງ</translation>
+<translation id="387681220560687945">ໜ້າຈໍ (ການຈັດຮຽງ ແລະ ການຈັດລະບຽບໜ້າຈໍ ແລະ ແຖບ)</translation>
 <translation id="3879748587602334249">ຕົວຈັດການການດາວໂຫລດ</translation>
 <translation id="3880456882942693779">ສິນລະປະ ແລະ ຄວາມບັນເທີງ</translation>
 <translation id="3880589673277376494">ອິນເຕີເນັດ ແລະ ໂທລະຄົມມະນາຄົມ</translation>
@@ -4747,6 +4751,7 @@
 <translation id="950736567201356821">ເຈາະຮູຢູ່ເທິງສຸດສາມຮູ</translation>
 <translation id="950926967802086924">ກະແຈຜ່ານ • ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="955429569736351433">ອະນຸຍາດ VR</translation>
+<translation id="955627189349169688">ທ່ານສາມາດເລືອກບໍ່ຮັບນະໂຍບາຍນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າ Chrome Sync<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">ສີເຫຼືອງທີ 2</translation>
 <translation id="961663415146723894">ຫຍິບເຫຼັ້ມລຸ່ມສຸດ</translation>
 <translation id="961856697154696964">ລຶບຂໍ້ມູນການທ່ອງເວັບ</translation>

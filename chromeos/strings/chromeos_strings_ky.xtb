@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">серепчинин башкы бети</translation>
 <translation id="1526389707933164996">Көшөгө анимациясы</translation>
 <translation id="152892567002884378">Катуулатуу</translation>
-<translation id="1531038290222364269">Өтмөктөрдү көрсөтүү</translation>
 <translation id="1539864135338521185">лазурит</translation>
 <translation id="1548555207631326346">Тема тандап, асты сызылган сөздөрдүн жардамы менен ЖИ түзгөн сүрөттөрдү жекелештириңиз.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Аракеттер уруксат берилген чегинен ашты.</translation>
 <translation id="1908234395526491708">Ишке ашпай калган UDP сурамдары</translation>
 <translation id="1908394185991500139">солго жебе</translation>
-<translation id="1911678930322867245">Жогорку оң бурчка жылдыруу</translation>
 <translation id="1914144885717544695">жумада</translation>
 <translation id="1915960750806557358">Пикириңизди бөлүшүп же көйгөйдү сүрөттөп бериңиз. Жеке же купуя нерсени кошпоңуз.</translation>
 <translation id="1923388006036088459">Негизги түстөр</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Автоматтык түрдө тандалган мыкты сүрөттөрүңүз</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">опал</translation>
+<translation id="2501278716633472235">Артка кайтуу</translation>
 <translation id="2505327257735685095">Тушкагаздын учурдагы сүрөтүн жаңыртуу</translation>
 <translation id="2507491234071975894">Динамик</translation>
 <translation id="2512979179176933762">терезелерди көрсөтүү</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Болжолдуу натыйжа үчүн <ph name="CATEGORY_TEXT" /> маанисин төмөнкүгө көбөйтүңүз: <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Бөлүү</translation>
 <translation id="4972592110715526173">режимди өзгөртүү</translation>
+<translation id="497421865427891073">Алга</translation>
 <translation id="4981003703840817201">көк жана кызгылтым</translation>
 <translation id="498186245079027698">Сканерди текшерип, кайталап көрүңүз. Скандалган файлдарды сактоо үчүн орун жетиштүү экенин текшериңиз.</translation>
 <translation id="4982627662315910959">Ыкчам баскыч жеткиликсиз. Shift жана дагы 1 өзгөртүүчү баскыч (ctrl, alt же <ph name="META_KEY" />) бар жаңы ыкчам баскычты басыңыз.</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Ойнотуу</translation>
 <translation id="5901630391730855834">Сары</translation>
 <translation id="5903200662178656908">Түзмөк баскычтоп менен чычкандан турат.</translation>
-<translation id="5903822368221507416">Өтмөктөрдү жашыруу</translation>
 <translation id="5904994456462260490">Жаңы APN'ди кошуу</translation>
 <translation id="590746845088109442">мышыктар</translation>
 <translation id="5907649332524363701">баскычтын түсү</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Тармактын APN параметрлерин тескеңиз. APN'дер мобилдик тармак менен Интернеттин ортосундагы байланышты түзүшөт. <ph name="BEGIN_LINK_LEARN_MORE" />Кеңири маалымат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Тышкы түзмөктөр үчүн орнотулган программанын жаңыртуулары</translation>
 <translation id="7216409898977639127">Интернет провайдери</translation>
+<translation id="7221869452894271364">Бул бетти кайра жүктөө</translation>
 <translation id="7223952304612664117">Бул системдик кызматтарга Жайгашкан жерди так аныктоо параметри аркылуу жүргөн жериңизди аныктоо мүмкүнчүлүгүн берет. Жайгашкан жерди так аныктоо түзмөктүн турган жерин болжолдоо үчүн зымсыз сигналдар жана сенсорлор тууралуу маалыматты колдонот.</translation>
 <translation id="7233782086689993269">Ыкчам баскыч калыбына келтирилди</translation>
 <translation id="723419678599947502">Аталышты Google ЖИнин жардамы менен түзүү</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">Сүрөттөр жок</translation>
 <translation id="8319809980370328428">Жаздыруу корутундусу жана аталыш түзүү</translation>
 <translation id="8320910311642849813">токой</translation>
-<translation id="8322464149031882595">Алдыга өтүү үчүн чыкылдатыңыз</translation>
 <translation id="8329018942023753850">эсептегич колдонмосу</translation>
 <translation id="8336739000755212683">Түзмөктөгү аккаунттун сүрөтүн өзгөртүү</translation>
 <translation id="8339024191194156249">Автоматтык түрдө иштетүү тууралуу кеңири маалымат</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайкана</translation>
 <translation id="8538236298648811558">Google сунуштаган ЖИ технологиялары</translation>
-<translation id="8543574988889671960">Өтмөктү кайрадан жүктөө</translation>
 <translation id="8550364285433943656">Баскычтоп баскычтары менен ойноо үчүн оюн аракеттерине башкаруу элементтерин коюңуз</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Генеративдик жасалма интеллект адамдар, ошондой эле башка нерселер тууралуу так эмес маалыматты көрсөтүшү мүмкүн, андыктан анын жоопторун эки жолу текшериңиз.</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">Кыстармалар</translation>
 <translation id="8833620912470026819">кактус токою</translation>
 <translation id="8834539327799336565">Учурда туташып турган түзмөктөр</translation>
-<translation id="8842526499753992487">Жогорку сол бурчка жылдыруу</translation>
 <translation id="8845001906332463065">Жардам алуу</translation>
 <translation id="8849799913685544685">маяк</translation>
 <translation id="8851859208664803097">Токтоду – Принтер жеткиликсиз</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">пингвиндер</translation>
 <translation id="8968751544471797276">Батареянын кубатталышы көрсөткүчү</translation>
 <translation id="8970109610781093811">Кайра сыноо</translation>
-<translation id="8972061581514441296">Кайтуу үчүн басыңыз</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скандоо}=1{{NUMBER_OF_PAGES} бетти скандоо}other{{NUMBER_OF_PAGES} бетти скандоо}}</translation>
 <translation id="89945434909472341">айыл</translation>

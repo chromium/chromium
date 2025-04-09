@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">blaaiertuis</translation>
 <translation id="1526389707933164996">Sluimerskerm-animasie</translation>
 <translation id="152892567002884378">Volume harder</translation>
-<translation id="1531038290222364269">Wys oortjies</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1548555207631326346">Kies ’n tema en kies dan die onderstreepte woorde om jou KI-prente te personaliseer.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Maksimum toegelate pogings is oorskry.</translation>
 <translation id="1908234395526491708">Mislukte UDP-versoeke</translation>
 <translation id="1908394185991500139">pyl links</translation>
-<translation id="1911678930322867245">Skuif na regs bo</translation>
 <translation id="1914144885717544695">op Vrydag</translation>
 <translation id="1915960750806557358">Deel jou terugvoer of beskryf jou kwessie. Maak seker dat jy niks persoonlik, sensitief of vertroulik insluit nie.</translation>
 <translation id="1923388006036088459">Aksentkleure</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Jou beste foto's, outomaties gekies</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opaal</translation>
+<translation id="2501278716633472235">Gaan terug</translation>
 <translation id="2505327257735685095">Herlaai die huidige muurpapierprent</translation>
 <translation id="2507491234071975894">Luidspreker</translation>
 <translation id="2512979179176933762">wys vensters</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Vir ’n benaderde resultaat, vermenigvuldig die <ph name="CATEGORY_TEXT" />-waarde met <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Verdeel</translation>
 <translation id="4972592110715526173">modus verander</translation>
+<translation id="497421865427891073">Gaan vorentoe</translation>
 <translation id="4981003703840817201">blou en pienk</translation>
 <translation id="498186245079027698">Gaan die skandeerder na en probeer weer. Maak seker daar is genoeg plaaslike spasie om lêers wat geskandeer is, te stoor.</translation>
 <translation id="4982627662315910959">Kortpad nie beskikbaar nie. Druk ’n nuwe kortpad deur gebruik te maak van shift en nog 1 wysigersleutel (ctrl, alt of <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Speel</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903200662178656908">Toestel is ’n sleutelbord-en-muis-kombinasie.</translation>
-<translation id="5903822368221507416">Versteek oortjies</translation>
 <translation id="5904994456462260490">Voeg ’n nuwe APN by</translation>
 <translation id="590746845088109442">katte</translation>
 <translation id="5907649332524363701">sleutelkleur</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Bestuur netwerk-APN-instellings. APN’e vestig ’n verbinding tussen ’n selnetwerk en die internet. <ph name="BEGIN_LINK_LEARN_MORE" />Meer inligting<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fermware-opdaterings vir eksterne toestelle</translation>
 <translation id="7216409898977639127">Sellulêre diensverskaffer</translation>
+<translation id="7221869452894271364">Herlaai hierdie bladsy</translation>
 <translation id="7223952304612664117">Dit laat stelseldienste toe om Liggingakkuraatheid te gebruik om jou ligging te bepaal. Liggingakkuraatheid gebruik inligting oor draadlose seine en sensors om toestelligging te skat.</translation>
 <translation id="7233782086689993269">Kortpad is herstel</translation>
 <translation id="723419678599947502">Skep titel met Google AI</translation>
@@ -1603,7 +1603,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8318753676953949627">Geen prente nie</translation>
 <translation id="8319809980370328428">Opsomming en titelskepping word tans opgeneem</translation>
 <translation id="8320910311642849813">woud</translation>
-<translation id="8322464149031882595">Klik om aan te beweeg</translation>
 <translation id="8329018942023753850">sakrekenaarapp</translation>
 <translation id="8336739000755212683">Verander toestelrekeningprent</translation>
 <translation id="8339024191194156249">Kry meer inligting oor outobegin</translation>
@@ -1656,7 +1655,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teehuis</translation>
 <translation id="8538236298648811558">Aangedryf deur Google AI</translation>
-<translation id="8543574988889671960">Herlaai oortjie</translation>
 <translation id="8550364285433943656">Plaas kontroles op speletjie-aksies om met sleutelbordsleutels te speel</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generatiewe KI kan foute maak, insluitend oor mense, so jy moet dit dubbelkontroleer.</translation>
@@ -1707,7 +1705,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8820817407110198400">Boekmerke</translation>
 <translation id="8833620912470026819">kaktuswoud</translation>
 <translation id="8834539327799336565">Tans gekoppel</translation>
-<translation id="8842526499753992487">Skuif na links bo</translation>
 <translation id="8845001906332463065">Kry hulp</translation>
 <translation id="8849799913685544685">vuurtoring</translation>
 <translation id="8851859208664803097">Gestop – kan nie drukker bereik nie</translation>
@@ -1747,7 +1744,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8961025972867871808">pikkewyne</translation>
 <translation id="8968751544471797276">Laaikoers</translation>
 <translation id="8970109610781093811">Laat loop weer</translation>
-<translation id="8972061581514441296">Klik om terug te gaan</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skandeer}=1{Skandeer bladsy {NUMBER_OF_PAGES}}other{Skandeer bladsy {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">dorpie</translation>

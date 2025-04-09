@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">home page del browser</translation>
 <translation id="1526389707933164996">Animazione del salvaschermo</translation>
 <translation id="152892567002884378">Alza il volume</translation>
-<translation id="1531038290222364269">Mostra schede</translation>
 <translation id="1539864135338521185">lapislazzuli</translation>
 <translation id="1548555207631326346">Scegli un tema e seleziona le parole sottolineate per personalizzare le tue immagini AI.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Numero massimo di tentativi consentiti superato.</translation>
 <translation id="1908234395526491708">Errori delle richieste UDP</translation>
 <translation id="1908394185991500139">Freccia sinistra</translation>
-<translation id="1911678930322867245">Sposta in alto a destra</translation>
 <translation id="1914144885717544695">venerdì</translation>
 <translation id="1915960750806557358">Condividi il tuo feedback o descrivi il problema. Assicurati di non includere informazioni personali, sensibili o riservate.</translation>
 <translation id="1923388006036088459">Colori intensi</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Le tue foto migliori selezionate automaticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opale</translation>
+<translation id="2501278716633472235">Indietro</translation>
 <translation id="2505327257735685095">Aggiorna l'immagine di sfondo corrente</translation>
 <translation id="2507491234071975894">Altoparlante</translation>
 <translation id="2512979179176933762">mostra finestre</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Per un risultato approssimativo, moltiplica il valore <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Suddividi</translation>
 <translation id="4972592110715526173">cambio modalità</translation>
+<translation id="497421865427891073">Avanti</translation>
 <translation id="4981003703840817201">blu e rosa</translation>
 <translation id="498186245079027698">Controlla lo scanner e riprova. Assicurati di avere spazio locale sufficiente per salvare i file sottoposti a scansione.</translation>
 <translation id="4982627662315910959">Scorciatoia non disponibile. Premi una nuova scorciatoia utilizzando Maiusc e 1 altro tasto di modifica (Ctrl, Alt o <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Riproduci</translation>
 <translation id="5901630391730855834">Giallo</translation>
 <translation id="5903200662178656908">Il dispositivo è una combinazione di tastiera e mouse.</translation>
-<translation id="5903822368221507416">Nascondi schede</translation>
 <translation id="5904994456462260490">Aggiungi un nuovo APN</translation>
 <translation id="590746845088109442">gatti</translation>
 <translation id="5907649332524363701">colore tasti</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Gestisci le impostazioni APN di rete. Gli APN stabiliscono una connessione tra una rete mobile e internet. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aggiornamenti del firmware per dispositivi esterni</translation>
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
+<translation id="7221869452894271364">Ricarica questa pagina</translation>
 <translation id="7223952304612664117">Questo consente ai servizi di sistema di utilizzare la precisione della localizzazione per determinare la tua posizione. La precisione della localizzazione utilizza informazioni su segnali wireless e sensori per stimare la posizione del dispositivo.</translation>
 <translation id="7233782086689993269">Scorciatoia ripristinata</translation>
 <translation id="723419678599947502">Crea un titolo con Google AI</translation>
@@ -1603,7 +1603,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8318753676953949627">Nessuna immagine</translation>
 <translation id="8319809980370328428">Riepilogo della registrazione e creazione del titolo</translation>
 <translation id="8320910311642849813">una foresta</translation>
-<translation id="8322464149031882595">Fai clic per proseguire</translation>
 <translation id="8329018942023753850">app calcolatrice</translation>
 <translation id="8336739000755212683">Modifica l'immagine dell'account del dispositivo</translation>
 <translation id="8339024191194156249">Scopri di più sull'avvio automatico</translation>
@@ -1656,7 +1655,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">sala da tè</translation>
 <translation id="8538236298648811558">IA di Google integrata</translation>
-<translation id="8543574988889671960">Ricarica scheda</translation>
 <translation id="8550364285433943656">Definisci i controlli per le azioni di gioco per giocare con i tasti della tastiera</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">L'AI generativa può fare errori, anche riguardo a persone, quindi verifica le sue risposte.</translation>
@@ -1707,7 +1705,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8833620912470026819">foresta di cactus</translation>
 <translation id="8834539327799336565">Attualmente connesso</translation>
-<translation id="8842526499753992487">Sposta in alto a sinistra</translation>
 <translation id="8845001906332463065">Richiedi assistenza</translation>
 <translation id="8849799913685544685">faro</translation>
 <translation id="8851859208664803097">Operazione interrotta: stampante non raggiungibile</translation>
@@ -1747,7 +1744,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8961025972867871808">pinguini</translation>
 <translation id="8968751544471797276">Velocità di ricarica</translation>
 <translation id="8970109610781093811">Esegui di nuovo</translation>
-<translation id="8972061581514441296">Fai clic per tornare indietro</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scansiona}=1{Scansiona pagina {NUMBER_OF_PAGES}}other{Scansiona pagina {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">un villaggio</translation>

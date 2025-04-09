@@ -491,6 +491,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1822995137827688764">Koʻchmas mulk qurish</translation>
 <translation id="1824402189105105503">Sakkizinchi oʻram</translation>
 <translation id="1826516787628120939">Tekshirilmoqda</translation>
+<translation id="1832730227369924598">Ish stolini sinxronlash</translation>
 <translation id="1834452765064623979">Qurilish va xizmat koʻrsatish</translation>
 <translation id="1838374766361614909">Qidiruv shartlarini tozalash</translation>
 <translation id="1839331950812095887">fikringizni bildiruvchi kamida bir nechta soʻz</translation>
@@ -828,6 +829,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2413155254802890957">Eski</translation>
 <translation id="2413528052993050574">Bu <ph name="DOMAIN" /> serveri ekanligi tasdiqlanmadi. Uning havfsizlik sertifikati eskirgan. Server sozlamalari noto‘g‘ri moslangan yoki kimdir sizning shaxsiy ma’lumotlaringizni o‘g‘irlashga harakat qilmoqda.</translation>
 <translation id="2414886740292270097">Qorong‘i</translation>
+<translation id="2418292431699242678">Administrator istalgan ChromeOS qurilmasida avvalgi va joriy seanslar orasida quyidagi maʼlumotlar sinxronlanishini yoqadi:</translation>
 <translation id="2429716554270894715">Mato (suv oʻtkazmaydigan)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> saytiga “<ph name="PROTOCOL" />” kabi havolalarga ishlov berishga ruxsat berilsinmi?</translation>
 <translation id="2436976580469434549">Sellyuloza va toʻqimachilik sanʼati</translation>
@@ -1159,6 +1161,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3037177537145227281">Narxni kuzatyapsiz</translation>
 <translation id="3037605927509011580">Ana xolos!</translation>
 <translation id="3039406992698062762">Oilaviy sahoyat</translation>
+<translation id="3040636468789770340">Cookie fayllar (yaqinda ochilgan saytlarga kirilganlik holati)</translation>
 <translation id="3041176923638368519">Karta imtiyozlari va shartlari</translation>
 <translation id="3041612393474885105">Sertifikat haqida ma’lumot</translation>
 <translation id="3045769629416806687">Ekstremal sport turlari</translation>
@@ -1665,6 +1668,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3869939189466884821">Qurilmadagi fayllar <ph name="MINUTES" /> daqiqa ichida oʻchiriladi</translation>
 <translation id="3872834068356954457">Ilm-fan</translation>
 <translation id="3875783148670536197">Koʻrsatish</translation>
+<translation id="387681220560687945">Oynalar (oyna va varaqlarni joylash va tartiblash)</translation>
 <translation id="3879748587602334249">Yuklanmalar menejeri</translation>
 <translation id="3880456882942693779">Sanʼat va hordiq</translation>
 <translation id="3880589673277376494">Internet va telekom</translation>
@@ -4741,6 +4745,7 @@ Batafsil axborot:
 <translation id="950736567201356821">Yuqoridan 3 ta teshik ochish</translation>
 <translation id="950926967802086924">Kirish kaliti • Google Parollar menejeri</translation>
 <translation id="955429569736351433">VR ishlatishga ruxsat berildi</translation>
+<translation id="955627189349169688">Bu qoidani <ph name="BEGIN_LINK" />Chrome Sync sozlamalari<ph name="END_LINK" /> orqali rad etish mumkin.</translation>
 <translation id="95721182352849470">Sariq 2</translation>
 <translation id="961663415146723894">Quyi chekkasini belgilash</translation>
 <translation id="961856697154696964">Brauzer maʼlumotlarini oʻchirish</translation>

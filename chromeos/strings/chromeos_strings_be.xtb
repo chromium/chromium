@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">галоўны экран браўзера</translation>
 <translation id="1526389707933164996">Анімацыя застаўкі</translation>
 <translation id="152892567002884378">Павялічыць гучнасць</translation>
-<translation id="1531038290222364269">Паказваць укладкі</translation>
 <translation id="1539864135338521185">лазурыт</translation>
 <translation id="1548555207631326346">Выберыце тэму, а потым націсніце на падкрэсленыя словы, каб персаналізаваць відарысы, створаныя з дапамогай AI.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Перавышана максімальная колькасць спроб.</translation>
 <translation id="1908234395526491708">Збоі запытаў UDP</translation>
 <translation id="1908394185991500139">стрэлка ўлева</translation>
-<translation id="1911678930322867245">Перамясціць уверх і ўправа</translation>
 <translation id="1914144885717544695">у пятніцу</translation>
 <translation id="1915960750806557358">Напішыце водгук або апішыце праблему. Не ўказвайце асабістую і канфідэнцыяльную інфармацыю.</translation>
 <translation id="1923388006036088459">Колеравыя акцэнты</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Найлепшыя фота, выбраныя аўтаматычна</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">апал</translation>
+<translation id="2501278716633472235">Назад</translation>
 <translation id="2505327257735685095">Абнавіць відарыс, які выкарыстоўваецца як шпалеры</translation>
 <translation id="2507491234071975894">Дынамік</translation>
 <translation id="2512979179176933762">паказаць вокны</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Каб атрымаць прыблізны вынік, памножце значэнне "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Падзелены экран</translation>
 <translation id="4972592110715526173">змена рэжыму</translation>
+<translation id="497421865427891073">Наперад</translation>
 <translation id="4981003703840817201">сіні і ружовы</translation>
 <translation id="498186245079027698">Праверце сканер і паўтарыце спробу. Упэўніцеся, што на прыладзе дастаткова месца для захавання файлаў адсканіраваных відарысаў.</translation>
 <translation id="4982627662315910959">Гэта спалучэнне клавіш недаступнае – выберыце іншае, націснуўшы клавішы ў такой камбінацыі, якая будзе ўключаць клавішу Shift і яшчэ адну клавішу-мадыфікатар (Ctrl, Alt або "<ph name="META_KEY" />").</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Прайграць</translation>
 <translation id="5901630391730855834">Жоўты</translation>
 <translation id="5903200662178656908">Прылада ўяўляе сабой камплект з клавіятуры і мышы.</translation>
-<translation id="5903822368221507416">Схаваць укладкі</translation>
 <translation id="5904994456462260490">Дадаванне новай назвы пункта доступу</translation>
 <translation id="590746845088109442">кошкі</translation>
 <translation id="5907649332524363701">колер клавіш</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Кіраванне наладамі сеткавых APN. З дапамогай APN устанаўліваецца падключэнне паміж сотавай сеткай і інтэрнэтам. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Абнаўленні ўбудаванага праграмнага забеспячэння для знешніх прылад</translation>
 <translation id="7216409898977639127">Сотавы аператар</translation>
+<translation id="7221869452894271364">Перазагрузіце старонку</translation>
 <translation id="7223952304612664117">Сістэмныя службы будуць вызначаць ваша месцазнаходжанне, выкарыстоўваючы дакладнасць вызначэння месцазнаходжання. Для дакладнасці вызначэння месцазнаходжання выкарыстоўваецца інфармацыя пра бесправадныя сігналы і датчыкі.</translation>
 <translation id="7233782086689993269">Спалучэнне клавіш адноўлена</translation>
 <translation id="723419678599947502">Стварыць назву з дапамогай штучнага інтэлекту ад Google</translation>
@@ -1601,7 +1601,6 @@
 <translation id="8318753676953949627">Няма відарысаў</translation>
 <translation id="8319809980370328428">Стварэнне зводкі і назвы для запісаў</translation>
 <translation id="8320910311642849813">лес</translation>
-<translation id="8322464149031882595">Націснуць, каб рухацца далей</translation>
 <translation id="8329018942023753850">праграма "Калькулятар"</translation>
 <translation id="8336739000755212683">Змяніць відарыс уліковага запісу на прыладзе</translation>
 <translation id="8339024191194156249">Даведацца больш пра аўтазапуск</translation>
@@ -1654,7 +1653,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайная</translation>
 <translation id="8538236298648811558">На аснове штучнага інтэлекту ад Google</translation>
-<translation id="8543574988889671960">Перазагрузіць укладку</translation>
 <translation id="8550364285433943656">Выберыце элементы кіравання для дзеянняў, каб гуляць з дапамогай клавіш клавіятуры</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Генератыўны штучны інтэлект можа рабіць памылкі, у тым ліку ў інфармацыі пра людзей, таму пераправярайце атрыманыя звесткі.</translation>
@@ -1705,7 +1703,6 @@
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="8833620912470026819">лес кактусаў</translation>
 <translation id="8834539327799336565">Падключаныя цяпер прылады</translation>
-<translation id="8842526499753992487">Перамясціць уверх і ўлева</translation>
 <translation id="8845001906332463065">Атрымаць даведку</translation>
 <translation id="8849799913685544685">маяк</translation>
 <translation id="8851859208664803097">Друк прыпынены: прынтар недаступны</translation>
@@ -1745,7 +1742,6 @@
 <translation id="8961025972867871808">пінгвіны</translation>
 <translation id="8968751544471797276">Хуткасць зарадкі</translation>
 <translation id="8970109610781093811">Выканаць яшчэ раз</translation>
-<translation id="8972061581514441296">Націснуць, каб вярнуцца</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Адсканіраваць}=1{Адсканіраваць старонку {NUMBER_OF_PAGES}}one{Адсканіраваць старонку {NUMBER_OF_PAGES}}few{Адсканіраваць старонку {NUMBER_OF_PAGES}}many{Адсканіраваць старонку {NUMBER_OF_PAGES}}other{Адсканіраваць старонку {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">вёска</translation>

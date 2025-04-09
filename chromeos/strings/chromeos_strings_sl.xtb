@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">domača stran brskalnika</translation>
 <translation id="1526389707933164996">Animacija ohranjevalnika zaslona.</translation>
 <translation id="152892567002884378">Povečanje glasnosti</translation>
-<translation id="1531038290222364269">Prikaz zavihkov</translation>
 <translation id="1539864135338521185">lazurit</translation>
 <translation id="1548555207631326346">Izberite temo in nato izberite podčrtane besede, če želite osebno prilagoditi slike z umetno inteligenco.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Preseženo je največje dovoljeno število dovoljenih poskusov.</translation>
 <translation id="1908234395526491708">Neuspele zahteve UDP</translation>
 <translation id="1908394185991500139">puščica levo</translation>
-<translation id="1911678930322867245">V zgornji desni kot</translation>
 <translation id="1914144885717544695">v petek</translation>
 <translation id="1915960750806557358">Pošljite povratne informacije ali opišite težavo. Ne vključite osebnih, občutljivih ali zaupnih podatkov.</translation>
 <translation id="1923388006036088459">Barve poudarka</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Vaše najboljše fotografije, izbrane samodejno</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
+<translation id="2501278716633472235">Nazaj</translation>
 <translation id="2505327257735685095">Osveži trenutno sliko zaslonskega ozadja</translation>
 <translation id="2507491234071975894">Zvočnik</translation>
 <translation id="2512979179176933762">prikaz oken</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Če želite približni rezultat, pomnožite vrednost kategorije »<ph name="CATEGORY_TEXT" />« s/z: <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Razdeli</translation>
 <translation id="4972592110715526173">sprememba načina</translation>
+<translation id="497421865427891073">Pojdi naprej</translation>
 <translation id="4981003703840817201">modra in rožnata</translation>
 <translation id="498186245079027698">Preverite optični bralnik in poskusite znova. Poskrbite, da je na lokalnem disku dovolj prostora za shranjevanje optično prebranih datotek.</translation>
 <translation id="4982627662315910959">Bližnjica ni na voljo. Pritisnite novo bližnjico s tipko Shift in še 1 modifikatorsko tipko (ctrl, alt ali <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Predvajanje</translation>
 <translation id="5901630391730855834">Rumena</translation>
 <translation id="5903200662178656908">Naprava je kombinacija tipkovnice in miške.</translation>
-<translation id="5903822368221507416">Skrivanje zavihkov</translation>
 <translation id="5904994456462260490">Dodajte nov APN</translation>
 <translation id="590746845088109442">mačke</translation>
 <translation id="5907649332524363701">barva tipk</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Upravljanje nastavitev APN-ja. APN-ji vzpostavijo povezavo med mobilnim omrežjem in internetom. <ph name="BEGIN_LINK_LEARN_MORE" />Več o tem<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Posodobitve vdelane programske opreme za zunanje naprave</translation>
 <translation id="7216409898977639127">Ponudnik mobilnih storitev</translation>
+<translation id="7221869452894271364">Ponovno naložite to stran</translation>
 <translation id="7223952304612664117">To sistemskim storitvam omogoča uporabo natančnosti zaznavanja lokacije za določanje vaše lokacije. Natančnost zaznavanja lokacije za oceno lokacije naprave uporablja podatke o brezžičnih signalih in tipalih.</translation>
 <translation id="7233782086689993269">Bližnjica je obnovljena</translation>
 <translation id="723419678599947502">Ustvarjanje naslova z Googlovo umetno inteligenco</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">Ni slik</translation>
 <translation id="8319809980370328428">Ustvarjanje povzetka in naslova posnetka</translation>
 <translation id="8320910311642849813">gozd</translation>
-<translation id="8322464149031882595">Kliknite, če želite nadaljevati.</translation>
 <translation id="8329018942023753850">aplikacija računalo</translation>
 <translation id="8336739000755212683">Spremeni sliko računa v napravi</translation>
 <translation id="8339024191194156249">Preberite več o samodejnem zagonu</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čajnica</translation>
 <translation id="8538236298648811558">Uporablja Googlovo umetno inteligenco</translation>
-<translation id="8543574988889671960">Vnovično nalaganje zavihka</translation>
 <translation id="8550364285433943656">Prestavite upravljanje na dejanja v igri, če želite igrati s tipkami na tipkovnici</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generativna umetna inteligenca se lahko zmoti, tudi o ljudeh, zato preverite odgovore.</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">Zaznamki</translation>
 <translation id="8833620912470026819">gozd s kaktusi</translation>
 <translation id="8834539327799336565">Trenutno povezano</translation>
-<translation id="8842526499753992487">V zgornji levi kot</translation>
 <translation id="8845001906332463065">Poiščite pomoč</translation>
 <translation id="8849799913685544685">svetilnik</translation>
 <translation id="8851859208664803097">Ustavljeno – tiskalnik ni dosegljiv</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">pingvini</translation>
 <translation id="8968751544471797276">Hitrost polnjenja</translation>
 <translation id="8970109610781093811">Znova zaženi</translation>
-<translation id="8972061581514441296">Kliknite, če se želite vrniti</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Optično preberi}=1{Optično preberi stran {NUMBER_OF_PAGES}}one{Optično preberi stran {NUMBER_OF_PAGES}}two{Optično preberi stran {NUMBER_OF_PAGES}}few{Optično preberi stran {NUMBER_OF_PAGES}}other{Optično preberi stran {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">vas</translation>

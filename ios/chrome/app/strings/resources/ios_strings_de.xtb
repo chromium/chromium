@@ -1127,6 +1127,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="573974402615125334">Wenn du Tabgruppen teilen, ihnen beitreten und gemeinsam mit anderen an ihnen arbeiten möchtest, synchronisiere deinen Verlauf und deine Tabs</translation>
 <translation id="5740123193752401435">Tabs suchen…</translation>
 <translation id="5744274077973758795">Benachrichtigungen für „<ph name="FEATURE_NAME" />“ aktiviert</translation>
+<translation id="5745598824054949526">Kein Text gefunden</translation>
 <translation id="574762237186762643">Termine</translation>
 <translation id="5749158352074143502">Mit diesem Tab fortfahren</translation>
 <translation id="5753021559215751319">Passwort speichern</translation>
@@ -1290,6 +1291,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6410883413783534063">Öffne Tabs, um mehrere Seiten gleichzeitig zu besuchen</translation>
 <translation id="6416807286621280684">Deine Pakete mit Sendungsverfolgung und Lieferupdates.</translation>
 <translation id="6418346271604475326">PDF wird vorbereitet</translation>
+<translation id="6421038304268477484">Übersetzter Text</translation>
 <translation id="6429213933892582367">Öffne „Passwortoptionen“</translation>
 <translation id="6434591244308415567">Ein Fehler ist aufgetreten. Bitte versuche es später noch einmal.</translation>
 <translation id="6435307030888827407">Abgemeldet bleiben</translation>
@@ -1968,6 +1970,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="9097506547406246598">Nicht mehr folgen nicht möglich. Ein Fehler ist aufgetreten.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> Passwörter löschen?</translation>
 <translation id="9099233023029360602">Jedes Mal nachfragen, welches Konto verwendet werden soll</translation>
+<translation id="9099821309562615674">Achte darauf, dass der Text, den du übersetzen möchtest, vollständig lesbar und im Bild ist.</translation>
 <translation id="9100610230175265781">Passphrase erforderlich</translation>
 <translation id="91023216973987714">Zahlungsmethoden</translation>
 <translation id="9106655997975673326">Von „<ph name="SOURCE_DEVICE" />“</translation>

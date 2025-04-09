@@ -4612,7 +4612,7 @@
 <translation id="4203769790323223880">کیمرے کی اجازت نہیں ہے</translation>
 <translation id="4204415812590935863">ابھی تھیم نہیں بنا سکتے۔</translation>
 <translation id="4205157409548006256">‏Linux کنفیگر کرنے میں ایک خرابی تھی۔</translation>
-<translation id="4205643719206044108">‏تجاویز پیش کرنے کے لیے، آپ جن سائٹس پر جاتے ہیں اور صفحہ کا مواد Google کے ساتھ اشتراک کیا جاتا ہے</translation>
+<translation id="4205643719206044108">‏تجاویز پیش کرنے کے لیے، آپ کی ملاحظہ کردہ سائٹس اور صفحہ کے مواد کا اشتراک Google کے ساتھ کیا جاتا ہے</translation>
 <translation id="4206144641569145248">ایلیئن</translation>
 <translation id="4206323443866416204">تاثرات کی رپورٹ</translation>
 <translation id="4206585797409671301">درخواستیں دکھانے کی اجازت ہے</translation>
@@ -6799,7 +6799,6 @@
 <translation id="5794414402486823030">ہمیشہ سسٹم ویور کے ساتھ کھولیں</translation>
 <translation id="5794700615121138172">‏Linux کے اشتراک کردہ فولڈرز</translation>
 <translation id="5794786537412027208">‏سبھی Chrome ایپس چھوڑ دیں</translation>
-<translation id="5795422263272161110">ایک ساتھ دکھائیں</translation>
 <translation id="5796485699458186843">نیا پوشیدگی ٹیب</translation>
 <translation id="5796956053441619942">‏ریموٹ آلہ کا URL تعاون یافتہ نہیں ہے</translation>
 <translation id="5797934230382081317">‏&lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; اور &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; پر شروع کرنے کا طریقہ سیکھیں</translation>
@@ -9238,7 +9237,6 @@
 <translation id="7552846755917812628">درج ذیل تجاویز کی کوشش کریں:</translation>
 <translation id="7553012839257224005">‏Linux کنٹینر کو چیک کیا جا رہا ہے</translation>
 <translation id="7553242001898162573">اپنا پاس ورڈ درج کریں</translation>
-<translation id="7554342082838376298">پاس ورڈ کی خودکار تبدیلی</translation>
 <translation id="755472745191515939">آپ کا منتظم اس زبان کی اجازت نہیں دیتا ہے</translation>
 <translation id="7554791636758816595">نیا ٹیب</translation>
 <translation id="7556033326131260574">‏Smart Lock آپ کے اکاؤنٹ کی توثیق نہیں کر سکا۔ درج کرنے کیلئے اپنا پاس ورڈ ٹائپ کریں۔</translation>
@@ -11211,7 +11209,6 @@
 <translation id="8915916167043355778">تمام بند کریں</translation>
 <translation id="8916476537757519021">پوشیدگی کا ذیلی فریم: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">ہاں میں متفق ہوں</translation>
-<translation id="8917980324687233736">ایک ساتھ دکھائیں</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> کا <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">ایپ انسٹال کی جا رہی ہے...</translation>
 <translation id="891931289445130855">ڈیٹا اور اجازتیں حذف کریں</translation>

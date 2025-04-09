@@ -6332,6 +6332,7 @@ Pode atribuir vários interruptores a esta ação.</translation>
 <translation id="5436492226391861498">A aguardar pelo túnel do proxy...</translation>
 <translation id="5436510242972373446">Pesquisar <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Janela <ph name="WINDOW_SIDE" /> agora com <ph name="WINDOW_SIZE_PERCENT" /> de largura e painel <ph name="PANE_SIDE" /> agora com <ph name="PANE_SIZE_PERCENT" /> de largura.</translation>
+<translation id="5438060324827306856">Encontrar &amp;extensões</translation>
 <translation id="5440425659852470030">Feche o painel lateral</translation>
 <translation id="544083962418256601">Criar atalhos...</translation>
 <translation id="5441133529460183413">App Web instalada a partir do navegador Chrome</translation>
@@ -6804,7 +6805,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5794414402486823030">Abrir sempre com o visualizador do sistema</translation>
 <translation id="5794700615121138172">Pastas partilhadas do Linux</translation>
 <translation id="5794786537412027208">Sair de todas as Apps do Chrome</translation>
-<translation id="5795422263272161110">Mostrar lado a lado</translation>
 <translation id="5796485699458186843">Novo &amp;separador de navegação anónima</translation>
 <translation id="5796956053441619942">O URL do dispositivo remoto não é compatível</translation>
 <translation id="5797934230382081317">Saiba como começar no &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; e &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9244,7 +9244,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7552846755917812628">Experimente as sugestões seguintes:</translation>
 <translation id="7553012839257224005">A verificar o contentor do Linux…</translation>
 <translation id="7553242001898162573">Introduza a palavra-passe</translation>
-<translation id="7554342082838376298">Alteração automática de palavras-passe</translation>
 <translation id="755472745191515939">O seu administrador não permite este idioma</translation>
 <translation id="7554791636758816595">Novo separador</translation>
 <translation id="7556033326131260574">O Smart Lock não conseguiu validar a sua conta. Introduza a palavra-passe para aceder.</translation>
@@ -11218,7 +11217,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="8915916167043355778">Fechar tudo</translation>
 <translation id="8916476537757519021">Subestrutura da navegação anónima: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Sim, aceito</translation>
-<translation id="8917980324687233736">Mostrar lado a lado</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">A instalar a app…</translation>
 <translation id="891931289445130855">Eliminar dados e autorizações</translation>

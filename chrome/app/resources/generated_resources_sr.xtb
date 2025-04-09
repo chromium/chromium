@@ -4086,7 +4086,7 @@
 <translation id="3824621460022590830">Токен за регистрацију уређаја је неважећи. Обратите се власнику уређаја или администратору. Кôд грешке: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Пријавите се да бисте видели картице са других уређаја</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Запамти мој избор за овај тип фајла: <ph name="FILE_TYPES" />}one{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}few{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}other{Запамти мој избор за ове типове фајлова: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825235932371054736">{NUM_TABS,plural, =1{Решите проблем са овом картицом}one{Решите проблем са овим картицама}few{Решите проблем са овим картицама}other{Решите проблем са овим картицама}}</translation>
+<translation id="3825235932371054736">{NUM_TABS,plural, =1{Реши проблем са овом картицом}one{Реши проблем са овим картицама}few{Реши проблем са овим картицама}other{Реши проблем са овим картицама}}</translation>
 <translation id="3825512074963838982">Преглед</translation>
 <translation id="3825635794653163640">Приказује тачку на икони апликације за обавештења о апликацији</translation>
 <translation id="3826071569074535339">Дозвољено им је коришћење сензора покрета</translation>
@@ -6327,6 +6327,7 @@
 <translation id="5436492226391861498">Чекање на прокси тунел...</translation>
 <translation id="5436510242972373446">Претражи сајт <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Прозор <ph name="WINDOW_SIDE" /> је сада широк <ph name="WINDOW_SIZE_PERCENT" />, а окно <ph name="PANE_SIDE" /> је сада широко <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">Пронађите додатке</translation>
 <translation id="5440425659852470030">Затвори бочну таблу</translation>
 <translation id="544083962418256601">Направи пречице...</translation>
 <translation id="5441133529460183413">Веб-апликација је инсталирана из Chrome прегледача</translation>
@@ -6799,7 +6800,6 @@
 <translation id="5794414402486823030">Увек отварај помоћу системског приказивача</translation>
 <translation id="5794700615121138172">Дељени Linux директоријуми</translation>
 <translation id="5794786537412027208">Изађи из свих Chrome апликација</translation>
-<translation id="5795422263272161110">Прикажи упоредо</translation>
 <translation id="5796485699458186843">Нова картица без архивирања</translation>
 <translation id="5796956053441619942">URL са удаљеног уређаја није подржан</translation>
 <translation id="5797934230382081317">Сазнајте како да започнете са &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android-ом&lt;/a&gt; и &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS-ом&lt;/a&gt;</translation>
@@ -9243,7 +9243,6 @@
 <translation id="7552846755917812628">Испробајте следеће савете:</translation>
 <translation id="7553012839257224005">Проверава се Linux контејнер</translation>
 <translation id="7553242001898162573">Унесите лозинку</translation>
-<translation id="7554342082838376298">Аутоматизована промена лозинке</translation>
 <translation id="755472745191515939">Администратор не дозвољава овај језик</translation>
 <translation id="7554791636758816595">Нова картица</translation>
 <translation id="7556033326131260574">Smart Lock није успео да верификује налог. Унесете лозинку да бисте приступили.</translation>
@@ -10532,7 +10531,7 @@
 <translation id="8434109185104929038">Кутак за читање</translation>
 <translation id="8434480141477525001">NaCl порт за отклањање грешака</translation>
 <translation id="8434837876193928924">Детаљи групе картица</translation>
-<translation id="8435951291982398331">{NUM_TABS,plural, =1{Решите проблем са овом картицом}one{Решите проблем са овим картицама}few{Решите проблем са овим картицама}other{Решите проблем са овим картицама}}</translation>
+<translation id="8435951291982398331">{NUM_TABS,plural, =1{Реши проблем са овом картицом}one{Реши проблем са овим картицама}few{Реши проблем са овим картицама}other{Реши проблем са овим картицама}}</translation>
 <translation id="8436800506934625875">Направите алфанумерички PIN за враћање приступа Google менаџеру лозинки</translation>
 <translation id="8437209419043462667">америчка</translation>
 <translation id="8438518537545182071">Избори родитеља сада ти пружају већу безбедност онлајн</translation>
@@ -11219,7 +11218,6 @@
 <translation id="8915916167043355778">Затворите све</translation>
 <translation id="8916476537757519021">Подоквир Без архивирања: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Да, омогући</translation>
-<translation id="8917980324687233736">Прикажи упоредо</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> корисника <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Апликација  се инсталира…</translation>
 <translation id="891931289445130855">Избриши податке и дозволе</translation>

@@ -540,6 +540,9 @@ Wenn die Richtlinie nicht konfiguriert ist, werden Links für verwaltete Nutzer 
 <translation id="1417888712677507140">JavaScript-Dialogfelder blockieren, die von einem anderen Quell-Subframe ausgelöst wurden</translation>
 <translation id="1418387035898607074">Safe Browsing-Überprüfung für den Dateidownload von vertrauenswürdigen Quellen überspringen</translation>
 <translation id="1419020637569060510">Einschränkungen zur Nutzung eines verwalteten Kontos als sekundäres Konto in Chrome OS hinzufügen</translation>
+<translation id="1423359855587524289">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann die App die Autorisierung „vorläufige“ Benachrichtigungen von iOS verwenden, um Benachrichtigungen im Benachrichtigungscenter von iOS anzuzeigen.
+
+Wenn die Richtlinie deaktiviert ist, verwendet die App keine vorläufigen Benachrichtigungen.</translation>
 <translation id="142346659686073702">Nicht verknüpften Nutzern die Verwendung von Crostini gestatten</translation>
 <translation id="1423900783955065155">Diese Richtlinie legt fest, ob eine Seite mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ im Back-Forward-Cache gespeichert werden kann. Es wird möglicherweise nicht erwartet, dass die Seite aus dem Back-Forward-Cache wiederhergestellt wird, da einige vertrauliche Daten auch nach der Wiederherstellung angezeigt werden können, selbst wenn die Seite nicht mehr zugänglich ist.
 
@@ -1231,6 +1234,7 @@ Wenn diese Richtlinie auf „False“ gesetzt ist, werden keine personenbezogene
 
 Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
+<translation id="187961648719201562">Vorhandene lokale Dateien löschen (wird seit Version 137 unterstützt)</translation>
 <translation id="1883274744253492031">Automatisches Upgrade für gemischte Inhalte aktivieren</translation>
 <translation id="1885782360784839335">Einblendung von Werbung auf dem gesamten Tab aktivieren</translation>
 <translation id="1888871729456797026">Das Registrierungstoken der Cloud-Richtlinie auf dem Desktop</translation>
@@ -6755,6 +6759,9 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="5883754873839596178">Wenn diese Richtlinie konfiguriert ist, legt sie die maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver fest. Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird. Der Wert sollte kleiner als 100 und größer als 6 sein. Einige Web-Apps nutzen viele Verbindungen mit hängenden GETs. Daher kann ein Wert unter 32 dazu führen, dass der Browser hängt, wenn zu viele solcher Web-Apps geöffnet sind. Wenn du einen Wert unter dem Standardwert festlegst, geschieht dies auf eigenes Risiko.
 
       Ist diese Richtlinie nicht konfiguriert, so kommt der Standardwert von 32 zum Einsatz.</translation>
+<translation id="5886280631293123880">Diese Richtlinie bietet die Möglichkeit, eine bereits eingestellte und entfernte Reihe von Plattformereignissen namens Mutationsereignisse vorübergehend wieder zu aktivieren.
+Wenn diese Richtlinie aktiviert ist, werden Mutationsereignisse weiterhin ausgelöst, selbst wenn sie für normale Webnutzer standardmäßig deaktiviert wurden. Ist die Richtlinie deaktiviert oder nicht konfiguriert, werden diese Ereignisse möglicherweise nicht ausgelöst.
+Diese Richtlinie ist eine vorübergehende Behelfslösung und wird in M137 nicht mehr funktionieren.</translation>
 <translation id="5887414688706570295">Konfiguriert das TalkGadget-Präfix, das von Remote-Zugriff-Hosts verwendet wird, und verhindert, dass dieses von Nutzern geändert werden kann.
 
           Wenn dieses Präfix angegeben wird, wird es dem TalkGadget-Basisnamen vorangestellt, um einen vollständigen Domainnamen für das TalkGadget zu erstellen. Der Basisname der TalkGadget-Domain lautet ".talkgadget.google.com".
@@ -8279,6 +8286,21 @@ Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlini
 
 Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL für "Neuer Tab"-Seite</translation>
+<translation id="6895437634974956885">Der Akkuzustand kann durch Faktoren wie häufiges vollständiges Aufladen und längere Ladezeiten beeinträchtigt werden. Diese Richtlinie bietet drei Optionen, das Ladeverhalten zu optimieren sowie diese Beeinträchtigungen zu minimieren und so letztendlich die Lebensdauer des Akkus zu verlängern.
+
+Wenn die Richtlinie nicht konfiguriert ist, können Nutzer die Ein/Aus-Schaltfläche für das adaptive Laden verwenden, um es zu aktivieren oder zu deaktivieren.
+
+Wenn die Richtlinie auf „1“ (Standard) gesetzt oder nicht konfiguriert ist, wird der Akku ganz normal auf 100 % aufgeladen. Dadurch werden das adaptive und das begrenzte Laden deaktiviert.
+
+Wenn die Richtlinie auf „2“ (Adaptiv) gesetzt ist, passt sich dein Gerät deinen Ladegewohnheiten an und wartet mit dem Aufladen auf 100 %, bis dies erforderlich ist. Dadurch wird der Akku geschont.
+
+Wenn die Richtlinie auf „3“ (Begrenzt) gesetzt ist, wird der Akku nur bis zu etwa 80 % aufgeladen, um seine Lebensdauer zu maximieren.
+
+Wenn die Richtlinie „<ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" />“ festgelegt ist, hat sie Vorrang vor der Richtlinie „<ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />“.
+
+Wenn die Richtlinie „<ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" />“ nicht konfiguriert ist, bestimmt die Richtlinie „<ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />“, ob die Funktion „Adaptives Laden“ aktiviert oder deaktiviert ist.
+
+<ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> wird verworfen.</translation>
 <translation id="6897730193187922386">Nachrichten zu veralteten Funktionen von <ph name="CLOUD_PRINT_NAME" /> unterdrücken</translation>
 <translation id="6899705656741990703">Proxy-Einstellungen automatisch erkennen</translation>
 <translation id="6901462246839613666">Anzeigen von Werbeinhalten aktivieren</translation>
@@ -8935,6 +8957,7 @@ Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktivi
 <translation id="7366637365754181686">Cloud-Berichterstellung zu Nutzersicherheitssignalen aktivieren</translation>
 <translation id="7366948865469126526">Einheitenumrechnung über „Schnellinfo“ deaktivieren</translation>
 <translation id="7367734504783638685">Synchronisierung von Passwörtern zwischen SSO-Drittanbietern und Chrome-Geräten</translation>
+<translation id="7372818045062294211">App erlauben, Autorisierung für vorläufige Benachrichtigungen zu verwenden</translation>
 <translation id="7372831798009983116">Bedienungshilfe "Automatisch klicken" aktivieren</translation>
 <translation id="7373200034079131670">Nach Nutzerabmeldung neu starten, wenn Android oder eine VM gestartet wurde.</translation>
 <translation id="7374784840090523241">Passkeys standardmäßig in einem anderen Speicher erstellen, z. B. im <ph name="PRODUCT_NAME" />-Profil.</translation>
@@ -10281,6 +10304,7 @@ Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die re
 <translation id="8421202694245456861"><ph name="CLASS_TOOLS_NAME" />-Funktion zur Untertitelung konfigurieren</translation>
 <translation id="8422658829373743789">Neues Verhalten für die Ereignisweiterleitung bei deaktivierten Formularsteuerelementen festlegen</translation>
 <translation id="8423237137411858515">Lokale Dateien im Lesemodus lassen</translation>
+<translation id="8424056332208748750">App nicht erlauben, Autorisierung für vorläufige Benachrichtigungen zu verwenden</translation>
 <translation id="8424255554404582727">Standarddrehung des Bildschirms festlegen, die bei jedem Neustart erneut angewendet wird</translation>
 <translation id="8426231401662877819">Bildschirm um 90 Grad im Uhrzeigersinn drehen</translation>
 <translation id="8426326725481825773">Diese Richtlinie bestimmt das Verhalten für die Neuzuordnung der Tasten „Position 1“ und „Ende“ auf der Unterseite für die Tastenneuzuordnung. Auf dieser Unterseite können Nutzer Tasten anpassen. Wenn die Richtlinie aktiviert ist, können Nutzer diese spezifischen Neuzuordnungen nicht anpassen. Ist die Richtlinie nicht konfiguriert, gelten suchbasierte Tastenkombinationen als Standard und Nutzer können die Tastenkombinationen ändern.</translation>
@@ -10418,6 +10442,7 @@ Rollback auf <ph name="PRODUCT_OS_NAME" /> Version 106 oder niedriger wird nich
 <translation id="8520064498689833152">Erzwingen, dass in der Google Suche SafeSearch verwendet wird und der eingeschränkte Modus für YouTube mindestens auf „Moderat“ festgelegt ist</translation>
 <translation id="8520950040439618600">PIN- und Kopplungsauthentifizierung für Hosts für den Remote-Zugriff zulassen</translation>
 <translation id="8524334245528364388">URL einer JSON-Datei mit einer Liste von Druckservern.</translation>
+<translation id="8525282442896658040">Ermöglicht der App, die Autorisierung für vorläufige Benachrichtigungen unter iOS zu verwenden</translation>
 <translation id="8525526490824335042">Linux-Container</translation>
 <translation id="8526745614158856826">Wenn diese Richtlinie konfiguriert ist, kannst du eine Liste mit Websites erstellen, denen automatisch die Zugriffsberechtigung auf alle verfügbaren Geräte gewährt wird.
 

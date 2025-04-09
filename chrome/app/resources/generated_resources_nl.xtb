@@ -6795,7 +6795,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5794414402486823030">Altijd openen met systeemviewer</translation>
 <translation id="5794700615121138172">Gedeelde mappen voor Linux</translation>
 <translation id="5794786537412027208">Alle Chrome-apps sluiten</translation>
-<translation id="5795422263272161110">Naast elkaar tonen</translation>
 <translation id="5796485699458186843">Nieuw incognito&amp;tabblad</translation>
 <translation id="5796956053441619942">De URL van het apparaat op afstand wordt niet ondersteund</translation>
 <translation id="5797934230382081317">Ontdek hoe je aan de slag gaat met &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; en &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9233,7 +9232,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7552846755917812628">Probeer de volgende tips:</translation>
 <translation id="7553012839257224005">De Linux-container wordt gecontroleerd</translation>
 <translation id="7553242001898162573">Geef je wachtwoord op</translation>
-<translation id="7554342082838376298">Wachtwoord automatisch wijzigen</translation>
 <translation id="755472745191515939">Je beheerder staat deze taal niet toe</translation>
 <translation id="7554791636758816595">Nieuw tabblad</translation>
 <translation id="7556033326131260574">Smart Lock kan je account niet verifiëren. Typ je wachtwoord om in te loggen.</translation>
@@ -11207,7 +11205,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8915916167043355778">Alles sluiten</translation>
 <translation id="8916476537757519021">Incognito-subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Ja, aanzetten</translation>
-<translation id="8917980324687233736">Naast elkaar tonen</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> van <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">App installeren...</translation>
 <translation id="891931289445130855">Gegevens en rechten verwijderen</translation>

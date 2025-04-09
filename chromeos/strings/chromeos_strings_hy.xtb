@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">դիտարկիչի գլխավոր էջ</translation>
 <translation id="1526389707933164996">Էրանապահի համար շարժանկար</translation>
 <translation id="152892567002884378">Բարձրացնել ձայնը</translation>
-<translation id="1531038290222364269">Ցույց տալ ներդիրները</translation>
 <translation id="1539864135338521185">կապույտ լաջվարդ</translation>
 <translation id="1548555207631326346">Ընտրեք թեմա, այնուհետև ընտրեք ընդգծված բառերը՝ ձեր ԱԲ պատկերներն անհատականացնելու համար։<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
 <translation id="1908394185991500139">ձախ սլաք</translation>
-<translation id="1911678930322867245">Տեղափոխել վերևի աջ անկյուն</translation>
 <translation id="1914144885717544695">ուրբաթ օրը</translation>
 <translation id="1915960750806557358">Կիսվեք ձեր կարծիքով կամ նկարագրեք խնդիրը։ Մի՛ ներառեք անձնական, զգայուն կամ կոնֆիդենցիալ տեղեկություններ։</translation>
 <translation id="1923388006036088459">Ակցենտային գույներ</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Ավտոմատ ընտրված լավագույն լուսանկարները</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">օպալ</translation>
+<translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="2505327257735685095">Թարմացնել ընթացիկ պաստառը</translation>
 <translation id="2507491234071975894">Բարձրախոս</translation>
 <translation id="2512979179176933762">ցուցադրել պատուհանները</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Մոտավոր արդյունք ստանալու համար «<ph name="CATEGORY_TEXT" />» արժեքը բազմապատկեք <ph name="CONVERSION_RATE" />-ով</translation>
 <translation id="4969079779290789265">Տրոհել</translation>
 <translation id="4972592110715526173">փոխել ռեժիմը</translation>
+<translation id="497421865427891073">Առաջ գնալ</translation>
 <translation id="4981003703840817201">կապույտ և վարդագույն</translation>
 <translation id="498186245079027698">Ստուգեք սկաները և նորից փորձեք։ Համոզվեք, որ սկանավորված ֆայլերը պահելու համար բավարար տարածք կա։</translation>
 <translation id="4982627662315910959">Դյուրանցումը հասանելի չէ։ Սեղմեք նոր դյուրանցում՝ օգտագործելով Shift ստեղնն ու ևս մեկ կերպափոխիչ ստեղն (Ctrl, Alt կամ <ph name="META_KEY" />)։</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Նվագարկել</translation>
 <translation id="5901630391730855834">Դեղին</translation>
 <translation id="5903200662178656908">Սարքը ստեղնաշարի և մկնիկի համադրություն է։</translation>
-<translation id="5903822368221507416">Թաքցնել ներդիրները</translation>
 <translation id="5904994456462260490">Ավելացրեք նոր APN</translation>
 <translation id="590746845088109442">կատուներ</translation>
 <translation id="5907649332524363701">ստեղների գույնը</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Կառավարեք ցանցի APN-ի կարգավորումները։ APN-ները կապ են հաստատում բջջային ցանցի և համացանցի միջև։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ներկառուցված ծրագրաշարի թարմացումներ արտաքին սարքերի համար</translation>
 <translation id="7216409898977639127">Բջջային օպերատոր</translation>
+<translation id="7221869452894271364">Վերաբեռնել այս էջը</translation>
 <translation id="7223952304612664117">Սա թույլ է տալիս համակարգային ծառայություններին տեղորոշման ճշգրտության միջոցով որոշել ձեր գտնվելու վայրը։ Տեղորոշման ճշգրտությունն օգտագործում է անլար ազդանշանների և սենսորների տվյալները՝ սարքի տեղադրությունը որոշելու համար։</translation>
 <translation id="7233782086689993269">Դյուրանցումը վերականգնվեց</translation>
 <translation id="723419678599947502">Ստեղծել անվանում Google AI-ի միջոցով</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">Պատկերներ չկան</translation>
 <translation id="8319809980370328428">Ձայնագրության ամփոփագրի և անվանման ստեղծում</translation>
 <translation id="8320910311642849813">անտառ</translation>
-<translation id="8322464149031882595">Սեղմեք՝ առաջ անցնելու համար</translation>
 <translation id="8329018942023753850">հաշվիչ հավելված</translation>
 <translation id="8336739000755212683">Փոխել հաշվի պատկերը սարքում</translation>
 <translation id="8339024191194156249">Իմանալ ավելին ինքնագործարկման մասին</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">CrosVm</translation>
 <translation id="852896705346853285">թեյատուն</translation>
 <translation id="8538236298648811558">Google AI տեխնոլոգիաներ</translation>
-<translation id="8543574988889671960">Նորից բեռնել ներդիրը</translation>
 <translation id="8550364285433943656">Ստեղնաշարի միջոցով խաղալու համար ընտրեք գործողությունների համար ստեղներ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Գեներատիվ արհեստական բանականությունը կարող է սխալներ թույլ տալ, այդ թվում՝ մարդկանց մասին, ուստի ստուգեք դրա տրամադրած պատասխանները։</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="8833620912470026819">կակտուսների անտառ</translation>
 <translation id="8834539327799336565">Միացված է</translation>
-<translation id="8842526499753992487">Տեղափոխել վերևի ձախ անկյուն</translation>
 <translation id="8845001906332463065">Օգնություն</translation>
 <translation id="8849799913685544685">փարոս</translation>
 <translation id="8851859208664803097">Կանգնեցված է – Տպիչն անհասանելի է</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">պինգվիններ</translation>
 <translation id="8968751544471797276">Լիցքավորման արագությունը</translation>
 <translation id="8970109610781093811">Կրկնել</translation>
-<translation id="8972061581514441296">Սեղմեք՝ վերադառնալու համար</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Սկանավորել}=1{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}one{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}other{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}}</translation>
 <translation id="89945434909472341">գյուղ</translation>

@@ -14,6 +14,7 @@
 Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<ph name="TITLE_OF_GROUP" />", che verrà eliminato da tutti i dispositivi.</translation>
 <translation id="1329584516321524826">Aggiornata adesso</translation>
 <translation id="1340839264183302272">Lascia il gruppo</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}other{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1419023007528516122">Il gruppo verrà eliminato definitivamente dal tuo dispositivo</translation>
 <translation id="1486715732399361704">Qui troverai tutti i tuoi gruppi di schede</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Creato <ph name="NUM_MINS_ONE" /> minuto fa}other{Creato <ph name="NUM_MINS_MANY" /> minuti fa}}</translation>
@@ -108,6 +109,7 @@ Se lo elimini, tutti perderanno immediatamente l'accesso al gruppo di schede "<p
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Chiudi scheda}other{Chiudi schede}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> gruppi salvati (le schede verranno chiuse e i gruppi eliminati)</translation>
 <translation id="492284538114688557">Prezzo in calo rilevato</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}other{Espandi il gruppo di schede condiviso con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">Visualizza</translation>
 <translation id="5073204694187207510">Nascondi la griglia a schermo intero</translation>
 <translation id="5076161749301278626">Vuoi visualizzare le recensioni sul negozio?</translation>

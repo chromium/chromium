@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">പ്രോപ്പർട്ടി ഡെവലപ്മെന്റ്</translation>
 <translation id="1824402189105105503">എട്ടാമത്തെ റോൾ</translation>
 <translation id="1826516787628120939">പരിശോധിക്കുന്നു</translation>
+<translation id="1832730227369924598">ഡെസ്‌ക് സമന്വയം</translation>
 <translation id="1834452765064623979">നിർമ്മാണവും പരിപാലനവും</translation>
 <translation id="1838374766361614909">തിരയൽ മായ്ക്കുക</translation>
 <translation id="1839331950812095887">നിങ്ങളുടെ ചിന്തകളെ സംഗ്രഹിക്കുന്ന ഏതാനും വാക്കുകൾ</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">പഴയവ</translation>
 <translation id="2413528052993050574">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; സെർവറിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് റദ്ദാക്കിയിരിക്കാം. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2414886740292270097">ഇരുണ്ടത്</translation>
+<translation id="2418292431699242678">ഏതൊരു ChromeOS ഉപകരണത്തിലും നിങ്ങളുടെ മുമ്പത്തെയും നിലവിലെയും സെഷനുകൾ തമ്മിൽ സമന്വയിപ്പിക്കാൻ നിങ്ങളുടെ അഡ്‌മിൻ ഇനിപ്പറയുന്നവ പ്രവർത്തനക്ഷമമാക്കുന്നു:</translation>
 <translation id="2429716554270894715">ഫാബ്രിക് (വാട്ടർപ്രൂഫ്)</translation>
 <translation id="2436186046335138073">എല്ലാ <ph name="PROTOCOL" /> ലിങ്കുകളും തുറക്കാൻ <ph name="HANDLER_HOSTNAME" /> എന്നതിനെ അനുവദിക്കണോ?</translation>
 <translation id="2436976580469434549">ഫൈബർ, ടെക്‌സ്‌റ്റൈൽ ആർട്ട്സ്</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037605927509011580">കഷ്ടം!</translation>
 <translation id="3039406992698062762">കുടുംബത്തോടൊപ്പമുള്ള യാത്ര</translation>
+<translation id="3040636468789770340">കുക്കികൾ (നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ച വെബ്‌സൈറ്റുകളിൽ സൈൻ ചെയ്തിരിക്കുന്ന സ്ഥിതി)</translation>
 <translation id="3041176923638368519">കാർഡ് ആനുകൂല്യ നിബന്ധനകൾ കാണുക</translation>
 <translation id="3041612393474885105">സര്‍‌ട്ടിഫിക്കറ്റ് വിവരങ്ങള്‍‌</translation>
 <translation id="3045769629416806687">എക്‌സ്ട്രീം സ്പോർട്‌സ്</translation>
@@ -1669,6 +1672,7 @@
 <translation id="3869939189466884821">നിങ്ങളുടെ ലോക്കൽ ഫയലുകൾ <ph name="MINUTES" /> മിനിറ്റിനുള്ളിൽ ഇല്ലാതാക്കും</translation>
 <translation id="3872834068356954457">ശാസ്ത്രം</translation>
 <translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
+<translation id="387681220560687945">വിൻഡോകൾ (വിൻഡോകളുടെയും ടാബുകളുടെയും അറേഞ്ച്മെന്റും ക്രമീകരണവും)</translation>
 <translation id="3879748587602334249">ഡൗൺലോഡ് മാനേജർ</translation>
 <translation id="3880456882942693779">കലയും വിനോദവും</translation>
 <translation id="3880589673277376494">ഇന്റർനെറ്റും ടെലികോമും</translation>
@@ -4745,6 +4749,7 @@
 <translation id="950736567201356821">മുകളിൽ മൂന്ന് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="950926967802086924">പാസ്‌കീ • Google Password Manager</translation>
 <translation id="955429569736351433">VR അനുവദിച്ചു</translation>
+<translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome സമന്വയത്തിനുള്ള ക്രമീകരണത്തിൽ<ph name="END_LINK" /> നിങ്ങൾക്ക് ഈ നയം ഒഴിവാക്കാം.</translation>
 <translation id="95721182352849470">മഞ്ഞ 2</translation>
 <translation id="961663415146723894">താഴെ ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="961856697154696964">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കൂ</translation>

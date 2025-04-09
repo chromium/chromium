@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">Развој некретнина</translation>
 <translation id="1824402189105105503">Осми котур</translation>
 <translation id="1826516787628120939">Провера</translation>
+<translation id="1832730227369924598">Синхронизација радних површина</translation>
 <translation id="1834452765064623979">Изградња и одржавање</translation>
 <translation id="1838374766361614909">Обришите претрагу</translation>
 <translation id="1839331950812095887">неколико речи као резиме ваших мисли</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">Старо</translation>
 <translation id="2413528052993050574">Овај сервер не може да докаже да је <ph name="DOMAIN" />; његов безбедносни сертификат ће можда бити опозван. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="2414886740292270097">Тамнa</translation>
+<translation id="2418292431699242678">Администратор омогућава синхронизацију следећих елемената између претходних и актуелних сесија на било ком ChromeOS уређају:</translation>
 <translation id="2429716554270894715">Тканина (водоотпорна)</translation>
 <translation id="2436186046335138073">Желите ли да дозволите да <ph name="HANDLER_HOSTNAME" /> отвара све <ph name="PROTOCOL" /> линкове?</translation>
 <translation id="2436976580469434549">Текстилна уметност</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">Прати се цена</translation>
 <translation id="3037605927509011580">О, не!</translation>
 <translation id="3039406992698062762">Породична путовања</translation>
+<translation id="3040636468789770340">Колачићи (пријављени статус на недавно посећеним веб-сајтовима)</translation>
 <translation id="3041176923638368519">Прикажи услове за предности картица</translation>
 <translation id="3041612393474885105">Информације о сертификату</translation>
 <translation id="3045769629416806687">Екстремни спортови</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">Локални фајлови ће бити избрисани за <ph name="MINUTES" /> минута</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Покажи ми како</translation>
+<translation id="387681220560687945">Прозори (уређење и организација прозора и картица)</translation>
 <translation id="3879748587602334249">Менаџер преузимања</translation>
 <translation id="3880456882942693779">Уметност и забава</translation>
 <translation id="3880589673277376494">Интернет и телекомуникације</translation>
@@ -2776,7 +2780,7 @@
 <translation id="5826507051599432481">Опште име (CN)</translation>
 <translation id="5830698870816298009">коришћење и кретање камере</translation>
 <translation id="583281660410589416">Непознато</translation>
-<translation id="5837220895135257862">Ослободите простору у услузи <ph name="CLOUD_PROVIDER" /> пре него што пробате поново</translation>
+<translation id="5837220895135257862">Ослободите простор у услузи <ph name="CLOUD_PROVIDER" /> пре него што пробате поново</translation>
 <translation id="5838278095973806738">Немојте да уносите осетљиве информације на овом сајту (на пример, лозинке или кредитне картице) јер нападачи могу да их украду.</translation>
 <translation id="5838732667866024867">Промене цена на графикону можете да прегледате помоћу стрелице налево и надесно</translation>
 <translation id="5840318881868981258">На Google налогу, <ph name="ACCOUNT" /></translation>
@@ -4748,6 +4752,7 @@
 <translation id="950736567201356821">Троструко бушење на врху</translation>
 <translation id="950926967802086924">Приступни кључ • Google менаџер лозинки</translation>
 <translation id="955429569736351433">ВР је дозвољен</translation>
+<translation id="955627189349169688">Ове смернице можете да онемогућите у <ph name="BEGIN_LINK" />подешавањима Chrome синхронизације<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Жута 2</translation>
 <translation id="961663415146723894">Повез на дну</translation>
 <translation id="961856697154696964">Избриши податке прегледања</translation>

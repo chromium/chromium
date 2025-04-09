@@ -492,6 +492,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1822995137827688764">Empreendimentos</translation>
 <translation id="1824402189105105503">Oitavo rolo</translation>
 <translation id="1826516787628120939">A verificar</translation>
+<translation id="1832730227369924598">Sincronização do espaço de trabalho</translation>
 <translation id="1834452765064623979">Construção e manutenção</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839331950812095887">algumas palavras que resumem as suas ideias</translation>
@@ -829,6 +830,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o respetivo certificado de segurança poderá ser revogado. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="2414886740292270097">Escuro</translation>
+<translation id="2418292431699242678">O administrador permite a sincronização dos seguintes itens entre as suas sessões anteriores e atuais em qualquer dispositivo com ChromeOS:</translation>
 <translation id="2429716554270894715">Tecido (à prova de água)</translation>
 <translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Arte com fibras e têxteis</translation>
@@ -1160,6 +1162,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3037177537145227281">Monitorizar o preço</translation>
 <translation id="3037605927509011580">Ah, bolas!!</translation>
 <translation id="3039406992698062762">Viagens familiares</translation>
+<translation id="3040636468789770340">Cookies (estado de sessão iniciada nos Websites visitados recentemente)</translation>
 <translation id="3041176923638368519">Veja os termos das vantagens do cartão</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
 <translation id="3045769629416806687">Desportos radicais</translation>
@@ -1670,6 +1673,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3869939189466884821">Os seus ficheiros locais vão ser eliminados dentro de <ph name="MINUTES" /> minutos</translation>
 <translation id="3872834068356954457">Ciência</translation>
 <translation id="3875783148670536197">Mostrar-me como</translation>
+<translation id="387681220560687945">Janelas (disposição e organização de janelas e separadores)</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
 <translation id="3880456882942693779">Artes e entretenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicações</translation>
@@ -4748,6 +4752,7 @@ Detalhes adicionais:
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="950926967802086924">Chave de acesso • Gestor de Palavras-passe da Google</translation>
 <translation id="955429569736351433">RV permitida</translation>
+<translation id="955627189349169688">Pode recusar esta política nas <ph name="BEGIN_LINK" />definições da Sincronização do Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Amarelo 2</translation>
 <translation id="961663415146723894">Encadernar parte inferior</translation>
 <translation id="961856697154696964">Eliminar dados de navegação</translation>

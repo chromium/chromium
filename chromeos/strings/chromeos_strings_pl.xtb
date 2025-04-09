@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">strona główna przeglądarki</translation>
 <translation id="1526389707933164996">Animacja wygaszacza ekranu</translation>
 <translation id="152892567002884378">Zwiększ głośność</translation>
-<translation id="1531038290222364269">Pokaż karty</translation>
 <translation id="1539864135338521185">lapis-lazuli</translation>
 <translation id="1548555207631326346">Wybierz motyw, a następnie podkreślone słowa, aby spersonalizować obrazy wygenerowane przez AI.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów wygenerowanych przez AI.
@@ -241,7 +240,6 @@
 <translation id="1905710495812624430">Przekroczono maksymalną liczbę prób.</translation>
 <translation id="1908234395526491708">Nieudane żądania UDP</translation>
 <translation id="1908394185991500139">strzałka w lewo</translation>
-<translation id="1911678930322867245">Przesuń w prawy górny róg</translation>
 <translation id="1914144885717544695">w piątek</translation>
 <translation id="1915960750806557358">Podziel się opinią lub opisz problem. Nie podawaj żadnych danych osobowych, poufnych ani wrażliwych.</translation>
 <translation id="1923388006036088459">Kolory uzupełniające</translation>
@@ -361,6 +359,7 @@
 <translation id="2493126929778606526">Twoje najlepsze zdjęcia wybrane automatycznie</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opalu</translation>
+<translation id="2501278716633472235">Wróć</translation>
 <translation id="2505327257735685095">Odśwież bieżący obraz tapety</translation>
 <translation id="2507491234071975894">Głośnik</translation>
 <translation id="2512979179176933762">pokaż okna</translation>
@@ -381,6 +380,7 @@
 <translation id="2584559707064218956">Aby skonfigurować sieć, otwórz Ustawienia</translation>
 <translation id="2586146417912237930">niebieskim i indygo</translation>
 <translation id="2589921777872778654">Menu edytowania i usuwania</translation>
+<translation id="2590424100019931043">Usunięto Cię z tych zajęć</translation>
 <translation id="2597774443162333062">Pliki zostaną wysłane do Google w celu debugowania</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Gotowe. Zeskanowano 1 stronę.}few{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}many{Gotowe. Zeskanowano {NUMBER_OF_PAGES} stron.}other{Gotowe. Zeskanowano {NUMBER_OF_PAGES} strony.}}</translation>
 <translation id="261322795497077164">Identyfikacja mówiącej osoby</translation>
@@ -866,6 +866,7 @@
 <translation id="4965703485264574128">Aby uzyskać wynik przybliżony, pomnóż <ph name="CATEGORY_TEXT" /> przez <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Podziel</translation>
 <translation id="4972592110715526173">zmiana trybu</translation>
+<translation id="497421865427891073">Dalej</translation>
 <translation id="4981003703840817201">niebieskich i różowych</translation>
 <translation id="498186245079027698">Sprawdź skaner i spróbuj ponownie. Upewnij się, że na urządzeniu masz miejsce na zapisanie zeskanowanych plików.</translation>
 <translation id="4982627662315910959">Brak dostępnego skrótu. Naciśnij nowy skrót, używając klawisza Shift i 1 dodatkowego klawisza modyfikującego (Ctrl, Alt lub <ph name="META_KEY" />).</translation>
@@ -1053,7 +1054,6 @@
 <translation id="5896602941605730551">Odtwórz</translation>
 <translation id="5901630391730855834">Żółty</translation>
 <translation id="5903200662178656908">Urządzenie to zestaw klawiatury i myszy.</translation>
-<translation id="5903822368221507416">Ukryj karty</translation>
 <translation id="5904994456462260490">Dodaj nowy APN</translation>
 <translation id="590746845088109442">koty</translation>
 <translation id="5907649332524363701">kolor klawiszy</translation>
@@ -1364,6 +1364,7 @@
 <translation id="7212547870105584639">Zarządzaj ustawieniami APN sieci. Punkty APN nawiązują połączenie między siecią komórkową a internetem. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aktualizacje oprogramowania urządzeń zewnętrznych</translation>
 <translation id="7216409898977639127">Operator komórkowy</translation>
+<translation id="7221869452894271364">Odśwież stronę</translation>
 <translation id="7223952304612664117">Pozwoli to usługom systemowym na określanie Twojej lokalizacji przy użyciu Dokładności lokalizacji. Dokładność lokalizacji używa danych o sygnałach bezprzewodowych i czujnikach, aby określać w przybliżeniu lokalizację urządzenia.</translation>
 <translation id="7233782086689993269">Skrót został przywrócony</translation>
 <translation id="723419678599947502">Utwórz tytuł za pomocą AI od Google</translation>
@@ -1599,7 +1600,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8318753676953949627">Brak obrazów</translation>
 <translation id="8319809980370328428">Tworzenie podsumowania nagrania i tytułu</translation>
 <translation id="8320910311642849813">las</translation>
-<translation id="8322464149031882595">Kliknij, aby przejść dalej</translation>
 <translation id="8329018942023753850">aplikacja Kalkulator</translation>
 <translation id="8336739000755212683">Zmień obraz konta na urządzeniu</translation>
 <translation id="8339024191194156249">Więcej informacji o automatycznym uruchamianiu</translation>
@@ -1652,7 +1652,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">herbaciarnia</translation>
 <translation id="8538236298648811558">Z wykorzystaniem AI od Google</translation>
-<translation id="8543574988889671960">Załaduj kartę ponownie</translation>
 <translation id="8550364285433943656">Dodaj elementy sterujące do działań w grze, aby grać za pomocą klawiszy na klawiaturze</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generatywna AI może popełniać błędy, także dotyczące osób, dlatego sprawdzaj uzyskane odpowiedzi.</translation>
@@ -1703,7 +1702,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="8833620912470026819">las kaktusów</translation>
 <translation id="8834539327799336565">Obecnie połączone</translation>
-<translation id="8842526499753992487">Przesuń w lewy górny róg</translation>
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
 <translation id="8849799913685544685">latarni morskiej</translation>
 <translation id="8851859208664803097">Zatrzymano – drukarka jest nieosiągalna</translation>
@@ -1743,7 +1741,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8961025972867871808">pingwiny</translation>
 <translation id="8968751544471797276">Szybkość ładowania</translation>
 <translation id="8970109610781093811">Uruchom ponownie</translation>
-<translation id="8972061581514441296">Kliknij, aby wrócić</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanuj}=1{Skanuj {NUMBER_OF_PAGES} stronę}few{Skanuj {NUMBER_OF_PAGES} strony}many{Skanuj {NUMBER_OF_PAGES} stron}other{Skanuj {NUMBER_OF_PAGES} strony}}</translation>
 <translation id="89945434909472341">wieś</translation>

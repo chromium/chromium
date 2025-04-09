@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">хөтчийн үндсэн нүүр</translation>
 <translation id="1526389707933164996">Дэлгэц амраагчийн анимаци</translation>
 <translation id="152892567002884378">Дууны түвшинг нэмэх</translation>
-<translation id="1531038290222364269">Табуудыг харуулах</translation>
 <translation id="1539864135338521185">номин</translation>
 <translation id="1548555207631326346">Загвар сонгоод, ХОУ-аар үүсгэсэн зургаа хувийн болгохын тулд доогуур нь зурсан үгнүүдийг сонгоно уу.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Оролдлогын тоо дээд хэмжээнээс хэтэрсэн.</translation>
 <translation id="1908234395526491708">UDP хүсэлтийн алдаа</translation>
 <translation id="1908394185991500139">зүүн тийш заасан сум</translation>
-<translation id="1911678930322867245">Баруун дээш зөөх</translation>
 <translation id="1914144885717544695">Баасан гарагт</translation>
 <translation id="1915960750806557358">Санал хүсэлтээ хуваалцах эсвэл асуудлаа тайлбарлана уу. Ямар нэг хувийн, эмзэг, нууцлалтай зүйл оруулахгүй байхаа мартуузай.</translation>
 <translation id="1923388006036088459">Өргөлтийн өнгөнүүд</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Автоматаар сонгогдсон таны шилдэг зургууд</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">гэрэлтчимэд</translation>
+<translation id="2501278716633472235">Буцаах</translation>
 <translation id="2505327257735685095">Одоогийн дэлгэцийн зургийг сэргээх</translation>
 <translation id="2507491234071975894">Чанга яригч</translation>
 <translation id="2512979179176933762">цонхнуудыг харуулах</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Ойролцоо дүн гаргахын тулд <ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-р үржүүлнэ үү</translation>
 <translation id="4969079779290789265">Хуваах</translation>
 <translation id="4972592110715526173">горим өөрчлөх</translation>
+<translation id="497421865427891073">Цаашаа явах</translation>
 <translation id="4981003703840817201">цэнхэр болгон ягаан</translation>
 <translation id="498186245079027698">Сканнерыг шалгаад дахин оролдоно уу. Скан хийсэн файлуудыг хадгалах хангалттай дотоод зай байгаа эсэхийг шалгана уу.</translation>
 <translation id="4982627662315910959">Товчлол боломжгүй байна. Shift болон өөр 1 тохируулагч товчийг (ctrl, alt эсвэл <ph name="META_KEY" />) ашиглан шинэ товчлолыг дарна уу.</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Тоглуулах</translation>
 <translation id="5901630391730855834">Шар</translation>
 <translation id="5903200662178656908">Төхөөрөмж нь гар болон хулганын хослол юм.</translation>
-<translation id="5903822368221507416">Табуудыг нуух</translation>
 <translation id="5904994456462260490">Шинэ APN нэмэх</translation>
 <translation id="590746845088109442">муурууд</translation>
 <translation id="5907649332524363701">товчны өнгө</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Сүлжээний APN-н тохиргоог удирдана уу. APN үүрэн холбооны сүлжээ болон интернэтийн хооронд холболт тогтоодог. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Гадаад төхөөрөмжүүдийн жижиг программын шинэчлэлтүүд</translation>
 <translation id="7216409898977639127">Үүрэн холбооны үйлчилгээ үзүүлэгч</translation>
+<translation id="7221869452894271364">Энэ хуудсыг дахин ачаалла</translation>
 <translation id="7223952304612664117">Энэ нь системийн үйлчилгээнд таны байршлыг тодорхойлохын тулд Байршлын нарийвчлалыг ашиглахыг зөвшөөрдөг. Байршлын нарийвчлал нь төхөөрөмжийн байршлыг тооцоолохын тулд утасгүй дохио болон мэдрэгчдийн талаарх мэдээллийг ашигладаг.</translation>
 <translation id="7233782086689993269">Товчлолыг сэргээсэн</translation>
 <translation id="723419678599947502">Google-н ХОУ-ыг ашиглан нэр үүсгэх</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">Зураг байхгүй</translation>
 <translation id="8319809980370328428">Бичлэгийн хураангуй болон нэр үүсгэх</translation>
 <translation id="8320910311642849813">ой мод</translation>
-<translation id="8322464149031882595">Үргэлжлүүлэхийн тулд товшино уу</translation>
 <translation id="8329018942023753850">тооны машин апп</translation>
 <translation id="8336739000755212683">Төхөөрөмжийн бүртгэлийн зургийг өөрчлөх</translation>
 <translation id="8339024191194156249">Автоматаар эхлүүлэх талаар нэмэлт мэдээлэл авах</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">цайны газар</translation>
 <translation id="8538236298648811558">Google AI-аар дэмжигдсэн</translation>
-<translation id="8543574988889671960">Табыг дахин ачаалах</translation>
 <translation id="8550364285433943656">Гарын товчнуудаар тоглохын тулд тоглоомын үйлдлүүдэд удирдлага тохируулна уу</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Үүсгэгч ХОУ хүмүүсийн талаар буруу мэдээлэл үүсгэх зэрэг алдаа гаргаж болох тул хариултыг дахин шалгана уу.</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">Хавчуургууд</translation>
 <translation id="8833620912470026819">кактусын ой</translation>
 <translation id="8834539327799336565">Одоогоор холбогдсон</translation>
-<translation id="8842526499753992487">Зүүн дээш зөөх</translation>
 <translation id="8845001906332463065">Тусламж авах</translation>
 <translation id="8849799913685544685">гэрэлт цамхаг</translation>
 <translation id="8851859208664803097">Зогсоосон - Хэвлэгчид холбогдох боломжгүй</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">оцон шувуунууд</translation>
 <translation id="8968751544471797276">Цэнэглэх хурд</translation>
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
-<translation id="8972061581514441296">Буцахын тулд товшино уу</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скан хийх}=1{{NUMBER_OF_PAGES} хуудас скан хийх}other{{NUMBER_OF_PAGES} хуудас скан хийх}}</translation>
 <translation id="89945434909472341">тосгон</translation>

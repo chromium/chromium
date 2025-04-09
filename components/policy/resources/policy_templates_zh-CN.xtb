@@ -8075,9 +8075,9 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 浏览器启动 15 秒后便会开始删除过期数据，运行期间则会每 30 分钟删除一次。
 
 截至 Chrome 114，此政策要求将 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策设为 true。从 Chrome 115 开始，如果既未通过设置 <ph name="SYNC_DISABLED_POLICY_NAME" /> 政策停用“<ph name="CHROME_SYNC_NAME" />”，也未停用 <ph name="BROWSER_SIGNIN_POLICY_NAME" />，设置此政策会为相应的数据类型停用同步功能。</translation>
-<translation id="6762635531429930846">指定最短发布期限，如果超过此期限，重新启动通知会更频繁。系统会从当前正在运行的版本上次提供给客户端的时间算起，计算此期限。
+<translation id="6762635531429930846">指定最短发布期限，如果超过此期限，重新启动通知会更频繁。系统会以当前正在运行的版本上次提供给客户端的时间为起点来计算此期限。
 
-如果有新版本待安装、需要重新启动浏览器或重启设备，且当前版本已被替换超过此设置中指定的天数，则 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 政策将被覆盖，改为 2 小时。如果 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 政策设为 1（“必需”），用户将在该时间段结束时被迫重新启动或重启。
+如果有新版本待安装、需要重新启动浏览器或重启设备，且当前版本已被替换超过此设置中指定的天数，则 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 政策将被覆盖为 2 小时。如果 <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME" /> 政策设为 1（“必需”），系统将在该时间段结束时强制重新启动或重启。
 
 如果未设置此政策或无法确定发布期限，系统会将 <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME" /> 政策应用于所有更新。</translation>
 <translation id="6763023079133439068">允许使用由本地信任锚颁发的缺少 subjectAlternativeName 扩展项的证书</translation>

@@ -14,6 +14,7 @@
 আপনি এটি মুছে দিলে, সকলেই, "<ph name="TITLE_OF_GROUP" />" ট্যাব গ্রুপে অ্যাক্সেস হারাবেন এবং এটি সব ডিভাইস থেকে মুছে দেওয়া হবে।</translation>
 <translation id="1329584516321524826">এখনই আপডেট করা হয়েছে</translation>
 <translation id="1340839264183302272">গ্রুপ থেকে বেরিয়ে আসুন</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব সহ শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন, এর রঙ <ph name="COLOR_NAME" />, লেবেল <ph name="CARD_LABEL" />।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব সহ শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন, এর রঙ <ph name="COLOR_NAME" />, লেবেল <ph name="CARD_LABEL" />।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব সহ শেয়ার করা <ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ বড় করুন, এর রঙ <ph name="COLOR_NAME" />, লেবেল <ph name="CARD_LABEL" />।}}</translation>
 <translation id="1419023007528516122">এর ফলে আপনার ডিভাইস থেকে গ্রুপ স্থায়ীভাবে মুছে যাবে</translation>
 <translation id="1486715732399361704">আপনি সব ট্যাব গ্রুপ এখানে দেখতে পারবেন</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> মিনিট আগে তৈরি করা হয়েছে}one{<ph name="NUM_MINS_MANY" /> মিনিট আগে তৈরি করা হয়েছে}other{<ph name="NUM_MINS_MANY" /> মিনিট আগে তৈরি করা হয়েছে}}</translation>
@@ -108,6 +109,7 @@
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{ট্যাব বন্ধ করুন}one{ট্যাব বন্ধ করুন}other{ট্যাব বন্ধ করুন}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> গ্রুপ সেভ করা হয়েছে (ট্যাব বন্ধ হয়ে যাবে ও গ্রুপ মুছে যাবে)</translation>
 <translation id="492284538114688557">দাম কমেছে বোঝা গেছে</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব সহ শেয়ার করা ট্যাব গ্রুপ বড় করুন, এর রঙ <ph name="COLOR_NAME" />, লেবেল <ph name="CARD_LABEL" />।}one{<ph name="TABS_COUNT_MANY" />টি ট্যাব সহ শেয়ার করা ট্যাব গ্রুপ বড় করুন, এর রঙ <ph name="COLOR_NAME" />, লেবেল <ph name="CARD_LABEL" />।}other{<ph name="TABS_COUNT_MANY" />টি ট্যাব সহ শেয়ার করা ট্যাব গ্রুপ বড় করুন, এর রঙ <ph name="COLOR_NAME" />, লেবেল <ph name="CARD_LABEL" />।}}</translation>
 <translation id="5007392906805964215">পর্যালোচনা করুন</translation>
 <translation id="5073204694187207510">ফুলস্ক্রিন গ্রিড লুকান</translation>
 <translation id="5076161749301278626">স্টোরের রিভিউ দেখতে চান?</translation>

@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">Browser-Startseite</translation>
 <translation id="1526389707933164996">Bildschirmschoneranimation</translation>
 <translation id="152892567002884378">Lauter</translation>
-<translation id="1531038290222364269">Tabs anzeigen</translation>
 <translation id="1539864135338521185">Lapislazuli</translation>
 <translation id="1548555207631326346">Wähle ein Design und dann die unterstrichenen Wörter aus, um deine KI-Bilder zu personalisieren.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Die maximal zulässige Anzahl an Versuchen wurde überschritten.</translation>
 <translation id="1908234395526491708">Fehlgeschlagene UDP-Anfragen</translation>
 <translation id="1908394185991500139">Pfeil nach links</translation>
-<translation id="1911678930322867245">Nach oben rechts verschieben</translation>
 <translation id="1914144885717544695">am Freitag</translation>
 <translation id="1915960750806557358">Gib uns Feedback oder beschreibe das Problem. Achte darauf, dass du keine persönlichen, sensiblen oder vertraulichen Informationen angibst.</translation>
 <translation id="1923388006036088459">Akzentfarben</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Meine besten automatisch ausgewählten Fotos</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">Opal</translation>
+<translation id="2501278716633472235">Zurück</translation>
 <translation id="2505327257735685095">Aktuelles Hintergrundbild aktualisieren</translation>
 <translation id="2507491234071975894">Lautsprecher</translation>
 <translation id="2512979179176933762">Fenster anzeigen</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128"><ph name="CATEGORY_TEXT" /> mit <ph name="CONVERSION_RATE" /> multiplizieren, um ein ungefähres Ergebnis zu erhalten</translation>
 <translation id="4969079779290789265">Aufteilen</translation>
 <translation id="4972592110715526173">Modusänderung</translation>
+<translation id="497421865427891073">Weiter</translation>
 <translation id="4981003703840817201">Blau und Rosa</translation>
 <translation id="498186245079027698">Prüfe den Scanner und versuche es noch einmal. Sieh nach, ob ausreichend lokaler Speicherplatz vorhanden ist, um die gescannten Dateien zu speichern.</translation>
 <translation id="4982627662315910959">Tastenkombination nicht verfügbar. Drücke eine neue Tastenkombination unter Verwendung der Umschalttaste und einer weiteren Modifikatortaste (Strg, Alt oder <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Wiedergeben</translation>
 <translation id="5901630391730855834">Gelb</translation>
 <translation id="5903200662178656908">Das Gerät ist eine Kombination aus Maus und Tastatur.</translation>
-<translation id="5903822368221507416">Tabs ausblenden</translation>
 <translation id="5904994456462260490">Neuen APN hinzufügen</translation>
 <translation id="590746845088109442">Katzen</translation>
 <translation id="5907649332524363701">Tastenfarbe</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Hier kannst du die APN-Netzwerkeinstellungen verwalten. APNs stellen eine Verbindung zwischen einem Mobilfunknetz und dem Internet her. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Firmwareupdates für externe Geräte</translation>
 <translation id="7216409898977639127">Mobilfunkanbieter</translation>
+<translation id="7221869452894271364">Diese Seite neu laden</translation>
 <translation id="7223952304612664117">Dadurch dürfen Systemdienste die Einstellung „Standortgenauigkeit“ nutzen, um deinen Standort zu ermitteln. „Standortgenauigkeit“ verwendet Informationen zu drahtlosen Signalen sowie Sensordaten, um den Standort des Geräts einzuschätzen.</translation>
 <translation id="7233782086689993269">Tastenkombination wiederhergestellt</translation>
 <translation id="723419678599947502">Titel mithilfe von Google AI erstellen</translation>
@@ -1603,7 +1603,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8318753676953949627">Keine Bilder vorhanden</translation>
 <translation id="8319809980370328428">Zusammenfassung der Aufzeichnung und Titelerstellung</translation>
 <translation id="8320910311642849813">Wald</translation>
-<translation id="8322464149031882595">Klicken, um fortzufahren</translation>
 <translation id="8329018942023753850">Rechner App</translation>
 <translation id="8336739000755212683">Bild des Gerätekontos ändern</translation>
 <translation id="8339024191194156249">Weitere Informationen zum automatischen Start</translation>
@@ -1656,7 +1655,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">Teehaus</translation>
 <translation id="8538236298648811558">Powered by Google AI</translation>
-<translation id="8543574988889671960">Tab aktualisieren</translation>
 <translation id="8550364285433943656">Platziere die Steuerelemente auf Spielaktionen, um über die Tastatur zu spielen</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generative KI kann Fehler machen, auch bei Informationen über Personen, überprüfe daher die Antworten.</translation>
@@ -1707,7 +1705,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8833620912470026819">Kaktuswald</translation>
 <translation id="8834539327799336565">Derzeit verbunden</translation>
-<translation id="8842526499753992487">Nach oben links verschieben</translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>
 <translation id="8849799913685544685">Leuchtturm</translation>
 <translation id="8851859208664803097">Angehalten – Drucker nicht erreichbar</translation>
@@ -1747,7 +1744,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8961025972867871808">Pinguine</translation>
 <translation id="8968751544471797276">Ladestrom</translation>
 <translation id="8970109610781093811">Erneut ausführen</translation>
-<translation id="8972061581514441296">Klicken, um zurückzukehren</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scannen}=1{Seite {NUMBER_OF_PAGES} scannen}other{Seite {NUMBER_OF_PAGES} scannen}}</translation>
 <translation id="89945434909472341">Dorf</translation>

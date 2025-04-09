@@ -6781,7 +6781,6 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5794414402486823030">Zawsze otwieraj w przeglądarce systemowej</translation>
 <translation id="5794700615121138172">Foldery udostępnione Linuksa</translation>
 <translation id="5794786537412027208">Zamknij wszystkie aplikacje Chrome</translation>
-<translation id="5795422263272161110">Pokaż obok siebie</translation>
 <translation id="5796485699458186843">Nowa &amp;karta incognito</translation>
 <translation id="5796956053441619942">URL z urządzenia zdalnego nie jest obsługiwany</translation>
 <translation id="5797934230382081317">Dowiedz się, jak zacząć korzystać z tej usługi na &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidzie&lt;/a&gt; i &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9222,7 +9221,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7552846755917812628">Skorzystaj z tych wskazówek:</translation>
 <translation id="7553012839257224005">Sprawdzam kontener Linuksa</translation>
 <translation id="7553242001898162573">Wpisz hasło</translation>
-<translation id="7554342082838376298">Automatyczne zmienianie hasła</translation>
 <translation id="755472745191515939">Administrator nie zezwala na korzystanie z tego języka</translation>
 <translation id="7554791636758816595">Nowa karta</translation>
 <translation id="7556033326131260574">Smart Lock nie mógł zweryfikować Twojego konta. Wpisz hasło, by uzyskać dostęp do urządzenia.</translation>
@@ -11194,7 +11192,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8915916167043355778">Zamknij wszystko</translation>
 <translation id="8916476537757519021">Ramka podrzędna incognito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Tak, zgadzam się</translation>
-<translation id="8917980324687233736">Pokaż obok siebie</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">Instaluję aplikację…</translation>
 <translation id="891931289445130855">Usuń dane i uprawnienia</translation>

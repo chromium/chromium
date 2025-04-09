@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">головна вкладка веб-переглядача</translation>
 <translation id="1526389707933164996">Анімація для заставки</translation>
 <translation id="152892567002884378">Збільшити гучність</translation>
-<translation id="1531038290222364269">Показати вкладки</translation>
 <translation id="1539864135338521185">лазурит</translation>
 <translation id="1548555207631326346">Щоб персоналізувати зображення, створені за допомогою ШІ, виберіть тему й натисніть підкреслені слова.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Перевищено максимальну кількість дозволених спроб.</translation>
 <translation id="1908234395526491708">Не виконано запити за протоколом UDP</translation>
 <translation id="1908394185991500139">стрілка вліво</translation>
-<translation id="1911678930322867245">Перемістити у верхній правий кут</translation>
 <translation id="1914144885717544695">у п’ятницю</translation>
 <translation id="1915960750806557358">Залиште відгук або опишіть проблему. Не вказуйте особисту, чутливу або конфіденційну інформацію.</translation>
 <translation id="1923388006036088459">Акцентні кольори</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Ваші найкращі фото, вибрані автоматично</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">опалу</translation>
+<translation id="2501278716633472235">Назад</translation>
 <translation id="2505327257735685095">Оновити поточний фоновий малюнок</translation>
 <translation id="2507491234071975894">Колонка</translation>
 <translation id="2512979179176933762">показати вікна</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Щоб отримати приблизний результат, помножте значення "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Розділити</translation>
 <translation id="4972592110715526173">змінити режим</translation>
+<translation id="497421865427891073">Перейти вперед</translation>
 <translation id="4981003703840817201">синього й рожевого</translation>
 <translation id="498186245079027698">Перевірте сканер і повторіть спробу. Переконайтеся, що на пристрої достатньо вільного місця для зберігання відсканованих файлів.</translation>
 <translation id="4982627662315910959">Комбінація клавіш недоступна. Натисніть нову комбінацію з використанням клавіші Shift і ще однієї клавіші-модифікатора (Ctrl, Alt або клавіша <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Відтворити</translation>
 <translation id="5901630391730855834">Жовтий</translation>
 <translation id="5903200662178656908">Пристрій – це набір із клавіатури й миші.</translation>
-<translation id="5903822368221507416">Сховати вкладки</translation>
 <translation id="5904994456462260490">Додати нове ім’я точки доступу (APN)</translation>
 <translation id="590746845088109442">коти</translation>
 <translation id="5907649332524363701">колір клавіш</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Керуйте налаштуваннями APN мережі: за допомогою ідентифікаторів APN установлюється зв’язок між мобільною мережею і Інтернетом. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Оновлення мікропрограми для зовнішніх пристроїв</translation>
 <translation id="7216409898977639127">Постачальник мобільного зв’язку</translation>
+<translation id="7221869452894271364">Перезавантажити цю сторінку</translation>
 <translation id="7223952304612664117">Системні сервіси зможуть використовувати точну геолокацію, щоб визначати ваше місцезнаходження. Для визначення місцеположення пристрою використовується інформація про бездротові сигнали й датчики.</translation>
 <translation id="7233782086689993269">Комбінацію клавіш відновлено</translation>
 <translation id="723419678599947502">Створити назву за допомогою ШІ від Google</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">Немає зображень</translation>
 <translation id="8319809980370328428">Короткий виклад запису й створення назви</translation>
 <translation id="8320910311642849813">ліс</translation>
-<translation id="8322464149031882595">Натисніть, щоб перейти вперед</translation>
 <translation id="8329018942023753850">додаток Калькулятор</translation>
 <translation id="8336739000755212683">Змінити зображення облікового запису на пристрої</translation>
 <translation id="8339024191194156249">Докладніше про автоматичний запуск</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">в стилі чайхани</translation>
 <translation id="8538236298648811558">На основі технології ШІ від Google</translation>
-<translation id="8543574988889671960">Оновити вкладку</translation>
 <translation id="8550364285433943656">Виберіть клавіші для дій, щоб грати за допомогою клавіатури</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Генеративний ШІ може припускатися помилок (зокрема щодо людей), тому радимо ретельно перевіряти його відповіді.</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8833620912470026819">кактусовий ліс</translation>
 <translation id="8834539327799336565">Підключено</translation>
-<translation id="8842526499753992487">Перемістити у верхній лівий кут</translation>
 <translation id="8845001906332463065">Отримати довідку</translation>
 <translation id="8849799913685544685">Маяк</translation>
 <translation id="8851859208664803097">Зупинено – принтер недоступний</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">пінгвіни</translation>
 <translation id="8968751544471797276">Швидкість заряджання</translation>
 <translation id="8970109610781093811">Запустити знову</translation>
-<translation id="8972061581514441296">Натисніть, щоб повернутися назад</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканувати}=1{Сканувати сторінку ({NUMBER_OF_PAGES})}one{Сканувати сторінки ({NUMBER_OF_PAGES})}few{Сканувати сторінки ({NUMBER_OF_PAGES})}many{Сканувати сторінки ({NUMBER_OF_PAGES})}other{Сканувати сторінки ({NUMBER_OF_PAGES})}}</translation>
 <translation id="89945434909472341">село</translation>

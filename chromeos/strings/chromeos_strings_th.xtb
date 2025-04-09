@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">หน้าหลักของเบราว์เซอร์</translation>
 <translation id="1526389707933164996">ภาพเคลื่อนไหวของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="152892567002884378">เพิ่มระดับเสียง</translation>
-<translation id="1531038290222364269">แสดงแท็บ</translation>
 <translation id="1539864135338521185">ลาพิส ลาซูลี</translation>
 <translation id="1548555207631326346">เลือกธีมแล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนรูปภาพ AI ในแบบของคุณ<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">ลองทำเกินจำนวนครั้งที่กำหนดไว้แล้ว</translation>
 <translation id="1908234395526491708">ขอ UDP ไม่สำเร็จ</translation>
 <translation id="1908394185991500139">ลูกศรซ้าย</translation>
-<translation id="1911678930322867245">ย้ายไปที่ด้านขวาบน</translation>
 <translation id="1914144885717544695">ในวันศุกร์</translation>
 <translation id="1915960750806557358">แชร์ความคิดเห็นหรืออธิบายปัญหาของคุณ โดยไม่ใส่เรื่องส่วนตัว ข้อมูลที่ละเอียดอ่อน หรือข้อมูลที่เป็นความลับ</translation>
 <translation id="1923388006036088459">สีเฉพาะจุด</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">รูปภาพที่ดีที่สุดซึ่งเลือกสรรมาให้คุณโดยอัตโนมัติ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">โอปอล</translation>
+<translation id="2501278716633472235">ย้อนกลับ</translation>
 <translation id="2505327257735685095">รีเฟรชรูปภาพวอลเปเปอร์ปัจจุบัน</translation>
 <translation id="2507491234071975894">ลำโพง</translation>
 <translation id="2512979179176933762">แสดงหน้าต่าง</translation>
@@ -869,6 +868,7 @@
 <translation id="4965703485264574128">สำหรับผลลัพธ์โดยประมาณ ให้นำค่า <ph name="CATEGORY_TEXT" /> มาคูณด้วย <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">แยก</translation>
 <translation id="4972592110715526173">เปลี่ยนโหมด</translation>
+<translation id="497421865427891073">ไปข้างหน้า</translation>
 <translation id="4981003703840817201">น้ำเงินและชมพู</translation>
 <translation id="498186245079027698">ตรวจสอบเครื่องสแกนแล้วลองอีกครั้ง ตรวจดูว่ามีพื้นที่ว่างในเครื่องเพียงพอสำหรับบันทึกไฟล์ที่สแกน</translation>
 <translation id="4982627662315910959">แป้นพิมพ์ลัดไม่พร้อมใช้งาน กดแป้นพิมพ์ลัดใหม่โดยใช้ Shift และแป้นกดร่วมอีก 1 รายการ (Ctrl, Alt หรือ<ph name="META_KEY" />)</translation>
@@ -1056,7 +1056,6 @@
 <translation id="5896602941605730551">เล่น</translation>
 <translation id="5901630391730855834">สีเหลือง</translation>
 <translation id="5903200662178656908">อุปกรณ์คือชุดแป้นพิมพ์และเมาส์</translation>
-<translation id="5903822368221507416">ซ่อนแท็บ</translation>
 <translation id="5904994456462260490">เพิ่ม APN ใหม่</translation>
 <translation id="590746845088109442">แมว</translation>
 <translation id="5907649332524363701">สีเต็มแป้นพิมพ์</translation>
@@ -1367,6 +1366,7 @@
 <translation id="7212547870105584639">จัดการการตั้งค่า APN ของเครือข่าย APN จะเริ่มการเชื่อมต่อระหว่างเครือข่ายมือถือกับอินเทอร์เน็ต <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">การอัปเดตเฟิร์มแวร์สำหรับอุปกรณ์ภายนอก</translation>
 <translation id="7216409898977639127">ผู้ให้บริการเครือข่ายมือถือ</translation>
+<translation id="7221869452894271364">โหลดหน้านี้ใหม่</translation>
 <translation id="7223952304612664117">การตั้งค่านี้จะช่วยให้บริการของระบบใช้ความแม่นยำของตำแหน่งเพื่อระบุตำแหน่งของคุณได้ ความแม่นยำของตำแหน่งจะใช้ข้อมูลเกี่ยวกับสัญญาณไร้สายและเซ็นเซอร์เพื่อประมาณตำแหน่งของอุปกรณ์</translation>
 <translation id="7233782086689993269">คืนค่าแป้นพิมพ์ลัดแล้ว</translation>
 <translation id="723419678599947502">สร้างชื่อโดยใช้ AI ของ Google</translation>
@@ -1604,7 +1604,6 @@
 <translation id="8318753676953949627">ไม่มีภาพ</translation>
 <translation id="8319809980370328428">การสร้างชื่อและสรุปบันทึกเสียง</translation>
 <translation id="8320910311642849813">ป่า</translation>
-<translation id="8322464149031882595">คลิกเพื่อดำเนินการต่อ</translation>
 <translation id="8329018942023753850">แอปเครื่องคิดเลข</translation>
 <translation id="8336739000755212683">เปลี่ยนรูปภาพของบัญชีอุปกรณ์</translation>
 <translation id="8339024191194156249">ดูข้อมูลเพิ่มเติมเกี่ยวกับการเปิดใช้งานอัตโนมัติ</translation>
@@ -1657,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ร้านน้ำชา</translation>
 <translation id="8538236298648811558">ทำงานด้วย AI ของ Google</translation>
-<translation id="8543574988889671960">โหลดแท็บซ้ำ</translation>
 <translation id="8550364285433943656">วางตัวควบคุมสำหรับการดำเนินการในเกมเพื่อเล่นด้วยแป้นต่างๆ บนแป้นพิมพ์</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generative AI อาจทำผิดพลาดได้ ซึ่งรวมถึงการให้ข้อมูลเกี่ยวกับผู้คน ดังนั้นโปรดตรวจสอบคำตอบอีกครั้ง</translation>
@@ -1708,7 +1706,6 @@
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="8833620912470026819">ป่ากระบองเพชร</translation>
 <translation id="8834539327799336565">เชื่อมต่ออยู่</translation>
-<translation id="8842526499753992487">ย้ายไปที่ด้านซ้ายบน</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
 <translation id="8849799913685544685">ประภาคาร</translation>
 <translation id="8851859208664803097">หยุดแล้ว - เข้าถึงเครื่องพิมพ์ไม่ได้</translation>
@@ -1748,7 +1745,6 @@
 <translation id="8961025972867871808">เพนกวิน</translation>
 <translation id="8968751544471797276">อัตราการชาร์จ</translation>
 <translation id="8970109610781093811">ทำงานอีกครั้ง</translation>
-<translation id="8972061581514441296">คลิกเพื่อย้อนกลับ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{สแกน}=1{สแกนหน้า {NUMBER_OF_PAGES}}other{สแกนหน้า {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">หมู่บ้าน</translation>

@@ -6811,7 +6811,6 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5794414402486823030">Avaa aina järjestelmän katselusovelluksella</translation>
 <translation id="5794700615121138172">Linuxin jaetut kansiot</translation>
 <translation id="5794786537412027208">Sulje kaikki Chrome-sovellukset</translation>
-<translation id="5795422263272161110">Näytä rinnakkain</translation>
 <translation id="5796485699458186843">Uusi incognito-välilehti</translation>
 <translation id="5796956053441619942">Etälaitteen URL-osoitetta ei tueta</translation>
 <translation id="5797934230382081317">Lue lisää &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidin&lt;/a&gt; ja &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS:n&lt;/a&gt; käytön aloittamisesta</translation>
@@ -9251,7 +9250,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7552846755917812628">Kokeile seuraavia keinoja:</translation>
 <translation id="7553012839257224005">Tarkistetaan Linux-säilöä</translation>
 <translation id="7553242001898162573">Lisää salasana</translation>
-<translation id="7554342082838376298">Automaattinen salasanan vaihto</translation>
 <translation id="755472745191515939">Järjestelmänvalvoja ei salli tätä kieltä</translation>
 <translation id="7554791636758816595">Uusi välilehti</translation>
 <translation id="7556033326131260574">Smart Lock ei voinut vahvistaa tiliäsi. Avaa laite kirjoittamalla salasana.</translation>
@@ -11224,7 +11222,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="8915916167043355778">Sulje kaikki</translation>
 <translation id="8916476537757519021">Incognito-alakehys: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Kyllä</translation>
-<translation id="8917980324687233736">Näytä rinnakkain</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8918900204934259333">Asennetaan sovellusta…</translation>
 <translation id="891931289445130855">Poista dataa ja lupia</translation>

@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">ဘရောင်ဇာ ပင်မစာမျက်နှာ</translation>
 <translation id="1526389707933164996">စခရင်နားချိန်ပုံ လှုပ်ရှားသက်ဝင်ပုံ</translation>
 <translation id="152892567002884378">အသံချဲ့ရန်</translation>
-<translation id="1531038290222364269">တဘ်များ ပြပါ</translation>
 <translation id="1539864135338521185">ပါလဒုတ္တာကျောက်</translation>
 <translation id="1548555207631326346">သင့် AI ပုံများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် အပြင်အဆင်ရွေးပြီး မျဉ်းသားထားသော စာလုံးများကို ရွေးပါ။<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">အများဆုံးခွင့်ပြုပေးထားသည့် အခေါက်အရေအတွက်ထက် ကျော်လွန်သွားပါပြီ။</translation>
 <translation id="1908234395526491708">UDP တောင်းဆိုချက် ချွတ်ယွင်းမှုများ</translation>
 <translation id="1908394185991500139">ဘယ်ညွှန်မြား</translation>
-<translation id="1911678930322867245">ညာဖက်ထိပ်သို့ ရွှေ့ရန်</translation>
 <translation id="1914144885717544695">သောကြာနေ့တွင်</translation>
 <translation id="1915960750806557358">သင့်အကြံပြုချက်ကို မျှဝေပါ (သို့) သင့်ပြဿနာကို ဖော်ပြပါ။ ကိုယ်ရေးကိုယ်တာ၊ သတိထားရမည့် (သို့) လျှို့ဝှက်ထားရှိသော မည်သည့်အရာကိုမျှ ထည့်မထားကြောင်း သေချာပါစေ။</translation>
 <translation id="1923388006036088459">အထူးပြုအရောင်များ</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">အလိုအလျောက်ရွေးထားသော သင်၏ အကောင်းဆုံးဓာတ်ပုံများ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">မဟူရာဖလားကျောက်</translation>
+<translation id="2501278716633472235">နောက်သို့ ပြန်ရန်</translation>
 <translation id="2505327257735685095">လက်ရှိနောက်ခံပုံကို ပြန်လည်စတင်ရန်</translation>
 <translation id="2507491234071975894">စပီကာ</translation>
 <translation id="2512979179176933762">ဝင်းဒိုးများ ပြပါ</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">ခန့်မှန်းခြေရလဒ်အတွက် <ph name="CATEGORY_TEXT" /> တန်ဖိုးကို <ph name="CONVERSION_RATE" /> နှင့်မြှောက်ပါ</translation>
 <translation id="4969079779290789265">ခွဲထုတ်ရန်</translation>
 <translation id="4972592110715526173">မုဒ်ပြောင်းရန်</translation>
+<translation id="497421865427891073">ရှေ့သို့သွား</translation>
 <translation id="4981003703840817201">အပြာနှင့် ပန်းရောင်</translation>
 <translation id="498186245079027698">စကင်ဖတ်စက်ကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။ စကင်ဖတ်ထားသောဖိုင်များကို သိမ်းရန် စက်တွင်းနေရာ လုံလောက်ကြောင်း သေချာပါစေ။</translation>
 <translation id="4982627662315910959">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ Shift နှင့် မွမ်းမံခလုတ် (Ctrl၊ Alt၊ သို့မဟုတ် <ph name="META_KEY" />) ၁ ခု ဖြင့် ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">ဖွင့်ရန်</translation>
 <translation id="5901630391730855834">အၐါရောင်</translation>
 <translation id="5903200662178656908">စက်ပစ္စည်းက ကီးဘုတ်နှင့်မောက်စ်အတွဲ ဖြစ်သည်။</translation>
-<translation id="5903822368221507416">တဘ်များ ဖျောက်ရန်</translation>
 <translation id="5904994456462260490">APN အသစ် ထည့်ရန်</translation>
 <translation id="590746845088109442">ကြောင်</translation>
 <translation id="5907649332524363701">ကီးအရောင်</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">ကွန်ရက် APN ဆက်တင်များကို စီမံနိုင်သည်။ APN များက ဆယ်လူလာ ကွန်ရက်နှင့် အင်တာနက်အကြား ချိတ်ဆက်ပေးသည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ပြင်ပစက်များအတွက် ဖာမ်းဝဲအပ်ဒိတ်များ</translation>
 <translation id="7216409898977639127">ဆယ်လူလာဝန်ဆောင်မှုပေးသူ</translation>
+<translation id="7221869452894271364">ဤစာမျက်နှာအား ပြန်ဖွင်</translation>
 <translation id="7223952304612664117">၎င်းသည် သင့်တည်နေရာကို ဆုံးဖြတ်ရန်အတွက် ‘တည်နေရာတိကျမှန်ကန်မှု’ သုံးရန် စနစ်ဝန်ဆောင်မှုများကို ခွင့်ပြုသည်။ ‘တည်နေရာတိကျမှန်ကန်မှု’ သည် စက်တည်နေရာကို ခန့်မှန်းရန် ကြိုးမဲ့အချက်ပြမှုနှင့် အာရုံခံကိရိယာများအကြောင်း အချက်အလက်ကို သုံးသည်။</translation>
 <translation id="7233782086689993269">ဖြတ်လမ်းလင့်ခ်ကို ပြန်ယူလိုက်ပါပြီ</translation>
 <translation id="723419678599947502">Google AI သုံး၍ ခေါင်းစဉ်တပ်ရန်</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">ပုံများ မရှိပါ</translation>
 <translation id="8319809980370328428">အသံဖမ်းချက် အနှစ်ချုပ်နှင့် ခေါင်းစဉ်တပ်ခြင်း</translation>
 <translation id="8320910311642849813">သစ်တော</translation>
-<translation id="8322464149031882595">ရှေ့ဆက်သွားရန် နှိပ်ပါ</translation>
 <translation id="8329018942023753850">ဂဏန်းတွက်စက် အက်ပ်</translation>
 <translation id="8336739000755212683">စက်ပစ္စည်း၏ အကောင့်ပုံ ပြောင်းရန်</translation>
 <translation id="8339024191194156249">အော်တိုစတင်မှုအကြောင်း ပိုမိုလေ့လာရန်</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">လက်ဖက်ရည်ဆိုင်</translation>
 <translation id="8538236298648811558">Google AI က ပံ့ပိုးထားသည်</translation>
-<translation id="8543574988889671960">တဘ်ကို ပြန်လည်စတင်ရန်</translation>
 <translation id="8550364285433943656">ကီးဘုတ်ကီးများဖြင့် ကစားရန်အတွက် ဂိမ်းလုပ်ဆောင်ချက်များတွင် သတ်မှတ်ချက်များ ထည့်ပါ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">ထုတ်လုပ်မှု AI သည် လူများအကြောင်းအပါအဝင် အမှားများ ပြုလုပ်နိုင်သဖြင့် ၎င်းကို သေချာစွာစိစစ်ပါ။</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="8833620912470026819">ရှားစောင်းတော</translation>
 <translation id="8834539327799336565">လက်ရှိ ချိတ်ဆက်ထားသည်</translation>
-<translation id="8842526499753992487">ဘယ်ဘက်ထိပ်သို့ ရွှေ့ရန်</translation>
 <translation id="8845001906332463065">အကူအညီရယူပါ</translation>
 <translation id="8849799913685544685">မီးပြတိုက်</translation>
 <translation id="8851859208664803097">ရပ်သွားသည် - ပရင်တာကို ချိတ်ဆက်၍မရပါ</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">ပင်ဂွင်ငှက်</translation>
 <translation id="8968751544471797276">အားသွင်းနှုန်း</translation>
 <translation id="8970109610781093811">ထပ်လုပ်ဆောင်ရန်</translation>
-<translation id="8972061581514441296">နောက်ပြန်သွားရန် နှိပ်ပါ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{စကင်ဖတ်ရန်}=1{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}other{စာမျက်နှာ {NUMBER_OF_PAGES} ကို စကင်ဖတ်ရန်}}</translation>
 <translation id="89945434909472341">ရွာ</translation>

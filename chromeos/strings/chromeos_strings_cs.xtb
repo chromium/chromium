@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">domovská stránka prohlížeče</translation>
 <translation id="1526389707933164996">Animace spořiče obrazovky</translation>
 <translation id="152892567002884378">Zvýšit hlasitost</translation>
-<translation id="1531038290222364269">Zobrazit karty</translation>
 <translation id="1539864135338521185">lazurit</translation>
 <translation id="1548555207631326346">Vyberte motiv a pak si obrázky vygenerované pomocí AI přizpůsobte výběrem podtržených slov.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Byl překročen maximální povolený počet pokusů.</translation>
 <translation id="1908234395526491708">Selhání požadavků UDP</translation>
 <translation id="1908394185991500139">šipka vlevo</translation>
-<translation id="1911678930322867245">Přesunout doprava nahoru</translation>
 <translation id="1914144885717544695">v pátek</translation>
 <translation id="1915960750806557358">Sdělte nám svůj názor nebo popište svůj problém. Neuvádějte žádné osobní, citlivé ani důvěrné informace.</translation>
 <translation id="1923388006036088459">Barvy zvýraznění</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Vaše nejlepší fotky, vybrané automaticky</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opál</translation>
+<translation id="2501278716633472235">Zpět</translation>
 <translation id="2505327257735685095">Obnovit aktuální tapetu</translation>
 <translation id="2507491234071975894">Reproduktor</translation>
 <translation id="2512979179176933762">zobrazit okna</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Přibližný výsledek získáte vynásobením hodnoty <ph name="CATEGORY_TEXT" /> číslem <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Rozdělit</translation>
 <translation id="4972592110715526173">změna režimu</translation>
+<translation id="497421865427891073">Vpřed</translation>
 <translation id="4981003703840817201">modrá a růžová</translation>
 <translation id="498186245079027698">Zkontrolujte skener a zkuste to znovu. Zkontrolujte, zda máte dostatek místního úložného prostoru k ukládání naskenovaných souborů.</translation>
 <translation id="4982627662315910959">Zkratka není k dispozici. Stiskněte novou zkratku s klávesou Shift a jednou další modifikační klávesou (Ctrl, Alt nebo <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Přehrát</translation>
 <translation id="5901630391730855834">Žlutá</translation>
 <translation id="5903200662178656908">Zařízení je kombinace klávesnice a myši.</translation>
-<translation id="5903822368221507416">Skrýt karty</translation>
 <translation id="5904994456462260490">Přidání nového názvu přístupového bodu</translation>
 <translation id="590746845088109442">kočky</translation>
 <translation id="5907649332524363701">barva klíče</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Spravovat nastavení názvů přístupových bodů (APN) sítě. Názvy přístupových bodů umožňují navázat spojení mezi mobilní sítí a internetem. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Aktualizace firmwaru pro externí zařízení</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
+<translation id="7221869452894271364">Načíst tuto stránku znovu</translation>
 <translation id="7223952304612664117">Systémové služby budou moct k určení vaší polohy používat funkci Přesnost určování polohy. Přesnost polohy využívá k odhadu polohy zařízení informace o bezdrátových signálech a senzorech.</translation>
 <translation id="7233782086689993269">Zkratka byla obnovena</translation>
 <translation id="723419678599947502">Vytvořit název pomocí Google AI</translation>
@@ -1603,7 +1603,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8318753676953949627">Žádné obrázky</translation>
 <translation id="8319809980370328428">Shrnutí nahrávky a vytvoření názvu</translation>
 <translation id="8320910311642849813">les</translation>
-<translation id="8322464149031882595">Kliknutím přejdete vpřed</translation>
 <translation id="8329018942023753850">aplikace kalkulačka</translation>
 <translation id="8336739000755212683">Změnit obrázek účtu zařízení</translation>
 <translation id="8339024191194156249">Další informace o automatickém spouštění</translation>
@@ -1656,7 +1655,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">čajovna</translation>
 <translation id="8538236298648811558">Používá Google AI</translation>
-<translation id="8543574988889671960">Načíst kartu znovu</translation>
 <translation id="8550364285433943656">Přiřaďte herním akcím ovládání, abyste mohli hrát pomocí klávesnice</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generativní umělá inteligence může dělat chyby, a to i v případě lidí, proto si odpověď zkontrolujte.</translation>
@@ -1707,7 +1705,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8833620912470026819">kaktusový les</translation>
 <translation id="8834539327799336565">Momentálně připojeno</translation>
-<translation id="8842526499753992487">Přesunout doleva nahoru</translation>
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8849799913685544685">maják</translation>
 <translation id="8851859208664803097">Zastaveno – tiskárna není dostupná</translation>
@@ -1747,7 +1744,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8961025972867871808">tučňáci</translation>
 <translation id="8968751544471797276">Rychlost nabíjení</translation>
 <translation id="8970109610781093811">Spustit znovu</translation>
-<translation id="8972061581514441296">Kliknutím se vrátíte zpět</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Naskenovat}=1{Naskenovat {NUMBER_OF_PAGES} stránek}few{Naskenovat {NUMBER_OF_PAGES} stránky}many{Naskenovat {NUMBER_OF_PAGES} stránky}other{Naskenovat {NUMBER_OF_PAGES} stránek}}</translation>
 <translation id="89945434909472341">vesnice</translation>

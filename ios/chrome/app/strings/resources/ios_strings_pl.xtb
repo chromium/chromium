@@ -1127,6 +1127,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="573974402615125334">Aby udostępniać grupy kart, dołączać do nich i używać ich do współpracy, zsynchronizuj historię i karty</translation>
 <translation id="5740123193752401435">Wyszukaj karty…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> – powiadomienia włączone</translation>
+<translation id="5745598824054949526">Nie znaleziono tekstu</translation>
 <translation id="574762237186762643">Wydarzenia</translation>
 <translation id="5749158352074143502">Kontynuuj na tej karcie</translation>
 <translation id="5753021559215751319">Zapisz hasło</translation>
@@ -1290,6 +1291,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6410883413783534063">Otwórz karty, by odwiedzić jednocześnie wiele stron</translation>
 <translation id="6416807286621280684">Śledzenie przesyłek i aktualne informacje o dostawie.</translation>
 <translation id="6418346271604475326">Przygotowuję PDF</translation>
+<translation id="6421038304268477484">Przetłumaczony tekst</translation>
 <translation id="6429213933892582367">Otwórz Opcje haseł</translation>
 <translation id="6434591244308415567">Wystąpił błąd. Spróbuj ponownie później.</translation>
 <translation id="6435307030888827407">Nie chcę się logować</translation>
@@ -1968,6 +1970,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9097506547406246598">Nie udało się zrezygnować z obserwowania. Coś poszło nie tak.</translation>
 <translation id="9098541895599151034">Usunąć hasła (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Za każdym razem pytaj, którego konta używać</translation>
+<translation id="9099821309562615674">Zadbaj o to, aby tłumaczony tekst był wyraźny i mieścił się w kadrze.</translation>
 <translation id="9100610230175265781">Wymagane jest hasło wielowyrazowe</translation>
 <translation id="91023216973987714">Formy płatności</translation>
 <translation id="9106655997975673326">Z urządzenia „<ph name="SOURCE_DEVICE" />”</translation>

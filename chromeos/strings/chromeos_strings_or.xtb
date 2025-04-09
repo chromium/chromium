@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">ବ୍ରାଉଜର ହୋମ</translation>
 <translation id="1526389707933164996">ସ୍କ୍ରିନ ସେଭର ଆନିମେସନ</translation>
 <translation id="152892567002884378">ଭଲ୍ୟୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
-<translation id="1531038290222364269">ଟାବ ଦେଖାନ୍ତୁ</translation>
 <translation id="1539864135338521185">ଲେପିସ ଲାଜୁଲି</translation>
 <translation id="1548555207631326346">ଏକ ଥିମ ବାଛନ୍ତୁ ଏବଂ ତା'ପରେ ଆପଣଙ୍କର AI ଇମେଜଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଅଣ୍ଡରଲାଇନ କରାଯାଇଥିବା ଶବ୍ଦଗୁଡ଼ିକୁ ଚୟନ କରନ୍ତୁ।<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">ସର୍ବାଧିକ ଅନୁମୋଦିତ ପ୍ରଚେଷ୍ଟା ସୀମା ଅତିକ୍ରମ କଲା।</translation>
 <translation id="1908234395526491708">UDP ଅନୁରୋଧ ବିଫଳ</translation>
 <translation id="1908394185991500139">ବାମପଟକୁ ତୀର</translation>
-<translation id="1911678930322867245">ଶୀର୍ଷ ଡାହାଣକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="1914144885717544695">ଶୁକ୍ରବାର ଦିନ</translation>
 <translation id="1915960750806557358">ଆପଣଙ୍କ ମତାମତ ସେୟାର କରନ୍ତୁ କିମ୍ବା ଆପଣଙ୍କ ସମସ୍ୟାର ବର୍ଣ୍ଣନା କରନ୍ତୁ। ବ୍ୟକ୍ତିଗତ, ସମ୍ବେଦନଶୀଳ କିମ୍ବା ଗୋପନୀୟ କିଛି ଅନ୍ତର୍ଭୁକ୍ତ ନକରିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="1923388006036088459">ଆକ୍ସେଣ୍ଟ ରଙ୍ଗଗୁଡ଼ିକ</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">ସ୍ୱଚାଳିତ ଭାବେ ଚୟନିତ, ଆପଣଙ୍କର ଶ୍ରେଷ୍ଠ ଫଟୋଗୁଡ଼ିକ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ଓପାଲ</translation>
+<translation id="2501278716633472235">ଫେରନ୍ତୁ</translation>
 <translation id="2505327257735685095">ବର୍ତ୍ତମାନର ୱାଲପେପର୍ ଛବିକୁ ରିଫ୍ରେସ୍ କରନ୍ତୁ</translation>
 <translation id="2507491234071975894">ସ୍ପିକର</translation>
 <translation id="2512979179176933762">ୱିଣ୍ଡୋଗୁଡ଼ିକ ଦେଖାନ୍ତୁ</translation>
@@ -869,6 +868,7 @@
 <translation id="4965703485264574128">ଏକ ଆନୁମାନିକ ଫଳାଫଳ ପାଇଁ <ph name="CONVERSION_RATE" /> ଭେଲ୍ୟୁକୁ <ph name="CATEGORY_TEXT" /> ଦ୍ୱାରା ଗୁଣନ କରନ୍ତୁ</translation>
 <translation id="4969079779290789265">ସ୍ପ୍ଲିଟ କରନ୍ତୁ</translation>
 <translation id="4972592110715526173">ମୋଡ୍‍ ପରିବର୍ତ୍ତନ</translation>
+<translation id="497421865427891073">ଆଗକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="4981003703840817201">ନୀଳ ଏବଂ ଗୋଲାପୀ</translation>
 <translation id="498186245079027698">ସ୍କାନର୍ ଯାଞ୍ଚ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ। ସ୍କାନ୍ କରାଯାଇଥିବା ଫାଇଲଗୁଡ଼ିକୁ ସେଭ୍ କରିବାକୁ ଯଥେଷ୍ଟ ଲୋକାଲ୍ ସ୍ଥାନ ଥିବା ନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="4982627662315910959">ସର୍ଟକଟ ଉପଲବ୍ଧ ନାହିଁ। shift ଏବଂ 1 ଅଧିକ ମୋଡିଫାୟର କୀ (ctrl, alt କିମ୍ବା <ph name="META_KEY" />) ବ୍ୟବହାର କରି ଏକ ନୂଆ ସର୍ଟକଟ ଦବାନ୍ତୁ।</translation>
@@ -1056,7 +1056,6 @@
 <translation id="5896602941605730551">ପ୍ଲେ କରନ୍ତୁ</translation>
 <translation id="5901630391730855834">ହଳଦିଆ</translation>
 <translation id="5903200662178656908">ଡିଭାଇସଟି ଏକ କୀବୋର୍ଡ ଏବଂ ମାଉସର କମ୍ବୋ ଅଟେ।</translation>
-<translation id="5903822368221507416">ଟାବଗୁଡ଼ିକୁ ଲୁଚାନ୍ତୁ</translation>
 <translation id="5904994456462260490">ଏକ ନୂଆ APN ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="590746845088109442">ବିଲେଇ</translation>
 <translation id="5907649332524363701">କୀ'ର ରଙ୍ଗ</translation>
@@ -1367,6 +1366,7 @@
 <translation id="7212547870105584639">ନେଟୱାର୍କ APN ସେଟିଂସକୁ ପରିଚାଳନା କରନ୍ତୁ। APNଗୁଡ଼ିକ ଏକ ସେଲୁଲାର ନେଟୱାର୍କ ଏବଂ ଇଣ୍ଟରନେଟ ମଧ୍ୟରେ ଏକ କନେକ୍ସନ ତିଆରି କରେ। <ph name="BEGIN_LINK_LEARN_MORE" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ଏକ୍ସଟର୍ନଲ ଡିଭାଇସଗୁଡ଼ିକ ପାଇଁ ଫାର୍ମୱେର ଅପଡେଟଗୁଡ଼ିକ</translation>
 <translation id="7216409898977639127">ସେଲ୍ୟୁଲାର୍ ସେବା ପ୍ରଦାତା</translation>
+<translation id="7221869452894271364">ଏହି ପୃଷ୍ଠାଟି ପୁନଃଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="7223952304612664117">ଏହା ସିଷ୍ଟମ ସାର୍ଭିସକୁ ଆପଣଙ୍କ ଲୋକେସନ ନିର୍ଦ୍ଧାରଣ କରିବା ପାଇଁ ଲୋକେସନ ସଠିକତା ବ୍ୟବହାର କରିବା ପାଇଁ ଅନୁମତି ଦିଏ। ଡିଭାଇସର ଲୋକେସନକୁ ଆକଳନ କରିବା ପାଇଁ ଲୋକେସନ ସଠିକତା ୱାୟାରଲେସ ସିଗନାଲ ଏବଂ ସେନ୍ସରଗୁଡ଼ିକ ବିଷୟରେ ଥିବା ସୂଚନାକୁ ବ୍ୟବହାର କରେ।</translation>
 <translation id="7233782086689993269">ସର୍ଟକଟ ରିଷ୍ଟୋର କରାଯାଇଛି</translation>
 <translation id="723419678599947502">Google AI ବ୍ୟବହାର କରି ଟାଇଟେଲ ତିଆରି କରନ୍ତୁ</translation>
@@ -1604,7 +1604,6 @@
 <translation id="8318753676953949627">କୌଣସି ଇମେଜ୍ ନାହିଁ</translation>
 <translation id="8319809980370328428">ରେକର୍ଡିଂ ସାରାଂଶ ଏବଂ ଟାଇଟେଲ ତିଆରି କରିବା</translation>
 <translation id="8320910311642849813">ଜଙ୍ଗଲ</translation>
-<translation id="8322464149031882595">ଆଗକୁ ଯିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="8329018942023753850">କାଲକୁଲେଟର ଆପ</translation>
 <translation id="8336739000755212683">ଡିଭାଇସ୍ ଆକାଉଣ୍ଟ ଛବି ବଦଳାନ୍ତୁ</translation>
 <translation id="8339024191194156249">ସ୍ୱତଃ-ଲଞ୍ଚ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
@@ -1657,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ଟି ହାଉସ</translation>
 <translation id="8538236298648811558">Google AI ଦ୍ୱାରା ପରିଚାଳିତ</translation>
-<translation id="8543574988889671960">ଟାବକୁ ପୁଣି ଲୋଡ କରନ୍ତୁ</translation>
 <translation id="8550364285433943656">ଆପଣଙ୍କ କୀବୋର୍ଡ କୀ ମାଧ୍ୟମରେ ପ୍ଲେ କରିବା ପାଇଁ ଗେମ ଆକ୍ସନରେ ନିୟନ୍ତ୍ରଣ ଲାଗୁ କରନ୍ତୁ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">ଜେନେରେଟିଭ AI ଭୁଲ କରିପାରେ, ଯେଉଁଥିରେ ଲୋକମାନଙ୍କ ବିଷୟରେ ସୂଚନା ଅନ୍ତର୍ଭୁକ୍ତ, ତେଣୁ ଏହାକୁ ଦୁଇଥର-ଯାଞ୍ଚ କରନ୍ତୁ।</translation>
@@ -1708,7 +1706,6 @@
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8833620912470026819">କାକଟସ ଜଙ୍ଗଲ</translation>
 <translation id="8834539327799336565">ବର୍ତ୍ତମାନ ସଂଯୁକ୍ତ ଅଛି</translation>
-<translation id="8842526499753992487">ଶୀର୍ଷ ବାମକୁ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="8845001906332463065">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="8849799913685544685">ଲାଇଟହାଉସ</translation>
 <translation id="8851859208664803097">ବନ୍ଦ ହୋଇଯାଇଛି - ପ୍ରିଣ୍ଟର ସହ ସଂଯୋଗ କରି ହେଉନାହିଁ</translation>
@@ -1748,7 +1745,6 @@
 <translation id="8961025972867871808">ପେଙ୍ଗୁଇନ</translation>
 <translation id="8968751544471797276">ଚାର୍ଜିଂ ରେଟ୍</translation>
 <translation id="8970109610781093811">ପୁଣି ଚଲାନ୍ତୁ</translation>
-<translation id="8972061581514441296">ପଛକୁ ଫେରିବା ପାଇଁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ସ୍କାନ୍ କରନ୍ତୁ}=1{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}other{{NUMBER_OF_PAGES}ଟି ପୃଷ୍ଠା ସ୍କାନ୍ କରନ୍ତୁ}}</translation>
 <translation id="89945434909472341">ଗ୍ରାମ</translation>

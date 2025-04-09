@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">tarayıcı ana sayfası</translation>
 <translation id="1526389707933164996">Ekran koruyucu animasyon</translation>
 <translation id="152892567002884378">Sesi açar</translation>
-<translation id="1531038290222364269">Sekmeleri göster</translation>
 <translation id="1539864135338521185">laciverttaşı</translation>
 <translation id="1548555207631326346">Yapay zeka resimlerinizi kişiselleştirmek için bir tema ve ardından altı çizili kelimeleri seçin.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">İzin verilen maksimum deneme sayısı aşıldı.</translation>
 <translation id="1908234395526491708">UDP istek hataları</translation>
 <translation id="1908394185991500139">sol ok</translation>
-<translation id="1911678930322867245">Sağ üste taşı</translation>
 <translation id="1914144885717544695">Cuma günü</translation>
 <translation id="1915960750806557358">Geri bildiriminizi paylaşın veya sorununuzu açıklayın. Kişisel, hassas veya gizli bilgiler eklemeyin.</translation>
 <translation id="1923388006036088459">Vurgu renkleri</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Otomatik olarak seçilen en iyi fotoğraflarınız</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
+<translation id="2501278716633472235">Geri dön</translation>
 <translation id="2505327257735685095">Mevcut duvar kağıdı resmini yenile</translation>
 <translation id="2507491234071975894">Hoparlör</translation>
 <translation id="2512979179176933762">pencereleri göster</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Yaklaşık sonuç için <ph name="CATEGORY_TEXT" /> değerini <ph name="CONVERSION_RATE" /> ile çarp</translation>
 <translation id="4969079779290789265">Böl</translation>
 <translation id="4972592110715526173">mod değiştir</translation>
+<translation id="497421865427891073">İlerle</translation>
 <translation id="4981003703840817201">mavi ve pembe</translation>
 <translation id="498186245079027698">Tarayıcıyı kontrol edip tekrar deneyin. Taranan dosyaların kaydedilmesi için yeterli yerel alan bulunduğundan emin olun.</translation>
 <translation id="4982627662315910959">Kısayol kullanılamıyor. Üst karakter ve bir tane daha değiştirici tuş (ctrl, alt veya <ph name="META_KEY" />) kullanarak yeni bir kısayola basın.</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Çal</translation>
 <translation id="5901630391730855834">Sarı</translation>
 <translation id="5903200662178656908">Bu cihaz bir klavye ile fare kombinasyonudur.</translation>
-<translation id="5903822368221507416">Sekmeleri gizle</translation>
 <translation id="5904994456462260490">Yeni bir APN ekleyin</translation>
 <translation id="590746845088109442">kediler</translation>
 <translation id="5907649332524363701">tuş rengi</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Ağ APN ayarlarını yönetin. APN'ler, hücresel ağ ve internet arasında bir bağlantı oluşturur. <ph name="BEGIN_LINK_LEARN_MORE" />Daha fazla bilgi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Harici cihazlar için donanım yazılımı güncellemeleri</translation>
 <translation id="7216409898977639127">Hücresel sağlayıcı</translation>
+<translation id="7221869452894271364">Bu sayfayı yeniden yükle</translation>
 <translation id="7223952304612664117">Sisteme ait hizmetler, bu işlemden sonra konumunuzu belirlemek için Konum Doğruluğu'nu kullanabilir. Konum Doğruluğu, cihaz konumunu tahmin etmek için kablosuz sinyaller ve sensörler hakkındaki bilgileri kullanır.</translation>
 <translation id="7233782086689993269">Kısayol geri yüklendi</translation>
 <translation id="723419678599947502">Google Yapay Zeka'yı kullanarak başlık oluşturun</translation>
@@ -1603,7 +1603,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8318753676953949627">Resim Yok</translation>
 <translation id="8319809980370328428">Kayıt özeti ve başlık oluşturma</translation>
 <translation id="8320910311642849813">orman</translation>
-<translation id="8322464149031882595">Devam etmek için tıklayın</translation>
 <translation id="8329018942023753850">hesap makinesi uygulaması</translation>
 <translation id="8336739000755212683">Cihaz hesap görüntüsünü değiştir</translation>
 <translation id="8339024191194156249">Otomatik başlatma hakkında daha fazla bilgi</translation>
@@ -1656,7 +1655,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">çay bahçesi</translation>
 <translation id="8538236298648811558">Google Yapay Zeka destekli</translation>
-<translation id="8543574988889671960">Sekmeyi yeniden yükle</translation>
 <translation id="8550364285433943656">Klavye tuşlarıyla oynamak için oyun işlemlerine kontroller ekleyin</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Üretken yapay zeka, kişiler de dahil olmak üzere farklı konular hakkında yanlış bilgi verebildiğinden yanıtlarını doğrulayın.</translation>
@@ -1707,7 +1705,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8820817407110198400">Yer işaretleri</translation>
 <translation id="8833620912470026819">kaktüs ormanı</translation>
 <translation id="8834539327799336565">Şu anda bağlı cihazlar</translation>
-<translation id="8842526499753992487">Sol üste taşı</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8849799913685544685">deniz feneri</translation>
 <translation id="8851859208664803097">Durduruldu - Yazıcıya erişilemiyor</translation>
@@ -1747,7 +1744,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8961025972867871808">penguenler</translation>
 <translation id="8968751544471797276">Şarj olma hızı</translation>
 <translation id="8970109610781093811">Yeniden çalıştır</translation>
-<translation id="8972061581514441296">Geri dönmek için tıklayın</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Tara}=1{Taranacak sayfa: {NUMBER_OF_PAGES}}other{Taranacak sayfa: {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">köy</translation>

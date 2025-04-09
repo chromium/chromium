@@ -6331,6 +6331,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5436492226391861498">Čekanje na proxy tunel...</translation>
 <translation id="5436510242972373446">Pretraži <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Prozor <ph name="WINDOW_SIDE" /> sada je širok <ph name="WINDOW_SIZE_PERCENT" />, okno <ph name="PANE_SIDE" /> sada je široko <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">Pronađite &amp;proširenja</translation>
 <translation id="5440425659852470030">Zatvori bočnu ploču</translation>
 <translation id="544083962418256601">Stvaranje prečaca...</translation>
 <translation id="5441133529460183413">Web-aplikacija instalirana iz preglednika Chrome</translation>
@@ -6800,7 +6801,6 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5794414402486823030">Uvijek otvori u pregledniku sustava</translation>
 <translation id="5794700615121138172">Linuxove dijeljene mape</translation>
 <translation id="5794786537412027208">Zatvori sve Chromeove aplikacije</translation>
-<translation id="5795422263272161110">Prikaži usporedno</translation>
 <translation id="5796485699458186843">Nova anonimna &amp;kartica</translation>
 <translation id="5796956053441619942">URL s udaljenog uređaja nije podržan</translation>
 <translation id="5797934230382081317">Saznajte kako početi upotrebljavati &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; i &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9243,7 +9243,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="7552846755917812628">Pokušajte učiniti sljedeće:</translation>
 <translation id="7553012839257224005">Provjera Linuxovog spremnika</translation>
 <translation id="7553242001898162573">Unesite zaporku</translation>
-<translation id="7554342082838376298">Automatizirana promjena zaporke</translation>
 <translation id="755472745191515939">Vaš administrator ne dopušta taj jezik</translation>
 <translation id="7554791636758816595">Nova kartica</translation>
 <translation id="7556033326131260574">Smart Lock nije uspio potvrditi vaš račun. Upišite zaporku da biste pristupili uređaju.</translation>
@@ -11219,7 +11218,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="8915916167043355778">Zatvori sve</translation>
 <translation id="8916476537757519021">Anonimni podokvir: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Da, pristajem</translation>
-<translation id="8917980324687233736">Prikaži usporedno</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">Instaliranje aplikacije...</translation>
 <translation id="891931289445130855">Izbriši podatke i dopuštenja</translation>

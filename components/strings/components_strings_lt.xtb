@@ -492,6 +492,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1822995137827688764">Nuosavybės plėtra</translation>
 <translation id="1824402189105105503">Aštuntas ritinėlis</translation>
 <translation id="1826516787628120939">Tikrinama</translation>
+<translation id="1832730227369924598">Darbalaukio sinchronizavimas</translation>
 <translation id="1834452765064623979">Statyba ir techninė priežiūra</translation>
 <translation id="1838374766361614909">Išvalyti paiešką</translation>
 <translation id="1839331950812095887">keli žodžiai, apibendrinantys jūsų mintis</translation>
@@ -829,6 +830,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2413155254802890957">Senas</translation>
 <translation id="2413528052993050574">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas gali būti atšauktas. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="2414886740292270097">Tamsi</translation>
+<translation id="2418292431699242678">Administratorius įgalina sinchronizuoti šiuos elementus tarp ankstesnių ir dabartinių seansų bet kuriame „ChromeOS“ įrenginyje:</translation>
 <translation id="2429716554270894715">Audinys (atsparus vandeniui)</translation>
 <translation id="2436186046335138073">Leisti „<ph name="HANDLER_HOSTNAME" />“ atidaryti visas <ph name="PROTOCOL" /> nuorodas?</translation>
 <translation id="2436976580469434549">Pluošto ir audinių menai</translation>
@@ -1160,6 +1162,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3037177537145227281">Kaina stebima</translation>
 <translation id="3037605927509011580">Oi!</translation>
 <translation id="3039406992698062762">Šeimos kelionės</translation>
+<translation id="3040636468789770340">Slapukai (prisijungimo būsena neseniai aplankytose svetainėse)</translation>
 <translation id="3041176923638368519">Žr. kortelės privilegijų sąlygas</translation>
 <translation id="3041612393474885105">Sertifikato informacija</translation>
 <translation id="3045769629416806687">Ekstremalusis sportas</translation>
@@ -1671,6 +1674,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3869939189466884821">Vietiniai failai bus ištrinti po <ph name="MINUTES" /> min.</translation>
 <translation id="3872834068356954457">Mokslas</translation>
 <translation id="3875783148670536197">Peržiūrėti, kaip tai padaryti</translation>
+<translation id="387681220560687945">Langai (langų ir skirtukų išdėstymas bei tvarkymas)</translation>
 <translation id="3879748587602334249">Atsisiuntimų tvarkytuvė</translation>
 <translation id="3880456882942693779">Menas ir pramogos</translation>
 <translation id="3880589673277376494">Internetas ir telekomunikacijos</translation>
@@ -4750,6 +4754,7 @@ Papildoma išsami informacija:
 <translation id="950736567201356821">Trys skylės viršuje</translation>
 <translation id="950926967802086924">Prieigos raktas • „Google“ slaptažodžių tvarkyklė</translation>
 <translation id="955429569736351433">VR leidžiama</translation>
+<translation id="955627189349169688">Šios politikos galite atsisakyti <ph name="BEGIN_LINK" />„Chrome“ sinchronizavimo funkcijos nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">2 geltona</translation>
 <translation id="961663415146723894">Įrišimas apačioje</translation>
 <translation id="961856697154696964">Ištrinti naršymo duomenis</translation>

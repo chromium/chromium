@@ -6794,7 +6794,6 @@
 <translation id="5794414402486823030">一律使用系統檢視器開啟</translation>
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
-<translation id="5795422263272161110">並排顯示</translation>
 <translation id="5796485699458186843">新無痕分頁</translation>
 <translation id="5796956053441619942">不支援遠端裝置中的網址</translation>
 <translation id="5797934230382081317">瞭解如何在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 裝置上開始使用密碼管理工具</translation>
@@ -9231,7 +9230,6 @@
 <translation id="7552846755917812628">嘗試按照下列提示操作：</translation>
 <translation id="7553012839257224005">正在檢查 Linux 容器</translation>
 <translation id="7553242001898162573">請輸入您的密碼</translation>
-<translation id="7554342082838376298">自動變更密碼</translation>
 <translation id="755472745191515939">管理員已禁止使用這種語言</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7556033326131260574">Smart Lock 無法驗證您的帳戶，請輸入您的密碼。</translation>
@@ -11205,7 +11203,6 @@
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">是，我同意</translation>
-<translation id="8917980324687233736">並排顯示</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安裝應用程式...</translation>
 <translation id="891931289445130855">刪除資料和權限</translation>

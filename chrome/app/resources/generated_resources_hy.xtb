@@ -6797,7 +6797,6 @@
 <translation id="5794414402486823030">Միշտ բացել համակարգի դիտման ծրագրի միջոցով</translation>
 <translation id="5794700615121138172">Լինուքսի ընդհանուր պանակներ</translation>
 <translation id="5794786537412027208">Դուրս գալ Chrome-ի բոլոր հավելվածներից</translation>
-<translation id="5795422263272161110">Ցույց տալ կողք կողքի</translation>
 <translation id="5796485699458186843">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="5796956053441619942">Հեռակա սարքի URL-ը չի աջակցվում</translation>
 <translation id="5797934230382081317">Իմացեք, թե ինչպես սկսել օգտվել ծառայությունից &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; և &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; սարքերում</translation>
@@ -9237,7 +9236,6 @@
 <translation id="7552846755917812628">Փորձեք անել հետևյալը՝</translation>
 <translation id="7553012839257224005">Լինուքսի կոնտեյները ստուգվում է</translation>
 <translation id="7553242001898162573">Մուտքագրեք ձեր գաղտնաբառը</translation>
-<translation id="7554342082838376298">Գաղտնաբառի ավտոմատ փոփոխում</translation>
 <translation id="755472745191515939">Ադմինիստրատորն արգելել է այս լեզվի օգտագործումը</translation>
 <translation id="7554791636758816595">Նոր ներդիր</translation>
 <translation id="7556033326131260574">Smart Lock գործառույթին չհաջողվեց հաստատել ձեր հաշիվը: Մտնելու համար մուտքագրեք գաղտնաբառը:</translation>
@@ -11210,7 +11208,6 @@
 <translation id="8915916167043355778">Փակել բոլորը</translation>
 <translation id="8916476537757519021">Ինկոգնիտո ռեժիմի ենթաշրջանակ՝ <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Եղավ</translation>
-<translation id="8917980324687233736">Ցույց տալ կողք կողքի</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8918900204934259333">Հավելվածը տեղադրվում է…</translation>
 <translation id="891931289445130855">Ջնջել տվյալները և թույլտվությունները</translation>

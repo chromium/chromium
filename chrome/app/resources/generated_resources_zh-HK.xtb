@@ -6805,7 +6805,6 @@
 <translation id="5794414402486823030">一律使用系統檢視器開啟</translation>
 <translation id="5794700615121138172">Linux 共用資料夾</translation>
 <translation id="5794786537412027208">結束所有 Chrome 應用程式</translation>
-<translation id="5795422263272161110">並排顯示</translation>
 <translation id="5796485699458186843">新無痕式分頁</translation>
 <translation id="5796956053441619942">不支援來自遠端裝置的網址</translation>
 <translation id="5797934230382081317">瞭解如何在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 裝置上開始使用密碼管理工具</translation>
@@ -9243,7 +9242,6 @@
 <translation id="7552846755917812628">請嘗試按照以下提示操作：</translation>
 <translation id="7553012839257224005">正在檢查 Linux 容器</translation>
 <translation id="7553242001898162573">輸入您的密碼</translation>
-<translation id="7554342082838376298">自動更改密碼</translation>
 <translation id="755472745191515939">管理員已禁止使用此語言</translation>
 <translation id="7554791636758816595">新分頁</translation>
 <translation id="7556033326131260574">Smart Lock 無法驗證您的帳戶。請輸入您的密碼以進入。</translation>
@@ -10465,7 +10463,7 @@
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8387087863179559896">Chrome 可以為你更新此網站的帳戶資料，設定安全度高的密碼。密碼會儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」，因此你無需記住密碼。進一步瞭解如何<ph name="PASSWORD_CHANGE" />。</translation>
 <translation id="8387361103813440603">不允許查看您的位置</translation>
-<translation id="8387617938027387193">驗證您的身分</translation>
+<translation id="8387617938027387193">驗證你的身分</translation>
 <translation id="8388770971141403598">不支援次要設定檔</translation>
 <translation id="8389492867173948260">允許此擴充程式讀取及變更您瀏覽的網站上的所有資料：</translation>
 <translation id="8390392581097975659">正在安裝掃瞄器軟件</translation>
@@ -11211,7 +11209,6 @@
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">係，我同意</translation>
-<translation id="8917980324687233736">並排顯示</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安裝應用程式…</translation>
 <translation id="891931289445130855">刪除資料和權限</translation>

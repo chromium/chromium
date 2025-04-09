@@ -6803,7 +6803,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5794414402486823030">Toujours ouvrir avec System Viewer</translation>
 <translation id="5794700615121138172">Dossiers partagés Linux</translation>
 <translation id="5794786537412027208">Quitter toutes les applications Chrome</translation>
-<translation id="5795422263272161110">Afficher côte à côte</translation>
 <translation id="5796485699458186843">&amp;Nouvel onglet de navigation privée</translation>
 <translation id="5796956053441619942">L'URL de l'appareil distant n'est pas prise en charge</translation>
 <translation id="5797934230382081317">Découvrez comment démarrer sur &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; et &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9244,7 +9243,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7552846755917812628">Essayez les conseils suivants :</translation>
 <translation id="7553012839257224005">Vérification du conteneur Linux en cours…</translation>
 <translation id="7553242001898162573">Entrez votre mot de passe</translation>
-<translation id="7554342082838376298">Modification automatique du mot de passe</translation>
 <translation id="755472745191515939">Votre administrateur n'autorise pas l'utilisation de cette langue</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
 <translation id="7556033326131260574">Le système de verrouillage intelligent Smart Lock n'a pas pu vérifier votre compte. Tapez votre mot de passe pour y accéder.</translation>
@@ -11217,7 +11215,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="8915916167043355778">Tout fermer</translation>
 <translation id="8916476537757519021">Sous-cadre de navigation privée : <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Oui, j'accepte</translation>
-<translation id="8917980324687233736">Afficher côte à côte</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Installation de l'application en cours…</translation>
 <translation id="891931289445130855">Supprimer les données et les autorisations</translation>

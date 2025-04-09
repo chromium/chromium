@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">બ્રાઉઝર હોમ</translation>
 <translation id="1526389707933164996">સ્ક્રીન સેવર ઍનિમેશન</translation>
 <translation id="152892567002884378">વૉલ્યૂમ વધારો</translation>
-<translation id="1531038290222364269">ટૅબ બતાવો</translation>
 <translation id="1539864135338521185">લાપિસ લૅઝુલી</translation>
 <translation id="1548555207631326346">તમારી AI છબીઓને મનગમતી બનાવવા માટે, થીમ પસંદ કરો અને પછી અન્ડરલાઇન કરેલા શબ્દો પસંદ કરો.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">મહત્તમ મંજૂર પ્રયત્નોની સંખ્યા ઓળંગાઈ.</translation>
 <translation id="1908234395526491708">UDP વિનંતી નિષ્ફળ થઈ</translation>
 <translation id="1908394185991500139">તીર ડાબું</translation>
-<translation id="1911678930322867245">ટોચ પર જમણી બાજુએ ખસેડો</translation>
 <translation id="1914144885717544695">શુક્રવારે</translation>
 <translation id="1915960750806557358">તમારો પ્રતિસાદ શેર કરો અથવા તમારી સમસ્યાનું વર્ણન કરો. વ્યક્તિગત, સંવેદનશીલ કે ગોપનીય હોય તેવી કોઈપણ માહિતી શામેલ ન કરવાની ખાતરી કરો.</translation>
 <translation id="1923388006036088459">ઍક્સેન્ટના રંગ</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">ઑટોમૅટિક રીતે પસંદ કરવામાં આવેલા તમારા શ્રેષ્ઠ ફોટા</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ઓપલ</translation>
+<translation id="2501278716633472235">પાછા જાઓ</translation>
 <translation id="2505327257735685095">હાલની વૉલપેપર છબી રિફ્રેશ કરો</translation>
 <translation id="2507491234071975894">સ્પીકર</translation>
 <translation id="2512979179176933762">વિન્ડો બતાવો</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">એક અંદાજિત પરિણામ માટે, <ph name="CONVERSION_RATE" />થી <ph name="CATEGORY_TEXT" /> મૂલ્યનો ગુણાકાર કરો</translation>
 <translation id="4969079779290789265">વિભાજન કરો</translation>
 <translation id="4972592110715526173">મોડમાં ફેરફાર</translation>
+<translation id="497421865427891073">આગળ જાઓ</translation>
 <translation id="4981003703840817201">વાદળી અને ગુલાબી</translation>
 <translation id="498186245079027698">તમારું સ્કૅનર ચેક કરો અને ફરી પ્રયાસ કરો. ખાતરી કરો કે સ્કૅન કરેલી ફાઇલોને સાચવવા માટે પૂરતી સ્થાનિક સ્પેસ હોય.</translation>
 <translation id="4982627662315910959">શૉર્ટકટ ઉપલબ્ધ નથી. shift અને વધુ 1 મૉડિફાયર કી (ctrl, alt અથવા <ph name="META_KEY" />)નો ઉપયોગ કરીને નવો શૉર્ટકટ દબાવો.</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">ચલાવો</translation>
 <translation id="5901630391730855834">પીળો</translation>
 <translation id="5903200662178656908">આ ડિવાઇસ કોઈ કીબોર્ડ અને માઉસનું સંયોજન છે.</translation>
-<translation id="5903822368221507416">ટૅબ છુપાવો</translation>
 <translation id="5904994456462260490">નવું APN ઉમેરો</translation>
 <translation id="590746845088109442">બિલાડીઓ</translation>
 <translation id="5907649332524363701">કીનો રંગ</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">નેટવર્ક APN સેટિંગ મેનેજ કરો. APN સેલ્યુલર નેટવર્ક અને ઇન્ટરનેટ વચ્ચે કનેક્શન સ્થાપિત કરે છે. <ph name="BEGIN_LINK_LEARN_MORE" />વધુ જાણો<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">બાહ્ય ડિવાઇસ માટે ફર્મવેયરની અપડેટ</translation>
 <translation id="7216409898977639127">સેલ્યુલર પ્રદાતા</translation>
+<translation id="7221869452894271364">આ પેજને ફરીથી લોડ કરો</translation>
 <translation id="7223952304612664117">આમ કરવાથી, સિસ્ટમ સર્વિસને તમારું લોકેશન નક્કી કરવા માટે લોકેશનની સચોટતાની સુવિધાનો ઉપયોગ કરવાની મંજૂરી મળે છે. લોકેશનની સચોટતાની સુવિધા, ડિવાઇસનું લોકેશન નક્કી કરવા માટે, વાયરલેસ સિગ્નલ વિશેની માહિતી અને સેન્સરનો ઉપયોગ કરે છે.</translation>
 <translation id="7233782086689993269">શૉર્ટકટ રિસ્ટોર કર્યો</translation>
 <translation id="723419678599947502">Google AIનો ઉપયોગ કરીને શીર્ષકો બનાવો</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">કોઈ છબી ઉપલબ્ધ નથી</translation>
 <translation id="8319809980370328428">રેકોર્ડિંગનો સારાંશ અને શીર્ષકની રચના</translation>
 <translation id="8320910311642849813">જંગલ</translation>
-<translation id="8322464149031882595">આગળ વધવા માટે ક્લિક કરો</translation>
 <translation id="8329018942023753850">કેલ્ક્યુલેટર ઍપ</translation>
 <translation id="8336739000755212683">ડિવાઇસના એકાઉન્ટની છબી બદલો</translation>
 <translation id="8339024191194156249">ઑટો-લૉન્ચ વિશે વધુ જાણો</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ટી હાઉસ</translation>
 <translation id="8538236298648811558">Google AI દ્વારા સંચાલિત</translation>
-<translation id="8543574988889671960">ફરીથી લોડ કરેલું ટૅબ</translation>
 <translation id="8550364285433943656">કીબોર્ડ કી વડે રમવા માટે ગેમ ક્રિયાઓ પર નિયંત્રણો લાગુ કરો</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">જનરેટિવ AI ભૂલો કરી શકે છે જેમાં લોકો વિશેની માહિતી પણ શામેલ છે, તેથી તેને બે વાર ચેક કરો.</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">બુકમાર્ક</translation>
 <translation id="8833620912470026819">થોરનું જંગલ</translation>
 <translation id="8834539327799336565">હાલમાં કનેક્ટેડ</translation>
-<translation id="8842526499753992487">ટોચ પર ડાબી બાજુએ ખસેડો</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8849799913685544685">દીવાદાંડી</translation>
 <translation id="8851859208664803097">રોક્યું - પ્રિન્ટ કનેક્ટ કરી શકાતું નથી</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">પેન્ગવિન</translation>
 <translation id="8968751544471797276">ચાર્જ થવાની ટકાવારી</translation>
 <translation id="8970109610781093811">ફરીથી ચલાવો</translation>
-<translation id="8972061581514441296">પાછા જવા માટે ક્લિક કરો</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{સ્કૅન કરો}=1{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}one{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}other{{NUMBER_OF_PAGES} પેજ સ્કૅન કરો}}</translation>
 <translation id="89945434909472341">ગામ</translation>

@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">不動産開発</translation>
 <translation id="1824402189105105503">ロール 8</translation>
 <translation id="1826516787628120939">確認中</translation>
+<translation id="1832730227369924598">デスク同期</translation>
 <translation id="1834452765064623979">建設、メンテナンス</translation>
 <translation id="1838374766361614909">検索をクリア</translation>
 <translation id="1839331950812095887">考えをあらわすいくつかの単語</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は取り消されている可能性があります。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="2414886740292270097">ダーク</translation>
+<translation id="2418292431699242678">管理者は、ChromeOS デバイスの以前と現在のセッション間で次の項目の同期を有効にしています。</translation>
 <translation id="2429716554270894715">布（防水）</translation>
 <translation id="2436186046335138073">すべての <ph name="PROTOCOL" /> リンクを <ph name="HANDLER_HOSTNAME" /> で開きますか？</translation>
 <translation id="2436976580469434549">手芸</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">価格をトラッキングします</translation>
 <translation id="3037605927509011580">エラー</translation>
 <translation id="3039406992698062762">家族旅行</translation>
+<translation id="3040636468789770340">Cookie（最近アクセスしたウェブサイトのログイン状態）</translation>
 <translation id="3041176923638368519">カードの特典の利用規約を表示</translation>
 <translation id="3041612393474885105">証明書情報</translation>
 <translation id="3045769629416806687">エクストリーム スポーツ</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">ローカル ファイルは <ph name="MINUTES" /> 分後に削除されます</translation>
 <translation id="3872834068356954457">科学</translation>
 <translation id="3875783148670536197">手順を見る</translation>
+<translation id="387681220560687945">ウィンドウ（ウィンドウとタブの配置と分類）</translation>
 <translation id="3879748587602334249">ダウンロード マネージャ</translation>
 <translation id="3880456882942693779">アート、エンターテインメント</translation>
 <translation id="3880589673277376494">インターネット、通信事業</translation>
@@ -4749,6 +4753,7 @@
 <translation id="950736567201356821">3 穴パンチ（上）</translation>
 <translation id="950926967802086924">パスキー • Google パスワード マネージャー</translation>
 <translation id="955429569736351433">VR を許可しました</translation>
+<translation id="955627189349169688">このポリシーは <ph name="BEGIN_LINK" />Chrome 同期の設定<ph name="END_LINK" />で無効にできます。</translation>
 <translation id="95721182352849470">黄 2</translation>
 <translation id="961663415146723894">製本（下綴じ）</translation>
 <translation id="961856697154696964">閲覧履歴データを削除</translation>

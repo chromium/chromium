@@ -259,6 +259,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="22091350895006575">Dodaj korisničko ime</translation>
 <translation id="221494669172414749">Otvaranje Chromea bez zaključavanja profila će ukloniti sačuvane lozinke i načine plaćanja iz automobila. Korištenje zaključavanja profila čuva te podatke na sigurnom.</translation>
 <translation id="2227444325776770048">Nastavite kao <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230288123399603508">Grupa kartica <ph name="TAB_GROUP_TITLE" /> ima novu aktivnost</translation>
 <translation id="2230777942707397948">Prazan prozor</translation>
 <translation id="223356358902285214">Aktivnost na webu i u aplikacijama</translation>
 <translation id="2234827758954819389">Vodič za privatnost</translation>
@@ -1491,7 +1492,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7697383401610880082">Ručica za prevlačenje</translation>
 <translation id="7698359219371678927">Kreirajte e-poruku u aplikaciji <ph name="APP_NAME" /></translation>
 <translation id="7702420606070050505">Donja tabela nedavne aktivnosti je otvorena u punoj visini</translation>
-<translation id="7707922173985738739">Koristi prijenos podataka na mobilnoj mreži</translation>
+<translation id="7707922173985738739">Koristi prenos podataka na mobilnoj mreži</translation>
 <translation id="7708994397325774423">Dobijte sve svoje lozinke</translation>
 <translation id="7733878270780732638">Na uređaju nema dovoljno prostora.</translation>
 <translation id="7746817319925672889">Google upravitelj lozinki će uskoro prestati funkcionirati na ovom uređaju</translation>

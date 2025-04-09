@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">startside for nettleser</translation>
 <translation id="1526389707933164996">Skjermspareranimasjon</translation>
 <translation id="152892567002884378">Volum opp</translation>
-<translation id="1531038290222364269">Vis faner</translation>
 <translation id="1539864135338521185">lasurstein</translation>
 <translation id="1548555207631326346">Velg et tema og deretter de understrekede ordene for å gi AI-bildene personlig preg.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Du har overskredet maksimumsgrensen for antall forsøk.</translation>
 <translation id="1908234395526491708">Mislykkede UDP-forespørsler</translation>
 <translation id="1908394185991500139">pil venstre</translation>
-<translation id="1911678930322867245">Flytt øverst til høyre</translation>
 <translation id="1914144885717544695">på fredag</translation>
 <translation id="1915960750806557358">Del tilbakemeldingen eller beskriv problemet. Pass på at du ikke tar med noe som er personlig, sensitivt eller konfidensielt.</translation>
 <translation id="1923388006036088459">Markeringsfarger</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">De beste bildene dine, valgt automatisk</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
+<translation id="2501278716633472235">Gå tilbake</translation>
 <translation id="2505327257735685095">Last inn det nåværende bakgrunnsbildet på nytt</translation>
 <translation id="2507491234071975894">Høyttaler</translation>
 <translation id="2512979179176933762">vis vinduer</translation>
@@ -869,6 +868,7 @@
 <translation id="4965703485264574128">Multipliser <ph name="CATEGORY_TEXT" />-verdien med <ph name="CONVERSION_RATE" /> for å få et omtrentlig svar</translation>
 <translation id="4969079779290789265">Del opp</translation>
 <translation id="4972592110715526173">modusendring</translation>
+<translation id="497421865427891073">Gå til neste</translation>
 <translation id="4981003703840817201">blå og rosa</translation>
 <translation id="498186245079027698">Sjekk skanneren, og prøv på nytt. Sørg for at det er nok lokal lagringsplass til å lagre skannede filer.</translation>
 <translation id="4982627662315910959">Hurtigtasten er ikke tilgjengelig. Trykk på en ny hurtigtast som inneholder Shift og én modifikatortast til (Ctrl, Alt eller <ph name="META_KEY" />).</translation>
@@ -1056,7 +1056,6 @@
 <translation id="5896602941605730551">Spill av</translation>
 <translation id="5901630391730855834">Gul</translation>
 <translation id="5903200662178656908">Enheten er en kombinasjon av tastatur og mus.</translation>
-<translation id="5903822368221507416">Skjul faner</translation>
 <translation id="5904994456462260490">Legg til et nytt APN</translation>
 <translation id="590746845088109442">katter</translation>
 <translation id="5907649332524363701">tastefarge</translation>
@@ -1367,6 +1366,7 @@
 <translation id="7212547870105584639">Administrer APN-innstillingene for nettverket. APN oppretter en tilkobling mellom et mobilnettverk og internett. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Fastvareoppdateringer for eksterne enheter</translation>
 <translation id="7216409898977639127">Mobiloperatør</translation>
+<translation id="7221869452894271364">Last inn denne siden på nytt</translation>
 <translation id="7223952304612664117">Dette gjør at systemtjenester kan bruke Posisjonsnøyaktighet til å fastslå posisjonen din. Posisjonsnøyaktighet bruker informasjon om trådløse signaler og sensorer til å anslå enhetsposisjonen.</translation>
 <translation id="7233782086689993269">Hurtigtasten er gjenopprettet</translation>
 <translation id="723419678599947502">Opprett en tittel med AI fra Google</translation>
@@ -1604,7 +1604,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8318753676953949627">Ingen bilder</translation>
 <translation id="8319809980370328428">Oppretting av opptakssammendrag og -titler</translation>
 <translation id="8320910311642849813">skog</translation>
-<translation id="8322464149031882595">Klikk for å fortsette</translation>
 <translation id="8329018942023753850">kalkulator-appen</translation>
 <translation id="8336739000755212683">Endre bildet for enhetskontoen</translation>
 <translation id="8339024191194156249">Finn ut mer om automatisk oppstart</translation>
@@ -1657,7 +1656,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tehus</translation>
 <translation id="8538236298648811558">Basert på AI-løsninger fra Google</translation>
-<translation id="8543574988889671960">Last inn fanen på nytt</translation>
 <translation id="8550364285433943656">Plasser kontroller på spillhandlinger for å spille med tastaturtaster</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generativ AI kan ta feil, blant annet om personer, så dobbeltsjekk svarene den gir.</translation>
@@ -1708,7 +1706,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="8833620912470026819">kaktusskog</translation>
 <translation id="8834539327799336565">Tilkoblet nå</translation>
-<translation id="8842526499753992487">Flytt øverst til venstre</translation>
 <translation id="8845001906332463065">Få hjelp</translation>
 <translation id="8849799913685544685">fyrtårn</translation>
 <translation id="8851859208664803097">Stoppet – skriveren kan ikke nås</translation>
@@ -1748,7 +1745,6 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8961025972867871808">pingviner</translation>
 <translation id="8968751544471797276">Ladefrekvens</translation>
 <translation id="8970109610781093811">Kjør på nytt</translation>
-<translation id="8972061581514441296">Klikk for å gå tilbake</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skann}=1{Skann side {NUMBER_OF_PAGES}}other{Skann side {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">landsby</translation>

@@ -91,8 +91,10 @@
 <translation id="1367951781824006909">ファイルを選択</translation>
 <translation id="1371650399987522809">Google AI による壁紙に関するフィードバック</translation>
 <translation id="1374385338586507108">定義</translation>
+<translation id="1376064675713230088">ティラノサウルス</translation>
 <translation id="1383876407941801731">検索</translation>
 <translation id="1387854245479784695">すべてのコアの合計値です</translation>
+<translation id="1388919980490622894">カラー グレーディング</translation>
 <translation id="1393206549145430405">城</translation>
 <translation id="1394661041439318933">デバイスのケースのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
 <translation id="1397738625398125236">ゲートウェイへの ping</translation>
@@ -125,11 +127,11 @@
 <translation id="1499900233129743732">このユーザーは <ph name="MANAGER" /> によって管理されています。設定の管理とユーザー アクティビティの監視がリモートで行われることがあります。</translation>
 <translation id="150962533380566081">無効な PUK です。</translation>
 <translation id="1510238584712386396">ランチャー</translation>
+<translation id="1512872158112631650">ドラマチックな影</translation>
 <translation id="1514446283880973949">確実な文章を作成したり、内容を要約したり、定義を取得したりできます</translation>
 <translation id="1515129336378114413">ブラウザのホーム</translation>
 <translation id="1526389707933164996">スクリーン セーバーのアニメーション</translation>
 <translation id="152892567002884378">音量を上げる</translation>
-<translation id="1531038290222364269">タブを表示</translation>
 <translation id="1539864135338521185">ラピスラズリ</translation>
 <translation id="1548555207631326346">テーマを選択した後、下線付きの単語を選択して AI 画像をカスタマイズします。<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -229,6 +231,7 @@
 <translation id="1854156910036166007">ナマケモノ</translation>
 <translation id="1856388568474281774">下矢印</translation>
 <translation id="1858620243986915808">スクリーンショットを添付する</translation>
+<translation id="1860654594958086756">3D レンダリング</translation>
 <translation id="1871413952174074704">APN は <ph name="CHAR_LIMIT" /> 文字以内で指定してください</translation>
 <translation id="1871569928317311284">ダークモードをオフにする</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -242,10 +245,10 @@
 <translation id="1905710495812624430">最大試行回数を超えました。</translation>
 <translation id="1908234395526491708">UDP リクエストに失敗しました</translation>
 <translation id="1908394185991500139">左矢印</translation>
-<translation id="1911678930322867245">右上に移動</translation>
 <translation id="1914144885717544695">金曜日</translation>
 <translation id="1915960750806557358">フィードバックまたは問題の内容を記入します。個人情報や機密情報は含めないようにしてください。</translation>
 <translation id="1923388006036088459">アクセント カラー</translation>
+<translation id="1926611810597212636">ユニコーン</translation>
 <translation id="1945403655450283000">レコーダー</translation>
 <translation id="1947737735496445907">印刷完了</translation>
 <translation id="1951012854035635156">アシスタント</translation>
@@ -315,6 +318,7 @@
 <translation id="2230624078793142213">さらに作成</translation>
 <translation id="2236746079896696523">キーボード バックライトの切り替え</translation>
 <translation id="2240366984605217732">レイアウトの切り替え</translation>
+<translation id="224421911978987610">長時間露光</translation>
 <translation id="2244834438220057800">緑色</translation>
 <translation id="225692081236532131">起動状態</translation>
 <translation id="2267285889943769271">スクリーンショットを追加</translation>
@@ -362,6 +366,7 @@
 <translation id="2493126929778606526">自動的に選択されたベストショットです</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">オパール</translation>
+<translation id="2501278716633472235">戻る</translation>
 <translation id="2505327257735685095">現在の壁紙画像を更新する</translation>
 <translation id="2507491234071975894">スピーカー</translation>
 <translation id="2512979179176933762">ウィンドウを表示する</translation>
@@ -382,6 +387,7 @@
 <translation id="2584559707064218956">設定を行うには [設定] に移動します</translation>
 <translation id="2586146417912237930">青色とインディゴ</translation>
 <translation id="2589921777872778654">編集と削除メニュー</translation>
+<translation id="2590424100019931043">このクラスから削除されました</translation>
 <translation id="2597774443162333062">ファイルはデバッグのため Google に送信されます</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{スキャンが完了しました。1 ページをスキャンしました}other{スキャンが完了しました。{NUMBER_OF_PAGES} ページをスキャンしました}}</translation>
 <translation id="261322795497077164">話し手の識別</translation>
@@ -460,6 +466,7 @@
 <translation id="3084958266922136097">スクリーン セーバーを無効にする</translation>
 <translation id="3091839911843451378">失敗 - 停止中です</translation>
 <translation id="3102119246920354026">キャッシュ</translation>
+<translation id="3103783611481501187">シュール</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">プール</translation>
 <translation id="3122883569442693641">詳細</translation>
@@ -488,6 +495,7 @@
 <translation id="3226405216343213872">スキャナを検索しています</translation>
 <translation id="3226657629376379887">レイアウトの操作メニュー</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> の値を <ph name="CONVERSION_RATE" /> で割る</translation>
+<translation id="3242622575335502454">デジタルアート</translation>
 <translation id="3246869037381808805">昨日より前の印刷ジョブは削除されます</translation>
 <translation id="3248791727258378769">文字起こしは作成されません</translation>
 <translation id="324961752321393509">このアプリを閉じることは、管理者が許可していません</translation>
@@ -524,6 +532,7 @@
 <translation id="3428551088151258685">アウトドア</translation>
 <translation id="3428971106895559033">パステル</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3434988468785284438">反射</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="3435896845095436175">有効にする</translation>
 <translation id="345256797477978759">ウィンドウを画面の <ph name="DIRECTION" /> の大きな部分に固定</translation>
@@ -624,6 +633,7 @@
 <translation id="3889914174935857450">リセット日</translation>
 <translation id="3897092660631435901">メニュー</translation>
 <translation id="3902271751020176019">音声文字変換の言語</translation>
+<translation id="390890062090528082">星空</translation>
 <translation id="391412459402535266">デバイスをテストできません。テストするにはノートパソコン モードに切り替えます。</translation>
 <translation id="3916998944874125962">スクリーンショットを撮る</translation>
 <translation id="3923184630988645767">データ使用</translation>
@@ -713,6 +723,7 @@
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           生成 AI は間違った画像（人物に関する画像など）を生成することがあるため、生成された画像は再確認するようにしてください。<ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />詳細<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+<translation id="4253971074682120908">ネガティブ スペース</translation>
 <translation id="4258281355379922695">HTTP レイテンシ</translation>
 <translation id="4266143281602681663">毛糸</translation>
 <translation id="4269815121975886860">起動時の設定</translation>
@@ -810,7 +821,9 @@
 <translation id="4691278870498629773">停止 - トレイなし</translation>
 <translation id="469379815867856270">電波強度</translation>
 <translation id="4697260493945012995">コントロール タイプを選択</translation>
+<translation id="4712940987669302829">ボケ効果</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
+<translation id="4734982181169850310">パステルカラー</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4744944742468440486">選択した項目に関連する情報</translation>
 <translation id="4750394297954878236">候補</translation>
@@ -860,14 +873,17 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> 秒で <ph name="RATE" /> 充電しました。</translation>
 <translation id="4930320165497208503">接続を設定または更新するには、[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] に移動します。</translation>
 <translation id="4932733599132424254">日付</translation>
+<translation id="493637535592633700">生物発光</translation>
 <translation id="494102685638938793"><ph name="LINK_TEXT" />、新しいタブで開く</translation>
 <translation id="4946927805998996217">要約を生成しています</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> のファームウェアがバージョン <ph name="VERSION" /> に更新されました</translation>
 <translation id="4950893758552030541">樹木のトンネル</translation>
+<translation id="4964806321337443935">4K</translation>
 <translation id="4965661459364092269">セーフティ リセットが完了しました</translation>
 <translation id="4965703485264574128">近似値を求めるには、<ph name="CATEGORY_TEXT" /> の値に <ph name="CONVERSION_RATE" /> をかける</translation>
 <translation id="4969079779290789265">分割</translation>
 <translation id="4972592110715526173">モード変更</translation>
+<translation id="497421865427891073">次に進む</translation>
 <translation id="4981003703840817201">青色とピンク</translation>
 <translation id="498186245079027698">スキャナを確認して、もう一度お試しください。デバイスにスキャンしたファイルを保存するのに十分な容量があるかどうかも確認してください。</translation>
 <translation id="4982627662315910959">このショートカットは使用できません。Shift キーと他 1 個の修飾キー（Ctrl、Alt、または <ph name="META_KEY" />）を使用して新しいショートカットを押してください。</translation>
@@ -875,6 +891,7 @@
 <translation id="4987769320337599931">ファイアウォール</translation>
 <translation id="4988526792673242964">ページ</translation>
 <translation id="4989542687859782284">利用不可</translation>
+<translation id="4999267570108760491">ベクターアート スタイル</translation>
 <translation id="4999333166442584738">レポートを非表示</translation>
 <translation id="500920857929044050">テストを停止</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -943,6 +960,7 @@
 <translation id="5300172019534884676">カメラへのアクセスを切り替える</translation>
 <translation id="5300814202279832142">ウィンドウをデスクに移動</translation>
 <translation id="5302048478445481009">言語</translation>
+<translation id="5303459213631364445">輝き</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" /> 限定の壁紙</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="530883153651464140"><ph name="DEVICE_NAME" /> をバージョン <ph name="VERSION" /> にアップデート</translation>
@@ -1046,6 +1064,7 @@
 <translation id="5859969039821714932">このショートカットは使用できません。<ph name="KEY" /> を使用しない新しいショートカットを押してください。</translation>
 <translation id="5860033963881614850">オフ</translation>
 <translation id="5860491529813859533">オンにする</translation>
+<translation id="586463370326011345">稲妻</translation>
 <translation id="5875913454160982848">音声文字変換モデルをダウンロード</translation>
 <translation id="5876385649737594562">オプションを選択するにはオンにしてください</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" /> を一時停止</translation>
@@ -1055,7 +1074,6 @@
 <translation id="5896602941605730551">再生</translation>
 <translation id="5901630391730855834">黄</translation>
 <translation id="5903200662178656908">デバイスはキーボードとマウスの一体型です。</translation>
-<translation id="5903822368221507416">タブを非表示</translation>
 <translation id="5904994456462260490">新しい APN の追加</translation>
 <translation id="590746845088109442">ネコ</translation>
 <translation id="5907649332524363701">キーの色</translation>
@@ -1181,6 +1199,7 @@
 <translation id="6417265370957905582">Google アシスタント</translation>
 <translation id="6419454453018688975">システムの位置情報へのアクセスをオンにする</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="642713342828771202">夕暮れ</translation>
 <translation id="6437513277380808188">txt</translation>
 <translation id="6439505561246192797">弱い（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="6447630859861661624">アカウント設定に移動</translation>
@@ -1290,6 +1309,7 @@
 <translation id="6926069762081461162">録音のタイトル</translation>
 <translation id="6930242544192836755">接続時間</translation>
 <translation id="6930597342185648547">背景について</translation>
+<translation id="6931666215260956151">銀河</translation>
 <translation id="6939766318048400022">カフェ</translation>
 <translation id="6942253772720771875">フィードバックまたは問題の内容を記入してください</translation>
 <translation id="6943893908656559156">リモート ID（オプション）</translation>
@@ -1366,6 +1386,7 @@
 <translation id="7212547870105584639">ネットワークの APN 設定を管理します。APN は、モバイル ネットワークとインターネットの間の接続を確立します。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">外部デバイスのファームウェア アップデート</translation>
 <translation id="7216409898977639127">モバイル プロバイダ</translation>
+<translation id="7221869452894271364">このページを再読み込みします</translation>
 <translation id="7223952304612664117">これにより、システム サービスは [位置情報の精度] の機能を使用してユーザーの現在地を特定できるようになります。[位置情報の精度] をオンにした場合、ワイヤレス シグナルとセンサーに関する情報に基づいて、デバイスの位置情報が推定されます。</translation>
 <translation id="7233782086689993269">ショートカットを復元しました</translation>
 <translation id="723419678599947502">Google AI を使用してタイトルを作成</translation>
@@ -1424,6 +1445,7 @@
 <translation id="7481312909269577407">進む</translation>
 <translation id="7487067081878637334">テクノロジー</translation>
 <translation id="7490813197707563893">MAC アドレス</translation>
+<translation id="7494145938791663804">美しさ</translation>
 <translation id="7497215489070763236">サーバーの CA 証明書</translation>
 <translation id="7500205272584643581">レコーダーに話し手の検出とラベル付けを許可しますか？</translation>
 <translation id="7501957181231305652">または</translation>
@@ -1479,6 +1501,7 @@
 <translation id="7760571082554155847">ホームページの設定</translation>
 <translation id="7762130827864645708">パスワードを変更しました。今後は新しいパスワードを使用してください。</translation>
 <translation id="7763470514545477072">ドメイン サフィックス マッチ</translation>
+<translation id="7764171263909999400">ボリュメトリック ライト</translation>
 <translation id="7769672763586021400">モデル ID</translation>
 <translation id="7774759755755950354">戻る</translation>
 <translation id="7778717409420828014">お送りいただいたフィードバックは、担当チームで確認し、Chromebook の操作性向上に役立てさせていただきます。寄せられる報告の数が多いため、個別に返信できないことをご了承ください。</translation>
@@ -1603,7 +1626,6 @@
 <translation id="8318753676953949627">0 件の画像</translation>
 <translation id="8319809980370328428">録音の要約とタイトル作成</translation>
 <translation id="8320910311642849813">森林</translation>
-<translation id="8322464149031882595">クリックして続行</translation>
 <translation id="8329018942023753850">電卓アプリ</translation>
 <translation id="8336739000755212683">デバイスのアカウント画像を変更</translation>
 <translation id="8339024191194156249">自動起動の詳細</translation>
@@ -1651,12 +1673,13 @@
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
 <translation id="8505011850330200833">Gemini モデルを使用した文字起こしと要約の作成には 2 GB の保存容量が必要です</translation>
+<translation id="8506394543220680287">雪景色</translation>
 <translation id="8508640263392900755">APN の詳細</translation>
 <translation id="8522687886059337719">新しい<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />壁紙<ph name="END_LINK_WALLPAPER_SUBPAGE" />と<ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />スクリーン セーバー<ph name="END_LINK_SCREENSAVER_SUBPAGE" />にアクセスできるようになりました</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ティーハウス</translation>
+<translation id="8531692079895415839">霧</translation>
 <translation id="8538236298648811558">Google AI を搭載</translation>
-<translation id="8543574988889671960">タブを再読み込み</translation>
 <translation id="8550364285433943656">キーボードのキーでプレイするにはゲーム操作のコントロールを設定します</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">生成 AI は間違った情報（人物に関する情報など）を表示することがあるため、生成された回答は再確認するようにしてください。</translation>
@@ -1707,7 +1730,6 @@
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8833620912470026819">サボテンの森</translation>
 <translation id="8834539327799336565">現在接続中のデバイス</translation>
-<translation id="8842526499753992487">左上に移動</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
 <translation id="8849799913685544685">灯台</translation>
 <translation id="8851859208664803097">停止しました - プリンタにアクセスできません</translation>
@@ -1747,15 +1769,16 @@
 <translation id="8961025972867871808">ペンギン</translation>
 <translation id="8968751544471797276">充電率</translation>
 <translation id="8970109610781093811">再実行</translation>
-<translation id="8972061581514441296">クリックして戻る</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{スキャン}=1{{NUMBER_OF_PAGES} ページ目をスキャン}other{ {NUMBER_OF_PAGES} ページ目をスキャン}}</translation>
 <translation id="89945434909472341">村</translation>
 <translation id="8997710128084572139">デバイスのバッテリー残量は <ph name="BATTERY_PERCENTAGE" />% です。</translation>
+<translation id="8998002498898621320">写実的な写真</translation>
 <translation id="8998289560386111590">お使いのデバイスではご利用いただけません</translation>
 <translation id="9000871120886759611">指定した言語で情報にアクセスできるようにするため、リセットしました。指定した言語のみが使用されていることを確認してください。</translation>
 <translation id="9003499805101629690">ピザ</translation>
 <translation id="9003704114456258138">周波数</translation>
+<translation id="9017411601860840405">ネオンライト</translation>
 <translation id="901834265349196618">メール</translation>
 <translation id="9022897536196898720">花</translation>
 <translation id="9024331582947483881">全画面表示</translation>

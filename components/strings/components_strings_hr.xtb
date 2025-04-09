@@ -492,6 +492,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1822995137827688764">Stanogradnja</translation>
 <translation id="1824402189105105503">Osmi kolut</translation>
 <translation id="1826516787628120939">Provjera</translation>
+<translation id="1832730227369924598">Sinkronizacija s radnom površinom</translation>
 <translation id="1834452765064623979">Izgradnja i održavanje</translation>
 <translation id="1838374766361614909">Brisanje pretraživanja</translation>
 <translation id="1839331950812095887">nekoliko riječi koje sažimaju vaše misli</translation>
@@ -829,6 +830,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2413155254802890957">Stara</translation>
 <translation id="2413528052993050574">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; njegov sigurnosni certifikat možda je opozvan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
 <translation id="2414886740292270097">Tamno</translation>
+<translation id="2418292431699242678">Administrator omogućuje sinkronizaciju sljedećeg između prethodnih i trenutačnih sesija na bilo kojem ChromeOS uređaju:</translation>
 <translation id="2429716554270894715">Tkanina (vodootporna)</translation>
 <translation id="2436186046335138073">Želite li dopustiti da <ph name="HANDLER_HOSTNAME" /> otvori sve veze protokola <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Umjetnost na vlaknu i tekstilu</translation>
@@ -1160,6 +1162,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3037177537145227281">Praćenje cijene</translation>
 <translation id="3037605927509011580">O, ne!</translation>
 <translation id="3039406992698062762">Obiteljska putovanja</translation>
+<translation id="3040636468789770340">Kolačići (prijavljeno stanje na nedavno posjećenim web-lokacijama)</translation>
 <translation id="3041176923638368519">Pogledajte uvjete za ostvarivanje pogodnosti kartice</translation>
 <translation id="3041612393474885105">Podaci o certifikatu</translation>
 <translation id="3045769629416806687">Ekstremni sportovi</translation>
@@ -1669,6 +1672,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="3869939189466884821">Vaše lokalne datoteke izbrisat će se za <ph name="MINUTES" /> min</translation>
 <translation id="3872834068356954457">Znanost</translation>
 <translation id="3875783148670536197">Pokaži mi kako</translation>
+<translation id="387681220560687945">Prozori (aranžman i organizacija prozora i kartica)</translation>
 <translation id="3879748587602334249">Upravitelj preuzimanja</translation>
 <translation id="3880456882942693779">Umjetnost i zabava</translation>
 <translation id="3880589673277376494">Internet i telekomunikacije</translation>
@@ -4748,6 +4752,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="950736567201356821">Trostruko bušenje pri vrhu</translation>
 <translation id="950926967802086924">Pristupni ključ • Google upravitelj zaporki</translation>
 <translation id="955429569736351433">Dopuštena je virtualna stvarnost</translation>
+<translation id="955627189349169688">To pravilo možete isključiti u <ph name="BEGIN_LINK" />postavkama Chrome sinkronizacije<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">žuta 2</translation>
 <translation id="961663415146723894">Uvez pri dnu</translation>
 <translation id="961856697154696964">Izbriši podatke o pregledavanju</translation>

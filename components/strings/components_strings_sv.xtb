@@ -492,6 +492,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1822995137827688764">Fastighetsutveckling</translation>
 <translation id="1824402189105105503">Åttonde rullen</translation>
 <translation id="1826516787628120939">Kontrollerar</translation>
+<translation id="1832730227369924598">Synkronisering av skrivbord</translation>
 <translation id="1834452765064623979">Byggnad och underhåll</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
 <translation id="1839331950812095887">några ord som sammanfattar dina tankar</translation>
@@ -829,6 +830,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2413155254802890957">Tidigare</translation>
 <translation id="2413528052993050574">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kan ha återkallats. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="2414886740292270097">Mörk</translation>
+<translation id="2418292431699242678">Administratören gör att följande synkroniseras mellan dina tidigare och nuvarande sessioner på alla ChromeOS-enheter:</translation>
 <translation id="2429716554270894715">Tyg (vattentätt)</translation>
 <translation id="2436186046335138073">Vill du tillåta att <ph name="HANDLER_HOSTNAME" /> öppnar alla <ph name="PROTOCOL" />-länkar?</translation>
 <translation id="2436976580469434549">Fiber- och textilkonst</translation>
@@ -1160,6 +1162,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3037605927509011580">Oj, ett fel har uppstått!</translation>
 <translation id="3039406992698062762">Familjeresor</translation>
+<translation id="3040636468789770340">Cookies (inloggningsstatus på webbplatser som du har besökt nyligen)</translation>
 <translation id="3041176923638368519">Se villkoren för kortförmåner</translation>
 <translation id="3041612393474885105">Certifikatinformation</translation>
 <translation id="3045769629416806687">Extremsporter</translation>
@@ -1670,6 +1673,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3869939189466884821">Dina lokala filer raderas om <ph name="MINUTES" /> minuter</translation>
 <translation id="3872834068356954457">Vetenskap</translation>
 <translation id="3875783148670536197">Visa hur man gör</translation>
+<translation id="387681220560687945">Fönster (arrangemang och organisation av fönster och flikar)</translation>
 <translation id="3879748587602334249">Nedladdningshanterare</translation>
 <translation id="3880456882942693779">Konst och underhållning</translation>
 <translation id="3880589673277376494">Internet och telekom</translation>
@@ -4749,6 +4753,7 @@ Mer information:
 <translation id="950736567201356821">Tre hål högst upp</translation>
 <translation id="950926967802086924">Nyckel • Google Lösenordshantering</translation>
 <translation id="955429569736351433">VR tillåts</translation>
+<translation id="955627189349169688">Du kan välja bort denna princip i <ph name="BEGIN_LINK" />inställningarna för Chrome Sync<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Gul 2</translation>
 <translation id="961663415146723894">Bindning längst ned</translation>
 <translation id="961856697154696964">Radera webbinformation</translation>

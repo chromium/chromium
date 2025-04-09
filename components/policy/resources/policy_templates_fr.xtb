@@ -540,6 +540,9 @@ Si cette règle n'est pas configurée, les liens s'ouvrent par défaut dans les 
 <translation id="1417888712677507140">Bloquer les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente.</translation>
 <translation id="1418387035898607074">Ignorer les vérifications de la navigation sécurisée visant à autoriser ou non le téléchargement de fichiers provenant d'une source fiable</translation>
 <translation id="1419020637569060510">Ajouter des restrictions à l'utilisation d'un compte géré comme compte secondaire sur Chrome OS</translation>
+<translation id="1423359855587524289">Si la règle est activée ou n'est pas configurée, l'appli peut utiliser l'autorisation des notifications temporaires d'iOS pour afficher des notifications dans le centre de notifications iOS.
+
+Si cette règle est désactivée, l'appli n'utilisera pas les notifications temporaires.</translation>
 <translation id="142346659686073702">Autoriser les utilisateurs non affiliés à utiliser Crostini</translation>
 <translation id="1423900783955065155">Cette règle détermine si une page avec un en-tête <ph name="CACHE_CONTROL_NO_STORE_NAME" /> peut être stockée dans le cache amélioré. Le paramètre de site Web défini pour cet en-tête ne prévoit peut-être pas que la page soit restaurée à partir du cache amélioré, car certaines informations sensibles peuvent rester affichées après la restauration, même si elles ne sont plus accessibles.
 
@@ -1229,6 +1232,7 @@ Si cette règle est définie sur "False", aucune information pouvant servir à i
 
 Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
 Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="187961648719201562">Supprimer les fichiers locaux existants (pris en charge depuis la version 137)</translation>
 <translation id="1883274744253492031">Activer la mise à niveau automatique du contenu mixte</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
 <translation id="1888871729456797026">Jeton d'enregistrement des règles relatives au cloud sur ordinateur</translation>
@@ -6768,6 +6772,9 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
 <translation id="5883754873839596178">Cette règle permet de spécifier le nombre maximal de connexions simultanées au serveur proxy. Toutefois, certains serveurs proxy ne peuvent pas gérer de nombreuses connexions simultanées par client. Pour résoudre ce problème, il suffit de diminuer la valeur de cette règle, laquelle doit être supérieure à 6 et inférieure à 100. Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes. Toute diminution de la valeur par défaut est effectuée à vos propres risques.
 
       Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.</translation>
+<translation id="5886280631293123880">Cette règle permet de réactiver temporairement un ensemble d'événements de plate-forme obsolète et supprimé appelé "Événements de mutation".
+Si cette règle est activée, les événements de mutation continuent de se déclencher, même s'ils ont été désactivés par défaut pour les utilisateurs Web standards. Si elle est désactivée ou n'est pas configurée, il est possible que ces événements ne soient pas déclenchés.
+Cette règle est une solution temporaire et ne fonctionnera plus dans M137.</translation>
 <translation id="5887414688706570295">Configure le préfixe TalkGadget utilisé par les hôtes d'accès à distance et empêche les utilisateurs de le modifier.
 
           S'il est défini, ce préfixe est ajouté au nom TalkGadget de base afin de créer un nom de domaine TalkGadget complet. Le nom de domaine TalkGadget de base est ".talkgadget.google.com".
@@ -8291,6 +8298,21 @@ Si cette règle n'est pas définie pour un site, la règle <ph name="DEFAULT_WIN
 
 Cette règle remplace la règle <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />, obsolète.</translation>
 <translation id="6894178810167845842">URL de la page "Nouvel onglet"</translation>
+<translation id="6895437634974956885">L'état de la batterie peut être affecté par des facteurs comme les recharges complètes fréquentes et les recharges prolongées. Cette règle propose trois options pour optimiser la recharge, atténuer ces facteurs et prolonger ainsi la durée de vie de la batterie.
+
+Si cette règle n'est pas configurée, les utilisateurs peuvent activer/désactiver la recharge adaptative à l'aide du bouton correspondant.
+
+Si vous définissez cette règle sur "1 - Standard" ou que vous ne la configurez pas, la batterie se recharge normalement à 100 %. Cela désactive les recharges adaptative et limitée.
+
+Si vous définissez cette règle sur "2 - Adaptative", l'appareil apprend vos habitudes de recharge et retarde la recharge à 100 % jusqu'à ce que cela soit nécessaire. Cela contribue à prolonger la durée de vie de la batterie.
+
+Si vous définissez cette règle sur "3 - Limitée", la batterie ne se recharge qu'à environ 80 % pour maximiser sa durée de vie.
+
+Si la règle <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> est configurée, elle prévaut sur la règle <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Si la règle <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> n'est pas configurée, la règle <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> détermine si la fonctionnalité de recharge adaptative est activée ou désactivée.
+
+<ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> sera supprimée.</translation>
 <translation id="6897730193187922386">Supprimer les messages d'abandon de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Détecter automatiquement les paramètres de proxy</translation>
 <translation id="6901462246839613666">Activer l'affichage des contenus promotionnels</translation>
@@ -8949,6 +8971,7 @@ Si elle est définie sur "False", l'ancien comportement est activé.</translatio
 <translation id="7366637365754181686">Activer la création de rapports cloud sur les signaux de sécurité utilisateur</translation>
 <translation id="7366948865469126526">Désactiver la conversion d'unités pour Réponses rapides</translation>
 <translation id="7367734504783638685">Synchronisation des mots de passe entre les fournisseurs SSO tiers et les appareils Google Chrome</translation>
+<translation id="7372818045062294211">Autoriser l'appli à utiliser l'autorisation des notifications temporaires</translation>
 <translation id="7372831798009983116">Activer la fonctionnalité d'accessibilité de clic automatique</translation>
 <translation id="7373200034079131670">Redémarrage en cas de déconnexion de l'utilisateur si Android ou une VM sont lancés</translation>
 <translation id="7374784840090523241">Créer les clés d'accès dans d'autres magasins par défaut, comme le profil <ph name="PRODUCT_NAME" />.</translation>
@@ -10299,6 +10322,7 @@ Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_
 <translation id="8421202694245456861">Configurer la fonctionnalité de <ph name="CLASS_TOOLS_NAME" /> permettant d'activer les sous-titres</translation>
 <translation id="8422658829373743789">Contrôler le nouveau comportement d'envoi des événements sur les commandes de formulaire désactivées</translation>
 <translation id="8423237137411858515">Conserver les fichiers locaux en mode lecture seule</translation>
+<translation id="8424056332208748750">Ne pas autoriser l'appli à utiliser l'autorisation des notifications temporaires</translation>
 <translation id="8424255554404582727">Définir la rotation de l'écran par défaut (réappliquée à chaque redémarrage)</translation>
 <translation id="8426231401662877819">Faire pivoter l'écran vers la droite de 90 degrés</translation>
 <translation id="8426326725481825773">Cette règle détermine le comportement du remappage des touches Origine/Fin dans la sous-page de remappage des touches. Cette sous-page permet aux utilisateurs de personnaliser les touches du clavier. Si cette règle est activée, elle empêche les utilisateurs de personnaliser ces remappages spécifiques. Si cette règle n'est pas configurée, les raccourcis de recherche sont utilisés par défaut et les utilisateurs peuvent configurer les raccourcis.</translation>
@@ -10436,6 +10460,7 @@ Le rollback vers <ph name="PRODUCT_OS_NAME" /> 106 ou version antérieure n'est
 <translation id="8520064498689833152">Forcez l'utilisation de SafeSearch dans la recherche Google et le mode restreint à être au moins modéré sur YouTube</translation>
 <translation id="8520950040439618600">Autoriser les méthodes d'authentification par code ou association pour les hôtes d'accès à distance</translation>
 <translation id="8524334245528364388">URL vers un fichier JSON contenant une liste de serveurs d'impression.</translation>
+<translation id="8525282442896658040">Autorise l'appli à utiliser l'autorisation des notifications temporaires sur iOS</translation>
 <translation id="8525526490824335042">Conteneur Linux</translation>
 <translation id="8526745614158856826">Cette règle permet de dresser la liste des sites automatiquement autorisés à accéder à tous les appareils disponibles.
 

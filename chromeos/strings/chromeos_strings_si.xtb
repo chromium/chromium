@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">බ්‍රව්සර් නිවස</translation>
 <translation id="1526389707933164996">තිර රූ සජීවිකරණය</translation>
 <translation id="152892567002884378">හඬ පරිමාව වැඩි</translation>
-<translation id="1531038290222364269">පටිති පෙන්වන්න</translation>
 <translation id="1539864135338521185">ලපිස් ලාසුලි</translation>
 <translation id="1548555207631326346">තේමාවක් තෝරා පසුව ඔබේ AI රූප පුද්ගලායන කිරීමට යටි ඉරැති වචන තෝරන්න.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">ඉඩ දෙන උපරිම උත්සාහයන් ගණන ඉක්මවා ඇත.</translation>
 <translation id="1908234395526491708">UDP ඉල්ලීම් අසාර්ථක වීම්</translation>
 <translation id="1908394185991500139">ඊතලය වමට</translation>
-<translation id="1911678930322867245">ඉහළ දකුණ වෙත ගෙන යන්න</translation>
 <translation id="1914144885717544695">සිකුරාදා</translation>
 <translation id="1915960750806557358">ඔබේ ප්‍රතිපෝෂණය බෙදා ගන්න හෝ ඔබේ ගැටලුව විස්තර කරන්න. පුද්ගලික, සංවේදී, හෝ රහසිගත කිසිවක් ඇතුළත් නොකිරීමට වග බලා ගන්න.</translation>
 <translation id="1923388006036088459">අවධාරණ වර්ණ</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">ස්වයංක්‍රියව තෝරන ලද, ඔබගේ හොඳම ඡායාරූප</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ඕපල්</translation>
+<translation id="2501278716633472235">ආපසු යන්න</translation>
 <translation id="2505327257735685095">වත්මන් වෝල්පේපර රූපය නැවුම් කරන්න</translation>
 <translation id="2507491234071975894">ස්පීකරය</translation>
 <translation id="2512979179176933762">කවුළු පෙන්වන්න</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">ආසන්න ප්‍රතිඵලයක් සඳහා, <ph name="CATEGORY_TEXT" /> අගය <ph name="CONVERSION_RATE" />න් ගුණ කරන්න</translation>
 <translation id="4969079779290789265">බෙදන්න</translation>
 <translation id="4972592110715526173">ප්‍රකාරය වෙනස් කරන්න</translation>
+<translation id="497421865427891073">ඉදිරියට යන්න</translation>
 <translation id="4981003703840817201">නිල් සහ රෝස</translation>
 <translation id="498186245079027698">ස්කෑනරය පරීක්ෂා කර නැවත උත්සාහ කරන්න. ස්කෑන් කළ ගොනු සුරැකීමට ප්‍රමාණවත් ස්ථානීය ඉඩක් ඇති බවට සහතික කර ගන්න.</translation>
 <translation id="4982627662315910959">කෙටිමඟ නොලැබේ. Shift සහ 1 තවත් සංස්කාරක යතුරක් (ctrl, alt, හෝ <ph name="META_KEY" />) භාවිතයෙන් නව කෙටිමඟක් ඔබන්න.</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">වාදනය කරන්න</translation>
 <translation id="5901630391730855834">කහ</translation>
 <translation id="5903200662178656908">උපාංගය යතුරු පුවරු සහ මූසික සංයෝජනයකි.</translation>
-<translation id="5903822368221507416">පටිති සඟවන්න</translation>
 <translation id="5904994456462260490">නව APN එකක් එක් කරන්න</translation>
 <translation id="590746845088109442">පූසෝ</translation>
 <translation id="5907649332524363701">ප්‍රධාන වර්ණය</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">ජාල APN සැකසීම් කළමනා කරන්න. APN සෙලියුලර් ජාලයක් සහ අන්තර්ජාලය අතර සම්බන්‍ධතාවක් ඇති කරයි. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">බාහිර උපාංග සඳහා නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
 <translation id="7216409898977639127">සෙලියුලර් සපයන්නා</translation>
+<translation id="7221869452894271364">මෙම පිටුව නැවත ලබාගන්න</translation>
 <translation id="7223952304612664117">මෙය පද්ධති සේවාවලට ඔබේ ස්ථානය තීරණ කිරීමට ස්ථාන නිරවද්‍යතාව භාවිත කිරීමට ඉඩ දෙයි. ස්ථාන නිරවද්‍යතාවය තක්සේරු කිරීම සඳහා ස්ථාන නිරවද්‍යතාවය රැහැන් රහිත සංඥා සහ සංවේදක පිළිබඳ තොරතුරු භාවිත කරයි.</translation>
 <translation id="7233782086689993269">කෙටිමඟ ප්‍රතිසාධන කළා</translation>
 <translation id="723419678599947502">Google AI භාවිතයෙන් මාතෘකාවක් සාදන්න</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">රූප නැත</translation>
 <translation id="8319809980370328428">පටිගත කිරීමේ සාරාංශය සහ මාතෘකා නිර්මාණය</translation>
 <translation id="8320910311642849813">වනාන්තරය</translation>
-<translation id="8322464149031882595">ඉදිරියට යාමට ක්ලික් කරන්න</translation>
 <translation id="8329018942023753850">ගණක යෙදුම</translation>
 <translation id="8336739000755212683">උපාංග ගිණුම් රූපය මාරු කරන්න</translation>
 <translation id="8339024191194156249">ස්වයං දියත් කිරීම පිළිබඳව තව දැන ගන්න</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">තේ නිවස</translation>
 <translation id="8538236298648811558">Google AI මඟින් බලගන්වයි</translation>
-<translation id="8543574988889671960">පටිත්ත නැවත පූරණය කරන්න</translation>
 <translation id="8550364285433943656">යතුරු පුවරු යතුරු සමග ක්‍රීඩා කිරීමට ක්‍රීඩා ක්‍රියාවන් පාලනය කරන්න</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">උත්පාදක AI හට පුද්ගලයින් ගැන පවා වැරදි සිදු විය හැක, එබැවින් එය දෙවරක් පරීක්ෂා කරන්න.</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">පිටුසන්</translation>
 <translation id="8833620912470026819">පතොක් වනාන්තරය</translation>
 <translation id="8834539327799336565">දැනට සම්බන්ධ වී ඇත</translation>
-<translation id="8842526499753992487">ඉහළ වම වෙත ගෙන යන්න</translation>
 <translation id="8845001906332463065">උදවු ලබා ගන්න</translation>
 <translation id="8849799913685544685">ප්‍රදීපාගාරය</translation>
 <translation id="8851859208664803097">නැවතී ඇත - මුද්‍රකයට ළඟා විය නොහැක</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">පෙන්ගුයින්</translation>
 <translation id="8968751544471797276">ආරෝපණ වේගය</translation>
 <translation id="8970109610781093811">නැවත ධාවනය කරන්න</translation>
-<translation id="8972061581514441296">ආපසු යාමට ක්ලික් කරන්න</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ස්කෑන් කරන්න}=1{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}one{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}other{පිටු {NUMBER_OF_PAGES}ක් ස්කෑන් කරන්න}}</translation>
 <translation id="89945434909472341">ගම</translation>

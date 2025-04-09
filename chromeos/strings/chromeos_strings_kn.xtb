@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">ಬ್ರೌಸರ್ ಹೋಮ್</translation>
 <translation id="1526389707933164996">ಸ್ಕ್ರೀನ್‌ಸೇವರ್ ಆ್ಯನಿಮೇಶನ್</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
-<translation id="1531038290222364269">ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="1539864135338521185">ಲ್ಯಾಪಿಸ್ ಲಾಜುಲಿ</translation>
 <translation id="1548555207631326346">ನಿಮ್ಮ AI ಚಿತ್ರಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಲು, ಥೀಮ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ, ನಂತರ ಅಂಡರ್‌ಲೈನ್ ಮಾಡಲಾದ ಪದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">ಅನುಮತಿಸಲಾದ ಗರಿಷ್ಟ ಪ್ರಯತ್ನಗಳು ಮೀರಿವೆ.</translation>
 <translation id="1908234395526491708">UDP ವಿನಂತಿ ವೈಫಲ್ಯಗಳು</translation>
 <translation id="1908394185991500139">ಎಡ ಆ್ಯರೋ</translation>
-<translation id="1911678930322867245">ಮೇಲಿನ ಬಲಭಾಗಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1914144885717544695">ಶುಕ್ರವಾರದಂದು</translation>
 <translation id="1915960750806557358">ನಿಮ್ಮ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಿ ಅಥವಾ ನಿಮ್ಮ ಸಮಸ್ಯೆಯನ್ನು ವಿವರಿಸಿ. ವೈಯಕ್ತಿಕ, ಸೂಕ್ಷ್ಮ ಅಥವಾ ಗೌಪ್ಯವಾದ ಯಾವ ವಿಚಾರವನ್ನೂ ಒಳಗೊಂಡಿಲ್ಲ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="1923388006036088459">ಆ್ಯಕ್ಸೆಂಟ್‌ನ ಬಣ್ಣಗಳು</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">ನಿಮ್ಮ ಅತ್ಯುತ್ತಮ ಫೋಟೋಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಆಯ್ಕೆಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ಓಪಲ್</translation>
+<translation id="2501278716633472235">ಹಿಂದಿರುಗಿ</translation>
 <translation id="2505327257735685095">ಪ್ರಸ್ತುತ ವಾಲ್‌ಪೇಪರ್ ಚಿತ್ರವನ್ನು ರಿಫ್ರೆಶ್ ಮಾಡಿ</translation>
 <translation id="2507491234071975894">ಸ್ಪೀಕರ್</translation>
 <translation id="2512979179176933762">ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -382,6 +381,7 @@
 <translation id="2584559707064218956">ಸೆಟಪ್ ಮಾಡಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="2586146417912237930">ನೀಲಿ ಮತ್ತು ಇಂಡಿಗೊ</translation>
 <translation id="2589921777872778654">ಮೆನುವನ್ನು ಎಡಿಟ್ ಮಾಡಿ ಮತ್ತು ಅಳಿಸಿ</translation>
+<translation id="2590424100019931043">ನಿಮ್ಮನ್ನು ಈ ತರಗತಿಯಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="2597774443162333062">ಡೀಬಗ್ ಮಾಡಲು ಫೈಲ್‌ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. 1 ಪುಟವನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}one{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}other{ಸ್ಕ್ಯಾನಿಂಗ್ ಪೂರ್ಣಗೊಂಡಿದೆ. {NUMBER_OF_PAGES} ಪುಟಗಳನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾಗಿದೆ}}</translation>
 <translation id="261322795497077164">ಸ್ಪೀಕರ್‌ ಗುರುತಿಸುವಿಕೆ</translation>
@@ -868,6 +868,7 @@
 <translation id="4965703485264574128">ಅಂದಾಜು ಫಲಿತಾಂಶಕ್ಕಾಗಿ, <ph name="CATEGORY_TEXT" /> ನ ಮೌಲ್ಯವನ್ನು <ph name="CONVERSION_RATE" /> ಸಂಖ್ಯೆಯಿಂದ ಗುಣಿಸಿ</translation>
 <translation id="4969079779290789265">ವಿಭಜಿಸಿ</translation>
 <translation id="4972592110715526173">ಮೋಡ್ ಬದಲಾಯಿಸಿ</translation>
+<translation id="497421865427891073">ಮುಂದಕ್ಕೆ ಹೋಗು</translation>
 <translation id="4981003703840817201">ನೀಲಿ ಮತ್ತು ಗುಲಾಬಿ</translation>
 <translation id="498186245079027698">ಸ್ಕ್ಯಾನರ್ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ. ಸ್ಕ್ಯಾನ್ ಮಾಡಿರುವ ಫೈಲ್‌ಗಳನ್ನು ಉಳಿಸಲು ಸಾಕಷ್ಟು ಸ್ಥಳೀಯ ಸ್ಥಳವಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="4982627662315910959">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. shift ಮತ್ತು ಇನ್ನೂ ಒಂದು ಮಾರ್ಪಡಿಸುವ ಕೀ ಅನ್ನು ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ (ctrl, alt ಅಥವಾ <ph name="META_KEY" />).</translation>
@@ -1055,7 +1056,6 @@
 <translation id="5896602941605730551">ಪ್ಲೇ ಮಾಡಿ</translation>
 <translation id="5901630391730855834">ಹಳದಿ</translation>
 <translation id="5903200662178656908">ಸಾಧನವು ಕೀಬೋರ್ಡ್ ಮತ್ತು ಮೌಸ್‌ನ ಕಾಂಬೋ ಆಗಿದೆ.</translation>
-<translation id="5903822368221507416">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರೆಮಾಡಿ</translation>
 <translation id="5904994456462260490">ಹೊಸ APN ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="590746845088109442">ಬೆಕ್ಕುಗಳು</translation>
 <translation id="5907649332524363701">ಕೀ ಬಣ್ಣ</translation>
@@ -1366,6 +1366,7 @@
 <translation id="7212547870105584639">ನೆಟ್‌ವರ್ಕ್ APN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ. APN ಗಳು ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಹಾಗೂ ಇಂಟರ್ನೆಟ್ ನಡುವೆ ಕನೆಕ್ಷನ್ ಅನ್ನು ಸ್ಥಾಪಿಸುತ್ತವೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">ಬಾಹ್ಯ ಸಾಧನಗಳಿಗಾಗಿ ಫರ್ಮ್‌ವೇರ್ ಅಪ್‌ಡೇಟ್‌ಗಳು</translation>
 <translation id="7216409898977639127">ಸೆಲ್ಯುಲಾರ್ ಒದಗಿಸುವವರು</translation>
+<translation id="7221869452894271364">ಈ ಪುಟವನ್ನು ರೀಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="7223952304612664117">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ನಿರ್ಧರಿಸಲು ಸ್ಥಳದ ನಿಖರತೆಯನ್ನು ಬಳಸಲು ಸಿಸ್ಟಮ್ ಸೇವೆಗಳಿಗೆ ಇದು ಅನುಮತಿಸುತ್ತದೆ. ಸಾಧನದ ಸ್ಥಳವನ್ನು ಅಂದಾಜು ಮಾಡಲು ವೈರ್‌ಲೆಸ್ ಸಿಗ್ನಲ್‌ಗಳು ಮತ್ತು ಸೆನ್ಸರ್‌ಗಳಂತಹ ಮಾಹಿತಿಯನ್ನು ಸ್ಥಳದ ನಿಖರತೆಯು ಬಳಸುತ್ತದೆ.</translation>
 <translation id="7233782086689993269">ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಮರುಸ್ಥಾಪಿಸಲಾಗಿದೆ</translation>
 <translation id="723419678599947502">Google AI ಬಳಸಿಕೊಂಡು ಶೀರ್ಷಿಕೆಯನ್ನು ರಚಿಸಿ</translation>
@@ -1603,7 +1604,6 @@
 <translation id="8318753676953949627">ಯಾವುದೇ ಚಿತ್ರಗಳಿಲ್ಲ</translation>
 <translation id="8319809980370328428">ರೆಕಾರ್ಡಿಂಗ್ ಸಾರಾಂಶ ಮತ್ತು ಶೀರ್ಷಿಕೆ ರಚನೆ</translation>
 <translation id="8320910311642849813">ಕಾಡು</translation>
-<translation id="8322464149031882595">ಮುಂದೆ ಹೋಗಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="8329018942023753850">ಕ್ಯಾಲ್ಕ್ಯುಲೇಟರ್ ಆ್ಯಪ್</translation>
 <translation id="8336739000755212683">ಸಾಧನದ ಖಾತೆ ಚಿತ್ರವನ್ನು ಬದಲಾಯಿಸಿ</translation>
 <translation id="8339024191194156249">ಸ್ವಯಂ ಪ್ರಾರಂಭದ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
@@ -1656,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ಟೀ ಹೌಸ್</translation>
 <translation id="8538236298648811558">Google AI ನಿಂದ ಚಾಲಿತವಾಗಿದೆ</translation>
-<translation id="8543574988889671960">ಟ್ಯಾಬ್ ಅನ್ನು ಪುನಃ ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8550364285433943656">ಕೀಬೋರ್ಡ್‌ ಕೀಗಳೊಂದಿಗೆ ಆಡಲು ಗೇಮ್‌ ಆ್ಯಕ್ಷನ್‌ಗಳ ಮೇಲೆ ಕಂಟ್ರೋಲ್‌ಗಳನ್ನು ಇರಿಸಿ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">ಜನರೇಟಿವ್ AI ಜನರ ಬಗ್ಗೆ ಸೇರಿದಂತೆ ತಪ್ಪಾದ ಮಾಹಿತಿಯನ್ನು ನೀಡಬಹುದು, ಆದ್ದರಿಂದ ಅದನ್ನು ಎರಡು ಬಾರಿ ಪರಿಶೀಲಿಸಿ.</translation>
@@ -1707,7 +1706,6 @@
 <translation id="8820817407110198400">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="8833620912470026819">ಕ್ಯಾಕ್ಟಸ್ ಫಾರೆಸ್ಟ್</translation>
 <translation id="8834539327799336565">ಪ್ರಸ್ತುತ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ</translation>
-<translation id="8842526499753992487">ಮೇಲಿನ ಎಡಭಾಗಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="8845001906332463065">ಸಹಾಯ ಪಡೆಯಿರಿ</translation>
 <translation id="8849799913685544685">ಲೈಟ್‌ಹೌಸ್</translation>
 <translation id="8851859208664803097">ಸ್ಥಗಿತಗೊಳಿಸಲಾಗಿದೆ - ಪ್ರಿಂಟರ್ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ</translation>
@@ -1747,7 +1745,6 @@
 <translation id="8961025972867871808">ಪೆಂಗ್ವಿನ್‌ಗಳು</translation>
 <translation id="8968751544471797276">ಚಾರ್ಜಿಂಗ್ ರೇಟ್</translation>
 <translation id="8970109610781093811">ಮತ್ತೆ ಚಾಲನೆ ಮಾಡಿ</translation>
-<translation id="8972061581514441296">ಹಿಂತಿರುಗಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{ಸ್ಕ್ಯಾನ್}=1{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}one{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}other{ಸ್ಕ್ಯಾನ್ ಮಾಡಲಾದ ಪುಟ {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">ಗ್ರಾಮ</translation>

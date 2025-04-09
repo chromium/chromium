@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">accueil du navigateur</translation>
 <translation id="1526389707933164996">Animation de l'économiseur d'écran</translation>
 <translation id="152892567002884378">Augmenter le volume</translation>
-<translation id="1531038290222364269">Afficher les onglets</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1548555207631326346">Choisissez un thème, puis sélectionnez les mots soulignés pour personnaliser vos images IA.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Vous avez atteint le nombre maximal autorisé de tentatives.</translation>
 <translation id="1908234395526491708">Échec de la requête UDP</translation>
 <translation id="1908394185991500139">flèche vers la gauche</translation>
-<translation id="1911678930322867245">Déplacer en haut à droite</translation>
 <translation id="1914144885717544695">vendredi</translation>
 <translation id="1915960750806557358">Partagez vos commentaires ou décrivez votre problème. Veillez à ne fournir aucune information personnelle, sensible ou confidentielle.</translation>
 <translation id="1923388006036088459">Couleurs d'accentuation</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Vos plus belles photos sélectionnées automatiquement</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opale</translation>
+<translation id="2501278716633472235">Retour</translation>
 <translation id="2505327257735685095">Actualiser le fond d'écran actuel</translation>
 <translation id="2507491234071975894">Enceinte</translation>
 <translation id="2512979179176933762">afficher les fenêtres</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Pour obtenir un résultat approximatif, multiplier la valeur <ph name="CATEGORY_TEXT" /> par <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Diviser</translation>
 <translation id="4972592110715526173">changement de mode</translation>
+<translation id="497421865427891073">Avancer</translation>
 <translation id="4981003703840817201">bleu et rose</translation>
 <translation id="498186245079027698">Vérifiez le scanner et réessayez. Assurez-vous que l'espace de stockage local est suffisant pour y enregistrer les fichiers numérisés.</translation>
 <translation id="4982627662315910959">Raccourci non disponible. Appuyez sur un nouveau raccourci avec la touche Maj et une autre touche de modification (Ctrl, Alt ou <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Lire</translation>
 <translation id="5901630391730855834">Jaune</translation>
 <translation id="5903200662178656908">L'appareil combine clavier et souris.</translation>
-<translation id="5903822368221507416">Masquer les onglets</translation>
 <translation id="5904994456462260490">Ajouter un APN</translation>
 <translation id="590746845088109442">chats</translation>
 <translation id="5907649332524363701">couleur touche</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Gérer les paramètres APN du réseau. Les APN établissent une connexion entre un réseau mobile et Internet. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mises à jour du micrologiciel pour les appareils externes</translation>
 <translation id="7216409898977639127">Opérateur de téléphonie mobile</translation>
+<translation id="7221869452894271364">Actualiser cette page</translation>
 <translation id="7223952304612664117">Cela permet aux services système d'utiliser la précision de la localisation pour déterminer votre position. La précision de la localisation utilise des informations concernant les signaux sans fil et les capteurs pour estimer la position de l'appareil.</translation>
 <translation id="7233782086689993269">Raccourci restauré</translation>
 <translation id="723419678599947502">Créer un titre à l'aide de l'IA de Google</translation>
@@ -1603,7 +1603,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8318753676953949627">Aucune image</translation>
 <translation id="8319809980370328428">Résumé de l'enregistrement et création du titre</translation>
 <translation id="8320910311642849813">forêt</translation>
-<translation id="8322464149031882595">Cliquer pour continuer</translation>
 <translation id="8329018942023753850">appli calculatrice</translation>
 <translation id="8336739000755212683">Modifier l'image du compte sur l'appareil</translation>
 <translation id="8339024191194156249">En savoir plus sur le lancement automatique</translation>
@@ -1656,7 +1655,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">salon de thé</translation>
 <translation id="8538236298648811558">Optimisé par l'IA de Google</translation>
-<translation id="8543574988889671960">Actualiser l'onglet</translation>
 <translation id="8550364285433943656">Configurez les commandes des actions du jeu pour jouer avec les touches de votre clavier</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Vérifiez les réponses de l'IA générative, car elle peut faire des erreurs, y compris sur des personnes.</translation>
@@ -1707,7 +1705,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8833620912470026819">forêt de cactus</translation>
 <translation id="8834539327799336565">Actuellement connectés</translation>
-<translation id="8842526499753992487">Déplacer en haut à gauche</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8849799913685544685">phare</translation>
 <translation id="8851859208664803097">Arrêtée – Imprimante inaccessible</translation>
@@ -1747,7 +1744,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8961025972867871808">manchots</translation>
 <translation id="8968751544471797276">Vitesse de recharge</translation>
 <translation id="8970109610781093811">Exécuter à nouveau</translation>
-<translation id="8972061581514441296">Cliquer pour revenir en arrière</translation>
 <translation id="8983038754672563810">3G+</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scanner}=1{Scanner la page {NUMBER_OF_PAGES}}one{Scanner la page {NUMBER_OF_PAGES}}other{Scanner les pages {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">village</translation>

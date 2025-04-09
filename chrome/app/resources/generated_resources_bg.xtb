@@ -5994,6 +5994,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5186381005592669696">Персонализиране на екранния език за поддържаните приложения</translation>
 <translation id="5186788525428341874">Можете да използвате този ключ за достъп, за да влизате по-бързо в профила си на всичките си устройства. Ключът ще бъде запазен в Google Мениджър на пароли за <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">Инсталиране на страницата като приложение...</translation>
+<translation id="5187671830619031922">Добавяне на раздела към разделен изглед</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Споделено от <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Използване на местоположението. Позволете на ChromeOS, приложенията за Android, уебсайтовете и услугите да ползват местоположението на устройството ви, ако имат съответното разрешение. „Точност на местоположението“ предоставя на приложенията и услугите за Android по-точни данни за местоположението. За целта Google периодично обработва информацията от сензорите на устройството ви и безжичните сигнали от него, за да определя местоположенията на съответните сигнали посредством отворена ангажираност. Използваме тези данни, без да ви идентифицираме, за да подобряваме точността на местоположението и базиращите се на него услуги, както и да подобряваме, предоставяме и поддържаме услугите на Google въз основа на законните си интереси и тези на трети страни, така че да обслужваме нуждите на потребителите. <ph name="BEGIN_LINK1" />Научете повече за използването на местоположението<ph name="END_LINK1" /></translation>
@@ -6341,6 +6342,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5436492226391861498">Изчаква се прокси тунел...</translation>
 <translation id="5436510242972373446">Търсене с <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> прозорец вече е с широчина <ph name="WINDOW_SIZE_PERCENT" />, а <ph name="PANE_SIDE" /> панел вече е с широчина <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">Намиране и разширения</translation>
 <translation id="5440425659852470030">Затваряне на страничния панел</translation>
 <translation id="544083962418256601">Създаване на преки пътища...</translation>
 <translation id="5441133529460183413">Уеб приложение, инсталирано от браузъра Chrome</translation>
@@ -6813,7 +6815,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5794414402486823030">Отваряне винаги със системния визуализатор</translation>
 <translation id="5794700615121138172">Споделяне на папки в Linux</translation>
 <translation id="5794786537412027208">Затваряне на всички приложения в Chrome</translation>
-<translation id="5795422263272161110">Показване един до друг</translation>
 <translation id="5796485699458186843">Нов &amp;раздел „инкогнито“</translation>
 <translation id="5796956053441619942">URL адресът от отдалеченото устройство не се поддържа</translation>
 <translation id="5797934230382081317">Научете как да започнете да използвате &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; и &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9253,7 +9254,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7552846755917812628">Изпробвайте следните съвети:</translation>
 <translation id="7553012839257224005">Контейнерът за Linux се проверява</translation>
 <translation id="7553242001898162573">Въведете паролата си</translation>
-<translation id="7554342082838376298">Автоматичната промяна на паролата</translation>
 <translation id="755472745191515939">Администраторът ви не разрешава този език</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
 <translation id="7556033326131260574">Smart Lock не можа да потвърди профила ви. Въведете паролата си, за да влезете.</translation>
@@ -11102,6 +11102,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8827125715368568315">Блокирани са „<ph name="PERMISSION" />“ и още <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Фиксиране на разширението</translation>
 <translation id="8828933418460119530">DNS име</translation>
+<translation id="8829979393064090868">Добавяне на раздела към разделен изглед</translation>
 <translation id="883062543841130884">Substitutions</translation>
 <translation id="8830779999439981481">Рестартира се, за да се приложат актуализациите</translation>
 <translation id="8830796635868321089">Проверката за актуализации не бе успешна посредством текущите настройки на прокси сървъра. Моля, <ph name="PROXY_SETTINGS_LINK_START" />коригирайте ги<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
@@ -11227,7 +11228,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8915916167043355778">Затваряне на всички</translation>
 <translation id="8916476537757519021">Подрамка в режим „инкогнито“: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Да, ще участвам</translation>
-<translation id="8917980324687233736">Показване един до друг</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Приложението се инсталира...</translation>
 <translation id="891931289445130855">Изтриване на данните и разрешенията</translation>

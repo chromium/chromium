@@ -1127,6 +1127,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="573974402615125334">Synkroniser din historik og dine faner for at dele, deltage i og samarbejde i fanegrupper</translation>
 <translation id="5740123193752401435">Søg i faner…</translation>
 <translation id="5744274077973758795">Notifikationer er aktiveret for <ph name="FEATURE_NAME" /></translation>
+<translation id="5745598824054949526">Der blev ikke fundet nogen tekst</translation>
 <translation id="574762237186762643">Begivenheder</translation>
 <translation id="5749158352074143502">Fortsæt med denne fane</translation>
 <translation id="5753021559215751319">Gem adgangskode</translation>
@@ -1290,6 +1291,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6410883413783534063">Åbn faner for at besøge forskellige sider på samme tid</translation>
 <translation id="6416807286621280684">De pakker, du sporer, og leveringsopdateringer.</translation>
 <translation id="6418346271604475326">Forbereder PDF</translation>
+<translation id="6421038304268477484">Oversat tekst</translation>
 <translation id="6429213933892582367">Åbn Valgmuligheder for adgangskoder</translation>
 <translation id="6434591244308415567">Der opstod en fejl. Prøv igen senere.</translation>
 <translation id="6435307030888827407">Forbliv logget ud</translation>
@@ -1968,6 +1970,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="9097506547406246598">"Følg" kan ikke fortrydes. Der gik noget galt.</translation>
 <translation id="9098541895599151034">Vil du slette <ph name="NUMBER_OF_ACCOUNTS" /> adgangskoder?</translation>
 <translation id="9099233023029360602">Spørg, hvilken konto der skal bruges, hver gang</translation>
+<translation id="9099821309562615674">Sørg for, at den tekst, du oversætter, er tydelig og inden for rammen.</translation>
 <translation id="9100610230175265781">Adgangssætning kræves</translation>
 <translation id="91023216973987714">Betalingsmetoder</translation>
 <translation id="9106655997975673326">Fra "<ph name="SOURCE_DEVICE" />"</translation>

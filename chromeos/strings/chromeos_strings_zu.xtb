@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">isiphequluli sasekhaya</translation>
 <translation id="1526389707933164996">Isigcini sesikrini sikapopayi</translation>
 <translation id="152892567002884378">Ivolumu phezulu</translation>
-<translation id="1531038290222364269">Bonisa amathebhu</translation>
 <translation id="1539864135338521185">i-lapis lazuli</translation>
 <translation id="1548555207631326346">Khetha itimu bese ukhetha amagama adwetshelwe ukuze uqondanise nomuntu siqu imifanekiso yakho ye-AI.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Imizamo emikhulu evunyelwe idluliwe.</translation>
 <translation id="1908234395526491708">Ukwehluleka kwesicelo se-UDP</translation>
 <translation id="1908394185991500139">Umcimbisholo wangakwesokunxele</translation>
-<translation id="1911678930322867245">Iya phezulu kwesokudla</translation>
 <translation id="1914144885717544695">ngoLwesihlanu</translation>
 <translation id="1915960750806557358">Yabelana ngempendulo yakho noma uchaze inkinga yakho. Qinisekisa ukuthi awufaki lutho lomuntu siqu, oluzwelayo, noma oluyimfihlo.</translation>
 <translation id="1923388006036088459">Imibala ye-accent</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Izithombe zakho ezingcono kakhulu, zikhethwe ngokuzenzakalelayo</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">i-opal</translation>
+<translation id="2501278716633472235">Iya emuva</translation>
 <translation id="2505327257735685095">Vuselela umfanekiso wamanje wesithombe sangemuva</translation>
 <translation id="2507491234071975894">Isipikha</translation>
 <translation id="2512979179176933762">bonisa amawindi</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Ngomphumela osondelene, phinda leli nani le-<ph name="CATEGORY_TEXT" /> ngo-<ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Hlukanisa</translation>
 <translation id="4972592110715526173">ukushintsha kwemodi</translation>
+<translation id="497421865427891073">Iya phambili</translation>
 <translation id="4981003703840817201">okuluhlaza okwesibhakabhaka nokuphinki</translation>
 <translation id="498186245079027698">Hlola iskena bese uzame futhi. Qiniseka ukuthi kunesikhala esanele sensawo sokulondoloza amafayela askeniwe.</translation>
 <translation id="4982627662315910959">Isinqamuleli asitholakali. Chofoza isinqamuleli esisha usebenzisa u-shift nomunye ukhiye ongu-1 wokushintsha (ctrl, alt, noma <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Dlala</translation>
 <translation id="5901630391730855834">Okuliphuzi</translation>
 <translation id="5903200662178656908">Idivayisi iyinhlanganisela yekhibhodi nemowusi</translation>
-<translation id="5903822368221507416">Fihla amathebhu</translation>
 <translation id="5904994456462260490">Engeza i-APN entsha</translation>
 <translation id="590746845088109442">amakati</translation>
 <translation id="5907649332524363701">umbala wokhiye</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Phatha amasethingi enethiwekhi ye-APN. Ama-APN asungula ukuxhumana phakathi kwenethiwekhi yeselula ne-inthanethi. <ph name="BEGIN_LINK_LEARN_MORE" />Funda kabanzi<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Izibuyekezo ze-Firmware zamadivayisi angaphandle</translation>
 <translation id="7216409898977639127">Umhlinzeki weselula</translation>
+<translation id="7221869452894271364">Phinda ulayishe leli khasi</translation>
 <translation id="7223952304612664117">Lokhu kuvumela ukuba uhlelokulungisa lohlelo lusebenzise Ukuhlonzwa Kwendawo Ngqo ukuze luthole indawo yakho. Ukunemba Kwendawo kusebenzisa ulwazi olumayelana namasignali angenantambo nezinzwa ukulinganisa indawo yedivayisi.</translation>
 <translation id="7233782086689993269">Isinqamuleli sibuyiselwe</translation>
 <translation id="723419678599947502">Sungula isihloko usebenzisa iGoogle AI</translation>
@@ -1603,7 +1603,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8318753676953949627">Azikho Izithombe</translation>
 <translation id="8319809980370328428">Isifinyezo sokurekhoda nokusungula isihloko</translation>
 <translation id="8320910311642849813">ihlathi</translation>
-<translation id="8322464149031882595">Chofoza ukuze uye phambili</translation>
 <translation id="8329018942023753850">i-app yesibali</translation>
 <translation id="8336739000755212683">Shintsha isithombe se-akhawunti yedivayisi</translation>
 <translation id="8339024191194156249">Funda kabanzi mayelana nokwethulwa okuzenzekelayo</translation>
@@ -1656,7 +1655,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8528615187455571738">I-Crosvm</translation>
 <translation id="852896705346853285">indlu yetiye</translation>
 <translation id="8538236298648811558">Isekelwe yi-Google AI</translation>
-<translation id="8543574988889671960">Layisha ithebhu kabusha</translation>
 <translation id="8550364285433943656">Beka izilawuli kuzenzo zegeyimu ukuze udlale ngokhiye bekhibhodi</translation>
 <translation id="8557447961879934694">I-WPA2</translation>
 <translation id="8558521694042102707">I-AI ekhiqizayo ingawenza amaphutha, okuhlanganisa amaphutha ngabantu, ngakho qinisekisa.</translation>
@@ -1707,7 +1705,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8820817407110198400">Amabhukhimakhi</translation>
 <translation id="8833620912470026819">ihlathi lomdolofiya</translation>
 <translation id="8834539327799336565">Kuxhunyiwe manje</translation>
-<translation id="8842526499753992487">Iya phezulu kwesokunxele</translation>
 <translation id="8845001906332463065">Thola usizo</translation>
 <translation id="8849799913685544685">indlu yesibani</translation>
 <translation id="8851859208664803097">Kumisiwe - Iphrinta ayifinyeleleki</translation>
@@ -1747,7 +1744,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8961025972867871808">amaphengwini</translation>
 <translation id="8968751544471797276">Isilinganisela sokushaja</translation>
 <translation id="8970109610781093811">Sebenzisa futhi</translation>
-<translation id="8972061581514441296">Chofoza ukuze ubuyele emuva</translation>
 <translation id="8983038754672563810">I-HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skena}=1{Skena ikhasi elingu-{NUMBER_OF_PAGES}}one{Skena ikhasi elingu-{NUMBER_OF_PAGES}}other{Skena ikhasi elingu-{NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">idolobhana</translation>

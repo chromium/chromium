@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">home ng browser</translation>
 <translation id="1526389707933164996">Animation ng screen saver</translation>
 <translation id="152892567002884378">Lakasan ang volume</translation>
-<translation id="1531038290222364269">Ipakita ang mga tab</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1548555207631326346">Pumili ng tema at pagkatapos ay piliin ang mga nakasalungguhit na salita para i-personalize ang iyong mga imaheng gawa ng AI.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Nalampasan na ang maximum na pinapahintulutang bilang ng pagsubok</translation>
 <translation id="1908234395526491708">Mga hindi naisagawang kahilingan sa UDP</translation>
 <translation id="1908394185991500139">pakaliwang arrow</translation>
-<translation id="1911678930322867245">Ilipat sa kanang bahagi sa itaas</translation>
 <translation id="1914144885717544695">sa Biyernes</translation>
 <translation id="1915960750806557358">I-share ang iyong feedback o ilarawan ang isyu mo. Siguraduhing hindi ka magsasama ng kahit anong personal, sensitibo, o kumpidensyal.</translation>
 <translation id="1923388006036088459">Mga kulay ng accent</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Ang iyong mga pinakamagandang larawang awtomatikong napili</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
+<translation id="2501278716633472235">Bumalik</translation>
 <translation id="2505327257735685095">I-refresh ang kasalukuyang larawan sa wallpaper</translation>
 <translation id="2507491234071975894">Speaker</translation>
 <translation id="2512979179176933762">ipakita ang mga window</translation>
@@ -382,6 +381,7 @@
 <translation id="2584559707064218956">Para mag-set up, pumunta sa Mga Setting</translation>
 <translation id="2586146417912237930">asul at indigo</translation>
 <translation id="2589921777872778654">Menu ng pag-edit at pag-delete</translation>
+<translation id="2590424100019931043">Inalis ka na sa klaseng ito</translation>
 <translation id="2597774443162333062">Ipapadala ang mga file sa Google para sa pagde-debug</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Tapos na ang pag-scan. 1 page ang na-scan}one{Tapos na ang pag-scan. {NUMBER_OF_PAGES} page ang na-scan}other{Tapos na ang pag-scan. {NUMBER_OF_PAGES} na page ang na-scan}}</translation>
 <translation id="261322795497077164">Pagtukoy sa speaker</translation>
@@ -868,6 +868,7 @@
 <translation id="4965703485264574128">Para sa tinatayang resulta, i-multiply ang value ng <ph name="CATEGORY_TEXT" /> sa <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">I-split</translation>
 <translation id="4972592110715526173">pagbabago ng mode</translation>
+<translation id="497421865427891073">Sumulong</translation>
 <translation id="4981003703840817201">asul at pink</translation>
 <translation id="498186245079027698">Suriin ang scanner at subukan ulit. Tiyaking may sapat na lokal na space para mag-save ng mga na-scan na file.</translation>
 <translation id="4982627662315910959">Hindi available ang shortcut. Pumindot ng bagong shortcut gamit ang shift at 1 pang modifier key (ctrl, alt, o <ph name="META_KEY" />).</translation>
@@ -1055,7 +1056,6 @@
 <translation id="5896602941605730551">I-play</translation>
 <translation id="5901630391730855834">Dilaw</translation>
 <translation id="5903200662178656908">Pinagsamang keyboard at mouse ang device.</translation>
-<translation id="5903822368221507416">I-hide ang mga tab</translation>
 <translation id="5904994456462260490">Magdagdag ng bagong APN</translation>
 <translation id="590746845088109442">mga pusa</translation>
 <translation id="5907649332524363701">kulay ng key</translation>
@@ -1366,6 +1366,7 @@
 <translation id="7212547870105584639">Pamahalaan ang mga setting ng APN ng network. Bumubuo ang mga APN ng koneksyon sa pagitan ng cellular network at internet. <ph name="BEGIN_LINK_LEARN_MORE" />Matuto pa<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Mga update sa firmware para sa mga external na device</translation>
 <translation id="7216409898977639127">Cellular provider</translation>
+<translation id="7221869452894271364">I-reload ang page na ito</translation>
 <translation id="7223952304612664117">Pinapayagan nito ang mga serbisyo ng system na gamitin ang Katumpakan ng Lokasyon para matukoy ang iyong lokasyon. Gumagamit ang Katumpakan ng Lokasyon ng impormasyon tungkol sa mga wireless na signal at sensor para matantya ang lokasyon ng device.</translation>
 <translation id="7233782086689993269">Na-restore ang shortcut</translation>
 <translation id="723419678599947502">Gawin ang pamagat gamit ang Google AI</translation>
@@ -1603,7 +1604,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8318753676953949627">Walang Larawan</translation>
 <translation id="8319809980370328428">Paggawa ng buod at pamagat ng recording</translation>
 <translation id="8320910311642849813">gubat</translation>
-<translation id="8322464149031882595">Mag-click para magpatuloy</translation>
 <translation id="8329018942023753850">calculator app</translation>
 <translation id="8336739000755212683">Baguhin ang larawan ng account ng device</translation>
 <translation id="8339024191194156249">Matuto pa tungkol sa awtomatikong paglunsad</translation>
@@ -1656,7 +1656,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tea house</translation>
 <translation id="8538236298648811558">Pinapagana ng Google AI</translation>
-<translation id="8543574988889671960">I-reload ang tab</translation>
 <translation id="8550364285433943656">Ilagay ang mga kontrol sa mga pagkilos sa laro para maglaro gamit ang mga keyboard key mo</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Puwedeng magkamali ang Generative AI, kabilang ang tungkol sa mga tao, kaya i-double check ito.</translation>
@@ -1707,7 +1706,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8820817407110198400">Mga Bookmark</translation>
 <translation id="8833620912470026819">cactus forest</translation>
 <translation id="8834539327799336565">Kasalukuyang nakakonekta</translation>
-<translation id="8842526499753992487">Ilipat sa kaliwang bahagi sa itaas</translation>
 <translation id="8845001906332463065">Humingi ng tulong</translation>
 <translation id="8849799913685544685">parola</translation>
 <translation id="8851859208664803097">Ihininto - Hindi makakonekta sa printer</translation>
@@ -1747,7 +1745,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8961025972867871808">mga penguin</translation>
 <translation id="8968751544471797276">Rate ng Pag-charge</translation>
 <translation id="8970109610781093811">Patakbuhing muli</translation>
-<translation id="8972061581514441296">I-click para bumalik</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{I-scan}=1{I-scan ang page {NUMBER_OF_PAGES}}one{I-scan ang page {NUMBER_OF_PAGES}}other{I-scan ang page {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">village</translation>

@@ -6318,6 +6318,7 @@
 <translation id="5436492226391861498">正在等待代理隧道的响应...</translation>
 <translation id="5436510242972373446">用 <ph name="SITE_NAME" /> 搜索：</translation>
 <translation id="5438014818441491616">现在，<ph name="WINDOW_SIDE" />窗口占 <ph name="WINDOW_SIZE_PERCENT" /> 宽度，<ph name="PANE_SIDE" />窗格占 <ph name="PANE_SIZE_PERCENT" /> 宽度。</translation>
+<translation id="5438060324827306856">查找扩展程序(&amp;E)</translation>
 <translation id="5440425659852470030">关闭侧边栏</translation>
 <translation id="544083962418256601">创建快捷方式...</translation>
 <translation id="5441133529460183413">从 Chrome 浏览器安装的 Web 应用</translation>
@@ -6787,7 +6788,6 @@
 <translation id="5794414402486823030">始终使用系统查看器打开</translation>
 <translation id="5794700615121138172">Linux 共享文件夹</translation>
 <translation id="5794786537412027208">退出所有Chrome应用</translation>
-<translation id="5795422263272161110">并排显示</translation>
 <translation id="5796485699458186843">打开新的无痕式标签页(&amp;T)</translation>
 <translation id="5796956053441619942">远程设备的网址不受支持</translation>
 <translation id="5797934230382081317">了解如何开始在 &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; 和 &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt; 设备上使用</translation>
@@ -9226,7 +9226,6 @@
 <translation id="7552846755917812628">请尝试按以下提示操作：</translation>
 <translation id="7553012839257224005">正在检查 Linux 容器</translation>
 <translation id="7553242001898162573">输入您的密码</translation>
-<translation id="7554342082838376298">自动更改密码</translation>
 <translation id="755472745191515939">您的管理员不允许使用该语言</translation>
 <translation id="7554791636758816595">新标签页</translation>
 <translation id="7556033326131260574">Smart Lock 无法验证您的账号，您需要输入密码才能进入。</translation>
@@ -11200,7 +11199,6 @@
 <translation id="8915916167043355778">全部关闭</translation>
 <translation id="8916476537757519021">隐身辅助框架：<ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">立即开启</translation>
-<translation id="8917980324687233736">并排显示</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">正在安装应用…</translation>
 <translation id="891931289445130855">删除数据和权限</translation>

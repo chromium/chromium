@@ -1127,6 +1127,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="573974402615125334">For å dele, bli med i og samarbeide i fanegrupper, synkroniser loggen og fanene dine</translation>
 <translation id="5740123193752401435">Søk i faner…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" />-varsler er slått på</translation>
+<translation id="5745598824054949526">Fant ingen tekst</translation>
 <translation id="574762237186762643">Aktiviteter</translation>
 <translation id="5749158352074143502">Fortsett med denne fanen</translation>
 <translation id="5753021559215751319">Lagre passord</translation>
@@ -1290,6 +1291,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6410883413783534063">Åpne faner for å besøke ulike sider samtidig</translation>
 <translation id="6416807286621280684">Sporede pakker og leveringsoppdateringer.</translation>
 <translation id="6418346271604475326">Forbereder PDF</translation>
+<translation id="6421038304268477484">Oversatt tekst</translation>
 <translation id="6429213933892582367">Åpne Passordvalg</translation>
 <translation id="6434591244308415567">Det oppsto en feil. Prøv på nytt senere.</translation>
 <translation id="6435307030888827407">Forbli avlogget</translation>
@@ -1968,6 +1970,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9097506547406246598">Kan ikke slutte å følge. Noe gikk galt.</translation>
 <translation id="9098541895599151034">Vil du slette <ph name="NUMBER_OF_ACCOUNTS" /> passord?</translation>
 <translation id="9099233023029360602">Spør om hvilken konto som skal brukes, hver gang</translation>
+<translation id="9099821309562615674">Sørg for at teksten du vil oversette, er tydelig og innenfor rammen.</translation>
 <translation id="9100610230175265781">Det kreves en passordfrase</translation>
 <translation id="91023216973987714">Betalingsmåter</translation>
 <translation id="9106655997975673326">Fra «<ph name="SOURCE_DEVICE" />»</translation>

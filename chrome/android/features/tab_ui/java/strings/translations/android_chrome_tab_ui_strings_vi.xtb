@@ -14,6 +14,7 @@
 Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào nhóm thẻ "<ph name="TITLE_OF_GROUP" />" và nhóm thẻ này sẽ bị xoá khỏi tất cả thiết bị.</translation>
 <translation id="1329584516321524826">Vừa cập nhật xong</translation>
 <translation id="1340839264183302272">Rời khỏi nhóm</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />, có nhãn <ph name="CARD_LABEL" />.}other{Mở rộng nhóm thẻ <ph name="TITLE_OF_GROUP" /> được chia sẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />, có nhãn <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1419023007528516122">Thao tác này sẽ xoá vĩnh viễn nhóm khỏi thiết bị của bạn</translation>
 <translation id="1486715732399361704">Bạn có thể tìm thấy tất cả nhóm thẻ của mình tại đây</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Tạo <ph name="NUM_MINS_ONE" /> phút trước}other{Tạo <ph name="NUM_MINS_MANY" /> phút trước}}</translation>
@@ -108,6 +109,7 @@ Nếu bạn xoá, mọi người sẽ lập tức mất quyền truy cập vào 
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Đóng thẻ}other{Đóng các thẻ}}</translation>
 <translation id="4908147833782857886">Đã lưu <ph name="USER_EMAIL" /> nhóm (sẽ đóng thẻ và xoá nhóm)</translation>
 <translation id="492284538114688557">Đã phát hiện có mặt hàng giảm giá</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{Mở rộng nhóm thẻ được chia sẻ có <ph name="TABS_COUNT_ONE" /> thẻ, màu <ph name="COLOR_NAME" />, có nhãn <ph name="CARD_LABEL" />.}other{Mở rộng nhóm thẻ được chia sẻ có <ph name="TABS_COUNT_MANY" /> thẻ, màu <ph name="COLOR_NAME" />, có nhãn <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">Xem</translation>
 <translation id="5073204694187207510">Ẩn lưới toàn màn hình</translation>
 <translation id="5076161749301278626">Xem đánh giá về cửa hàng?</translation>

@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">brauseri avaleht</translation>
 <translation id="1526389707933164996">Ekraanisäästja animatsioon</translation>
 <translation id="152892567002884378">Helitugevuse suurendamine</translation>
-<translation id="1531038290222364269">Kuva vahelehed</translation>
 <translation id="1539864135338521185">lasuriidist</translation>
 <translation id="1548555207631326346">Valige teema ja seejärel allajoonitud sõnad, et oma AI pilte isikupärastada.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Katsete maksimaalne arv on ületatud.</translation>
 <translation id="1908234395526491708">UDP-taotluste vead</translation>
 <translation id="1908394185991500139">vasaknool</translation>
-<translation id="1911678930322867245">Teisalda paremale üles</translation>
 <translation id="1914144885717544695">reedel</translation>
 <translation id="1915960750806557358">Jagage tagasisidet või kirjeldage oma probleem. Ärge lisage midagi, mis on isiklik, delikaatne või konfidentsiaalne.</translation>
 <translation id="1923388006036088459">Aktsentvärvid</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Teie parimad fotod, valitud automaatselt</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opaalist</translation>
+<translation id="2501278716633472235">Mine tagasi</translation>
 <translation id="2505327257735685095">Praeguse taustapildi värskendamine</translation>
 <translation id="2507491234071975894">Kõlar</translation>
 <translation id="2512979179176933762">kuvab aknad</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Umbkaudse tulemuse saamiseks korrutage <ph name="CATEGORY_TEXT" /> arvuga <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Jagatud</translation>
 <translation id="4972592110715526173">muudab režiimi</translation>
+<translation id="497421865427891073">Edasiminek</translation>
 <translation id="4981003703840817201">Sinistes ja roosades</translation>
 <translation id="498186245079027698">Kontrollige skannerit ja proovige uuesti. Veenduge, et skannitud failide salvestamiseks oleks piisavalt kohalikku ruumi.</translation>
 <translation id="4982627662315910959">Otsetee pole saadaval. Vajutage uut klahvikombinatsiooni, kasutades tõstuklahvi ja veel ühte muuteklahvi (Ctrl, Alt või <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Esitamine</translation>
 <translation id="5901630391730855834">Kollane</translation>
 <translation id="5903200662178656908">Seade on klaviatuuri ja hiire kombinatsioon.</translation>
-<translation id="5903822368221507416">Peida vahelehed</translation>
 <translation id="5904994456462260490">Uue APN-i lisamine</translation>
 <translation id="590746845088109442">kassid</translation>
 <translation id="5907649332524363701">klahvistiku värv</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Hallake võrgu APN-ide seadeid. APN-id loovad ühenduse mobiilsidevõrgu ja interneti vahel. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Välisseadmete püsivaravärskendused</translation>
 <translation id="7216409898977639127">Mobiilsideteenuse pakkuja</translation>
+<translation id="7221869452894271364">Laadi see lehekülg uuesti</translation>
 <translation id="7223952304612664117">See lubab süsteemiteenustel kasutada teie asukoha tuvastamiseks asukohatäpsust. Asukohatäpsus kasutab seadme asukoha määramiseks teavet juhtmeta signaalide ja andurite kohta.</translation>
 <translation id="7233782086689993269">Otsetee taastati</translation>
 <translation id="723419678599947502">Looge Google'i AI abil pealkiri</translation>
@@ -1603,7 +1603,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8318753676953949627">Pilte pole</translation>
 <translation id="8319809980370328428">Salvestiste kokkuvõtete ja pealkirjade loomine</translation>
 <translation id="8320910311642849813">mets</translation>
-<translation id="8322464149031882595">Klõpsake edasiliikumiseks</translation>
 <translation id="8329018942023753850">rakendus Kalkulaator</translation>
 <translation id="8336739000755212683">Seadme kontopildi muutmine</translation>
 <translation id="8339024191194156249">Lisateave automaatse käivitamise kohta</translation>
@@ -1656,7 +1655,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teemaja</translation>
 <translation id="8538236298648811558">Toimib Google'i AI platvormil</translation>
-<translation id="8543574988889671960">Laadi vaheleht uuesti</translation>
 <translation id="8550364285433943656">Klaviatuuriklahvidega mängimiseks lisage mängutegevusse nupud</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Generatiivne AI võib anda ebatäpset teavet, sealhulgas inimeste kohta, seega kontrollige selle vastused üle.</translation>
@@ -1707,7 +1705,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8820817407110198400">Järjehoidjad</translation>
 <translation id="8833620912470026819">kaktusemets</translation>
 <translation id="8834539327799336565">Praegu ühendatud</translation>
-<translation id="8842526499753992487">Teisalda vasakule üles</translation>
 <translation id="8845001906332463065">Otsige abi</translation>
 <translation id="8849799913685544685">tuletorn</translation>
 <translation id="8851859208664803097">Peatatud – printeriga ei saa ühendust</translation>
@@ -1747,7 +1744,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8961025972867871808">pingviinid</translation>
 <translation id="8968751544471797276">Laadimiskiirus</translation>
 <translation id="8970109610781093811">Käita uuesti</translation>
-<translation id="8972061581514441296">Klikkige tagasiliikumiseks</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skanni}=1{Skanni {NUMBER_OF_PAGES}. lehte}other{Skanni {NUMBER_OF_PAGES}. lehte}}</translation>
 <translation id="89945434909472341">küla</translation>

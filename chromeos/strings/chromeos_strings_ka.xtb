@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">ბრაუზერის მთავარი გვერდი</translation>
 <translation id="1526389707933164996">ეკრანმზოგის ანიმაცია</translation>
 <translation id="152892567002884378">ხმის აწევა</translation>
-<translation id="1531038290222364269">ჩანართების ჩვენება</translation>
 <translation id="1539864135338521185">ლაზურიტი</translation>
 <translation id="1548555207631326346">გენერაციული სურათების პერსონალიზებისთვის აირჩიეთ თემა, შემდეგ კი — ხაზგასმული სიტყვები.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">გადაჭარბებულია მცდელობათა მაქსიმალური რაოდენობა.</translation>
 <translation id="1908234395526491708">წარუმატებელი UDP მოთხოვნები</translation>
 <translation id="1908394185991500139">ისარი მარცხნივ</translation>
-<translation id="1911678930322867245">ზედა მარჯვენა კუთხეში გადატანა</translation>
 <translation id="1914144885717544695">პარასკევს</translation>
 <translation id="1915960750806557358">გამოგვეხმაურეთ ან აღწერეთ პრობლემა. დარწმუნდით, რომ არ დაურთავთ პერსონალურ, სენსიტიურ ან კონფიდენციალურ ინფორმაციას.</translation>
 <translation id="1923388006036088459">აქცენტირებული ფერები</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">ავტომატურად არჩეული თქვენი საუკეთესო ფოტოები</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ოპალი</translation>
+<translation id="2501278716633472235">უკან დაბრუნება</translation>
 <translation id="2505327257735685095">ფონის ამჟამინდელი სურათის განახლება</translation>
 <translation id="2507491234071975894">დინამიკი</translation>
 <translation id="2512979179176933762">ფანჯრების ჩვენება</translation>
@@ -869,6 +868,7 @@
 <translation id="4965703485264574128">მიახლოებითი შედეგის მისაღებად გაამრავლეთ <ph name="CATEGORY_TEXT" />-ის მნიშვნელობა <ph name="CONVERSION_RATE" />-ზე</translation>
 <translation id="4969079779290789265">გაყოფილი</translation>
 <translation id="4972592110715526173">რეჟიმის შეცვლა</translation>
+<translation id="497421865427891073">გადასვლა წინ</translation>
 <translation id="4981003703840817201">ლურჯი და ვარდისფერი</translation>
 <translation id="498186245079027698">შეამოწმეთ სკანერი და ცადეთ ხელახლა. დარწმუნდით, რომ ადგილობრივი მეხსიერება საკმარისია სკანირებული ფაილების შესანახად.</translation>
 <translation id="4982627662315910959">მალსახმობი მიუწვდომელია. დააჭირეთ ახალ მალსახმობს shift-ისა და კიდევ ერთი მოდიფიკატორი კლავიშის (ctrl, alt ან <ph name="META_KEY" />) მეშვეობით.</translation>
@@ -1056,7 +1056,6 @@
 <translation id="5896602941605730551">დაკვრა</translation>
 <translation id="5901630391730855834">ყვითელი</translation>
 <translation id="5903200662178656908">მოწყობილობა კლავიატურისა და მაუსის კომბინაციაა.</translation>
-<translation id="5903822368221507416">ჩანართების დამალვა</translation>
 <translation id="5904994456462260490">ახალი APN-ის დამატება</translation>
 <translation id="590746845088109442">კატები</translation>
 <translation id="5907649332524363701">კლავიშების ფერი</translation>
@@ -1367,6 +1366,7 @@
 <translation id="7212547870105584639">მართეთ ქსელის APN-ის პარამეტრები. APN ამყარებს კავშირს ფიჭურ ქსელსა და ინტერნეტს შორის. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">გარე მოწყობილობებში ჩაშენებული პროგრამული უზრუნველყოფის განახლებები</translation>
 <translation id="7216409898977639127">ფიჭური ქსელის პროვაიდერი</translation>
+<translation id="7221869452894271364">ამ გვერდის ხელახლა ჩატვირთვა</translation>
 <translation id="7223952304612664117">ამ მოქმედების საშუალებით სისტემის სერვისები გამოიყენებს მდებარეობის სიზუსტეს, მდებარეობის დადგენის მიზნით. მდებარეობის სიზუსტე იყენებს ინფორმაციას უსადენო სიგნალებისა და სენსორების შესახებ, რათა დაადგინოს მოწყობილობის მდებარეობა.</translation>
 <translation id="7233782086689993269">მალსახმობი აღდგენილია</translation>
 <translation id="723419678599947502">სათაურის შექმნა Google-ის ხელოვნური ინტელექტის მეშვეობით</translation>
@@ -1604,7 +1604,6 @@
 <translation id="8318753676953949627">სურათები არ არის</translation>
 <translation id="8319809980370328428">ჩანაწერის შეჯამება და სათაურის შექმნა</translation>
 <translation id="8320910311642849813">ტყე</translation>
-<translation id="8322464149031882595">დააწკაპუნეთ გასაგრძელებლად</translation>
 <translation id="8329018942023753850">კალკულატორის აპი</translation>
 <translation id="8336739000755212683">მოწყობილობის ანგარიშის სურათის შეცვლა</translation>
 <translation id="8339024191194156249">შეიტყვეთ მეტი ავტომატური გაშვების შესახებ</translation>
@@ -1657,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">ჩაის სახლი</translation>
 <translation id="8538236298648811558">უზრუნველყოფილია Google-ის ხელოვნური ინტელექტის მიერ</translation>
-<translation id="8543574988889671960">ჩანართის გადატვირთვა</translation>
 <translation id="8550364285433943656">გამოიყენეთ მართვის საშუალებები თამაშში განსაზღვრული მოქმედებებისთვის, კლავიატურით რომ ითამაშოთ</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">გენერაციული ხელოვნური ინტელექტი შეიძლება შეცდეს, მათ შორის, ხალხის შესახებ, ამიტომ გადაამოწმეთ მისი ინფორმაცია.</translation>
@@ -1708,7 +1706,6 @@
 <translation id="8820817407110198400">სანიშნეები</translation>
 <translation id="8833620912470026819">კაქტუსების ტყე</translation>
 <translation id="8834539327799336565">ამჟამად დაკავშირებული</translation>
-<translation id="8842526499753992487">ზედა მარცხენა კუთხეში გადატანა</translation>
 <translation id="8845001906332463065">დახმარების მიღება</translation>
 <translation id="8849799913685544685">შუქურა</translation>
 <translation id="8851859208664803097">შეწყვეტილია — პრინტერი მიუწვდომელია</translation>
@@ -1748,7 +1745,6 @@
 <translation id="8961025972867871808">პინგვინები</translation>
 <translation id="8968751544471797276">დატენის სიჩქარე</translation>
 <translation id="8970109610781093811">ხელახლა გაშვება</translation>
-<translation id="8972061581514441296">დააწკაპუნეთ უკან დასაბრუნებლად</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{სკანირება}=1{გვერდის {NUMBER_OF_PAGES} სკანირება}other{გვერდის {NUMBER_OF_PAGES} სკანირება}}</translation>
 <translation id="89945434909472341">სოფელი</translation>

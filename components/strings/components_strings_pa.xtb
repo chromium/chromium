@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">ਸੰਪਤੀ ਵਿਕਾਸ</translation>
 <translation id="1824402189105105503">ਅੱਠਵਾਂ ਰੋਲ</translation>
 <translation id="1826516787628120939">ਜਾਂਚ ਕਰ ਰਿਹਾ ਹੈ</translation>
+<translation id="1832730227369924598">ਡੈਸਕ ਸਿੰਕ</translation>
 <translation id="1834452765064623979">ਉਸਾਰੀ ਅਤੇ ਸਾਂਭ-ਸੰਭਾਲ</translation>
 <translation id="1838374766361614909">ਖੋਜ ਹਟਾਓ</translation>
 <translation id="1839331950812095887">ਤੁਹਾਡੇ ਵਿਚਾਰਾਂ ਨੂੰ ਦਰਸਾਉਣ ਲਈ ਕੁਝ ਸ਼ਬਦ</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">ਪੁਰਾਣਾ</translation>
 <translation id="2413528052993050574">ਇਹ ਸਰਵਰ ਇਹ ਸਿੱਧ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਸਰਟੀਫਿਕੇਟ ਰੱਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। ਇਸ ਦਾ ਕਾਰਨ ਗਲਤ ਸੰਰੂਪਣ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਦੇ ਰਾਹ ਨੂੰ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2414886740292270097">ਡਾਰਕ</translation>
+<translation id="2418292431699242678">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਕਿਸੇ ਵੀ ChromeOS ਡੀਵਾਈਸ 'ਤੇ ਤੁਹਾਡੇ ਪਿਛਲੇ ਅਤੇ ਮੌਜੂਦਾ ਸੈਸ਼ਨਾਂ ਵਿਚਕਾਰ ਸਿੰਕ ਕਰਨ ਲਈ ਅੱਗੇ ਦਿੱਤਿਆਂ ਨੂੰ ਚਾਲੂ ਕਰਦਾ ਹੈ:</translation>
 <translation id="2429716554270894715">ਕੱਪੜਾ (ਵਾਟਰਪਰੂਫ਼)</translation>
 <translation id="2436186046335138073">ਕੀ <ph name="HANDLER_HOSTNAME" /> ਨੂੰ ਸਾਰੇ <ph name="PROTOCOL" /> ਲਿੰਕ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦੇਣੀ ਹੈ?</translation>
 <translation id="2436976580469434549">ਫਾਈਬਰ ਅਤੇ ਟੈਕਸਟਾਈਲ ਸੰਬੰਧੀ ਕਲਾਵਾਂ</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">ਕੀਮਤ 'ਤੇ ਨਜ਼ਰ ਰੱਖੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="3037605927509011580">ਆਹ, ਸਨੈਪ!</translation>
 <translation id="3039406992698062762">ਪਰਿਵਾਰਕ ਯਾਤਰਾ</translation>
+<translation id="3040636468789770340">ਕੁਕੀਜ਼ (ਤੁਹਾਡੇ ਵੱਲੋਂ ਹਾਲ ਹੀ ਵਿੱਚ ਦੇਖੀਆਂ ਗਈਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਸਾਈਨ-ਇਨ ਸਥਿਤੀ)</translation>
 <translation id="3041176923638368519">ਕਾਰਡ ਦੇ ਲਾਭ ਸੰਬੰਧੀ ਨਿਯਮ ਦੇਖੋ</translation>
 <translation id="3041612393474885105">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਬਾਰੇ ਜਾਣਕਾਰੀ</translation>
 <translation id="3045769629416806687">ਜੋਖਮ ਭਰੀਆਂ ਖੇਡਾਂ</translation>
@@ -1667,6 +1670,7 @@
 <translation id="3869939189466884821">ਤੁਹਾਡੀਆਂ ਸਥਾਨਕ ਫ਼ਾਈਲਾਂ ਨੂੰ <ph name="MINUTES" /> ਮਿੰਟਾਂ ਵਿੱਚ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="3872834068356954457">ਵਿਗਿਆਨ</translation>
 <translation id="3875783148670536197">ਮੈਨੂੰ ਤਰੀਕਾ ਦਿਖਾਓ</translation>
+<translation id="387681220560687945">ਵਿੰਡੋਆਂ (ਵਿੰਡੋਆਂ ਅਤੇ ਟੈਬਾਂ ਦੀ ਵਿਵਸਥਾ ਅਤੇ ਪ੍ਰਬੰਧਨ)</translation>
 <translation id="3879748587602334249">ਡਾਊਨਲੋਡ ਪ੍ਰਬੰਧਕ</translation>
 <translation id="3880456882942693779">ਕਲਾ ਅਤੇ ਮਨੋਰੰਜਨ</translation>
 <translation id="3880589673277376494">ਇੰਟਰਨੈੱਟ ਅਤੇ ਟੈਲੀਕਾਮ</translation>
@@ -4743,6 +4747,7 @@
 <translation id="950736567201356821">ਉੱਪਰ ਤਿੰਨ ਮੋਰੀਆਂ</translation>
 <translation id="950926967802086924">ਪਾਸਕੀ • Google Password Manager</translation>
 <translation id="955429569736351433">VR ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
+<translation id="955627189349169688">ਤੁਸੀਂ <ph name="BEGIN_LINK" />Chrome ਸਿੰਕ ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਇਸ ਨੀਤੀ ਤੋਂ ਹਟਣ ਦੀ ਚੋਣ ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="95721182352849470">ਪੀਲਾ 2</translation>
 <translation id="961663415146723894">ਹੇਠਾਂ ਜਿਲਦਬੰਦ</translation>
 <translation id="961856697154696964">ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਮਿਟਾਓ</translation>

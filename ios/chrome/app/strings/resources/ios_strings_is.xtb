@@ -1127,6 +1127,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="573974402615125334">Samstilltu ferilinn þinn og flipa til að deila, taka þátt í og flipahópum</translation>
 <translation id="5740123193752401435">Leita í flipum…</translation>
 <translation id="5744274077973758795">Kveikt á tilkynningum fyrir <ph name="FEATURE_NAME" /></translation>
+<translation id="5745598824054949526">Enginn texti fannst</translation>
 <translation id="574762237186762643">Viðburðir</translation>
 <translation id="5749158352074143502">Halda áfram á þessum flipa</translation>
 <translation id="5753021559215751319">Vista aðgangsorð</translation>
@@ -1290,6 +1291,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6410883413783534063">Opnaðu flipa til að skoða mismunandi síður samtímis</translation>
 <translation id="6416807286621280684">Pakkarnir þínir sem verið er að rekja og afhendingarupplýsingar.</translation>
 <translation id="6418346271604475326">Undirbýr PDF</translation>
+<translation id="6421038304268477484">Þýddur texti</translation>
 <translation id="6429213933892582367">Opnaðu „Valkostir fyrir aðgangsorð“</translation>
 <translation id="6434591244308415567">Villa kom upp. Reyndu aftur síðar.</translation>
 <translation id="6435307030888827407">Vera áfram útskráð(ur)</translation>
@@ -1968,6 +1970,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="9097506547406246598">Ekki er hægt að hætta að fylgja. Eitthvað fór úrskeiðis.</translation>
 <translation id="9098541895599151034">Eyða <ph name="NUMBER_OF_ACCOUNTS" /> aðgangsorðum?</translation>
 <translation id="9099233023029360602">Spyrja hvaða reikning á að nota í hvert skipti</translation>
+<translation id="9099821309562615674">Gættu þess að textinn sem þú ert að þýða sé skýr og innan rammans.</translation>
 <translation id="9100610230175265781">Aðgangsorðs krafist</translation>
 <translation id="91023216973987714">Greiðslumátar</translation>
 <translation id="9106655997975673326">Úr „<ph name="SOURCE_DEVICE" />“</translation>

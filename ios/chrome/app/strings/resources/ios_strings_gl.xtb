@@ -1127,6 +1127,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="573974402615125334">Para compartir grupos de pestanas, unirte a eles e colaborar, sincroniza o teu historial e as pestanas</translation>
 <translation id="5740123193752401435">Busca pestanas…</translation>
 <translation id="5744274077973758795">Activáronse as notificacións de <ph name="FEATURE_NAME" /></translation>
+<translation id="5745598824054949526">Non se atopou texto</translation>
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5749158352074143502">Continuar con esta pestana</translation>
 <translation id="5753021559215751319">Gardar contrasinal</translation>
@@ -1290,6 +1291,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="6410883413783534063">Abre pestanas para visitar páxinas diferentes ao mesmo tempo</translation>
 <translation id="6416807286621280684">Paquetes dos que se está facendo un seguimento e información actualizada da entrega.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
+<translation id="6421038304268477484">Texto traducido</translation>
 <translation id="6429213933892582367">Abre Password Options (Opcións de contrasinais)</translation>
 <translation id="6434591244308415567">Produciuse un erro. Téntao de novo máis tarde.</translation>
 <translation id="6435307030888827407">Permanecer coa sesión pechada</translation>
@@ -1968,6 +1970,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9097506547406246598">Non se puido deixar de seguir o contido. Produciuse un erro.</translation>
 <translation id="9098541895599151034">Queres eliminar <ph name="NUMBER_OF_ACCOUNTS" /> contrasinais?</translation>
 <translation id="9099233023029360602">Preguntar que conta usar cada vez</translation>
+<translation id="9099821309562615674">Asegúrate de que o texto que queres traducir se vexa con claridade e estea encadrado.</translation>
 <translation id="9100610230175265781">Contrasinal obrigatorio</translation>
 <translation id="91023216973987714">Métodos de pago</translation>
 <translation id="9106655997975673326">De <ph name="SOURCE_DEVICE" /></translation>

@@ -1127,6 +1127,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="573974402615125334">Para compartilhar, participar e colaborar em grupos de guias, sincronize o histórico e as guias</translation>
 <translation id="5740123193752401435">Pesquisar guias…</translation>
 <translation id="5744274077973758795">Notificações de <ph name="FEATURE_NAME" /> ativadas</translation>
+<translation id="5745598824054949526">Nenhum texto encontrado</translation>
 <translation id="574762237186762643">Eventos</translation>
 <translation id="5749158352074143502">Continue com esta guia</translation>
 <translation id="5753021559215751319">Salvar senha</translation>
@@ -1290,6 +1291,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6410883413783534063">Abra guias para acessar páginas diferentes ao mesmo tempo</translation>
 <translation id="6416807286621280684">Atualizações de entrega e rastreamento de pacotes.</translation>
 <translation id="6418346271604475326">Preparando PDF</translation>
+<translation id="6421038304268477484">Texto traduzido</translation>
 <translation id="6429213933892582367">Abra "Opções de senha"</translation>
 <translation id="6434591244308415567">Ocorreu um erro. Tente novamente mais tarde.</translation>
 <translation id="6435307030888827407">Continuar sem fazer login</translation>
@@ -1968,6 +1970,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="9097506547406246598">Não foi possível parar de seguir. Algo deu errado.</translation>
 <translation id="9098541895599151034">Excluir <ph name="NUMBER_OF_ACCOUNTS" /> senhas?</translation>
 <translation id="9099233023029360602">Sempre perguntar qual conta usar</translation>
+<translation id="9099821309562615674">Confira se o texto que você está traduzindo está nítido e enquadrado.</translation>
 <translation id="9100610230175265781">Senha necessária</translation>
 <translation id="91023216973987714">Formas de pagamento</translation>
 <translation id="9106655997975673326">De "<ph name="SOURCE_DEVICE" />"</translation>

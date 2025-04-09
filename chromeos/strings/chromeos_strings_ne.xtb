@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">ब्राउजर होम</translation>
 <translation id="1526389707933164996">स्क्रिन सेभरको एनिमेसन</translation>
 <translation id="152892567002884378">भोल्युम बढाउनुहोस्</translation>
-<translation id="1531038290222364269">ट्याबहरू देखाउनुहोस्</translation>
 <translation id="1539864135338521185">लापिस लाजुली</translation>
 <translation id="1548555207631326346">आफ्ना AI फोटोहरू पर्सनलाइज गर्न कुनै थिम छनौट गर्नुहोस् अनि अन्डरलाइन गरिएका शब्दहरू चयन गर्नुहोस्।<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">अनुमति दिइएका प्रयासहरूको अधिकतम संख्या नाघ्यो।</translation>
 <translation id="1908234395526491708">UDP सम्बन्धी अनुरोध गर्न सकिएन</translation>
 <translation id="1908394185991500139">"लेफ्ट एरो" जनाउने आइकन</translation>
-<translation id="1911678930322867245">सारेर सिरानको दायाँतिर लैजानुहोस्</translation>
 <translation id="1914144885717544695">शुक्रवार</translation>
 <translation id="1915960750806557358">आफ्नो प्रतिक्रिया दिनुहोस् वा समस्याका बारेमा वर्णन गर्नुहोस्। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश गरिएको छैन भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="1923388006036088459">एक्सेन्ट कलर</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">स्वतः चयन गरिएका तपाईंका उत्कृष्ट फोटोहरू</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ओपल</translation>
+<translation id="2501278716633472235">पछाडि जानुहोस्</translation>
 <translation id="2505327257735685095">हालको वालपेपर रिफ्रेस गर्नुहोस्</translation>
 <translation id="2507491234071975894">स्पिकर</translation>
 <translation id="2512979179176933762">"विन्डोहरू देखाउनुहोस्" जनाउने आइकन</translation>
@@ -382,6 +381,7 @@
 <translation id="2584559707064218956">नेटवर्क सेटअप गर्न सेटिङमा जानुहोस्</translation>
 <translation id="2586146417912237930">निलो र इन्डिगो</translation>
 <translation id="2589921777872778654">सम्पादन गर्नुहोस् र मेटाउनुहोस् नामक मेनु</translation>
+<translation id="2590424100019931043">तपाईंलाई यो कक्षाबाट हटाइएको छ</translation>
 <translation id="2597774443162333062">फाइलहरू डिबग प्रक्रियाका लागि Google मा पठाइने छन्</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{स्क्यान गर्ने कार्य पूरा भयो। एउटा पेज स्क्यान गरियो}other{स्क्यान गर्ने कार्य पूरा भयो। {NUMBER_OF_PAGES} वटा पेज स्क्यान गरिए}}</translation>
 <translation id="261322795497077164">वक्ताको पहिचान</translation>
@@ -868,6 +868,7 @@
 <translation id="4965703485264574128">अनुमानित परिणाम प्राप्त गर्न <ph name="CONVERSION_RATE" /> ले <ph name="CATEGORY_TEXT" /> लाई गुणन गर्नुहोस्</translation>
 <translation id="4969079779290789265">स्प्लिट स्क्रिन</translation>
 <translation id="4972592110715526173">"मोड बदल्नुहोस्" जनाउने आइकन</translation>
+<translation id="497421865427891073">अगाडि जानुहोस्</translation>
 <translation id="4981003703840817201">निलो र गुलाबी</translation>
 <translation id="498186245079027698">स्क्यानर जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। स्क्यान गरिएका फाइलहरू सुरक्षित गर्न चाहिने पर्याप्त खाली ठाउँ छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="4982627662315910959">यो सर्टकट उपलब्ध छैन। सिफ्ट र थप एउटा मोडिफायर की (ctrl, alt वा <ph name="META_KEY" />) प्रयोग गरी नयाँ सर्टकट थिच्नुहोस्।</translation>
@@ -1055,7 +1056,6 @@
 <translation id="5896602941605730551">प्ले गर्नुहोस्</translation>
 <translation id="5901630391730855834">पहेँलो</translation>
 <translation id="5903200662178656908">यो डिभाइस किबोर्ड र माउसको कम्बो हो।</translation>
-<translation id="5903822368221507416">ट्याबहरू लुकाउनुहोस्</translation>
 <translation id="5904994456462260490">नयाँ APN हाल्नुहोस्</translation>
 <translation id="590746845088109442">बिरालोहरू</translation>
 <translation id="5907649332524363701">कीको रङ</translation>
@@ -1366,6 +1366,7 @@
 <translation id="7212547870105584639">नेटवर्क APN सम्बन्धी सेटिङ मिलाउनुहोस्। APN ले मोबाइल नेटवर्क र इन्टरनेटबिचको कनेक्सन बनाउँछ। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाह्य डिभाइसहरूका लागि फर्मवेयरसम्बन्धी अपडेटहरू</translation>
 <translation id="7216409898977639127">सेलुलर प्रदायक</translation>
+<translation id="7221869452894271364">यस पृष्ठलाई रिलोड गर्नुहोस्</translation>
 <translation id="7223952304612664117">तपाईंले यसो गर्नुभयो भने सिस्टमका सेवाले तपाईंको लोकेसन पत्ता लगाउन "लोकेसनको सटीकता" प्रयोग गर्न पाउँछन्। "लोकेसनको सटीकता" ले डिभाइसको लोकेसनको अनुमान लगाउन वायरलेस सिग्नल र सेन्सरसम्बन्धी डेटा प्रयोग गर्छ।</translation>
 <translation id="7233782086689993269">सर्टकट रिस्टोर गरियो</translation>
 <translation id="723419678599947502">Google AI प्रयोग गरी शीर्षक बनाउनुहोस्</translation>
@@ -1603,7 +1604,6 @@
 <translation id="8318753676953949627">कुनै पनि फोटो छैन</translation>
 <translation id="8319809980370328428">रेकर्डिङको सारांश तथा शीर्षक बनाउने मोडेल</translation>
 <translation id="8320910311642849813">जङ्गल</translation>
-<translation id="8322464149031882595">अगाडि जान क्लिक गर्नुहोस्</translation>
 <translation id="8329018942023753850">"क्याल्कुलेटर एप" जनाउने आइकन</translation>
 <translation id="8336739000755212683">यन्त्रको खाताको फोटो बदल्नुहोस्</translation>
 <translation id="8339024191194156249">स्वतः सुरु हुने सुविधाका बारेमा थप जान्नुहोस्</translation>
@@ -1656,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">चिया पसल</translation>
 <translation id="8538236298648811558">Google AI प्रयोग गरी बनाइएका</translation>
-<translation id="8543574988889671960">ट्याब रिलोड गर्नुहोस्</translation>
 <translation id="8550364285433943656">किबोर्डका कीहरू प्रयोग गरेर गेम खेल्न गेममा कन्ट्रोलहरू सेट गर्नुहोस्</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">जेनेरेटिभ AI ले मान्छे तथा अन्य कुराका बारेमा गलत जानकारी देखाउन सक्छ। त्यसैले यसले दिने जवाफ सही छ कि छैन फेरि जाँच्नुहोस्।</translation>
@@ -1707,7 +1706,6 @@
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="8833620912470026819">क्याक्टस फरेस्ट</translation>
 <translation id="8834539327799336565">हाल कनेक्ट गरिएका डिभाइस</translation>
-<translation id="8842526499753992487">सारेर सिरानको बायाँतिर लैजानुहोस्</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8849799913685544685">लाइटहाउस</translation>
 <translation id="8851859208664803097">रोकियो - प्रिन्टरमा कनेक्ट गर्न सकिएन</translation>
@@ -1747,7 +1745,6 @@
 <translation id="8961025972867871808">पेन्गुइनहरू</translation>
 <translation id="8968751544471797276">चार्ज भइरहेको दर</translation>
 <translation id="8970109610781093811">फेरि गर्नुहोस्</translation>
-<translation id="8972061581514441296">पछाडि जान क्लिक गर्नुहोस्</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{स्क्यान गर्नुहोस्}=1{{NUMBER_OF_PAGES} पृष्ठ स्क्यान गर्नुहोस्}other{{NUMBER_OF_PAGES} पृष्ठ स्क्यान गर्नुहोस्}}</translation>
 <translation id="89945434909472341">गाउँ</translation>

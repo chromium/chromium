@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">براؤزر ہوم</translation>
 <translation id="1526389707933164996">اسکرین سیور اینیمیشن</translation>
 <translation id="152892567002884378">والیوم بڑھائیں</translation>
-<translation id="1531038290222364269">ٹیبز دکھائیں</translation>
 <translation id="1539864135338521185">سنگ لاجورد</translation>
 <translation id="1548555207631326346">‏تھیم منتخب کریں اور پھر اپنی AI سے تخلیق کردہ تصاویر کو ذاتی نوعیت کا بنانے کے لیے انڈر لائن کردہ الفاظ کا انتخاب کریں۔<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">زیادہ سے زیادہ مجاز کوششوں سے تجاوز کرگیا۔</translation>
 <translation id="1908234395526491708">‏UDP درخواست کی ناکامیاں</translation>
 <translation id="1908394185991500139">بائیں طرف تیر کا نشان</translation>
-<translation id="1911678930322867245">اوپر دائیں طرف منتقل کریں</translation>
 <translation id="1914144885717544695">جمعہ کو</translation>
 <translation id="1915960750806557358">اپنے تاثرات کا اشتراک کریں یا اپنے مسئلے کی وضاحت کریں۔ یہ یقینی بنائیں کہ ایسی کوئی چیز شامل نہیں کی گئی ہے جو ذاتی، حساس یا رازدارانہ ہو۔</translation>
 <translation id="1923388006036088459">ایکسنٹ کے رنگ</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">آپ کی بہترین تصاویر، خودکار طور پر منتخب کی گئیں</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">اوپل</translation>
+<translation id="2501278716633472235">پیچھے جائیں</translation>
 <translation id="2505327257735685095">وال پیپر کی موجودہ تصویر کو ریفریش کریں</translation>
 <translation id="2507491234071975894">اسپیکر</translation>
 <translation id="2512979179176933762">ونڈوز دکھائیں</translation>
@@ -869,6 +868,7 @@
 <translation id="4965703485264574128">ایک تخمینی نتیجے کے لیے، <ph name="CATEGORY_TEXT" /> قدر کو <ph name="CONVERSION_RATE" /> سے ضرب دیں</translation>
 <translation id="4969079779290789265">اسپلٹ</translation>
 <translation id="4972592110715526173">وضع میں تبدیلی</translation>
+<translation id="497421865427891073">آگے جائیں</translation>
 <translation id="4981003703840817201">نیلا اور گلابی</translation>
 <translation id="498186245079027698">اسکینر چیک کریں اور دوبارہ کوشش کریں۔ یقینی بنائیں کہ اسکین کردہ فائلز محفوظ کرنے کے لیے کافی مقامی جگہ ہے۔</translation>
 <translation id="4982627662315910959">‏شارٹ کٹ دستیاب نہیں ہے۔ شفٹ اور 1 مزید موڈیفائر کلید (ctrl, alt یا <ph name="META_KEY" />) کا استعمال کرتے ہوئے ایک نیا شارٹ کٹ دبائیں۔</translation>
@@ -1056,7 +1056,6 @@
 <translation id="5896602941605730551">چلائیں</translation>
 <translation id="5901630391730855834">پیلا</translation>
 <translation id="5903200662178656908">آلہ ایک کی بورڈ اور ماؤس کومبو ہے۔</translation>
-<translation id="5903822368221507416">ٹیبز چھپائیں</translation>
 <translation id="5904994456462260490">‏ایک نیا APN شامل کریں</translation>
 <translation id="590746845088109442">بلیاں</translation>
 <translation id="5907649332524363701">کلید کا رنگ</translation>
@@ -1367,6 +1366,7 @@
 <translation id="7212547870105584639">‏نیٹ ورک APN کی ترتیبات کا نظم کریں۔ APNs سیلولر نیٹ ورک اور انٹرنیٹ کے درمیان رابطہ قائم کرتے ہیں۔ <ph name="BEGIN_LINK_LEARN_MORE" />مزید جانیں<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">بیرونی آلات کیلئے فرم ویئر اپ ڈیٹس</translation>
 <translation id="7216409898977639127">سیلولر فراہم کنندہ</translation>
+<translation id="7221869452894271364">یہ صفحہ دوبارہ لوڈ کریں</translation>
 <translation id="7223952304612664117">آپ کے مقام کا تعین کرنے کیلئے، یہ سسٹم سروسز کو مقام کی درستگی کا استعمال کرنے کی اجازت دیتا ہے۔ مقام کی درستگی آلے کے مقام کا تعین کرنے کے لیے وائرلیس سگنلز اور سینسر کے بارے میں معلومات کا استعمال کرتی ہے۔</translation>
 <translation id="7233782086689993269">شارٹ کٹ بحال کیا گیا</translation>
 <translation id="723419678599947502">‏‫Google AI کی مدد سے عنوان تخلیق کریں</translation>
@@ -1604,7 +1604,6 @@
 <translation id="8318753676953949627">کوئی تصویر نہیں ہے</translation>
 <translation id="8319809980370328428">ریکارڈنگ کا خلاصہ اور عنوان کی تخلیق</translation>
 <translation id="8320910311642849813">جنگل</translation>
-<translation id="8322464149031882595">آگے بڑھنے کے لیے کلک کریں</translation>
 <translation id="8329018942023753850">کیلکولیٹر ایپ</translation>
 <translation id="8336739000755212683">آلے کے اکاؤنٹ کی تصویر تبدیل کریں</translation>
 <translation id="8339024191194156249">خودکار لانچ کے بارے میں مزید جانیں</translation>
@@ -1657,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">چائے خانہ</translation>
 <translation id="8538236298648811558">‏Google AI کی جانب سے تقویت یافتہ</translation>
-<translation id="8543574988889671960">ٹیب دوبارہ لوڈ کریں</translation>
 <translation id="8550364285433943656">کی بورڈ کلیدوں کے ساتھ کھیلنے کے لیے گیم ایکشنز پر کنٹرول رکھیں</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">‏تخلیق کر سکنے والا AI غلطیاں کر سکتا ہے، بشمول لوگوں کے بارے میں، لہذا اسے دوبارہ چیک کریں۔</translation>
@@ -1708,7 +1706,6 @@
 <translation id="8820817407110198400">بُک مارکس</translation>
 <translation id="8833620912470026819">کیکٹس کا جنگل</translation>
 <translation id="8834539327799336565">فی الحال منسلک ہے</translation>
-<translation id="8842526499753992487">اوپر بائیں طرف منتقل کریں</translation>
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
 <translation id="8849799913685544685">Lighthouse</translation>
 <translation id="8851859208664803097">رک گیا - پرنٹر ناقابل رسائی ہے</translation>
@@ -1748,7 +1745,6 @@
 <translation id="8961025972867871808">پینگوئنز</translation>
 <translation id="8968751544471797276">چارج ہونے کی شرح</translation>
 <translation id="8970109610781093811">دوبارہ چلائيں</translation>
-<translation id="8972061581514441296">واپس جانے کے لیے کلک کریں</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{اسکین کریں}=1{{NUMBER_OF_PAGES} صفحہ اسکین کریں}other{{NUMBER_OF_PAGES} صفحہ اسکین کریں}}</translation>
 <translation id="89945434909472341">گاؤں</translation>

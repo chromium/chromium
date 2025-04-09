@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">የንብረት ልማት</translation>
 <translation id="1824402189105105503">ስምንተኛ ጥቅልል</translation>
 <translation id="1826516787628120939">በመፈተሸ ላይ</translation>
+<translation id="1832730227369924598">የዴስክ ሥምረት</translation>
 <translation id="1834452765064623979">ግንባታ እና ጥገና</translation>
 <translation id="1838374766361614909">ፍለጋን ያፅዱ</translation>
 <translation id="1839331950812095887">ሀሳብዎን የሚያጠቃልሉ ጥቂት ቃላት</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">የቆየ</translation>
 <translation id="2413528052993050574">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው ተሽሮ ሊሆን ይችላል። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="2414886740292270097">ጨለማ</translation>
+<translation id="2418292431699242678">አስተዳዳሪዎ የሚከተለውን በማንኛውም የChromeOS መሣሪያ ላይ በእርስዎ ቀዳሚ እና የአሁን ክፍለ-ጊዜዎች መካከል እንዲሠምር ያስችለዋል።</translation>
 <translation id="2429716554270894715">ጨርቅ (ውሃ የማያስገባ)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> ሁሉንም የ<ph name="PROTOCOL" /> አገናኞች እንዲከፍት ይፈቀድለት?</translation>
 <translation id="2436976580469434549">የፋይበር እና የጨርቃጨርቅ ሥነ ጥበባት</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">ዋጋዎችን በመከታተል ላይ</translation>
 <translation id="3037605927509011580">ውይ፣ ተሰናከለ!</translation>
 <translation id="3039406992698062762">የቤተሰብ ጉዞ</translation>
+<translation id="3040636468789770340">ኩኪዎች (በቅርብ የተጎበኙ ድር ጣቢያዎችዎ ላይ እርስዎ በመለያ የገቡበት ሁኔታ)</translation>
 <translation id="3041176923638368519">የካርድ ጥቅማጥቅሞች ደንቦችን ይመልከቱ</translation>
 <translation id="3041612393474885105">የሰርቲፊኬት መረጃ</translation>
 <translation id="3045769629416806687">አደገኛ ስፖርቶች</translation>
@@ -1669,6 +1672,7 @@
 <translation id="3869939189466884821">የእርስዎ አካባቢያዊ ፋይሎች በ<ph name="MINUTES" /> ደቂቃዎች ውስጥ ይሰረዛሉ</translation>
 <translation id="3872834068356954457">ሳይንስ</translation>
 <translation id="3875783148670536197">እንዴት እንደሆነ አሳየኝ</translation>
+<translation id="387681220560687945">መስኮቶች (የመስኮቶች እና ትሮች አደረጃጀት እና አቀማመጥ)</translation>
 <translation id="3879748587602334249">የማውረድ አቀናባሪ</translation>
 <translation id="3880456882942693779">ሥነ ጥበባት እና መዝናኛ</translation>
 <translation id="3880589673277376494">በይነመረብ እና ቴሌኮም</translation>
@@ -4748,6 +4752,7 @@
 <translation id="950736567201356821">ሦስቴ ከላይ ብሳ</translation>
 <translation id="950926967802086924">የይለፍ ቁልፍ • Google የይለፍ ቃል አስተዳዳሪ</translation>
 <translation id="955429569736351433">ምናባዊ እውነታ ተፈቅዷል</translation>
+<translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome ሥምረት ቅንብሮች<ph name="END_LINK" /> ውስጥ ከዚህ መመሪያ መርጠው መውጣት ይችላሉ።</translation>
 <translation id="95721182352849470">ቢጫ 2</translation>
 <translation id="961663415146723894">ከታች ጠርዝ</translation>
 <translation id="961856697154696964">የአሰሳ ውሂብን ይሰርዙ</translation>

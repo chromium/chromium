@@ -6815,7 +6815,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="5794414402486823030">Always open with system viewer</translation>
 <translation id="5794700615121138172">Linux shared folders</translation>
 <translation id="5794786537412027208">Quit all Chrome Apps</translation>
-<translation id="5795422263272161110">Show side by side</translation>
 <translation id="5796485699458186843">New Incognito tab</translation>
 <translation id="5796956053441619942">The URL from the remote device is not supported</translation>
 <translation id="5797934230382081317">Learn how to get started on &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; and &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9255,7 +9254,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7552846755917812628">Try the following tips:</translation>
 <translation id="7553012839257224005">Checking the Linux container</translation>
 <translation id="7553242001898162573">Enter your password</translation>
-<translation id="7554342082838376298">Automated password change</translation>
 <translation id="755472745191515939">Your administrator doesn't allow this language</translation>
 <translation id="7554791636758816595">New Tab</translation>
 <translation id="7556033326131260574">Smart Lock couldn’t verify your account. Type your password to enter.</translation>
@@ -11229,7 +11227,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="8915916167043355778">Close all</translation>
 <translation id="8916476537757519021">Incognito Subframe: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Yes, I'm in</translation>
-<translation id="8917980324687233736">Show side by side</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />'s <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">Installing app…</translation>
 <translation id="891931289445130855">Delete data and permissions</translation>

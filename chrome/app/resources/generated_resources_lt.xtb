@@ -6347,6 +6347,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5436492226391861498">Laukiama, kol bus nustatytas tarpinio serverio tunelis...</translation>
 <translation id="5436510242972373446">Ieškoti <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> langas dabar <ph name="WINDOW_SIZE_PERCENT" /> pločio, <ph name="PANE_SIDE" /> sritis dabar <ph name="PANE_SIZE_PERCENT" /> pločio.</translation>
+<translation id="5438060324827306856">Rasti &amp;plėtinių</translation>
 <translation id="5440425659852470030">Uždaryti šoninį skydelį</translation>
 <translation id="544083962418256601">Kurti sparčiuosius klavišus...</translation>
 <translation id="5441133529460183413">Iš „Chrome“ naršyklės įdiegta žiniatinklio programa</translation>
@@ -6819,7 +6820,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5794414402486823030">Visada atidaryti naudojant sistemos peržiūros priemonę</translation>
 <translation id="5794700615121138172">„Linux“ bendrinami aplankai</translation>
 <translation id="5794786537412027208">Uždaryti visas „Chrome“ programas</translation>
-<translation id="5795422263272161110">Rodyti šalia</translation>
 <translation id="5796485699458186843">Naujas inkognito &amp;skirtukas</translation>
 <translation id="5796956053441619942">Nuotolinio įrenginio URL nepalaikomas</translation>
 <translation id="5797934230382081317">Sužinokite, kaip pradėti naudoti &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;„Android“&lt;/a&gt; ir &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;„iOS“&lt;/a&gt;</translation>
@@ -9265,7 +9265,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7552846755917812628">Išbandykite toliau pateiktus patarimus.</translation>
 <translation id="7553012839257224005">Tikrinamas „Linux“ sudėtinis rodinys</translation>
 <translation id="7553242001898162573">Įveskite slaptažodį</translation>
-<translation id="7554342082838376298">Automatinis slaptažodžio keitimas</translation>
 <translation id="755472745191515939">Administratorius neleidžia naudoti šios kalbos</translation>
 <translation id="7554791636758816595">Naujas skirtukas</translation>
 <translation id="7556033326131260574">„Smart Lock“ negalėjo patvirtinti paskyros. Įveskite slaptažodį ir prisijunkite.</translation>
@@ -11242,7 +11241,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="8915916167043355778">Uždaryti viską</translation>
 <translation id="8916476537757519021">Inkognito antrinis kadras: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Taip, sutinku</translation>
-<translation id="8917980324687233736">Rodyti šalia</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />, <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">Įdiegiama programa...</translation>
 <translation id="891931289445130855">Ištrinti duomenis ir leidimus</translation>

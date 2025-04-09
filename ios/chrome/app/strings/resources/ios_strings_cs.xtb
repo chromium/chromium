@@ -1127,6 +1127,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="573974402615125334">Pokud chcete sdílet skupiny karet, připojovat se k nim a spolupracovat na nich, synchronizujte historii a karty</translation>
 <translation id="5740123193752401435">Hledat karty…</translation>
 <translation id="5744274077973758795">Oznámení z kategorie <ph name="FEATURE_NAME" /> jsou zapnutá</translation>
+<translation id="5745598824054949526">Nebyl nalezen žádný text</translation>
 <translation id="574762237186762643">Události</translation>
 <translation id="5749158352074143502">Pokračovat s touto kartou</translation>
 <translation id="5753021559215751319">Uložit heslo</translation>
@@ -1290,6 +1291,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6410883413783534063">Pomocí karet můžete mít otevřených několik různých stránek najednou</translation>
 <translation id="6416807286621280684">Aktuální informace o sledovaných zásilkách a dodání.</translation>
 <translation id="6418346271604475326">Příprava souboru PDF</translation>
+<translation id="6421038304268477484">Přeložený text</translation>
 <translation id="6429213933892582367">Otevřete sekci Volby hesel.</translation>
 <translation id="6434591244308415567">Došlo k chybě, zkuste to později.</translation>
 <translation id="6435307030888827407">Odhlásit trvale</translation>
@@ -1968,6 +1970,7 @@ Weby pomocí souborů cookie mohou sledovat vaši aktivitu prohlížení na růz
 <translation id="9097506547406246598">Sledování nelze zrušit. Něco se pokazilo.</translation>
 <translation id="9098541895599151034">Smazat hesla (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Pokaždé se zeptat, který účet chci použít</translation>
+<translation id="9099821309562615674">Překládaný text musí být dobře čitelný a musí být v záběru.</translation>
 <translation id="9100610230175265781">Je vyžadována heslová fráze</translation>
 <translation id="91023216973987714">Platební metody</translation>
 <translation id="9106655997975673326">Ze zařízení <ph name="SOURCE_DEVICE" /></translation>

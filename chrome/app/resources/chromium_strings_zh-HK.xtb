@@ -78,6 +78,7 @@
 <translation id="2018879682492276940">無法安裝，請再試一次。</translation>
 <translation id="2020032459870799438">如要檢查其他密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="2049376729098081731">選擇是否包含 Chromium 記錄，以便在 Google 服務中享有更個人化的體驗</translation>
+<translation id="2054039611381840095">如果之後要更新 Chromium，請使用 macOS 12 以上版本。這部電腦目前搭載的版本為 macOS 11。</translation>
 <translation id="2086476982681781442">由於此檔案是欺詐檔案，可能會對裝置造成非預期的變更，因此 Chromium 已禁止下載</translation>
 <translation id="2088953378266246249">Chromium 如何管理根憑證的相關資訊</translation>
 <translation id="2099452623287920103">你儲存在 Google 帳戶的密碼和其他 Chromium 資料，將會從這部裝置移除。如要再次在 Chromium 中使用這些資料，請重新登入。</translation>

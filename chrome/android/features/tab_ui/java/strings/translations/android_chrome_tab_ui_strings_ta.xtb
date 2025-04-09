@@ -14,6 +14,7 @@
 இதை நீக்கிவிட்டால் "<ph name="TITLE_OF_GROUP" />" பக்கக் குழுவிற்கான அணுகலை எல்லோரும் இழப்பார்கள். அத்துடன், இது எல்லாச் சாதனங்களில் இருந்தும் நீக்கப்படும்.</translation>
 <translation id="1329584516321524826">சற்றுமுன் புதுப்பிக்கப்பட்டது</translation>
 <translation id="1340839264183302272">குழுவிலிருந்து வெளியேறு</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_ONE" />பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக்குழுவை விரிவாக்கும்.}other{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_MANY" />பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக்குழுவை விரிவாக்கும்.}}</translation>
 <translation id="1419023007528516122">உங்கள் சாதனத்தில் உள்ள குழுவை இது நிரந்தரமாக நீக்கிவிடும்</translation>
 <translation id="1486715732399361704">உங்கள் பக்கக் குழுக்கள் அனைத்தும் இங்கே இருக்கும்</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> நிமிடத்திற்கு முன் உருவாக்கப்பட்டது}other{<ph name="NUM_MINS_MANY" /> நிமிடங்களுக்கு முன் உருவாக்கப்பட்டது}}</translation>
@@ -108,6 +109,7 @@
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{பக்கத்தை மூடுக}other{பக்கங்களை மூடுக}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> குழுக்கள் சேமிக்கப்பட்டுள்ளன (பக்கங்கள் மூடப்பட்டு குழுக்கள் நீக்கப்படும்)</translation>
 <translation id="492284538114688557">விலைச் சரிவு கண்டறியப்பட்டது</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_ONE" />பக்கம் உள்ள பகிரப்பட்ட பக்கக் குழுவை விரிவாக்கும்.}other{<ph name="CARD_LABEL" /> என்னும் லேபிளுடன், <ph name="COLOR_NAME" /> வண்ணத்தில், <ph name="TABS_COUNT_MANY" />பக்கங்கள் உள்ள பகிரப்பட்ட பக்கக் குழுவை விரிவாக்கும்.}}</translation>
 <translation id="5007392906805964215">சரிபார்</translation>
 <translation id="5073204694187207510">முழுத்திரை கட்டத்தை மூடு</translation>
 <translation id="5076161749301278626">ஸ்டோருக்குக் கிடைத்த கருத்துகளைப் பார்க்க வேண்டுமா?</translation>

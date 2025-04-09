@@ -492,6 +492,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1822995137827688764">Phát triển tài sản</translation>
 <translation id="1824402189105105503">Cuộn thứ tám</translation>
 <translation id="1826516787628120939">Đang kiểm tra</translation>
+<translation id="1832730227369924598">Đồng bộ hoá không gian làm việc</translation>
 <translation id="1834452765064623979">Xây dựng và bảo trì</translation>
 <translation id="1838374766361614909">Xóa tìm kiếm</translation>
 <translation id="1839331950812095887">một vài từ tóm tắt suy nghĩ của bạn</translation>
@@ -829,6 +830,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2413155254802890957">Cũ</translation>
 <translation id="2413528052993050574">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này có thể đã bị thu hồi. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
 <translation id="2414886740292270097">Tối</translation>
+<translation id="2418292431699242678">Quản trị viên của bạn cho phép đồng bộ hoá những nội dung sau giữa phiên trước và phiên hiện tại trên thiết bị ChromeOS bất kỳ:</translation>
 <translation id="2429716554270894715">Vải (Chống thấm nước)</translation>
 <translation id="2436186046335138073">Cho phép <ph name="HANDLER_HOSTNAME" /> mở tất cả liên kết <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Nghệ thuật sợi và dệt</translation>
@@ -1160,6 +1162,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3037177537145227281">Đang theo dõi giá</translation>
 <translation id="3037605927509011580">Ôi, hỏng! </translation>
 <translation id="3039406992698062762">Du lịch gia đình</translation>
+<translation id="3040636468789770340">Cookie (trạng thái đã đăng nhập trên các trang web bạn truy cập gần đây)</translation>
 <translation id="3041176923638368519">Xem các điều khoản về lợi ích của thẻ</translation>
 <translation id="3041612393474885105">Thông tin Chứng chỉ</translation>
 <translation id="3045769629416806687">Thể thao mạo hiểm</translation>
@@ -1670,6 +1673,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3869939189466884821">Các tệp trên máy của bạn sẽ bị xoá sau <ph name="MINUTES" /> phút</translation>
 <translation id="3872834068356954457">Khoa học</translation>
 <translation id="3875783148670536197">Chỉ cho tôi cách làm</translation>
+<translation id="387681220560687945">Windows (cách sắp xếp, tổ chức các cửa sổ và thẻ)</translation>
 <translation id="3879748587602334249">Trình quản lý tải xuống</translation>
 <translation id="3880456882942693779">Nghệ thuật và giải trí</translation>
 <translation id="3880589673277376494">Internet và viễn thông</translation>
@@ -4749,6 +4753,7 @@ Thông tin chi tiết bổ sung:
 <translation id="950736567201356821">Đục 3 lỗ trên cùng</translation>
 <translation id="950926967802086924">Khoá truy cập • Trình quản lý mật khẩu của Google</translation>
 <translation id="955429569736351433">Cho phép sử dụng thực tế ảo</translation>
+<translation id="955627189349169688">Bạn có thể chọn không áp dụng chính sách này trong phần <ph name="BEGIN_LINK" />cài đặt tính năng Đồng bộ hoá Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Vàng 2</translation>
 <translation id="961663415146723894">Đóng gáy dưới cùng</translation>
 <translation id="961856697154696964">Xoá dữ liệu duyệt web</translation>

@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">బ్రౌజర్ హోమ్</translation>
 <translation id="1526389707933164996">స్క్రీన్ సేవర్ యానిమేషన్</translation>
 <translation id="152892567002884378">వాల్యూమ్ పెంచండి</translation>
-<translation id="1531038290222364269">ట్యాబ్‌లను చూడండి</translation>
 <translation id="1539864135338521185">లాపస్ లాజులై</translation>
 <translation id="1548555207631326346">మీ AI ఇమేజ్‌లను వ్యక్తిగతీకరించడానికి థీమ్‌ను ఎంచుకుని, అండర్‌లైన్ చేసిన పదాలను ఎంచుకోండి.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">అనుమతించిన గరిష్ట ప్రయత్నాలు మించిపోయారు.</translation>
 <translation id="1908234395526491708">UDP రిక్వెస్ట్ వైఫల్యాలు</translation>
 <translation id="1908394185991500139">ఎడమ వైపు బాణం</translation>
-<translation id="1911678930322867245">ఎగువ కుడి వైపునకు తరలించండి</translation>
 <translation id="1914144885717544695">శుక్రవారం నాడు</translation>
 <translation id="1915960750806557358">మీ ఫీడ్‌బ్యాక్‌ను షేర్ చేయండి లేదా మీ సమస్యను వివరించండి. వ్యక్తిగతమైన వాటిని, సున్నితమైన లేదా గోప్యమైన అంశాలను చేర్చకుండా చూసుకోండి.</translation>
 <translation id="1923388006036088459">యాక్సెంట్ రంగు</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">ఆటోమేటిక్‌గా ఎంపిక చేసిన మీ ఉత్తమ ఫోటోలు</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ముత్యం</translation>
+<translation id="2501278716633472235">వెనుకకు వెళ్ళు</translation>
 <translation id="2505327257735685095">ప్రస్తుత వాల్‌పేపర్ ఇమేజ్‌ను రిఫ్రెష్ చేయండి</translation>
 <translation id="2507491234071975894">స్పీకర్</translation>
 <translation id="2512979179176933762">విండోలను చూపుతుంది</translation>
@@ -869,6 +868,7 @@
 <translation id="4965703485264574128">సమీప ఫలితం కోసం, <ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో గుణించండి</translation>
 <translation id="4969079779290789265">స్ప్లిట్ చేయండి</translation>
 <translation id="4972592110715526173">మోడ్‌ను మారుస్తుంది</translation>
+<translation id="497421865427891073">ముందుకు వెళ్ళు</translation>
 <translation id="4981003703840817201">నీలం రంగు, గులాబీ రంగు</translation>
 <translation id="498186245079027698">స్కానర్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి. స్కాన్ చేయబడిన ఫైల్స్‌ను సేవ్ చేయడానికి తగినంత స్థానిక స్పేస్ ఉందని నిర్దారించుకోండి.</translation>
 <translation id="4982627662315910959">షార్ట్‌కట్ అందుబాటులో లేదు. shift, ఇంకో 1 మోడిఫయర్ కీని (ctrl, alt, లేదా <ph name="META_KEY" />) ఉపయోగించి కొత్త షార్ట్‌కట్‌ను నొక్కండి.</translation>
@@ -1056,7 +1056,6 @@
 <translation id="5896602941605730551">ప్లే చేయండి</translation>
 <translation id="5901630391730855834">పసుపు</translation>
 <translation id="5903200662178656908">పరికరం అనేది కీబోర్డ్, మౌస్ కలయిక.</translation>
-<translation id="5903822368221507416">ట్యాబ్‌లను దాచండి</translation>
 <translation id="5904994456462260490">కొత్త APNని జోడించండి</translation>
 <translation id="590746845088109442">పిల్లులు</translation>
 <translation id="5907649332524363701">కీ రంగు</translation>
@@ -1367,6 +1366,7 @@
 <translation id="7212547870105584639">నెట్‌వర్క్ APN సెట్టింగ్‌లను మేనేజ్ చేయండి. APNలు సెల్యులార్ నెట్‌వర్క్‌కు, ఇంటర్నెట్‌కు మధ్య కనెక్షన్‌ని ఏర్పరుస్తాయి. <ph name="BEGIN_LINK_LEARN_MORE" />మరింత తెలుసుకోండి<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">బాహ్య పరికరాల కోసం ఫర్మ్‌వేర్ అప్‌డేట్‌లు</translation>
 <translation id="7216409898977639127">సెల్యులార్ ప్రదాత</translation>
+<translation id="7221869452894271364">ఈ పేజీని మళ్లీ లోడ్ చేయి</translation>
 <translation id="7223952304612664117">ఇది మీ లొకేషన్‌ను గుర్తించడానికి లొకేషన్ ఖచ్చితత్వాన్ని ఉపయోగించడానికి సిస్టమ్ సర్వీస్‌లను అనుమతిస్తుంది. లొకేషన్ ఖచ్చితత్వం పరికర లొకేషన్‌ను అంచనా వేయడానికి వైర్‌లెస్ సిగ్నల్స్, అలాగే సెన్సార్‌ల గురించిన సమాచారాన్ని ఉపయోగిస్తుంది.</translation>
 <translation id="7233782086689993269">షార్ట్‌కట్ రీస్టోర్ చేయబడింది</translation>
 <translation id="723419678599947502">Googleకు చెందిన AI టెక్నాలజీలను ఉపయోగించి టైటిల్‌ను క్రియేట్ చేయండి</translation>
@@ -1604,7 +1604,6 @@
 <translation id="8318753676953949627">ఇమేజ్‌లు లేవు</translation>
 <translation id="8319809980370328428">రికార్డింగ్ సారాంశం, టైటిల్ క్రియేషన్</translation>
 <translation id="8320910311642849813">అడవి</translation>
-<translation id="8322464149031882595">ముందుకు వెళ్లడానికి క్లిక్ చేయండి</translation>
 <translation id="8329018942023753850">క్యాలిక్యులేటర్ యాప్</translation>
 <translation id="8336739000755212683">పరికరం ఖాతా చిత్రాన్ని మార్చండి</translation>
 <translation id="8339024191194156249">ఆటోమేటిక్ లాంచ్ గురించి మరింత తెలుసుకోండి</translation>
@@ -1657,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">టీ హౌస్</translation>
 <translation id="8538236298648811558">Googleకు చెందిన AI టెక్నాలజీల ద్వారా అందించబడుతోంది</translation>
-<translation id="8543574988889671960">ట్యాబ్‌ను రీలోడ్ చేయండి</translation>
 <translation id="8550364285433943656">మీ కీబోర్డ్‌తో ఆడేందుకు గేమ్ చర్యలకు కంట్రోల్స్‌ను సెట్ చేయండి</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">జెనరేటివ్ AI ఇచ్చే సమాధానాలు కరెక్ట్‌గా ఉండకపోవచ్చు, వ్యక్తులకు సంబంధించిన సమాచారం విషయంలో కూడా ఇదే వర్తిస్తుంది, కాబట్టి దాన్ని డబుల్-చెక్ చేయండి.</translation>
@@ -1708,7 +1706,6 @@
 <translation id="8820817407110198400">బుక్‌మార్క్‌లు</translation>
 <translation id="8833620912470026819">కాక్టస్ అడవి</translation>
 <translation id="8834539327799336565">ప్రస్తుతం కనెక్ట్ చేయబడింది</translation>
-<translation id="8842526499753992487">ఎగువ ఎడమ వైపునకు తరలించండి</translation>
 <translation id="8845001906332463065">సహాయం పొందండి</translation>
 <translation id="8849799913685544685">లైట్‌హౌస్</translation>
 <translation id="8851859208664803097">స్టాప్ చేయబడింది - ప్రింటర్ అందుబాటులో లేదు</translation>
@@ -1748,7 +1745,6 @@
 <translation id="8961025972867871808">పెంగ్విన్‌లు</translation>
 <translation id="8968751544471797276">ఛార్జింగ్ రేట్</translation>
 <translation id="8970109610781093811">మళ్లీ అమలు చేయి</translation>
-<translation id="8972061581514441296">వెనుకకు వెళ్లడానికి క్లిక్ చేయండి</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{స్కాన్ చేయండి}=1{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}other{{NUMBER_OF_PAGES} పేజీని స్కాన్ చేయండి}}</translation>
 <translation id="89945434909472341">గ్రామం</translation>

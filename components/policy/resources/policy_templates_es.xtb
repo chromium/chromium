@@ -540,6 +540,9 @@ Si no se define esta política, los enlaces se abrirán de forma predeterminada 
 <translation id="1417888712677507140">Bloquear los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>
 <translation id="1418387035898607074">Saltar comprobaciones de Navegación segura para las descargas de archivos desde fuentes de confianza</translation>
 <translation id="1419020637569060510">Añadir restricciones al uso de una cuenta gestionada como cuenta secundaria en ChromeOS</translation>
+<translation id="1423359855587524289">Si se habilita esta política o no se establece, la aplicación puede usar la autorización "provisional" de notificaciones de iOS para mostrar notificaciones en el Centro de notificaciones de iOS.
+
+Si se inhabilita esta política, la aplicación no usará notificaciones provisionales.</translation>
 <translation id="142346659686073702">Permitir que los usuarios no afiliados utilicen Crostini</translation>
 <translation id="1423900783955065155">Esta política controla si una página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se puede almacenar en la caché de páginas completas. Es posible que el sitio web que configura este encabezado no espere que se restaure la página desde la caché de páginas completas, ya que parte de la información sensible podría seguir mostrándose después de la restauración aunque ya no se pueda acceder a ella.
 
@@ -1230,6 +1233,7 @@ Si se le asigna el valor False, no se recogerá información que pueda usarse pa
 
 En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
+<translation id="187961648719201562">Eliminar archivos locales (compatible desde la versión 137)</translation>
 <translation id="1883274744253492031">Habilitar la actualización automática de contenido mixto</translation>
 <translation id="1885782360784839335">Permitir que se muestre contenido promocional que ocupe toda la pestaña</translation>
 <translation id="1888871729456797026">El token de registro de la política de nube en ordenadores</translation>
@@ -6793,6 +6797,9 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
 <translation id="5883754873839596178">Establecer esta política permite especificar el número máximo de conexiones simultáneas al servidor proxy. Algunos servidores proxy no son capaces de gestionar un número elevado de conexiones simultáneas por cliente, lo que se puede solucionar estableciendo un valor inferior para esta política. El valor debe ser inferior a 100 y superior a 6. Algunas aplicaciones web consumen muchas conexiones con las solicitudes GET pendientes, por lo que un valor inferior a 32 puede hacer que la red del navegador se bloquee si se abren muchas aplicaciones web de este tipo. Si estableces un valor inferior al predeterminado, debes hacerlo bajo tu propia responsabilidad.
 
       Si no se establece esta política, se utilizará el valor predeterminado (32).</translation>
+<translation id="5886280631293123880">Esta política proporciona un mecanismo temporal para volver a activar un conjunto de eventos de plataforma obsoletos y retirados que se denominan eventos de mutación.
+Si se habilita esta política, los eventos de mutación seguirán activándose aunque se hayan inhabilitado de forma predeterminada para los usuarios web normales. Si se inhabilita esta política o no se define, estos eventos no se podrán activar.
+Esta política es una solución temporal y dejará de funcionar en la versión M137.</translation>
 <translation id="5887414688706570295">Permite configurar el prefijo TalkGadget que utilizarán los hosts de acceso remoto y evita que los usuarios lo modifiquen.
 
          Si se especifica, este prefijo se antepone al nombre TalkGadget básico para crear un nombre de dominio completo para TalkGadget. El nombre de dominio TalkGadget básico es ".talkgadget.google.com".
@@ -8332,6 +8339,21 @@ Si esta política no se establece para un sitio, se le aplicará la de <ph name=
 
 Esta política sustituye a la obsoleta de <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6894178810167845842">URL de la página Nueva pestaña</translation>
+<translation id="6895437634974956885">El estado de la batería puede verse afectado por factores como las cargas completas frecuentes y las duraciones de carga prolongadas. Esta política ofrece tres opciones para optimizar el comportamiento de carga y mitigar estos factores, lo que, en última instancia, prolonga la vida útil de la batería.
+
+Si no se define la política, los usuarios podrán usar el botón activar/desactivar de Carga inteligente para habilitar o inhabilitar esta función.
+
+Si se asigna el valor 1 (Estándar) a la política o no se define, la batería se cargará con normalidad hasta el 100 %. Se inhabilita Carga inteligente y la carga limitada.
+
+Si se asigna el valor 2 (Adaptativa) a la política, el dispositivo aprende tus hábitos de carga y retrasa la carga al 100 % hasta que sea necesario. Esto ayuda a prolongar el estado de la batería.
+
+Si se asigna el valor 3 (Limitada), la batería solo se cargará hasta el 80 % aproximadamente para maximizar su vida útil.
+
+Si se define la política <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" />, prevalecerá sobre la política <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Si no se define la política <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" />, la política <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> controlará si la función Carga inteligente se habilita o inhabilita.
+
+<ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> dejará de estar disponible.</translation>
 <translation id="6897730193187922386">Elimina los mensajes de desactivación de <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Detección automática de la configuración del proxy</translation>
 <translation id="6901462246839613666">Habilitar que se muestre contenido promocional</translation>
@@ -8991,6 +9013,7 @@ Si se le asigna el valor False, se habilitará el comportamiento anterior.</tran
 <translation id="7366637365754181686">Habilitar los informes en la nube de las señales de seguridad de los usuarios</translation>
 <translation id="7366948865469126526">Inhabilitar conversión de unidades de Respuestas rápidas</translation>
 <translation id="7367734504783638685">Sincronización de contraseñas entre proveedores de SSO externos y dispositivos Chrome</translation>
+<translation id="7372818045062294211">Permitir que la aplicación use la autorización provisional de notificaciones</translation>
 <translation id="7372831798009983116">Habilitar la función de accesibilidad de clic automático</translation>
 <translation id="7373200034079131670">Reinicia cuando el usuario cierra sesión si se ha iniciado Android o una máquina virtual.</translation>
 <translation id="7374784840090523241">Crear llaves de acceso de forma predeterminada en otros almacenes, como el perfil de <ph name="PRODUCT_NAME" /></translation>
@@ -10354,6 +10377,7 @@ Si se le asigna el valor 0 (<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_B
 <translation id="8421202694245456861">Configurar la función de subtítulos de <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="8422658829373743789">Controlar el nuevo comportamiento de envío de eventos en controles de formulario inhabilitados</translation>
 <translation id="8423237137411858515">Mantener los archivos locales en modo de solo lectura</translation>
+<translation id="8424056332208748750">No permitir que la aplicación use la autorización provisional de notificaciones</translation>
 <translation id="8424255554404582727">Establecer rotación de pantalla predeterminada y volver a aplicarla cada vez que se reinicie el dispositivo</translation>
 <translation id="8426231401662877819">Rotar la pantalla 90 grados hacia la derecha</translation>
 <translation id="8426326725481825773">Esta política determina cómo funcionará la reasignación de las teclas Inicio y Fin en la subpágina de reasignación de teclas. La subpágina de reasignación de teclas permite que los usuarios personalicen las teclas del teclado. Si se habilita, esta política impedirá que los usuarios personalicen estas reasignaciones específicas. Si no se define esta política, las combinaciones de teclas basadas en búsquedas serán las predeterminadas y los usuarios podrán configurarlas.</translation>
@@ -10495,6 +10519,7 @@ No se puede restaurar la versión 106 de <ph name="PRODUCT_OS_NAME" /> ni versio
 <translation id="8520064498689833152">Forzar el uso de Búsqueda Segura en la Búsqueda de Google y que el modo Restringido de YouTube se aplique en la opción moderada como mínimo</translation>
 <translation id="8520950040439618600">Permitir métodos de autenticación con PIN y con emparejamiento para los hosts de acceso remoto</translation>
 <translation id="8524334245528364388">URL de un archivo JSON con una lista de servidores de impresión.</translation>
+<translation id="8525282442896658040">Permite que la aplicación use la autorización provisional de notificaciones en iOS</translation>
 <translation id="8525526490824335042">Contenedor de Linux</translation>
 <translation id="8526745614158856826">Establecer esta política permite definir una lista de sitios a los que se les concederá permiso automáticamente para acceder a todos los dispositivos disponibles.
 

@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">pārlūkprogrammas sākumlapa</translation>
 <translation id="1526389707933164996">Ekrānsaudzētāja animācija</translation>
 <translation id="152892567002884378">Palielināt skaļumu</translation>
-<translation id="1531038290222364269">Rādīt cilnes</translation>
 <translation id="1539864135338521185">lazurīts</translation>
 <translation id="1548555207631326346">Izvēlieties tēmu un pēc tam atlasiet pasvītrotos vārdus, lai personalizētu savus MI attēlus.<ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Atlasiet opciju “Iedvesmot mani”, lai iegūtu unikālākas un daudzveidīgākas MI attēlu iespējas.
           <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Ja izveidei izmantojat MI, uzvedne tiek nosūtīta Google MI serveriem, lai ģenerētu attēlus un uzlabotu produktu, ievērojot <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google konfidencialitātes politiku<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
@@ -236,7 +235,6 @@
 <translation id="1905710495812624430">Ir pārsniegts maksimālais atļautais mēģinājumu skaits.</translation>
 <translation id="1908234395526491708">UDP pieprasījumu kļūmes</translation>
 <translation id="1908394185991500139">kreisā bultiņa</translation>
-<translation id="1911678930322867245">Pārvietot uz augšējo labo stūri</translation>
 <translation id="1914144885717544695">piektdien</translation>
 <translation id="1915960750806557358">Sniedziet atsauksmes vai aprakstiet problēmu. Neiekļaujiet nekādu personas, sensitīvu vai konfidenciālu informāciju.</translation>
 <translation id="1923388006036088459">Izcēluma krāsas</translation>
@@ -356,6 +354,7 @@
 <translation id="2493126929778606526">Jūsu labākie fotoattēli (atlasīti automātiski)</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> — <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opāls</translation>
+<translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="2505327257735685095">Atsvaidzināt pašreizējo fona tapetes attēlu</translation>
 <translation id="2507491234071975894">Skaļrunis</translation>
 <translation id="2512979179176933762">rādīt logus</translation>
@@ -856,6 +855,7 @@
 <translation id="4965703485264574128">Lai iegūtu aptuvenu rezultātu, <ph name="CATEGORY_TEXT" /> jāreizina ar <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Sadalīt</translation>
 <translation id="4972592110715526173">mainīt režīmu</translation>
+<translation id="497421865427891073">Doties uz priekšu</translation>
 <translation id="4981003703840817201">zila un rozā</translation>
 <translation id="498186245079027698">Pārbaudiet skeneri un mēģiniet vēlreiz. Vietējā krātuvē jābūt pietiekami daudz vietas skenēto failu saglabāšanai.</translation>
 <translation id="4982627662315910959">Šie īsinājumtaustiņi nav pieejami. Nospiediet jaunus īsinājumtaustiņus, izmantojot taustiņu Shift un vēl vienu modificētājtaustiņu (Ctrl, Alt vai <ph name="META_KEY" />).</translation>
@@ -1043,7 +1043,6 @@
 <translation id="5896602941605730551">Atskaņot</translation>
 <translation id="5901630391730855834">Dzeltena</translation>
 <translation id="5903200662178656908">Ierīce sastāv no tastatūras un peles.</translation>
-<translation id="5903822368221507416">Paslēpt cilnes</translation>
 <translation id="5904994456462260490">Jauna APN pievienošana</translation>
 <translation id="590746845088109442">kaķi</translation>
 <translation id="5907649332524363701">taustiņu krāsa</translation>
@@ -1354,6 +1353,7 @@
 <translation id="7212547870105584639">Pārvaldiet tīkla APN iestatījumus. APN izveido savienojumu starp mobilo tīklu un internetu. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7212734716605298123">Aparātprogrammatūras atjauninājumi ārējām ierīcēm</translation>
 <translation id="7216409898977639127">Mobilo sakaru operators</translation>
+<translation id="7221869452894271364">Pārlādēt šo lapu</translation>
 <translation id="7223952304612664117">Tādējādi atļausiet sistēmas pakalpojumiem izmantot atrašanās vietas precizitāti, lai noteiktu jūsu atrašanās vietu. Iestatījums “Atrašanās vietas precizitāte” izmanto informāciju par bezvadu signāliem un sensoriem, lai noteiktu ierīces atrašanās vietu.</translation>
 <translation id="7233782086689993269">Īsinājumtaustiņš ir atjaunots</translation>
 <translation id="723419678599947502">Izveidot nosaukumu, izmantojot Google MI</translation>
@@ -1591,7 +1591,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8318753676953949627">Nav attēlu</translation>
 <translation id="8319809980370328428">Ieraksta kopsavilkuma un nosaukuma izveide</translation>
 <translation id="8320910311642849813">mežs</translation>
-<translation id="8322464149031882595">Noklikšķiniet, lai pārietu uz priekšu</translation>
 <translation id="8329018942023753850">lietotne Kalkulators</translation>
 <translation id="8336739000755212683">Mainīt ierīces konta attēlu</translation>
 <translation id="8339024191194156249">Uzzināt vairāk par automātisko palaišanu</translation>
@@ -1644,7 +1643,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">tējas namiņš</translation>
 <translation id="8538236298648811558">Nodrošina Google MI</translation>
-<translation id="8543574988889671960">Atkārtoti ielādēt cilni</translation>
 <translation id="8550364285433943656">Piešķiriet vadīklas spēles darbībām, lai spēlētu ar tastatūras taustiņiem</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Ģeneratīvais MI var pieļaut kļūdas, tostarp par personām, tāpēc pārbaudiet atbildi.</translation>
@@ -1695,7 +1693,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8820817407110198400">Grāmatzīmes</translation>
 <translation id="8833620912470026819">kaktusu mežs</translation>
 <translation id="8834539327799336565">Ierīces, ar kurām pašlaik izveidots savienojums</translation>
-<translation id="8842526499753992487">Pārvietot uz augšējo kreiso stūri</translation>
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8849799913685544685">bāka</translation>
 <translation id="8851859208664803097">Apturēts — printeris nav sasniedzams</translation>
@@ -1735,7 +1732,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8961025972867871808">pingvīni</translation>
 <translation id="8968751544471797276">Uzlādes ātrums</translation>
 <translation id="8970109610781093811">Izpildīt vēlreiz</translation>
-<translation id="8972061581514441296">Noklikšķiniet, lai pārietu atpakaļ</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Skenēt}=1{Skenēt {NUMBER_OF_PAGES}. lapu}zero{Skenēt {NUMBER_OF_PAGES}. lapu}one{Skenēt {NUMBER_OF_PAGES}. lapu}other{Skenēt {NUMBER_OF_PAGES}. lapu}}</translation>
 <translation id="89945434909472341">ciems</translation>

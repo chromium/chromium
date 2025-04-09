@@ -1293,6 +1293,7 @@ Se la policy viene impostata su False, le informazioni che possono essere utiliz
 
 Questa policy viene applicata soltanto se la macchina viene registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
 Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="187961648719201562">Elimina i file locali esistenti (supportato dalla versione 137)</translation>
 <translation id="1883274744253492031">Attiva l'upgrade automatico del contenuto misto</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="1888871729456797026">Il token di registrazione della norma relativa al cloud su desktop</translation>
@@ -6850,6 +6851,9 @@ gli utenti non potranno modificarla o eseguirne l'override.</translation>
 <translation id="5883754873839596178">La configurazione della policy consente di specificare il numero massimo di connessioni simultanee al server proxy. Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare la policy su un numero inferiore per risolvere questo problema. Il valore deve essere inferiore a 100 e superiore a 6. Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo. È sconsigliato utilizzare un valore inferiore a quello predefinito.
 
       Se la policy non viene configurata, viene utilizzato il valore predefinito 32.</translation>
+<translation id="5886280631293123880">Questa policy consente di riattivare temporaneamente un insieme di eventi della piattaforma deprecato e rimosso chiamato eventi Mutazione.
+Se questa policy viene attivata, gli eventi Mutazione continueranno a essere attivati, anche se sono stati disattivati per impostazione predefinita per i normali utenti web. Se questa policy viene disattivata o se non viene configurata, questi eventi potrebbero non essere attivati.
+Questa policy è una soluzione alternativa temporanea e non sarà più valida nella versione M137.</translation>
 <translation id="5887414688706570295">Consente di configurare il prefisso TalkGadget che verrà utilizzato dagli host di accesso remoto e impedisce agli utenti di modificarlo.
 
           Se specificato, questo prefisso viene anteposto al nome TalkGadget di base per creare un nome di dominio completo per TalkGadget. Il nome TalkGadget di base del dominio è "Talkgadget.google.com".
@@ -8423,6 +8427,21 @@ Se la policy non viene configurata per un sito, la policy di <ph name="DEFAULT_W
 
 Sostituisce la policy <ph name="WINDOW_PLACEMENT_ALLOWED_FOR_URLS_POLICY_NAME" /> obsoleta.</translation>
 <translation id="6894178810167845842">URL della pagina Nuova scheda</translation>
+<translation id="6895437634974956885">L'integrità della batteria può essere influenzata da fattori quali ricariche complete frequenti e ricariche prolungate. Questa policy offre tre opzioni per ottimizzare il comportamento di ricarica e attenuare questi fattori, prolungando così la durata della batteria.
+
+Se la policy non viene configurata, gli utenti possono usare il pulsante di attivazione/disattivazione della ricarica adattiva per attivare/disattivare la ricarica adattiva.
+
+Se la policy viene impostata su 1 - Standard o se non viene configurata, la batteria viene caricata normalmente fino al 100%. Questa operazione disattiva le ricariche adattiva e limitata.
+
+Se la policy viene impostata su 2 - Adaptive, il dispositivo apprende le tue abitudini di ricarica e ritarda la ricarica al 100% fino a quando non è necessario. Questo aiuta a prolungare l'integrità della batteria.
+
+Se la policy viene impostata su 3 - Limited, la batteria si ricarica solo fino a circa l'80% per massimizzare la durata.
+
+Se la policy <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> è impostata, ha la precedenza sulla policy <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" />.
+
+Se la policy <ph name="DEVICE_POWER_BATTERY_CHARGING_OPTIMIZATION_POLICY_NAME" /> non viene configurata, la policy <ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> controlla se la funzionalità di ricarica adattiva è attivata o disattivata.
+
+<ph name="DEVICE_POWER_ADAPTIVE_CHARGING_ENABLED_POLICY_NAME" /> verrà deprecata.</translation>
 <translation id="6897730193187922386">Elimina messaggi relativi al ritiro di <ph name="CLOUD_PRINT_NAME" /></translation>
 <translation id="6899705656741990703">Rileva automaticamente impostazioni proxy</translation>
 <translation id="6901462246839613666">Abilita la visualizzazione dei contenuti promozionali</translation>

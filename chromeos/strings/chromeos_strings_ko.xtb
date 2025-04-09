@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">브라우저 홈</translation>
 <translation id="1526389707933164996">화면 보호기 애니메이션</translation>
 <translation id="152892567002884378">볼륨 크게</translation>
-<translation id="1531038290222364269">탭 표시</translation>
 <translation id="1539864135338521185">청금석</translation>
 <translation id="1548555207631326346">테마를 선택한 후 밑줄이 그어진 단어를 선택해 AI 생성 이미지를 맞춤설정하세요.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">허용되는 최대 시도 횟수를 초과했습니다.</translation>
 <translation id="1908234395526491708">UDP 요청 실패</translation>
 <translation id="1908394185991500139">왼쪽 화살표입니다</translation>
-<translation id="1911678930322867245">오른쪽 상단으로 이동</translation>
 <translation id="1914144885717544695">금요일</translation>
 <translation id="1915960750806557358">의견을 공유하거나 문제를 설명해 주세요. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="1923388006036088459">강조 색상</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">가장 잘 나온 사진이 자동으로 선별됩니다.</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" />, <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">오팔</translation>
+<translation id="2501278716633472235">뒤로 이동</translation>
 <translation id="2505327257735685095">현재 배경화면 이미지 새로고침</translation>
 <translation id="2507491234071975894">스피커</translation>
 <translation id="2512979179176933762">창을 표시합니다</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">근삿값 결과를 얻으려면 <ph name="CATEGORY_TEXT" /> 값에 <ph name="CONVERSION_RATE" />을(를) 곱합니다.</translation>
 <translation id="4969079779290789265">분할</translation>
 <translation id="4972592110715526173">모드를 변경합니다</translation>
+<translation id="497421865427891073">앞으로 이동</translation>
 <translation id="4981003703840817201">파란색 및 분홍색</translation>
 <translation id="498186245079027698">스캐너를 확인한 후 다시 시도해 보세요. 스캔된 파일을 저장하기에 공간이 충분한지 확인합니다.</translation>
 <translation id="4982627662315910959">단축키를 사용할 수 없습니다. Shift 외 특수키 1개(Ctrl, Alt 또는 <ph name="META_KEY" />)를 사용하여 새 단축키를 누르세요.</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">재생</translation>
 <translation id="5901630391730855834">노란색</translation>
 <translation id="5903200662178656908">기기가 키보드와 마우스의 조합입니다.</translation>
-<translation id="5903822368221507416">탭 숨기기</translation>
 <translation id="5904994456462260490">새 APN 추가</translation>
 <translation id="590746845088109442">고양이</translation>
 <translation id="5907649332524363701">키 색상</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">네트워크 APN 설정을 관리하세요. APN은 셀룰러 네트워크와 인터넷 간의 연결을 설정합니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">외부 기기 펌웨어 업데이트</translation>
 <translation id="7216409898977639127">이동통신사</translation>
+<translation id="7221869452894271364">페이지 새로고침</translation>
 <translation id="7223952304612664117">이렇게 하면 시스템 서비스에서 위치 정확도를 사용하여 내 위치를 파악할 수 있습니다. 위치 정확도는 무선 신호 및 센서에 관한 정보를 사용하여 기기 위치를 추정합니다.</translation>
 <translation id="7233782086689993269">단축키가 복원됨</translation>
 <translation id="723419678599947502">Google AI를 사용하여 제목 생성하기</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">이미지 없음</translation>
 <translation id="8319809980370328428">녹화 파일 요약 및 제목 생성하기</translation>
 <translation id="8320910311642849813">숲</translation>
-<translation id="8322464149031882595">클릭하여 진행</translation>
 <translation id="8329018942023753850">계산기 앱입니다</translation>
 <translation id="8336739000755212683">기기 계정 이미지 변경</translation>
 <translation id="8339024191194156249">자동 실행 자세히 알아보기</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">찻집</translation>
 <translation id="8538236298648811558">Google AI 기반</translation>
-<translation id="8543574988889671960">탭 새로고침</translation>
 <translation id="8550364285433943656">게임 액션에 컨트롤을 사용하여 키보드 키로 플레이하세요.</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">생성형 AI는 인물 등에 관한 정보 제공 시 실수를 할 수 있으니 다시 한번 확인하세요.</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">북마크</translation>
 <translation id="8833620912470026819">선인장 숲</translation>
 <translation id="8834539327799336565">현재 연결된 기기</translation>
-<translation id="8842526499753992487">왼쪽 상단으로 이동</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8849799913685544685">등대</translation>
 <translation id="8851859208664803097">중지됨 - 프린터에 연결할 수 없음</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">펭귄</translation>
 <translation id="8968751544471797276">충전 속도</translation>
 <translation id="8970109610781093811">다시 실행</translation>
-<translation id="8972061581514441296">돌아가려면 클릭</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{스캔}=1{{NUMBER_OF_PAGES}페이지 스캔}other{{NUMBER_OF_PAGES}페이지 스캔}}</translation>
 <translation id="89945434909472341">마을</translation>

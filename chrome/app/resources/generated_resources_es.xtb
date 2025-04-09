@@ -6329,6 +6329,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5436492226391861498">Esperando túnel proxy...</translation>
 <translation id="5436510242972373446">Buscar <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Ahora, la ventana <ph name="WINDOW_SIDE" /> tiene un ancho del <ph name="WINDOW_SIZE_PERCENT" /> y el panel <ph name="PANE_SIDE" /> tiene un ancho del <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">Buscar &amp;extensiones</translation>
 <translation id="5440425659852470030">Cerrar panel lateral</translation>
 <translation id="544083962418256601">Crear accesos directos...</translation>
 <translation id="5441133529460183413">Aplicación web instalada desde el navegador Chrome</translation>
@@ -6800,7 +6801,6 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5794414402486823030">Abrir siempre con el visor del sistema</translation>
 <translation id="5794700615121138172">Carpetas compartidas de Linux</translation>
 <translation id="5794786537412027208">Salir de todas las aplicaciones de Chrome</translation>
-<translation id="5795422263272161110">Mostrar en paralelo</translation>
 <translation id="5796485699458186843">Nueva pestaña de Incógnito</translation>
 <translation id="5796956053441619942">La URL del dispositivo remoto no es compatible</translation>
 <translation id="5797934230382081317">Descubre cómo empezar a usar &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; y &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9240,7 +9240,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7552846755917812628">Prueba los siguientes consejos:</translation>
 <translation id="7553012839257224005">Comprobando el contenedor de Linux</translation>
 <translation id="7553242001898162573">Introduce tu contraseña</translation>
-<translation id="7554342082838376298">Cambio de contraseña automatizado</translation>
 <translation id="755472745191515939">Tu administrador no permite el uso de este idioma</translation>
 <translation id="7554791636758816595">Nueva pestaña</translation>
 <translation id="7556033326131260574">Smart Lock no ha podido verificar tu cuenta. Introduce la contraseña para acceder.</translation>
@@ -9742,7 +9741,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7897900149154324287">En el futuro, asegúrate de expulsar tu dispositivo extraíble en la aplicación Archivos antes de desconectarlo. De lo contrario, podrías perder datos.</translation>
 <translation id="7898725031477653577">Traducir siempre</translation>
 <translation id="7900950034255258543">Para asegurarse de que este dispositivo se puede usar de forma segura, tu organización puede ver información sobre su sistema operativo, navegador, configuración y software instalado</translation>
-<translation id="7901405293566323524">Phone Hub</translation>
+<translation id="7901405293566323524">Mi teléfono</translation>
 <translation id="7903429136755645827">Haz clic para personalizar los controles de juegos</translation>
 <translation id="7903481341948453971">Usar el bloqueo de pantalla para rellenar contraseñas</translation>
 <translation id="7903742244674067440">Tienes certificados registrados que identifican a estas entidades</translation>
@@ -11214,7 +11213,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="8915916167043355778">Cerrar todo</translation>
 <translation id="8916476537757519021">Submarco incógnito: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Sí, acepto</translation>
-<translation id="8917980324687233736">Mostrar en paralelo</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Instalando la aplicación...</translation>
 <translation id="891931289445130855">Eliminar datos y permisos</translation>

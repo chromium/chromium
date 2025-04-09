@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">דף הבית של הדפדפן</translation>
 <translation id="1526389707933164996">אנימציה של שומר המסך</translation>
 <translation id="152892567002884378">הגברת עוצמת הקול</translation>
-<translation id="1531038290222364269">הצגת כרטיסיות</translation>
 <translation id="1539864135338521185">לפיס לזולי</translation>
 <translation id="1548555207631326346">‏כדי להתאים אישית את התמונות שנוצרו על ידי AI, בוחרים עיצוב ואז בוחרים את המילים שמסומנות בקו תחתון.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">חריגה ממספר הניסיונות המרבי המותר.</translation>
 <translation id="1908234395526491708">‏בקשות UDP נכשלו</translation>
 <translation id="1908394185991500139">חץ שמאלה</translation>
-<translation id="1911678930322867245">העברה לפינה הימנית העליונה</translation>
 <translation id="1914144885717544695">ביום שישי</translation>
 <translation id="1915960750806557358">נשמח לקבל ממך משוב או תיאור של הבעיה. חשוב להקפיד שלא לכלול מידע אישי, רגיש או סודי.</translation>
 <translation id="1923388006036088459">צבעים משניים</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">התמונות הטובות ביותר שלך שנבחרו באופן אוטומטי</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">אופאל</translation>
+<translation id="2501278716633472235">חזרה</translation>
 <translation id="2505327257735685095">רענון של תמונת הטפט</translation>
 <translation id="2507491234071975894">רמקול</translation>
 <translation id="2512979179176933762">הצגת החלונות</translation>
@@ -382,6 +381,7 @@
 <translation id="2584559707064218956">כדי להגדיר את הרשת, צריך לעבור להגדרות</translation>
 <translation id="2586146417912237930">כחול ואינדיגו</translation>
 <translation id="2589921777872778654">תפריט עריכה ומחיקה</translation>
+<translation id="2590424100019931043">הוסרת מהשיעור הזה</translation>
 <translation id="2597774443162333062">‏הקבצים יישלחו אל Google לניפוי באגים</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{הסריקה הושלמה. נסרק עמוד אחד}one{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}two{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}other{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}}</translation>
 <translation id="261322795497077164">זיהוי הדובר</translation>
@@ -868,6 +868,7 @@
 <translation id="4965703485264574128">כדי לקבל תוצאה מקורבת, צריך להכפיל את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">פיצול</translation>
 <translation id="4972592110715526173">שינוי מצב</translation>
+<translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="4981003703840817201">ורוד וכחול</translation>
 <translation id="498186245079027698">יש לבדוק את הסורק ולנסות שוב. חשוב לוודא שיש במכשיר מספיק מקום לשמור את הקבצים הסרוקים.</translation>
 <translation id="4982627662315910959">‏מקש הקיצור לא זמין. צריך להקיש על מקש קיצור חדש שכולל את Shift ומקש צירוף נוסף (Ctrl,‏ Alt או <ph name="META_KEY" />).</translation>
@@ -1055,7 +1056,6 @@
 <translation id="5896602941605730551">הפעלה</translation>
 <translation id="5901630391730855834">צהוב</translation>
 <translation id="5903200662178656908">המכשיר משלב מקלדת ועכבר.</translation>
-<translation id="5903822368221507416">הסתרת הכרטיסיות</translation>
 <translation id="5904994456462260490">‏הוספת APN חדש</translation>
 <translation id="590746845088109442">חתולים</translation>
 <translation id="5907649332524363701">הצבע העיקרי</translation>
@@ -1366,6 +1366,7 @@
 <translation id="7212547870105584639">‏ניהול הגדרות APN של הרשת. נקודות APN יוצרות חיבור בין רשת סלולרית לבין האינטרנט. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">עדכוני קושחה למכשירים חיצוניים</translation>
 <translation id="7216409898977639127">ספק שירות סלולרי</translation>
+<translation id="7221869452894271364">רענון הדף</translation>
 <translation id="7223952304612664117">האישור מאפשר לשירותי המערכת להשתמש בהגדרה 'קביעת מיקום יותר מדויקת' כדי לקבוע את המיקום שלך. ההגדרה 'קביעת מיקום יותר מדויקת' משתמשת במידע על אותות אלחוטיים וחיישנים כדי לקבוע את המיקום של המכשיר.</translation>
 <translation id="7233782086689993269">מקש הקיצור שוחזר</translation>
 <translation id="723419678599947502">‏יצירת שם באמצעות AI מבית Google</translation>
@@ -1603,7 +1604,6 @@
 <translation id="8318753676953949627">אין תמונות</translation>
 <translation id="8319809980370328428">סיכום ההקלטה ויצירת שם</translation>
 <translation id="8320910311642849813">יער</translation>
-<translation id="8322464149031882595">צריך ללחוץ כדי להמשיך</translation>
 <translation id="8329018942023753850">אפליקציית המחשבון</translation>
 <translation id="8336739000755212683">שינוי תמונת החשבון במכשיר</translation>
 <translation id="8339024191194156249">מידע נוסף על הפעלה אוטומטית</translation>
@@ -1656,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">בית תה</translation>
 <translation id="8538236298648811558">‏מבוסס על AI מבית Google</translation>
-<translation id="8543574988889671960">טעינה מחדש של הכרטיסייה</translation>
 <translation id="8550364285433943656">הגדרת אמצעי בקרה לפעולות במשחק כדי לשחק באמצעות המקלדת</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">בינה מלאכותית גנרטיבית עלולה לטעות, גם לגבי אנשים, אז כדאי לבדוק היטב את התשובות.</translation>
@@ -1707,7 +1706,6 @@
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8833620912470026819">יער קקטוסים</translation>
 <translation id="8834539327799336565">מחובר עכשיו</translation>
-<translation id="8842526499753992487">העברה לפינה השמאלית העליונה</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8849799913685544685">מגדלור</translation>
 <translation id="8851859208664803097">המשימה הופסקה – אין גישה למדפסת</translation>
@@ -1747,7 +1745,6 @@
 <translation id="8961025972867871808">פינגווינים</translation>
 <translation id="8968751544471797276">שיעור הטעינה</translation>
 <translation id="8970109610781093811">הפעל שוב</translation>
-<translation id="8972061581514441296">צריך ללחוץ כדי לחזור אחורה</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{סריקה}=1{סריקת דף {NUMBER_OF_PAGES}}one{סריקת דף {NUMBER_OF_PAGES}}two{סריקת דף {NUMBER_OF_PAGES}}other{סריקת דף {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">כפר</translation>

@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">الصفحة الرئيسية للمتصفّح</translation>
 <translation id="1526389707933164996">الصور المتحركة لشاشة الاستراحة</translation>
 <translation id="152892567002884378">رفع مستوى الصوت</translation>
-<translation id="1531038290222364269">إظهار علامات التبويب</translation>
 <translation id="1539864135338521185">لازورد</translation>
 <translation id="1548555207631326346">‏يمكنك اختيار مظهر والنقر على الكلمات التي تحتها خط لتخصيص صورك التي أنشأها الذكاء الاصطناعي (AI).<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">تم تجاوز الحد الأقصى لعدد المحاولات المسموح بها.</translation>
 <translation id="1908234395526491708">‏تعذَّر طلب بروتوكول UDP.</translation>
 <translation id="1908394185991500139">سهم متّجه لليسار</translation>
-<translation id="1911678930322867245">النقل إلى أعلى اليمين</translation>
 <translation id="1914144885717544695">يوم الجمعة</translation>
 <translation id="1915960750806557358">يُرجى إخبارنا بملاحظاتك أو توضيح مشكلتك، مع الحرص على عدم تضمين أي معلومات شخصية أو حسّاسة أو سرية.</translation>
 <translation id="1923388006036088459">ألوان التمييز</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">أفضل الصور التي تم اختيارها تلقائيًا</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">الأوبال</translation>
+<translation id="2501278716633472235">الرجوع</translation>
 <translation id="2505327257735685095">إعادة تحميل صورة الخلفية الحالية</translation>
 <translation id="2507491234071975894">مكبّر الصوت</translation>
 <translation id="2512979179176933762">إظهار النوافذ</translation>
@@ -382,6 +381,7 @@
 <translation id="2584559707064218956">لضبط إعدادات الشبكة، انتقِل إلى "الإعدادات".</translation>
 <translation id="2586146417912237930">الأزرق والنيلي</translation>
 <translation id="2589921777872778654">قائمة التعديل والحذف</translation>
+<translation id="2590424100019931043">تمت إزالتك من هذا الصف</translation>
 <translation id="2597774443162333062">‏سيتم إرسال الملفات إلى Google لتصحيح الأخطاء.</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{اكتمل المسح الضوئي. تم مسح صفحة واحدة ضوئيًا.}zero{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}two{اكتمل المسح الضوئي. تم مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا.}few{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحات ضوئيًا.}many{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}other{اكتمل المسح الضوئي. تم مسح {NUMBER_OF_PAGES} صفحة ضوئيًا.}}</translation>
 <translation id="261322795497077164">تحديد هوية المتحدّث</translation>
@@ -868,6 +868,7 @@
 <translation id="4965703485264574128">للحصول على نتيجة تقريبية، يمكنك ضرب قيمة <ph name="CATEGORY_TEXT" /> في <ph name="CONVERSION_RATE" />.</translation>
 <translation id="4969079779290789265">تقسيم الشاشة</translation>
 <translation id="4972592110715526173">تغيير الوضع</translation>
+<translation id="497421865427891073">انتقال للأمام</translation>
 <translation id="4981003703840817201">الأزرق والوردي</translation>
 <translation id="498186245079027698">يجب التحقُّق من جهاز "المسح الضوئي" ثم إعادة المحاولة. ويجب التأكّد من توفّر مساحة على الجهاز لحفظ الملفات التي تم "مسحها ضوئيًا".</translation>
 <translation id="4982627662315910959">‏هذا الاختصار غير متاح. اضغط على اختصار جديد باستخدام مفتاح Shift مع مفتاح تعديل واحد آخر (Ctrl أو Alt أو مفتاح <ph name="META_KEY" />).</translation>
@@ -1055,7 +1056,6 @@
 <translation id="5896602941605730551">تشغيل</translation>
 <translation id="5901630391730855834">أصفر</translation>
 <translation id="5903200662178656908">يتكوّن الجهاز من لوحة مفاتيح وماوس.</translation>
-<translation id="5903822368221507416">إخفاء علامات التبويب</translation>
 <translation id="5904994456462260490">‏إضافة اسم نقطة وصول (APN) جديد</translation>
 <translation id="590746845088109442">قطط</translation>
 <translation id="5907649332524363701">لون المفتاح</translation>
@@ -1366,6 +1366,7 @@
 <translation id="7212547870105584639">يمكنك إدارة إعدادات اسم نقطة الوصول للشبكة. وتُنشئ أسماء نقاط الوصول اتصالاً بين شبكة الجوّال والإنترنت. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">تحديثات البرامج الثابتة للأجهزة الخارجية</translation>
 <translation id="7216409898977639127">موفر شبكة الجوّال</translation>
+<translation id="7221869452894271364">إعادة تحميل هذه الصفحة</translation>
 <translation id="7223952304612664117">يسمح هذا الإجراء لخدمات النظام باستخدام ميزة "دقة الموقع الجغرافي" لتحديد موقعك الجغرافي. وتستخدم ميزة "دقة الموقع الجغرافي" معلومات عن الإشارات اللاسلكية وأدوات الاستشعار لتقدير الموقع الجغرافي للجهاز.</translation>
 <translation id="7233782086689993269">تمت استعادة الاختصار.</translation>
 <translation id="723419678599947502">‏إنشاء عنوان باستخدام ذكاء Google الاصطناعي</translation>
@@ -1603,7 +1604,6 @@
 <translation id="8318753676953949627">ما مِن صور.</translation>
 <translation id="8319809980370328428">إنشاء ملخّص التسجيل وعنوانه</translation>
 <translation id="8320910311642849813">غابة</translation>
-<translation id="8322464149031882595">يُرجى النقر للتقدّم إلى الأمام</translation>
 <translation id="8329018942023753850">تطبيق "الآلة الحاسبة"</translation>
 <translation id="8336739000755212683">تغيير صورة حساب الجهاز</translation>
 <translation id="8339024191194156249">مزيد من المعلومات عن الإطلاق التلقائي</translation>
@@ -1656,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">لتقديم الشاي</translation>
 <translation id="8538236298648811558">‏الخلفية مستندة إلى تكنولوجيات الذكاء الاصطناعي من Google</translation>
-<translation id="8543574988889671960">إعادة تحميل علامة التبويب</translation>
 <translation id="8550364285433943656">خصِّص لكل إجراء في اللعبة مفتاحًا معيّنًا لتلعب باستخدام لوحة المفاتيح</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">قد ترتكب تكنولوجيا الذكاء الاصطناعي التوليدي أخطاء، بما فيها تلك المتعلّقة بالأشخاص، لذا يُنصَح بالتحقّق من ردودها.</translation>
@@ -1707,7 +1706,6 @@
 <translation id="8820817407110198400">الإشارات المرجعية</translation>
 <translation id="8833620912470026819">غابة من نبات الصبّار</translation>
 <translation id="8834539327799336565">الأجهزة المتصلة حاليًا</translation>
-<translation id="8842526499753992487">النقل إلى أعلى اليسار</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
 <translation id="8849799913685544685">منارة</translation>
 <translation id="8851859208664803097">تم إيقاف مَهمّة الطباعة: لا يمكن الوصول إلى الطابعة.</translation>
@@ -1747,7 +1745,6 @@
 <translation id="8961025972867871808">طيور بطريق</translation>
 <translation id="8968751544471797276">معدّل الشحن</translation>
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
-<translation id="8972061581514441296">يُرجى النقر للعودة</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{مسح ضوئي}=1{مسح صفحة واحدة ({NUMBER_OF_PAGES}) ضوئيًا}two{مسح صفحتَين ({NUMBER_OF_PAGES}) ضوئيًا}few{مسح {NUMBER_OF_PAGES} صفحات ضوئيًا}many{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}other{مسح {NUMBER_OF_PAGES} صفحة ضوئيًا}}</translation>
 <translation id="89945434909472341">قرية</translation>

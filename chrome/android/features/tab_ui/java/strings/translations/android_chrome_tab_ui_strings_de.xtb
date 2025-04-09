@@ -14,6 +14,7 @@
 Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren alle Mitglieder sofort den Zugriff darauf und sie wird von allen Geräten gelöscht.</translation>
 <translation id="1329584516321524826">Gerade aktualisiert</translation>
 <translation id="1340839264183302272">Gruppe verlassen</translation>
+<translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Geteilte Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />, Label: <ph name="CARD_LABEL" />.}other{Geteilte Tabgruppe „<ph name="TITLE_OF_GROUP" />“ mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />, Label: <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1419023007528516122">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht</translation>
 <translation id="1486715732399361704">Hier findest du alle deine Tabgruppen</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Vor <ph name="NUM_MINS_ONE" /> Minute erstellt}other{Vor <ph name="NUM_MINS_MANY" /> Minuten erstellt}}</translation>
@@ -108,6 +109,7 @@ Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren all
 <translation id="4895402777090717310">{TABS_COUNT,plural, =1{Tab schließen}other{Tabs schließen}}</translation>
 <translation id="4908147833782857886"><ph name="USER_EMAIL" /> Gruppen gespeichert (dadurch werden Tabs geschlossen und Gruppen gelöscht)</translation>
 <translation id="492284538114688557">Preisnachlass entdeckt</translation>
+<translation id="4937582754153367435">{NUMBER_OF_TABS,plural, =1{Geteilte Tabgruppe mit <ph name="TABS_COUNT_ONE" /> Tab maximieren, Farbe: <ph name="COLOR_NAME" />, Label: <ph name="CARD_LABEL" />.}other{Geteilte Tabgruppe mit <ph name="TABS_COUNT_MANY" /> Tabs maximieren, Farbe: <ph name="COLOR_NAME" />, Label: <ph name="CARD_LABEL" />.}}</translation>
 <translation id="5007392906805964215">Ansehen</translation>
 <translation id="5073204694187207510">Vollbildraster ausblenden</translation>
 <translation id="5076161749301278626">Möchtest du dir Händlerrezensionen ansehen?</translation>

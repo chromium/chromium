@@ -1127,6 +1127,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="573974402615125334">Sekme gruplarını paylaşmak, bunlara katılmak ve gruplarda ortak çalışma yapmak için geçmişinizi ve sekmelerinizi senkronize edin</translation>
 <translation id="5740123193752401435">Sekme ara…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> bildirimleri açık</translation>
+<translation id="5745598824054949526">Metin bulunamadı</translation>
 <translation id="574762237186762643">Etkinlikler</translation>
 <translation id="5749158352074143502">Bu sekmeyle devam et</translation>
 <translation id="5753021559215751319">Şifreyi kaydet</translation>
@@ -1290,6 +1291,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6410883413783534063">Aynı anda birden fazla sayfayı ziyaret etmek için yeni sekme açın</translation>
 <translation id="6416807286621280684">Takip ettiğiniz kargolar ve teslimat güncellemeleri.</translation>
 <translation id="6418346271604475326">PDF hazırlanıyor</translation>
+<translation id="6421038304268477484">Çevrilmiş metin</translation>
 <translation id="6429213933892582367">Şifre Seçenekleri'ni açın</translation>
 <translation id="6434591244308415567">Bir hata oluştu. Daha sonra tekrar deneyin.</translation>
 <translation id="6435307030888827407">Oturumu kapalı tut</translation>
@@ -1968,6 +1970,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="9097506547406246598">Takip bırakılamıyor. Bir sorun oldu.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> şifre silinsin mi?</translation>
 <translation id="9099233023029360602">Kullanılacak hesabı her zaman sor</translation>
+<translation id="9099821309562615674">Çevirdiğiniz metnin net ve kadrajda olduğundan emin olun.</translation>
 <translation id="9100610230175265781">Parola gerekli</translation>
 <translation id="91023216973987714">Ödeme yöntemleri</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" telefondan</translation>

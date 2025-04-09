@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">Строително предприемачество</translation>
 <translation id="1824402189105105503">Осма ролка</translation>
 <translation id="1826516787628120939">Извършва се проверка</translation>
+<translation id="1832730227369924598">Синхронизиране на работния плот</translation>
 <translation id="1834452765064623979">Строителство и поддръжка</translation>
 <translation id="1838374766361614909">Изчистване на търсенето</translation>
 <translation id="1839331950812095887">няколко думи, които обобщават мислите ви</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">Стар</translation>
 <translation id="2413528052993050574">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; възможно е сертификатът му за сигурност да е оттеглен. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="2414886740292270097">Тъмно</translation>
+<translation id="2418292431699242678">Администраторът ви дава възможност за синхронизиране на следните неща между предишните и текущите ви сесии на всяко устройство с ChromeOS:</translation>
 <translation id="2429716554270894715">Текстил (водоустойчив)</translation>
 <translation id="2436186046335138073">Да се разреши ли на <ph name="HANDLER_HOSTNAME" /> да отваря всички връзки от типа „<ph name="PROTOCOL" />“?</translation>
 <translation id="2436976580469434549">Влакна и текстилни изкуства</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">Цената се проследява</translation>
 <translation id="3037605927509011580">Ужас!</translation>
 <translation id="3039406992698062762">Семейни пътувания</translation>
+<translation id="3040636468789770340">Бисквитки (състояние на влизане в профила на наскоро посетените от вас уебсайтове)</translation>
 <translation id="3041176923638368519">Вижте условията за предимствата на картата</translation>
 <translation id="3041612393474885105">Информация за сертификата</translation>
 <translation id="3045769629416806687">Екстремни спортове</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">Локалните ви файлове ще бъдат изтрити след <ph name="MINUTES" /> минути</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Покажете ми как</translation>
+<translation id="387681220560687945">Прозорци (подреждане и организиране на прозорци и раздели)</translation>
 <translation id="3879748587602334249">Мениджър на изтеглянията</translation>
 <translation id="3880456882942693779">Изкуство и развлечения</translation>
 <translation id="3880589673277376494">Интернет и телекомуникации</translation>
@@ -4748,6 +4752,7 @@
 <translation id="950736567201356821">Тройно перфориране в горната част</translation>
 <translation id="950926967802086924">Ключ за достъп • Google Мениджър на пароли</translation>
 <translation id="955429569736351433">Разрешено е използването на VR</translation>
+<translation id="955627189349169688">Можете да се откажете от това правило от <ph name="BEGIN_LINK" />настройките за синхронизиране на Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">жълто 2</translation>
 <translation id="961663415146723894">Подвързване на долната част</translation>
 <translation id="961856697154696964">Данни за сърфир.: Изтриване</translation>

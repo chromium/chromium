@@ -6344,6 +6344,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5436492226391861498">Väntar på proxytunnel...</translation>
 <translation id="5436510242972373446">Sök <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" />-fönstrets bredd är nu <ph name="WINDOW_SIZE_PERCENT" />, <ph name="PANE_SIDE" />-rutans bredd är nu <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">Hitta &amp;tillägg</translation>
 <translation id="5440425659852470030">Stäng sidopanelen</translation>
 <translation id="544083962418256601">Skapa genvägar ...</translation>
 <translation id="5441133529460183413">Webbappen installerades från webbläsaren Chrome</translation>
@@ -6815,7 +6816,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5794414402486823030">Öppna alltid med systemets visningsprogram</translation>
 <translation id="5794700615121138172">Delade mappar i Linux</translation>
 <translation id="5794786537412027208">Stäng alla Chrome-appar</translation>
-<translation id="5795422263272161110">Visa sida vid sida</translation>
 <translation id="5796485699458186843">Ny inkognitoflik</translation>
 <translation id="5796956053441619942">Webbadressen från fjärrenheten stöds inte</translation>
 <translation id="5797934230382081317">Läs mer om hur du kommer igång på &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; och &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9255,7 +9255,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7552846755917812628">Testa följande tips:</translation>
 <translation id="7553012839257224005">Linux-behållaren kontrolleras</translation>
 <translation id="7553242001898162573">Ange ditt lösenord</translation>
-<translation id="7554342082838376298">Automatisk lösenordsändring</translation>
 <translation id="755472745191515939">Administratören tillåter inte det här språket</translation>
 <translation id="7554791636758816595">Ny flik</translation>
 <translation id="7556033326131260574">Smart Lock kunde inte verifiera ditt konto. Ange ditt lösenord.</translation>
@@ -11229,7 +11228,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="8915916167043355778">Stäng alla</translation>
 <translation id="8916476537757519021">Underram i inkognitoläge: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Ja</translation>
-<translation id="8917980324687233736">Visa sida vid sida</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> som tillhör <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Installerar appen …</translation>
 <translation id="891931289445130855">Radera data och behörigheter</translation>

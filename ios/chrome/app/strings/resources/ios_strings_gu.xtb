@@ -1127,6 +1127,7 @@
 <translation id="573974402615125334">ટૅબના ગ્રૂપ શેર કરવા, તેમાં જોડાવા અથવા તેમાં સહયોગ કરવા માટે, તમારો ઇતિહાસ અને ટૅબ સિંક કરો</translation>
 <translation id="5740123193752401435">ટૅબ શોધો…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> નોટિફિકેશન ચાલુ કર્યા</translation>
+<translation id="5745598824054949526">કોઈ ટેક્સ્ટ મળી નથી</translation>
 <translation id="574762237186762643">ઇવેન્ટ</translation>
 <translation id="5749158352074143502">આ ટૅબ સાથે આગળ ચાલુ રાખો</translation>
 <translation id="5753021559215751319">પાસવર્ડ સાચવો</translation>
@@ -1290,6 +1291,7 @@
 <translation id="6410883413783534063">એકસાથે વિભિન્ન પેજની મુલાકાત લેવા માટે ટૅબ ખોલો</translation>
 <translation id="6416807286621280684">તમારા ટ્રૅક કરેલા પૅકેજ અને ડિલિવરી વિશેની અપડેટ.</translation>
 <translation id="6418346271604475326">PDF તૈયાર કરી રહ્યાં છે</translation>
+<translation id="6421038304268477484">અનુવાદ કરેલી ટેક્સ્ટ</translation>
 <translation id="6429213933892582367">પાસવર્ડના વિકલ્પો ખોલો</translation>
 <translation id="6434591244308415567">એક ભૂલ આવી છે. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="6435307030888827407">સાઇન આઉટ થયેલા રહો</translation>
@@ -1968,6 +1970,7 @@
 <translation id="9097506547406246598">અનફૉલો કરી શકતા નથી. કંઈક ખોટું થયું.</translation>
 <translation id="9098541895599151034">શું પાસવર્ડ <ph name="NUMBER_OF_ACCOUNTS" /> ડિલીટ કરીએ?</translation>
 <translation id="9099233023029360602">કયા એકાઉન્ટનો ઉપયોગ કરવો છે, તે દરેક વખતે પૂછો</translation>
+<translation id="9099821309562615674">ખાતરી કરો કે તમે જે ટેક્સ્ટનો અનુવાદ કરી રહ્યાં છો તે સ્પષ્ટ છે અને ફ્રેમમાં છે.</translation>
 <translation id="9100610230175265781">પાસફ્રેઝ આવશ્યક છે</translation>
 <translation id="91023216973987714">ચુકવણી પદ્ધતિઓ</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />"માંથી</translation>

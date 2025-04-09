@@ -1127,6 +1127,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="573974402615125334">Ak sa chcete pripojiť ku skupinám kariet, zdieľať ich a spolupracovať na nich, synchronizujte svoju históriu a karty</translation>
 <translation id="5740123193752401435">Hľadajte karty…</translation>
 <translation id="5744274077973758795">Upozornenia pre funkciu <ph name="FEATURE_NAME" /> sú zapnuté</translation>
+<translation id="5745598824054949526">Nenašiel sa žiadny text</translation>
 <translation id="574762237186762643">Udalosti</translation>
 <translation id="5749158352074143502">Pokračovať s touto kartou</translation>
 <translation id="5753021559215751319">Uložiť heslo</translation>
@@ -1290,6 +1291,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6410883413783534063">Otvorte karty a navštívte tak rôzne stránky naraz</translation>
 <translation id="6416807286621280684">Vaše sledované zásielky a aktuality o doručení.</translation>
 <translation id="6418346271604475326">Príprava PDF</translation>
+<translation id="6421038304268477484">Preložený text</translation>
 <translation id="6429213933892582367">Otvorte Možnosti hesiel</translation>
 <translation id="6434591244308415567">Vyskytla sa chyba. Skúste to neskôr.</translation>
 <translation id="6435307030888827407">Pokračovať bez prihlásenia</translation>
@@ -1968,6 +1970,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="9097506547406246598">Nedá sa prestať sledovať. Niečo sa pokazilo.</translation>
 <translation id="9098541895599151034">Chcete odstrániť heslá (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Vždy sa pýtať, ktorý účet použiť</translation>
+<translation id="9099821309562615674">Uistite sa, že text, ktorý chcete preložiť, je zreteľný a v zábere.</translation>
 <translation id="9100610230175265781">Vyžaduje sa prístupová fráza</translation>
 <translation id="91023216973987714">Spôsoby platby</translation>
 <translation id="9106655997975673326">Zo zariadenia <ph name="SOURCE_DEVICE" /></translation>

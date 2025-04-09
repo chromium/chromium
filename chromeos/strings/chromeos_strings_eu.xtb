@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">arakatzailearen orri nagusia</translation>
 <translation id="1526389707933164996">Pantaila-babeslearen animazioa</translation>
 <translation id="152892567002884378">Igo bolumena</translation>
-<translation id="1531038290222364269">Erakutsi fitxak</translation>
 <translation id="1539864135338521185">lapis lazulia</translation>
 <translation id="1548555207631326346">Aukeratu gai bat eta hautatu azpimarratutako hitzak AAk sortutako irudiak pertsonalizatzeko.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
 <translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
 <translation id="1908394185991500139">ezkerrera egiteko gezi-tekla</translation>
-<translation id="1911678930322867245">Eraman gora, eskuinetara</translation>
 <translation id="1914144885717544695">ostiralean</translation>
 <translation id="1915960750806557358">Partekatu iritzia edo azaldu zer arazo duzun. Ez sartu pertsonala, kontuzkoa edo isilpekoa den informaziorik.</translation>
 <translation id="1923388006036088459">Nabarmentzeko koloreak</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Zure argazkirik onenak, automatikoki hautatuta</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opaloa</translation>
+<translation id="2501278716633472235">Egin atzera</translation>
 <translation id="2505327257735685095">Freskatu oraingo horma-paperaren irudia</translation>
 <translation id="2507491234071975894">Bozgorailua</translation>
 <translation id="2512979179176933762">erakutsi leihoak</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Gutxi gorabeherako emaitza bat lortzeko, biderkatu <ph name="CATEGORY_TEXT" /> balioa <ph name="CONVERSION_RATE" /> faktorearekin</translation>
 <translation id="4969079779290789265">Zatitu</translation>
 <translation id="4972592110715526173">modu-aldaketa</translation>
+<translation id="497421865427891073">Aurrera</translation>
 <translation id="4981003703840817201">urdin eta arrosa</translation>
 <translation id="498186245079027698">Eman begirada bat eskanerrari eta saiatu berriro. Ziurtatu eskaneatutako fitxategiak gordetzeko behar beste toki dagoela gailuan.</translation>
 <translation id="4982627662315910959">Lasterbidea ez dago erabilgarri. Sakatu beste lasterbide bat Maius eta beste tekla aldatzaile bat erabilita (Ktrl, Alt edo <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Erreproduzitu</translation>
 <translation id="5901630391730855834">Horia</translation>
 <translation id="5903200662178656908">Gailua teklatu baten eta sagu baten konbinazio bat da.</translation>
-<translation id="5903822368221507416">Ezkutatu fitxak</translation>
 <translation id="5904994456462260490">Gehitu beste APN bat</translation>
 <translation id="590746845088109442">katuak</translation>
 <translation id="5907649332524363701">teklen kolorea</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Kudeatu sarearen APNaren ezarpenak. Sare mugikorren eta Interneten arteko konexioak ezartzen dituzte APNek. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Kanpoko gailuen firmware-eguneratzeak</translation>
 <translation id="7216409898977639127">Zerbitzu mugikorraren hornitzailea</translation>
+<translation id="7221869452894271364">Kargatu berriro orri hau</translation>
 <translation id="7223952304612664117">Zure kokapena zehazteko Kokapen-zehaztasuna erabiltzeko baimena ematen die sistemaren zerbitzuei. Kokapen-zehaztasuna ezarpenak hari gabeko seinaleen eta sentsoreen datuak erabiltzen ditu gailuaren kokapena estimatzeko.</translation>
 <translation id="7233782086689993269">Leheneratu da lasterbidea</translation>
 <translation id="723419678599947502">Sortu izen bat Google-ren AA erabilita</translation>
@@ -1603,7 +1603,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8318753676953949627">Ez dago irudirik</translation>
 <translation id="8319809980370328428">Grabaketen laburpenak eta izenak sortzea</translation>
 <translation id="8320910311642849813">Baso</translation>
-<translation id="8322464149031882595">Aurrera egiteko, sakatu hau</translation>
 <translation id="8329018942023753850">kalkulagailua aplikazioa</translation>
 <translation id="8336739000755212683">Aldatu gailuko kontuaren irudia</translation>
 <translation id="8339024191194156249">Lortu informazio gehiago exekutatze automatikoari buruz</translation>
@@ -1656,7 +1655,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">te-etxe estiloko</translation>
 <translation id="8538236298648811558">Google-ren AA bidezkoa</translation>
-<translation id="8543574988889671960">Kargatu fitxa berriro</translation>
 <translation id="8550364285433943656">Ezarri kontrolatzeko aukerak jokoko ekintzei teklatuarekin jokatzeko</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Baliteke AA generatiboak akatsak egitea (jendeari buruzkoak barne); beraz, egiaztatu informazioa.</translation>
@@ -1707,7 +1705,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8820817407110198400">Laster-markak</translation>
 <translation id="8833620912470026819">kaktus-basoa</translation>
 <translation id="8834539327799336565">Konektatuta daudenak</translation>
-<translation id="8842526499753992487">Eraman gora, ezkerretara</translation>
 <translation id="8845001906332463065">Lortu laguntza</translation>
 <translation id="8849799913685544685">Itsasargia</translation>
 <translation id="8851859208664803097">Gelditu da: ezin da konektatu inprimagailuarekin</translation>
@@ -1747,7 +1744,6 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8961025972867871808">pinguinoak</translation>
 <translation id="8968751544471797276">Kargatze-abiadura</translation>
 <translation id="8970109610781093811">Abiarazi berriro</translation>
-<translation id="8972061581514441296">Sakatu itzultzeko</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Eskaneatu}=1{Eskaneatu {NUMBER_OF_PAGES} orria}other{Eskaneatu {NUMBER_OF_PAGES} orri}}</translation>
 <translation id="89945434909472341">Herrixka</translation>

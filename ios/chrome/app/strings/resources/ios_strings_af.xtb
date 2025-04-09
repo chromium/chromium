@@ -1127,6 +1127,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="573974402615125334">Sinkroniseer jou geskiedenis en oortjies om te deel, aan te sluit en saam te werk in oortjiegroepe</translation>
 <translation id="5740123193752401435">Soek oortjies …</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" />-kennisgewings is aangeskakel</translation>
+<translation id="5745598824054949526">Geen teks gevind nie</translation>
 <translation id="574762237186762643">Geleenthede</translation>
 <translation id="5749158352074143502">Gaan voort met hierdie oortjie</translation>
 <translation id="5753021559215751319">Stoor wagwoord</translation>
@@ -1290,6 +1291,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6410883413783534063">Maak oortjies oop om verskillende bladsye op dieselfde tyd te besoek</translation>
 <translation id="6416807286621280684">Jou nagespoorde pakkies en afleweringopdaterings.</translation>
 <translation id="6418346271604475326">Berei PDF voor</translation>
+<translation id="6421038304268477484">Vertaalde teks</translation>
 <translation id="6429213933892582367">Maak Wagwoordopsies oop</translation>
 <translation id="6434591244308415567">Iets is fout. Probeer later weer.</translation>
 <translation id="6435307030888827407">Bly afgemeld</translation>
@@ -1968,6 +1970,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9097506547406246598">Kan nie ontvolg nie. Iets was fout.</translation>
 <translation id="9098541895599151034">Vee <ph name="NUMBER_OF_ACCOUNTS" /> wagwoorde uit?</translation>
 <translation id="9099233023029360602">Vra elke keer watter rekening om te gebruik</translation>
+<translation id="9099821309562615674">Maak seker dat die teks wat jy vertaal, duidelik en in die raam is.</translation>
 <translation id="9100610230175265781">Wagwoordfrase word vereis</translation>
 <translation id="91023216973987714">Betaalmetodes</translation>
 <translation id="9106655997975673326">Van “<ph name="SOURCE_DEVICE" />”</translation>

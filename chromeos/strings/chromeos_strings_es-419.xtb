@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">página principal del navegador</translation>
 <translation id="1526389707933164996">Animación del protector de pantalla</translation>
 <translation id="152892567002884378">Subir el volumen</translation>
-<translation id="1531038290222364269">Mostrar las pestañas</translation>
 <translation id="1539864135338521185">lapislázuli</translation>
 <translation id="1548555207631326346">Elige un tema y, luego, selecciona las palabras subrayadas para personalizar tus imágenes generadas por IA.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Se superó la cantidad máxima de intentos permitidos.</translation>
 <translation id="1908234395526491708">Fallos de solicitudes de UDP</translation>
 <translation id="1908394185991500139">flecha hacia la izquierda</translation>
-<translation id="1911678930322867245">Mover a la parte superior derecha</translation>
 <translation id="1914144885717544695">el viernes</translation>
 <translation id="1915960750806557358">Comparte tus comentarios o describe el problema. Asegúrate de no incluir información personal, sensible o confidencial.</translation>
 <translation id="1923388006036088459">Colores de los elementos destacados</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Tus mejores fotos seleccionadas automáticamente</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ópalo</translation>
+<translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2505327257735685095">Actualiza la imagen del fondo de pantalla actual</translation>
 <translation id="2507491234071975894">Bocina</translation>
 <translation id="2512979179176933762">mostrar ventanas</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Para obtener un resultado aproximado, multiplica el valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Pantalla dividida</translation>
 <translation id="4972592110715526173">cambio de modo</translation>
+<translation id="497421865427891073">Avanzar</translation>
 <translation id="4981003703840817201">azul y rosa</translation>
 <translation id="498186245079027698">Revisa el escáner y vuelve a intentarlo. Asegúrate de que haya espacio suficiente en el almacenamiento local para guardar los archivos escaneados.</translation>
 <translation id="4982627662315910959">La combinación de teclas no está disponible. Usa una nueva combinación de teclas que incluya Mayúsculas y 1 tecla modificadora adicional (Ctrl, Alt o <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Reproducir</translation>
 <translation id="5901630391730855834">Amarillo</translation>
 <translation id="5903200662178656908">El dispositivo es una combinación de teclado con mouse.</translation>
-<translation id="5903822368221507416">Ocultar pestañas</translation>
 <translation id="5904994456462260490">Agregar un APN nuevo</translation>
 <translation id="590746845088109442">gatos</translation>
 <translation id="5907649332524363701">color de la tecla</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Administra la configuración del APN de red. Los APN establecen una conexión entre Internet y una red móvil. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Actualizaciones de firmware para dispositivos externos</translation>
 <translation id="7216409898977639127">Proveedor de red celular</translation>
+<translation id="7221869452894271364">Volver a cargar esta página</translation>
 <translation id="7223952304612664117">Esto permite que los servicios del sistema usen la Precisión de la ubicación para determinar dónde te encuentras. La Precisión de la ubicación usa la información sobre sensores y señales inalámbricos para calcular la ubicación del dispositivo.</translation>
 <translation id="7233782086689993269">Se restableció el acceso directo</translation>
 <translation id="723419678599947502">Crea un título con la IA de Google</translation>
@@ -1603,7 +1603,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8318753676953949627">No hay imágenes</translation>
 <translation id="8319809980370328428">Creación de títulos y resúmenes de grabaciones</translation>
 <translation id="8320910311642849813">un bosque</translation>
-<translation id="8322464149031882595">Hacer clic para avanzar</translation>
 <translation id="8329018942023753850">app de Calculadora</translation>
 <translation id="8336739000755212683">Cambiar la imagen de cuenta del dispositivo</translation>
 <translation id="8339024191194156249">Más información sobre el inicio automático</translation>
@@ -1656,7 +1655,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">salón de té</translation>
 <translation id="8538236298648811558">Con la IA de Google</translation>
-<translation id="8543574988889671960">Volver a cargar la pestaña</translation>
 <translation id="8550364285433943656">Ubica los controles sobre las acciones del juego para jugar con el teclado</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">La IA generativa puede cometer errores, incluso sobre personas, así que verifica las respuestas.</translation>
@@ -1707,7 +1705,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8820817407110198400">Favoritos</translation>
 <translation id="8833620912470026819">bosque de cactus</translation>
 <translation id="8834539327799336565">Conectados actualmente</translation>
-<translation id="8842526499753992487">Mover a la parte superior izquierda</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
 <translation id="8849799913685544685">faro</translation>
 <translation id="8851859208664803097">Se detuvo: no se puede acceder a la impresora</translation>
@@ -1747,7 +1744,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcri
 <translation id="8961025972867871808">pingüinos</translation>
 <translation id="8968751544471797276">Velocidad de carga</translation>
 <translation id="8970109610781093811">Volver a ejecutar</translation>
-<translation id="8972061581514441296">Hacer clic para volver</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Analizar}=1{Analizar {NUMBER_OF_PAGES} página}other{Analizar {NUMBER_OF_PAGES} páginas}}</translation>
 <translation id="89945434909472341">una aldea</translation>

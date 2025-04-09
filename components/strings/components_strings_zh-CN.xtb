@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">房地产开发</translation>
 <translation id="1824402189105105503">第 8 卷</translation>
 <translation id="1826516787628120939">正在检查</translation>
+<translation id="1832730227369924598">桌面同步</translation>
 <translation id="1834452765064623979">施工与维护</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
 <translation id="1839331950812095887">总结想法的几个字词</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">旧</translation>
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2414886740292270097">深色调</translation>
+<translation id="2418292431699242678">管理员允许在所有 ChromeOS 设备的先前会话和当前会话之间同步以下数据：</translation>
 <translation id="2429716554270894715">织物（防水）</translation>
 <translation id="2436186046335138073">允许<ph name="HANDLER_HOSTNAME" />打开所有<ph name="PROTOCOL" />链接？</translation>
 <translation id="2436976580469434549">纤维与纺织品艺术</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">正在跟踪价格</translation>
 <translation id="3037605927509011580">喔唷，崩溃啦！</translation>
 <translation id="3039406992698062762">家庭旅行</translation>
+<translation id="3040636468789770340">Cookie（您最近访问过的网站上的已登录状态）</translation>
 <translation id="3041176923638368519">查看卡福利条款</translation>
 <translation id="3041612393474885105">证书信息</translation>
 <translation id="3045769629416806687">极限运动</translation>
@@ -1666,6 +1669,7 @@
 <translation id="3869939189466884821">您的本地文件将在 <ph name="MINUTES" /> 分钟后被删除</translation>
 <translation id="3872834068356954457">科学</translation>
 <translation id="3875783148670536197">操作步骤</translation>
+<translation id="387681220560687945">窗口（窗口和标签页的排列和组织方式）</translation>
 <translation id="3879748587602334249">下载管理器</translation>
 <translation id="3880456882942693779">艺术与娱乐</translation>
 <translation id="3880589673277376494">互联网与电信</translation>
@@ -4743,6 +4747,7 @@
 <translation id="950736567201356821">三孔（顶部）</translation>
 <translation id="950926967802086924">通行密钥 • Google 密码管理工具</translation>
 <translation id="955429569736351433">允许使用 VR</translation>
+<translation id="955627189349169688">您可在 <ph name="BEGIN_LINK" />Chrome 同步设置<ph name="END_LINK" />中选择停用此政策。</translation>
 <translation id="95721182352849470">黄色 2</translation>
 <translation id="961663415146723894">装订（底部）</translation>
 <translation id="961856697154696964">删除浏览数据</translation>

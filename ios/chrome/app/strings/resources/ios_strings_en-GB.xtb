@@ -1127,6 +1127,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="573974402615125334">To share, join and collaborate in tab groups, sync your history and tabs</translation>
 <translation id="5740123193752401435">Search tabs…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> notifications turned on</translation>
+<translation id="5745598824054949526">No text found</translation>
 <translation id="574762237186762643">Events</translation>
 <translation id="5749158352074143502">Continue with this tab</translation>
 <translation id="5753021559215751319">Save password</translation>
@@ -1290,6 +1291,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6410883413783534063">Open tabs to visit different pages at the same time</translation>
 <translation id="6416807286621280684">Your tracked parcels and delivery updates.</translation>
 <translation id="6418346271604475326">Preparing PDF</translation>
+<translation id="6421038304268477484">Translated text</translation>
 <translation id="6429213933892582367">Open password options</translation>
 <translation id="6434591244308415567">An error occurred. Try again later.</translation>
 <translation id="6435307030888827407">Stay signed out</translation>
@@ -1968,6 +1970,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="9097506547406246598">Can't unfollow. Something went wrong.</translation>
 <translation id="9098541895599151034">Delete <ph name="NUMBER_OF_ACCOUNTS" /> passwords?</translation>
 <translation id="9099233023029360602">Ask which account to use every time</translation>
+<translation id="9099821309562615674">Make sure that the text that you're translating is clear and in frame.</translation>
 <translation id="9100610230175265781">Passphrase required</translation>
 <translation id="91023216973987714">Payment methods</translation>
 <translation id="9106655997975673326">From "<ph name="SOURCE_DEVICE" />"</translation>

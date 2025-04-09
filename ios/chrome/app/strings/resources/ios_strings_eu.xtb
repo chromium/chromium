@@ -1127,6 +1127,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="573974402615125334">Fitxa taldeak partekatzeko, haietan sartzeko eta elkarlanean jarduteko, sinkronizatu historia eta fitxak</translation>
 <translation id="5740123193752401435">Bilatu fitxetan…</translation>
 <translation id="5744274077973758795">Aktibatu dira <ph name="FEATURE_NAME" /> eginbidearen jakinarazpenak</translation>
+<translation id="5745598824054949526">Ez da aurkitu testurik</translation>
 <translation id="574762237186762643">Gertaerak</translation>
 <translation id="5749158352074143502">Egin aurrera fitxa honekin</translation>
 <translation id="5753021559215751319">Gorde pasahitza</translation>
@@ -1290,6 +1291,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="6410883413783534063">Erabili fitxak aldi berean webgune bat baino gehiago ikusteko</translation>
 <translation id="6416807286621280684">Jarraipena egiten diezun paketeei eta entregei buruzko informazio eguneratua.</translation>
 <translation id="6418346271604475326">Prestatzen</translation>
+<translation id="6421038304268477484">Itzulpena</translation>
 <translation id="6429213933892582367">Ireki Password Options (pasahitzen aukerak).</translation>
 <translation id="6434591244308415567">Errore bat gertatu da. Saiatu berriro geroago.</translation>
 <translation id="6435307030888827407">Ez hasi saioa</translation>
@@ -1968,6 +1970,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="9097506547406246598">Ezin zaio jarraitzeari utzi. Arazoren bat izan da.</translation>
 <translation id="9098541895599151034"><ph name="NUMBER_OF_ACCOUNTS" /> pasahitz ezabatu nahi dituzu?</translation>
 <translation id="9099233023029360602">Galdetu beti zein kontu erabili behar den</translation>
+<translation id="9099821309562615674">Ziurtatu itzuli nahi duzun testua argi ikusten dela eta markoaren barruan dagoela.</translation>
 <translation id="9100610230175265781">Pasaesaldia behar da</translation>
 <translation id="91023216973987714">Ordainketa-metodoak</translation>
 <translation id="9106655997975673326">"<ph name="SOURCE_DEVICE" />" gailukoa</translation>

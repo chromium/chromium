@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">pàgina d'inici del navegador</translation>
 <translation id="1526389707933164996">Animació de l'estalvi de pantalla</translation>
 <translation id="152892567002884378">Apuja el volum</translation>
-<translation id="1531038290222364269">Mostra les pestanyes</translation>
 <translation id="1539864135338521185">lapislàtzuli</translation>
 <translation id="1548555207631326346">Tria un tema i selecciona les paraules subratllades per personalitzar les teves imatges d'IA.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">S'ha superat el nombre màxim d'intents permesos.</translation>
 <translation id="1908234395526491708">Errors en la sol·licitud d'UDP</translation>
 <translation id="1908394185991500139">fletxa esquerra</translation>
-<translation id="1911678930322867245">Mou a dalt a la dreta</translation>
 <translation id="1914144885717544695">divendres</translation>
 <translation id="1915960750806557358">Comparteix els teus suggeriments o descriu el problema. Assegura't de no incloure-hi informació personal, sensible ni confidencial.</translation>
 <translation id="1923388006036088459">Colors d'èmfasi</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Les teves millors fotos, seleccionades automàticament</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> (<ph name="SOURCE_LANGUAGE_NAME" />)</translation>
 <translation id="2501126912075504550">òpal</translation>
+<translation id="2501278716633472235">Torna</translation>
 <translation id="2505327257735685095">Actualitza la imatge actual del fons de pantalla</translation>
 <translation id="2507491234071975894">Altaveu</translation>
 <translation id="2512979179176933762">mostra les finestres</translation>
@@ -869,6 +868,7 @@
 <translation id="4965703485264574128">Per obtenir un resultat aproximat, multiplica el valor de <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Dividit</translation>
 <translation id="4972592110715526173">canvi de mode</translation>
+<translation id="497421865427891073">Ves endavant</translation>
 <translation id="4981003703840817201">blau i rosa</translation>
 <translation id="498186245079027698">Comprova l'escàner i torna-ho a provar. Assegura't que hi hagi prou espai local per desar els fitxers escanejats.</translation>
 <translation id="4982627662315910959">La drecera no està disponible. Prem una drecera nova amb Maj i una tecla modificadora més (Ctrl, Alt o <ph name="META_KEY" />).</translation>
@@ -1056,7 +1056,6 @@
 <translation id="5896602941605730551">Reprodueix</translation>
 <translation id="5901630391730855834">Groc</translation>
 <translation id="5903200662178656908">El dispositiu és un conjunt de teclat i ratolí.</translation>
-<translation id="5903822368221507416">Amaga les pestanyes</translation>
 <translation id="5904994456462260490">Afegeix un APN nou</translation>
 <translation id="590746845088109442">gats</translation>
 <translation id="5907649332524363701">color de les tecles</translation>
@@ -1367,6 +1366,7 @@
 <translation id="7212547870105584639">Gestiona la configuració de l'APN de la xarxa. Els APN estableixen una connexió entre una xarxa mòbil i Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Actualitzacions de microprogramari per a dispositius externs</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
+<translation id="7221869452894271364">Torna a carregar aquesta pàgina</translation>
 <translation id="7223952304612664117">Això permet que els serveis del sistema utilitzin la precisió de la ubicació per determinar la teva ubicació. Per estimar la ubicació del dispositiu, la precisió de la ubicació utilitza informació de sensors i senyals sense fil.</translation>
 <translation id="7233782086689993269">La drecera s'ha restaurat</translation>
 <translation id="723419678599947502">Crea un títol amb la IA de Google</translation>
@@ -1604,7 +1604,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8318753676953949627">Cap imatge</translation>
 <translation id="8319809980370328428">Creació del títol i el resum de la gravació</translation>
 <translation id="8320910311642849813">un bosc</translation>
-<translation id="8322464149031882595">Fes clic per anar endavant</translation>
 <translation id="8329018942023753850">aplicació Calculadora</translation>
 <translation id="8336739000755212683">Canvia la imatge del compte del dispositiu</translation>
 <translation id="8339024191194156249">Obtén més informació sobre l'inici automàtic</translation>
@@ -1657,7 +1656,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">saló de te</translation>
 <translation id="8538236298648811558">Amb la tecnologia de la IA de Google</translation>
-<translation id="8543574988889671960">Torna a carregar la pestanya</translation>
 <translation id="8550364285433943656">Col·loca els controls sobre les accions del joc per jugar amb les tecles del teclat</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">La IA generativa pot cometre errors, també sobre persones, així que comprova'n les respostes.</translation>
@@ -1708,7 +1706,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8820817407110198400">Adreces d'interès</translation>
 <translation id="8833620912470026819">bosc de cactus</translation>
 <translation id="8834539327799336565">Connectats actualment</translation>
-<translation id="8842526499753992487">Mou a dalt a l'esquerra</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8849799913685544685">far</translation>
 <translation id="8851859208664803097">S'ha aturat: no es pot accedir a la impressora</translation>
@@ -1748,7 +1745,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8961025972867871808">pingüins</translation>
 <translation id="8968751544471797276">Percentatge de càrrega</translation>
 <translation id="8970109610781093811">Torna a executar</translation>
-<translation id="8972061581514441296">Fes clic per tornar enrere</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Escaneja}=1{Escaneja {NUMBER_OF_PAGES} pàgina}other{Escaneja {NUMBER_OF_PAGES} pàgines}}</translation>
 <translation id="89945434909472341">un poble</translation>

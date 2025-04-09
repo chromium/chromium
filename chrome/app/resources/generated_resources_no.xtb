@@ -6804,7 +6804,6 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5794414402486823030">Åpne alltid med systemvisningsprogrammet</translation>
 <translation id="5794700615121138172">Delte mapper i Linux</translation>
 <translation id="5794786537412027208">Avslutt alle Chrome-apper</translation>
-<translation id="5795422263272161110">Vis side ved side</translation>
 <translation id="5796485699458186843">Ny inkognito&amp;fane</translation>
 <translation id="5796956053441619942">Nettadressen fra den eksterne enheten støttes ikke</translation>
 <translation id="5797934230382081317">Finn ut hvordan du kommer i gang i &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; og &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9244,7 +9243,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7552846755917812628">Prøv følgende tips:</translation>
 <translation id="7553012839257224005">Kontrollerer Linux-beholderen</translation>
 <translation id="7553242001898162573">Skriv inn passordet ditt</translation>
-<translation id="7554342082838376298">automatisk passordendring</translation>
 <translation id="755472745191515939">Administratoren din tillater ikke dette språket</translation>
 <translation id="7554791636758816595">Ny fane</translation>
 <translation id="7556033326131260574">Smart Lock kunne ikke bekrefte kontoen din. Skriv inn passordet for å få tilgang.</translation>
@@ -11218,7 +11216,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="8915916167043355778">Lukk alle</translation>
 <translation id="8916476537757519021">Inkognito-underramme: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Ja, den er grei</translation>
-<translation id="8917980324687233736">Vis side ved side</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>
 <translation id="8918900204934259333">Installerer appen …</translation>
 <translation id="891931289445130855">Slett data og tillatelser</translation>

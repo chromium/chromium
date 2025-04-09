@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">ब्राउझर होम</translation>
 <translation id="1526389707933164996">स्क्रीन सेव्हर अ‍ॅनिमेशन</translation>
 <translation id="152892567002884378">आवाज मोठा करा</translation>
-<translation id="1531038290222364269">टॅब दाखवा</translation>
 <translation id="1539864135338521185">लॅपिस लाझुली</translation>
 <translation id="1548555207631326346">तुमच्या AI इमेज पर्सनलाइझ करण्यासाठी, थीम निवडा आणि त्यानंतर अधोरेखित केलेले शब्द निवडा.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">कमाल अनुमती असलेले प्रयत्न ओलांडले.</translation>
 <translation id="1908234395526491708">UDP विनंती पूर्ण करता आली नाही</translation>
 <translation id="1908394185991500139">अ‍ॅरो लेफ्ट</translation>
-<translation id="1911678930322867245">सर्वात वरती उजवीकडे हलवा</translation>
 <translation id="1914144885717544695">शुक्रवारी</translation>
 <translation id="1915960750806557358">तुमचा फीडबॅक शेअर करा किंवा तुमच्या समस्येचे वर्णन करा. वैयक्तिक, संवेदनशील किंवा गोपनीय असे काहीही समाविष्ट न केल्याची खात्री करा.</translation>
 <translation id="1923388006036088459">ॲक्सेंट रंग</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">तुमचे सर्वोत्तम फोटो, आपोआप निवडले</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ओपाल</translation>
+<translation id="2501278716633472235">परत जा</translation>
 <translation id="2505327257735685095">सध्याची वॉलपेपर इमेज रिफ्रेश करा</translation>
 <translation id="2507491234071975894">स्पीकर</translation>
 <translation id="2512979179176933762">विंडो दाखवा</translation>
@@ -869,6 +868,7 @@
 <translation id="4965703485264574128">अंदाजे परिणामासाठी <ph name="CONVERSION_RATE" /> ने <ph name="CATEGORY_TEXT" /> मूल्याचा गुणाकार करा</translation>
 <translation id="4969079779290789265">स्प्लिट करा</translation>
 <translation id="4972592110715526173">मोड बदला</translation>
+<translation id="497421865427891073">पुढे जा</translation>
 <translation id="4981003703840817201">निळा आणि गुलाबी</translation>
 <translation id="498186245079027698">स्कॅनर तपासा आणि पुन्हा प्रयत्न करा. स्कॅन केलेल्या फाइल सेव्ह करण्यासाठी पुरेशी स्थानिक जागा उपलब्ध असल्याची खात्री करा.</translation>
 <translation id="4982627662315910959">शॉर्टकट उपलब्ध नाही. शिफ्ट आणि आणखी १ मॉडिफायर की (कंट्रोल, ऑल्ट किंवा <ph name="META_KEY" />) वापरून नवीन शॉर्टकट प्रेस करा.</translation>
@@ -1056,7 +1056,6 @@
 <translation id="5896602941605730551">प्ले करा</translation>
 <translation id="5901630391730855834">पिवळा</translation>
 <translation id="5903200662178656908">डिव्हाइस हे कीबोर्ड आणि माउस यांचे काँबो आहे.</translation>
-<translation id="5903822368221507416">टॅब लपवा</translation>
 <translation id="5904994456462260490">नवीन APN जोडा</translation>
 <translation id="590746845088109442">मांजरी</translation>
 <translation id="5907649332524363701">कीचा रंग</translation>
@@ -1367,6 +1366,7 @@
 <translation id="7212547870105584639">नेटवर्क APN सेटिंग्ज व्यवस्थापित करा. APNs ही मोबाइल नेटवर्क आणि इंटरनेटदरम्यान कनेक्शन तयार करतात. <ph name="BEGIN_LINK_LEARN_MORE" />अधिक जाणून घ्या<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">बाह्य डिव्हाइससाठी फर्मवेअर अपडेट</translation>
 <translation id="7216409898977639127">सेल्युलर सेवा देणारा</translation>
+<translation id="7221869452894271364">हे पेज रीलोड करा</translation>
 <translation id="7223952304612664117">यामुळे तुमचे स्थान निर्धारित करण्यासाठी सिस्टीम सेवांना स्थान अचूकता वापरता येते. स्थान अचूकता हे डिव्हाइसच्या स्थानाचा अंदाज घेण्यासाठी वायरलेस सिग्नल आणि सेन्सरबद्दलची माहिती वापरते.</translation>
 <translation id="7233782086689993269">शॉर्टकट रिस्टोअर केला आहे</translation>
 <translation id="723419678599947502">Google AI वापरून शीर्षक तयार करा</translation>
@@ -1604,7 +1604,6 @@
 <translation id="8318753676953949627">कोणत्याही इमेज नाहीत</translation>
 <translation id="8319809980370328428">रेकॉर्डिंग सारांश आणि शीर्षक तयार करणे</translation>
 <translation id="8320910311642849813">जंगल</translation>
-<translation id="8322464149031882595">पुढे जाण्यासाठी क्लिक करा</translation>
 <translation id="8329018942023753850">Calculator ॲप</translation>
 <translation id="8336739000755212683">डिव्हाइस खाते इमेज बदला</translation>
 <translation id="8339024191194156249">ऑटो-लाँचबद्दल अधिक जाणून घ्या</translation>
@@ -1657,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">टी हाउस</translation>
 <translation id="8538236298648811558">Google AI द्वारे सक्षम केलेला</translation>
-<translation id="8543574988889671960">टॅब रीलोड करा</translation>
 <translation id="8550364285433943656">कीबोर्डच्या की वापरून खेळण्यासाठी गेमसंबंधित कृतींना नियंत्रणे लागू करा</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">जनरेटिव्ह AI हे लोकांच्या बाबतीतदेखील चुका करू शकते, त्यामुळे ते दोनदा तपासा.</translation>
@@ -1708,7 +1706,6 @@
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8833620912470026819">निवडुंगाचे जंगल</translation>
 <translation id="8834539327799336565">सध्या कनेक्ट केलेली</translation>
-<translation id="8842526499753992487">सर्वात वरती डावीकडे हलवा</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8849799913685544685">लाइटहाउस</translation>
 <translation id="8851859208664803097">थांबवले - प्रिंटरशी कनेक्ट करता आले नाही</translation>
@@ -1748,7 +1745,6 @@
 <translation id="8961025972867871808">पेंग्विन</translation>
 <translation id="8968751544471797276">चार्ज करण्याचा रेट</translation>
 <translation id="8970109610781093811">पुन्हा चालवा</translation>
-<translation id="8972061581514441296">मागे जाण्यासाठी क्लिक करा</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Scan}=1{{NUMBER_OF_PAGES} पेज स्कॅन करा}other{{NUMBER_OF_PAGES} पेज स्कॅन करा}}</translation>
 <translation id="89945434909472341">गाव</translation>

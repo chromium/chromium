@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">ব্রাউজার হোম</translation>
 <translation id="1526389707933164996">স্ক্রিন সেভার অ্যানিমেশন</translation>
 <translation id="152892567002884378">ভলিউম বাড়ান</translation>
-<translation id="1531038290222364269">ট্যাব দেখুন</translation>
 <translation id="1539864135338521185">লাপিস লাজুলি</translation>
 <translation id="1548555207631326346">আপনার AI ছবি পছন্দমতো সেট করতে একটি থিম, তারপর নিচে দাগ দেওয়া শব্দগুলি বেছে নিন।<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">সর্বোচ্চ অনুমোদিত প্রচেষ্টা ছাড়িয়ে গেছে।</translation>
 <translation id="1908234395526491708">UDP-এর অনুরোধ করা যায়নি</translation>
 <translation id="1908394185991500139">বাঁদিকের তীরচিহ্ন</translation>
-<translation id="1911678930322867245">উপরের ডানদিকে সরান</translation>
 <translation id="1914144885717544695">শুক্রবারে</translation>
 <translation id="1915960750806557358">আপনার মতামত শেয়ার করুন বা সমস্যার বিবরণ দিন। ব্যক্তিগত, সংবেদনশীল বা গোপনীয় কোনও তথ্য যেন অন্তর্ভুক্ত না থাকে তা ভালো করে দেখে নেবেন।</translation>
 <translation id="1923388006036088459">অ্যাকসেন্ট কালার</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">আপনার সেরা ফটোগুলি অটোমেটিক বেছে নেওয়া হয়</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">ওপাল</translation>
+<translation id="2501278716633472235">ফিরে যান</translation>
 <translation id="2505327257735685095">বর্তমান ওয়ালপেপারের ছবি রিফ্রেশ করুন</translation>
 <translation id="2507491234071975894">স্পিকার</translation>
 <translation id="2512979179176933762">উইন্ডো দেখুন</translation>
@@ -382,6 +381,7 @@
 <translation id="2584559707064218956">সেট আপ করতে, সেটিংসে যান</translation>
 <translation id="2586146417912237930">নীল ও ইন্ডিগো</translation>
 <translation id="2589921777872778654">এডিট ও মুছে দেওয়ার মেনু</translation>
+<translation id="2590424100019931043">এই ক্লাস থেকে আপনার নাম সরিয়ে দেওয়া হয়েছে</translation>
 <translation id="2597774443162333062">ডিবাগিংয়ের জন্য, ফাইল Google-এ পাঠানো হবে</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{স্ক্যান করা হয়েছে। ১টি পৃষ্ঠা স্ক্যান করা হয়েছে}one{স্ক্যান করা হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}other{স্ক্যান করা হয়েছে। {NUMBER_OF_PAGES}টি পৃষ্ঠা স্ক্যান করা হয়েছে}}</translation>
 <translation id="261322795497077164">স্পিকার শনাক্তকরণ</translation>
@@ -868,6 +868,7 @@
 <translation id="4965703485264574128">একটি আনুমানিক ফলাফলের জন্য, <ph name="CONVERSION_RATE" /> মান দ্বারা <ph name="CATEGORY_TEXT" /> গুণ করুন</translation>
 <translation id="4969079779290789265">স্প্লিট করুন</translation>
 <translation id="4972592110715526173">মোড পাল্টান</translation>
+<translation id="497421865427891073">অগ্রবর্তী করুন</translation>
 <translation id="4981003703840817201">নীল ও গোলাপি</translation>
 <translation id="498186245079027698">স্ক্যানার চেক করে আবার চেষ্টা করুন। স্ক্যান করা ফাইল সেভ করার জন্য পর্যাপ্ত লোকাল স্পেস আছে কিনা দেখে নিন।</translation>
 <translation id="4982627662315910959">শর্টকাট উপলভ্য নেই। shift ও আরও ১টি 'পরিবর্তক কী' (ctrl, alt, অথবা <ph name="META_KEY" />) ব্যবহার করে নতুন শর্টকাট প্রেস করুন।</translation>
@@ -1055,7 +1056,6 @@
 <translation id="5896602941605730551">চালান</translation>
 <translation id="5901630391730855834">হলুদ</translation>
 <translation id="5903200662178656908">ডিভাইসটি কীবোর্ড এবং মাউসের একটি কম্বো।</translation>
-<translation id="5903822368221507416">ট্যাব লুকান</translation>
 <translation id="5904994456462260490">নতুন APN যোগ করুন</translation>
 <translation id="590746845088109442">বিড়াল</translation>
 <translation id="5907649332524363701">কী কালার</translation>
@@ -1366,6 +1366,7 @@
 <translation id="7212547870105584639">নেটওয়ার্কের APN সেটিংস ম্যানেজ করুন। APN মোবাইল নেটওয়ার্ক এবং ইন্টারনেটের মধ্যে কানেকশন তৈরি করে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">এক্সটার্নাল ডিভাইসের জন্য ফার্মওয়্যার আপডেট</translation>
 <translation id="7216409898977639127">মোবাইল পরিষেবা প্রদানকারী</translation>
+<translation id="7221869452894271364">এই পৃষ্ঠাটি রিলোড করুন</translation>
 <translation id="7223952304612664117">এটি আপনার লোকেশন নির্ধারণ করার জন্য, সিস্টেম পরিষেবাকে 'লোকেশন অ্যাকুরেসি' ব্যবহার করার অনুমতি দেয়। ডিভাইসের লোকেশন অনুমান করার জন্য 'লোকেশন অ্যাকুরেসি' ওয়্যারলেস সিগন্যাল ও সেন্সর সম্পর্কিত তথ্য ব্যবহার করে।</translation>
 <translation id="7233782086689993269">শর্টকাট ফিরিয়ে আনা হয়েছে</translation>
 <translation id="723419678599947502">Google AI ব্যবহার করে শিরোনাম তৈরি করুন</translation>
@@ -1603,7 +1604,6 @@
 <translation id="8318753676953949627">কোন ছবি নেই</translation>
 <translation id="8319809980370328428">রেকর্ডিং সম্পর্কিত সারসংক্ষেপ এবং শিরোনাম তৈরি</translation>
 <translation id="8320910311642849813">ফরেস্ট</translation>
-<translation id="8322464149031882595">এগিয়ে যাওয়ার জন্য ক্লিক করুন</translation>
 <translation id="8329018942023753850">Calculator অ্যাপ</translation>
 <translation id="8336739000755212683">ডিভাইস অ্যাকাউন্টের ছবিটি পরিবর্তন করুন</translation>
 <translation id="8339024191194156249">অটো-লঞ্চ সম্পর্কে আরও জানুন</translation>
@@ -1656,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">টি হাউস</translation>
 <translation id="8538236298648811558">Google AI দ্বারা পরিচালিত</translation>
-<translation id="8543574988889671960">ট্যাব আবার লোড করুন</translation>
 <translation id="8550364285433943656">কীবোর্ডের 'কী'-এর মাধ্যমে খেলার জন্য গেমের অ্যাকশন কন্ট্রোল করুন</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">জেনারেটিভ AI ভুল করতে পারে যেমন কোনও ব্যক্তি সম্পর্কে ভুল তথ্য দিতে পারে, তাই এটি ডবল-চেক করুন।</translation>
@@ -1707,7 +1706,6 @@
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8833620912470026819">ক্যাকটাস ফরেল্ট</translation>
 <translation id="8834539327799336565">এখন কানেক্ট করা রয়েছে</translation>
-<translation id="8842526499753992487">উপরের বাঁদিকে সরান</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
 <translation id="8849799913685544685">লাইটহাউস</translation>
 <translation id="8851859208664803097">বন্ধ হয়ে গেছে - প্রিন্টার অ্যাক্সেস করা যাচ্ছে না</translation>
@@ -1747,7 +1745,6 @@
 <translation id="8961025972867871808">পেঙ্গুইন</translation>
 <translation id="8968751544471797276">চর্জিং রেট</translation>
 <translation id="8970109610781093811">আবার চালান</translation>
-<translation id="8972061581514441296">ফিরে যেতে ক্লিক করুন</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{স্ক্যান করুন}=1{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}one{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}other{{NUMBER_OF_PAGES} নম্বর পৃষ্ঠা স্ক্যান করুন}}</translation>
 <translation id="89945434909472341">ভিলেজ</translation>

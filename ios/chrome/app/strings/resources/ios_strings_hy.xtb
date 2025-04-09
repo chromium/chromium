@@ -1127,6 +1127,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="573974402615125334">Ներդիրների խմբերով կիսվելու, դրանց միանալու կամ դրանցում համատեղ աշխատելու համար համաժամացրեք ձեր պատմությունը և ներդիրները</translation>
 <translation id="5740123193752401435">Որոնեք ներդիրներ…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" /> գործառույթի ծանուցումները միացվեցին</translation>
+<translation id="5745598824054949526">Տեքստ չի գտնվել</translation>
 <translation id="574762237186762643">Միջոցառումներ</translation>
 <translation id="5749158352074143502">Շարունակել այս ներդիրի դիտումը</translation>
 <translation id="5753021559215751319">Պահել գաղտնաբառը</translation>
@@ -1290,6 +1291,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="6410883413783534063">Միաժամանակ մի քանի էջեր այցելելու համար ներդիրներ բացեք</translation>
 <translation id="6416807286621280684">Ծանուցումներ հետագծվող առաքանիների և առաքումների մասին</translation>
 <translation id="6418346271604475326">PDF-ի պատրաստում</translation>
+<translation id="6421038304268477484">Թարգմանված տեքստ</translation>
 <translation id="6429213933892582367">Բացեք Գաղտնաբառերի կարգավորումները</translation>
 <translation id="6434591244308415567">Սխալ առաջացավ։ Փորձեք ավելի ուշ։</translation>
 <translation id="6435307030888827407">Չմտնել հաշիվ</translation>
@@ -1968,6 +1970,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="9097506547406246598">Սխալի պատճառով չհաջողվեց չեղարկել բաժանորդագրությունը։</translation>
 <translation id="9098541895599151034">Ջնջե՞լ <ph name="NUMBER_OF_ACCOUNTS" /> գաղտնաբառ</translation>
 <translation id="9099233023029360602">Միշտ հարցնել, թե որ հաշիվն օգտագործել</translation>
+<translation id="9099821309562615674">Համոզվեք, որ տեքստը, որը թարգմանում եք, ընթեռնելի է և կադրում է։</translation>
 <translation id="9100610230175265781">Անհրաժեշտ է անցաբառ</translation>
 <translation id="91023216973987714">Վճարման եղանակներ</translation>
 <translation id="9106655997975673326">«<ph name="SOURCE_DEVICE" />» սարքից</translation>

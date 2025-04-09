@@ -1127,6 +1127,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="573974402615125334">Për të ndarë, për t'u bashkuar dhe për të bashkëpunuar në grupet e skedave, sinkronizo historikun dhe skedat e tua</translation>
 <translation id="5740123193752401435">Kërko skedat…</translation>
 <translation id="5744274077973758795">Njoftimet për "<ph name="FEATURE_NAME" />" janë aktivizuar</translation>
+<translation id="5745598824054949526">Nuk u gjet asnjë tekst</translation>
 <translation id="574762237186762643">Ngjarjet</translation>
 <translation id="5749158352074143502">Vazhdo me këtë skedë</translation>
 <translation id="5753021559215751319">Ruaj fjalëkalimin</translation>
@@ -1290,6 +1291,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6410883413783534063">Hap skedat për të vizituar faqe të ndryshme njëkohësisht</translation>
 <translation id="6416807286621280684">Pakot e tua të gjurmuara dhe përditësimet për dorëzimin.</translation>
 <translation id="6418346271604475326">Po përgatit PDF</translation>
+<translation id="6421038304268477484">Teksti i përkthyer</translation>
 <translation id="6429213933892582367">Hap "Opsionet e fjalëkalimeve"</translation>
 <translation id="6434591244308415567">Ndodhi një gabim. Provo përsëri më vonë.</translation>
 <translation id="6435307030888827407">Qëndro i paidentifikuar</translation>
@@ -1968,6 +1970,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="9097506547406246598">Ndjekja nuk mund të anulohet. Ndodhi një gabim.</translation>
 <translation id="9098541895599151034">Të fshihen <ph name="NUMBER_OF_ACCOUNTS" /> fjalëkalime?</translation>
 <translation id="9099233023029360602">Pyet se cila llogari do të përdoret çdo herë</translation>
+<translation id="9099821309562615674">Sigurohu që teksti që po përkthen të jetë i qartë dhe në kuadër</translation>
 <translation id="9100610230175265781">Kërkohet shprehja e kalimit</translation>
 <translation id="91023216973987714">Mënyrat e pagesës</translation>
 <translation id="9106655997975673326">Nga "<ph name="SOURCE_DEVICE" />"</translation>

@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">αρχική σελίδα προγράμματος περιήγησης</translation>
 <translation id="1526389707933164996">Κινούμενη εικόνα προφύλαξης οθόνης</translation>
 <translation id="152892567002884378">Αύξηση έντασης ήχου</translation>
-<translation id="1531038290222364269">Εμφάνιση καρτελών</translation>
 <translation id="1539864135338521185">λάπις λάζουλι</translation>
 <translation id="1548555207631326346">Επιλέξτε ένα θέμα και έπειτα επιλέξτε τις υπογραμμισμένες λέξεις, για να εξατομικεύσετε τις εικόνες AI.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Έγινε υπέρβαση του μέγιστου αριθμού επιτρεπόμενων προσπαθειών.</translation>
 <translation id="1908234395526491708">Σφάλματα αιτήματος UDP</translation>
 <translation id="1908394185991500139">αριστερό βέλος</translation>
-<translation id="1911678930322867245">Μετακίνηση επάνω δεξιά</translation>
 <translation id="1914144885717544695">την Παρασκευή</translation>
 <translation id="1915960750806557358">Μοιραστείτε τα σχόλιά σας ή περιγράψτε το πρόβλημα. Φροντίστε να μην συμπεριλάβετε προσωπικές, ευαίσθητες ή εμπιστευτικές πληροφορίες.</translation>
 <translation id="1923388006036088459">Χρώματα έμφασης</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Οι καλύτερες αυτόματα επιλεγμένες φωτογραφίες σας</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">οπάλιο</translation>
+<translation id="2501278716633472235">Επιστροφή</translation>
 <translation id="2505327257735685095">Ανανέωση της τρέχουσας εικόνας ταπετσαρίας</translation>
 <translation id="2507491234071975894">Ηχείο</translation>
 <translation id="2512979179176933762">προβολή παραθύρων</translation>
@@ -869,6 +868,7 @@
 <translation id="4965703485264574128">Για ένα αποτέλεσμα κατά προσέγγιση, πολλαπλασιάστε την τιμή <ph name="CATEGORY_TEXT" /> με το <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Διαχωρισμός</translation>
 <translation id="4972592110715526173">αλλαγή λειτουργίας</translation>
+<translation id="497421865427891073">Μετάβαση προς τα εμπρός</translation>
 <translation id="4981003703840817201">μπλε και ροζ</translation>
 <translation id="498186245079027698">Ελέγξτε τον σαρωτή και δοκιμάστε ξανά. Βεβαιωθείτε ότι υπάρχει αρκετός τοπικός αποθηκευτικός χώρος για την αποθήκευση των αρχείων που σαρώνονται.</translation>
 <translation id="4982627662315910959">Η συντόμευση δεν είναι διαθέσιμη. Πατήστε μια νέα συντόμευση χρησιμοποιώντας το shift και 1 ακόμα πλήκτρο τροποποίησης (ctrl, alt ή <ph name="META_KEY" />).</translation>
@@ -1056,7 +1056,6 @@
 <translation id="5896602941605730551">Αναπαραγωγή</translation>
 <translation id="5901630391730855834">Κίτρινο</translation>
 <translation id="5903200662178656908">Η συσκευή είναι ένας συνδυασμός πληκτρολογίου και ποντικιού.</translation>
-<translation id="5903822368221507416">Απόκρυψη καρτελών</translation>
 <translation id="5904994456462260490">Προσθήκη νέου APN</translation>
 <translation id="590746845088109442">γάτες</translation>
 <translation id="5907649332524363701">χρώμα πλήκτρων</translation>
@@ -1367,6 +1366,7 @@
 <translation id="7212547870105584639">Διαχείριση ρυθμίσεων APN δικτύου. Τα APN δημιουργούν μια σύνδεση μεταξύ ενός δικτύου κινητής τηλεφωνίας και του διαδικτύου. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ενημερώσεις υλικολογισμικού για εξωτερικές συσκευές</translation>
 <translation id="7216409898977639127">Πάροχος δικτύου κινητής τηλεφωνίας</translation>
+<translation id="7221869452894271364">Επαναφόρτωση αυτής της σελίδας</translation>
 <translation id="7223952304612664117">Αυτό επιτρέπει στις υπηρεσίες συστήματος να χρησιμοποιούν την Ακρίβεια τοποθεσίας για να προσδιορίζουν την τοποθεσία σας. Η Ακρίβεια τοποθεσίας χρησιμοποιεί πληροφορίες σχετικά με τα ασύρματα σήματα και τους αισθητήρες για να υπολογίσει την τοποθεσία της συσκευής.</translation>
 <translation id="7233782086689993269">Έγινε επαναφορά της συντόμευσης</translation>
 <translation id="723419678599947502">Δημιουργία τίτλου με χρήση του Google AI</translation>
@@ -1604,7 +1604,6 @@
 <translation id="8318753676953949627">Δεν υπάρχουν εικόνες</translation>
 <translation id="8319809980370328428">Δημιουργία σύνοψης και τίτλου εγγραφής</translation>
 <translation id="8320910311642849813">δάσος</translation>
-<translation id="8322464149031882595">Κάντε κλικ για μετάβαση εμπρός</translation>
 <translation id="8329018942023753850">εφαρμογή Αριθμομηχανή</translation>
 <translation id="8336739000755212683">Αλλαγή εικόνας λογαριασμού συσκευής</translation>
 <translation id="8339024191194156249">Μάθετε περισσότερα σχετικά με την αυτόματη εκκίνηση</translation>
@@ -1657,7 +1656,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">τσαγερί</translation>
 <translation id="8538236298648811558">Με την υποστήριξη του Google AI</translation>
-<translation id="8543574988889671960">Επανάληψη φόρτωσης καρτέλας</translation>
 <translation id="8550364285433943656">Τοποθετήστε στοιχεία ελέγχου στις ενέργειες παιχνιδιού για να παίξετε με τα πλήκτρα του πληκτρολογίου</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Το generative AI μπορεί να κάνει λάθη, συμπεριλαμβανομένων των πληροφοριών σχετικά με άτομα, επομένως θα πρέπει να επαληθεύετε τις απαντήσεις του.</translation>
@@ -1708,7 +1706,6 @@
 <translation id="8820817407110198400">Σελιδοδείκτες</translation>
 <translation id="8833620912470026819">δάσος κάκτων</translation>
 <translation id="8834539327799336565">Συνδεδεμένες αυτήν τη στιγμή</translation>
-<translation id="8842526499753992487">Μετακίνηση επάνω αριστερά</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8849799913685544685">φάρος</translation>
 <translation id="8851859208664803097">Διακοπή - Δεν είναι δυνατή η πρόσβαση στον εκτυπωτή</translation>
@@ -1748,7 +1745,6 @@
 <translation id="8961025972867871808">πιγκουίνοι</translation>
 <translation id="8968751544471797276">Ρυθμός φόρτισης</translation>
 <translation id="8970109610781093811">Επανεκτέλεση</translation>
-<translation id="8972061581514441296">Κάντε κλικ για επιστροφή</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Σάρωση}=1{Σάρωση σελίδας {NUMBER_OF_PAGES}}other{Σάρωση σελίδας {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">χωριό</translation>

@@ -6343,6 +6343,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5436492226391861498">Čekanje na proksi tunel...</translation>
 <translation id="5436510242972373446">Pretraži web lokaciju <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616"><ph name="WINDOW_SIDE" /> prozor je sada širok <ph name="WINDOW_SIZE_PERCENT" /> i <ph name="PANE_SIDE" /> okno je sada široko <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">Pronađite &amp;proširenja</translation>
 <translation id="5440425659852470030">Zatvori bočnu ploču</translation>
 <translation id="544083962418256601">Kreiraj prečice...</translation>
 <translation id="5441133529460183413">Web aplikacija instalirana s preglednika Chrome.</translation>
@@ -6814,7 +6815,6 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="5794414402486823030">Uvijek otvori u prikazivaču sistema</translation>
 <translation id="5794700615121138172">Dijeljeni folderi na Linuxu</translation>
 <translation id="5794786537412027208">Napusti sve Chromeove aplikacije</translation>
-<translation id="5795422263272161110">Prikaži jednu pored druge</translation>
 <translation id="5796485699458186843">Nova anonimna &amp;kartica</translation>
 <translation id="5796956053441619942">URL s udaljenog uređaja nije podržan</translation>
 <translation id="5797934230382081317">Saznajte kako započeti na &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Androidu&lt;/a&gt; i &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS-u&lt;/a&gt;</translation>
@@ -7687,7 +7687,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6429384232893414837">Greška prilikom ažuriranja</translation>
 <translation id="6430814529589430811">Šifrirano koristeći Base64 ASCII, jedna potvrda</translation>
 <translation id="6431347207794742960">Aplikacija <ph name="PRODUCT_NAME" /> će postaviti automatsko ažuriranje za sve korisnike na ovom računaru.</translation>
-<translation id="6434104957329207050">Brzina pregledanja po tačkama</translation>
+<translation id="6434104957329207050">Brzina skeniranja po tačkama</translation>
 <translation id="6434309073475700221">Odbaci</translation>
 <translation id="6434325376267409267">Da koristite aplikaciju <ph name="APP_NAME" />, najprije trebate ažurirati uređaj.</translation>
 <translation id="6434755719322447931">Haotično</translation>
@@ -9258,7 +9258,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7552846755917812628">Isprobajte sljedeće savjete:</translation>
 <translation id="7553012839257224005">Provjeravanje Linux spremnika</translation>
 <translation id="7553242001898162573">Unesite lozinku</translation>
-<translation id="7554342082838376298">Automatizirana promjena lozinke</translation>
 <translation id="755472745191515939">Administrator ne dozvoljava ovaj jezik</translation>
 <translation id="7554791636758816595">Nova kartica</translation>
 <translation id="7556033326131260574">Smart Lock nije mogao potvrditi vaš račun. Unesite lozinku za pristup.</translation>
@@ -9487,7 +9486,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="7705334495398865155">Nasumično odaberite ID hardvera (BSSID) da spriječite da drugi prate ovaj uređaj.</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7707108266051544351">Ovoj web lokaciji je blokirano korištenje senzora pokreta.</translation>
-<translation id="7707922173985738739">Koristi prijenos podataka na mobilnoj mreži</translation>
+<translation id="7707922173985738739">Koristi prenos podataka na mobilnoj mreži</translation>
 <translation id="770831926727930011">Lokalni podaci su zaštićeni vašom starom lozinkom. Unesite staru lozinku da oporavite lokalne podatke.</translation>
 <translation id="7709152031285164251">Neuspješno – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Emitiraj...</translation>
@@ -11234,7 +11233,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="8915916167043355778">Zatvori sve</translation>
 <translation id="8916476537757519021">Podokvir anonimnog načina: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Pristajem</translation>
-<translation id="8917980324687233736">Prikaži jednu pored druge</translation>
 <translation id="8918637186205009138">Uređaj <ph name="DEVICE_TYPE" /> koji koristi <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Instaliranje aplikacije…</translation>
 <translation id="891931289445130855">Izbriši podatke i odobrenja</translation>

@@ -4086,7 +4086,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3824621460022590830">Token za registraciju uređaja je nevažeći. Obratite se vlasniku uređaja ili administratoru. Kôd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="3824757763656550700">Prijavite se da biste videli kartice sa drugih uređaja</translation>
 <translation id="3825041664272812989">{FILE_TYPE_COUNT,plural, =1{Zapamti moj izbor za ovaj tip fajla: <ph name="FILE_TYPES" />}one{Zapamti moj izbor za ove tipove fajlova: <ph name="FILE_TYPES" />}few{Zapamti moj izbor za ove tipove fajlova: <ph name="FILE_TYPES" />}other{Zapamti moj izbor za ove tipove fajlova: <ph name="FILE_TYPES" />}}</translation>
-<translation id="3825235932371054736">{NUM_TABS,plural, =1{Rešite problem sa ovom karticom}one{Rešite problem sa ovim karticama}few{Rešite problem sa ovim karticama}other{Rešite problem sa ovim karticama}}</translation>
+<translation id="3825235932371054736">{NUM_TABS,plural, =1{Reši problem sa ovom karticom}one{Reši problem sa ovim karticama}few{Reši problem sa ovim karticama}other{Reši problem sa ovim karticama}}</translation>
 <translation id="3825512074963838982">Pregled</translation>
 <translation id="3825635794653163640">Prikazuje tačku na ikoni aplikacije za obaveštenja o aplikaciji</translation>
 <translation id="3826071569074535339">Dozvoljeno im je korišćenje senzora pokreta</translation>
@@ -6327,6 +6327,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5436492226391861498">Čekanje na proksi tunel...</translation>
 <translation id="5436510242972373446">Pretraži sajt <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Prozor <ph name="WINDOW_SIDE" /> je sada širok <ph name="WINDOW_SIZE_PERCENT" />, a okno <ph name="PANE_SIDE" /> je sada široko <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">Pronađite dodatke</translation>
 <translation id="5440425659852470030">Zatvori bočnu tablu</translation>
 <translation id="544083962418256601">Napravi prečice...</translation>
 <translation id="5441133529460183413">Veb-aplikacija je instalirana iz Chrome pregledača</translation>
@@ -6799,7 +6800,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5794414402486823030">Uvek otvaraj pomoću sistemskog prikazivača</translation>
 <translation id="5794700615121138172">Deljeni Linux direktorijumi</translation>
 <translation id="5794786537412027208">Izađi iz svih Chrome aplikacija</translation>
-<translation id="5795422263272161110">Prikaži uporedo</translation>
 <translation id="5796485699458186843">Nova kartica bez arhiviranja</translation>
 <translation id="5796956053441619942">URL sa udaljenog uređaja nije podržan</translation>
 <translation id="5797934230382081317">Saznajte kako da započnete sa &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android-om&lt;/a&gt; i &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS-om&lt;/a&gt;</translation>
@@ -9243,7 +9243,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7552846755917812628">Isprobajte sledeće savete:</translation>
 <translation id="7553012839257224005">Proverava se Linux kontejner</translation>
 <translation id="7553242001898162573">Unesite lozinku</translation>
-<translation id="7554342082838376298">Automatizovana promena lozinke</translation>
 <translation id="755472745191515939">Administrator ne dozvoljava ovaj jezik</translation>
 <translation id="7554791636758816595">Nova kartica</translation>
 <translation id="7556033326131260574">Smart Lock nije uspeo da verifikuje nalog. Unesete lozinku da biste pristupili.</translation>
@@ -10532,7 +10531,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8434109185104929038">Kutak za čitanje</translation>
 <translation id="8434480141477525001">NaCl port za otklanjanje grešaka</translation>
 <translation id="8434837876193928924">Detalji grupe kartica</translation>
-<translation id="8435951291982398331">{NUM_TABS,plural, =1{Rešite problem sa ovom karticom}one{Rešite problem sa ovim karticama}few{Rešite problem sa ovim karticama}other{Rešite problem sa ovim karticama}}</translation>
+<translation id="8435951291982398331">{NUM_TABS,plural, =1{Reši problem sa ovom karticom}one{Reši problem sa ovim karticama}few{Reši problem sa ovim karticama}other{Reši problem sa ovim karticama}}</translation>
 <translation id="8436800506934625875">Napravite alfanumerički PIN za vraćanje pristupa Google menadžeru lozinki</translation>
 <translation id="8437209419043462667">američka</translation>
 <translation id="8438518537545182071">Izbori roditelja sada ti pružaju veću bezbednost onlajn</translation>
@@ -11219,7 +11218,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8915916167043355778">Zatvorite sve</translation>
 <translation id="8916476537757519021">Podokvir Bez arhiviranja: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Da, omogući</translation>
-<translation id="8917980324687233736">Prikaži uporedo</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> korisnika <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">Aplikacija  se instalira…</translation>
 <translation id="891931289445130855">Izbriši podatke i dozvole</translation>

@@ -76,6 +76,7 @@
 <translation id="2018879682492276940">安装失败。请重试。</translation>
 <translation id="2020032459870799438">若要检查您的其他密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chromium<ph name="END_LINK" />。</translation>
 <translation id="2049376729098081731">选择是否要包含 Chromium 历史记录以便在各款 Google 服务中获享更个性化的体验</translation>
+<translation id="2054039611381840095">若要接收后续 Chromium 更新，您需要使用 macOS 12 或更高版本。该电脑目前使用的是 macOS 11。</translation>
 <translation id="2086476982681781442">Chromium 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="2088953378266246249">与 Chromium 如何管理其根证书有关的信息</translation>
 <translation id="2099452623287920103">系统将从此设备中移除您已保存在 Google 账号中的密码和其他 Chromium 数据。如需在 Chromium 中重新使用这些数据，请重新登录。</translation>

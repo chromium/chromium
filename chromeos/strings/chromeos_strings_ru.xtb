@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">Главный экран браузера</translation>
 <translation id="1526389707933164996">Анимированная заставка</translation>
 <translation id="152892567002884378">Увеличить громкость</translation>
-<translation id="1531038290222364269">Показать вкладки</translation>
 <translation id="1539864135338521185">лазурит</translation>
 <translation id="1548555207631326346">Выберите тему, а затем используйте подчеркнутые слова для персонализации ИИ-изображений.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Превышено максимально допустимое число попыток.</translation>
 <translation id="1908234395526491708">Невыполненные запросы UDP.</translation>
 <translation id="1908394185991500139">стрелка влево</translation>
-<translation id="1911678930322867245">Переместить в правый верхний угол</translation>
 <translation id="1914144885717544695">в пятницу</translation>
 <translation id="1915960750806557358">Оставьте отзыв или опишите проблему. Не указывайте персональные и конфиденциальные данные.</translation>
 <translation id="1923388006036088459">Акцентные цвета</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Ваши лучшие фото, отобранные автоматически</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">опал</translation>
+<translation id="2501278716633472235">Назад</translation>
 <translation id="2505327257735685095">Обновить обои</translation>
 <translation id="2507491234071975894">Динамик</translation>
 <translation id="2512979179176933762">показать окна</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Чтобы получить приблизительный результат, умножьте значение "<ph name="CATEGORY_TEXT" />" на <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Окна одного размера</translation>
 <translation id="4972592110715526173">сменить режим</translation>
+<translation id="497421865427891073">Вперед</translation>
 <translation id="4981003703840817201">синих и розовых</translation>
 <translation id="498186245079027698">Проверьте сканер и повторите попытку. Убедитесь, что на диске достаточно свободного места для хранения отсканированных файлов.</translation>
 <translation id="4982627662315910959">Недопустимое сочетание клавиш. Выберите новое с клавишей Shift и ещё одним модификатором: Ctrl, Alt или <ph name="META_KEY" />.</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Воспроизвести</translation>
 <translation id="5901630391730855834">Желтый</translation>
 <translation id="5903200662178656908">Устройство представляет собой комплект из мыши и клавиатуры.</translation>
-<translation id="5903822368221507416">Скрыть вкладки</translation>
 <translation id="5904994456462260490">Добавление точки доступа</translation>
 <translation id="590746845088109442">кошки</translation>
 <translation id="5907649332524363701">цвет клавиш</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Управление настройками точки доступа. С помощью точек доступа устанавливается подключение между мобильной сетью и интернетом. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Обновление встроенного ПО на внешних устройствах</translation>
 <translation id="7216409898977639127">Оператор сотовой связи</translation>
+<translation id="7221869452894271364">Обновить эту страницу</translation>
 <translation id="7223952304612664117">Системные службы смогут использовать точность геолокации, чтобы определять ваше местоположение. Функция обрабатывает данные датчиков и сведения о беспроводных сигналах. Это позволяет ей точнее определять местоположение устройства.</translation>
 <translation id="7233782086689993269">Сочетание клавиш восстановлено</translation>
 <translation id="723419678599947502">Создать название, используя ИИ от Google</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">Нет изображений</translation>
 <translation id="8319809980370328428">Краткий пересказ записей и создание названий</translation>
 <translation id="8320910311642849813">лес</translation>
-<translation id="8322464149031882595">Нажмите, чтобы перейти вперед</translation>
 <translation id="8329018942023753850">приложение "Калькулятор"</translation>
 <translation id="8336739000755212683">Изменить фото профиля на устройстве</translation>
 <translation id="8339024191194156249">Подробнее об автоматическом запуске</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чайная</translation>
 <translation id="8538236298648811558">На базе технологии ИИ от Google</translation>
-<translation id="8543574988889671960">Обновить вкладку</translation>
 <translation id="8550364285433943656">Выберите клавиши для действий, чтобы играть с помощью клавиатуры.</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Генеративный искусственный интеллект может допускать ошибки, в том числе в сведениях о людях, поэтому перепроверяйте его ответы.</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8833620912470026819">кактусовые заросли</translation>
 <translation id="8834539327799336565">Текущие подключения</translation>
-<translation id="8842526499753992487">Переместить в левый верхний угол</translation>
 <translation id="8845001906332463065">Справка</translation>
 <translation id="8849799913685544685">маяк</translation>
 <translation id="8851859208664803097">Печать прервана: принтер недоступен</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">пингвины</translation>
 <translation id="8968751544471797276">Скорость зарядки</translation>
 <translation id="8970109610781093811">Выполнить ещё раз</translation>
-<translation id="8972061581514441296">Нажмите, чтобы перейти назад</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Сканировать}=1{Сканировать {NUMBER_OF_PAGES} страницу}one{Сканировать {NUMBER_OF_PAGES} страницу}few{Сканировать {NUMBER_OF_PAGES} страницы}many{Сканировать {NUMBER_OF_PAGES} страниц}other{Сканировать {NUMBER_OF_PAGES} страницы}}</translation>
 <translation id="89945434909472341">деревня</translation>

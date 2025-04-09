@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">böngésző kezdőlapja</translation>
 <translation id="1526389707933164996">Animált képernyőkímélő</translation>
 <translation id="152892567002884378">Hangerő növelése</translation>
-<translation id="1531038290222364269">Lapok megjelenítése</translation>
 <translation id="1539864135338521185">lazúrkő</translation>
 <translation id="1548555207631326346">Válasszon egy témát, majd válassza ki az aláhúzott szavakat az AI-képek személyre szabásához.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Elérte az engedélyezett kísérletek maximális számát.</translation>
 <translation id="1908234395526491708">Hibás UDP-kérelmek.</translation>
 <translation id="1908394185991500139">balra nyíl</translation>
-<translation id="1911678930322867245">Mozgatás a jobb felső sarokba</translation>
 <translation id="1914144885717544695">pénteken</translation>
 <translation id="1915960750806557358">Írja le visszajelzését vagy problémáját. Semmiképp se adjon meg személyes, kényes vagy bizalmas adatokat.</translation>
 <translation id="1923388006036088459">Kiemelés színei</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">A legjobb, automatikusan kiválasztott fotók</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opál</translation>
+<translation id="2501278716633472235">Visszalépés</translation>
 <translation id="2505327257735685095">A jelenlegi háttérkép frissítése</translation>
 <translation id="2507491234071975894">Hangszóró</translation>
 <translation id="2512979179176933762">ablakok megjelenítése</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">Hozzávetőleges eredményért szorozza meg a(z) <ph name="CATEGORY_TEXT" /> értékét ennyivel: <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Felosztás</translation>
 <translation id="4972592110715526173">mód váltása</translation>
+<translation id="497421865427891073">Előrelépés</translation>
 <translation id="4981003703840817201">kék és rózsaszín</translation>
 <translation id="498186245079027698">Ellenőrizze a szkennert, majd próbálja újra. Győződjön meg arról, hogy van elég helyi tárhely a beolvasott fájlok mentéséhez.</translation>
 <translation id="4982627662315910959">A billentyűparancs nem áll rendelkezésre. Nyomjon meg egy új billentyűparancsot a Shift és egy további módosító billentyű (Ctrl, Alt vagy <ph name="META_KEY" />) használatával.</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Lejátszás</translation>
 <translation id="5901630391730855834">Sárga</translation>
 <translation id="5903200662178656908">Az eszközhöz billentyűzet és egér is tartozik.</translation>
-<translation id="5903822368221507416">Lapok elrejtése</translation>
 <translation id="5904994456462260490">Új APN hozzáadása</translation>
 <translation id="590746845088109442">macskák</translation>
 <translation id="5907649332524363701">billentyűk színe</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Kezelheti a hálózati APN-beállításokat. Az APN-ek kapcsolatot létesítenek a mobilhálózat és az internet között. <ph name="BEGIN_LINK_LEARN_MORE" />További információ<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7212734716605298123">Firmware-frissítések külső eszközökhöz</translation>
 <translation id="7216409898977639127">Mobilszolgáltató</translation>
+<translation id="7221869452894271364">Az oldal újratöltése</translation>
 <translation id="7223952304612664117">Ez lehetővé teszi a rendszerszolgáltatások számára, hogy a Helymeghatározás pontossága beállítást használják az Ön tartózkodási helyének meghatározásához. A Helymeghatározás pontossága beállítás a vezeték nélküli jelek és az érzékelők adatait használja az eszköz helyének meghatározásához.</translation>
 <translation id="7233782086689993269">Parancsikon visszaállítva</translation>
 <translation id="723419678599947502">Cím létrehozása a Google AI segítségével</translation>
@@ -1603,7 +1603,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8318753676953949627">Nincsenek képek</translation>
 <translation id="8319809980370328428">Felvétel összefoglalója és cím létrehozása</translation>
 <translation id="8320910311642849813">erdő</translation>
-<translation id="8322464149031882595">Kattintson a továbblépéshez</translation>
 <translation id="8329018942023753850">számológép alkalmazás</translation>
 <translation id="8336739000755212683">Eszközfiókhoz tartozó kép módosítása</translation>
 <translation id="8339024191194156249">További információ az automatikus indításról</translation>
@@ -1656,7 +1655,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">teaház</translation>
 <translation id="8538236298648811558">A Google AI működteti</translation>
-<translation id="8543574988889671960">Lap újratöltése</translation>
 <translation id="8550364285433943656">Rendeljen vezérlőket a játékműveletekhez, és használja játékra a billentyűzet billentyűit</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">A generatív AI hibázhat (többek között személyekkel kapcsolatban is), ezért ellenőrizze a válaszait.</translation>
@@ -1707,7 +1705,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8820817407110198400">Könyvjelzők</translation>
 <translation id="8833620912470026819">kaktuszerdő</translation>
 <translation id="8834539327799336565">Csatlakoztatva</translation>
-<translation id="8842526499753992487">Mozgatás a bal felső sarokba</translation>
 <translation id="8845001906332463065">Súgó</translation>
 <translation id="8849799913685544685">világítótorony</translation>
 <translation id="8851859208664803097">Leállítva – A nyomtató nem áll rendelkezésre</translation>
@@ -1747,7 +1744,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8961025972867871808">pingvinek</translation>
 <translation id="8968751544471797276">Töltési sebesség</translation>
 <translation id="8970109610781093811">Futtatás újra</translation>
-<translation id="8972061581514441296">Kattintson a visszalépéshez</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Keresés}=1{Keresés {NUMBER_OF_PAGES} oldalon}other{Keresés {NUMBER_OF_PAGES} oldalon}}</translation>
 <translation id="89945434909472341">falu</translation>

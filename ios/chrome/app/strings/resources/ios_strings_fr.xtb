@@ -1127,6 +1127,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="573974402615125334">Pour rejoindre des groupes d'onglets, en partager et collaborer dessus, synchronisez votre historique et vos onglets</translation>
 <translation id="5740123193752401435">Rechercher dans les onglets…</translation>
 <translation id="5744274077973758795">Notifications activées pour <ph name="FEATURE_NAME" /></translation>
+<translation id="5745598824054949526">Aucun texte trouvé</translation>
 <translation id="574762237186762643">Événements</translation>
 <translation id="5749158352074143502">Continuer avec cet onglet</translation>
 <translation id="5753021559215751319">Enregistrer le mot de passe</translation>
@@ -1290,6 +1291,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="6410883413783534063">Utilisez les onglets pour consulter plusieurs pages en même temps</translation>
 <translation id="6416807286621280684">Vos colis suivis et les notifications de livraison.</translation>
 <translation id="6418346271604475326">PDF en prépa.</translation>
+<translation id="6421038304268477484">Texte traduit</translation>
 <translation id="6429213933892582367">Ouvrez "Options de mots de passe"</translation>
 <translation id="6434591244308415567">Une erreur s'est produite. Réessayez plus tard.</translation>
 <translation id="6435307030888827407">Rester déconnecté</translation>
@@ -1968,6 +1970,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="9097506547406246598">Impossible de vous désabonner en raison d'une erreur.</translation>
 <translation id="9098541895599151034">Supprimer <ph name="NUMBER_OF_ACCOUNTS" /> mots de passe ?</translation>
 <translation id="9099233023029360602">Demander quel compte utiliser à chaque fois</translation>
+<translation id="9099821309562615674">Assurez-vous que le texte que vous traduisez est clair et bien cadré.</translation>
 <translation id="9100610230175265781">Veuillez saisir la phrase secrète.</translation>
 <translation id="91023216973987714">Modes de paiement</translation>
 <translation id="9106655997975673326">Provenant de <ph name="SOURCE_DEVICE" /></translation>

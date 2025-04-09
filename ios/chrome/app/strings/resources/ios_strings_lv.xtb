@@ -1127,6 +1127,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="573974402615125334">Lai kopīgotu ciļņu grupas, pievienotos tām un sadarbotos tajās, sinhronizējiet savu vēsturi un cilnes.</translation>
 <translation id="5740123193752401435">Meklēt cilnēs…</translation>
 <translation id="5744274077973758795"><ph name="FEATURE_NAME" />: paziņojumi ir ieslēgti.</translation>
+<translation id="5745598824054949526">Teksts nav atrasts</translation>
 <translation id="574762237186762643">Pasākumi</translation>
 <translation id="5749158352074143502">Turpiniet pārlūkot šo cilni</translation>
 <translation id="5753021559215751319">Saglabāt paroli</translation>
@@ -1290,6 +1291,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6410883413783534063">Atveriet cilnes, lai vienlaikus apmeklētu vairākas lapas</translation>
 <translation id="6416807286621280684">Jūsu izsekotās pakas un jaunumi par piegādi.</translation>
 <translation id="6418346271604475326">PDF sagatave</translation>
+<translation id="6421038304268477484">Tulkotais teksts</translation>
 <translation id="6429213933892582367">Atveriet sadaļu Paroles iespējas.</translation>
 <translation id="6434591244308415567">Radās kļūda. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6435307030888827407">Nepierakstīties</translation>
@@ -1968,6 +1970,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="9097506547406246598">Nevar pārtraukt sekošanu. Radās kļūda.</translation>
 <translation id="9098541895599151034">Vai dzēst paroles (<ph name="NUMBER_OF_ACCOUNTS" />)?</translation>
 <translation id="9099233023029360602">Ikreiz jautāt, kuru kontu izmantot</translation>
+<translation id="9099821309562615674">Pārliecinieties, ka tulkojamais teksts ir skaidri redzams un iekļauts kadrā.</translation>
 <translation id="9100610230175265781">Jāievada ieejas frāze.</translation>
 <translation id="91023216973987714">Maksājumu veidi</translation>
 <translation id="9106655997975673326">No ierīces <ph name="SOURCE_DEVICE" /></translation>

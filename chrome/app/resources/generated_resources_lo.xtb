@@ -6342,6 +6342,7 @@
 <translation id="5436492226391861498">ກໍາລັງລໍຖ້າຊ່ອງພຣັອກຊີ...</translation>
 <translation id="5436510242972373446">ຊອກຫາ <ph name="SITE_NAME" /> :</translation>
 <translation id="5438014818441491616">ຕອນນີ້ໜ້າຈໍ <ph name="WINDOW_SIDE" /> ກວ້າງ <ph name="WINDOW_SIZE_PERCENT" />, ແຖບ <ph name="PANE_SIDE" /> ກວ້າງ <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">ສ່ວນຂະຫຍາຍການຊອກຫາ</translation>
 <translation id="5440425659852470030">ປິດແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="544083962418256601">ສ້າງ​ທາງ​ລັດ...</translation>
 <translation id="5441133529460183413">ຕິດຕັ້ງເວັບແອັບຈາກໂປຣແກຣມທ່ອງເວັບ Chrome ແລ້ວ</translation>
@@ -6813,7 +6814,6 @@
 <translation id="5794414402486823030">ເປີດ​ກັບ​ຕົວ​ເບິ່ງ​ລະ​ບົບ​ທຸກ​ຄັ້ງ</translation>
 <translation id="5794700615121138172">ໂຟນເດີທີ່ແບ່ງປັນຂອງ Linux</translation>
 <translation id="5794786537412027208">ອອກທຸກແອັບ Chrome</translation>
-<translation id="5795422263272161110">ສະແດງຂ້າງກັນ</translation>
 <translation id="5796485699458186843">ແ&amp;ຖບ​ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="5796956053441619942">ບໍ່ຮອງຮັບ URL ຈາກອຸປະກອນທາງໄກ</translation>
 <translation id="5797934230382081317">ສຶກສາວິທີເລີ່ມຕົ້ນຢູ່ &lt;a target='_blank' href='<ph name="LINK_ANDROID" />'&gt;Android&lt;/a&gt; ແລະ &lt;a target='_blank' href='<ph name="LINK_IOS" />'&gt;iOS&lt;/a&gt;</translation>
@@ -9251,7 +9251,6 @@
 <translation id="7552846755917812628">ລອງຄຳແນະນຳຕໍ່ໄປນີ້:</translation>
 <translation id="7553012839257224005">ກຳລັງກວດເບິ່ງກ່ອງບັນຈຸ Linux</translation>
 <translation id="7553242001898162573">ປ້ອນ​ລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານ​</translation>
-<translation id="7554342082838376298">ປ່ຽນລະຫັດຜ່ານອັດຕະໂນມັດ</translation>
 <translation id="755472745191515939">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານບໍ່ອະນຸຍາດໃຫ້ໃຊ້ພາສານີ້</translation>
 <translation id="7554791636758816595">ແຖບ​ໃຫມ່</translation>
 <translation id="7556033326131260574">ລັອກ​ອັດ​ສະ​ລິ​ຍະບໍ່​ສາ​ມາດຢືນ​ຢັນ​ບັນ​ຊີ​ຂອງ​ທ່ານ​ໄດ້. ພິມ​ລະ​ຫັດ​ຜ່ານ​ຂອງ​ທ່ານ ເພື່ອ​ເຂົ້າ​ຫາ.</translation>
@@ -11223,7 +11222,6 @@
 <translation id="8915916167043355778">ປິດທັງໝົດ</translation>
 <translation id="8916476537757519021">ຂອບຍ່ອຍທີ່ບໍ່ເຜີຍຕົນຕົວ​: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">ແມ່ນ, ຂ້ອຍເຂົ້າຮ່ວມ</translation>
-<translation id="8917980324687233736">ສະແດງຂ້າງກັນ</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ຂອງ <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">ກຳລັງຕິດຕັ້ງແອັບ...</translation>
 <translation id="891931289445130855">ລຶບຂໍ້ມູນ ແລະ ການອະນຸຍາດ</translation>

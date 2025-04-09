@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">почетна страница на прелистувач</translation>
 <translation id="1526389707933164996">Анимација за штедачот на екранот</translation>
 <translation id="152892567002884378">Зголемете ја јачината на звукот</translation>
-<translation id="1531038290222364269">Прикажи ги картичките</translation>
 <translation id="1539864135338521185">син камен</translation>
 <translation id="1548555207631326346">Изберете тема, па изберете ги подвлечените зборови за да се персонализираат вашите слики создадени од AI.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Максималниот број дозволени обиди е надминат.</translation>
 <translation id="1908234395526491708">Неуспешни UDP-барања</translation>
 <translation id="1908394185991500139">стрелка налево</translation>
-<translation id="1911678930322867245">Премести горе десно</translation>
 <translation id="1914144885717544695">во петок</translation>
 <translation id="1915960750806557358">Споделете ги вашите повратни информации или опишете го проблемот. Погрижете се да не наведувате лични, чувствителни или доверливи податоци.</translation>
 <translation id="1923388006036088459">Бои за истакнување</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Вашите најдобри фотографии, избрани автоматски</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">опал</translation>
+<translation id="2501278716633472235">Врати се</translation>
 <translation id="2505327257735685095">Освежете ја тековната слика за тапет</translation>
 <translation id="2507491234071975894">Звучник</translation>
 <translation id="2512979179176933762">прикажување прозорци</translation>
@@ -868,6 +867,7 @@
 <translation id="4965703485264574128">За приближен резултат, помножете ја вредноста на <ph name="CATEGORY_TEXT" /> со <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Поделено</translation>
 <translation id="4972592110715526173">променување режим</translation>
+<translation id="497421865427891073">Оди напред</translation>
 <translation id="4981003703840817201">сина и розова</translation>
 <translation id="498186245079027698">Проверете го скенерот и обидете се повторно. Уверете се дека има доволно простор на уредот за да се зачуваат скенираните датотеки.</translation>
 <translation id="4982627662315910959">Кратенката не е достапна. Притиснете нова кратенка со копчето Shift и уште 1 копче модификатор (Ctrl, Alt или <ph name="META_KEY" />).</translation>
@@ -1055,7 +1055,6 @@
 <translation id="5896602941605730551">Пушти</translation>
 <translation id="5901630391730855834">Жолта боја</translation>
 <translation id="5903200662178656908">Уредот е комбинација од тастатура и глувче.</translation>
-<translation id="5903822368221507416">Скриј ги картичките</translation>
 <translation id="5904994456462260490">Додајте нова APN</translation>
 <translation id="590746845088109442">мачки</translation>
 <translation id="5907649332524363701">боја на копчиња</translation>
@@ -1366,6 +1365,7 @@
 <translation id="7212547870105584639">Управувајте со поставките за APN на мрежата. Имињата на пристапните точки воспоставуваат врска меѓу мобилната мрежа и интернетот. <ph name="BEGIN_LINK_LEARN_MORE" />Дознајте повеќе<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Ажурирања на фирмверот за екстерни уреди</translation>
 <translation id="7216409898977639127">Мобилен оператор</translation>
+<translation id="7221869452894271364">Пак вчитај страница</translation>
 <translation id="7223952304612664117">Ова овозможува системските услуги да користат „Прецизност на локација“ за да ја утврдуваат вашата локација. „Прецизност на локација“ ги користи податоците за безжичните сигнали и сензорите за проценување на локацијата на уредот.</translation>
 <translation id="7233782086689993269">Кратенката е вратена</translation>
 <translation id="723419678599947502">Создајте наслов со Google AI</translation>
@@ -1603,7 +1603,6 @@
 <translation id="8318753676953949627">Нема слики</translation>
 <translation id="8319809980370328428">Создавање резимеа и наслови на снимки</translation>
 <translation id="8320910311642849813">шума</translation>
-<translation id="8322464149031882595">Кликнете за да одите напред</translation>
 <translation id="8329018942023753850">апликација „Калкулатор“</translation>
 <translation id="8336739000755212683">Променете ја сликата за сметката на уредот</translation>
 <translation id="8339024191194156249">Дознајте повеќе за автоматското стартување</translation>
@@ -1656,7 +1655,6 @@
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">чајџилница</translation>
 <translation id="8538236298648811558">Овозможено од Google AI</translation>
-<translation id="8543574988889671960">Вчитај ја картичката повторно</translation>
 <translation id="8550364285433943656">Поставете контроли на дејства во игра за да играте со копчињата од тастатурата</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">Генеративната AI може да прави грешки, што опфаќа и грешки за луѓе, па проверувајте ги одговорите.</translation>
@@ -1707,7 +1705,6 @@
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="8833620912470026819">шума со кактуси</translation>
 <translation id="8834539327799336565">Моментално поврзани</translation>
-<translation id="8842526499753992487">Премести горе лево</translation>
 <translation id="8845001906332463065">Побарајте помош</translation>
 <translation id="8849799913685544685">светилник</translation>
 <translation id="8851859208664803097">Сопрено - печатачот е недостапен</translation>
@@ -1747,7 +1744,6 @@
 <translation id="8961025972867871808">пингвини</translation>
 <translation id="8968751544471797276">Брзина на полнење</translation>
 <translation id="8970109610781093811">Изврши повторно</translation>
-<translation id="8972061581514441296">Кликнете за да се вратите назад</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скенирај}=1{Скенирај {NUMBER_OF_PAGES} страница}one{Скенирај {NUMBER_OF_PAGES} страница}other{Скенирај {NUMBER_OF_PAGES} страници}}</translation>
 <translation id="89945434909472341">село</translation>

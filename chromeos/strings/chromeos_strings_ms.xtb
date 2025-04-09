@@ -129,7 +129,6 @@
 <translation id="1515129336378114413">laman utama penyemak imbas</translation>
 <translation id="1526389707933164996">Animasi penyelamat skrin</translation>
 <translation id="152892567002884378">Tambah kelantangan</translation>
-<translation id="1531038290222364269">Paparkan tab</translation>
 <translation id="1539864135338521185">lapis lazuli</translation>
 <translation id="1548555207631326346">Pilih tema, kemudian pilih perkataan bergaris untuk memeribadikan imej AI anda.<ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
@@ -242,7 +241,6 @@
 <translation id="1905710495812624430">Melebihi had maksimum percubaan yang dibenarkan.</translation>
 <translation id="1908234395526491708">Kegagalan permintaan UDP</translation>
 <translation id="1908394185991500139">anak panah ke kiri</translation>
-<translation id="1911678930322867245">Alihkan kepada bahagian atas sebelah kanan</translation>
 <translation id="1914144885717544695">pada hari Jumaat</translation>
 <translation id="1915960750806557358">Kongsi maklum balas anda atau huraikan masalah anda. Pastikan anda tidak menyertakan sebarang maklumat yang bersifat peribadi, sensitif atau sulit.</translation>
 <translation id="1923388006036088459">Warna aksen</translation>
@@ -362,6 +360,7 @@
 <translation id="2493126929778606526">Foto terbaik anda, dipilih secara automatik</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
 <translation id="2501126912075504550">opal</translation>
+<translation id="2501278716633472235">Kembali</translation>
 <translation id="2505327257735685095">Muatkan semula imej kertas dinding semasa</translation>
 <translation id="2507491234071975894">Pembesar suara</translation>
 <translation id="2512979179176933762">tunjukkan tetingkap</translation>
@@ -382,6 +381,7 @@
 <translation id="2584559707064218956">Untuk membuat persediaan, pergi ke Tetapan</translation>
 <translation id="2586146417912237930">biru dan biru nila</translation>
 <translation id="2589921777872778654">Edit dan padamkan menu</translation>
+<translation id="2590424100019931043">Anda telah dialih keluar daripada kelas ini</translation>
 <translation id="2597774443162333062">Fail akan dihantar kepada Google untuk dinyahpepijat</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Pengimbasan selesai. 1 halaman diimbas}other{Pengimbasan selesai. {NUMBER_OF_PAGES} halaman diimbas}}</translation>
 <translation id="261322795497077164">Pengecaman penutur</translation>
@@ -868,6 +868,7 @@
 <translation id="4965703485264574128">Untuk mendapatkan jawapan anggaran, darabkan nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="4969079779290789265">Pisah</translation>
 <translation id="4972592110715526173">pertukaran mod</translation>
+<translation id="497421865427891073">Ke hadapan</translation>
 <translation id="4981003703840817201">biru dan merah jambu</translation>
 <translation id="498186245079027698">Periksa pengimbas dan cuba lagi. Pastikan terdapat ruang setempat yang mencukupi untuk menyimpan fail yang diimbas.</translation>
 <translation id="4982627662315910959">Pintasan tidak tersedia. Tekan pintasan baharu menggunakan shift dan 1 lagi kekunci pengubah suai (ctrl, alt atau <ph name="META_KEY" />).</translation>
@@ -1055,7 +1056,6 @@
 <translation id="5896602941605730551">Main</translation>
 <translation id="5901630391730855834">Kuning</translation>
 <translation id="5903200662178656908">Peranti ialah kombo papan kekunci dan tetikus.</translation>
-<translation id="5903822368221507416">Sembunyikan tab</translation>
 <translation id="5904994456462260490">Tambah APN baharu</translation>
 <translation id="590746845088109442">kucing</translation>
 <translation id="5907649332524363701">warna utama</translation>
@@ -1366,6 +1366,7 @@
 <translation id="7212547870105584639">Urus tetapan APN rangkaian. APN mewujudkan sambungan antara rangkaian selular dengan Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Ketahui lebih lanjut<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7212734716605298123">Kemaskinian perisian tegar untuk peranti luaran</translation>
 <translation id="7216409898977639127">Penyedia selular</translation>
+<translation id="7221869452894271364">Muatkan semula halaman ini</translation>
 <translation id="7223952304612664117">Tindakan ini membolehkan perkhidmatan sistem menggunakan Ketepatan Lokasi untuk menentukan lokasi anda. Ketepatan Lokasi menggunakan maklumat tentang isyarat dan penderia wayarles untuk menganggar lokasi peranti.</translation>
 <translation id="7233782086689993269">Pintasan telah dipulihkan</translation>
 <translation id="723419678599947502">Buat tajuk menggunakan Google AI</translation>
@@ -1603,7 +1604,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8318753676953949627">Tiada Imej</translation>
 <translation id="8319809980370328428">Penciptaan ringkasan dan tajuk rakaman</translation>
 <translation id="8320910311642849813">hutan</translation>
-<translation id="8322464149031882595">Klik untuk maju</translation>
 <translation id="8329018942023753850">apl kalkulator</translation>
 <translation id="8336739000755212683">Tukar imej akaun peranti</translation>
 <translation id="8339024191194156249">Ketahui lebih lanjut tentang autolancar</translation>
@@ -1656,7 +1656,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">restoran teh</translation>
 <translation id="8538236298648811558">Dikuasakan oleh Google AI</translation>
-<translation id="8543574988889671960">Muatkan semula tab</translation>
 <translation id="8550364285433943656">Letakkan kawalan pada tindakan permainan untuk bermain dengan kekunci papan kekunci</translation>
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8558521694042102707">AI generatif boleh membuat kesilapan, termasuk tentang orang, maka semak semula respons.</translation>
@@ -1707,7 +1706,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8820817407110198400">Penanda buku</translation>
 <translation id="8833620912470026819">hutan kaktus</translation>
 <translation id="8834539327799336565">Tersambung pada masa ini</translation>
-<translation id="8842526499753992487">Alihkan kepada bahagian atas sebelah kiri</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8849799913685544685">rumah api</translation>
 <translation id="8851859208664803097">Dihentikan - Pencetak tidak dapat dihubungi</translation>
@@ -1747,7 +1745,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8961025972867871808">penguin</translation>
 <translation id="8968751544471797276">Kadar pengecasan</translation>
 <translation id="8970109610781093811">Jalankan sekali lagi</translation>
-<translation id="8972061581514441296">Klik untuk kembali</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Imbas}=1{Imbas halaman {NUMBER_OF_PAGES}}other{Imbas halaman {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">kampung</translation>
