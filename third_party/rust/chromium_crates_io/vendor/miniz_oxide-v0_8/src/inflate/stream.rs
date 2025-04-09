@@ -325,8 +325,12 @@ fn inflate_loop(
         state.dict_avail = out_bytes;
         *total_out += push_dict_out(state, next_out);
 
+        // Finish was requested but we didn't end on an end block.
+        if status == TINFLStatus::FailedCannotMakeProgress {
+            return Err(MZError::Buf);
+        }
         // The stream was corrupted, and decompression failed.
-        if (status as i32) < 0 {
+        else if (status as i32) < 0 {
             return Err(MZError::Data);
         }
 

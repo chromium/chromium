@@ -23,7 +23,7 @@ fn roundtrip(data: &[u8]) {
 "##
 )]
 #![forbid(unsafe_code)]
-#![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(all(not(feature = "std"), not(feature = "serde")), no_std)]
 
 #[cfg(feature = "with-alloc")]
 extern crate alloc;
@@ -31,6 +31,8 @@ extern crate alloc;
 #[cfg(feature = "with-alloc")]
 pub mod deflate;
 pub mod inflate;
+#[cfg(feature = "serde")]
+pub mod serde;
 mod shared;
 
 pub use crate::shared::update_adler32 as mz_adler32_oxide;

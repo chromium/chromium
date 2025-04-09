@@ -26,13 +26,15 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/inflate/output_buffer.rs",
     "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/inflate/stream.rs",
     "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/serde/big_array.rs",
+    "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/serde/mod.rs",
     "//third_party/rust/chromium_crates_io/vendor/miniz_oxide-v0_8/src/shared.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "0.8.5"
+  cargo_pkg_version = "0.8.7"
   cargo_pkg_authors = "Frommi <daniil.liferenko@gmail.com>, oyvindln <oyvindln@users.noreply.github.com>, Rich Geldreich richgel99@gmail.com"
   cargo_pkg_name = "miniz_oxide"
   cargo_pkg_description = "DEFLATE compression and decompression library rewritten in Rust based on miniz"

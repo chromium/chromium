@@ -12,7 +12,7 @@
 [package]
 edition = "2021"
 name = "miniz_oxide"
-version = "0.8.5"
+version = "0.8.7"
 authors = [
     "Frommi <daniil.liferenko@gmail.com>",
     "oyvindln <oyvindln@users.noreply.github.com>",
@@ -44,6 +44,7 @@ repository = "https://github.com/Frommi/miniz_oxide/tree/master/miniz_oxide"
 resolver = "1"
 
 [features]
+block-boundary = []
 default = ["with-alloc"]
 rustc-dep-of-std = [
     "core",
@@ -76,6 +77,11 @@ optional = true
 version = "1.0.0"
 optional = true
 package = "rustc-std-workspace-core"
+
+[dependencies.serde]
+version = "1.0"
+features = ["derive"]
+optional = true
 
 [dependencies.simd-adler32]
 version = "0.3.3"

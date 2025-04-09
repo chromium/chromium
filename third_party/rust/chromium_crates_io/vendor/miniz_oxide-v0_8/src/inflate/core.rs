@@ -9,19 +9,27 @@ use ::core::convert::TryInto;
 
 use self::output_buffer::{InputWrapper, OutputBuffer};
 
+#[cfg(feature = "serde")]
+use crate::serde::big_array::BigArray;
+#[cfg(feature = "serde")]
+use serde::{Deserialize, Serialize};
+
 pub const TINFL_LZ_DICT_SIZE: usize = 32_768;
 
 /// A struct containing huffman code lengths and the huffman code tree used by the decompressor.
 #[derive(Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 struct HuffmanTable {
     /// Fast lookup table for shorter huffman codes.
     ///
     /// See `HuffmanTable::fast_lookup`.
+    #[cfg_attr(feature = "serde", serde(with = "BigArray"))]
     pub look_up: [i16; FAST_LOOKUP_SIZE as usize],
     /// Full huffman tree.
     ///
     /// Positive values are edge nodes/symbols, negative values are
     /// parent nodes/references to other nodes.
+    #[cfg_attr(feature = "serde", serde(with = "BigArray"))]
     pub tree: [i16; MAX_HUFF_TREE_SIZE],
 }
 
@@ -100,11 +108,13 @@ const MAX_HUFF_SYMBOLS_2: usize = 19;
 /// The maximum length of a code that can be looked up in the fast lookup table.
 const FAST_LOOKUP_BITS: u8 = 10;
 /// The size of the fast lookup table.
-const FAST_LOOKUP_SIZE: u32 = 1 << FAST_LOOKUP_BITS;
+const FAST_LOOKUP_SIZE: u16 = 1 << FAST_LOOKUP_BITS;
 const MAX_HUFF_TREE_SIZE: usize = MAX_HUFF_SYMBOLS_0 * 2;
 const LITLEN_TABLE: usize = 0;
 const DIST_TABLE: usize = 1;
 const HUFFLEN_TABLE: usize = 2;
+const LEN_CODES_SIZE: usize = 512;
+const LEN_CODES_MASK: usize = LEN_CODES_SIZE - 1;
 
 /// Flags to [`decompress()`] to control how inflation works.
 ///
@@ -150,6 +160,12 @@ pub mod inflate_flags {
     /// this will result in checksum failure (outside the unlikely event where the checksum happens
     /// to match anyway).
     pub const TINFL_FLAG_IGNORE_ADLER32: u32 = 64;
+
+    /// Return [`TINFLStatus::BlockBoundary`][super::TINFLStatus::BlockBoundary]
+    /// on reaching the boundary between deflate blocks. Calling [`decompress()`][super::decompress]
+    /// again will resume decompression of the next block.
+    #[cfg(feature = "block-boundary")]
+    pub const TINFL_FLAG_STOP_ON_BLOCK_BOUNDARY: u32 = 128;
 }
 
 use self::inflate_flags::*;
@@ -169,9 +185,54 @@ enum HuffmanTableType {
     Huffman = 2,
 }*/
 
+/// Minimal data representing the [`DecompressorOxide`] state when it is between deflate blocks
+/// (i.e. [`decompress()`] has returned [`TINFLStatus::BlockBoundary`]).
+/// This can be serialized along with the last 32KiB of the output buffer, then passed to
+/// [`DecompressorOxide::from_block_boundary_state()`] to resume decompression from the same point.
+///
+/// The Zlib/Adler32 fields can be ignored if you aren't using those features
+/// ([`TINFL_FLAG_PARSE_ZLIB_HEADER`], [`TINFL_FLAG_COMPUTE_ADLER32`]).
+/// When deserializing, you can reconstruct `bit_buf` from the previous byte in the input file
+/// (if you still have access to it), so `num_bits` is the only field that is always required.
+#[derive(Clone)]
+#[cfg(feature = "block-boundary")]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
+pub struct BlockBoundaryState {
+    /// The number of bits from the last byte of input consumed,
+    /// that are needed for decoding the next deflate block.
+    /// Value is in range `0..=7`
+    pub num_bits: u8,
+
+    /// The `num_bits` MSBs from the last byte of input consumed,
+    /// that are needed for decoding the next deflate block.
+    /// Stored in the LSBs of this field.
+    pub bit_buf: u8,
+
+    /// Zlib CMF
+    pub z_header0: u32,
+    /// Zlib FLG
+    pub z_header1: u32,
+    /// Adler32 checksum of the data decompressed so far
+    pub check_adler32: u32,
+}
+
+#[cfg(feature = "block-boundary")]
+impl Default for BlockBoundaryState {
+    fn default() -> Self {
+        BlockBoundaryState {
+            num_bits: 0,
+            bit_buf: 0,
+            z_header0: 0,
+            z_header1: 0,
+            check_adler32: 1,
+        }
+    }
+}
+
 /// Main decompression struct.
 ///
 #[derive(Clone)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct DecompressorOxide {
     /// Current state of the decompressor.
     state: core::State,
@@ -203,13 +264,18 @@ pub struct DecompressorOxide {
     bit_buf: BitBuffer,
     /// Huffman tables.
     tables: [HuffmanTable; MAX_HUFF_TABLES],
+
+    #[cfg_attr(feature = "serde", serde(with = "BigArray"))]
     code_size_literal: [u8; MAX_HUFF_SYMBOLS_0],
     code_size_dist: [u8; MAX_HUFF_SYMBOLS_1],
     code_size_huffman: [u8; MAX_HUFF_SYMBOLS_2],
     /// Raw block header.
     raw_header: [u8; 4],
     /// Huffman length codes.
-    len_codes: [u8; MAX_HUFF_SYMBOLS_0 + MAX_HUFF_SYMBOLS_1 + 137],
+    #[cfg_attr(feature = "serde", serde(with = "BigArray"))]
+    // MAX_HUFF_SYMBOLS_0 + MAX_HUFF_SYMBOLS_1 + 137
+    // Extended to 512 to allow masking to help evade bounds checks.
+    len_codes: [u8; LEN_CODES_SIZE],
 }
 
 impl DecompressorOxide {
@@ -228,6 +294,7 @@ impl DecompressorOxide {
     /// Returns the adler32 checksum of the currently decompressed data.
     /// Note: Will return Some(1) if decompressing zlib but ignoring adler32.
     #[inline]
+    #[cfg(not(feature = "rustc-dep-of-std"))]
     pub fn adler32(&self) -> Option<u32> {
         if self.state != State::Start && !self.state.is_failure() && self.z_header0 != 0 {
             Some(self.check_adler32)
@@ -238,6 +305,7 @@ impl DecompressorOxide {
 
     /// Returns the adler32 that was read from the zlib header if it exists.
     #[inline]
+    #[cfg(not(feature = "rustc-dep-of-std"))]
     pub fn adler32_header(&self) -> Option<u32> {
         if self.state != State::Start && self.state != State::BadZlibHeader && self.z_header0 != 0 {
             Some(self.z_adler32)
@@ -260,6 +328,48 @@ impl DecompressorOxide {
             _ => &mut self.code_size_huffman,
         }
     }*/
+
+    /// Returns the current [`BlockBoundaryState`]. Should only be called when
+    /// [`decompress()`] has returned [`TINFLStatus::BlockBoundary`];
+    /// otherwise this will return `None`.
+    #[cfg(feature = "block-boundary")]
+    pub fn block_boundary_state(&self) -> Option<BlockBoundaryState> {
+        if self.state == core::State::ReadBlockHeader {
+            // If we're in this state, undo_bytes should have emptied
+            // bit_buf of any whole bytes
+            assert!(self.num_bits < 8);
+
+            Some(BlockBoundaryState {
+                num_bits: self.num_bits as u8,
+                bit_buf: self.bit_buf as u8,
+                z_header0: self.z_header0,
+                z_header1: self.z_header1,
+                check_adler32: self.check_adler32,
+            })
+        } else {
+            None
+        }
+    }
+
+    /// Creates a new `DecompressorOxide` from the state returned by
+    /// `block_boundary_state()`.
+    ///
+    /// When calling [`decompress()`], the 32KiB of `out` preceding `out_pos` must be
+    /// initialized with the same data that it contained when `block_boundary_state()`
+    /// was called.
+    #[cfg(feature = "block-boundary")]
+    pub fn from_block_boundary_state(st: &BlockBoundaryState) -> Self {
+        DecompressorOxide {
+            state: core::State::ReadBlockHeader,
+            num_bits: st.num_bits as u32,
+            bit_buf: st.bit_buf as BitBuffer,
+            z_header0: st.z_header0,
+            z_header1: st.z_header1,
+            z_adler32: 1,
+            check_adler32: st.check_adler32,
+            ..DecompressorOxide::default()
+        }
+    }
 }
 
 impl Default for DecompressorOxide {
@@ -290,12 +400,13 @@ impl Default for DecompressorOxide {
             code_size_dist: [0; MAX_HUFF_SYMBOLS_1],
             code_size_huffman: [0; MAX_HUFF_SYMBOLS_2],
             raw_header: [0; 4],
-            len_codes: [0; MAX_HUFF_SYMBOLS_0 + MAX_HUFF_SYMBOLS_1 + 137],
+            len_codes: [0; LEN_CODES_SIZE],
         }
     }
 }
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug)]
+#[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 #[non_exhaustive]
 enum State {
     Start = 0,
@@ -339,6 +450,7 @@ enum State {
 }
 
 impl State {
+    #[cfg(not(feature = "rustc-dep-of-std"))]
     const fn is_failure(self) -> bool {
         matches!(
             self,
@@ -684,11 +796,13 @@ fn start_static_table(r: &mut DecompressorOxide) {
 
 #[cfg(any(
     feature = "rustc-dep-of-std",
+    not(feature = "with-alloc"),
     target_arch = "aarch64",
     target_arch = "arm64ec",
     target_arch = "loongarch64"
 ))]
-fn reverse_bits(n: u32) -> u32 {
+#[inline]
+const fn reverse_bits(n: u16) -> u16 {
     // Lookup is not used when building as part of std to avoid wasting space
     // for lookup table in every rust binary
     // as it's only used for backtraces in the cold path
@@ -696,27 +810,35 @@ fn reverse_bits(n: u32) -> u32 {
 
     // armv7 and newer, and loongarch have a cpu instruction for bit reversal so
     // it's preferable to just use that on those architectures.
+
+    // Also disable lookup table when not using the alloc feature as
+    // we probably don't want to waste space for a lookup table in an environment
+    // without an allocator.
     n.reverse_bits()
 }
 
-#[cfg(not(any(
-    feature = "rustc-dep-of-std",
-    target_arch = "aarch64",
-    target_arch = "arm64ec",
-    target_arch = "loongarch64"
-)))]
-fn reverse_bits(n: u32) -> u32 {
-    static REVERSED_BITS_LOOKUP: [u32; 512] = {
+#[cfg(all(
+    not(any(
+        feature = "rustc-dep-of-std",
+        target_arch = "aarch64",
+        target_arch = "arm64ec",
+        target_arch = "loongarch64"
+    )),
+    feature = "with-alloc"
+))]
+fn reverse_bits(n: u16) -> u16 {
+    static REVERSED_BITS_LOOKUP: [u16; 512] = {
         let mut table = [0; 512];
 
         let mut i = 0;
         while i < 512 {
-            table[i] = (i as u32).reverse_bits();
+            table[i] = (i as u16).reverse_bits();
             i += 1;
         }
 
         table
     };
+
     REVERSED_BITS_LOOKUP[n as usize]
 }
 
@@ -733,8 +855,9 @@ fn init_tree(r: &mut DecompressorOxide, l: &mut LocalVars) -> Option<Action> {
         let table = &mut r.tables[bt];
 
         let mut total_symbols = [0u16; 16];
+        // Next code - we use the odd length here to simplify a loop later.
         let mut next_code = [0u32; 17];
-        const INVALID_CODE: i16 = 1 << 9 | 286;
+        const INVALID_CODE: i16 = (1 << 9) | 286;
         // Set the values in the fast table to return a
         // non-zero length and an invalid symbol instead of zero
         // so that we do not have to have a check for a zero
@@ -755,8 +878,12 @@ fn init_tree(r: &mut DecompressorOxide, l: &mut LocalVars) -> Option<Action> {
         if table_size > code_sizes.len() {
             return None;
         }
+
         for &code_size in &code_sizes[..table_size] {
             let cs = code_size as usize;
+            // Code sizes are limited to max 15 according to the
+            // deflate spec.
+            // If it is larger than this, something has gone wrong...
             if cs >= total_symbols.len() {
                 return None;
             }
@@ -792,15 +919,17 @@ fn init_tree(r: &mut DecompressorOxide, l: &mut LocalVars) -> Option<Action> {
 
         let mut tree_next = -1;
         for symbol_index in 0..table_size {
-            let code_size = code_sizes[symbol_index];
-            if code_size == 0 || usize::from(code_size) >= next_code.len() {
+            // Code sizes are limited to 15 according to the spec
+            // It's already checked earlier but the compiler might not be smart enough to know that.
+            let code_size = code_sizes[symbol_index] & 15;
+            if code_size == 0 {
                 continue;
             }
 
             let cur_code = next_code[code_size as usize];
             next_code[code_size as usize] += 1;
 
-            let n = cur_code & (u32::MAX >> (32 - code_size));
+            let n = (cur_code & (u32::MAX >> (32 - code_size))) as u16;
 
             let mut rev_code = if n < 512 {
                 // Using a lookup table
@@ -811,7 +940,7 @@ fn init_tree(r: &mut DecompressorOxide, l: &mut LocalVars) -> Option<Action> {
                 reverse_bits(n)
             } else {
                 n.reverse_bits()
-            } >> (32 - code_size);
+            } >> (16 - code_size);
 
             if code_size <= FAST_LOOKUP_BITS {
                 let k = (i16::from(code_size) << 9) | symbol_index as i16;
@@ -915,23 +1044,37 @@ fn transfer(
     } else {
         out_pos - source_pos
     };
-    if out_buf_size_mask == usize::MAX && source_diff == 1 && out_pos > source_pos {
-        let init = out_slice[out_pos - 1];
-        let end = (match_len >> 2) * 4 + out_pos;
 
+    // The last 3 bytes can wrap as those are dealt with separately at the end.
+    let not_wrapping =
+        (out_buf_size_mask == usize::MAX) || ((source_pos + match_len - 3) < out_slice.len());
+
+    let end_pos = ((match_len >> 2) * 4) + out_pos;
+    if not_wrapping && source_diff == 1 && out_pos > source_pos {
+        let end = (match_len >> 2) * 4 + out_pos;
+        let init = out_slice[out_pos - 1];
         out_slice[out_pos..end].fill(init);
         out_pos = end;
         source_pos = end - 1;
-    // if the difference between `source_pos` and `out_pos` is greater than 3, we
+    // if the difference between `source_pos` and `out_pos` is greater than 3,
+    // and we are not wrapping, we
     // can do slightly better than the naive case by copying everything at once
-    } else if out_buf_size_mask == usize::MAX && source_diff >= 4 && out_pos > source_pos {
-        for _ in 0..match_len >> 2 {
+    } else if not_wrapping && out_pos > source_pos && (out_pos - source_pos >= 4) {
+        let end_pos = cmp::min(end_pos, out_slice.len().saturating_sub(3));
+        while out_pos < end_pos {
             out_slice.copy_within(source_pos..=source_pos + 3, out_pos);
             source_pos += 4;
             out_pos += 4;
         }
     } else {
-        for _ in 0..match_len >> 2 {
+        let end_pos = cmp::min(end_pos, out_slice.len().saturating_sub(3));
+        while out_pos < end_pos {
+            // Placing these assertions moves some bounds check before the accesses which
+            // makes the compiler able to optimize better.
+            // Ideally we would find a safe way to remove them entirely.
+            assert!(out_pos + 3 < out_slice.len());
+            assert!((source_pos + 3) & out_buf_size_mask < out_slice.len());
+
             out_slice[out_pos] = out_slice[source_pos & out_buf_size_mask];
             out_slice[out_pos + 1] = out_slice[(source_pos + 1) & out_buf_size_mask];
             out_slice[out_pos + 2] = out_slice[(source_pos + 2) & out_buf_size_mask];
@@ -945,10 +1088,14 @@ fn transfer(
         0 => (),
         1 => out_slice[out_pos] = out_slice[source_pos & out_buf_size_mask],
         2 => {
+            assert!(out_pos + 1 < out_slice.len());
+            assert!((source_pos + 1) & out_buf_size_mask < out_slice.len());
             out_slice[out_pos] = out_slice[source_pos & out_buf_size_mask];
             out_slice[out_pos + 1] = out_slice[(source_pos + 1) & out_buf_size_mask];
         }
         3 => {
+            assert!(out_pos + 2 < out_slice.len());
+            assert!((source_pos + 2) & out_buf_size_mask < out_slice.len());
             out_slice[out_pos] = out_slice[source_pos & out_buf_size_mask];
             out_slice[out_pos + 1] = out_slice[(source_pos + 1) & out_buf_size_mask];
             out_slice[out_pos + 2] = out_slice[(source_pos + 2) & out_buf_size_mask];
@@ -991,7 +1138,9 @@ fn apply_match(
     }
 
     if cfg!(not(any(target_arch = "x86", target_arch = "x86_64"))) {
-        // We are not on x86 so copy manually.
+        // The copy from slice code seems to not give any added performance at least on
+        // armv7 so transfer manually
+        // Need to test on other platforms.
         transfer(out_slice, source_pos, out_pos, match_len, out_buf_size_mask);
         return;
     }
@@ -1203,8 +1352,6 @@ fn decompress_fast(
 ///
 /// Returns a tuple containing the status of the compressor, the number of input bytes read, and the
 /// number of bytes output to `out`.
-///
-/// This function shouldn't panic pending any bugs.
 pub fn decompress(
     r: &mut DecompressorOxide,
     in_buf: &[u8],
@@ -1461,13 +1608,14 @@ pub fn decompress(
                         flags, &mut in_iter, |r, l, symbol| {
                             l.dist = symbol as u32;
                             if l.dist < 16 {
-                                r.len_codes[l.counter as usize] = l.dist as u8;
+                                r.len_codes[l.counter as usize & LEN_CODES_MASK] = l.dist as u8;
                                 l.counter += 1;
                                 Action::None
                             } else if l.dist == 16 && l.counter == 0 {
                                 Action::Jump(BadCodeSizeDistPrevLookup)
                             } else {
-                                l.num_extra = [2, 3, 7][l.dist as usize - 16];
+                                // Last value is a dummy to allow mask.
+                                l.num_extra = [2, 3, 7, 0][(l.dist as usize - 16) & 3];
                                 Action::Jump(ReadExtraBitsCodeSize)
                             }
                         }
@@ -1475,13 +1623,20 @@ pub fn decompress(
                 } else if l.counter != u32::from(r.table_sizes[LITLEN_TABLE]) + u32::from(r.table_sizes[DIST_TABLE]) {
                     Action::Jump(BadCodeSizeSum)
                 } else {
+
                     r.code_size_literal[..r.table_sizes[LITLEN_TABLE] as usize]
-                        .copy_from_slice(&r.len_codes[..r.table_sizes[LITLEN_TABLE] as usize]);
+                        .copy_from_slice(&r.len_codes[..r.table_sizes[LITLEN_TABLE] as usize & LEN_CODES_MASK]);
 
                     let dist_table_start = r.table_sizes[LITLEN_TABLE] as usize;
+                    debug_assert!(dist_table_start < r.len_codes.len());
                     let dist_table_end = (r.table_sizes[LITLEN_TABLE] +
                                           r.table_sizes[DIST_TABLE]) as usize;
-                    r.code_size_dist[..r.table_sizes[DIST_TABLE] as usize]
+                    let code_size_dist_end = r.table_sizes[DIST_TABLE] as usize;
+                    debug_assert!(dist_table_end < r.len_codes.len());
+                    debug_assert!(code_size_dist_end < r.code_size_dist.len());
+                    let dist_table_start = dist_table_start & LEN_CODES_MASK;
+                    let dist_table_end = dist_table_end & LEN_CODES_MASK;
+                    r.code_size_dist[..code_size_dist_end & (MAX_HUFF_SYMBOLS_1 - 1)]
                         .copy_from_slice(&r.len_codes[dist_table_start..dist_table_end]);
 
                     r.block_type -= 1;
@@ -1493,15 +1648,22 @@ pub fn decompress(
                 let num_extra = l.num_extra.into();
                 read_bits(&mut l, num_extra, &mut in_iter, flags, |l, mut extra_bits| {
                     // Mask to avoid a bounds check.
-                    extra_bits += [3, 3, 11][(l.dist as usize - 16) & 3];
+                    // We can use 2 since the 2 first values are the same.
+                    extra_bits += [3, 3, 11][(l.dist as usize - 16) & 2];
                     let val = if l.dist == 16 {
-                        r.len_codes[l.counter as usize - 1]
+                        debug_assert!(l.counter as usize - 1 < r.len_codes.len());
+                        r.len_codes[(l.counter as usize - 1) & LEN_CODES_MASK]
                     } else {
                         0
                     };
 
+                    let fill_start = l.counter as usize;
+                    let fill_end = l.counter as usize + extra_bits as usize;
+                    debug_assert!(fill_start < r.len_codes.len());
+                    debug_assert!(fill_end < r.len_codes.len());
+
                     r.len_codes[
-                            l.counter as usize..l.counter as usize + extra_bits as usize
+                            fill_start & LEN_CODES_MASK..fill_end & LEN_CODES_MASK
                         ].fill(val);
                     l.counter += extra_bits as u32;
                     Action::Jump(ReadLitlenDistTablesCodeSize)
@@ -1751,7 +1913,16 @@ pub fn decompress(
                         Action::Jump(DoneForever)
                     }
                 } else {
-                    Action::Jump(ReadBlockHeader)
+                    #[cfg(feature = "block-boundary")]
+                    if flags & TINFL_FLAG_STOP_ON_BLOCK_BOUNDARY != 0 {
+                        Action::End(TINFLStatus::BlockBoundary)
+                    } else {
+                        Action::Jump(ReadBlockHeader)
+                    }
+                    #[cfg(not(feature = "block-boundary"))]
+                    {
+                        Action::Jump(ReadBlockHeader)
+                    }
                 }
             }),
 
@@ -1796,6 +1967,12 @@ pub fn decompress(
     } else {
         0
     };
+
+    // If we're returning after completing a block, prepare for the next block when called again.
+    #[cfg(feature = "block-boundary")]
+    if status == TINFLStatus::BlockBoundary {
+        state = State::ReadBlockHeader;
+    }
 
     // Make sure HasMoreOutput overrides NeedsMoreInput if the output buffer is full.
     // (Unless the missing input is the adler32 value in which case we don't need to write anything.)
@@ -2126,5 +2303,13 @@ mod test {
         };
         //println!("status {:?}", status);
         assert!(status != BadTotalSymbols);
+    }
+
+    #[test]
+    fn reverse_bits_lookup() {
+        use super::reverse_bits;
+        for i in 0..512 {
+            assert_eq!(reverse_bits(i), i.reverse_bits());
+        }
     }
 }

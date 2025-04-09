@@ -8,8 +8,8 @@ use super::super::*;
 use super::deflate_flags::*;
 use super::CompressionLevel;
 use crate::deflate::buffer::{
-    update_hash, HashBuffers, LocalBuf, LZ_CODE_BUF_SIZE, LZ_DICT_FULL_SIZE, LZ_HASH_BITS,
-    LZ_HASH_SHIFT, LZ_HASH_SIZE, OUT_BUF_SIZE,
+    update_hash, HashBuffers, LocalBuf, LZ_CODE_BUF_MASK, LZ_CODE_BUF_SIZE, LZ_DICT_FULL_SIZE,
+    LZ_HASH_BITS, LZ_HASH_SHIFT, LZ_HASH_SIZE, OUT_BUF_SIZE,
 };
 use crate::deflate::stored::compress_stored;
 use crate::deflate::zlib;
@@ -25,26 +25,26 @@ pub(crate) const MAX_PROBES_MASK: u32 = 0xFFF;
 
 const MAX_SUPPORTED_HUFF_CODESIZE: usize = 15;
 
-/// Length code for length values.
-#[rustfmt::skip]
-const LEN_SYM: [u16; 256] = [
-    257, 258, 259, 260, 261, 262, 263, 264, 265, 265, 266, 266, 267, 267, 268, 268,
-    269, 269, 269, 269, 270, 270, 270, 270, 271, 271, 271, 271, 272, 272, 272, 272,
-    273, 273, 273, 273, 273, 273, 273, 273, 274, 274, 274, 274, 274, 274, 274, 274,
-    275, 275, 275, 275, 275, 275, 275, 275, 276, 276, 276, 276, 276, 276, 276, 276,
-    277, 277, 277, 277, 277, 277, 277, 277, 277, 277, 277, 277, 277, 277, 277, 277,
-    278, 278, 278, 278, 278, 278, 278, 278, 278, 278, 278, 278, 278, 278, 278, 278,
-    279, 279, 279, 279, 279, 279, 279, 279, 279, 279, 279, 279, 279, 279, 279, 279,
-    280, 280, 280, 280, 280, 280, 280, 280, 280, 280, 280, 280, 280, 280, 280, 280,
-    281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281,
-    281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281, 281,
-    282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282,
-    282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282, 282,
-    283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283,
-    283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283, 283,
-    284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284,
-    284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 284, 285
+// Length code for length values - 256.
+// We use an offset to help with bound check avoidance as we can mask values to 32
+// and it also saves some memory as we can use a u8 instead of a u16.
+// Conventiently our table is large enough that we can get away with using an
+// offset of 256 which results in very efficient code.
+const LEN_SYM: [u8; 256] = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 13, 13, 14, 14, 14, 14, 15, 15,
+    15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19,
+    19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20, 20, 20, 20, 21, 21, 21, 21, 21, 21, 21, 21, 21, 21,
+    21, 21, 21, 21, 21, 21, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 23, 23,
+    23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24, 24, 24, 24,
+    24, 24, 24, 24, 24, 24, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25,
+    25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 25, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26,
+    26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 27, 27,
+    27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27,
+    27, 27, 27, 27, 27, 27, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28,
+    28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 29,
 ];
+
+const LEN_SYM_OFFSET: usize = 256;
 
 /// Number of extra bits for length values.
 #[rustfmt::skip]
@@ -315,7 +315,7 @@ fn write_u16_le(val: u16, slice: &mut [u8], pos: usize) {
 }
 
 // Read the two bytes starting at pos and interpret them as an u16.
-#[inline]
+#[inline(always)]
 const fn read_u16_le<const N: usize>(slice: &[u8; N], pos: usize) -> u16 {
     // The compiler is smart enough to optimize this into an unaligned load.
     slice[pos] as u16 | ((slice[pos + 1] as u16) << 8)
@@ -1254,7 +1254,20 @@ impl DictOxide {
                     let next_probe_pos = self.b.next[probe_pos] as usize;
 
                     dist = (lookahead_pos - next_probe_pos) & 0xFFFF;
-                    if next_probe_pos == 0 || dist > max_dist {
+                    // Optimization: The last condition should never be hit but helps the compiler by avoiding
+                    // doing the bounds check in the read_u16_le call and adding the extra instructions
+                    // for branching to a panic after that and instead just adds the extra instruction here
+                    // instead saving some instructions and thus improving performance a bit.
+                    // May want to investigate whether we can avoid it entirely but as of now the compiler
+                    // isn't able to deduce that match_len - 1 is bounded to [1-257]
+                    // Disable clippy lint as it needs to be written in this specific way
+                    // rather than MAX_MATCH_LEN to work
+                    // because the compiler isn't super smart....
+                    #[allow(clippy::int_plus_one)]
+                    if next_probe_pos == 0
+                        || dist > max_dist
+                        || match_len as usize - 1 >= MAX_MATCH_LEN
+                    {
                         // We reached the end of the hash chain, or the next value is further away
                         // than the maximum allowed distance, so return the best match we found, if
                         // any.
@@ -1265,7 +1278,6 @@ impl DictOxide {
                     // position to match against.
                     probe_pos = next_probe_pos & LZ_DICT_SIZE_MASK;
 
-                    // TODO: This bounds check does not get optimized out
                     if read_u16_le(&self.b.dict, probe_pos + match_len as usize - 1) == c01 {
                         break 'found;
                     }
@@ -1305,14 +1317,18 @@ impl DictOxide {
                     if probe_len > match_len as usize {
                         match_dist = dist as u32;
                         match_len = cmp::min(max_match_len, probe_len as u32);
-                        if match_len == max_match_len {
+                        if match_len >= max_match_len {
                             // We found a match that had the maximum allowed length,
                             // so there is now point searching further.
                             return (match_dist, match_len);
                         }
                         // We found a better match, so save the last two bytes for further match
                         // comparisons.
-                        c01 = read_u16_le(&self.b.dict, pos + match_len as usize - 1);
+                        // Optimization: use saturating_sub makes the compiler able to evade the bounds check
+                        // at the cost of some extra instructions since it avoids any possibility of wraparound.
+                        // need to see if we can find a better way to do this since this is still a bit costly.
+                        c01 =
+                            read_u16_le(&self.b.dict, (pos + match_len as usize).saturating_sub(1));
                     }
                     continue 'outer;
                 }
@@ -1485,19 +1501,22 @@ fn compress_lz_codes(
             let sym;
             let num_extra_bits;
 
-            let match_len = lz_code_buf[i] as usize;
+            let match_len = lz_code_buf[i & LZ_CODE_BUF_MASK] as usize;
 
-            let match_dist = read_u16_le(lz_code_buf, i + 1);
+            let match_dist = lz_code_buf[(i + 1) & LZ_CODE_BUF_MASK] as u16
+                | ((lz_code_buf[(i + 2) & LZ_CODE_BUF_MASK] as u16) << 8);
 
             i += 3;
 
-            debug_assert!(huff.code_sizes[0][LEN_SYM[match_len] as usize] != 0);
+            debug_assert!(huff.code_sizes[0][LEN_SYM[match_len] as usize + LEN_SYM_OFFSET] != 0);
+            let len_sym = (LEN_SYM[match_len] & 31) as usize + LEN_SYM_OFFSET;
+
             bb.put_fast(
-                u64::from(huff.codes[0][LEN_SYM[match_len] as usize]),
-                u32::from(huff.code_sizes[0][LEN_SYM[match_len] as usize]),
+                u64::from(huff.codes[0][len_sym]),
+                u32::from(huff.code_sizes[0][len_sym]),
             );
             bb.put_fast(
-                match_len as u64 & u64::from(BITMASKS[LEN_EXTRA[match_len] as usize]),
+                match_len as u64 & u64::from(BITMASKS[(LEN_EXTRA[match_len] & 7) as usize]),
                 u32::from(LEN_EXTRA[match_len]),
             );
 
@@ -1515,14 +1534,14 @@ fn compress_lz_codes(
                 u32::from(huff.code_sizes[1][sym]),
             );
             bb.put_fast(
-                u64::from(match_dist) & u64::from(BITMASKS[num_extra_bits]),
+                u64::from(match_dist) & u64::from(BITMASKS[num_extra_bits & 15]),
                 num_extra_bits as u32,
             );
         } else {
             // The lz code was a literal
             for _ in 0..3 {
                 flags >>= 1;
-                let lit = lz_code_buf[i & (LZ_CODE_BUF_SIZE - 1)];
+                let lit = lz_code_buf[i & LZ_CODE_BUF_MASK];
                 i += 1;
 
                 debug_assert!(huff.code_sizes[0][lit as usize] != 0);
@@ -1713,15 +1732,15 @@ pub(crate) fn record_literal(h: &mut HuffmanOxide, lz: &mut LZOxide, lit: u8) {
     h.count[0][lit as usize] += 1;
 }
 
-fn record_match(h: &mut HuffmanOxide, lz: &mut LZOxide, mut match_len: u32, mut match_dist: u32) {
+fn record_match(h: &mut HuffmanOxide, lz: &mut LZOxide, match_len: u32, mut match_dist: u32) {
     debug_assert!(match_len >= MIN_MATCH_LEN.into());
     debug_assert!(match_dist >= 1);
     debug_assert!(match_dist as usize <= LZ_DICT_SIZE);
 
     lz.total_bytes += match_len;
     match_dist -= 1;
-    match_len -= u32::from(MIN_MATCH_LEN);
-    lz.write_code(match_len as u8);
+    let match_len = (match_len - u32::from(MIN_MATCH_LEN)) as u8;
+    lz.write_code(match_len);
     lz.write_code(match_dist as u8);
     lz.write_code((match_dist >> 8) as u8);
 
@@ -1735,8 +1754,9 @@ fn record_match(h: &mut HuffmanOxide, lz: &mut LZOxide, mut match_len: u32, mut 
         LARGE_DIST_SYM[((match_dist >> 8) & 127) as usize]
     } as usize;
     h.count[1][symbol] += 1;
-    // Perf - go via u8 to help optimize out bounds check.
-    h.count[0][LEN_SYM[usize::from(match_len as u8)] as usize] += 1;
+    // Mask the values from LEN_SYM here as the compiler isn't quite smart enough to infer
+    // that it only contains values smaller than 32.
+    h.count[0][(LEN_SYM[match_len as usize] as usize & 31) + LEN_SYM_OFFSET] += 1;
 }
 
 fn compress_normal(d: &mut CompressorOxide, callback: &mut CallbackOxide) -> bool {
@@ -1786,6 +1806,7 @@ fn compress_normal(d: &mut CompressorOxide, callback: &mut CallbackOxide) -> boo
                 dst_pos = (dst_pos + 1) & LZ_DICT_SIZE_MASK;
                 ins_pos += 1;
             }
+
             src_pos += num_bytes_to_process;
         } else {
             let dictb = &mut d.dict.b;
@@ -2031,6 +2052,7 @@ fn compress_fast(d: &mut CompressorOxide, callback: &mut CallbackOxide) -> bool 
                         // that ends after the end of the input data.
                         cur_match_len = cmp::min(cur_match_len, lookahead_size as u32);
                         debug_assert!(cur_match_len >= MIN_MATCH_LEN.into());
+                        debug_assert!(cur_match_len <= MAX_MATCH_LEN as u32);
                         debug_assert!(cur_match_dist >= 1);
                         debug_assert!(cur_match_dist as usize <= LZ_DICT_SIZE);
                         cur_match_dist -= 1;
@@ -2048,8 +2070,11 @@ fn compress_fast(d: &mut CompressorOxide, callback: &mut CallbackOxide) -> bool 
                                 [LARGE_DIST_SYM[(cur_match_dist >> 8) as usize] as usize] += 1;
                         }
 
-                        d.huff.count[0][LEN_SYM[(cur_match_len - u32::from(MIN_MATCH_LEN)) as usize]
-                            as usize] += 1;
+                        d.huff.count[0][(LEN_SYM
+                            [(cur_match_len - u32::from(MIN_MATCH_LEN)) as usize & 255]
+                            as usize
+                            & 31)
+                            + LEN_SYM_OFFSET] += 1;
                     }
                 } else {
                     d.lz.write_code(first_trigram as u8);
