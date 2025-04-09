@@ -7102,6 +7102,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "LauncherImageSearch",
                         "LauncherImageSearchIca"
                     ]
                 }

@@ -37,7 +37,7 @@ BASE_FEATURE(kICASupportedByHardware,
 
 BASE_FEATURE(kLauncherImageSearchOcr,
              "LauncherImageSearchOcr",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLauncherImageSearchIndexingLimit,
              "LauncherImageSearchIndexingLimit",
