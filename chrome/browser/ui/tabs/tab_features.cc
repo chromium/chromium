@@ -48,7 +48,7 @@
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
-#include "chrome/browser/ui/views/page_action/page_action_properties.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/side_panel_controller_views.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
@@ -204,8 +204,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     CHECK(pinned_actions_model);
     page_action_controller_ =
         std::make_unique<page_actions::PageActionController>(
-            page_actions::GetPageActionControllerProperties(),
-            pinned_actions_model);
+            page_actions::PageActionPropertiesProvider(), pinned_actions_model);
     page_action_controller_->Initialize(
         tab, std::vector<actions::ActionId>(page_actions::kActionIds.begin(),
                                             page_actions::kActionIds.end()));

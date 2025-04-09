@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
+#include "chrome/browser/ui/views/page_action/test_support/test_page_action_properties_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
@@ -48,6 +48,17 @@ using ::ui::EventType;
 
 constexpr int kDefaultIconSize = 16;
 const std::u16string kTestText = u"Test text";
+
+static constexpr actions::ActionId kTestPageActionId = 0;
+static const PageActionPropertiesMap kTestProperties = PageActionPropertiesMap{
+    {
+        kTestPageActionId,
+        PageActionProperties{
+            .histogram_name = "Test",
+            .is_ephemeral = true,
+        },
+    },
+};
 
 class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
  public:
@@ -82,7 +93,10 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
     auto image = ui::ImageModel::FromVectorIcon(
         vector_icons::kBackArrowIcon, ui::kColorSysPrimary, kDefaultIconSize);
     action_item_ = actions::ActionManager::Get().AddAction(
-        actions::ActionItem::Builder().SetActionId(0).SetImage(image).Build());
+        actions::ActionItem::Builder()
+            .SetActionId(kTestPageActionId)
+            .SetImage(image)
+            .Build());
     test_page_action_view_ = std::make_unique<PageActionView>(
         action_item_,
         PageActionViewParams{
@@ -105,7 +119,8 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<PageActionController> NewPageActionController(
       tabs::TabInterface& tab) const {
     auto controller = std::make_unique<PageActionController>(
-        GetPageActionControllerTestProperties(), pinned_actions_model_.get());
+        TestPageActionPropertiesProvider(kTestProperties),
+        pinned_actions_model_.get());
     controller->Initialize(tab, {action_item_->GetActionId().value()});
     return controller;
   }
@@ -137,7 +152,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
-    action_item_ = actions::ActionItem::Builder().SetActionId(0).Build();
+    action_item_ =
+        actions::ActionItem::Builder().SetActionId(kTestPageActionId).Build();
 
     // Host the view in a Widget so it can handle things like mouse input.
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);

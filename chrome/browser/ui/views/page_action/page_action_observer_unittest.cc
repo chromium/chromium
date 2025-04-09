@@ -10,15 +10,25 @@
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
+#include "chrome/browser/ui/views/page_action/test_support/test_page_action_properties_provider.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace page_actions {
+namespace {
 
 static constexpr actions::ActionId kTestPageActionId = 0;
+static const PageActionPropertiesMap kTestProperties = PageActionPropertiesMap{
+    {
+        kTestPageActionId,
+        PageActionProperties{
+            .histogram_name = "Test",
+            .is_ephemeral = true,
+        },
+    },
+};
 
 class MockPageActionObserver : public PageActionObserver {
  public:
@@ -82,7 +92,8 @@ class PageActionObserverTest : public ::testing::Test {
 
   void SetUp() override {
     controller_ = std::make_unique<PageActionController>(
-        GetPageActionControllerTestProperties(), nullptr, &model_factory_);
+        TestPageActionPropertiesProvider(kTestProperties), nullptr,
+        &model_factory_);
     controller_->Initialize(tab_, {kTestPageActionId});
   }
 
@@ -154,4 +165,5 @@ TEST_F(PageActionObserverTest, PageActionInitialStateHidden) {
   model.NotifyChanged();
 }
 
+}  // namespace
 }  // namespace page_actions

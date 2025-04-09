@@ -15,7 +15,7 @@ source_set("page_action") {
     "page_action_container_view.h",
     "page_action_controller.h",
     "page_action_observer.h",
-    "page_action_properties.h",
+    "page_action_properties_provider.h",
     "page_action_triggers.h",
     "page_action_view.h",
     "page_action_view_params.h",
@@ -28,7 +28,7 @@ source_set("page_action") {
     "page_action_model.h",
     "page_action_model_observer.h",
     "page_action_observer.cc",
-    "page_action_properties.cc",
+    "page_action_properties_provider.cc",
     "page_action_triggers.cc",
     "page_action_view.cc",
   ]
@@ -61,8 +61,8 @@ source_set("unit_tests") {
     "test_support/fake_tab_interface.h",
     "test_support/mock_page_action_model.cc",
     "test_support/mock_page_action_model.h",
-    "test_support/page_action_properties.cc",
-    "test_support/page_action_properties.h",
+    "test_support/test_page_action_properties_provider.cc",
+    "test_support/test_page_action_properties_provider.h",
   ]
 
   deps = [

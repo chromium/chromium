@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "ui/actions/actions.h"
@@ -24,6 +25,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageActionContainerView,
 
 PageActionContainerView::PageActionContainerView(
     const std::vector<actions::ActionItem*>& action_items,
+    const PageActionPropertiesProviderInterface& properties_provider,
     const PageActionViewParams& params) {
   SetProperty(views::kElementIdentifierKey, kPageActionContainerViewElementId);
 

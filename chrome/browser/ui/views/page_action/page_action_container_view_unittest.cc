@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
+#include "chrome/browser/ui/views/page_action/test_support/test_page_action_properties_provider.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/test/views_test_base.h"
@@ -15,6 +16,17 @@ namespace {
 
 constexpr int kDefaultBetweenIconSpacing = 8;
 constexpr int kDefaultIconSize = 16;
+
+static constexpr actions::ActionId kTestPageActionId = 0;
+static const PageActionPropertiesMap kTestProperties = PageActionPropertiesMap{
+    {
+        kTestPageActionId,
+        PageActionProperties{
+            .histogram_name = "Test",
+            .is_ephemeral = true,
+        },
+    },
+};
 
 class MockIconLabelViewDelegate : public IconLabelBubbleView::Delegate {
  public:
@@ -55,11 +67,12 @@ TEST_F(PageActionContainerViewTest, GetPageActionView) {
           .SetImage(ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowIcon,
                                                    ui::kColorSysPrimary,
                                                    /*icon_size=*/16))
-          .SetActionId(0)
+          .SetActionId(kTestPageActionId)
           .Build());
 
   auto page_action_container = std::make_unique<PageActionContainerView>(
-      std::vector<actions::ActionItem*>{action_item}, DefaultViewParams());
+      std::vector<actions::ActionItem*>{action_item},
+      TestPageActionPropertiesProvider(kTestProperties), DefaultViewParams());
 
   PageActionView* page_action_view =
       page_action_container->GetPageActionView(0);

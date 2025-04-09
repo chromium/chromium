@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "chrome/browser/ui/views/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/mock_page_action_model.h"
-#include "chrome/browser/ui/views/page_action/test_support/page_action_properties.h"
+#include "chrome/browser/ui/views/page_action/test_support/test_page_action_properties_provider.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -31,7 +31,23 @@
 namespace page_actions {
 namespace {
 
-constexpr int kActionItemId = 0;
+constexpr int kFirstActionItemId = 0;
+constexpr int kSecondActionItemId = 1;
+static const PageActionPropertiesMap kTestProperties =
+    PageActionPropertiesMap{{
+                                kFirstActionItemId,
+                                PageActionProperties{
+                                    .histogram_name = "Test0",
+                                    .is_ephemeral = true,
+                                },
+                            },
+                            {
+                                kSecondActionItemId,
+                                PageActionProperties{
+                                    .histogram_name = "Test1",
+                                    .is_ephemeral = true,
+                                },
+                            }};
 
 const std::u16string kText = u"Text";
 const std::u16string kOverrideText = u"Override Text";
@@ -89,7 +105,22 @@ class PageActionControllerTest : public ::testing::Test {
     pinned_actions_model_ =
         std::make_unique<PinnedToolbarActionsModel>(&profile_);
     controller_ = std::make_unique<PageActionController>(
-        GetPageActionControllerTestProperties(), pinned_actions_model_.get());
+        TestPageActionPropertiesProvider(
+            PageActionPropertiesMap{{
+                                        /*action_id=*/0,
+                                        PageActionProperties{
+                                            .histogram_name = "Test0",
+                                            .is_ephemeral = true,
+                                        },
+                                    },
+                                    {
+                                        /*action_id=*/1,
+                                        PageActionProperties{
+                                            .histogram_name = "Test1",
+                                            .is_ephemeral = true,
+                                        },
+                                    }}),
+        pinned_actions_model_.get());
     tab_interface_ = std::make_unique<FakeTabInterface>(&profile_);
     tab_interface_->Activate();
   }
@@ -182,7 +213,7 @@ TEST_F(PageActionControllerTest, ShowAndHidePageActionUpdatesCorrectModel) {
   auto action_item_a = BuildActionItem(0);
   base::CallbackListSubscription subscription_a =
       controller()->CreateActionItemSubscription(action_item_a.get());
-  auto action_item_b = BuildActionItem(1);
+  auto action_item_b = BuildActionItem(kSecondActionItemId);
   base::CallbackListSubscription subscription_b =
       controller()->CreateActionItemSubscription(action_item_b.get());
 
@@ -371,7 +402,7 @@ class MockPageActionModelFactory : public PageActionModelFactory {
 class PageActionControllerMockModelTest : public ::testing::Test {
  public:
   PageActionControllerMockModelTest()
-      : controller_(GetPageActionControllerTestProperties(),
+      : controller_(TestPageActionPropertiesProvider(kTestProperties),
                     /*pinned_actions_model=*/nullptr,
                     &model_factory_),
         tab_interface_(&profile_) {}
@@ -390,17 +421,17 @@ class PageActionControllerMockModelTest : public ::testing::Test {
 };
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
-  controller().Initialize(tab_interface(), {kActionItemId});
+  controller().Initialize(tab_interface(), {kFirstActionItemId});
 
   // Set the text override.
-  EXPECT_CALL(models().Get(kActionItemId),
+  EXPECT_CALL(models().Get(kFirstActionItemId),
               SetOverrideText(_, std::optional<std::u16string>(kText)))
       .Times(1);
 
-  controller().OverrideText(kActionItemId, kText);
+  controller().OverrideText(kFirstActionItemId, kText);
 
   // Clear the text override.
-  EXPECT_CALL(models().Get(kActionItemId),
+  EXPECT_CALL(models().Get(kFirstActionItemId),
               SetOverrideText(_, std::optional<std::u16string>(std::nullopt)))
       .Times(1);
   controller().ClearOverrideText(0);
@@ -408,82 +439,86 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
 
 TEST_F(PageActionControllerMockModelTest, TabActivation) {
   tab_interface().Deactivate();
-  controller().Initialize(tab_interface(), {kActionItemId});
+  controller().Initialize(tab_interface(), {kFirstActionItemId});
 
-  EXPECT_CALL(models().Get(kActionItemId), SetTabActive(_, true)).Times(1);
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetTabActive(_, true)).Times(1);
   tab_interface().Activate();
 }
 
 TEST_F(PageActionControllerMockModelTest, TabDeactivation) {
   tab_interface().Activate();
-  controller().Initialize(tab_interface(), {kActionItemId});
+  controller().Initialize(tab_interface(), {kFirstActionItemId});
 
-  EXPECT_CALL(models().Get(kActionItemId), SetTabActive(_, false)).Times(1);
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetTabActive(_, false))
+      .Times(1);
   tab_interface().Deactivate();
 }
 
 TEST_F(PageActionControllerMockModelTest, ShowSuggestionChip) {
-  controller().Initialize(tab_interface(), {kActionItemId});
+  controller().Initialize(tab_interface(), {kFirstActionItemId});
 
-  EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(_, true))
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetShowSuggestionChip(_, true))
       .Times(1);
-  EXPECT_CALL(models().Get(kActionItemId), SetShouldAnimateChip(_, true)).Times(1);
-  controller().ShowSuggestionChip(kActionItemId);
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetShouldAnimateChip(_, true))
+      .Times(1);
+  controller().ShowSuggestionChip(kFirstActionItemId);
 
-  EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(_, true))
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetShowSuggestionChip(_, true))
       .Times(1);
-  EXPECT_CALL(models().Get(kActionItemId), SetShouldAnimateChip(_, false)).Times(1);
-  controller().ShowSuggestionChip(kActionItemId, {.should_animate = false});
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetShouldAnimateChip(_, false))
+      .Times(1);
+  controller().ShowSuggestionChip(kFirstActionItemId,
+                                  {.should_animate = false});
 
-  EXPECT_CALL(models().Get(kActionItemId), SetShowSuggestionChip(_, false))
+  EXPECT_CALL(models().Get(kFirstActionItemId), SetShowSuggestionChip(_, false))
       .Times(1);
-  controller().HideSuggestionChip(kActionItemId);
+  controller().HideSuggestionChip(kFirstActionItemId);
 }
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideImage) {
-  controller().Initialize(tab_interface(), {kActionItemId});
+  controller().Initialize(tab_interface(), {kFirstActionItemId});
 
   ui::ImageModel override_image =
       ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/32));
 
   EXPECT_CALL(
-      models().Get(kActionItemId),
+      models().Get(kFirstActionItemId),
       SetOverrideImage(_, std::optional<ui::ImageModel>(override_image)))
       .Times(1);
-  controller().OverrideImage(kActionItemId, override_image);
+  controller().OverrideImage(kFirstActionItemId, override_image);
 
-  EXPECT_CALL(models().Get(kActionItemId),
+  EXPECT_CALL(models().Get(kFirstActionItemId),
               SetOverrideImage(_, std::optional<ui::ImageModel>(std::nullopt)))
       .Times(1);
-  controller().ClearOverrideImage(kActionItemId);
+  controller().ClearOverrideImage(kFirstActionItemId);
 }
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideTooltip) {
-  controller().Initialize(tab_interface(), {kActionItemId});
+  controller().Initialize(tab_interface(), {kFirstActionItemId});
 
   EXPECT_CALL(
-      models().Get(kActionItemId),
+      models().Get(kFirstActionItemId),
       SetOverrideTooltip(_, std::optional<std::u16string>(kOverrideText)))
       .Times(1);
-  controller().OverrideTooltip(kActionItemId, kOverrideText);
+  controller().OverrideTooltip(kFirstActionItemId, kOverrideText);
 
   EXPECT_CALL(
-      models().Get(kActionItemId),
+      models().Get(kFirstActionItemId),
       SetOverrideTooltip(_, std::optional<std::u16string>(std::nullopt)))
       .Times(1);
-  controller().ClearOverrideTooltip(kActionItemId);
+  controller().ClearOverrideTooltip(kFirstActionItemId);
 }
 
 TEST_F(PageActionControllerMockModelTest, ShouldForciblyHidePageActions) {
-  controller().Initialize(tab_interface(), {kActionItemId});
+  controller().Initialize(tab_interface(), {kFirstActionItemId});
 
-  EXPECT_CALL(models().Get(kActionItemId),
+  EXPECT_CALL(models().Get(kFirstActionItemId),
               SetShouldHidePageAction(_, /*should_hide_page_actions*/ true))
       .Times(1);
 
   controller().SetShouldHidePageActions(true);
 
-  EXPECT_CALL(models().Get(kActionItemId),
+  EXPECT_CALL(models().Get(kFirstActionItemId),
               SetShouldHidePageAction(_, /*should_hide_page_actions*/ false))
       .Times(1);
 
