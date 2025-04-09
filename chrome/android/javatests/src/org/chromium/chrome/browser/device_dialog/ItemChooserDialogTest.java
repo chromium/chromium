@@ -22,7 +22,6 @@ import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,9 +32,9 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.permissions.DeviceItemAdapter;
 import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -50,13 +49,9 @@ import org.chromium.ui.widget.TextViewWithClickableSpans;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/344665244): Failing when batched, batch this again.
 public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCallback {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     ItemChooserDialog mChooserDialog;
 
@@ -98,7 +93,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
     }
 
     private Drawable getNewTestDrawable() {
-        final Activity activity = sActivityTestRule.getActivity();
+        final Activity activity = mActivityTestRule.getActivity();
         Drawable drawable =
                 VectorDrawableCompat.create(
                         activity.getResources(),
@@ -127,7 +122,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                         statusIdleNoneFound,
                         statusIdleSomeFound,
                         positiveButton);
-        Activity activity = sActivityTestRule.getActivity();
+        Activity activity = mActivityTestRule.getActivity();
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     return new ItemChooserDialog(
