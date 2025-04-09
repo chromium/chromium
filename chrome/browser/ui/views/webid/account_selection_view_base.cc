@@ -365,18 +365,23 @@ std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
         footer = base::UTF8ToUTF16(idp_data.idp_for_display);
       }
     }
+    std::u16string title = account->is_filtered_out
+                               ? base::UTF8ToUTF16(account->display_identifier)
+                               : base::UTF8ToUTF16(account->display_name);
+    std::u16string subtitle =
+        account->is_filtered_out
+            ? l10n_util::GetStringUTF16(IDS_FILTERED_ACCOUNT_MESSAGE)
+            : base::UTF8ToUTF16(account->display_identifier);
+    if (title.empty()) {
+      // display_name is never empty. Show it if there is no display_identifier.
+      title = base::UTF8ToUTF16(account->display_name);
+    }
     // We can pass crefs to OnAccountSelected because the `observer_` owns the
     // data.
     auto row = std::make_unique<AccountHoverButton>(
         base::BindRepeating(&FedCmAccountSelectionView::OnAccountSelected,
                             base::Unretained(owner_), account),
-        std::move(account_image_view),
-        /*title=*/account->is_filtered_out
-            ? base::UTF8ToUTF16(account->display_identifier)
-            : base::UTF8ToUTF16(account->display_name),
-        /*subtitle=*/account->is_filtered_out
-            ? l10n_util::GetStringUTF16(IDS_FILTERED_ACCOUNT_MESSAGE)
-            : base::UTF8ToUTF16(account->display_identifier),
+        std::move(account_image_view), title, subtitle,
         /*secondary_view=*/
         is_modal_dialog ? std::make_unique<AccountHoverButtonSecondaryView>()
                         : nullptr,

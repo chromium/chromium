@@ -138,7 +138,8 @@ views::View* AccountSelectionViewTestBase::GetViewWithClassName(
 
 void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
     views::View* row,
-    const std::string& account_suffix) {
+    const std::string& account_suffix,
+    bool has_display_identifier) {
   std::vector<raw_ptr<views::View, VectorExperimental>> row_children =
       row->children();
   ASSERT_EQ(row_children.size(), 2u);
@@ -157,7 +158,8 @@ void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
             views::BoxLayout::Orientation::kVertical);
   std::vector<raw_ptr<views::View, VectorExperimental>> text_view_children =
       text_view->children();
-  ASSERT_EQ(text_view_children.size(), 2u);
+  unsigned int expected_children = has_display_identifier ? 2u : 1u;
+  ASSERT_EQ(text_view_children.size(), expected_children);
 
   std::string expected_display_name(std::string(kDisplayNameBase) +
                                     account_suffix);
@@ -166,12 +168,15 @@ void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
   ASSERT_TRUE(name_view);
   EXPECT_EQ(name_view->GetText(), base::UTF8ToUTF16(expected_display_name));
 
-  std::string expected_display_identifier(std::string(kDisplayIdentifierBase) +
-                                          account_suffix);
-  views::Label* email_view = static_cast<views::Label*>(text_view_children[1]);
-  ASSERT_TRUE(email_view);
-  EXPECT_EQ(email_view->GetText(),
-            base::UTF8ToUTF16(expected_display_identifier));
+  if (has_display_identifier) {
+    std::string expected_display_identifier(
+        std::string(kDisplayIdentifierBase) + account_suffix);
+    views::Label* display_identifier_view =
+        static_cast<views::Label*>(text_view_children[1]);
+    ASSERT_TRUE(display_identifier_view);
+    EXPECT_EQ(display_identifier_view->GetText(),
+              base::UTF8ToUTF16(expected_display_identifier));
+  }
 }
 
 void AccountSelectionViewTestBase::CheckHoverableAccountRows(
@@ -189,13 +194,15 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRows(
       ++accounts_index;
     }
     CheckHoverableAccountRow(accounts[accounts_index++], account_suffix,
-                             expect_idp, is_modal_dialog);
+                             /*has_display_identifier=*/true, expect_idp,
+                             is_modal_dialog);
   }
 }
 
 void AccountSelectionViewTestBase::CheckHoverableAccountRow(
     views::View* account,
     const std::string& account_suffix,
+    bool has_display_identifier,
     bool expect_idp,
     bool is_modal_dialog,
     bool is_disabled) {
@@ -209,15 +216,19 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
   // Check for the title, which is the display name if the account is not
   // filtered out and the display identifier otherwise.
   EXPECT_EQ(GetHoverButtonTitle(account_row),
-            is_disabled
+            (is_disabled && has_display_identifier)
                 ? base::UTF8ToUTF16(kDisplayIdentifierBase + account_suffix)
                 : base::UTF8ToUTF16(kDisplayNameBase + account_suffix));
 
   if (!is_disabled) {
-    // Check for account display identifier in subtitle.
-    EXPECT_EQ(GetHoverButtonSubtitle(account_row)->GetText(),
-              base::UTF8ToUTF16(std::string(kDisplayIdentifierBase) +
-                                account_suffix));
+    if (has_display_identifier) {
+      // Check for account display identifier in subtitle.
+      EXPECT_EQ(GetHoverButtonSubtitle(account_row)->GetText(),
+                base::UTF8ToUTF16(std::string(kDisplayIdentifierBase) +
+                                  account_suffix));
+    } else {
+      EXPECT_EQ(nullptr, GetHoverButtonSubtitle(account_row));
+    }
     EXPECT_TRUE(account_row->GetEnabled());
   } else {
     // Check that the subtitle says that the account is disabled.
@@ -225,10 +236,12 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRow(
               u"You can't sign in using this account");
     EXPECT_FALSE(account_row->GetEnabled());
   }
-  // The subtitle has changed style, so AutoColorReadabilityEnabled should be
-  // set.
-  EXPECT_TRUE(
-      GetHoverButtonSubtitle(account_row)->GetAutoColorReadabilityEnabled());
+  if (is_disabled || has_display_identifier) {
+    // The subtitle has changed style, so AutoColorReadabilityEnabled should be
+    // set.
+    EXPECT_TRUE(
+        GetHoverButtonSubtitle(account_row)->GetAutoColorReadabilityEnabled());
+  }
 
   // Check for account icon.
   views::View* icon_view = GetHoverButtonIconView(account_row);

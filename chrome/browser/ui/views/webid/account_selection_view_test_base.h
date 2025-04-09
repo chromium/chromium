@@ -66,7 +66,8 @@ class AccountSelectionViewTestBase {
   views::View* GetHoverButtonSecondaryView(HoverButton* account);
 
   void CheckNonHoverableAccountRow(views::View* row,
-                                   const std::string& account_suffix);
+                                   const std::string& account_suffix,
+                                   bool has_display_identifier);
   void CheckHoverableAccountRows(
       const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
       const std::vector<std::string>& account_suffixes,
@@ -75,6 +76,7 @@ class AccountSelectionViewTestBase {
       bool is_modal_dialog = false);
   void CheckHoverableAccountRow(views::View* account,
                                 const std::string& account_suffix,
+                                bool has_display_identifier,
                                 bool expect_idp = false,
                                 bool is_modal_dialog = false,
                                 bool is_disabled = false);

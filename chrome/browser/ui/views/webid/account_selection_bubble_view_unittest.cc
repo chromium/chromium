@@ -159,9 +159,13 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   }
 
   void CreateAndShowSingleAccountPicker(
+      bool has_display_identifier,
       LoginState login_state = LoginState::kSignUp) {
     IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
         kAccountSuffix, idp_data_, login_state);
+    if (!has_display_identifier) {
+      account->display_identifier = "";
+    }
 
     CreateAccountSelectionBubble();
     account->identity_provider = idp_data_;
@@ -277,8 +281,10 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
   }
 
   void TestSingleAccount(const std::u16string expected_title,
-                         bool expected_icon_visibility) {
-    CreateAndShowSingleAccountPicker();
+                         bool expected_icon_visibility,
+                         bool has_display_identifier) {
+    CreateAndShowSingleAccountPicker(has_display_identifier,
+                                     LoginState::kSignUp);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> children =
         dialog()->children();
@@ -290,7 +296,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
     ASSERT_EQ(single_account_chooser->children().size(), 3u);
 
     CheckNonHoverableAccountRow(single_account_chooser->children()[0],
-                                kAccountSuffix);
+                                kAccountSuffix, has_display_identifier);
 
     // Check the "Continue as" button.
     views::MdTextButton* button = static_cast<views::MdTextButton*>(
@@ -509,12 +515,13 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccount) {
   TestSingleAccount(kTitleSignIn,
-                    /*expected_icon_visibility=*/true);
+                    /*expected_icon_visibility=*/true,
+                    /*has_display_identifier=*/true);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, SingleAccountNoTermsOfService) {
   idp_data_->client_metadata.terms_of_service_url = GURL("");
-  CreateAndShowSingleAccountPicker();
+  CreateAndShowSingleAccountPicker(true);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
@@ -544,7 +551,7 @@ TEST_F(AccountSelectionBubbleViewTest, SingleAccountOnlyTwoDisclosureFields) {
       content::IdentityRequestDialogDisclosureField::kName,
       content::IdentityRequestDialogDisclosureField::kEmail};
   idp_data_->client_metadata.terms_of_service_url = GURL();
-  CreateAndShowSingleAccountPicker();
+  CreateAndShowSingleAccountPicker(true);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
@@ -594,7 +601,7 @@ TEST_F(AccountSelectionBubbleViewTest, UseDifferentAccountNotSupported) {
 }
 
 TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
-  CreateAndShowSingleAccountPicker(LoginState::kSignIn);
+  CreateAndShowSingleAccountPicker(true, LoginState::kSignIn);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
@@ -609,7 +616,8 @@ TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
   ASSERT_EQ(chooser_children.size(), 2u);
   views::View* single_account_row = chooser_children[0];
 
-  CheckNonHoverableAccountRow(single_account_row, kAccountSuffix);
+  CheckNonHoverableAccountRow(single_account_row, kAccountSuffix,
+                              /*has_display_identifier=*/true);
 
   // Check the "Continue as" button.
   views::MdTextButton* button =
@@ -621,7 +629,7 @@ TEST_F(AccountSelectionBubbleViewTest, ReturningAccount) {
 
 TEST_F(AccountSelectionBubbleViewTest, NewAccountWithoutRequestPermission) {
   idp_data_->disclosure_fields = {};
-  CreateAndShowSingleAccountPicker();
+  CreateAndShowSingleAccountPicker(true);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       dialog()->children();
@@ -636,7 +644,8 @@ TEST_F(AccountSelectionBubbleViewTest, NewAccountWithoutRequestPermission) {
   ASSERT_EQ(chooser_children.size(), 2u);
   views::View* single_account_row = chooser_children[0];
 
-  CheckNonHoverableAccountRow(single_account_row, kAccountSuffix);
+  CheckNonHoverableAccountRow(single_account_row, kAccountSuffix,
+                              /*has_display_identifier=*/true);
 
   // Check the "Continue as" button.
   views::MdTextButton* button =
@@ -733,7 +742,8 @@ TEST_F(AccountSelectionBubbleViewTest, Verifying) {
 
   views::View* row_container = dialog()->children()[2];
   ASSERT_EQ(row_container->children().size(), 1u);
-  CheckNonHoverableAccountRow(row_container->children()[0], kAccountSuffix);
+  CheckNonHoverableAccountRow(row_container->children()[0], kAccountSuffix,
+                              /*has_display_identifier=*/true);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
@@ -753,7 +763,8 @@ TEST_F(AccountSelectionBubbleViewTest, VerifyingForAutoReauthn) {
 
   views::View* row_container = dialog()->children()[2];
   ASSERT_EQ(row_container->children().size(), 1u);
-  CheckNonHoverableAccountRow(row_container->children()[0], kAccountSuffix);
+  CheckNonHoverableAccountRow(row_container->children()[0], kAccountSuffix,
+                              /*has_display_identifier=*/true);
 }
 
 TEST_F(AccountSelectionBubbleViewTest, Failure) {
@@ -781,7 +792,8 @@ class MultipleIdpAccountSelectionBubbleViewTest
 // AccountSelectionBubbleViewTest's SingleAccount test.
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest, SingleAccount) {
   TestSingleAccount(kTitleSignIn,
-                    /*expected_icon_visibility=*/true);
+                    /*expected_icon_visibility=*/true,
+                    /*has_display_identifier=*/true);
 }
 
 // Tests that when there is multiple accounts but only one IDP, the UI is
@@ -1238,7 +1250,7 @@ TEST_F(AccountSelectionBubbleViewTest, ErrorWithDifferentErrorCodes) {
 TEST_F(AccountSelectionBubbleViewTest, EmptyBrandIconHidesImageView) {
   idp_data_->idp_metadata.brand_icon_url = GURL("invalid url");
   idp_data_->idp_metadata.brand_decoded_icon = gfx::Image();
-  CreateAndShowSingleAccountPicker();
+  CreateAndShowSingleAccountPicker(true);
 
   views::View* brand_icon_image_view = static_cast<views::View*>(
       GetViewWithClassName(dialog()->children()[0], "BrandIconImageView"));
@@ -1274,6 +1286,7 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccount) {
 
   // Check the filtered account and use a different account button.
   CheckHoverableAccountRow(accounts[0], kAccountSuffix,
+                           /*has_display_identifier=*/true,
                            /*expect_idp=*/false, /*is_modal_dialog=*/false,
                            /*is_disabled=*/true);
   CheckUseOtherAccount(accounts[2]);
@@ -1311,6 +1324,7 @@ TEST_F(AccountSelectionBubbleViewTest, MultipleDisabledAccounts) {
   for (size_t i = 0; i < 3; ++i) {
     CheckHoverableAccountRow(contents[i],
                              kAccountSuffix + base::NumberToString(i),
+                             /*has_display_identifier=*/true,
                              /*expect_idp=*/false, /*is_modal_dialog=*/false,
                              /*is_disabled=*/true);
   }
@@ -1347,12 +1361,63 @@ TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
   std::vector<raw_ptr<views::View, VectorExperimental>> contents =
       GetContents(children[1]);
   CheckHoverableAccountRow(contents[0], kAccountSuffixes[0],
+                           /*has_display_identifier=*/true,
                            /*expect_idp=*/false, /*is_modal_dialog=*/false,
                            /*is_disabled=*/false);
   CheckHoverableAccountRow(contents[1], kAccountSuffixes[1],
+                           /*has_display_identifier=*/true,
                            /*expect_idp=*/false, /*is_modal_dialog=*/false,
                            /*is_disabled=*/true);
   CheckUseOtherAccount(contents[3]);
+}
+
+TEST_F(AccountSelectionBubbleViewTest, SingleIdentifierAccounts) {
+  idp_data_->idp_metadata.has_filtered_out_account = true;
+  std::vector<IdentityRequestAccountPtr> accounts_list;
+  const std::vector<std::string> kAccountSuffixes = {"enabled", "disabled"};
+  IdentityRequestAccountPtr account1 = CreateTestIdentityRequestAccount(
+      kAccountSuffixes[0], idp_data_, LoginState::kSignIn);
+  account1->display_identifier = "";
+  accounts_list.push_back(std::move(account1));
+  IdentityRequestAccountPtr account2 = CreateTestIdentityRequestAccount(
+      kAccountSuffixes[1], idp_data_, LoginState::kSignUp);
+  account2->display_identifier = "";
+  account2->is_filtered_out = true;
+  accounts_list.push_back(std::move(account2));
+
+  CreateAccountSelectionBubble();
+  dialog_->ShowMultiAccountPicker(accounts_list, {idp_data_},
+                                  /*rp_icon=*/gfx::Image(),
+                                  /*show_back_button=*/false);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+      dialog()->children();
+  // The separator is in the multiple accounts container.
+  ASSERT_EQ(children.size(), 2u);
+  PerformHeaderChecks(children[0], kTitleSignIn,
+                      /*expected_icon_visibility=*/true);
+
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/2,
+                            /*expected_login_rows=*/1);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> contents =
+      GetContents(children[1]);
+  CheckHoverableAccountRow(contents[0], kAccountSuffixes[0],
+                           /*has_display_identifier=*/false,
+                           /*expect_idp=*/false, /*is_modal_dialog=*/false,
+                           /*is_disabled=*/false);
+  CheckHoverableAccountRow(contents[1], kAccountSuffixes[1],
+                           /*has_display_identifier=*/false,
+                           /*expect_idp=*/false, /*is_modal_dialog=*/false,
+                           /*is_disabled=*/true);
+  CheckUseOtherAccount(contents[3]);
+}
+
+TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
+       SingleAccountSingleIdentifier) {
+  TestSingleAccount(kTitleSignIn,
+                    /*expected_icon_visibility=*/true,
+                    /*has_display_identifier=*/false);
 }
 
 }  //  namespace webid
