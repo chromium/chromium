@@ -22,6 +22,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.Arrays;
 
@@ -63,7 +64,7 @@ public class TabGroupFaviconQuarter extends FrameLayout {
         mImageView.setVisibility(View.VISIBLE);
         mImageView.setImageDrawable(image);
         hideText();
-        updateBackgroundColor(R.dimen.default_elevation_0);
+        mBackground.setColor(SemanticColorUtils.getColorSurface(getContext()));
     }
 
     /** The displayed plus count is exclusive with the image. */

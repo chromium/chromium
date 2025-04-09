@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
 /**
@@ -80,8 +81,7 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
         super.onFinishInflate();
 
         final Context context = getContext();
-        final @ColorInt int surface0 =
-                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_0);
+        final @ColorInt int surfaceColor = SemanticColorUtils.getColorSurface(context);
         final @ColorInt int surface1 =
                 ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
 
@@ -100,7 +100,7 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
         mSecondaryImage.setClipToOutline(true);
 
         mSecondaryImageContainer = findViewById(R.id.secondary_image_container);
-        mSecondaryImageContainer.setBackgroundColor(surface0);
+        mSecondaryImageContainer.setBackgroundColor(surfaceColor);
 
         // Setup the background for the child count view when there's one image present.
         mChildCountBackgroundOneImage = findViewById(R.id.child_count_background_one_image);
@@ -123,7 +123,7 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
 
         // The container which separates the child text from the images.
         mChildCountContainer = findViewById(R.id.child_count_container);
-        mChildCountContainer.setBackgroundColor(surface0);
+        mChildCountContainer.setBackgroundColor(surfaceColor);
         mChildCountContainer.setClipToOutline(true);
 
         mChildCount = findViewById(R.id.child_count_text);

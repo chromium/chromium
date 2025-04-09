@@ -108,7 +108,7 @@ public class TabUiThemeUtil {
         } else if (isPlaceholder) {
             return getTabStripStartupContainerColor(context);
         } else {
-            return getSurfaceColorElev0(context, isIncognito);
+            return ChromeColors.getDefaultBgColor(context, isIncognito);
         }
     }
 
@@ -151,7 +151,7 @@ public class TabUiThemeUtil {
      * @return The color for the notification bubble.
      */
     public static @ColorInt int getGroupTitleBubbleColor(Context context) {
-        return getSurfaceColorElev0(context, /* isIncognito= */ false);
+        return ChromeColors.getDefaultBgColor(context, /* isIncognito= */ false);
     }
 
     public static @ColorInt int getReorderBackgroundColor(Context context, boolean isIncognito) {
@@ -180,21 +180,6 @@ public class TabUiThemeUtil {
     /** Returns the color for the tab strip startup "ghost" containers. */
     private static @ColorInt int getTabStripStartupContainerColor(Context context) {
         return context.getColor(R.color.bg_tabstrip_tab_folio_startup_tint);
-    }
-
-    /**
-     * Returns the value that corresponds to Surface-0 based on incognito status.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @return The value that corresponds to Surface-0.
-     */
-    private static @ColorInt int getSurfaceColorElev0(Context context, boolean isIncognito) {
-        if (isIncognito) {
-            return context.getColor(R.color.default_bg_color_dark);
-        }
-
-        return ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_0);
     }
 
     public static @DrawableRes int getTabResource() {

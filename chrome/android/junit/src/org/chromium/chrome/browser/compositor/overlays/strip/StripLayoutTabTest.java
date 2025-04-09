@@ -67,7 +67,7 @@ public class StripLayoutTabTest {
                 mNormalTab.getTint(true, false));
 
         // Normal inactive tab color.
-        expectedColor = ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_0);
+        expectedColor = SemanticColorUtils.getDefaultBgColor(mContext);
         assertEquals(
                 "Folio inactive tab containers should be Surface-0.",
                 expectedColor,

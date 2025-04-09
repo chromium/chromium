@@ -132,6 +132,21 @@ public class ChromeColors {
     }
 
     /**
+     * Get the default background color based on the incognito status.
+     *
+     * @param context The {@link Context} used to retrieve colors.
+     * @param isIncognito When true, returns the baseline dark tint color; otherwise returns
+     *     adaptive background color res.
+     * @return The {@link ColorRes} for the background.
+     */
+    public static @ColorInt int getDefaultBgColor(Context context, boolean isIncognito) {
+        if (isIncognito) {
+            return context.getColor(R.color.default_bg_color_dark);
+        }
+        return SemanticColorUtils.getDefaultBgColor(context);
+    }
+
+    /**
      * Calculates the surface color using theme colors.
      *
      * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
@@ -154,7 +169,7 @@ public class ChromeColors {
      * @deprecated Elevation based surface color is deprecated. See crbug.com/348667900.
      */
     @Deprecated
-    public static @ColorInt int getSurfaceColor(Context context, @Px float elevation) {
+    private static @ColorInt int getSurfaceColor(Context context, @Px float elevation) {
         ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(context);
         return elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(elevation);
     }
