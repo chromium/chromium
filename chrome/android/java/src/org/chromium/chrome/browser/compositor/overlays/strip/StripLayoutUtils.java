@@ -276,15 +276,15 @@ public class StripLayoutUtils {
             if (view instanceof StripLayoutTab tab) {
                 leftEdge = tab.getTouchTargetLeft();
                 rightEdge = tab.getTouchTargetRight();
-                if (LocalizationUtils.isLayoutRtl()) {
-                    leftEdge -= tab.getTrailingMargin();
-                } else {
-                    rightEdge += tab.getTrailingMargin();
-                }
             } else {
                 if (!includeGroupTitles) continue;
                 leftEdge = view.getDrawX();
                 rightEdge = leftEdge + view.getWidth();
+            }
+            if (LocalizationUtils.isLayoutRtl()) {
+                leftEdge -= view.getTrailingMargin();
+            } else {
+                rightEdge += view.getTrailingMargin();
             }
 
             if (view.isVisible() && leftEdge <= x && x <= rightEdge) {

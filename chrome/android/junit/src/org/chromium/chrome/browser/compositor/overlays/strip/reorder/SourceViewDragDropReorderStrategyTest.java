@@ -93,7 +93,8 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 .thenReturn(true);
 
         // Call
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
 
         // Assert
         assertNotNull("Dragged view should not be null", mStrategy.getViewBeingDraggedForTesting());
@@ -120,12 +121,14 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 .thenReturn(false);
 
         // Call
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
 
         // Verify fallback
-        verify(mReorderDelegate).stopReorderMode(mGroupTitles, mStripTabs);
+        verify(mReorderDelegate).stopReorderMode(mStripViews, mGroupTitles);
         verify(mReorderDelegate)
                 .startReorderMode(
+                        mStripViews,
                         mStripTabs,
                         mGroupTitles,
                         mInteractingTab,
@@ -139,7 +142,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
         // Call
         mStrategy.startReorderMode(
-                mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
+                mStripViews, mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
 
         // Verify
         verify(mTabDragSource)
@@ -172,6 +175,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verify(mStripUpdateDelegate).resizeTabStrip(false, null, false);
         verify(mTabStrategy)
                 .startReorderMode(
+                        eq(mStripViews),
                         eq(mStripTabs),
                         eq(mGroupTitles),
                         eq(mInteractingTab),
@@ -189,6 +193,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
         verify(mTabStrategy)
                 .startReorderMode(
+                        eq(mStripViews),
                         eq(mStripTabs),
                         eq(mGroupTitles),
                         eq(mInteractingTab),
@@ -255,7 +260,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
         // Verify
         verify(mStripUpdateDelegate).setCompositorButtonsVisible(true);
-        verify(mTabStrategy).stopReorderMode(mGroupTitles, mStripTabs);
+        verify(mTabStrategy).stopReorderMode(mStripViews, mGroupTitles);
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
         verify(mStripUpdateDelegate).resizeTabStrip(true, mInteractingTab, false);
         verifyNoMoreInteractions(mTabStrategy);
@@ -341,14 +346,14 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
 
         // Call
-        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Assert
         assertNull("View being dragged should be null", mStrategy.getViewBeingDraggedForTesting());
         assertEquals(0f, mStrategy.getDragLastOffsetXForTesting(), EPSILON);
 
         // Verify
-        verify(mTabStrategy).stopReorderMode(mGroupTitles, mStripTabs);
+        verify(mTabStrategy).stopReorderMode(mStripViews, mGroupTitles);
     }
 
     @Test
@@ -363,7 +368,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         mInteractingTab.setIsDraggedOffStrip(true);
 
         // Call
-        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Verify restore.
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
@@ -381,14 +386,14 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 mStripViews, mGroupTitles, mStripTabs, END_X, DELTA_X, ReorderType.DRAG_ONTO_STRIP);
 
         // Call
-        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Assert
         assertNull("View being dragged should be null", mStrategy.getViewBeingDraggedForTesting());
         assertEquals(0f, mStrategy.getDragLastOffsetXForTesting(), EPSILON);
 
         // Verify
-        verify(mGroupStrategy).stopReorderMode(mGroupTitles, mStripTabs);
+        verify(mGroupStrategy).stopReorderMode(mStripViews, mGroupTitles);
     }
 
     @Test
@@ -400,7 +405,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
         // Call. Simulate failed drop.
         when(mTabGroupModelFilter.tabGroupExists(GROUP_ID)).thenReturn(true);
-        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Verify restore.
         verify(mAnimationHost).finishAnimationsAndPushTabUpdates();
@@ -425,10 +430,10 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                 END_X,
                 DELTA_X,
                 ReorderType.DRAG_OUT_OF_STRIP);
-        verify(mTabStrategy).stopReorderMode(mGroupTitles, mStripTabs);
+        verify(mTabStrategy).stopReorderMode(mStripViews, mGroupTitles);
 
         // Call - Stop drag and drop strategy.
-        mStrategy.stopReorderMode(mGroupTitles, mStripTabs);
+        mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Assert
         assertNull("View being dragged should be null", mStrategy.getViewBeingDraggedForTesting());
@@ -446,7 +451,8 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         anyFloat(),
                         anyFloat()))
                 .thenReturn(true);
-        mStrategy.startReorderMode(mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
+        mStrategy.startReorderMode(
+                mStripViews, mStripTabs, mGroupTitles, mInteractingTab, DRAG_START_POINT);
     }
 
     private void startGroupReorder() {
@@ -459,6 +465,6 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         anyFloat()))
                 .thenReturn(true);
         mStrategy.startReorderMode(
-                mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
+                mStripViews, mStripTabs, mGroupTitles, mInteractingGroupTitle, DRAG_START_POINT);
     }
 }

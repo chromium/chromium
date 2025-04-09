@@ -84,6 +84,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
      * Attempts to move the interacting tab out of its group. May prompt the user with a
      * confirmation dialog if the tab removal will result in a group deletion. Animates accordingly.
      *
+     * @param stripViews The list of {@link StripLayoutView}.
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
      * @param stripTabs The list of {@link StripLayoutTab}.
      * @param interactingTab The tab to move out of group.
@@ -93,8 +94,8 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
      * @param actionType The action type {@link ActionType} to determine which user prompt to show.
      */
     protected void moveInteractingTabOutOfGroup(
+            StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
-            StripLayoutTab[] stripTabs,
             StripLayoutTab interactingTab,
             StripLayoutGroupTitle groupTitleToAnimate,
             boolean towardEnd,
@@ -102,7 +103,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         final int tabId = interactingTab.getTabId();
         // Exit reorder mode if the dialog will show. Tab drag and drop is cancelled elsewhere.
         Runnable beforeSyncDialogRunnable =
-                () -> mReorderDelegate.stopReorderMode(groupTitles, stripTabs);
+                () -> mReorderDelegate.stopReorderMode(stripViews, groupTitles);
         Runnable onSuccess =
                 () -> RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
 
@@ -173,30 +174,35 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
                         throughGroupTitle ? ANIM_TAB_MOVE_MS : ANIM_TAB_SLIDE_OUT_MS));
     }
 
-    protected void setTrailingMarginForTab(
-            StripLayoutTab stripTab,
+    protected void setTrailingMarginForView(
+            StripLayoutView stripView,
             StripLayoutGroupTitle[] groupTitles,
             boolean shouldHaveTrailingMargin,
             @NonNull List<Animator> animationList) {
-        final Tab tab = mModel.getTabById(stripTab.getTabId());
-        if (tab == null) return;
-        final StripLayoutGroupTitle groupTitle =
-                StripLayoutUtils.findGroupTitle(groupTitles, tab.getTabGroupId());
+        final StripLayoutGroupTitle groupTitle;
+        if (stripView instanceof StripLayoutTab stripTab) {
+            final Tab tab = mModel.getTabById(stripTab.getTabId());
+            if (tab == null) return;
+            groupTitle = StripLayoutUtils.findGroupTitle(groupTitles, tab.getTabGroupId());
+        } else {
+            groupTitle = (StripLayoutGroupTitle) stripView;
+        }
 
-        setTrailingMarginForTab(stripTab, groupTitle, shouldHaveTrailingMargin, animationList);
+        setTrailingMarginForView(stripView, groupTitle, shouldHaveTrailingMargin, animationList);
     }
 
     /**
-     * Sets the trailing margin for the current tab. Update bottom indicator width for Tab Group
-     * Indicators and animates if necessary.
+     * Sets the trailing margin for the current stripView. Update bottom indicator width for Tab
+     * Group Indicators and animates if necessary.
      *
-     * @param tab The tab to update.
-     * @param groupTitle The group title associated with the tab. Null if tab is not grouped.
-     * @param shouldHaveTrailingMargin Whether the tab should have a trailing margin or not.
-     * @param animationList The list to add the animation to, or {@code null} if not animating.
+     * @param stripView The stripView to update.
+     * @param groupTitle The group title associated with the stripView. Null if stripView is not
+     *     grouped.
+     * @param shouldHaveTrailingMargin Whether the stripView should have a trailing margin or not.
+     * @param animationList The list to add the animation to.
      */
-    private void setTrailingMarginForTab(
-            StripLayoutTab tab,
+    private void setTrailingMarginForView(
+            StripLayoutView stripView,
             StripLayoutGroupTitle groupTitle,
             boolean shouldHaveTrailingMargin,
             @NonNull List<Animator> animationList) {
@@ -205,7 +211,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
                 shouldHaveTrailingMargin
                         ? StripLayoutUtils.getHalfTabWidth(mTabWidthSupplier)
                         : 0.f;
-        if (tab.getTrailingMargin() == trailingMargin) return;
+        if (stripView.getTrailingMargin() == trailingMargin) return;
 
         // Update group title bottom indicator width if needed.
         if (groupTitle != null && !groupTitle.isCollapsed()) {
@@ -232,16 +238,16 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         animationList.add(
                 CompositorAnimator.ofFloatProperty(
                         mAnimationHost.getAnimationHandler(),
-                        tab,
-                        StripLayoutTab.TRAILING_MARGIN,
-                        tab.getTrailingMargin(),
+                        stripView,
+                        StripLayoutView.TRAILING_MARGIN,
+                        stripView.getTrailingMargin(),
                         trailingMargin,
                         ANIM_TAB_SLIDE_OUT_MS));
     }
 
     protected void handleStopReorderMode(
+            StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
-            StripLayoutTab[] stripTabs,
             StripLayoutView interactingView,
             List<Animator> animationList) {
 
@@ -262,7 +268,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
                 updateTabAttachState(tab, /* attached= */ true, animationList);
             }
         }
-        resetTabGroupMargins(groupTitles, stripTabs, animationList);
+        resetTabGroupMargins(groupTitles, stripViews, animationList);
     }
 
     @VisibleForTesting
@@ -314,14 +320,16 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
 
     private void resetTabGroupMargins(
             StripLayoutGroupTitle[] groupTitles,
-            StripLayoutTab[] stripTabs,
+            StripLayoutView[] stripViews,
             @NonNull List<Animator> animationList) {
         // TODO(crbug.com/372546700): Investigate only resetting first and last margin, as we now
         //  don't use trailing margins to demarcate tab group bounds.
-        for (int i = 0; i < stripTabs.length; i++) {
-            final StripLayoutTab stripTab = stripTabs[i];
-            setTrailingMarginForTab(
-                    stripTab, groupTitles, /* shouldHaveTrailingMargin= */ false, animationList);
+        for (int i = 0; i < stripViews.length; i++) {
+            setTrailingMarginForView(
+                    stripViews[i],
+                    groupTitles,
+                    /* shouldHaveTrailingMargin= */ false,
+                    animationList);
         }
         mScrollDelegate.setReorderStartMargin(/* newStartMargin= */ 0.f);
     }

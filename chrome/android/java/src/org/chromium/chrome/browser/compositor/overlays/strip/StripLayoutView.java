@@ -60,6 +60,20 @@ public abstract class StripLayoutView implements VirtualView {
                 }
             };
 
+    /** A property for animations to use for changing the trailingMargin of the tab. */
+    public static final FloatProperty<StripLayoutView> TRAILING_MARGIN =
+            new FloatProperty<>("trailingMargin") {
+                @Override
+                public void setValue(StripLayoutView object, float value) {
+                    object.setTrailingMargin(value);
+                }
+
+                @Override
+                public Float get(StripLayoutView object) {
+                    return object.getTrailingMargin();
+                }
+            };
+
     // The view's context.
     protected Context mContext;
 
@@ -92,6 +106,9 @@ public abstract class StripLayoutView implements VirtualView {
 
     // Tab group share properties.
     private boolean mShowNotificationBubble;
+
+    // Trailing margin applied when the view is hovered over.
+    private float mTrailingMargin;
 
     /**
      * @param incognito The incognito state of the view.
@@ -145,6 +162,25 @@ public abstract class StripLayoutView implements VirtualView {
         mDrawBounds.top = y;
         // Update touch target bounds
         updateTouchTargetBounds(mTouchTargetBounds);
+    }
+
+    /**
+     * This is used to help calculate the view's position and is not used for rendering.
+     *
+     * @param trailingMargin The trailing margin of the view (used for margins when reordering,
+     *     etc.).
+     */
+    public void setTrailingMargin(float trailingMargin) {
+        mTrailingMargin = trailingMargin;
+    }
+
+    /**
+     * This is used to help calculate the view's position and is not used for rendering.
+     *
+     * @return The trailing margin of the view.
+     */
+    public float getTrailingMargin() {
+        return mTrailingMargin;
     }
 
     /**

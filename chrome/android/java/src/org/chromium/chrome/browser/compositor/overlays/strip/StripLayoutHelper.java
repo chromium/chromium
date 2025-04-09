@@ -2260,7 +2260,12 @@ public class StripLayoutHelper
             }
 
             mReorderDelegate.startReorderMode(
-                    mStripTabs, mStripGroupTitles, interactingView, new PointF(x, y), reorderType);
+                    mStripViews,
+                    mStripTabs,
+                    mStripGroupTitles,
+                    interactingView,
+                    new PointF(x, y),
+                    reorderType);
         } else {
             // Broadcast to start moving the window instance as the user has long pressed on the
             // open space of the tab strip.
@@ -3755,8 +3760,6 @@ public class StripLayoutHelper
                         tab.isDying()
                                 ? getEffectiveTabWidth()
                                 : (tab.getWidth() - TAB_OVERLAP_WIDTH_DP) * tab.getWidthWeight();
-                // Trailing margins will only be nonzero during reorder mode.
-                delta += tab.getTrailingMargin();
             } else {
                 // Offset to "undo" the tab overlap width as that doesn't apply to non-tab views.
                 // Also applies the desired overlap with the previous tab.
@@ -3769,7 +3772,8 @@ public class StripLayoutHelper
                 view.setIdealX(startX + drawXOffset);
                 delta = (view.getWidth() - mGroupTitleOverlapWidth) * view.getWidthWeight();
             }
-
+            // Trailing margins will only be nonzero during reorder mode.
+            delta += view.getTrailingMargin();
             delta = MathUtils.flipSignIf(delta, LocalizationUtils.isLayoutRtl());
             startX += delta;
         }
@@ -4531,10 +4535,11 @@ public class StripLayoutHelper
 
     public void stopReorderMode() {
         if (mReorderDelegate.getInReorderMode()) {
-            mReorderDelegate.stopReorderMode(mStripGroupTitles, mStripTabs);
+            mReorderDelegate.stopReorderMode(mStripViews, mStripGroupTitles);
         }
     }
 
+    // TODO(crbug.com/409384790): Include group title for dropping between collapsed group.
     public int getTabIndexForTabDrop(float x) {
         float halfTabWidth = mCachedTabWidthSupplier.get() / 2;
         for (int i = 0; i < mStripTabs.length; i++) {

@@ -293,6 +293,7 @@ public class ReorderDelegate {
      * @param reorderType The type {@link ReorderType} of reorder to start.
      */
     public void startReorderMode(
+            StripLayoutView[] stripViews,
             StripLayoutTab[] stripTabs,
             StripLayoutGroupTitle[] stripGroupTitles,
             @NonNull StripLayoutView interactingView,
@@ -308,7 +309,8 @@ public class ReorderDelegate {
         mLastReorderX = startPoint.x;
         mStripUpdateDelegate.setCompositorButtonsVisible(false);
 
-        mActiveStrategy.startReorderMode(stripTabs, stripGroupTitles, interactingView, startPoint);
+        mActiveStrategy.startReorderMode(
+                stripViews, stripTabs, stripGroupTitles, interactingView, startPoint);
     }
 
     /** See {@link ReorderStrategy#updateReorderPosition} */
@@ -378,10 +380,10 @@ public class ReorderDelegate {
     }
 
     /** See {@link ReorderStrategy#stopReorderMode} */
-    public void stopReorderMode(StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
+    public void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
         assert mActiveStrategy != null && getInReorderMode()
                 : "Attempted to stop reorder without an active Strategy.";
-        mActiveStrategy.stopReorderMode(groupTitles, stripTabs);
+        mActiveStrategy.stopReorderMode(stripViews, groupTitles);
 
         // Reset state.
         mReorderScrollState = REORDER_SCROLL_NONE;
@@ -513,6 +515,7 @@ public class ReorderDelegate {
         /** See {@link ReorderStrategy#startReorderMode} */
         @Override
         public void startReorderMode(
+                StripLayoutView[] stripViews,
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 StripLayoutView interactingTab,
@@ -561,7 +564,7 @@ public class ReorderDelegate {
             // 3. Attempt to move the tab. If successful, update other relevant properties.
             boolean isRtl = LocalizationUtils.isLayoutRtl();
             if (reorderTabIfThresholdReached(
-                    groupTitles, stripTabs, mInteractingTab, offset, curIndex)) {
+                    stripViews, groupTitles, stripTabs, mInteractingTab, offset, curIndex)) {
                 // 3.a. We may have exited reorder mode to display the confirmation dialog. If so,
                 // we should not set the new offset here, and instead let the tab slide back to its
                 // idealX.
@@ -604,11 +607,11 @@ public class ReorderDelegate {
 
         @Override
         public void stopReorderMode(
-                StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
+                StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
             List<Animator> animatorList = new ArrayList<>();
             // 1. Reset the state variables.
             mReorderScrollState = REORDER_SCROLL_NONE;
-            handleStopReorderMode(groupTitles, stripTabs, mInteractingTab, animatorList);
+            handleStopReorderMode(stripViews, groupTitles, mInteractingTab, animatorList);
             // Start animations. Reset foregrounded state after the tabs have slid back to their
             // ideal positions, so the z-indexing is retained during the animation.
             mAnimationHost.startAnimations(
@@ -643,6 +646,7 @@ public class ReorderDelegate {
          * If the tab has been dragged past the threshold for the given case, update the {@link
          * TabModel} and return {@code true}. Else, return {@code false}.
          *
+         * @param stripViews The list of {@link StripLayoutView}.
          * @param groupTitles The list of {@link StripLayoutGroupTitle}.
          * @param stripTabs The list of {@link StripLayoutTab}.
          * @param interactingTab The tab to reorder.
@@ -650,6 +654,7 @@ public class ReorderDelegate {
          * @return {@code True} if the reorder was successful. {@code False} otherwise.
          */
         private boolean reorderTabIfThresholdReached(
+                StripLayoutView[] stripViews,
                 StripLayoutGroupTitle[] groupTitles,
                 StripLayoutTab[] stripTabs,
                 StripLayoutTab interactingTab,
@@ -683,8 +688,8 @@ public class ReorderDelegate {
                 if (Math.abs(offset) <= threshold) return false;
 
                 moveInteractingTabOutOfGroup(
+                        stripViews,
                         groupTitles,
-                        stripTabs,
                         interactingTab,
                         interactingGroupTitle,
                         towardEnd,
@@ -876,6 +881,7 @@ public class ReorderDelegate {
 
         @Override
         public void startReorderMode(
+                StripLayoutView[] stripViews,
                 StripLayoutTab[] stripTabs,
                 StripLayoutGroupTitle[] stripGroupTitles,
                 @NonNull StripLayoutView interactingView,
@@ -952,7 +958,7 @@ public class ReorderDelegate {
 
         @Override
         public void stopReorderMode(
-                StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs) {
+                StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles) {
             assert getInReorderMode()
                     : "Tried to stop reorder mode, without first starting reorder mode.";
 
