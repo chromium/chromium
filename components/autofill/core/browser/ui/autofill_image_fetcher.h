@@ -34,7 +34,7 @@ namespace autofill {
 // image_fetcher::ImageFetcher.
 class AutofillImageFetcher : public AutofillImageFetcherBase {
  public:
-  virtual ~AutofillImageFetcher();
+  ~AutofillImageFetcher() override;
 
   // AutofillImageFetcherBase:
   // The image sizes passed in the arguments are unused as this param is only

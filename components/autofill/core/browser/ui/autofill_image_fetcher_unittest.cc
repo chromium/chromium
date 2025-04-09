@@ -26,12 +26,12 @@ using testing::_;
 
 namespace autofill {
 
-class TestAutofillImageFetcher : public AutofillImageFetcher {
+class AutofillImageFetcherForTest : public AutofillImageFetcher {
  public:
-  explicit TestAutofillImageFetcher()
+  AutofillImageFetcherForTest()
       : mock_image_fetcher_(
             std::make_unique<image_fetcher::MockImageFetcher>()) {}
-  ~TestAutofillImageFetcher() override = default;
+  ~AutofillImageFetcherForTest() override = default;
 
   image_fetcher::MockImageFetcher* mock_image_fetcher() const {
     return mock_image_fetcher_.get();
@@ -77,13 +77,14 @@ class TestAutofillImageFetcher : public AutofillImageFetcher {
   gfx::Image card_art_image_override_;
 
   std::unique_ptr<image_fetcher::MockImageFetcher> mock_image_fetcher_;
-  base::WeakPtrFactory<TestAutofillImageFetcher> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AutofillImageFetcherForTest> weak_ptr_factory_{this};
 };
 
 class AutofillImageFetcherTest : public testing::Test {
  public:
   AutofillImageFetcherTest()
-      : autofill_image_fetcher_(std::make_unique<TestAutofillImageFetcher>()) {}
+      : autofill_image_fetcher_(
+            std::make_unique<AutofillImageFetcherForTest>()) {}
 
   gfx::Image& GetTestImage(int resource_id) {
     return ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
@@ -94,7 +95,7 @@ class AutofillImageFetcherTest : public testing::Test {
     return autofill_image_fetcher_->mock_image_fetcher();
   }
 
-  TestAutofillImageFetcher* autofill_image_fetcher() {
+  AutofillImageFetcherForTest* autofill_image_fetcher() {
     return autofill_image_fetcher_.get();
   }
 
@@ -103,7 +104,7 @@ class AutofillImageFetcherTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<TestAutofillImageFetcher> autofill_image_fetcher_;
+  std::unique_ptr<AutofillImageFetcherForTest> autofill_image_fetcher_;
 };
 
 TEST_F(AutofillImageFetcherTest, FetchImage_Success) {

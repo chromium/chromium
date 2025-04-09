@@ -3027,7 +3027,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   GURL card_art_url = GURL("https://www.example.com/card-art");
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
-  payments_data().AddCardArtImage(card_art_url, fake_image);
+  payments_data().CacheImage(card_art_url, fake_image);
 
   Suggestion virtual_card_suggestion = CreateCreditCardSuggestionForTest(
       server_card, *autofill_client(), CREDIT_CARD_NUMBER,
@@ -3080,7 +3080,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
   server_card.set_card_art_url(card_art_url);
   gfx::Image fake_image = CustomIconForTest();
   payments_data().AddServerCreditCard(server_card);
-  payments_data().AddCardArtImage(card_art_url, fake_image);
+  payments_data().CacheImage(card_art_url, fake_image);
 
   // Create a local card with same information.
   CreditCard local_card =
@@ -3200,7 +3200,7 @@ TEST_P(PaymentsSuggestionGeneratorTestForMetadata,
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   gfx::Image fake_image = CustomIconForTest();
   payments_data().AddServerCreditCard(server_card);
-  payments_data().AddCardArtImage(card_art_url, fake_image);
+  payments_data().CacheImage(card_art_url, fake_image);
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetCreditCardOrCvcFieldSuggestions(

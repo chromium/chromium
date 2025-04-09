@@ -46,6 +46,9 @@ class AutofillImageFetcherBase {
     kLarge = 1,
     kSquare = 2,
   };
+
+  virtual ~AutofillImageFetcherBase() = default;
+
   //  TODO (crbug.com/1478931): The implementation classes should own the
   //  fetched images, and define the callback to handle the images.
   //
