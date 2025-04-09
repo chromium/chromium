@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/sharing/ui_bundled/activity_services/canonical_url_retriever.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_positioner.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frame.h"
@@ -100,6 +101,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   test_web_state->SetCurrentURL(test_url);
   test_web_state->SetBrowserState(browser_->GetProfile());
   DownloadManagerTabHelper::CreateForWebState(test_web_state.get());
+  SnapshotTabHelper::CreateForWebState(test_web_state.get());
 
   auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
   web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();

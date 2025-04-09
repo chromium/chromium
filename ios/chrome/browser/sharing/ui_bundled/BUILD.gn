@@ -72,6 +72,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/sharing/ui_bundled/activity_services",
+    "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/test:test_support",
     "//ios/third_party/material_components_ios",
     "//ios/web/public",

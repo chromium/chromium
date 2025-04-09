@@ -20,7 +20,9 @@ namespace activity_services {
 
 // Returns a ShareToData object using data from `web_state`. `share_url` is the
 // URL to be shared with share extensions. If `share_url` is empty, the visible
-// URL associated with `web_state` will be used instead. `web_state` must not be
+// URL associated with `web_state` will be used instead. `share_url` must be
+// representative to the page visible content as other page attributes will
+// be associated to it (such as thumbnail and title). `web_state` must not be
 // nil. Function may return nil.
 ShareToData* ShareToDataForWebState(web::WebState* web_state,
                                     const GURL& share_url);
