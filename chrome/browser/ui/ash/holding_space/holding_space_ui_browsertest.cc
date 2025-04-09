@@ -235,6 +235,39 @@ void WaitForText(views::Label* label, const std::u16string& text) {
   run_loop.Run();
 }
 
+// NextMainFrameWaiter ---------------------------------------------------------
+
+// A helper class that waits until the next main frame is processed.
+class NextMainFrameWaiter : public ui::CompositorObserver {
+ public:
+  explicit NextMainFrameWaiter(ui::Compositor* compositor) {
+    observation_.Observe(compositor);
+  }
+
+  void Wait() {
+    CHECK(!run_loop_.running());
+    run_loop_.Run();
+  }
+
+ private:
+  // ui::CompositorObserver:
+  void OnDidBeginMainFrame(ui::Compositor* compositor) override {
+    if (run_loop_.running()) {
+      run_loop_.Quit();
+    }
+  }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver> observation_{
+      this};
+};
+
+// HoldingSpaceUiBrowserTest ---------------------------------------------------
+
+using HoldingSpaceUiBrowserTest = HoldingSpaceUiBrowserTestBase;
+
+}  // namespace
+
 // DropSenderView --------------------------------------------------------------
 
 class DropSenderView : public views::WidgetDelegateView,
@@ -396,39 +429,6 @@ class DropTargetView : public views::WidgetDelegateView {
 
   base::FilePath copied_file_path_;
 };
-
-// NextMainFrameWaiter ---------------------------------------------------------
-
-// A helper class that waits until the next main frame is processed.
-class NextMainFrameWaiter : public ui::CompositorObserver {
- public:
-  explicit NextMainFrameWaiter(ui::Compositor* compositor) {
-    observation_.Observe(compositor);
-  }
-
-  void Wait() {
-    CHECK(!run_loop_.running());
-    run_loop_.Run();
-  }
-
- private:
-  // ui::CompositorObserver:
-  void OnDidBeginMainFrame(ui::Compositor* compositor) override {
-    if (run_loop_.running()) {
-      run_loop_.Quit();
-    }
-  }
-
-  base::RunLoop run_loop_;
-  base::ScopedObservation<ui::Compositor, ui::CompositorObserver> observation_{
-      this};
-};
-
-// HoldingSpaceUiBrowserTest ---------------------------------------------------
-
-using HoldingSpaceUiBrowserTest = HoldingSpaceUiBrowserTestBase;
-
-}  // namespace
 
 // Tests -----------------------------------------------------------------------
 

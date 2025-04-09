@@ -96,29 +96,6 @@ namespace {
 using ::chromeos::WindowStateType;
 const char kTestAppId[] = "test-app-id";
 
-class MaximizeDelegateView : public views::WidgetDelegateView {
- public:
-  explicit MaximizeDelegateView(const gfx::Rect& initial_bounds)
-      : initial_bounds_(initial_bounds) {}
-
-  MaximizeDelegateView(const MaximizeDelegateView&) = delete;
-  MaximizeDelegateView& operator=(const MaximizeDelegateView&) = delete;
-
-  ~MaximizeDelegateView() override = default;
-
-  bool GetSavedWindowPlacement(
-      const views::Widget* widget,
-      gfx::Rect* bounds,
-      ui::mojom::WindowShowState* show_state) const override {
-    *bounds = initial_bounds_;
-    *show_state = ui::mojom::WindowShowState::kMaximized;
-    return true;
-  }
-
- private:
-  const gfx::Rect initial_bounds_;
-};
-
 class TestShellObserver : public ShellObserver {
  public:
   TestShellObserver() : call_count_(0), is_fullscreen_(false) {
@@ -183,6 +160,29 @@ class ScopedStickyKeyboardEnabler {
 };
 
 }  // namespace
+
+class MaximizeDelegateView : public views::WidgetDelegateView {
+ public:
+  explicit MaximizeDelegateView(const gfx::Rect& initial_bounds)
+      : initial_bounds_(initial_bounds) {}
+
+  MaximizeDelegateView(const MaximizeDelegateView&) = delete;
+  MaximizeDelegateView& operator=(const MaximizeDelegateView&) = delete;
+
+  ~MaximizeDelegateView() override = default;
+
+  bool GetSavedWindowPlacement(
+      const views::Widget* widget,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override {
+    *bounds = initial_bounds_;
+    *show_state = ui::mojom::WindowShowState::kMaximized;
+    return true;
+  }
+
+ private:
+  const gfx::Rect initial_bounds_;
+};
 
 using WorkspaceLayoutManagerTest = AshTestBase;
 

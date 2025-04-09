@@ -70,18 +70,22 @@ using ::chromeos::WindowStateType;
 
 constexpr char kMultitaskMenuBubbleWidgetName[] = "MultitaskMenuBubbleWidget";
 
-class TestWidgetDelegate : public views::WidgetDelegateView {
+}  // namespace
+
+class FrameSizeButtonTestWidgetDelegate : public views::WidgetDelegateView {
  public:
-  explicit TestWidgetDelegate(bool resizable) {
+  explicit FrameSizeButtonTestWidgetDelegate(bool resizable) {
     SetCanMaximize(true);
     SetCanMinimize(true);
     SetCanResize(resizable);
   }
 
-  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
-  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
+  FrameSizeButtonTestWidgetDelegate(const FrameSizeButtonTestWidgetDelegate&) =
+      delete;
+  FrameSizeButtonTestWidgetDelegate& operator=(
+      const FrameSizeButtonTestWidgetDelegate&) = delete;
 
-  ~TestWidgetDelegate() override = default;
+  ~FrameSizeButtonTestWidgetDelegate() override = default;
 
   FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
@@ -179,7 +183,7 @@ class FrameSizeButtonTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    widget_delegate_ = new TestWidgetDelegate(resizable_);
+    widget_delegate_ = new FrameSizeButtonTestWidgetDelegate(resizable_);
     widget_ = CreateWidget(widget_delegate_);
     widget_->GetNativeWindow()->SetProperty(chromeos::kAppTypeKey,
                                             chromeos::AppType::BROWSER);
@@ -202,7 +206,9 @@ class FrameSizeButtonTest : public AshTestBase {
   views::FrameCaptionButton* minimize_button() { return minimize_button_; }
   views::FrameCaptionButton* size_button() { return size_button_; }
   views::FrameCaptionButton* close_button() { return close_button_; }
-  TestWidgetDelegate* widget_delegate() { return widget_delegate_; }
+  FrameSizeButtonTestWidgetDelegate* widget_delegate() {
+    return widget_delegate_;
+  }
 
  private:
   // Not owned.
@@ -211,11 +217,10 @@ class FrameSizeButtonTest : public AshTestBase {
   raw_ptr<views::FrameCaptionButton, DanglingUntriaged> minimize_button_;
   raw_ptr<views::FrameCaptionButton, DanglingUntriaged> size_button_;
   raw_ptr<views::FrameCaptionButton, DanglingUntriaged> close_button_;
-  raw_ptr<TestWidgetDelegate, DanglingUntriaged> widget_delegate_;
+  raw_ptr<FrameSizeButtonTestWidgetDelegate, DanglingUntriaged>
+      widget_delegate_;
   bool resizable_ = true;
 };
-
-}  // namespace
 
 // Tests that pressing the left mouse button or tapping down on the size button
 // puts the button into the pressed state.

@@ -75,22 +75,6 @@ class ShapedNonClientFrameView : public NonClientFrameView {
   bool layout_requested_ = false;
 };
 
-class ShapedWidgetDelegate : public WidgetDelegateView {
- public:
-  ShapedWidgetDelegate() = default;
-
-  ShapedWidgetDelegate(const ShapedWidgetDelegate&) = delete;
-  ShapedWidgetDelegate& operator=(const ShapedWidgetDelegate&) = delete;
-
-  ~ShapedWidgetDelegate() override = default;
-
-  // WidgetDelegateView:
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override {
-    return std::make_unique<ShapedNonClientFrameView>();
-  }
-};
-
 class MouseEventRecorder : public ui::EventHandler {
  public:
   MouseEventRecorder() = default;
@@ -116,6 +100,22 @@ class MouseEventRecorder : public ui::EventHandler {
 };
 
 }  // namespace
+
+class ShapedWidgetDelegate : public WidgetDelegateView {
+ public:
+  ShapedWidgetDelegate() = default;
+
+  ShapedWidgetDelegate(const ShapedWidgetDelegate&) = delete;
+  ShapedWidgetDelegate& operator=(const ShapedWidgetDelegate&) = delete;
+
+  ~ShapedWidgetDelegate() override = default;
+
+  // WidgetDelegateView:
+  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
+      Widget* widget) override {
+    return std::make_unique<ShapedNonClientFrameView>();
+  }
+};
 
 class DesktopWindowTreeHostPlatformImplTest : public ViewsTestBase {
  public:

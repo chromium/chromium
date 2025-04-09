@@ -63,6 +63,8 @@ int GetMagnifierHeight(int display_height) {
          DockedMagnifierController::kSeparatorHeight;
 }
 
+}  // namespace
+
 class DockedMagnifierTest : public NoSessionAshTestBase {
  public:
   DockedMagnifierTest() = default;
@@ -985,7 +987,5 @@ TEST_F(DockedMagnifierTest, CaptureMode) {
 // - Test magnifier viewport's layer transforms with screen rotation,
 //   multi display, and unified mode.
 // - Test adjust scale using scroll events.
-
-}  // namespace
 
 }  // namespace ash

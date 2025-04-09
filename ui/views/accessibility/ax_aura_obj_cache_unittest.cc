@@ -48,6 +48,8 @@ bool HasNodeWithName(const ui::AXTree& tree, const std::string& name) {
   return HasNodeWithName(tree.root(), name);
 }
 
+}  // namespace
+
 class AXAuraObjCacheTest : public WidgetTest {
  public:
   AXAuraObjCacheTest() = default;
@@ -388,5 +390,4 @@ TEST_F(AXAuraObjCacheTest, VirtualViews) {
   EXPECT_EQ(nullptr, cache.Get(id));
 }
 
-}  // namespace
 }  // namespace views::test

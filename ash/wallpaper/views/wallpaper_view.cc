@@ -31,8 +31,6 @@
 
 namespace ash {
 
-namespace {
-
 // A view that controls the child view's layer so that the layer always has the
 // same size as the display's original, un-scaled size in DIP. The layer is then
 // transformed to fit to the virtual screen size when laid-out. This is to avoid
@@ -69,8 +67,6 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
     }
   }
 };
-
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // WallpaperView, public:

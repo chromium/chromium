@@ -41,8 +41,6 @@
 
 namespace ash {
 
-namespace {
-
 class ResizableWidgetDelegate : public views::WidgetDelegateView {
  public:
   ResizableWidgetDelegate() { SetHasWindowSizeControls(true); }
@@ -50,8 +48,6 @@ class ResizableWidgetDelegate : public views::WidgetDelegateView {
   ResizableWidgetDelegate& operator=(const ResizableWidgetDelegate&) = delete;
   ~ResizableWidgetDelegate() override = default;
 };
-
-}  // namespace
 
 class SystemGestureEventFilterTest : public AshTestBase {
  public:
