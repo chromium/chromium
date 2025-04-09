@@ -9,7 +9,6 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
@@ -27,8 +26,8 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -40,13 +39,9 @@ import org.chromium.components.user_prefs.UserPrefs;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class DownloadSettingsTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Rule
     public final SettingsActivityTestRule<DownloadSettings> mSettingsActivityTestRule =
@@ -54,7 +49,7 @@ public class DownloadSettingsTest {
 
     @Rule
     public final RuleChain mRuleChain =
-            RuleChain.outerRule(sActivityTestRule).around(mSettingsActivityTestRule);
+            RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
     private Preference assertPreference(final String preferenceKey) throws Exception {
         return assertPreference(preferenceKey, Matchers.notNullValue());
