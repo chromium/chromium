@@ -322,8 +322,12 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   // Send the current type predictions to the renderer. For non-queryable forms
   // this is all the information about them that will ever be available. The
   // queryable forms will be updated once the field type query is complete.
-  driver().SendTypePredictionsToRenderer(non_queryable_forms);
-  driver().SendTypePredictionsToRenderer(queryable_forms);
+  for (const FormStructure* form_structure : non_queryable_forms) {
+    driver().SendTypePredictionsToRenderer(*form_structure);
+  }
+  for (const FormStructure* form_structure : queryable_forms) {
+    driver().SendTypePredictionsToRenderer(*form_structure);
+  }
   LogTypePredictionsAvailable(log_manager(), non_queryable_forms);
   LogTypePredictionsAvailable(log_manager(), queryable_forms);
 
@@ -849,7 +853,9 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // Send field type predictions to the renderer so that it can possibly
   // annotate forms with the predicted types or add console warnings.
-  driver().SendTypePredictionsToRenderer(queried_forms);
+  for (const FormStructure* form_structure : queried_forms) {
+    driver().SendTypePredictionsToRenderer(*form_structure);
+  }
   LogTypePredictionsAvailable(log_manager(), queried_forms);
 
   for (const FormStructure* form : queried_forms) {

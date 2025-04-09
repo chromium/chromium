@@ -291,7 +291,7 @@ class AutofillDriverRouter {
       AutofillSuggestionTriggerSource trigger_source);
   void SendTypePredictionsToRenderer(
       RoutedCallback<const std::vector<FormDataPredictions>&> callback,
-      const std::vector<FormDataPredictions>& type_predictions);
+      const FormDataPredictions& type_predictions);
 
   // Returns the underlying renderer forms of `browser_form`.
   // Note that this function is intended for use outside of the `autofill`

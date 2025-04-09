@@ -2089,9 +2089,7 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
     return;
   }
 
-  driver().SendTypePredictionsToRenderer(
-      base::span_from_ref<raw_ptr<FormStructure, VectorExperimental>>(
-          form_structure));
+  driver().SendTypePredictionsToRenderer(*form_structure);
 
   form_filler_->MaybeTriggerRefill(
       form, *form_structure, RefillTriggerReason::kSelectOptionsChanged,

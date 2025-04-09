@@ -759,18 +759,14 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   EXPECT_TRUE(FormData::DeepEqual(augmented_forms.front(), form));
 
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> form_structures(
-      1, &form_structure);
-  std::vector<FormDataPredictions> expected_type_predictions =
-      FormStructure::GetFieldTypePredictions(form_structures);
 
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
-  driver().browser_events().SendTypePredictionsToRenderer(form_structures);
+  driver().browser_events().SendTypePredictionsToRenderer(form_structure);
   run_loop.RunUntilIdle();
 
-  EXPECT_EQ(expected_type_predictions,
-            agent().GetFieldTypePredictionsAvailable());
+  EXPECT_THAT(agent().GetFieldTypePredictionsAvailable(),
+              Optional(ElementsAre(form_structure.GetFieldTypePredictions())));
 }
 
 TEST_F(ContentAutofillDriverTestWithAddressForm, AcceptDataListSuggestion) {

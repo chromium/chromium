@@ -229,9 +229,7 @@ class ContentAutofillDriver : public AutofillDriver,
   void RendererShouldTriggerSuggestions(
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) override;
-  void SendTypePredictionsToRenderer(
-      base::span<const raw_ptr<FormStructure, VectorExperimental>> forms)
-      override;
+  void SendTypePredictionsToRenderer(const FormStructure& form) override;
 
   // Group (1c): browser -> renderer events, directed to to this driver's main
   // driver (see comment above).

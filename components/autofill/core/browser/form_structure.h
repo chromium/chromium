@@ -82,11 +82,8 @@ class FormStructure {
   void RationalizeAndAssignSections(LogManager* log_manager,
                                     bool legacy_order = false);
 
-  // Returns predictions using the details from the given |form_structures| and
-  // their fields' predicted types.
-  static std::vector<FormDataPredictions> GetFieldTypePredictions(
-      base::span<const raw_ptr<FormStructure, VectorExperimental>>
-          form_structures);
+  // Returns predictions that can be sent to the renderer process for debugging.
+  FormDataPredictions GetFieldTypePredictions() const;
 
   // Creates FormStructure that has bare minimum information for uploading
   // votes, namely form and field signatures. Warning: do not use for Autofill

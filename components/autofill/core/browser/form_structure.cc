@@ -258,58 +258,48 @@ void FormStructure::RationalizeAndAssignSections(LogManager* log_manager,
   }
 }
 
-// static
-std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
-    base::span<const raw_ptr<FormStructure, VectorExperimental>>
-        form_structures) {
-  std::vector<FormDataPredictions> forms;
-  forms.reserve(form_structures.size());
-  for (const FormStructure* form_structure : form_structures) {
-    FormDataPredictions form;
-    form.data = form_structure->ToFormData();
-    form.signature = form_structure->FormSignatureAsStr();
-    form.alternative_signature = base::NumberToString(
-        form_structure->alternative_form_signature().value());
+FormDataPredictions FormStructure::GetFieldTypePredictions() const {
+  CHECK(base::FeatureList::IsEnabled(
+      features::test::kAutofillShowTypePredictions));
+  FormDataPredictions form;
+  form.data = ToFormData();
+  form.signature = FormSignatureAsStr();
+  form.alternative_signature =
+      base::NumberToString(alternative_form_signature().value());
 
-    for (const auto& field : form_structure->fields_) {
-      FormFieldDataPredictions annotated_field;
-      annotated_field.host_form_signature =
-          base::NumberToString(field->host_form_signature().value());
-      annotated_field.signature = field->FieldSignatureAsStr();
-      annotated_field.heuristic_type =
-          FieldTypeToStringView(field->heuristic_type());
-      if (!field->server_predictions().empty()) {
-        annotated_field.server_type =
-            FieldTypeToStringView(field->server_type());
-      }
-      if (std::optional<FieldType> autofill_ai_type =
-              field->GetAutofillAiServerTypePredictions()) {
-        annotated_field.autofill_ai_type =
-            FieldTypeToStringView(*autofill_ai_type);
-      }
-      if (base::optional_ref<const std::u16string> format_string =
-              field->format_string()) {
-        annotated_field.format_string = base::UTF16ToUTF8(*format_string);
-      }
-      annotated_field.html_type = FieldTypeToStringView(field->html_type());
-      annotated_field.overall_type = std::string(field->Type().ToStringView());
-      annotated_field.parseable_name =
-          base::UTF16ToUTF8(field->parseable_name());
-      annotated_field.parseable_label =
-          base::UTF16ToUTF8(field->parseable_label());
-      annotated_field.section = field->section().ToString();
-      annotated_field.rank = field->rank();
-      annotated_field.rank_in_signature_group =
-          field->rank_in_signature_group();
-      annotated_field.rank_in_host_form = field->rank_in_host_form();
-      annotated_field.rank_in_host_form_signature_group =
-          field->rank_in_host_form_signature_group();
-      form.fields.push_back(annotated_field);
+  for (const auto& field : fields_) {
+    FormFieldDataPredictions annotated_field;
+    annotated_field.host_form_signature =
+        base::NumberToString(field->host_form_signature().value());
+    annotated_field.signature = field->FieldSignatureAsStr();
+    annotated_field.heuristic_type =
+        FieldTypeToStringView(field->heuristic_type());
+    if (!field->server_predictions().empty()) {
+      annotated_field.server_type = FieldTypeToStringView(field->server_type());
     }
-
-    forms.push_back(form);
+    if (std::optional<FieldType> autofill_ai_type =
+            field->GetAutofillAiServerTypePredictions()) {
+      annotated_field.autofill_ai_type =
+          FieldTypeToStringView(*autofill_ai_type);
+    }
+    if (base::optional_ref<const std::u16string> format_string =
+            field->format_string()) {
+      annotated_field.format_string = base::UTF16ToUTF8(*format_string);
+    }
+    annotated_field.html_type = FieldTypeToStringView(field->html_type());
+    annotated_field.overall_type = std::string(field->Type().ToStringView());
+    annotated_field.parseable_name = base::UTF16ToUTF8(field->parseable_name());
+    annotated_field.parseable_label =
+        base::UTF16ToUTF8(field->parseable_label());
+    annotated_field.section = field->section().ToString();
+    annotated_field.rank = field->rank();
+    annotated_field.rank_in_signature_group = field->rank_in_signature_group();
+    annotated_field.rank_in_host_form = field->rank_in_host_form();
+    annotated_field.rank_in_host_form_signature_group =
+        field->rank_in_host_form_signature_group();
+    form.fields.push_back(annotated_field);
   }
-  return forms;
+  return form;
 }
 
 // static
