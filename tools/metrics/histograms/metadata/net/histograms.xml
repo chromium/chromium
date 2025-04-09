@@ -5667,54 +5667,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.ZeroRttReason"
+<histogram name="Net.QuicSession.ZeroRttReason{HostType}"
     enum="SSLHandshakeEarlyDataReason" expires_after="2025-09-14">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     Indicates whether a QUIC handshake attempted or used 0-RTT on the
-    connection, and if 0-RTT was not used, it provides reasons why.
+    connection, and if 0-RTT was not used, it provides reasons why. Records
+    connections to {HostType} when a QUIC handshake is completed.
   </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".Google" summary="Google hosted servers"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
+    <variant name=".NonGoogle" summary="non-Google servers"/>
+  </token>
 </histogram>
 
-<histogram name="Net.QuicSession.ZeroRttReasonGoogle"
-    enum="SSLHandshakeEarlyDataReason" expires_after="2025-08-31">
+<histogram name="Net.QuicSession.ZeroRttState{HostType}" enum="ZeroRttState"
+    expires_after="2025-09-14">
   <owner>bashi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    Indicates whether a QUIC handshake attempted or used 0-RTT on the
-    connection, and if 0-RTT was not used, it provides reasons why. Only records
-    connections with Google hosted servers.
-
-    Warning: this histogram was expired from 2023-06-04 to 2024-10-25; data may
-    be missing.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ZeroRttReasonNonGoogle"
-    enum="SSLHandshakeEarlyDataReason" expires_after="2025-09-07">
-  <owner>bashi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Indicates whether a QUIC handshake attempted or used 0-RTT on the
-    connection, and if 0-RTT was not used, it provides reasons why. Only records
-    connections with non-Google servers.
-
-    Warning: this histogram was expired from 2023-03-19 to 2024-10-25; data may
-    be missing.
-  </summary>
-</histogram>
-
-<histogram name="Net.QuicSession.ZeroRttState" enum="ZeroRttState"
-    expires_after="2025-08-31">
-  <owner>bashi@chromium.org</owner>
-  <owner>src/net/quic/OWNERS</owner>
-  <summary>
-    Whether 0-RTT was successfully used in the connection.
+    Whether 0-RTT was successfully used in the connection. Records connections
+    to {HostType} when a QUIC handshake is completed.
 
     Warning: this histogram was expired from 2024-05-19 to 2024-10-25; data may
     be missing.
   </summary>
+  <token key="HostType">
+    <variant name="" summary="any server"/>
+    <variant name=".Google" summary="Google hosted servers"/>
+    <variant name=".GoogleWithAlpnH3"
+        summary="Google hosted servers with ALPN h3"/>
+    <variant name=".NonGoogle" summary="non-Google servers"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicStreamFactory.AttemptMigrationBeforeHandshake"
