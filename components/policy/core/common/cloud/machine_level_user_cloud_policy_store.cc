@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
@@ -21,6 +22,10 @@ namespace em = enterprise_management;
 
 namespace policy {
 namespace {
+
+BASE_FEATURE(kAlwaysVerifyPolicyKey,
+             "AlwaysVerifyPolicyKey",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FilePath::CharType kPolicyCache[] =
     FILE_PATH_LITERAL("Machine Level User Cloud Policy");
@@ -139,8 +144,9 @@ MachineLevelUserCloudPolicyStore::MaybeUseExternalCachedPolicies(
     PolicyLoadResult default_cached_policy_load_result) {
   PolicyLoadResult external_policy_cache_load_result =
       LoadExternalCachedPolicies(policy_cache_path, policy_info_path);
-  if (external_policy_cache_load_result.status != policy::LOAD_RESULT_SUCCESS)
+  if (external_policy_cache_load_result.status != policy::LOAD_RESULT_SUCCESS) {
     return default_cached_policy_load_result;
+  }
 
   // If default key is missing or not matches the external one, enable key
   // rotation mode to re-fetch public key again.
@@ -149,8 +155,9 @@ MachineLevelUserCloudPolicyStore::MaybeUseExternalCachedPolicies(
     external_policy_cache_load_result.doing_key_rotation = true;
   }
 
-  if (default_cached_policy_load_result.status != policy::LOAD_RESULT_SUCCESS)
+  if (default_cached_policy_load_result.status != policy::LOAD_RESULT_SUCCESS) {
     return external_policy_cache_load_result;
+  }
 
   enterprise_management::PolicyData default_data;
   enterprise_management::PolicyData external_data;
@@ -239,8 +246,9 @@ void MachineLevelUserCloudPolicyStore::Validate(
 
   // Policies cached by the external provider do not require key and signature
   // validation since they are stored in a secure location.
-  if (key)
+  if (key || base::FeatureList::IsEnabled(kAlwaysVerifyPolicyKey)) {
     ValidateKeyAndSignature(validator.get(), key.get(), std::string());
+  }
 
   if (validate_in_background) {
     UserCloudPolicyValidator::StartValidation(std::move(validator),
