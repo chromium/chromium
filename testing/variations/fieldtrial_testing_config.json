@@ -152,6 +152,36 @@
             ]
         }
     ],
+    "AccessibilityManifestV3SelectToSpeak": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityManifestV3SelectToSpeak"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AccessibilityManifestV3SwitchAccess": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityManifestV3SwitchAccess"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityPageZoomV2": [
         {
             "platforms": [
