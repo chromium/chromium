@@ -108,8 +108,9 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
     fake_chrome_render_frame.OverrideBinder(main_rfh());
 
     base::test::TestFuture<bool> success;
-    ActorCoordinator coordinator;
-    coordinator.Act(*GetTab(), action, success.GetCallback());
+    ActorCoordinator coordinator(profile());
+    coordinator.StartTaskForTesting(GetTab());
+    coordinator.Act(action, success.GetCallback());
     return success.Get();
   }
 
@@ -136,27 +137,27 @@ class ActorCoordinatorTest : public ChromeRenderViewHostTestHarness {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ActorCoordinatorTest, Basic) {
+TEST_F(ActorCoordinatorTest, ActSucceedsOnSupportedUrl) {
   EXPECT_TRUE(Act(GURL("http://localhost/"), MakeClick(kFakeContentNodeId)));
 }
 
-TEST_F(ActorCoordinatorTest, CannotActOnUrl) {
+TEST_F(ActorCoordinatorTest, ActFailsOnUnsupportedUrl) {
   EXPECT_FALSE(
       Act(GURL(chrome::kChromeUIVersionURL), MakeClick(kFakeContentNodeId)));
 }
 
-TEST_F(ActorCoordinatorTest, TabDestroyed) {
+TEST_F(ActorCoordinatorTest, ActFailsWhenTabDestroyed) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("http://localhost/"));
 
   base::test::TestFuture<bool> success;
-  ActorCoordinator coordinator;
+  ActorCoordinator coordinator(profile());
+  coordinator.StartTaskForTesting(GetTab());
 
   FakeChromeRenderFrame fake_chrome_render_frame;
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
-  coordinator.Act(*GetTab(), MakeClick(kFakeContentNodeId),
-                  success.GetCallback());
+  coordinator.Act(MakeClick(kFakeContentNodeId), success.GetCallback());
 
   ClearTabInterface();
   DeleteContents();
@@ -172,9 +173,9 @@ TEST_F(ActorCoordinatorTest, CrossOriginNavigationBeforeAction) {
   fake_chrome_render_frame.OverrideBinder(main_rfh());
 
   base::test::TestFuture<bool> success;
-  ActorCoordinator coordinator;
-  coordinator.Act(*GetTab(), MakeClick(kFakeContentNodeId),
-                  success.GetCallback());
+  ActorCoordinator coordinator(profile());
+  coordinator.StartTaskForTesting(GetTab());
+  coordinator.Act(MakeClick(kFakeContentNodeId), success.GetCallback());
 
   // Before the action happens, commit a cross-origin navigation.
   ASSERT_FALSE(success.IsReady());

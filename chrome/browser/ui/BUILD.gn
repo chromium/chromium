@@ -5694,11 +5694,15 @@ static_library("ui") {
       "webui/settings/glic_handler.h",
     ]
     deps += [
+      "//chrome/browser/actor",
       "//chrome/browser/background/glic",
       "//chrome/browser/glic",
       "//chrome/browser/glic:impl",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/glic:impl" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/actor",
+      "//chrome/browser/glic:impl",
+    ]
   }
 
   if (enable_reporting) {

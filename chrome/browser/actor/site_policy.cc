@@ -71,7 +71,7 @@ void OnOptimizationGuideDecision(
 }
 
 void MayActOnUrl(const GURL& url, Profile* profile, DecisionCallback callback) {
-  if (net::IsLocalhost(url)) {
+  if (net::IsLocalhost(url) || url.IsAboutBlank()) {
     ResolveDecision(std::move(callback), true);
     return;
   }

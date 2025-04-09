@@ -121,6 +121,10 @@ TEST_F(ActorSitePolicyTest, AllowLocalhost) {
   CheckUrl(GURL("http://[::1]/"), true);
 }
 
+TEST_F(ActorSitePolicyTest, AllowAboutBlank) {
+  CheckUrl(GURL(url::kAboutBlankURL), true);
+}
+
 TEST_F(ActorSitePolicyTest, BlockIpAddress) {
   CheckUrl(GURL("https://8.8.8.8/"), false);
   CheckUrl(GURL("https://[2001:4860:4860::8888]/"), false);

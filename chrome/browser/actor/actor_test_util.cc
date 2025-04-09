@@ -11,6 +11,7 @@
 using optimization_guide::proto::BrowserAction;
 using optimization_guide::proto::ClickAction;
 using optimization_guide::proto::MoveMouseAction;
+using optimization_guide::proto::NavigateAction;
 using optimization_guide::proto::ScrollAction;
 using optimization_guide::proto::TypeAction;
 
@@ -41,6 +42,14 @@ BrowserAction MakeMouseMove(int content_node_id) {
   BrowserAction action;
   MoveMouseAction* move = action.add_action_information()->mutable_move_mouse();
   move->mutable_target()->set_content_node_id(content_node_id);
+  return action;
+}
+
+BrowserAction MakeNavigate(std::string_view target_url) {
+  BrowserAction action;
+  NavigateAction* navigate =
+      action.add_action_information()->mutable_navigate();
+  navigate->mutable_url()->assign(target_url);
   return action;
 }
 

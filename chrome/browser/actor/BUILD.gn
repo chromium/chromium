@@ -34,12 +34,14 @@ source_set("actor") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser:browser_public_dependencies",
     "//components/optimization_guide/proto:optimization_guide_proto",
   ]
   deps = [
     "//chrome/browser/optimization_guide:optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
     "//components/safe_browsing:buildflags",

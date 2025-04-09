@@ -10,6 +10,7 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/actor/actor_coordinator.h"
 #include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -66,7 +67,15 @@ class ActorToolsTest : public InProcessBrowserTest {
     embedded_test_server()->ServeFilesFromSourceDirectory(kActorTestDataPath);
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    actor_coordinator_ = std::make_unique<actor::ActorCoordinator>();
+    actor_coordinator_ =
+        std::make_unique<actor::ActorCoordinator>(browser()->profile());
+    actor_coordinator().StartTaskForTesting(browser()->GetActiveTabInterface());
+  }
+
+  void TearDownOnMainThread() override {
+    // The coordinator has a pointer to the profile, which must be released
+    // before the browser is torn down to avoid a dangling pointer.
+    actor_coordinator_.reset();
   }
 
   void GoBack() {
@@ -86,14 +95,11 @@ class ActorToolsTest : public InProcessBrowserTest {
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
-  TabInterface* active_tab() { return browser()->GetActiveTabInterface(); }
-
   ActorCoordinator& actor_coordinator() { return *actor_coordinator_; }
 
  private:
-  std::unique_ptr<ActorCoordinator> actor_coordinator_;
-
   ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<ActorCoordinator> actor_coordinator_;
 };
 
 // Exercises the basic API to ensure nothing CHECKs or crashes.
@@ -105,10 +111,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, BasicSmokeTest) {
   BrowserAction action =
       MakeClick(/*content_node_id=*/kNonExistentContentNodeId);
 
-  TabInterface& tab = *active_tab();
-
   TestFuture<bool> result_fail;
-  actor_coordinator().Act(tab, action, result_fail.GetCallback());
+  actor_coordinator().Act(action, result_fail.GetCallback());
   // The node id doesn't exist so the tool will return false.
   EXPECT_FALSE(result_fail.Get());
 }
@@ -121,10 +125,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool) {
   BrowserAction action = MakeType(/*content_node_id=*/kNonExistentContentNodeId,
                                   /*text=*/"test", /*follow_by_enter=*/true);
 
-  TabInterface& tab = *active_tab();
-
   TestFuture<bool> result_fail;
-  actor_coordinator().Act(tab, action, result_fail.GetCallback());
+  actor_coordinator().Act(action, result_fail.GetCallback());
   // The node id doesn't exist so the tool will return false.
   // TODO(crbug.com/402218570): Add function to extract real DOMNodeId from the
   // test page so we can expect a true click returning here.
@@ -140,10 +142,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool) {
   BrowserAction action =
       MakeMouseMove(/*content_node_id=*/kNonExistentContentNodeId);
 
-  TabInterface& tab = *active_tab();
-
   TestFuture<bool> result_fail;
-  actor_coordinator().Act(tab, action, result_fail.GetCallback());
+  actor_coordinator().Act(action, result_fail.GetCallback());
   // The node id doesn't exist so the tool will return false.
   // TODO(crbug.com/402218570): Add function to extract real DOMNodeId from the
   // test page so we can expect a true click returning here.
@@ -155,7 +155,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   float scroll_offset_y = 50;
-  TabInterface& tab = *active_tab();
 
   {
     // If no node id is passed, it will scroll the page's viewport.
@@ -163,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
         /*content_node_id=*/std::nullopt, /*scroll_offset_x=*/0,
         scroll_offset_y);
     TestFuture<bool> result_success;
-    actor_coordinator().Act(tab, action, result_success.GetCallback());
+    actor_coordinator().Act(action, result_success.GetCallback());
     EXPECT_TRUE(result_success.Get());
     EXPECT_EQ(scroll_offset_y,
               EvalJs(web_contents(), "window.scrollY").ExtractDouble());
@@ -174,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
         /*content_node_id=*/std::nullopt, /*scroll_offset_x=*/0,
         scroll_offset_y);
     TestFuture<bool> result_success;
-    actor_coordinator().Act(tab, action, result_success.GetCallback());
+    actor_coordinator().Act(action, result_success.GetCallback());
     EXPECT_TRUE(result_success.Get());
     EXPECT_EQ(2 * scroll_offset_y,
               EvalJs(web_contents(), "window.scrollY").ExtractDouble());
@@ -191,10 +190,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
       /*content_node_id=*/kNonExistentContentNodeId, /*scroll_offset_x=*/0,
       scroll_offset_y);
 
-  TabInterface& tab = *active_tab();
-
   TestFuture<bool> result_fail;
-  actor_coordinator().Act(tab, action, result_fail.GetCallback());
+  actor_coordinator().Act(action, result_fail.GetCallback());
   EXPECT_FALSE(result_fail.Get());
 
   EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY").ExtractDouble());
@@ -211,10 +208,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool) {
       action.add_action_information()->mutable_navigate();
   navigate->mutable_url()->assign(url_target.spec());
 
-  TabInterface& tab = *active_tab();
-
   TestFuture<bool> result_success;
-  actor_coordinator().Act(tab, action, result_success.GetCallback());
+  actor_coordinator().Act(action, result_success.GetCallback());
   EXPECT_TRUE(result_success.Get());
 
   EXPECT_EQ(web_contents()->GetURL(), url_target);
@@ -227,10 +222,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_Back) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
-  TabInterface& tab = *active_tab();
-
   TestFuture<bool> result_success;
-  actor_coordinator().Act(tab, MakeHistoryBack(), result_success.GetCallback());
+  actor_coordinator().Act(MakeHistoryBack(), result_success.GetCallback());
   EXPECT_TRUE(result_success.Get());
 
   EXPECT_EQ(web_contents()->GetURL(), url_first);
@@ -243,14 +236,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_Forward) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
-  TabInterface& tab = *active_tab();
-
   GoBack();
   ASSERT_EQ(web_contents()->GetURL(), url_first);
 
   TestFuture<bool> result_success;
-  actor_coordinator().Act(tab, MakeHistoryForward(),
-                          result_success.GetCallback());
+  actor_coordinator().Act(MakeHistoryForward(), result_success.GetCallback());
   EXPECT_TRUE(result_success.Get());
 
   EXPECT_EQ(web_contents()->GetURL(), url_second);
@@ -268,10 +258,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackNoBFCache) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
-  TabInterface& tab = *active_tab();
-
   TestFuture<bool> result_success;
-  actor_coordinator().Act(tab, MakeHistoryBack(), result_success.GetCallback());
+  actor_coordinator().Act(MakeHistoryBack(), result_success.GetCallback());
   EXPECT_TRUE(result_success.Get());
 
   EXPECT_EQ(web_contents()->GetURL(), url_first);
@@ -285,13 +273,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_FailNoSessionHistory) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
-  TabInterface& tab = *active_tab();
-
   // Attempting a forward history navigation should fail since we're at the
   // latest entry.
   {
     TestFuture<bool> result;
-    actor_coordinator().Act(tab, MakeHistoryForward(), result.GetCallback());
+    actor_coordinator().Act(MakeHistoryForward(), result.GetCallback());
     EXPECT_FALSE(result.Get());
     EXPECT_EQ(web_contents()->GetURL(), url_second);
   }
@@ -304,7 +290,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_FailNoSessionHistory) {
   // entry.
   {
     TestFuture<bool> result;
-    actor_coordinator().Act(tab, MakeHistoryBack(), result.GetCallback());
+    actor_coordinator().Act(MakeHistoryBack(), result.GetCallback());
     EXPECT_FALSE(result.Get());
     EXPECT_EQ(web_contents()->GetURL(), url_second);
   }
@@ -317,18 +303,16 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackSameDocument) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
-  TabInterface& tab = *active_tab();
-
   {
     TestFuture<bool> result;
-    actor_coordinator().Act(tab, MakeHistoryBack(), result.GetCallback());
+    actor_coordinator().Act(MakeHistoryBack(), result.GetCallback());
     EXPECT_TRUE(result.Get());
     EXPECT_EQ(web_contents()->GetURL(), url_first);
   }
 
   {
     TestFuture<bool> result;
-    actor_coordinator().Act(tab, MakeHistoryForward(), result.GetCallback());
+    actor_coordinator().Act(MakeHistoryForward(), result.GetCallback());
     EXPECT_TRUE(result.Get());
     EXPECT_EQ(web_contents()->GetURL(), url_second);
   }
@@ -355,9 +339,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BasicIframeBack) {
   ASSERT_EQ(child_frame->GetLastCommittedURL(), child_frame_url_2);
 
   // Invoke the history back tool. The iframe should be navigated back.
-  TabInterface& tab = *active_tab();
   TestFuture<bool> result;
-  actor_coordinator().Act(tab, MakeHistoryBack(), result.GetCallback());
+  actor_coordinator().Act(MakeHistoryBack(), result.GetCallback());
   EXPECT_TRUE(result.Get());
   child_frame = content::ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);
   EXPECT_EQ(child_frame->GetLastCommittedURL(), child_frame_url_1);
@@ -375,11 +358,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_SlowBack) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
-  TabInterface& tab = *active_tab();
-
   TestNavigationManager back_navigation(web_contents(), url_first);
   TestFuture<bool> result_success;
-  actor_coordinator().Act(tab, MakeHistoryBack(), result_success.GetCallback());
+  actor_coordinator().Act(MakeHistoryBack(), result_success.GetCallback());
   ASSERT_TRUE(back_navigation.WaitForResponse());
   EXPECT_FALSE(result_success.IsReady());
 
@@ -438,9 +419,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_ConcurrentNavigations) {
 
   // Invoke the history back tool. Both should be navigated back to their
   // starting URL.
-  TabInterface& tab = *active_tab();
   TestFuture<bool> result;
-  actor_coordinator().Act(tab, MakeHistoryBack(), result.GetCallback());
+  actor_coordinator().Act(MakeHistoryBack(), result.GetCallback());
   EXPECT_TRUE(result.Get());
 
   child_frame_1 = ChildFrameAt(web_contents()->GetPrimaryMainFrame(), 0);

@@ -31,6 +31,7 @@ using optimization_guide::proto::ClickAction;
 constexpr int32_t kContentNodeId = 123;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTabId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
 
 class GlicActorControllerUiTest : public test::InteractiveGlicTest {
  public:
@@ -115,26 +116,85 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
     return base::Base64Encode(serialized_message);
   }
 
+  // Gets the context options to capture a new observation after completing an
+  // action. This includes both annotations (i.e. AnnotatedPageContent) and a
+  // screenshot.
   base::Value::Dict UpdatedContextOptions() {
     return base::Value::Dict()
         .Set("annotatedPageContent", true)
         .Set("viewportScreenshot", true);
   }
 
+  // Gets the context options to capture a new observation that only has the
+  // annotations (AnnotatedPageContent). Taking screenshots can be slow or flaky
+  // in the test. This is intended to be used for interim steps, *before*
+  // returning the final context of an action.
+  base::Value::Dict AnnotationsOnlyContextOptions() {
+    return base::Value::Dict()
+        .Set("annotatedPageContent", true)
+        .Set("viewportScreenshot", false);
+  }
+
+  // Starts a new task by executing the initial navigate to `task_url` to create
+  // a new tab. The new tab can then be referenced by `kNewActorTabId`.
+  auto StartTaskInNewTab(const GURL& task_url) {
+    const GURL start_url = embedded_test_server()->GetURL("/blank.html?start");
+    std::string startNavigateProto =
+        EncodeActionProto(actor::MakeNavigate(task_url.spec()));
+
+    return Steps(
+        InstrumentTab(kActiveTabId),
+        NavigateWebContents(kActiveTabId, start_url),
+        OpenGlicWindow(GlicWindowMode::kAttached),
+        InstrumentNextTab(kNewActorTabId),
+        ExecuteAction(startNavigateProto, AnnotationsOnlyContextOptions()),
+        WaitForWebContentsReady(kNewActorTabId, task_url));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, OpensNewTabOnFirstNavigate) {
+  const GURL start_url = embedded_test_server()->GetURL("/blank.html?start");
+  const GURL task_url =
+      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+  std::string navigateProto =
+      EncodeActionProto(actor::MakeNavigate(task_url.spec()));
+
+  RunTestSequence(InstrumentTab(kActiveTabId),
+                  NavigateWebContents(kActiveTabId, start_url),
+                  OpenGlicWindow(GlicWindowMode::kAttached),
+                  InstrumentNextTab(kNewActorTabId),
+                  ExecuteAction(navigateProto, UpdatedContextOptions()),
+                  WaitForWebContentsReady(kNewActorTabId, task_url));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       UsesExistingActorTabOnSubsequentNavigate) {
+  const GURL task_url =
+      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+  const GURL second_navigate_url =
+      embedded_test_server()->GetURL("/blank.html?second");
+  std::string secondNavigateProto =
+      EncodeActionProto(actor::MakeNavigate(second_navigate_url.spec()));
+
+  RunTestSequence(StartTaskInNewTab(task_url),
+                  // Now that the task is started in a new tab, do the
+                  // second navigation.
+                  ExecuteAction(secondNavigateProto, UpdatedContextOptions()),
+                  WaitForWebContentsReady(kNewActorTabId, second_navigate_url));
+}
+
 // TODO(https://crbug.com/402086021): Enable test after using real nodeId in
 // proto.
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DISABLED_ActionSucceeds) {
+  const GURL task_url =
+      embedded_test_server()->GetURL("/page_with_clickable_element.html");
   std::string encodedProto =
       EncodeActionProto(actor::MakeClick(kContentNodeId));
-  RunTestSequence(InstrumentTab(kActiveTabId),
-                  NavigateWebContents(kActiveTabId,
-                                      embedded_test_server()->GetURL(
-                                          "/page_with_clickable_element.html")),
-                  OpenGlicWindow(GlicWindowMode::kAttached),
+
+  RunTestSequence(StartTaskInNewTab(task_url),
                   ExecuteAction(encodedProto, UpdatedContextOptions()));
   // TODO(https://crbug.com/402086021): Check result after implementing tool
   // calling to do the action.
@@ -154,41 +214,37 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionProtoInvalid) {
           glic::mojom::ActInFocusedTabErrorReason::kInvalidActionProto));
 }
 
-// TODO(https://crbug.com/402086021): Enable test after implementing tool
-// calling to do the action.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
-                       DISABLED_ActionTargetNotFound) {
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
+  const GURL task_url =
+      embedded_test_server()->GetURL("/page_with_clickable_element.html");
   std::string encodedProto =
       EncodeActionProto(actor::MakeClick(kContentNodeId));
+
   RunTestSequence(
-      InstrumentTab(kActiveTabId),
-      NavigateWebContents(
-          kActiveTabId,
-          embedded_test_server()->GetURL("/page_with_clickable_element.html")),
-      OpenGlicWindow(GlicWindowMode::kAttached),
+      StartTaskInNewTab(task_url),
       ExecuteActionExpectingError(
           encodedProto, UpdatedContextOptions(),
           glic::mojom::ActInFocusedTabErrorReason::kTargetNotFound));
 }
 
-// TODO(crbug.com/402730309): Test is hangs flakily in a CopyOutputRequest for
-// the observation, unrelated to the HistoryTool code. Re-enable once that's
-// resolved.
-IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DISABLED_HistoryTool) {
-  std::string encodedProtoBack = EncodeActionProto(actor::MakeHistoryBack());
-  std::string encodedProtoForward =
-      EncodeActionProto(actor::MakeHistoryForward());
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, HistoryTool) {
   const GURL url_1 = embedded_test_server()->GetURL("/blank.html?1");
   const GURL url_2 = embedded_test_server()->GetURL("/blank.html?2");
+  std::string navigateUrl2Proto =
+      EncodeActionProto(actor::MakeNavigate(url_2.spec()));
+  std::string backProto = EncodeActionProto(actor::MakeHistoryBack());
+  std::string forwardProto = EncodeActionProto(actor::MakeHistoryForward());
 
-  RunTestSequence(InstrumentTab(kActiveTabId),
-                  NavigateWebContents(kActiveTabId, url_1),
-                  NavigateWebContents(kActiveTabId, url_2),
-                  OpenGlicWindow(GlicWindowMode::kAttached),
-                  ExecuteAction(encodedProtoBack, UpdatedContextOptions()),
-                  WaitForWebContentsReady(kActiveTabId, url_1),
-                  ExecuteAction(encodedProtoForward, UpdatedContextOptions()),
-                  WaitForWebContentsReady(kActiveTabId, url_2));
+  RunTestSequence(
+      StartTaskInNewTab(url_1),
+      ExecuteAction(navigateUrl2Proto, AnnotationsOnlyContextOptions()),
+      ExecuteAction(backProto, AnnotationsOnlyContextOptions()),
+      WaitForWebContentsReady(kNewActorTabId, url_1),
+      // TODO(crbug.com/402086021): Test hangs flakily in a CopyOutputRequest
+      // for the observation, unrelated to the HistoryTool code. Use
+      // UpdatedContextOptions() once that's resolved.
+      ExecuteAction(forwardProto, AnnotationsOnlyContextOptions()),
+      WaitForWebContentsReady(kNewActorTabId, url_2));
 }
 
 class GlicActorControllerWithActorDisabledUiTest
