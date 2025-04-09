@@ -528,7 +528,6 @@ crbug.com/365680830 [ mac angle-metal apple ] deqp/functional/gles3/occlusionque
 
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/angleproject/1465 [ win angle-d3d11 ] conformance2/glsl3/tricky-loop-conditions.html [ Failure ]
-crbug.com/angleproject/389733590 [ amd-0x7340 angle-d3d11 release-x64 target-cpu-64 win10 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 crbug.com/angleproject/389733590 [ angle-d3d11 nvidia-0x2184 nvidia_lt_535.183.01 win10 ] conformance/extensions/khr-parallel-shader-compile.html [ RetryOnFailure ]
 
 ## Win / NVIDIA ##
@@ -722,7 +721,6 @@ crbug.com/354627705 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/fbomult
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] deqp/functional/gles3/instancedrendering.html [ Failure ]
 crbug.com/328102507 [ mac amd angle-opengl graphite-disabled asan ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
-crbug.com/372295133 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_array_linear_mipmap_linear_equal.html [ Failure ]
 crbug.com/372295133 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_array_linear_mipmap_nearest_less_or_equal.html [ Failure ]
 crbug.com/374696517 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/uniformbuffers/random.html [ RetryOnFailure ]
 crbug.com/406424259 [ mac amd-0x7340 graphite-disabled ] conformance2/rendering/vertex-id-large-count.html [ Failure ]
