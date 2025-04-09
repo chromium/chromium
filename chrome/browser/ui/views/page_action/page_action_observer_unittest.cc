@@ -57,6 +57,10 @@ class NotifierPageActionModel : public MockPageActionModel {
     observer_list_.AddObserver(observer);
   }
 
+  void RemoveObserver(PageActionModelObserver* observer) override {
+    observer_list_.RemoveObserver(observer);
+  }
+
   void NotifyChanged() {
     observer_list_.Notify(&PageActionModelObserver::OnPageActionModelChanged,
                           *this);
@@ -66,25 +70,8 @@ class NotifierPageActionModel : public MockPageActionModel {
   base::ObserverList<PageActionModelObserver> observer_list_;
 };
 
-class FakePageActionModelFactory : public PageActionModelFactory {
- public:
-  std::unique_ptr<PageActionModelInterface> Create(int action_id) override {
-    auto model = std::make_unique<NotifierPageActionModel>();
-    model_map_.emplace(action_id, model.get());
-    return model;
-  }
-
-  // Model getter for tests to set expectations.
-  NotifierPageActionModel& Get(int action_id) {
-    auto id_to_model = model_map_.find(action_id);
-    CHECK(id_to_model != model_map_.end());
-    CHECK_NE(id_to_model->second, nullptr);
-    return *id_to_model->second;
-  }
-
- private:
-  std::map<actions::ActionId, NotifierPageActionModel*> model_map_;
-};
+using MockPageActionModelFactory =
+    FakePageActionModelFactory<NotifierPageActionModel>;
 
 class PageActionObserverTest : public ::testing::Test {
  public:
@@ -103,14 +90,14 @@ class PageActionObserverTest : public ::testing::Test {
 
   MockPageActionObserver& observer() { return observer_; }
   PageActionController& controller() { return *controller_; }
-  FakePageActionModelFactory& factory() { return model_factory_; }
+  MockPageActionModelFactory& factory() { return model_factory_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   MockPageActionObserver observer_;
   TestingProfile profile_;
   FakeTabInterface tab_;
-  FakePageActionModelFactory model_factory_;
+  MockPageActionModelFactory model_factory_;
   std::unique_ptr<PageActionController> controller_;
 };
 

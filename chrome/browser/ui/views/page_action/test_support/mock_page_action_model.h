@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/actions/action_id.h"
 
 namespace page_actions {
 
@@ -76,6 +77,27 @@ class MockPageActionModel : public PageActionModelInterface {
               SetShouldHidePageAction,
               (base::PassKey<PageActionController>, bool should_hide),
               (override));
+};
+
+template <typename PageActionModelType>
+class FakePageActionModelFactory : public PageActionModelFactory {
+ public:
+  std::unique_ptr<PageActionModelInterface> Create(int action_id) override {
+    auto model = std::make_unique<PageActionModelType>();
+    model_map_.emplace(action_id, model.get());
+    return model;
+  }
+
+  // Model getter for tests to set expectations.
+  PageActionModelType& Get(int action_id) {
+    auto id_to_model = model_map_.find(action_id);
+    CHECK(id_to_model != model_map_.end());
+    CHECK_NE(id_to_model->second, nullptr);
+    return *id_to_model->second;
+  }
+
+ private:
+  std::map<actions::ActionId, PageActionModelType*> model_map_;
 };
 
 }  // namespace page_actions

@@ -65,6 +65,9 @@ using TestPageActionModelObservation =
     ::base::ScopedObservation<PageActionModelInterface,
                               PageActionModelObserver>;
 
+using MockPageActionModelFactory =
+    FakePageActionModelFactory<MockPageActionModel>;
+
 class PageActionTestObserver : public PageActionModelObserver {
  public:
   PageActionTestObserver() = default;
@@ -377,27 +380,6 @@ TEST_F(PageActionControllerTest, ClearOverrideText) {
   // We should revert to the ActionItem text.
   EXPECT_EQ(kText, observer.text());
 }
-
-class MockPageActionModelFactory : public PageActionModelFactory {
- public:
-  // Interface used by PageActionController to create a model.
-  std::unique_ptr<PageActionModelInterface> Create(int action_id) override {
-    auto model = std::make_unique<MockPageActionModel>();
-    model_map_.emplace(action_id, model.get());
-    return model;
-  }
-
-  // Model getter for tests to set expectations.
-  MockPageActionModel& Get(int action_id) {
-    auto id_to_model = model_map_.find(action_id);
-    CHECK(id_to_model != model_map_.end());
-    CHECK_NE(id_to_model->second, nullptr);
-    return *id_to_model->second;
-  }
-
- private:
-  std::map<actions::ActionId, MockPageActionModel*> model_map_;
-};
 
 class PageActionControllerMockModelTest : public ::testing::Test {
  public:
