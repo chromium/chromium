@@ -3964,10 +3964,19 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "CameraOther_20250408",
+                    "params": {
+                        "action_filter": "Accepted,AcceptedOnce,Dismissed",
+                        "probability": "0.6",
+                        "prompt_disposition_reason_filter": "DefaultFallback",
+                        "request_type_filter": "VideoCapture",
+                        "survey_display_time": "OnPromptResolved",
+                        "trigger_id": "jGykX8MLD0ugnJ3q1cK0NzqCtGvZ"
+                    },
                     "enable_features": [
                         "CameraMicPreview",
-                        "GetUserMediaDeferredDeviceSettingsSelection"
+                        "GetUserMediaDeferredDeviceSettingsSelection",
+                        "PermissionsPromptSurvey"
                     ]
                 }
             ]
@@ -10897,33 +10906,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "GraduationUseEmbeddedTransferEndpoint"
-                    ]
-                }
-            ]
-        }
-    ],
-    "GranitePermissionsHaTS": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "GeoSurvey_20241211",
-                    "params": {
-                        "probability": "0.3",
-                        "prompt_disposition_filter": "AnchoredBubble",
-                        "prompt_disposition_reason_filter": "DefaultFallback",
-                        "request_type_filter": "Geolocation",
-                        "survey_display_time": "OnPromptResolved",
-                        "trigger_id": "gqeUMMLT20ugnJ3q1cK0NWHyGuSi"
-                    },
-                    "enable_features": [
-                        "PermissionsPromptSurvey"
                     ]
                 }
             ]
