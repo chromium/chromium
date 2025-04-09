@@ -210,13 +210,25 @@ each histogram.
   </summary>
 </histogram>
 
-<histogram name="PerformanceManager.InputScenarioChanged"
+<histogram name="PerformanceManager.InputScenarioChanges{InputScenario}"
     enum="InputScenarioUpdateReason" expires_after="2026-04-07">
   <owner>kraskevich@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    Logged on every input scenario change in performance manager.
+    Logged whenever the Performance Manager input scenario changes away from
+    {InputScenario}, with the reason for the change.
   </summary>
+<!-- LINT.IfChange(InputScenarioSuffix) -->
+
+  <token key="InputScenario">
+    <variant name="" summary="all scenarios"/>
+    <variant name=".NoInput" summary="InputScenario::kNoInput"/>
+    <variant name=".Scroll" summary="InputScenario::kScroll"/>
+    <variant name=".Tap" summary="InputScenario::kTap"/>
+    <variant name=".Typing" summary="InputScenario::kTyping"/>
+  </token>
+<!-- LINT.ThenChange(/components/performance_manager/decorators/frame_input_state_decorator.cc:InputScenarioSuffix) -->
+
 </histogram>
 
 <histogram name="PerformanceManager.LoadingNotQuiescentPageCount.{Visibility}"

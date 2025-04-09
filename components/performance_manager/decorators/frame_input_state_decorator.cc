@@ -5,13 +5,34 @@
 #include "components/performance_manager/decorators/frame_input_state_decorator.h"
 
 #include "base/check_is_test.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_frame_host_proxy.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace performance_manager {
+
+namespace {
+
+std::string GetInputScenarioSuffix(InputScenario scenario) {
+  // LINT.IfChange(InputScenarioSuffix)
+  switch (scenario) {
+    case InputScenario::kScroll:
+      return "Scroll";
+    case InputScenario::kTap:
+      return "Tap";
+    case InputScenario::kTyping:
+      return "Typing";
+    case InputScenario::kNoInput:
+      return "NoInput";
+  }
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/performance_manager/histograms.xml:InputScenarioSuffix)
+  NOTREACHED();
+}
+
+}  // namespace
 
 FrameInputStateDecorator::Data::Data(const FrameNode* frame_node) {
   input_observer_ = std::make_unique<InputObserver>(
@@ -48,15 +69,23 @@ void FrameInputStateDecorator::UpdateInputScenario(
     InputScenario input_scenario,
     InputScenarioUpdateReason update_reason) {
   auto* data = Data::Get(frame_node);
-  if (!data || data->input_scenario() == input_scenario) {
+  if (!data) {
+    return;
+  }
+  InputScenario previous_scenario = data->input_scenario();
+  if (previous_scenario == input_scenario) {
     return;
   }
 
   data->set_input_scenario(input_scenario);
   observers_.Notify(&FrameInputStateObserver::OnInputScenarioChanged,
                     frame_node);
-  UMA_HISTOGRAM_ENUMERATION("PerformanceManager.InputScenarioChanged",
-                            update_reason);
+  constexpr char kHistogramName[] = "PerformanceManager.InputScenarioChanges";
+  base::UmaHistogramEnumeration(kHistogramName, update_reason);
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {kHistogramName, ".", GetInputScenarioSuffix(previous_scenario)}),
+      update_reason);
 }
 
 void FrameInputStateDecorator::AddObserver(FrameInputStateObserver* observer) {
