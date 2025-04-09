@@ -104,7 +104,12 @@ class ProcessorEntityTracker {
   std::vector<ProcessorEntity*> GetEntitiesWithLocalChanges(size_t max_entries);
 
   // Returns true if there are any local entities to be committed.
+  // TODO(crbug.com/401470426): Investigate if this method can be replaced with
+  // `HasUnsyncedChanges()`, else rename it to something more accurate.
   bool HasLocalChanges() const;
+
+  // Returns true if there are any entities with unsynced changes.
+  bool HasUnsyncedChanges() const;
 
   const sync_pb::DataTypeState& data_type_state() const {
     return data_type_state_;

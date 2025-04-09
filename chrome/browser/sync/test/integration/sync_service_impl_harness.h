@@ -83,8 +83,17 @@ class SyncServiceImplHarness {
 #if !BUILDFLAG(IS_ANDROID)
   // Enters/exits the "Sync paused" state, which in real life happens if a
   // syncing user signs out of the content area.
+  // TODO(crbug.com/401470426): Replace the usages with
+  // Enter/ExitSignInPendingStateForPrimaryAccount().
   void EnterSyncPausedStateForPrimaryAccount();
   bool ExitSyncPausedStateForPrimaryAccount();
+
+  // Enters the "Sign-in pending" state and waits until the sync transport
+  // layer is paused. Returns true if successful.
+  bool EnterSignInPendingStateForPrimaryAccount();
+  // Exits the "Sign-in pending" state and waits until the sync transport layer
+  // is active. Returns true if successful.
+  bool ExitSignInPendingStateForPrimaryAccount();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Enables and configures sync for all available datatypes. Returns true only
@@ -145,6 +154,10 @@ class SyncServiceImplHarness {
   // Blocks the caller until the sync transport layer is active. Returns true if
   // successful.
   [[nodiscard]] bool AwaitSyncTransportActive();
+
+  // Blocks the caller until the sync transport layer is paused. Returns true if
+  // successful.
+  [[nodiscard]] bool AwaitSyncTransportPaused();
 
   // Blocks the caller until invalidations are enabled or disabled.
   [[nodiscard]] bool AwaitInvalidationsStatus(bool expected_status);
