@@ -76,6 +76,9 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
                      : border_scrollbar_padding.inline_start,
       CalculateTieThreshold(Style()));
 
+  const auto stacking_axis_gap = GridTrackSizingAlgorithm::CalculateGutterSize(
+      Style(), ChildAvailableSize(), is_for_columns ? kForRows : kForColumns);
+
   for (auto& masonry_item : masonry_items) {
     // Find the definite span that the masonry items should be placed in.
     auto item_span = masonry_item.Span(grid_axis_direction);
@@ -110,9 +113,9 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
                                       physical_fragment);
 
     // Update `running_positions` of the tracks that the items spans to include
-    // the size of the item in the stacking axis.
-    const auto new_running_position =
-        max_position +
+    // the size of the item + the size of the gap in the stacking axis.
+    auto new_running_position =
+        max_position + stacking_axis_gap +
         (is_for_columns ? fragment.BlockSize() : fragment.InlineSize());
     running_positions.UpdateRunningPositionsForSpan(item_span,
                                                     new_running_position);
@@ -125,8 +128,11 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
         ComputeMarginsFor(space, item_node.Style(), container_space));
   }
 
-  intrinsic_block_size_ += is_for_columns ? border_scrollbar_padding.block_end
-                                          : border_scrollbar_padding.inline_end;
+  // Remove last gap that was added, since there is not item after it.
+  intrinsic_block_size_ +=
+      (is_for_columns ? border_scrollbar_padding.block_end
+                      : border_scrollbar_padding.inline_end) -
+      stacking_axis_gap;
 }
 
 GridItems MasonryLayoutAlgorithm::BuildVirtualMasonryItems(

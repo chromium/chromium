@@ -19,8 +19,8 @@
     masonry-track-start: 3;
 }
 
-.auto-item {
-    padding: 10px;
+.auto-item, .gap-item {
+  padding: 10px;
 }
 
 .auto-item:nth-of-type(1) {
@@ -39,4 +39,8 @@
     background: lightpink;
     padding: 10px;
     masonry-track: span 2;
+}
+
+.gap-item {
+  width: 80px;
 }
