@@ -7,7 +7,7 @@
 @implementation FormSuggestionProviderQuery
 
 - (BOOL)hasFocusType {
-  return [_type isEqual:@"focus"];
+  return [_type isEqualToString:@"focus"];
 }
 
 - (instancetype)initWithFormName:(NSString*)formName
