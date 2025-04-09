@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.incognito.reauth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -26,10 +28,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** A delegate for the menu button present inside the Incognito re-auth view full page. */
+@NullMarked
 class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     /**
-     * An enum interface denoting the various options (in-order) present in the
-     * three dots menu in the incognito re-auth full page view.
+     * An enum interface denoting the various options (in-order) present in the three dots menu in
+     * the incognito re-auth full page view.
      */
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({MenuItemType.CLOSE_INCOGNITO_TABS, MenuItemType.SETTINGS})
@@ -47,8 +50,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
      * @param closeAllIncognitoTabRunnable The {@link Runnable} which would be used to close the
      *     Incognito tabs when the user clicks on "Close Incognito tabs" option.
      */
-    IncognitoReauthMenuDelegate(
-            @NonNull Context context, @NonNull Runnable closeAllIncognitoTabRunnable) {
+    IncognitoReauthMenuDelegate(Context context, Runnable closeAllIncognitoTabRunnable) {
         mContext = context;
         mCloseAllIncognitoTabsRunnable = closeAllIncognitoTabRunnable;
         mIncognitoReauthMenu = buildIncognitoReauthMenu();
@@ -121,7 +123,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
                         /* textEllipsizedAtEnd= */ true);
             default:
                 assert false : "Not implemented yet.";
-                return null;
+                return assumeNonNull(null);
         }
     }
 

@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.incognito.reauth;
 import android.app.Activity;
 import android.os.Build;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -19,8 +20,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** This class is responsible for managing the Incognito re-authentication flow. */
+@NullMarked
 public class IncognitoReauthManager {
-    private static Boolean sIsIncognitoReauthFeatureAvailableForTesting;
+    private static @Nullable Boolean sIsIncognitoReauthFeatureAvailableForTesting;
     private ReauthenticatorBridge mReauthenticatorBridge;
 
     /**
@@ -55,8 +57,7 @@ public class IncognitoReauthManager {
      * @param incognitoReauthCallback A {@link IncognitoReauthCallback} callback that would be run
      *     once the authentication is executed.
      */
-    public void startReauthenticationFlow(
-            @NonNull IncognitoReauthCallback incognitoReauthCallback) {
+    public void startReauthenticationFlow(IncognitoReauthCallback incognitoReauthCallback) {
         if (mReauthenticatorBridge.getBiometricAvailabilityStatus() == BiometricStatus.UNAVAILABLE
                 || !isIncognitoReauthFeatureAvailable()) {
             incognitoReauthCallback.onIncognitoReauthNotPossible();
@@ -101,7 +102,7 @@ public class IncognitoReauthManager {
      *     Incognito lock setting.
      * @return A boolean indicating if Incognito re-authentication is possible or not.
      */
-    public static boolean isIncognitoReauthEnabled(@NonNull Profile profile) {
+    public static boolean isIncognitoReauthEnabled(Profile profile) {
         return isIncognitoReauthFeatureAvailable()
                 && IncognitoReauthSettingUtils.isDeviceScreenLockEnabled()
                 && isIncognitoReauthSettingEnabled(profile);

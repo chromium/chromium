@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.tab_ui;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Simple data class that holds information to show or not show a notification dot for the whole tab
  * model.
  */
+@NullMarked
 public class TabModelDotInfo {
     public static final TabModelDotInfo HIDE = new TabModelDotInfo(false, "");
 
