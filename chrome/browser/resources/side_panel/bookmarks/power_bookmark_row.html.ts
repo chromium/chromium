@@ -72,7 +72,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
 </cr-url-list-item>`;
 
   if (this.shouldExpand_()) {
-    return html`
+    return html`<!--_html_template_start_-->
 <cr-expand-button no-hover id="expandButton"
     collapse-icon="cr:expand-more"
     expand-icon="cr:chevron-right"
@@ -86,7 +86,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
           .bookmark="${item}"
           ?compact="${this.compact}"
           .depth="${this.depth + 1}"
-          trailingIconTooltip="$i18n{tooltipMore}"
+          trailing-icon-tooltip="$i18n{tooltipMore}"
           ?has-checkbox="${this.hasCheckbox}"
           .selectedBookmarks="${this.selectedBookmarks}"
           .renamingId="${this.renamingId}"
@@ -97,7 +97,7 @@ export function getHtml(this: PowerBookmarkRowElement) {
           .contextMenuBookmark="${this.contextMenuBookmark}">
       </power-bookmark-row>
     `)}`: ''
-  }`;
+  }<!--_html_template_end_-->`;
   }
 
   return html`

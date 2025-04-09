@@ -119,6 +119,13 @@ suite('TreeView', () => {
     // Verify that the nested bookmark has the correct depth
     assertEquals(1, nestedBookmarkElement.depth);
 
+    // Verify that the "more" button has a tooltip.
+    const dotsIcon =
+        nestedBookmarkElement.shadowRoot.querySelector<HTMLElement>(
+            'cr-icon-button[iron-icon=\'cr:more-vert\']');
+    assertTrue(!!dotsIcon);
+    assertEquals(loadTimeData.getString('tooltipMore'), dotsIcon.title);
+
     const bookmarkDiv =
         nestedBookmarkElement.shadowRoot.querySelector<HTMLElement>(
             '#bookmark');
