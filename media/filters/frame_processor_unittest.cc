@@ -427,16 +427,17 @@ class FrameProcessorTest : public ::testing::TestWithParam<bool> {
         audio_ = std::make_unique<ChunkDemuxerStream>(DemuxerStream::AUDIO,
                                                       MediaTrack::Id("1"));
         AudioDecoderConfig decoder_config;
+        static constexpr int kSampleRate = 3000;
         if (support_audio_nonkeyframes) {
           decoder_config = AudioDecoderConfig(
               AudioCodec::kAAC, kSampleFormatPlanarF32, CHANNEL_LAYOUT_STEREO,
-              1000, EmptyExtraData(), EncryptionScheme::kUnencrypted);
+              kSampleRate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
           decoder_config.set_profile(AudioCodecProfile::kXHE_AAC);
         } else {
-          decoder_config =
-              AudioDecoderConfig(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                                 CHANNEL_LAYOUT_STEREO, 1000, EmptyExtraData(),
-                                 EncryptionScheme::kUnencrypted);
+          decoder_config = AudioDecoderConfig(
+              AudioCodec::kVorbis, kSampleFormatPlanarF32,
+              CHANNEL_LAYOUT_STEREO, kSampleRate, EmptyExtraData(),
+              EncryptionScheme::kUnencrypted);
         }
         frame_processor_->OnPossibleAudioConfigUpdate(decoder_config);
         ASSERT_TRUE(

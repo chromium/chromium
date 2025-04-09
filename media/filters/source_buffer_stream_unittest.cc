@@ -40,6 +40,8 @@ namespace {
 
 enum class TimeGranularity { kMicrosecond, kMillisecond };
 
+static constexpr int kSampleRate = 3000;
+
 }  // namespace
 
 namespace media {
@@ -95,9 +97,9 @@ class SourceBufferStreamTest : public testing::Test {
   void SetAudioStream() {
     video_config_ = TestVideoConfig::Invalid();
     audio_config_.Initialize(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                             CHANNEL_LAYOUT_STEREO, 1000, EmptyExtraData(),
-                             EncryptionScheme::kUnencrypted, base::TimeDelta(),
-                             0);
+                             CHANNEL_LAYOUT_STEREO, kSampleRate,
+                             EmptyExtraData(), EncryptionScheme::kUnencrypted,
+                             base::TimeDelta(), 0);
     ResetStream<>(audio_config_);
 
     // Equivalent to 2ms per frame.
@@ -4517,9 +4519,9 @@ TEST_F(SourceBufferStreamTest, Audio_PrerollFrame) {
 }
 
 TEST_F(SourceBufferStreamTest, Audio_ConfigChangeWithPreroll) {
-  AudioDecoderConfig new_config(AudioCodec::kVorbis, kSampleFormatPlanarF32,
-                                CHANNEL_LAYOUT_MONO, 2000, EmptyExtraData(),
-                                EncryptionScheme::kUnencrypted);
+  AudioDecoderConfig new_config(
+      AudioCodec::kVorbis, kSampleFormatPlanarF32, CHANNEL_LAYOUT_MONO,
+      kSampleRate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
   SetAudioStream();
   Seek(0);
 
@@ -4564,7 +4566,7 @@ TEST_F(SourceBufferStreamTest, Audio_Opus_SeekToJustBeforeRangeStart) {
   // interval requires a nonzero seek_preroll value.
   video_config_ = TestVideoConfig::Invalid();
   audio_config_.Initialize(AudioCodec::kOpus, kSampleFormatPlanarF32,
-                           CHANNEL_LAYOUT_STEREO, 1000, EmptyExtraData(),
+                           CHANNEL_LAYOUT_STEREO, kSampleRate, EmptyExtraData(),
                            EncryptionScheme::kUnencrypted,
                            base::Milliseconds(10), 0);
   ResetStream<>(audio_config_);
