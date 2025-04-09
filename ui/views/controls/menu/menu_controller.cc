@@ -2357,9 +2357,9 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
   // Anchor for calculated bounds. Can be alternatively used by a system
   // compositor for better positioning.
   ui::OwnedWindowAnchor anchor;
-  bool calculate_as_bubble_menu =
+  const bool calculate_as_bubble_menu =
       MenuItemView::IsBubble(state_.anchor) ||
-      (menu_config.use_bubble_border && menu_config.CornerRadiusForMenu(this));
+      menu_config.ShouldUseBubbleBorderForMenu(this);
   gfx::Rect bounds =
       calculate_as_bubble_menu
           ? CalculateBubbleMenuBounds(item, preferred_open_direction,
@@ -2739,7 +2739,6 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
   int y = 0;
   const gfx::Rect& monitor_bounds = state_.monitor_bounds;
   const MenuConfig& menu_config = MenuConfig::instance();
-  const int corner_radius = menu_config.CornerRadiusForMenu(this);
 
   if (!is_child_menu) {
     // This is a top-level menu, position it relative to the anchor bounds.
@@ -2754,7 +2753,7 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
         // In case of bubbles, the maximum width is limited by the space
         // between the display corner and the target area + the tip size.
         const bool is_bubble_menu =
-            menu_config.use_bubble_border && corner_radius;
+            menu_config.ShouldUseBubbleBorderForMenu(this);
         if (is_anchored_bubble || is_bubble_menu ||
             item->actual_menu_position() == MenuPosition::kAboveBounds) {
           // menu_size is expected to include not just the content size
@@ -2954,6 +2953,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     // out the border and shadow at the top and bottom.
     menu_size.set_height(std::min(
         menu_size.height(), monitor_bounds.height() + border_insets.height()));
+
+    const int corner_radius = menu_config.CornerRadiusForMenu(this);
     y = anchor_bounds.y() - border_insets.top() -
         (use_ash_system_ui_layout_
              ? menu_config.vertical_touchable_menu_item_padding

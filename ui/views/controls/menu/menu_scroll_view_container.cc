@@ -295,7 +295,8 @@ MenuScrollViewContainer::MenuScrollViewContainer(SubmenuView* content_view)
 
 bool MenuScrollViewContainer::HasBubbleBorder() const {
   return arrow_ != BubbleBorder::NONE ||
-         (MenuConfig::instance().use_bubble_border && GetCornerRadius());
+         MenuConfig::instance().ShouldUseBubbleBorderForMenu(
+             content_view_->GetMenuItem()->GetMenuController());
 }
 
 MenuItemView* MenuScrollViewContainer::GetFootnote() const {
