@@ -651,9 +651,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   // Specifies whether touch selection handles are hidden due to text selection.
   bool handles_hidden_by_selection_ui_ = false;
 
-  // Specifies whether the current input sequence is being handled completely by
-  // OverscrollController.
-  bool is_sequence_overscrolling_ = false;
   std::unique_ptr<input::AndroidInputHelper> input_helper_;
 
   raw_ptr<ImeAdapterAndroid> ime_adapter_android_;
