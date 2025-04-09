@@ -1062,8 +1062,8 @@ void GlicWindowController::EnableDragResize(bool enabled) {
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
-    GetGlicWidget()->SetZOrderLevel(enabled ? ui::ZOrderLevel::kNormal
-                                            : ui::ZOrderLevel::kFloatingWindow);
+    UpdateWindowBehaviorToMode(enabled ? mojom::WebClientMode::kText
+                                       : mojom::WebClientMode::kAudio);
   }
 
   if (base::FeatureList::IsEnabled(features::kGlicUserResize)) {
@@ -1579,6 +1579,17 @@ void GlicWindowController::SetWindowState(State new_state) {
 bool GlicWindowController::IsWindowOpenAndReady() {
   return web_client_ && state_ == State::kOpen &&
          webui_state_ == mojom::WebUiState::kReady;
+}
+
+void GlicWindowController::UpdateWindowBehaviorToMode(
+    mojom::WebClientMode mode) {
+  GetGlicWidget()->SetZOrderLevel(mode == mojom::WebClientMode::kText
+                                      ? ui::ZOrderLevel::kNormal
+                                      : ui::ZOrderLevel::kFloatingWindow);
+#if BUILDFLAG(IS_MAC)
+  GetGlicWidget()->SetVisibleOnAllWorkspaces(mode ==
+                                             mojom::WebClientMode::kAudio);
+#endif
 }
 
 }  // namespace glic

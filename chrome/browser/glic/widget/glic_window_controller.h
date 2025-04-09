@@ -399,6 +399,8 @@ class GlicWindowController : public views::WidgetObserver,
   // Returns true of the window is showing and the content is loaded.
   bool IsWindowOpenAndReady();
 
+  void UpdateWindowBehaviorToMode(mojom::WebClientMode mode);
+
   // Observes the glic widget.
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       glic_widget_observation_{this};
