@@ -5282,15 +5282,17 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledSocialMedia",
+                    "name": "Enabled",
                     "params": {
                         "availability": "any",
                         "event_trigger": "name:lens_overlay_iph_triggered;comparator:any;window:90;storage:365",
                         "event_used": "name:lens_overlay_used;comparator:==0;window:90;storage:365",
                         "session_rate": "==0",
-                        "x_url_allow_filters": "[\"facebook.com\",\"web.whatsapp.com\",\"instagram.com\",\"x.com\",\"twitter.com\",\"reddit.com\",\"tiktok.com\",\"pinterest.com\",\"quora.com\",\"youtube.com/shorts\"]",
-                        "x_url_block_filters": "[\"facebook.com/login\",\"x.com/login\",\"instagram.com/accounts/login\",\"reddit.com/login\",\"tiktok.com/login\",\"pinterest.com/login\",\"amazon.com/ap/signin\"]",
-                        "x_wait_time": "7s"
+                        "x_url_allow_filters": "[\"*\"]",
+                        "x_url_block_filters": "[\"chegg.com\",\"brainly.com\",\"coursehero.com\",\"quizlet.com\",\"study.com\",\"tutor.com\",\"wyzant.com\",\"tutoring.k12.com\",\"varsitytutors.com\",\"studypool.com\",\"sylvanlearning.com\",\"skooli.com\",\"socratic.org\",\"schoolhouse.world\",\"google.com\",\"ai\"]",
+                        "x_url_path_match_allow_patterns": "[\"assignments\",\"assignment\",\"assign\",\"assessment\",\"assessments\",\"homework\",\"quiz\",\"quizzes\",\"question\",\"questions\",\"exam\",\"exams\",\"task\",\"tasks\",\"activity\",\"activities\",\"attempt\",\"test\",\"tests\",\"worksheet\",\"worksheets\"]",
+                        "x_url_path_match_block_patterns": "[\"(?i)tutor\"]",
+                        "x_wait_time": "60s"
                     },
                     "enable_features": [
                         "IPH_LensOverlay"
