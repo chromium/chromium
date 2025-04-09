@@ -64,8 +64,6 @@ std::optional<TranslateErrors> FindTranslateErrorsKey(
 
 }  // anonymous namespace
 
-WEB_STATE_USER_DATA_KEY_IMPL(TranslateController)
-
 TranslateController::TranslateController(web::WebState* web_state)
     : web_state_(web_state), observer_(nullptr) {
   DCHECK(web_state_);

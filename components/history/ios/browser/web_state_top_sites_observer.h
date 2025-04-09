@@ -36,8 +36,6 @@ class WebStateTopSitesObserver
 
   // Underlying TopSites instance, may be null during testing.
   raw_ptr<TopSites> top_sites_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace history

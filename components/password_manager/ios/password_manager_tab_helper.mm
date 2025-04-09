@@ -35,6 +35,4 @@ void PasswordManagerTabHelper::SetFormHelper(PasswordFormHelper* form_helper) {
   password_form_helper_ = form_helper;
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(PasswordManagerTabHelper)
-
 }  // namespace password_manager

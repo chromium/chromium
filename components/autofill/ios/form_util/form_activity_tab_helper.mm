@@ -392,6 +392,4 @@ void FormActivityTabHelper::FormSubmissionHandler(
   RecordFormSubmissionOutcome(FormSubmissionOutcome::kHandled);
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(FormActivityTabHelper)
-
 }  // namespace autofill

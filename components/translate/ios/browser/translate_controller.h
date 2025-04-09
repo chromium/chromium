@@ -68,7 +68,6 @@ class TranslateController : public web::WebStateUserData<TranslateController> {
  private:
   TranslateController(web::WebState* web_state);
   friend class web::WebStateUserData<TranslateController>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   FRIEND_TEST_ALL_PREFIXES(TranslateControllerTest,
                            OnJavascriptCommandReceived);
