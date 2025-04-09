@@ -132,7 +132,9 @@ class StructuredLogAdapter(logging.Handler):
 class WPTAdapter:
     PORT_NAME_BY_PRODUCT = {
         'android_webview': 'webview',
+        'webview': 'webview',
         'chrome_android': 'android',
+        'clank': 'android',
     }
 
     def __init__(self, product, port, options, paths):
@@ -161,10 +163,8 @@ class WPTAdapter:
                   port_name: Optional[str] = None):
         options, tests = parse_arguments(args)
         cls._ensure_value(options, 'wpt_only', True)
-        # Do not run virtual tests for mobile embedders
-        cls._ensure_value(options, 'no_virtual_tests', options.product
-                          not in ['headless_shell', 'chrome'])
         if options.use_upstream_wpt:
+            cls._ensure_value(options, 'no_virtual_tests', True)
             cls._ensure_value(options, 'layout_tests_directory',
                               tempfile.gettempdir())
             options.no_expectations = True

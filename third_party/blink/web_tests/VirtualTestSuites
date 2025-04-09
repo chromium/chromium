@@ -9,6 +9,7 @@
   "     suite, e.g. on virtual suite expiration.                              ",
   " platforms: A list of platforms on which the virtual suite will run.       ",
   "     Linux is recommended if the test suite is platform-agnostic.          ",
+  "     Platforms supported now: Android, Fuchsia, Linux, Mac, Win, Webview.  ",
   " bases: A list of test directories or names that will be run under the     ",
   "     virtual suite.                                                        ",
   " exclusive_tests (optional): \"ALL\" or a list containing a subset of      ",

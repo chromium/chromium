@@ -2011,7 +2011,7 @@ class Port(object):
         """
         suite = self._lookup_virtual_suite(test)
         if suite is not None:
-            return self.operating_system() not in suite.platforms
+            return self.port_name not in suite.platforms
         return False
 
     def virtual_test_skipped_due_to_disabled(self, test):
