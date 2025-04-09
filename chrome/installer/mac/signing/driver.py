@@ -11,7 +11,8 @@ import os
 from signing import config_factory, commands, invoker, logger, model, pipeline
 
 
-def _create_config(config_args, development):
+def _create_config(config_args, development,
+                   embed_development_provisioning_profile):
     """Creates the |model.CodeSignConfig| for the signing operations.
 
     If |development| is True, the config will be modified to not require
@@ -23,6 +24,10 @@ def _create_config(config_args, development):
             constructor.
         development: Boolean indicating whether or not to modify the chosen
             config for development testing.
+        embed_development_provisioning_profile: Boolean indicating whether or
+            not to embed the development provisioning profile in the application
+            before signing when |development| is true.
+
 
     Returns:
         An instance of |model.CodeSignConfig|.
@@ -43,6 +48,9 @@ def _create_config(config_args, development):
 
             @property
             def provisioning_profile_basename(self):
+                if embed_development_provisioning_profile:
+                    return super().provisioning_profile_basename
+
                 return None
 
             @property
@@ -144,11 +152,29 @@ def main(args):
         'of `--notarize none`. If the `--notarize` argument is present but '
         'has no option specified, that is the equivalent of `--notarize '
         'staple`.')
+    parser.add_argument(
+        '--embed-development-provisioning-profile',
+        action=argparse.BooleanOptionalAction,
+        default=None,
+        help='Embed the development provisioning profile corresponding to the '
+        'signing identity in the application bundle before signing. Only '
+        'applicable if --development is specified.')
 
     invoker_cls = config_factory.get_invoker_class()
     invoker_cls.register_arguments(parser)
 
     args = parser.parse_args(args)
+
+    if args.development and args.embed_development_provisioning_profile is None:
+        # Default to not embedding provisioning profiles for development signing
+        # for compatibility with environments that use self-signed identities.
+        # The default will change in the future to require opting out.
+        args.embed_development_provisioning_profile = False
+    elif not args.development and \
+      args.embed_development_provisioning_profile is not None:
+        parser.error(
+            "--[no-]embed-development-provisioning-profile cannot be specified "
+            "without --development")
 
     config_args = model.pick(args, (
         'identity',
@@ -163,7 +189,8 @@ def main(args):
             parser.error(str(e))
 
     config_args['invoker'] = _create_invoker
-    config = _create_config(config_args, args.development)
+    config = _create_config(config_args, args.development,
+                            args.embed_development_provisioning_profile)
     paths = model.Paths(args.input, args.output, None)
 
     if not commands.file_exists(paths.output):
