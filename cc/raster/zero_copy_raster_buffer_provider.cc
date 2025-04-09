@@ -168,9 +168,9 @@ ZeroCopyRasterBufferProvider::ZeroCopyRasterBufferProvider(
     const scoped_refptr<gpu::SharedImageInterface>& shared_image_interface,
     const viz::SharedImageFormat& format,
     bool is_software)
-    : is_software_(is_software),
-      shared_image_interface_(shared_image_interface),
-      tile_format_(format) {
+    : RasterBufferProvider(format),
+      is_software_(is_software),
+      shared_image_interface_(shared_image_interface) {
   CHECK(shared_image_interface_)
       << "SharedImageInterface is null in ZeroCopyRasterBufferProvider ctor!";
 }
@@ -199,10 +199,6 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
 }
 
 void ZeroCopyRasterBufferProvider::Flush() {}
-
-viz::SharedImageFormat ZeroCopyRasterBufferProvider::GetFormat() const {
-  return tile_format_;
-}
 
 bool ZeroCopyRasterBufferProvider::CanPartialRasterIntoProvidedResource()
     const {

@@ -13,7 +13,7 @@ namespace cc {
 
 FakeRasterBufferProviderImpl::FakeRasterBufferProviderImpl(
     const viz::SharedImageFormat& format)
-    : tile_format_(format) {}
+    : RasterBufferProvider(format) {}
 
 FakeRasterBufferProviderImpl::~FakeRasterBufferProviderImpl() = default;
 
@@ -33,10 +33,6 @@ FakeRasterBufferProviderImpl::AcquireBufferForRaster(
 }
 
 void FakeRasterBufferProviderImpl::Flush() {}
-
-viz::SharedImageFormat FakeRasterBufferProviderImpl::GetFormat() const {
-  return tile_format_;
-}
 
 bool FakeRasterBufferProviderImpl::CanPartialRasterIntoProvidedResource()
     const {

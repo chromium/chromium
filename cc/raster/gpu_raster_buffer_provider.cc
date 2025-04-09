@@ -127,9 +127,9 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
     const gfx::Size& max_tile_size,
     RasterQueryQueue* const pending_raster_queries,
     float raster_metric_probability)
-    : compositor_context_provider_(compositor_context_provider),
+    : RasterBufferProvider(format),
+      compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
-      tile_format_(format),
       tile_overlay_candidate_(is_overlay_candidate),
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
@@ -176,10 +176,6 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
 
 void GpuRasterBufferProvider::Flush() {
   compositor_context_provider_->ContextSupport()->FlushPendingWork();
-}
-
-viz::SharedImageFormat GpuRasterBufferProvider::GetFormat() const {
-  return tile_format_;
 }
 
 bool GpuRasterBufferProvider::IsResourceReadyToDraw(

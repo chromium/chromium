@@ -57,7 +57,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) override;
-  viz::SharedImageFormat GetFormat() const override;
   bool CanPartialRasterIntoProvidedResource() const override;
   bool IsResourceReadyToDraw(
       const ResourcePool::InUsePoolResource& resource) override;
@@ -135,7 +134,6 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
 
   const raw_ptr<viz::RasterContextProvider> compositor_context_provider_;
   const raw_ptr<viz::RasterContextProvider> worker_context_provider_;
-  const viz::SharedImageFormat tile_format_;
   const bool tile_overlay_candidate_;
   const gfx::Size max_tile_size_;
 
