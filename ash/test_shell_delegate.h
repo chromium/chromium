@@ -19,6 +19,8 @@
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "url/gurl.h"
 
+class PrefService;
+
 namespace ash {
 
 class UserEducationDelegate;
@@ -72,8 +74,8 @@ class TestShellDelegate : public ShellDelegate {
 
   // Overridden from ShellDelegate:
   bool CanShowWindowForUser(const aura::Window* window) const override;
-  std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate()
-      const override;
+  std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate(
+      PrefService* local_state) const override;
   std::unique_ptr<ClipboardHistoryControllerDelegate>
   CreateClipboardHistoryControllerDelegate() const override;
   std::unique_ptr<CoralDelegate> CreateCoralDelegate() const override;

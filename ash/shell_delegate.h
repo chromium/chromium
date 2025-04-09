@@ -25,6 +25,8 @@
 #include "url/gurl.h"
 
 class AccountId;
+class PrefService;
+
 namespace aura {
 class Window;
 }
@@ -76,8 +78,8 @@ class ASH_EXPORT ShellDelegate {
   virtual bool CanShowWindowForUser(const aura::Window* window) const = 0;
 
   // Creates and returns the delegate of the Capture Mode feature.
-  virtual std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate()
-      const = 0;
+  virtual std::unique_ptr<CaptureModeDelegate> CreateCaptureModeDelegate(
+      PrefService* local_state) const = 0;
 
   // Creates and returns the delegate of the clipboard history feature.
   virtual std::unique_ptr<ClipboardHistoryControllerDelegate>

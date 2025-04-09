@@ -48,7 +48,7 @@ bool TestShellDelegate::CanShowWindowForUser(const aura::Window* window) const {
 }
 
 std::unique_ptr<CaptureModeDelegate>
-TestShellDelegate::CreateCaptureModeDelegate() const {
+TestShellDelegate::CreateCaptureModeDelegate(PrefService* local_state) const {
   return std::make_unique<TestCaptureModeDelegate>();
 }
 

@@ -1345,7 +1345,7 @@ void Shell::Init(
   window_cycle_controller_ = std::make_unique<WindowCycleController>();
 
   capture_mode_controller_ = std::make_unique<CaptureModeController>(
-      shell_delegate_->CreateCaptureModeDelegate());
+      shell_delegate_->CreateCaptureModeDelegate(local_state));
 
   // Accelerometer file reader starts listening to tablet mode controller.
   AccelerometerReader::GetInstance()->StartListenToTabletModeController();

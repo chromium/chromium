@@ -28,6 +28,8 @@
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+class PrefService;
+
 namespace screen_ai {
 class OpticalCharacterRecognizer;
 }  // namespace screen_ai
@@ -40,7 +42,8 @@ class LensOverlayQueryController;
 // in Chrome.
 class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
  public:
-  ChromeCaptureModeDelegate();
+  // `local_state` must not be null and must outlive `this`.
+  explicit ChromeCaptureModeDelegate(PrefService* local_state);
   ChromeCaptureModeDelegate(const ChromeCaptureModeDelegate&) = delete;
   ChromeCaptureModeDelegate& operator=(const ChromeCaptureModeDelegate&) =
       delete;
@@ -214,6 +217,8 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   // Called after the response to a /qfmetadata GET request (for text detection)
   // is received and the response body has been decoded.
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
+
+  const raw_ref<PrefService> local_state_;
 
   // Used to temporarily disable capture mode in certain cases for which neither
   // a device policy, nor DLP will be triggered. For example, Some extension

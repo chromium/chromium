@@ -158,8 +158,8 @@ bool ChromeShellDelegate::CanShowWindowForUser(
 }
 
 std::unique_ptr<ash::CaptureModeDelegate>
-ChromeShellDelegate::CreateCaptureModeDelegate() const {
-  return std::make_unique<ChromeCaptureModeDelegate>();
+ChromeShellDelegate::CreateCaptureModeDelegate(PrefService* local_state) const {
+  return std::make_unique<ChromeCaptureModeDelegate>(local_state);
 }
 
 std::unique_ptr<ash::ClipboardHistoryControllerDelegate>

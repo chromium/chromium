@@ -20,12 +20,14 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/cancelable_callback.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
@@ -44,7 +46,6 @@
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/skyvault_capture_upload_notification.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
@@ -194,9 +195,8 @@ ScreenshotArea ConvertToScreenshotArea(const aura::Window* window,
              : ScreenshotArea::CreateForWindow(window);
 }
 
-bool IsScreenCaptureDisabledByPolicy() {
-  return g_browser_process->local_state()->GetBoolean(
-      prefs::kDisableScreenshots);
+bool IsScreenCaptureDisabledByPolicy(PrefService& local_state) {
+  return local_state.GetBoolean(prefs::kDisableScreenshots);
 }
 
 void CaptureFileFinalized(
@@ -393,7 +393,8 @@ bool ParseQueryFormulationMetadataResponse(
 
 }  // namespace
 
-ChromeCaptureModeDelegate::ChromeCaptureModeDelegate() {
+ChromeCaptureModeDelegate::ChromeCaptureModeDelegate(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
@@ -521,7 +522,8 @@ void ChromeCaptureModeDelegate::CheckCaptureOperationRestrictionByDlp(
 }
 
 bool ChromeCaptureModeDelegate::IsCaptureAllowedByPolicy() const {
-  return !is_screen_capture_locked_ && !IsScreenCaptureDisabledByPolicy();
+  return !is_screen_capture_locked_ &&
+         !IsScreenCaptureDisabledByPolicy(local_state_.get());
 }
 
 void ChromeCaptureModeDelegate::StartObservingRestrictedContent(
@@ -664,7 +666,7 @@ void ChromeCaptureModeDelegate::GetDriveFsFreeSpaceBytes(
 bool ChromeCaptureModeDelegate::IsCameraDisabledByPolicy() const {
   return policy::SystemFeaturesDisableListPolicyHandler::
       IsSystemFeatureDisabled(policy::SystemFeature::kCamera,
-                              g_browser_process->local_state());
+                              &local_state_.get());
 }
 
 bool ChromeCaptureModeDelegate::IsAudioCaptureDisabledByPolicy() const {
