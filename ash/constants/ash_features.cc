@@ -826,6 +826,11 @@ BASE_FEATURE(kEolIncentiveSettings,
              "EolIncentiveSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Control whether the eSIM activation dialog supports submitting an empty code.
+BASE_FEATURE(kESimEmptyActivationCodeSupported,
+             "ESimEmptyActivationCodeSupported",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable or disable support for touchpad with haptic feedback.
 BASE_FEATURE(kExoHapticFeedbackSupport,
              "ExoHapticFeedbackSupport",
@@ -3607,6 +3612,10 @@ bool IsEcheSWAMeasureLatencyEnabled() {
 
 bool IsEOLIncentiveEnabled() {
   return base::FeatureList::IsEnabled(kEolIncentive);
+}
+
+bool IsESimEmptyActivationCodeSupportEnabled() {
+  return base::FeatureList::IsEnabled(kESimEmptyActivationCodeSupported);
 }
 
 bool IsExperimentalRgbKeyboardPatternsEnabled() {

@@ -6191,6 +6191,12 @@ const char kEnterpriseReportingUIName[] =
 const char kEnterpriseReportingUIDescription[] =
     "When enabled, allows for chrome://enterprise-reporting to be visited";
 
+const char kESimEmptyActivationCodeSupportedName[] =
+    "Enable support for empty activation codes in eSIM activation dialog";
+const char kESimEmptyActivationCodeSupportedDescription[] =
+    "When enabled, allows users to enter and submit empty activation codes in "
+    "the eSIM dialog";
+
 const char kPermissiveUsbPassthroughName[] =
     "Enable more permissive passthrough for USB Devices";
 const char kPermissiveUsbPassthroughDescription[] =

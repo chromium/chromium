@@ -271,6 +271,8 @@ enum class EolIncentiveParam { kNoOffer, kOffer, kOfferWithWarning };
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<EolIncentiveParam> kEolIncentiveParam;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kEolIncentiveSettings);
+COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kESimEmptyActivationCodeSupported);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kExoHapticFeedbackSupport);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kExoLinuxDmabufV4);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kExoLinuxDmabufModifiers);

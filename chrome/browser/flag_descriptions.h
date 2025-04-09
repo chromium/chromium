@@ -3652,6 +3652,9 @@ extern const char kEnableServiceWorkersForChromeUntrustedDescription[];
 extern const char kEnterpriseReportingUIName[];
 extern const char kEnterpriseReportingUIDescription[];
 
+extern const char kESimEmptyActivationCodeSupportedName[];
+extern const char kESimEmptyActivationCodeSupportedDescription[];
+
 extern const char kPermissiveUsbPassthroughName[];
 extern const char kPermissiveUsbPassthroughDescription[];
 

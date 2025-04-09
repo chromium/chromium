@@ -15600,6 +15600,7 @@ from previous Chrome versions.
   <int value="514569020" label="RemoteCopyImageNotification:enabled"/>
   <int value="515046556"
       label="EnterpriseUrlFilteringEventReportingOnAndroid:enabled"/>
+  <int value="515954975" label="ESimEmptyActivationCodeSupported:disabled"/>
   <int value="515981953" label="ElasticOverscroll:enabled"/>
   <int value="516143995" label="EnableAriaElementReflection:enabled"/>
   <int value="516603570" label="QuickAnswersRichUi:disabled"/>
@@ -19218,6 +19219,7 @@ from previous Chrome versions.
   <int value="1890329937"
       label="SafeBrowsingEnhancedProtectionMessageInInterstitials:disabled"/>
   <int value="1890700065" label="EdgeToEdgeWebOptIn:disabled"/>
+  <int value="1890841385" label="ESimEmptyActivationCodeSupported:enabled"/>
   <int value="1891210939" label="enable-blink-features"/>
   <int value="1891218220" label="HttpsFirstDialogUi:disabled"/>
   <int value="1891312456" label="AndroidMessagesProdEndpoint:disabled"/>
