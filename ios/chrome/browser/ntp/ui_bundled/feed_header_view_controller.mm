@@ -47,6 +47,9 @@ const CGFloat kSegmentAnimationDuration = 0.3;
 // Padding on top of the header.
 const CGFloat kTopVerticalPadding = 15;
 
+// Max size that the Title and Segmented Control fonts will scale to.
+const CGFloat kMaxFontSize = 24;
+
 // The size of feed symbol images.
 NSInteger kFeedSymbolPointSize = 17;
 
@@ -109,19 +112,8 @@ NSInteger kFeedSymbolPointSize = 17;
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
         @[ UITraitPreferredContentSizeCategory.class ]);
     [self registerForTraitChanges:traits
-                       withTarget:self.view
-                           action:@selector(setNeedsLayout)];
-  }
-}
-
-- (void)viewWillLayoutSubviews {
-  [super viewWillLayoutSubviews];
-
-  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
-    [self updateSegmentedControlFont:self.segmentedControl];
-  } else {
-    UIFont* font = [self fontForTitleLabel];
-    self.titleLabel.font = font;
+                       withTarget:self
+                           action:@selector(updateFonts)];
   }
 }
 
@@ -136,7 +128,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    [self.view setNeedsLayout];
+    [self updateFonts];
   }
 }
 #endif
@@ -310,7 +302,9 @@ NSInteger kFeedSymbolPointSize = 17;
 - (UILabel*)createTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  titleLabel.font = [self fontForTitleLabel];
+  titleLabel.font = PreferredFontForTextStyle(
+      UIFontTextStyleFootnote, UIFontWeightSemibold, kMaxFontSize);
+  titleLabel.adjustsFontForContentSizeCategory = YES;
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   titleLabel.accessibilityIdentifier =
       ntp_home::DiscoverHeaderTitleAccessibilityID();
@@ -345,16 +339,6 @@ NSInteger kFeedSymbolPointSize = 17;
   return segmentedControl;
 }
 
-- (UIFont*)fontForTitleLabel {
-  return CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold,
-                           self.view);
-}
-
-- (UIFont*)fontForSegmentedControl {
-  return CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightMedium,
-                           self.view);
-}
-
 // Configures and returns the label for when the feed visibility is
 // disabled.
 - (UILabel*)createHiddenFeedLabel {
@@ -372,16 +356,16 @@ NSInteger kFeedSymbolPointSize = 17;
 // Updates the font and color of the segmented control header to adapt to the
 // current dynamic sizing.
 - (void)updateSegmentedControlFont:(UISegmentedControl*)segmentedControl {
+  UIFont* font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                           UIFontWeightMedium, kMaxFontSize);
   NSDictionary* normalAttributes = [NSDictionary
-      dictionaryWithObjectsAndKeys:[self fontForSegmentedControl],
-                                   NSFontAttributeName,
+      dictionaryWithObjectsAndKeys:font, NSFontAttributeName,
                                    [UIColor colorNamed:kTextSecondaryColor],
                                    NSForegroundColorAttributeName, nil];
   [segmentedControl setTitleTextAttributes:normalAttributes
                                   forState:UIControlStateNormal];
   NSDictionary* selectedAttributes = [NSDictionary
-      dictionaryWithObjectsAndKeys:[self fontForSegmentedControl],
-                                   NSFontAttributeName,
+      dictionaryWithObjectsAndKeys:font, NSFontAttributeName,
                                    [UIColor colorNamed:kTextPrimaryColor],
                                    NSForegroundColorAttributeName, nil];
   [segmentedControl setTitleTextAttributes:selectedAttributes
@@ -637,6 +621,13 @@ NSInteger kFeedSymbolPointSize = 17;
   return [NSString stringWithFormat:@"%@ – %@", discoverFeedTitle,
                                     l10n_util::GetNSString(
                                         IDS_IOS_DISCOVER_FEED_TITLE_OFF_LABEL)];
+}
+
+// Updates fonts when the preferred content size class changes.
+- (void)updateFonts {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    [self updateSegmentedControlFont:self.segmentedControl];
+  }
 }
 
 @end
