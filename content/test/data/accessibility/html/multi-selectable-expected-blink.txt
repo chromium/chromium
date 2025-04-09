@@ -1,0 +1,27 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++listBox multiselectable activedescendantId=listBoxOption
+++++++++genericContainer ignored
+++++++++++listBoxOption name='Option1' selected=true
+++++++++++listBoxOption name='Option2' selected=true
+++++++++++listBoxOption name='Option3' selected=false
+++++++listBox multiselectable
+++++++++listBoxOption name='Red' selected=true
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Red'
+++++++++++++inlineTextBox name='Red'
+++++++++listBoxOption name='Orange' selected=true
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Orange'
+++++++++++++inlineTextBox name='Orange'
+++++++++listBoxOption name='Yellow' selected=false
+++++++++++none ignored
+++++++++++++staticText name='%E2%80%A2 '
+++++++++++++++inlineTextBox name='%E2%80%A2 '
+++++++++++staticText name='Yellow'
+++++++++++++inlineTextBox name='Yellow'

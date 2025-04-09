@@ -1,0 +1,9 @@
+[document web]
+++[list box] multiselectable
+++++[list item] name='Option1' selectable selected
+++++[list item] name='Option2' selectable selected
+++++[list item] name='Option3' selectable
+++[list box] multiselectable
+++++[list item] name='Red' selectable selected
+++++[list item] name='Orange' selectable selected
+++++[list item] name='Yellow' selectable

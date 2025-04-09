@@ -751,6 +751,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityMultiSelectable) {
+  RunHtmlTest(FILE_PATH_LITERAL("multi-selectable.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySlotDisplayContents) {
   RunHtmlTest(FILE_PATH_LITERAL("slot-display-contents.html"));
 }

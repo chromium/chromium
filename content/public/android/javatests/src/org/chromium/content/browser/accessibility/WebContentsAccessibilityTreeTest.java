@@ -2293,6 +2293,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_multi_selectable() {
+        performHtmlTest("multi-selectable.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_navigation() {
         performHtmlTest("navigation.html");
     }

@@ -4721,6 +4721,13 @@ data/accessibility/html/move-child-hypertext-expected-blink.txt
 data/accessibility/html/move-child-hypertext-expected-fuchsia.txt
 data/accessibility/html/move-child-hypertext-expected-win.txt
 data/accessibility/html/move-child-hypertext.html
+data/accessibility/html/multi-selectable-expected-android-external.txt
+data/accessibility/html/multi-selectable-expected-android.txt
+data/accessibility/html/multi-selectable-expected-auralinux.txt
+data/accessibility/html/multi-selectable-expected-blink.txt
+data/accessibility/html/multi-selectable-expected-fuchsia.txt
+data/accessibility/html/multi-selectable-expected-win.txt
+data/accessibility/html/multi-selectable.html
 data/accessibility/html/name-calc-focusable-expected-blink.txt
 data/accessibility/html/name-calc-focusable.html
 data/accessibility/html/name-img-labelledby-inputs-tree-expected-blink.txt
