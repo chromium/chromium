@@ -489,8 +489,11 @@ PinnedToolbarActionsContainer::CreatePermanentButtonFor(actions::ActionId id) {
 
 void PinnedToolbarActionsContainer::AddPinnedActionButtonFor(
     actions::ActionId id) {
-  // Pinned buttons shouldn't appear in web apps.
-  if (browser_view_->browser() && browser_view_->browser()->app_controller()) {
+  // Pinned buttons shouldn't appear in web apps or browsers without a tabstrip
+  // (like popups).
+  if (auto* browser = browser_view_->browser();
+      browser && (browser->app_controller() ||
+                  !browser->SupportsWindowFeature(Browser::FEATURE_TABSTRIP))) {
     return;
   }
 
