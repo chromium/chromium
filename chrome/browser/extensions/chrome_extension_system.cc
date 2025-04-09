@@ -172,7 +172,7 @@ void ChromeExtensionSystem::Shared::InitInstallGates() {
       ExtensionPrefs::DelayReason::kWaitForIdle, update_install_gate_.get());
   delayed_install_manager->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForImports,
-      extension_service_->shared_module_service());
+      SharedModuleService::Get(profile_));
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsRunningInForcedAppMode()) {
     kiosk_app_update_install_gate_ =
@@ -426,8 +426,7 @@ ContentVerifier* ChromeExtensionSystem::content_verifier() {
 
 std::unique_ptr<ExtensionSet> ChromeExtensionSystem::GetDependentExtensions(
     const Extension* extension) {
-  return extension_service()->shared_module_service()->GetDependentExtensions(
-      extension);
+  return SharedModuleService::Get(profile_)->GetDependentExtensions(extension);
 }
 
 void ChromeExtensionSystem::InstallUpdate(

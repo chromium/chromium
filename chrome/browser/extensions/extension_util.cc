@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "chrome/common/extensions/sync_helper.h"
@@ -50,7 +51,6 @@
 #else
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
-#include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #endif
@@ -269,9 +269,6 @@ void SetAllowFileAccess(const std::string& extension_id,
   ReloadExtension(extension_id, context);
 }
 
-// TODO(crbug.com/356905053): Enable more extension util functions on
-// desktop android.
-#if !BUILDFLAG(IS_ANDROID)
 bool IsExtensionIdle(const std::string& extension_id,
                      content::BrowserContext* context) {
   std::vector<std::string> ids_to_check;
@@ -283,9 +280,7 @@ bool IsExtensionIdle(const std::string& extension_id,
   if (extension && extension->is_shared_module()) {
     // We have to check all the extensions that use this shared module for idle
     // to tell whether it is really 'idle'.
-    SharedModuleService* service = ExtensionSystem::Get(context)
-                                       ->extension_service()
-                                       ->shared_module_service();
+    SharedModuleService* service = SharedModuleService::Get(context);
     std::unique_ptr<ExtensionSet> dependents =
         service->GetDependentExtensions(extension);
     for (ExtensionSet::const_iterator i = dependents->begin();
@@ -319,6 +314,9 @@ bool IsExtensionIdle(const std::string& extension_id,
   return true;
 }
 
+// TODO(crbug.com/356905053): Enable more extension util functions on
+// desktop android.
+#if !BUILDFLAG(IS_ANDROID)
 base::Value::Dict GetExtensionInfo(const Extension* extension) {
   DCHECK(extension);
   base::Value::Dict dict;

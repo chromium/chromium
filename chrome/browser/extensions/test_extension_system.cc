@@ -221,8 +221,7 @@ ContentVerifier* TestExtensionSystem::content_verifier() {
 
 std::unique_ptr<ExtensionSet> TestExtensionSystem::GetDependentExtensions(
     const Extension* extension) {
-  return extension_service()->shared_module_service()->GetDependentExtensions(
-      extension);
+  return SharedModuleService::Get(profile_)->GetDependentExtensions(extension);
 }
 
 void TestExtensionSystem::InstallUpdate(

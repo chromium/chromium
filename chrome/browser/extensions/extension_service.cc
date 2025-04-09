@@ -61,7 +61,6 @@
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/profile_util.h"
-#include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -210,7 +209,6 @@ ExtensionService::ExtensionService(
       component_loader_(ComponentLoader::Get(profile_)),
       error_controller_(error_controller),
       external_install_manager_(ExternalInstallManager::Get(profile)),
-      shared_module_service_(SharedModuleService::Get(profile)),
       extension_registrar_delegate_(
           std::make_unique<ChromeExtensionRegistrarDelegate>(profile_)),
       extension_registrar_(ExtensionRegistrar::Get(profile)),
@@ -225,6 +223,7 @@ ExtensionService::ExtensionService(
       delayed_install_manager_(DelayedInstallManager::Get(profile_)) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   TRACE_EVENT0("browser,startup", "ExtensionService::ExtensionService::ctor");
+
   extension_registrar_delegate_->Init(extension_registrar_);
   extension_registrar_->Init(extension_registrar_delegate_.get(),
                              extensions_enabled, command_line_,
@@ -310,7 +309,6 @@ void ExtensionService::Shutdown() {
   external_install_manager_ = nullptr;
   updater_ = nullptr;
   component_loader_ = nullptr;
-  shared_module_service_ = nullptr;
 }
 
 void ExtensionService::Init() {

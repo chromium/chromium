@@ -36,6 +36,7 @@ class SharedModuleServiceFactory : public ProfileKeyedServiceFactory {
   ~SharedModuleServiceFactory() override;
 
   // ProfileKeyedServiceFactory implementation:
+  bool ServiceIsCreatedWithBrowserContext() const override;
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };

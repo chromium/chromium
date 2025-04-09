@@ -135,7 +135,7 @@ TEST_F(SharedModuleServiceUnitTest, AddDependentSharedModules) {
 
   // Try to satisfy imports for the extension. This should queue the imported
   // module's installation.
-  service()->shared_module_service()->SatisfyImports(extension.get());
+  SharedModuleService::Get(profile())->SatisfyImports(extension.get());
   EXPECT_TRUE(pending_extension_manager->IsIdPending(import_id));
 }
 

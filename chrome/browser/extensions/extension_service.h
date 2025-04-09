@@ -76,7 +76,6 @@ class ExtensionUpdater;
 class ExternalInstallManager;
 class ExternalProviderManager;
 class PendingExtensionManager;
-class SharedModuleService;
 enum class UnloadedExtensionReason;
 
 // This is an interface class to encapsulate the dependencies that
@@ -342,12 +341,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   Profile* profile() { return profile_; }
 
-  // TODO(crbug.com/409120449): Delete this method. Callers should use
-  // SharedModuleService::Get() instead.
-  SharedModuleService* shared_module_service() {
-    return shared_module_service_;
-  }
-
   ForceInstalledTracker* force_installed_tracker() {
     return &force_installed_tracker_;
   }
@@ -503,9 +496,6 @@ class ExtensionService : public ExtensionServiceInterface,
 
   std::unique_ptr<ExtensionActionStorageManager>
       extension_action_storage_manager_;
-
-  // The SharedModuleService used to check for import dependencies.
-  raw_ptr<SharedModuleService> shared_module_service_ = nullptr;
 
   std::unique_ptr<ChromeExtensionRegistrarDelegate>
       extension_registrar_delegate_;

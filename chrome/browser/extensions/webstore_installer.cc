@@ -33,7 +33,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
@@ -56,7 +55,6 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_file_task_runner.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -254,10 +252,8 @@ void WebstoreInstaller::Start() {
     return;
   }
 
-  ExtensionService* extension_service =
-    ExtensionSystem::Get(profile_)->extension_service();
   if (approval_.get() && approval_->dummy_extension.get()) {
-    extension_service->shared_module_service()->CheckImports(
+    SharedModuleService::Get(profile_)->CheckImports(
         approval_->dummy_extension.get(), &pending_modules_, &pending_modules_);
     // Do not check the return value of CheckImports, the CRX installer
     // will report appropriate error messages and fail to install if there
@@ -656,10 +652,6 @@ void WebstoreInstaller::UpdateDownloadProgress() {
 void WebstoreInstaller::StartCrxInstaller(const DownloadItem& download) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!crx_installer_.get());
-
-  ExtensionService* service = ExtensionSystem::Get(profile_)->
-      extension_service();
-  CHECK(service);
 
   const InstallApproval* approval = GetAssociatedApproval(download);
   DCHECK(approval);

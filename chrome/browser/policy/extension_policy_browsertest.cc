@@ -306,6 +306,10 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
     return extensions::ExtensionUpdater::Get(browser()->profile());
   }
 
+  extensions::SharedModuleService* shared_module_service() {
+    return extensions::SharedModuleService::Get(browser()->profile());
+  }
+
   web_app::WebAppProvider* web_app_provider() {
     return web_app::WebAppProvider::GetForTest(browser()->profile());
   }
@@ -548,7 +552,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
   extensions::ScopedCurrentChannel channel(version_info::Channel::DEV);
 
   // Verify that the extensions are not installed initially.
-  extensions::ExtensionService* service = extension_service();
   extensions::ExtensionRegistry* registry = extension_registry();
   ASSERT_FALSE(registry->GetExtensionById(
       kImporterId, extensions::ExtensionRegistry::EVERYTHING));
@@ -592,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 
   // Verify the dependency.
   std::unique_ptr<extensions::ExtensionSet> set =
-      service->shared_module_service()->GetDependentExtensions(shared_module);
+      shared_module_service()->GetDependentExtensions(shared_module);
   ASSERT_TRUE(set);
   EXPECT_EQ(1u, set->size());
   EXPECT_TRUE(set->Contains(importer->id()));

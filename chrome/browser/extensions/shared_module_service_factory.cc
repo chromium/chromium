@@ -53,6 +53,12 @@ SharedModuleServiceFactory::SharedModuleServiceFactory()
 
 SharedModuleServiceFactory::~SharedModuleServiceFactory() = default;
 
+bool SharedModuleServiceFactory::ServiceIsCreatedWithBrowserContext() const {
+  // Create the service immediately so it can observe the `ExtensionRegistry`
+  // for installs.
+  return true;
+}
+
 std::unique_ptr<KeyedService>
 SharedModuleServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {

@@ -503,7 +503,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
 
   DelayedInstallManager::Get(profile())->RegisterInstallGate(
       ExtensionPrefs::DelayReason::kWaitForImports,
-      service_->shared_module_service());
+      SharedModuleService::Get(profile()));
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (!enable_install_limiter) {
