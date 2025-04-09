@@ -18,8 +18,6 @@ source_set("model") {
   sources = [
     "chrome_ios_translate_client.h",
     "chrome_ios_translate_client.mm",
-    "language_selection_context.h",
-    "language_selection_context.mm",
     "translate_infobar_tags.h",
     "translate_ranker_factory.h",
     "translate_ranker_factory.mm",
