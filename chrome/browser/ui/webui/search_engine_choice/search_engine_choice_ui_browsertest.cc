@@ -323,7 +323,7 @@ class SearchEngineChoiceUIPixelTest
       dialog_height = kMaximumHeight;
     }
 
-    ShowSearchEngineChoiceDialog(
+    SearchEngineChoiceDialog::Show(
         *browser(), gfx::Size(dialog_width, dialog_height), zoom_factor);
     widget_waiter.WaitIfNeededAndGet();
 
