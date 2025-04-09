@@ -132,7 +132,7 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
       scoped_observation_{this};
 };
 
-class MockPageLiveStateObserver : public PageLiveStateObserverDefaultImpl {
+class MockPageLiveStateObserver : public PageLiveStateObserver {
  public:
   MOCK_METHOD(void,
               OnIsConnectedToUSBDeviceChanged,

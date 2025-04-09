@@ -198,46 +198,20 @@ class PageLiveStateObserver : public base::CheckedObserver {
   PageLiveStateObserver(const PageLiveStateObserver& other) = delete;
   PageLiveStateObserver& operator=(const PageLiveStateObserver&) = delete;
 
-  virtual void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) = 0;
+  virtual void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) {}
   virtual void OnIsConnectedToBluetoothDeviceChanged(
-      const PageNode* page_node) = 0;
-  virtual void OnIsConnectedToHidDeviceChanged(const PageNode* page_node) = 0;
-  virtual void OnIsConnectedToSerialPortChanged(const PageNode* page_node) = 0;
-  virtual void OnIsCapturingVideoChanged(const PageNode* page_node) = 0;
-  virtual void OnIsCapturingAudioChanged(const PageNode* page_node) = 0;
-  virtual void OnIsBeingMirroredChanged(const PageNode* page_node) = 0;
-  virtual void OnIsCapturingWindowChanged(const PageNode* page_node) = 0;
-  virtual void OnIsCapturingDisplayChanged(const PageNode* page_node) = 0;
-  virtual void OnIsAutoDiscardableChanged(const PageNode* page_node) = 0;
-  virtual void OnIsActiveTabChanged(const PageNode* page_node) = 0;
-  virtual void OnIsPinnedTabChanged(const PageNode* page_node) = 0;
-  virtual void OnIsDevToolsOpenChanged(const PageNode* page_node) = 0;
-};
-
-class PageLiveStateObserverDefaultImpl : public PageLiveStateObserver {
- public:
-  PageLiveStateObserverDefaultImpl();
-  ~PageLiveStateObserverDefaultImpl() override;
-  PageLiveStateObserverDefaultImpl(
-      const PageLiveStateObserverDefaultImpl& other) = delete;
-  PageLiveStateObserverDefaultImpl& operator=(
-      const PageLiveStateObserverDefaultImpl&) = delete;
-
-  // PageLiveStateObserver:
-  void OnIsConnectedToUSBDeviceChanged(const PageNode* page_node) override {}
-  void OnIsConnectedToBluetoothDeviceChanged(
-      const PageNode* page_node) override {}
-  void OnIsConnectedToHidDeviceChanged(const PageNode* page_node) override {}
-  void OnIsConnectedToSerialPortChanged(const PageNode* page_node) override {}
-  void OnIsCapturingVideoChanged(const PageNode* page_node) override {}
-  void OnIsCapturingAudioChanged(const PageNode* page_node) override {}
-  void OnIsBeingMirroredChanged(const PageNode* page_node) override {}
-  void OnIsCapturingWindowChanged(const PageNode* page_node) override {}
-  void OnIsCapturingDisplayChanged(const PageNode* page_node) override {}
-  void OnIsAutoDiscardableChanged(const PageNode* page_node) override {}
-  void OnIsActiveTabChanged(const PageNode* page_node) override {}
-  void OnIsPinnedTabChanged(const PageNode* page_node) override {}
-  void OnIsDevToolsOpenChanged(const PageNode* page_node) override {}
+      const PageNode* page_node) {}
+  virtual void OnIsConnectedToHidDeviceChanged(const PageNode* page_node) {}
+  virtual void OnIsConnectedToSerialPortChanged(const PageNode* page_node) {}
+  virtual void OnIsCapturingVideoChanged(const PageNode* page_node) {}
+  virtual void OnIsCapturingAudioChanged(const PageNode* page_node) {}
+  virtual void OnIsBeingMirroredChanged(const PageNode* page_node) {}
+  virtual void OnIsCapturingWindowChanged(const PageNode* page_node) {}
+  virtual void OnIsCapturingDisplayChanged(const PageNode* page_node) {}
+  virtual void OnIsAutoDiscardableChanged(const PageNode* page_node) {}
+  virtual void OnIsActiveTabChanged(const PageNode* page_node) {}
+  virtual void OnIsPinnedTabChanged(const PageNode* page_node) {}
+  virtual void OnIsDevToolsOpenChanged(const PageNode* page_node) {}
 };
 
 }  // namespace performance_manager
