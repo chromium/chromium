@@ -514,39 +514,27 @@ void ImageAnnotationWorker::OnDecodeImageFile(
       base::BindOnce(&ImageAnnotationWorker::OnImageProcessTimeout,
                      weak_ptr_factory_.GetWeakPtr(), image_info.path));
 
-  // Downsamples Image if it is too big for OCR, and it helps reduce the memory
-  // usage and ocr processing time. We scale to the smaller ratio to ensure that
-  // the resized width and height won't exceed the max value.
-  gfx::ImageSkia resized_image;
-
-  if (use_ocr_ && (image_skia.height() > kMaxOcrImageSize ||
-                   image_skia.width() > kMaxOcrImageSize)) {
-    float scale = static_cast<float>(kMaxOcrImageSize) /
-                  std::max(image_skia.width(), image_skia.height());
-    gfx::Size target_size = gfx::ScaleToRoundedSize(image_skia.size(), scale);
-    resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
-        image_skia, skia::ImageOperations::RESIZE_BEST, target_size);
-  }
-
-  if (use_ocr_ && use_ica_) {
-    LogIndexingUma(IndexingStatus::kOcrStart);
-    LogIndexingUma(IndexingStatus::kIcaStart);
-    LogIcaUma(IcaStatus::kStartWithOcr);
-    optical_character_recognizer_->PerformOCR(
-        resized_image.isNull() ? *image_skia.bitmap() : *resized_image.bitmap(),
-        base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
-                       weak_ptr_factory_.GetWeakPtr(), image_info)
-            .Then(base::BindOnce(
-                &ImageContentAnnotator::AnnotateEncodedImage,
-                base::Unretained(&image_content_annotator_), image_info.path,
-                base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
-                               weak_ptr_factory_.GetWeakPtr(),
-                               std::move(image_info)))));
-    return;
-  }
-
   if (use_ocr_) {
     LogIndexingUma(IndexingStatus::kOcrStart);
+    LogIcaUma(IcaStatus::kStartWithOcr);
+    CHECK(!ocr_in_use_);
+
+    // Downsamples Image if it is too big for OCR, and it helps reduce the
+    // memory
+    // usage and ocr processing time. We scale to the smaller ratio to ensure
+    // that the resized width and height won't exceed the max value.
+    gfx::ImageSkia resized_image;
+
+    if (image_skia.height() > kMaxOcrImageSize ||
+        image_skia.width() > kMaxOcrImageSize) {
+      float scale = static_cast<float>(kMaxOcrImageSize) /
+                    std::max(image_skia.width(), image_skia.height());
+      gfx::Size target_size = gfx::ScaleToRoundedSize(image_skia.size(), scale);
+      resized_image = gfx::ImageSkiaOperations::CreateResizedImage(
+          image_skia, skia::ImageOperations::RESIZE_BEST, target_size);
+    }
+
+    ocr_in_use_ = true;
     optical_character_recognizer_->PerformOCR(
         resized_image.isNull() ? *image_skia.bitmap() : *resized_image.bitmap(),
         base::BindOnce(&ImageAnnotationWorker::OnPerformOcr,
@@ -557,6 +545,9 @@ void ImageAnnotationWorker::OnDecodeImageFile(
   if (use_ica_) {
     LogIndexingUma(IndexingStatus::kIcaStart);
     LogIcaUma(IcaStatus::kStartWithoutOcr);
+    CHECK(!ica_in_use_);
+
+    ica_in_use_ = true;
     image_content_annotator_.AnnotateEncodedImage(
         image_info.path,
         base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
@@ -581,6 +572,7 @@ void ImageAnnotationWorker::OnPerformOcr(
     screen_ai::mojom::VisualAnnotationPtr visual_annotation) {
   LogIndexingUma(IndexingStatus::kOcrSucceed);
   LogIcaUma(IcaStatus::kOcrSucceed);
+  ocr_in_use_ = false;
   if (search_features::IsLauncherImageSearchDebugEnabled()) {
     LOG(ERROR) << "OnPerformOcr with line size: "
                << visual_annotation->lines.size();
@@ -603,7 +595,16 @@ void ImageAnnotationWorker::OnPerformOcr(
   LogIcaUma(IcaStatus::kOcrInserted);
 
   // OCR is the first in the pipeline.
-  if (!use_ica_) {
+  if (use_ica_) {
+    LogIndexingUma(IndexingStatus::kIcaStart);
+    CHECK(!ica_in_use_);
+
+    ica_in_use_ = true;
+    image_content_annotator_.AnnotateEncodedImage(
+        image_info.path,
+        base::BindOnce(&ImageAnnotationWorker::OnPerformIca,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(image_info)));
+  } else {
     LogIcaUma(IcaStatus::kIcaDisabled);
     MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
   }
@@ -619,6 +620,7 @@ void ImageAnnotationWorker::OnPerformIca(
   } else {
     LogIcaUma(IcaStatus::kIcaFailed);
   }
+  ica_in_use_ = false;
   DVLOG(1) << "OnPerformIca. Status: " << ptr->status
            << " Size: " << ptr->annotations.size();
   for (const auto& a : ptr->annotations) {

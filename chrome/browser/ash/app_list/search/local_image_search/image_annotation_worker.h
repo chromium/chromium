@@ -156,6 +156,10 @@ class ImageAnnotationWorker {
   const int indexing_limit_;
   int num_indexing_images_ = 0;
 
+  // Boolean values to indicate if ica/ocr is currently in use.
+  bool ica_in_use_ = false;
+  bool ocr_in_use_ = false;
+
   // Fake delay for image processing callback. Used in tests only.
   std::optional<base::TimeDelta> image_processing_delay_for_test_ =
       std::nullopt;
