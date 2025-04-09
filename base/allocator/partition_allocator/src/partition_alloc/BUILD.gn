@@ -306,6 +306,7 @@ if (is_clang_or_gcc) {
   # Used to shim malloc symbols on Android. see //base/allocator/README.md.
   config("wrap_malloc_symbols") {
     ldflags = [
+      "-Wl,-wrap,aligned_alloc",
       "-Wl,-wrap,calloc",
       "-Wl,-wrap,free",
       "-Wl,-wrap,malloc",

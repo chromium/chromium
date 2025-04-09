@@ -48,6 +48,12 @@ extern "C" void* __libc_memalign(size_t align, size_t s);
 #include "partition_alloc/shim/allocator_shim_default_dispatch_to_partition_alloc_with_advanced_checks.h"
 #endif
 
+// Weak as this is a C11 function, which is not always available. It is also not
+// always defined in stdlib.h, for instance on Android prior to API level 28.
+extern "C" {
+void* __attribute__((weak)) aligned_alloc(size_t alignment, size_t size);
+}
+
 namespace allocator_shim {
 namespace {
 
@@ -453,6 +459,18 @@ TEST_F(AllocatorShimTest, InterceptLibcSymbols) {
   ASSERT_GE(aligned_allocs_intercepted_by_alignment[512], 1u);
   ASSERT_GE(aligned_allocs_intercepted_by_size[56], 1u);
 #endif
+
+  // TODO(crbug.com/407932921) Support Apple platforms.
+#if !BUILDFLAG(IS_APPLE)
+  // See above, it is a weak symbol.
+  if (aligned_alloc) {
+    void* aligned_alloc_ptr = aligned_alloc(128, 32);
+    ASSERT_NE(nullptr, aligned_alloc_ptr);
+    ASSERT_EQ(0u, reinterpret_cast<uintptr_t>(aligned_alloc_ptr) % 128);
+    ASSERT_GE(aligned_allocs_intercepted_by_alignment[128], 1u);
+    ASSERT_GE(aligned_allocs_intercepted_by_size[32], 1u);
+  }
+#endif  // !BUILDFLAG(IS_APPLE)
 
   char* realloc_ptr = static_cast<char*>(malloc(10));
   strcpy(realloc_ptr, "foobar");

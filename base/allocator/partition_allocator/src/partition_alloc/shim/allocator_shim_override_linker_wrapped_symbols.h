@@ -27,6 +27,10 @@
 
 extern "C" {
 
+SHIM_ALWAYS_EXPORT void* __wrap_aligned_alloc(size_t alignment, size_t size) {
+  return ShimMemalign(alignment, size, nullptr);
+}
+
 SHIM_ALWAYS_EXPORT void* __wrap_calloc(size_t n, size_t size) {
   return ShimCalloc(n, size, nullptr);
 }
