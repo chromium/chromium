@@ -233,10 +233,14 @@ bool IOSChromePasswordManagerClient::IsPasswordChangeOngoing() {
 }
 
 // TODO(crbug.com/409047852): Add unit test to confirm the event trigger.
-void IOSChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
-    const std::vector<std::pair<GURL, std::u16string>>& identities) const {
-  // Guard the realtime event reporting feature on iOS behind the feature flag.
-  if (!base::FeatureList::IsEnabled(
+void IOSChromePasswordManagerClient::MaybeReportEnterpriseLoginEvent(
+    const GURL& url,
+    bool is_federated,
+    const url::SchemeHostPort& federated_origin,
+    const std::u16string& login_user_name) const {
+  // Guard the password login reporting event on iOS behind the feature flag.
+  if (!bridge_.profile ||
+      !base::FeatureList::IsEnabled(
           enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
     return;
   }
@@ -244,9 +248,27 @@ void IOSChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
   enterprise_connectors::ReportingEventRouter* router =
       enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
           bridge_.profile);
-  if (!router) {
+  CHECK(router);
+
+  // The router is responsible for checking if the reporting of this event type
+  // is enabled by the admin.
+  router->OnLoginEvent(url, is_federated, federated_origin, login_user_name);
+}
+
+// TODO(crbug.com/409047852): Add unit test to confirm the event trigger.
+void IOSChromePasswordManagerClient::MaybeReportEnterprisePasswordBreachEvent(
+    const std::vector<std::pair<GURL, std::u16string>>& identities) const {
+  // Guard the realtime event reporting feature on iOS behind the feature flag.
+  if (!bridge_.profile ||
+      !base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
     return;
   }
+
+  enterprise_connectors::ReportingEventRouter* router =
+      enterprise_connectors::IOSReportingEventRouterFactory::GetForProfile(
+          bridge_.profile);
+  CHECK(router);
 
   // The router is responsible for checking if the reporting of this event type
   // is enabled by the admin.
