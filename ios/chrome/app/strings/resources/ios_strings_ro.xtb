@@ -287,7 +287,7 @@
 <translation id="2148799636999124959">Conectează-te cu ușurință la site-uri și aplicații cu parolele salvate.</translation>
 <translation id="2149968176347646218">Conexiunea nu este sigură</translation>
 <translation id="2149973817440762519">Editați marcajul</translation>
-<translation id="2155663190508912427">Șterge într-o lună</translation>
+<translation id="2155663190508912427">Șterge după o lună</translation>
 <translation id="2161446265348023004">Comută la fereastra deschisă</translation>
 <translation id="2164946989711475905">Conectează-te…</translation>
 <translation id="2175927920773552910">Cod QR</translation>
@@ -670,7 +670,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3909222758573607742">Salvează parolele și alte elemente în cont</translation>
 <translation id="3913463964270756493">Ascunde ecranul de căutare cu Google Lens</translation>
 <translation id="3914640181019354363">Detectează adresele</translation>
-<translation id="391904960191284041">Recenziile produsului</translation>
+<translation id="391904960191284041">Recenziile produselor</translation>
 <translation id="3921585859122905677">Poziția barei de adrese</translation>
 <translation id="3922185497376658606">Preîncarcă paginile web</translation>
 <translation id="3922395466317605522">Personalizează meniul</translation>
@@ -1260,7 +1260,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6316141353357700666">Alege parola pe care vrei să o folosești din lista care apare.</translation>
 <translation id="6321526113093607004">Adaugă în Marcaje</translation>
 <translation id="6331836477476466332">Un browser mai sigur și mai puternic pentru tine</translation>
-<translation id="6335744088476213315">Cardul afișează produsele pe care le-ai văzut recent și pe care ai putea să le urmărești pentru a primi alerte privind scăderea de preț</translation>
+<translation id="6335744088476213315">Acest card afișează produsele pe care le-ai văzut recent și pe care ai putea să le urmărești pentru a primi alerte privind scăderea de preț</translation>
 <translation id="6337234675334993532">Criptare</translation>
 <translation id="633809752005859102">A apărut o eroare. Ne vom ocupa de asta.</translation>
 <translation id="6339793034470834130">Pentru a folosi Web Inspector, conectează-te la Safari pe computer printr-un cablu și accesează iPhone-ul din meniul Dezvoltare. Poți activa meniul Dezvoltare din secțiunea Avansat a setărilor Safari de pe computer.</translation>

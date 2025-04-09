@@ -1290,6 +1290,7 @@ Se la policy viene impostata su False, le informazioni che possono essere utiliz
 
 Questa policy viene applicata soltanto se la macchina viene registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
 Questa policy viene sempre applicata per <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="187961648719201562">Elimina i file locali esistenti (supportato dalla versione 137)</translation>
 <translation id="1883274744253492031">Attiva l'upgrade automatico del contenuto misto</translation>
 <translation id="1885782360784839335">Attiva la visualizzazione di contenuti promozionali a scheda intera</translation>
 <translation id="1888871729456797026">Il token di registrazione della norma relativa al cloud su desktop</translation>

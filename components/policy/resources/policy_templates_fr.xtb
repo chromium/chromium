@@ -1232,6 +1232,7 @@ Si cette règle est définie sur "False", aucune information pouvant servir à i
 
 Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
 Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="187961648719201562">Supprimer les fichiers locaux existants (pris en charge depuis la version 137)</translation>
 <translation id="1883274744253492031">Activer la mise à niveau automatique du contenu mixte</translation>
 <translation id="1885782360784839335">Activer l'affichage de contenus promotionnels en mode Plein onglet</translation>
 <translation id="1888871729456797026">Jeton d'enregistrement des règles relatives au cloud sur ordinateur</translation>

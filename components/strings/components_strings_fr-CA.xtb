@@ -386,7 +386,7 @@
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1645004815457365098">Source inconnue</translation>
 <translation id="1645368109819982629">Protocole non pris en charge</translation>
-<translation id="1647550855876293003">du <ph name="RESULT_MODIFIED_DATE" /> au <ph name="RESULT_OWNER" /></translation>
+<translation id="1647550855876293003"><ph name="RESULT_MODIFIED_DATE" /> – <ph name="RESULT_OWNER" /></translation>
 <translation id="1650602712345345441">Gérer vos paramètres de Chrome</translation>
 <translation id="1652415888492971589">JIS B8</translation>
 <translation id="1652862280638399816">Pour utiliser le gestionnaire de mots de passe avec le trousseau macOS, relancez Chromium et autorisez l'accès au trousseau. Vos onglets s'ouvriront à nouveau après la relance.</translation>
@@ -1984,7 +1984,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="437620492464254965">Portes et fenêtres</translation>
 <translation id="4377125064752653719">Vous avez tenté d'accéder à <ph name="DOMAIN" />, mais le certificat présenté par le serveur a été révoqué par son émetteur, ce qui signifie qu'on ne peut plus faire confiance au certificat présenté par le serveur. Il est donc possible que vous communiquiez avec un pirate informatique.</translation>
 <translation id="4378154925671717803">Numéro de téléphone</translation>
-<translation id="4382833368532556056">Dorénavant, enregistrez vos fichiers dans un espace de stockage infonuagique</translation>
+<translation id="4382833368532556056">Dorénavant, enregistrez vos fichiers dans un espace de stockage infonuagique.</translation>
 <translation id="4384395682990721132">A4 x 3</translation>
 <translation id="4387692837058041921">Le téléversement de fichiers vers Microsoft OneDrive a été suspendu</translation>
 <translation id="4390472908992056574">Bord</translation>
@@ -3304,7 +3304,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6716039223770814796">Comparer <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> éléments</translation>
 <translation id="6716672519412350405"><ph name="URL" /> souhaite créer une carte 3D de votre environnement et faire le suivi de la position de l'appareil photo</translation>
 <translation id="6717692133381953670">Onglet envoyé à partir de <ph name="DEVICE_NAME" /></translation>
-<translation id="6718524733720986924">Enregistrez vos données afin que le remplissage automatique puisse remplir d'autres champs pour vous la prochaine fois</translation>
+<translation id="6718524733720986924">Enregistrez vos données afin que le remplissage automatique puisse remplir d'autres champs pour vous la prochaine fois.</translation>
 <translation id="6718612893943028815">Utiliser la caméra?</translation>
 <translation id="6721164594124191969">Étiquettes (brillantes)</translation>
 <translation id="6726832600570791992">(32-bit emulated)</translation>
