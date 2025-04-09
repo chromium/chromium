@@ -98,9 +98,6 @@ using extensions::service_worker_test_utils::TestServiceWorkerContextObserver;
 
 ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
     : ExtensionPlatformBrowserTest(context_type),
-#if BUILDFLAG(IS_CHROMEOS)
-      set_chromeos_user_(true),
-#endif
       override_prompt_for_external_extensions_(
           FeatureSwitch::prompt_for_external_extensions(),
           false)
