@@ -326,8 +326,7 @@ found in the LICENSE file.
                        android:layout_height="wrap_content"
                        android:layout_marginBottom="16dp"
                        app:cardElevation="0dp"
-                       android:id="@+id/learn_more_card">
-
+                       android:id="@+id/privacy_policy_card">
                        <LinearLayout
                            android:layout_width="match_parent"
                            android:layout_height="wrap_content"
@@ -335,11 +334,11 @@ found in the LICENSE file.
                            android:paddingHorizontal="16dp">
 
                            <org.chromium.ui.widget.TextViewWithLeading
-                               android:id="@+id/learn_more_text"
+                               android:id="@+id/privacy_policy_text"
                                android:layout_width="match_parent"
                                android:layout_height="wrap_content"
-                                 app:leading="@dimen/text_size_medium_leading"
-                               android:text="@string/privacy_sandbox_m1_consent_learn_more_card_v3"
+                               app:leading="@dimen/text_size_medium_leading"
+                               android:text="@string/privacy_sandbox_m1_privacy_policy_text_v3"
                                android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
 
                         </LinearLayout>

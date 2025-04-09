@@ -200,6 +200,17 @@ public final class PrivacySandboxDialogV3Test {
 
     @Test
     @SmallTest
+    @Feature({"RenderTest"})
+    public void testRenderRowNoticeDropdownContent() throws IOException {
+        // Expands the dropdown element.
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        renderViewWithId(
+                R.id.privacy_sandbox_dialog, "privacy_sandbox_row_notice_dropdown_container");
+    }
+
+    @Test
+    @SmallTest
     public void testEeaConsentFullyShownHidesMoreButton() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -348,13 +359,15 @@ public final class PrivacySandboxDialogV3Test {
     @SmallTest
     public void testEEAConsentPrivacyPolicyLink() {
         launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_CONSENT);
-        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(scrollTo(), click());
+        onView(withId(R.id.privacy_policy_text)).inRoot(isDialog()).perform(scrollTo());
         // Validate Privacy Policy View is not shown
         onView(withId(R.id.privacy_policy_view))
                 .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
         // Click "Privacy Policy" link
-        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        onView(withId(R.id.privacy_policy_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
         // TODO(crbug.com/392943234): Assert that a histogram was emitted when the link was
         // clicked.
         // Validate dialog is not shown
@@ -388,7 +401,9 @@ public final class PrivacySandboxDialogV3Test {
         onView(withId(R.id.privacy_sandbox_consent_title)).check(matches(isDisplayed()));
         onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(isDisplayed()));
         // Open the privacy policy.
-        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        onView(withId(R.id.privacy_policy_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
         // Check that only the privacy policy is visible.
         onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
@@ -411,7 +426,9 @@ public final class PrivacySandboxDialogV3Test {
         onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
         onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
         // Open the privacy policy view.
-        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        onView(withId(R.id.privacy_policy_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
         // Check that the policy policy page is shown and click the back button.
         onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withId(R.id.privacy_policy_back_button)).inRoot(isDialog()).perform(click());
@@ -506,13 +523,15 @@ public final class PrivacySandboxDialogV3Test {
     @SmallTest
     public void testEEANoticePrivacyPolicyLink() {
         launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.EEA_NOTICE);
-        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(scrollTo(), click());
+        onView(withId(R.id.privacy_policy_text)).inRoot(isDialog()).perform(scrollTo(), click());
         // Validate Privacy Policy View is not shown
         onView(withId(R.id.privacy_policy_view))
                 .inRoot(isDialog())
                 .check(matches(not(isDisplayed())));
         // Click "Privacy Policy" link
-        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        onView(withId(R.id.privacy_policy_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
         // TODO(crbug.com/392943234): Assert that a histogram was emitted when the link was
         // clicked.
         // Validate dialog is not shown
@@ -569,7 +588,9 @@ public final class PrivacySandboxDialogV3Test {
         onView(withId(R.id.privacy_sandbox_notice_title)).check(matches(isDisplayed()));
         onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(isDisplayed()));
         // Open the privacy policy.
-        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        onView(withId(R.id.privacy_policy_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
         // Check that only the privacy policy is visible.
         onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
@@ -592,7 +613,9 @@ public final class PrivacySandboxDialogV3Test {
         onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
         onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
         // Open the privacy policy view.
-        onView(withId(R.id.learn_more_text)).inRoot(isDialog()).perform(clickOnClickableSpan(0));
+        onView(withId(R.id.privacy_policy_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
         // Check that the policy policy page is shown and click the back button.
         onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
         onView(withId(R.id.privacy_policy_back_button)).inRoot(isDialog()).perform(click());
@@ -658,5 +681,117 @@ public final class PrivacySandboxDialogV3Test {
         // Verify action buttons are shown
         onView(withId(R.id.settings_button)).check(matches(isDisplayed()));
         onView(withId(R.id.ack_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testRowNoticeDropdown() {
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo());
+        // Validate dropdown content is not shown
+        onView(withId(R.id.dropdown_container))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+        // Expand the dropdown element.
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        // We need to scroll to the top separator so that the dropdown element is clickable, if we
+        // scroll to the dropdown element it becomes unclickable - blocked by the android status bar
+        // at the top.
+        onView(withId(R.id.top_separator_for_dropdown)).inRoot(isDialog()).perform(scrollTo());
+        // Retract the dropdown element.
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        // Validate the dropdown content is not shown
+        onView(withId(R.id.dropdown_container))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    public void testRowNoticePrivacyPolicyLink() {
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
+        // Expand the dropdown content to access the the privacy policy link
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        onView(withId(R.id.privacy_policy_text)).inRoot(isDialog()).perform(scrollTo());
+        // Validate Privacy Policy View is not shown
+        onView(withId(R.id.privacy_policy_view))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+        // Click "Privacy Policy" link
+        onView(withId(R.id.privacy_policy_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
+        // TODO(crbug.com/392943234): Assert that a histogram was emitted when the link was
+        // clicked.
+        // Validate dialog is not shown
+        onView(withId(R.id.privacy_sandbox_dialog_view))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+        // Validate Privacy Policy View is shown
+        onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_policy_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_policy_back_button))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        // Click back button
+        onView(withId(R.id.privacy_policy_back_button)).inRoot(isDialog()).perform(click());
+        // TODO(crbug.com/392943234): Assert that a histogram was emitted when the back button
+        // was clicked.
+        // Validate dialog is not shown
+        onView(withId(R.id.privacy_sandbox_dialog_view))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+        // Validate Privacy Policy View is not shown
+        onView(withId(R.id.privacy_policy_view))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    public void testRowNoticeOnlyPrivacyPolicyShownWhenClicked() {
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
+        onView(withId(R.id.privacy_sandbox_notice_title)).check(matches(isDisplayed()));
+        // Expand the dropdown content to access the the privacy policy link
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        // Open the privacy policy.
+        onView(withId(R.id.privacy_policy_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
+        // Check that only the privacy policy is visible.
+        onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.action_buttons)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.privacy_sandbox_dialog_view))
+                .inRoot(isDialog())
+                .check(matches(not(isDisplayed())));
+    }
+
+    @Test
+    @SmallTest
+    public void testRowNoticeActionButtonIsStickyAfterVisitingPrivacyPolicy() {
+        launchDialog(PrivacySandboxDialogV3.PrivacySandboxDialogType.ROW_NOTICE);
+        onView(withId(R.id.privacy_sandbox_notice_title)).check(matches(isDisplayed()));
+        // Scroll to the button to show the action buttons.
+        clickMoreButtonAndScrollToBottomIfNeeded();
+        onView(withId(R.id.action_buttons)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        // Expand the dropdown content to access the the privacy policy link
+        onView(withId(R.id.dropdown_element)).inRoot(isDialog()).perform(scrollTo(), click());
+        // Open the privacy policy view.
+        onView(withId(R.id.privacy_policy_text))
+                .inRoot(isDialog())
+                .perform(clickOnClickableSpan(0));
+        // Check that the policy policy page is shown and click the back button.
+        onView(withId(R.id.privacy_policy_view)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_policy_back_button)).inRoot(isDialog()).perform(click());
+        // Check that the more button and fade are not shown.
+        onView(withId(R.id.more_button)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        onView(withId(R.id.bottom_fade)).inRoot(isDialog()).check(matches(not(isDisplayed())));
+        // Scroll to the top of the dialog and confirm the action button is shown.
+        onView(withId(R.id.privacy_sandbox_notice_title)).inRoot(isDialog()).perform(scrollTo());
+        onView(withId(R.id.action_buttons)).inRoot(isDialog()).check(matches(isDisplayed()));
     }
 }
