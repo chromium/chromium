@@ -96,7 +96,7 @@ class HatsServiceDesktop : public HatsService {
     kNoLastSurveyTooRecent = 5,
     kNoBelowProbabilityLimit = 6,
     kNoTriggerStringMismatch = 7,
-    kNoNotRegularBrowser = 8,
+    kNoWrongBrowserType = 8,
     kNoIncognitoDisabled = 9,
     kNoCookiesBlocked = 10,            // Unused.
     kNoThirdPartyCookiesBlocked = 11,  // Unused.

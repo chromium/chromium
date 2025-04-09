@@ -5927,7 +5927,10 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="5" label="Last instance of this survey too recent"/>
   <int value="6" label="Below probability limit"/>
   <int value="7" label="Trigger string mismatch"/>
-  <int value="8" label="Not regular browser"/>
+  <int value="8" label="Wrong browser type">
+    Tried to show the survey in a wrong browser type. For instance, tried to
+    show a survey meant for regular browsing inside Incognito.
+  </int>
   <int value="9" label="Incognito mode disabled"/>
   <int value="10" label="Cookies are blocked"/>
   <int value="11" label="Third-party cookies are blocked"/>
