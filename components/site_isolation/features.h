@@ -12,13 +12,9 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kSiteIsolationForPasswordSites);
 BASE_DECLARE_FEATURE(kSiteIsolationForOAuthSites);
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kSiteIsolationMemoryThresholdsAndroid);
+BASE_DECLARE_FEATURE(kSiteIsolationMemoryThresholds);
 extern const char kStrictSiteIsolationMemoryThresholdParamName[];
 extern const char kPartialSiteIsolationMemoryThresholdParamName[];
-#endif  // BUIDLFLAG(IS_ANDROID)
-
 BASE_DECLARE_FEATURE(kOriginIsolationMemoryThreshold);
 extern const char kOriginIsolationMemoryThresholdParamName[];
 

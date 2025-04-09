@@ -47,9 +47,8 @@ BASE_FEATURE(kSiteIsolationForOAuthSites,
 #endif
 );
 
-#if BUILDFLAG(IS_ANDROID)
-// kSiteIsolationMemoryThresholdsAndroid is checked before individual site
-// isolation mode base::Features (such as kSitePerProcess or
+// kSiteIsolationMemoryThresholds is checked before individual site isolation
+// mode base::Features (such as kSitePerProcess or
 // kSiteIsolationForPasswordSites), and (if enabled) can restrict those modes
 // to not apply to low-memory devices below a certain memory threshold.  The
 // threshold for what is considered a "low memory" device can be set (in MB)
@@ -60,19 +59,19 @@ BASE_FEATURE(kSiteIsolationForOAuthSites,
 // On devices below the memory threshold, the site isolation features such as
 // kSitePerProcess won't be checked at all, and field trials won't activate
 // either the control or the experiment group.
-BASE_FEATURE(kSiteIsolationMemoryThresholdsAndroid,
+BASE_FEATURE(kSiteIsolationMemoryThresholds,
              "SiteIsolationMemoryThresholds",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kStrictSiteIsolationMemoryThresholdParamName[] =
     "strict_site_isolation_threshold_mb";
 const char kPartialSiteIsolationMemoryThresholdParamName[] =
     "partial_site_isolation_threshold_mb";
-#endif  // BUILDFLAG(IS_ANDROID)
 
-// Desktop-only: kOriginIsolationMemoryThreshold (if enabled) is used to
-// determine if a device has the necessary resources to participate in origin
-// isolation (a stronger model than site isolation, but with potentially higher
-// resource usage).
+// kOriginIsolationMemoryThreshold is checked after
+// kSiteIsolationMemoryThresholds, and (if enabled) is used to determine if a
+// device has the necessary resources to participate in origin isolation (a
+// stronger model than site isolation, but with potentially higher resource
+// usage).
 BASE_FEATURE(kOriginIsolationMemoryThreshold,
              "OriginIsolationMemoryThreshold",
              base::FEATURE_DISABLED_BY_DEFAULT);

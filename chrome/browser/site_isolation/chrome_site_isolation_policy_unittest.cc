@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/site_isolation/site_isolation_policy.h"
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
@@ -33,14 +35,12 @@ namespace {
 // skipped in this case.
 bool ShouldSkipBecauseOfConflictingCommandLineSwitches() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSitePerProcess)) {
+          switches::kSitePerProcess))
     return true;
-  }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableSiteIsolation)) {
+          switches::kDisableSiteIsolation))
     return true;
-  }
 
   return false;
 }
@@ -75,16 +75,14 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
         SetDisallowMemoryThresholdCachingForTesting(false);
   }
 
-#if BUILDFLAG(IS_ANDROID)
   // Note that this only sets the memory threshold for strict site isolation.
   void SetMemoryThreshold(const std::string& threshold) {
     threshold_feature_.InitAndEnableFeatureWithParameters(
-        site_isolation::features::kSiteIsolationMemoryThresholdsAndroid,
+        site_isolation::features::kSiteIsolationMemoryThresholds,
         {{site_isolation::features::
               kStrictSiteIsolationMemoryThresholdParamName,
           threshold}});
   }
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Note that this only sets the memory threshold for
   // kOriginKeyedProcessesByDefault isolation.
@@ -102,28 +100,14 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
   base::test::ScopedFeatureList origin_threshold_feature_;
 };
 
-#if BUILDFLAG(IS_ANDROID)
-// kSiteIsolationMemoryThresholdsAndroid only affects Android.
-// kOriginIsolationMemoryThreshold only affects Desktop.
-TEST_F(ChromeSiteIsolationPolicyTest, NoAndroidIsolationBelowMemoryThreshold) {
-  if (ShouldSkipBecauseOfConflictingCommandLineSwitches()) {
+TEST_F(ChromeSiteIsolationPolicyTest, NoIsolationBelowMemoryThreshold) {
+  if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
     return;
-  }
 
   SetMemoryThreshold("768");
   EXPECT_FALSE(
       content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 }
-
-TEST_F(ChromeSiteIsolationPolicyTest, AndroidIsolationAboveMemoryThreshold) {
-  if (ShouldSkipBecauseOfConflictingCommandLineSwitches()) {
-    return;
-  }
-
-  SetMemoryThreshold("128");
-  EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeSiteIsolationPolicyTest, NoOriginIsolationBelowMemoryThreshold) {
   if (ShouldSkipBecauseOfConflictingCommandLineSwitches()) {
@@ -133,6 +117,14 @@ TEST_F(ChromeSiteIsolationPolicyTest, NoOriginIsolationBelowMemoryThreshold) {
   SetOriginMemoryThreshold("768");
   EXPECT_FALSE(
       content::SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault());
+}
+
+TEST_F(ChromeSiteIsolationPolicyTest, IsolationAboveMemoryThreshold) {
+  if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
+    return;
+
+  SetMemoryThreshold("128");
+  EXPECT_TRUE(content::SiteIsolationPolicy::UseDedicatedProcessesForAllSites());
 }
 
 TEST_F(ChromeSiteIsolationPolicyTest, OriginIsolationAboveMemoryThreshold) {
@@ -152,9 +144,8 @@ TEST_F(ChromeSiteIsolationPolicyTest, OriginIsolationAboveMemoryThreshold) {
 }
 
 TEST_F(ChromeSiteIsolationPolicyTest, IsolatedOriginsContainChromeOrigins) {
-  if (ShouldSkipBecauseOfConflictingCommandLineSwitches()) {
+  if (ShouldSkipBecauseOfConflictingCommandLineSwitches())
     return;
-  }
 
   content::SiteIsolationPolicy::ApplyGlobalIsolatedOrigins();
 
