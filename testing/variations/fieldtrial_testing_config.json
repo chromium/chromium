@@ -21891,6 +21891,21 @@
             ]
         }
     ],
+    "Scanner": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ScannerUpdate"
+                    ]
+                }
+            ]
+        }
+    ],
     "ScannerDogfood": [
         {
             "platforms": [
