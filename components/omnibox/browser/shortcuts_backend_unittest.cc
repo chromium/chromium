@@ -32,33 +32,6 @@
 
 // ShortcutsBackendTest -------------------------------------------------------
 
-class FakeShortcutsBackend : public ShortcutsBackend {
- public:
-  FakeShortcutsBackend(TemplateURLService* template_url_service,
-                       std::unique_ptr<SearchTermsData> search_terms_data,
-                       history::HistoryService* history_service,
-                       base::FilePath database_path,
-                       bool suppress_db)
-      : ShortcutsBackend(template_url_service,
-                         std::move(search_terms_data),
-                         history_service,
-                         database_path,
-                         suppress_db) {}
-
-  using ShortcutsBackend::AddShortcut;
-  using ShortcutsBackend::DeleteOldShortcuts;
-  using ShortcutsBackend::DeleteShortcutsWithIDs;
-  using ShortcutsBackend::DeleteShortcutsWithInvalidKeywords;
-  using ShortcutsBackend::DeleteShortcutsWithURL;
-  using ShortcutsBackend::MatchToMatchCore;
-  using ShortcutsBackend::shortcuts_map_;
-  using ShortcutsBackend::ShutdownOnUIThread;
-  using ShortcutsBackend::UpdateShortcut;
-
- protected:
-  ~FakeShortcutsBackend() override = default;
-};
-
 class ShortcutsBackendTest : public testing::Test,
                              public ShortcutsBackend::ShortcutsBackendObserver {
  public:
@@ -92,17 +65,23 @@ class ShortcutsBackendTest : public testing::Test,
   }
 
   void InitBackend();
+  bool AddShortcut(const ShortcutsDatabase::Shortcut& shortcut);
+  bool UpdateShortcut(const ShortcutsDatabase::Shortcut& shortcut);
+  bool DeleteShortcutsWithURL(const GURL& url);
+  bool DeleteShortcutsWithIDs(
+      const ShortcutsDatabase::ShortcutIDs& deleted_ids);
+  bool DeleteOldShortcuts();
   bool ShortcutExists(const std::u16string& terms) const;
   std::vector<std::u16string> ShortcutsMapTexts() const;
   void ClearShortcutsMap();
   ShortcutsDatabase::Shortcut::MatchCore MatchToMatchCore(
       const AutocompleteMatch& match) {
     SearchTermsData search_terms_data;
-    return FakeShortcutsBackend::MatchToMatchCore(match, template_url_service(),
-                                                  &search_terms_data);
+    return ShortcutsBackend::MatchToMatchCore(match, template_url_service(),
+                                              &search_terms_data);
   }
 
-  FakeShortcutsBackend* backend() { return backend_.get(); }
+  ShortcutsBackend* backend() { return backend_.get(); }
 
   base::test::ScopedFeatureList& scoped_feature_list() {
     return scoped_feature_list_;
@@ -118,7 +97,7 @@ class ShortcutsBackendTest : public testing::Test,
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   std::unique_ptr<history::HistoryService> history_service_;
 
-  scoped_refptr<FakeShortcutsBackend> backend_;
+  scoped_refptr<ShortcutsBackend> backend_;
 
   bool load_notified_ = false;
   bool changed_notified_ = false;
@@ -162,7 +141,7 @@ void ShortcutsBackendTest::SetUp() {
 
   base::FilePath shortcuts_database_path =
       profile_dir_.GetPath().Append(kShortcutsDatabaseName);
-  backend_ = new FakeShortcutsBackend(
+  backend_ = new ShortcutsBackend(
       template_url_service(), std::make_unique<SearchTermsData>(),
       history_service_.get(), shortcuts_database_path, false);
   ASSERT_TRUE(backend_.get());
@@ -201,6 +180,29 @@ void ShortcutsBackendTest::InitBackend() {
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(load_notified_);
   EXPECT_TRUE(backend_->initialized());
+}
+
+bool ShortcutsBackendTest::AddShortcut(
+    const ShortcutsDatabase::Shortcut& shortcut) {
+  return backend_->AddShortcut(shortcut);
+}
+
+bool ShortcutsBackendTest::UpdateShortcut(
+    const ShortcutsDatabase::Shortcut& shortcut) {
+  return backend_->UpdateShortcut(shortcut);
+}
+
+bool ShortcutsBackendTest::DeleteShortcutsWithURL(const GURL& url) {
+  return backend_->DeleteShortcutsWithURL(url);
+}
+
+bool ShortcutsBackendTest::DeleteShortcutsWithIDs(
+    const ShortcutsDatabase::ShortcutIDs& deleted_ids) {
+  return backend_->DeleteShortcutsWithIDs(deleted_ids);
+}
+
+bool ShortcutsBackendTest::DeleteOldShortcuts() {
+  return backend_->DeleteOldShortcuts();
 }
 
 bool ShortcutsBackendTest::ShortcutExists(const std::u16string& terms) const {
@@ -254,11 +256,11 @@ TEST_F(ShortcutsBackendTest, SanitizeMatchCore) {
     ShortcutsDatabase::Shortcut::MatchCore match_core(MatchCoreForTesting(
         std::string(), cases[i].input_contents_class,
         cases[i].input_description_class, cases[i].input_type));
-    EXPECT_EQ(match_core.contents_class, cases[i].output_contents_class)
+    EXPECT_EQ(cases[i].output_contents_class, match_core.contents_class)
         << ":i:" << i << ":type:" << cases[i].input_type;
-    EXPECT_EQ(match_core.description_class, cases[i].output_description_class)
+    EXPECT_EQ(cases[i].output_description_class, match_core.description_class)
         << ":i:" << i << ":type:" << cases[i].input_type;
-    EXPECT_EQ(match_core.type, cases[i].output_type)
+    EXPECT_EQ(cases[i].output_type, match_core.type)
         << ":i:" << i << ":type:" << cases[i].input_type;
   }
 }
@@ -280,11 +282,11 @@ TEST_F(ShortcutsBackendTest, EntitySuggestionTest) {
       std::make_unique<TemplateURLRef::SearchTermsArgs>(match.fill_into_edit);
 
   ShortcutsDatabase::Shortcut::MatchCore match_core = MatchToMatchCore(match);
-  EXPECT_EQ(match_core.destination_url.spec(),
-            "http://foo.com/search?bar=franklin+d+roosevelt");
-  EXPECT_EQ(match_core.contents, match.fill_into_edit);
-  EXPECT_EQ(match_core.contents_class, "0,0");
-  EXPECT_EQ(match_core.description, std::u16string());
+  EXPECT_EQ("http://foo.com/search?bar=franklin+d+roosevelt",
+            match_core.destination_url.spec());
+  EXPECT_EQ(match.fill_into_edit, match_core.contents);
+  EXPECT_EQ("0,0", match_core.contents_class);
+  EXPECT_EQ(std::u16string(), match_core.description);
   EXPECT_TRUE(match_core.description_class.empty());
 }
 
@@ -330,23 +332,23 @@ TEST_F(ShortcutsBackendTest, AddAndUpdateShortcut) {
   ShortcutsDatabase::Shortcut shortcut(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"goog",
       MatchCoreForTesting("http://www.google.com"), base::Time::Now(), 100);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut));
+  EXPECT_TRUE(AddShortcut(shortcut));
   EXPECT_TRUE(changed_notified());
   auto shortcut_iter(shortcuts_map().find(shortcut.text));
   ASSERT_TRUE(shortcut_iter != shortcuts_map().end());
-  EXPECT_EQ(shortcut_iter->second.id, shortcut.id);
-  EXPECT_EQ(shortcut_iter->second.match_core.contents,
-            shortcut.match_core.contents);
+  EXPECT_EQ(shortcut.id, shortcut_iter->second.id);
+  EXPECT_EQ(shortcut.match_core.contents,
+            shortcut_iter->second.match_core.contents);
 
   set_changed_notified(false);
   shortcut.match_core.contents = u"Google Web Search";
-  EXPECT_TRUE(backend()->UpdateShortcut(shortcut));
+  EXPECT_TRUE(UpdateShortcut(shortcut));
   EXPECT_TRUE(changed_notified());
   shortcut_iter = shortcuts_map().find(shortcut.text);
   ASSERT_TRUE(shortcut_iter != shortcuts_map().end());
-  EXPECT_EQ(shortcut_iter->second.id, shortcut.id);
-  EXPECT_EQ(shortcut_iter->second.match_core.contents,
-            shortcut.match_core.contents);
+  EXPECT_EQ(shortcut.id, shortcut_iter->second.id);
+  EXPECT_EQ(shortcut.match_core.contents,
+            shortcut_iter->second.match_core.contents);
 }
 
 // Tests that zero suggest matches are not added to the database.
@@ -370,163 +372,100 @@ TEST_F(ShortcutsBackendTest, DeleteShortcuts) {
   ShortcutsDatabase::Shortcut shortcut1(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"goog",
       MatchCoreForTesting("http://www.google.com"), base::Time::Now(), 100);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut1));
+  EXPECT_TRUE(AddShortcut(shortcut1));
 
   ShortcutsDatabase::Shortcut shortcut2(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880E0", u"gle",
       MatchCoreForTesting("http://www.google.com"), base::Time::Now(), 100);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut2));
+  EXPECT_TRUE(AddShortcut(shortcut2));
 
   ShortcutsDatabase::Shortcut shortcut3(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880E1", u"sp",
       MatchCoreForTesting("http://www.sport.com"), base::Time::Now(), 10);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut3));
+  EXPECT_TRUE(AddShortcut(shortcut3));
 
   ShortcutsDatabase::Shortcut shortcut4(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880E2", u"mov",
       MatchCoreForTesting("http://www.film.com"), base::Time::Now(), 10);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut4));
+  EXPECT_TRUE(AddShortcut(shortcut4));
 
-  ASSERT_EQ(shortcuts_map().size(), 4U);
-  EXPECT_EQ(shortcuts_map().find(shortcut1.text)->second.id, shortcut1.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut2.text)->second.id, shortcut2.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut3.text)->second.id, shortcut3.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut4.text)->second.id, shortcut4.id);
+  ASSERT_EQ(4U, shortcuts_map().size());
+  EXPECT_EQ(shortcut1.id, shortcuts_map().find(shortcut1.text)->second.id);
+  EXPECT_EQ(shortcut2.id, shortcuts_map().find(shortcut2.text)->second.id);
+  EXPECT_EQ(shortcut3.id, shortcuts_map().find(shortcut3.text)->second.id);
+  EXPECT_EQ(shortcut4.id, shortcuts_map().find(shortcut4.text)->second.id);
 
-  EXPECT_TRUE(
-      backend()->DeleteShortcutsWithURL(shortcut1.match_core.destination_url));
+  EXPECT_TRUE(DeleteShortcutsWithURL(shortcut1.match_core.destination_url));
 
-  ASSERT_EQ(shortcuts_map().size(), 2U);
-  EXPECT_FALSE(ShortcutExists(shortcut1.text));
-  EXPECT_FALSE(ShortcutExists(shortcut2.text));
-  EXPECT_TRUE(ShortcutExists(shortcut3.text));
-  EXPECT_TRUE(ShortcutExists(shortcut4.text));
+  ASSERT_EQ(2U, shortcuts_map().size());
+  EXPECT_EQ(0U, shortcuts_map().count(shortcut1.text));
+  EXPECT_EQ(0U, shortcuts_map().count(shortcut2.text));
+  const ShortcutsBackend::ShortcutMap::const_iterator shortcut3_iter(
+      shortcuts_map().find(shortcut3.text));
+  ASSERT_TRUE(shortcut3_iter != shortcuts_map().end());
+  EXPECT_EQ(shortcut3.id, shortcut3_iter->second.id);
+  const ShortcutsBackend::ShortcutMap::const_iterator shortcut4_iter(
+      shortcuts_map().find(shortcut4.text));
+  ASSERT_TRUE(shortcut4_iter != shortcuts_map().end());
+  EXPECT_EQ(shortcut4.id, shortcut4_iter->second.id);
 
   ShortcutsDatabase::ShortcutIDs deleted_ids;
   deleted_ids.push_back(shortcut3.id);
   deleted_ids.push_back(shortcut4.id);
-  EXPECT_TRUE(backend()->DeleteShortcutsWithIDs(deleted_ids));
+  EXPECT_TRUE(DeleteShortcutsWithIDs(deleted_ids));
 
-  ASSERT_EQ(shortcuts_map().size(), 0U);
+  ASSERT_EQ(0U, shortcuts_map().size());
 }
 
 TEST_F(ShortcutsBackendTest, DeleteOldShortcuts) {
   InitBackend();
-
-  // Add an inactive keyword.
-  TemplateURLData data_inactive;
-  data_inactive.SetShortName(u"inactive");
-  data_inactive.SetKeyword(u"inactive");
-  data_inactive.SetURL("http://www.inactive.com/{searchTerms}");
-  template_url_service()->Add(std::make_unique<TemplateURL>(data_inactive));
 
   // Define shortcuts that are 1, 10, 100 and 1000 days old.
   ShortcutsDatabase::Shortcut shortcut1(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"google",
       MatchCoreForTesting("http://www.google.com"),
       base::Time::Now() - base::Days(1), 100);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut1));
+  EXPECT_TRUE(AddShortcut(shortcut1));
 
   ShortcutsDatabase::Shortcut shortcut2(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880E0", u"yahoo",
       MatchCoreForTesting("http://www.yahoo.com"),
       base::Time::Now() - base::Days(10), 10);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut2));
+  EXPECT_TRUE(AddShortcut(shortcut2));
 
   ShortcutsDatabase::Shortcut shortcut3(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880E1", u"baidu",
       MatchCoreForTesting("http://www.baidu.com"),
       base::Time::Now() - base::Days(100), 1000);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut3));
+  EXPECT_TRUE(AddShortcut(shortcut3));
 
   ShortcutsDatabase::Shortcut shortcut4(
       "BD85DBA2-8C29-49F9-84AE-48E1E90880E2", u"bing",
       MatchCoreForTesting("http://www.bing.com"),
       base::Time::Now() - base::Days(1000), 1);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut4));
+  EXPECT_TRUE(AddShortcut(shortcut4));
 
-  ShortcutsDatabase::Shortcut shortcut5(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E3", u"deleted",
-      MatchCoreForTesting("http://www.deleted.com"),
-      base::Time::Now() - base::Days(10), 1);
-  shortcut5.match_core.keyword = u"deleted";
-  EXPECT_TRUE(backend()->AddShortcut(shortcut5));
+  ASSERT_EQ(4U, shortcuts_map().size());
+  EXPECT_EQ(shortcut1.id, shortcuts_map().find(shortcut1.text)->second.id);
+  EXPECT_EQ(shortcut2.id, shortcuts_map().find(shortcut2.text)->second.id);
+  EXPECT_EQ(shortcut3.id, shortcuts_map().find(shortcut3.text)->second.id);
+  EXPECT_EQ(shortcut4.id, shortcuts_map().find(shortcut4.text)->second.id);
 
-  ShortcutsDatabase::Shortcut shortcut6(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E4", u"inactive",
-      MatchCoreForTesting("http://www.inactive.com"),
-      base::Time::Now() - base::Days(10), 1);
-  shortcut6.match_core.keyword = u"inactive";
-  EXPECT_TRUE(backend()->AddShortcut(shortcut6));
-
-  ASSERT_EQ(shortcuts_map().size(), 6U);
-  EXPECT_EQ(shortcuts_map().find(shortcut1.text)->second.id, shortcut1.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut2.text)->second.id, shortcut2.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut3.text)->second.id, shortcut3.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut4.text)->second.id, shortcut4.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut5.text)->second.id, shortcut5.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut6.text)->second.id, shortcut6.id);
-
-  EXPECT_TRUE(backend()->DeleteOldShortcuts());
+  EXPECT_TRUE(DeleteOldShortcuts());
 
   // After deleting old shortcuts, the two that are more than 90 days old should
-  // no longer be present. The one with a deleted keyword should no longer be
-  // present.
-  ASSERT_EQ(shortcuts_map().size(), 2U);
-  EXPECT_TRUE(ShortcutExists(shortcut1.text));
-  EXPECT_TRUE(ShortcutExists(shortcut2.text));
-  EXPECT_FALSE(ShortcutExists(shortcut3.text));
-  EXPECT_FALSE(ShortcutExists(shortcut4.text));
-  EXPECT_FALSE(ShortcutExists(shortcut5.text));
-  EXPECT_FALSE(ShortcutExists(shortcut6.text));
-}
-
-TEST_F(ShortcutsBackendTest, DeleteShortcutsWithInvalidKeywords) {
-  InitBackend();
-
-  // Add an inactive keyword.
-  TemplateURLData data;
-  data.SetShortName(u"inactive");
-  data.SetKeyword(u"inactive");
-  data.SetURL("http://www.inactive.com/{searchTerms}");
-  template_url_service()->Add(std::make_unique<TemplateURL>(data));
-
-  ShortcutsDatabase::Shortcut shortcut1(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880DF", u"goog",
-      MatchCoreForTesting("http://www.google.com"), base::Time::Now(), 100);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut1));
-
-  ShortcutsDatabase::Shortcut shortcut2(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E0", u"deleted query",
-      MatchCoreForTesting("http://www.deleted.com"), base::Time::Now(), 100);
-  shortcut2.match_core.keyword = u"deleted";
-  EXPECT_TRUE(backend()->AddShortcut(shortcut2));
-
-  ShortcutsDatabase::Shortcut shortcut3(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E1", u"inactive query",
-      MatchCoreForTesting("http://www.inactive.com"), base::Time::Now(), 100);
-  shortcut3.match_core.keyword = u"inactive";
-  EXPECT_TRUE(backend()->AddShortcut(shortcut3));
-
-  ShortcutsDatabase::Shortcut shortcut4(
-      "BD85DBA2-8C29-49F9-84AE-48E1E90880E2", u"sp",
-      MatchCoreForTesting("http://www.sport.com"), base::Time::Now(), 10);
-  EXPECT_TRUE(backend()->AddShortcut(shortcut4));
-
-  ASSERT_EQ(shortcuts_map().size(), 4U);
-  EXPECT_EQ(shortcuts_map().find(shortcut1.text)->second.id, shortcut1.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut2.text)->second.id, shortcut2.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut3.text)->second.id, shortcut3.id);
-  EXPECT_EQ(shortcuts_map().find(shortcut4.text)->second.id, shortcut4.id);
-
-  // Delete shortcuts with invalid keywords.
-  backend()->DeleteShortcutsWithInvalidKeywords();
-
-  ASSERT_EQ(shortcuts_map().size(), 2U);
-  EXPECT_TRUE(ShortcutExists(shortcut1.text));
-  EXPECT_FALSE(ShortcutExists(shortcut2.text));
-  EXPECT_FALSE(ShortcutExists(shortcut3.text));
-  EXPECT_TRUE(ShortcutExists(shortcut4.text));
+  // no longer be present.
+  ASSERT_EQ(2U, shortcuts_map().size());
+  const ShortcutsBackend::ShortcutMap::const_iterator shortcut1_iter(
+      shortcuts_map().find(shortcut1.text));
+  ASSERT_TRUE(shortcut1_iter != shortcuts_map().end());
+  EXPECT_EQ(shortcut1.id, shortcut1_iter->second.id);
+  const ShortcutsBackend::ShortcutMap::const_iterator shortcut2_iter(
+      shortcuts_map().find(shortcut2.text));
+  ASSERT_TRUE(shortcut2_iter != shortcuts_map().end());
+  EXPECT_EQ(shortcut2.id, shortcut2_iter->second.id);
+  EXPECT_EQ(0U, shortcuts_map().count(shortcut3.text));
+  EXPECT_EQ(0U, shortcuts_map().count(shortcut4.text));
 }
 
 TEST_F(ShortcutsBackendTest, AddOrUpdateShortcut_3CharShortening) {

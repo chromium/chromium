@@ -3496,34 +3496,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="ShortcutsProvider.InvalidKeywordEntryDeletions.OnInit"
-    units="units" expires_after="2026-04-04">
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    The number of entries in `ShortcutsBackend`'s database that were deleted due
-    to the associated keyword being deleted from the `TemplateURLService` or
-    inactive. Recorded once on profile load.
-
-    See also ShortcutsProvider.OldKeywordEntryDeletions.OnKeywordChange.
-  </summary>
-</histogram>
-
-<histogram
-    name="ShortcutsProvider.InvalidKeywordEntryDeletions.OnKeywordChange"
-    units="units" expires_after="2026-04-04">
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-desktop-search@google.com</owner>
-  <summary>
-    The number of entries in `ShortcutsBackend`'s database that were deleted due
-    to the associated keyword being deleted from the `TemplateURLService` or
-    inactive. Recorded each time an `OnTemplateURLServiceChanged` notification
-    from `TemplateURLService` is received by `ShortcutsBackend`.
-
-    See also ShortcutsProvider.OldKeywordEntryDeletions.OnInit.
-  </summary>
-</histogram>
-
 <histogram name="ShortcutsProvider.OldEntryDeletions.OnHistoryDeletions"
     units="units" expires_after="2025-08-24">
   <owner>jdonnelly@chromium.org</owner>
