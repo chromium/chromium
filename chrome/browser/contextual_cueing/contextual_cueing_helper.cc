@@ -190,6 +190,11 @@ bool ContextualCueingHelper::IsBrowserBlockingNudges(
 #if BUILDFLAG(ENABLE_GLIC)
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+
+  if (!glic::GlicEnabling::IsEnabledForProfile(profile)) {
+    return true;
+  }
+
   auto* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
 
@@ -245,7 +250,7 @@ void ContextualCueingHelper::MaybeCreateForWebContents(
 #if BUILDFLAG(ENABLE_GLIC)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (!glic::GlicEnabling::IsEnabledForProfile(profile)) {
+  if (!glic::GlicEnabling::IsProfileEligible(profile)) {
     return;
   }
 
