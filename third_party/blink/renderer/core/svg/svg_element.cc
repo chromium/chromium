@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 
 #include "base/auto_reset.h"
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -608,7 +607,7 @@ namespace {
 
 bool ProbablyUrlFunction(const AtomicString& value) {
   return value.length() > 5 && value.Is8Bit() &&
-         UNSAFE_TODO(memcmp(value.Characters8(), "url(", 4)) == 0;
+         base::as_string_view(value.Span8()).starts_with("url(");
 }
 
 bool UseCSSURIValueCacheForProperty(CSSPropertyID property_id) {
