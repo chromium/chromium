@@ -48,9 +48,9 @@ build_webui("build") {
     "folder_node.css",
     "item.css",
     "list.css",
-    "toolbar.css",
     "shared_style_lit.css",
     "shared_vars.css",
+    "toolbar.css",
   ]
 
   ts_composite = true

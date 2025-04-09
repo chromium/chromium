@@ -177,8 +177,8 @@ build_webui("build") {
   if (is_chrome_branded && overlay_include_cbx) {
     static_files += [
       "time_of_day/thumbnails/clouds.jpg",
-      "time_of_day/thumbnails/new_mexico.jpg",
       "time_of_day/thumbnails/jupiter.jpg",
+      "time_of_day/thumbnails/new_mexico.jpg",
     ]
   }
 

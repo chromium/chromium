@@ -12,8 +12,8 @@ build_webui("build") {
   css_files = [ "cr_shortcut_input.css" ]
 
   non_web_component_files = [
-    "cr_shortcut_input.ts",
     "cr_shortcut_input.html.ts",
+    "cr_shortcut_input.ts",
     "cr_shortcut_util.ts",
   ]
 

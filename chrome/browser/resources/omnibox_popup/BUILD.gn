@@ -10,8 +10,8 @@ build_webui("build") {
   grd_prefix = "omnibox_popup"
   static_files = [ "omnibox_popup.html" ]
   non_web_component_files = [
-    "app.ts",
     "app.html.ts",
+    "app.ts",
     "omnibox_popup.ts",
   ]
   css_files = [ "app.css" ]

@@ -17,18 +17,18 @@ build_webui("build") {
 
   non_web_component_files = [
     "browser_proxy.ts",
+    "glic_api/glic_api.ts",
     "glic_api_impl/conversions.ts",
     "glic_api_impl/glic_api_client.ts",
     "glic_api_impl/glic_api_host.ts",
     "glic_api_impl/glic_api_injected_client.ts",
     "glic_api_impl/post_message_transport.ts",
     "glic_api_impl/request_types.ts",
-    "glic_api/glic_api.ts",
     "glic_app_controller.ts",
     "icons.html.ts",
     "main.ts",
-    "webview.ts",
     "observable.ts",
+    "webview.ts",
   ]
 
   webui_context_type = "trusted"
@@ -56,11 +56,11 @@ build_webui("build") {
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/context_menus.d.ts",
     "//tools/typescript/definitions/extension_types.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
     "url_pattern.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
   ]
 
   ts_composite = true

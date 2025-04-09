@@ -13,8 +13,8 @@ build_webui("build") {
   non_web_component_files = [ "browser_proxy.js" ]
 
   mojo_files = [
-    "${root_gen_dir}\chrome\browser\ui\webui\ash\crostini_installer\crostini_installer.mojom-webui.ts",
     "${root_gen_dir}\chrome\browser\ash\crostini\crostini_types.mojom-webui.ts",
+    "${root_gen_dir}\chrome\browser\ui\webui\ash\crostini_installer\crostini_installer.mojom-webui.ts",
   ]
   mojo_files_deps = [
     "//chrome/browser/ash/crostini:crostini_installer_types_mojom_ts__generator",

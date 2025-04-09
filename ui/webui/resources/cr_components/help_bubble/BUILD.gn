@@ -46,8 +46,8 @@ build_webui("build") {
 
   mojo_files_deps = [ ":mojo_bindings_ts__generator" ]
   mojo_files = [
-    "$target_gen_dir/help_bubble.mojom-webui.ts",
     "$target_gen_dir/custom_help_bubble.mojom-webui.ts",
+    "$target_gen_dir/help_bubble.mojom-webui.ts",
   ]
 
   html_to_wrapper_template = "detect"

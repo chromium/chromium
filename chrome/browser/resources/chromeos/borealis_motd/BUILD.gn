@@ -7,8 +7,8 @@ build_webui("build") {
   grd_prefix = "borealis_motd"
 
   static_files = [
-    "index.html",
     "index.css",
+    "index.html",
   ]
 
   non_web_component_files = [ "index.ts" ]

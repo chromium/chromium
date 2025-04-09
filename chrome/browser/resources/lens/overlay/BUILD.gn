@@ -74,11 +74,11 @@ build_webui("build_overlay") {
     "screenshot_utils.ts",
     "searchbox_utils.ts",
     "selection_utils.ts",
-    "simplified_text_layer.ts",
-    "simplified_text_layer.html.ts",
     "side_panel/side_panel_browser_proxy.ts",
-    "text_layer_base.ts",
+    "simplified_text_layer.html.ts",
+    "simplified_text_layer.ts",
     "text_highlights.ts",
+    "text_layer_base.ts",
     "text_rendering.ts",
     "values_converter.ts",
     "wiggle.ts",
@@ -113,10 +113,10 @@ build_webui("build_overlay") {
     "$root_gen_dir/chrome/browser/lens/core/mojom/lens.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/lens_side_panel.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/overlay_object.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/page_content_type.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/polygon.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/text.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/lens/core/mojom/translate.mojom-webui.ts",
-    "$root_gen_dir/chrome/browser/lens/core/mojom/page_content_type.mojom-webui.ts",
   ]
 
   ts_path_mappings =
