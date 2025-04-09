@@ -461,20 +461,7 @@ bool GetStatusForSigninPolicy() {
   ItemType type = static_cast<ItemType>(item.type);
   switch (type) {
     case AllowChromeSigninItemType: {
-      if (self.hasPrimaryIdentity) {
-        __weak GoogleServicesSettingsMediator* weakSelf = self;
-        [self.commandHandler
-            showSignOutFromTargetRect:targetRect
-                           completion:^(BOOL success, SceneState* scene_state) {
-                             weakSelf.allowChromeSigninPreference.value =
-                                 success ? value : !value;
-                             [weakSelf
-                                 updateNonPersonalizedSectionWithNotification:
-                                     YES];
-                           }];
-      } else {
-        self.allowChromeSigninPreference.value = value;
-      }
+      [self handleUpdateIsSigninAllowedValue:value targetRect:targetRect];
       break;
     }
     case ImproveChromeItemType:
@@ -516,4 +503,18 @@ bool GetStatusForSigninPolicy() {
              self.identityManager) == signin::Tribool::kTrue;
 }
 
+- (void)handleUpdateIsSigninAllowedValue:(BOOL)value
+                              targetRect:(CGRect)targetRect {
+  if (self.hasPrimaryIdentity) {
+    void (^completion)(BOOL, SceneState*) =
+        ^(BOOL success, SceneState* scene_state) {
+          GetApplicationContext()->GetLocalState()->SetBoolean(
+              prefs::kSigninAllowedOnDevice, success ? value : !value);
+        };
+    [self.commandHandler showSignOutFromTargetRect:targetRect
+                                        completion:completion];
+  } else {
+    self.allowChromeSigninPreference.value = value;
+  }
+}
 @end

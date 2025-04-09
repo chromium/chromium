@@ -131,15 +131,27 @@ void AuthenticationService::Initialize(
 
   account_manager_service_observation_.Observe(account_manager_service_.get());
 
-  // Register for prefs::kSigninAllowed.
-  pref_change_registrar_.Init(pref_service_);
-  PrefChangeRegistrar::NamedChangeCallback signin_allowed_callback =
-      base::BindRepeating(&AuthenticationService::OnSigninAllowedChanged,
-                          base::Unretained(this));
-  pref_change_registrar_.Add(prefs::kSigninAllowed, signin_allowed_callback);
+  // Synchronize local state and profile signin prefs. This is needed because
+  // many low level services still rely on the profile pref.
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+  const PrefService::Preference* signin_allowed_on_device =
+      local_pref_service->FindPreference(prefs::kSigninAllowedOnDevice);
+  CHECK(signin_allowed_on_device);
+  const PrefService::Preference* signin_allowed_profile =
+      pref_service_->FindPreference(prefs::kSigninAllowed);
+  CHECK(signin_allowed_profile);
+  // One time migration from the profile prefs to the local state if the local
+  // state is still using the default value. Otherwise update the profile pref
+  // to match the local state value which is the source of truth.
+  if (signin_allowed_on_device->IsDefaultValue()) {
+    local_pref_service->Set(prefs::kSigninAllowedOnDevice,
+                            *signin_allowed_profile->GetValue());
+  } else {
+    pref_service_->Set(prefs::kSigninAllowed,
+                       *signin_allowed_on_device->GetValue());
+  }
 
   // Register for prefs::kBrowserSigninPolicy.
-  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
   local_pref_change_registrar_.Init(local_pref_service);
   PrefChangeRegistrar::NamedChangeCallback browser_signin_policy_callback =
       base::BindRepeating(&AuthenticationService::OnBrowserSigninPolicyChanged,
@@ -147,6 +159,20 @@ void AuthenticationService::Initialize(
   local_pref_change_registrar_.Add(prefs::kBrowserSigninPolicy,
                                    browser_signin_policy_callback);
 
+  // Register for prefs::kSigninAllowedOnDevice.
+  PrefChangeRegistrar::NamedChangeCallback signin_allowed_on_device_callback =
+      base::BindRepeating(
+          &AuthenticationService::OnSigninAllowedOnDeviceChanged,
+          base::Unretained(this));
+  local_pref_change_registrar_.Add(prefs::kSigninAllowedOnDevice,
+                                   signin_allowed_on_device_callback);
+
+  // Register for prefs::kSigninAllowed.
+  pref_change_registrar_.Init(pref_service_);
+  PrefChangeRegistrar::NamedChangeCallback signin_allowed_callback =
+      base::BindRepeating(&AuthenticationService::OnSigninAllowedChanged,
+                          base::Unretained(this));
+  pref_change_registrar_.Add(prefs::kSigninAllowed, signin_allowed_callback);
 // Migrate primary identity info to widgets if needed.
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
@@ -223,9 +249,9 @@ AuthenticationService::ServiceStatus AuthenticationService::GetServiceStatus() {
   if (!account_manager_service_->IsServiceSupported()) {
     return ServiceStatus::SigninDisabledByInternal;
   }
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
   BrowserSigninMode policy_mode = static_cast<BrowserSigninMode>(
-      GetApplicationContext()->GetLocalState()->GetInteger(
-          prefs::kBrowserSigninPolicy));
+      local_pref_service->GetInteger(prefs::kBrowserSigninPolicy));
   switch (policy_mode) {
     case BrowserSigninMode::kDisabled:
       return ServiceStatus::SigninDisabledByPolicy;
@@ -234,7 +260,7 @@ AuthenticationService::ServiceStatus AuthenticationService::GetServiceStatus() {
     case BrowserSigninMode::kEnabled:
       break;
   }
-  if (!pref_service_->GetBoolean(prefs::kSigninAllowed)) {
+  if (!local_pref_service->GetBoolean(prefs::kSigninAllowedOnDevice)) {
     return ServiceStatus::SigninDisabledByUser;
   }
   return ServiceStatus::SigninAllowed;
@@ -720,6 +746,18 @@ void AuthenticationService::FirePrimaryAccountRestricted() {
 
 void AuthenticationService::OnSigninAllowedChanged(const std::string& name) {
   DCHECK_EQ(prefs::kSigninAllowed, name);
+  GetApplicationContext()->GetLocalState()->SetBoolean(
+      prefs::kSigninAllowedOnDevice,
+      pref_service_->GetBoolean(prefs::kSigninAllowed));
+}
+
+void AuthenticationService::OnSigninAllowedOnDeviceChanged(
+    const std::string& name) {
+  DCHECK_EQ(prefs::kSigninAllowedOnDevice, name);
+  pref_service_->SetBoolean(
+      prefs::kSigninAllowed,
+      GetApplicationContext()->GetLocalState()->GetBoolean(
+          prefs::kSigninAllowedOnDevice));
   FireServiceStatusNotification();
 }
 

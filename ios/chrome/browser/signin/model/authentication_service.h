@@ -203,6 +203,9 @@ class AuthenticationService : public KeyedService,
   // Notification for prefs::kSigninAllowed.
   void OnSigninAllowedChanged(const std::string& name);
 
+  // Notification for prefs::kSigninAllowedOnDevice.
+  void OnSigninAllowedOnDeviceChanged(const std::string& name);
+
   // Notification for prefs::kBrowserSigninPolicy.
   void OnBrowserSigninPolicyChanged(const std::string& name);
 
@@ -250,7 +253,7 @@ class AuthenticationService : public KeyedService,
 
   // Registrar for prefs::kSigninAllowed.
   PrefChangeRegistrar pref_change_registrar_;
-  // Registrar for prefs::kBrowserSigninPolicy.
+  // Registrar for prefs::kBrowserSigninPolicy and kSigninAllowedOnDevice.
   PrefChangeRegistrar local_pref_change_registrar_;
 
   base::WeakPtrFactory<AuthenticationService> weak_pointer_factory_;
