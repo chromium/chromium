@@ -18120,28 +18120,6 @@
             ]
         }
     ],
-    "PreconnectToSearchWithPrivacyModeEnabled": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PreconnectToSearchWithPrivacyModeEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "PrefetchDocumentManagerEarlyCookieCopySkipped": [
         {
             "platforms": [
