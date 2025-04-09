@@ -1167,10 +1167,7 @@ void GpuServiceImpl::MaybeExitOnContextLost(
     return;
   }
 
-  LOG(ERROR) << "Exiting GPU process because some drivers can't recover "
-                "from errors. GPU process will restart shortly.";
-  base::Process::TerminateCurrentProcessImmediately(
-      static_cast<int>(ExitCode::RESULT_CODE_GPU_EXIT_ON_CONTEXT_LOST));
+  RestartGpuProcessForContextLoss("Context was lost.");
 }
 
 bool GpuServiceImpl::IsExiting() const {
