@@ -120,6 +120,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
       const base::android::JavaParamRef<jobject>&
           bluetooth_gatt_service_wrapper);  // BluetoothGattServiceWrapper
 
+  // Update the connected state of |transport| to |connected|.
+  void UpdateAclConnectState(uint8_t transport, bool connected);
+
  private:
   BluetoothDeviceAndroid(
       BluetoothAdapterAndroid* adapter,
@@ -138,6 +141,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   scoped_refptr<BluetoothSocketThread> socket_thread_;
 
   bool gatt_connected_ = false;
+
+  // A bit-wise flag indicating connected states of Bluetooth transports.
+  uint8_t connected_transport_ = 0;
 };
 
 }  // namespace device

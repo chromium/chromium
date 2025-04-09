@@ -39,6 +39,7 @@ import org.chromium.device.bluetooth.wrapper.BluetoothGattWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothLeScannerWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothSocketWrapper;
 import org.chromium.device.bluetooth.wrapper.DeviceBondStateReceiverWrapper;
+import org.chromium.device.bluetooth.wrapper.DeviceConnectStateReceiverWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanCallbackWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanResultWrapper;
 import org.chromium.device.bluetooth.wrapper.ThreadUtilsWrapper;
@@ -139,8 +140,9 @@ class Fakes {
         private final FakeBluetoothLeScanner mFakeScanner;
         private boolean mPowered = true;
         private int mEnabledDeviceTransport = BluetoothDevice.DEVICE_TYPE_DUAL;
-        final ArraySet<BluetoothDeviceWrapper> mFakePairedDevices = new ArraySet<>();
+        private final ArraySet<BluetoothDeviceWrapper> mFakePairedDevices = new ArraySet();
         private DeviceBondStateReceiverWrapper.Callback mDeviceBondStateCallback;
+        DeviceConnectStateReceiverWrapper.Callback mDeviceConnectStateCallback;
         final long mNativeBluetoothTestAndroid;
 
         /** Creates a FakeBluetoothAdapter. */
@@ -404,6 +406,12 @@ class Fakes {
             }
 
             mFakePairedDevices.add(device);
+            // When a device becomes paired, it needs to be connected first. The connection state
+            // broadcast comes before the bond broadcast.
+            if (notifyCallback && mDeviceConnectStateCallback != null) {
+                mDeviceConnectStateCallback.onDeviceConnectStateChanged(
+                        device, BluetoothDevice.TRANSPORT_BREDR, true);
+            }
             if (notifyCallback && mDeviceBondStateCallback != null) {
                 mDeviceBondStateCallback.onDeviceBondStateChanged(
                         device, BluetoothDevice.BOND_BONDED);
@@ -540,6 +548,13 @@ class Fakes {
                 DeviceBondStateReceiverWrapper.Callback callback) {
             mDeviceBondStateCallback = callback;
             return super.createDeviceBondStateReceiver(callback);
+        }
+
+        @Override
+        public DeviceConnectStateReceiverWrapper createDeviceConnectStateReceiver(
+                DeviceConnectStateReceiverWrapper.Callback callback) {
+            mDeviceConnectStateCallback = callback;
+            return super.createDeviceConnectStateReceiver(callback);
         }
     }
 
@@ -754,6 +769,16 @@ class Fakes {
                     connected
                             ? android.bluetooth.BluetoothProfile.STATE_CONNECTED
                             : android.bluetooth.BluetoothProfile.STATE_DISCONNECTED);
+        }
+
+        @CalledByNative("FakeBluetoothDevice")
+        private static void aclConnectionStateChange(
+                ChromeBluetoothDevice chromeDevice, int transport, boolean connected) {
+            FakeBluetoothDevice fakeDevice = (FakeBluetoothDevice) chromeDevice.mDevice;
+            if (fakeDevice.mAdapter.mDeviceConnectStateCallback != null) {
+                fakeDevice.mAdapter.mDeviceConnectStateCallback.onDeviceConnectStateChanged(
+                        fakeDevice, transport, connected);
+            }
         }
 
         // Create a call to onServicesDiscovered on the |chrome_device| using parameter

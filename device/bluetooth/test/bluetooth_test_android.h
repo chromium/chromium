@@ -130,6 +130,11 @@ class BluetoothTestAndroid : public BluetoothTestBase {
   // Simulates having unpaired a device of |address|.
   void UnpairDevice(std::string address);
 
+  // Simulates a low level (ACL) connect state change for |device|.
+  void SimulateAclConnectStateChange(BluetoothDevice* device,
+                                     uint8_t transport,
+                                     bool connected);
+
   // Instruct the fake adapter to claim that location services are off for the
   // device.
   void SimulateLocationServicesOff();

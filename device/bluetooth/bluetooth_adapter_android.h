@@ -6,6 +6,7 @@
 #define DEVICE_BLUETOOTH_BLUETOOTH_ADAPTER_ANDROID_H_
 
 #include <memory>
+#include <string>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
@@ -13,12 +14,14 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_device.h"
 
 using base::android::ScopedJavaLocalRef;
 
 namespace device {
 
 class BluetoothSocketThread;
+class BluetoothDeviceAndroid;
 
 // BluetoothAdapterAndroid, along with the Java class
 // org.chromium.device.bluetooth.BluetoothAdapter, implement BluetoothAdapter.
@@ -118,19 +121,32 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
           manufacturer_data_values,  // Java Type: byte[]
       int32_t advertisement_flags);
 
-  // Creates a device and adds to the device list if it isn't present.
-  void PopulatePairedDevice(
+  // Called when a new paired device is found or an existing device becomes
+  // paired. It creates a device if it isn't in |devices_|
+  void PopulateOrUpdatePairedDevice(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& caller,
       const base::android::JavaParamRef<jstring>& address,
       const base::android::JavaParamRef<jobject>&
-          bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
+          bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
       bool from_broadcast_receiver);
 
   // Called when the Android system notifies us that a device is unpaired.
   void OnDeviceUnpaired(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& caller,
                         const base::android::JavaParamRef<jstring>& address);
+
+  // Updates the connected state of the device with |address| if it's in the
+  // device list for |transport| to |connected|. It creates a device if it's
+  // not in |devices_| and connected.
+  void UpdateDeviceAclConnectState(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& caller,
+      const base::android::JavaParamRef<jstring>& address,
+      const base::android::JavaParamRef<jobject>&
+          bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
+      uint8_t transport,
+      bool connected);
 
  protected:
   BluetoothAdapterAndroid();
@@ -159,6 +175,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterAndroid final
 
  private:
   void PopulatePairedDevices() const;
+  BluetoothDeviceAndroid* CreateDevice(
+      const std::string& device_address,
+      const base::android::JavaParamRef<jobject>&
+          bluetooth_device_wrapper);  // Java Type: BluetoothDeviceWrapper
 
   scoped_refptr<BluetoothSocketThread> socket_thread_;
 

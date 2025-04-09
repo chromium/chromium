@@ -22,6 +22,7 @@
 #include "device/base/features.h"
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_common.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 #include "device/bluetooth/test/bluetooth_scanner_callback.h"
 #include "device/bluetooth/test/bluetooth_test_android.h"
@@ -382,13 +383,29 @@ TEST_F(BluetoothAdapterAndroidTest, NotifyObserversForNewPairedDevices) {
 
   adapter_->GetDevices();
 
-  SimulatePairedClassicDevice(1, true);
+  SimulatePairedClassicDevice(1, /*notify_callback=*/true);
   ASSERT_EQ(observer.device_added_count(), 1);
   EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress1);
 
-  SimulatePairedClassicDevice(2, true);
+  SimulatePairedClassicDevice(2, /*notify_callback=*/true);
   ASSERT_EQ(observer.device_added_count(), 2);
   EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress2);
+}
+
+TEST_F(BluetoothAdapterAndroidTest, IsConnectedAfterNewDevicePaired) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+
+  adapter_->GetDevices();
+
+  SimulatePairedClassicDevice(1, /*notify_callback=*/true);
+  EXPECT_EQ(observer.device_added_count(), 1);
+  EXPECT_EQ(observer.device_changed_count(), 1);
+  EXPECT_TRUE(observer.last_device()->IsConnected());
 }
 
 TEST_F(BluetoothAdapterAndroidTest, ExposeUuidFromPairedDevices) {
@@ -478,6 +495,138 @@ TEST_F(BluetoothAdapterAndroidTest, UnknownDeviceUnpaired) {
   adapter_->GetDevices();
 
   UnpairDevice(kTestDeviceAddress1);
+}
+
+TEST_F(BluetoothAdapterAndroidTest, AclConnected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  SimulatePairedClassicDevice(1);
+
+  BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddress1);
+  EXPECT_FALSE(device->IsConnected());
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_CLASSIC,
+                                /*connected=*/true);
+  ASSERT_EQ(observer.device_changed_count(), 1);
+  EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress1);
+  EXPECT_TRUE(observer.last_device()->IsConnected());
+}
+
+TEST_F(BluetoothAdapterAndroidTest, AclDisconnected) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  adapter_->GetDevices();
+
+  SimulatePairedClassicDevice(1, /*notify_callback=*/true);
+
+  BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddress1);
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_CLASSIC,
+                                /*connected=*/false);
+  ASSERT_EQ(observer.device_changed_count(), 1);
+  EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress1);
+  EXPECT_FALSE(observer.last_device()->IsConnected());
+}
+
+TEST_F(BluetoothAdapterAndroidTest, AclConnectedWithDualTransport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  SimulatePairedClassicDevice(1);
+
+  BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddress1);
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_CLASSIC,
+                                /*connected=*/true);
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_LE,
+                                /*connected=*/true);
+  ASSERT_EQ(observer.device_changed_count(), 1);
+  EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress1);
+  EXPECT_TRUE(observer.last_device()->IsConnected());
+}
+
+TEST_F(BluetoothAdapterAndroidTest, AclDisconnectedWithDualTransport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  SimulatePairedClassicDevice(1);
+
+  BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddress1);
+
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_CLASSIC,
+                                /*connected=*/true);
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_LE,
+                                /*connected=*/true);
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_CLASSIC,
+                                /*connected=*/false);
+  EXPECT_EQ(observer.device_changed_count(), 0);
+  EXPECT_TRUE(device->IsConnected());
+
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_LE,
+                                /*connected=*/false);
+
+  ASSERT_EQ(observer.device_changed_count(), 1);
+  EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress1);
+  EXPECT_FALSE(observer.last_device()->IsConnected());
+}
+
+// The transport extra of ACL connected/disconnected broadcasts was added in API
+// level 33 (Android 13/T). On devices where the extra was not provided, we
+// use BluetoothDevice#TRANSPORT_AUTO (0) as the default value, and later
+// assign an arbitrary non-zero value (BR/EDR) so that the bit-wise flag takes
+// effect. Write unit tests to ensure it works fine.
+TEST_F(BluetoothAdapterAndroidTest, AclConnectedWithoutTransport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  SimulatePairedClassicDevice(1);
+
+  BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddress1);
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_INVALID,
+                                /*connected=*/true);
+  ASSERT_EQ(observer.device_changed_count(), 1);
+  EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress1);
+  EXPECT_TRUE(observer.last_device()->IsConnected());
+}
+
+TEST_F(BluetoothAdapterAndroidTest, AclDisconnectedWithoutTransport) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kBluetoothRfcommAndroid);
+
+  InitWithFakeAdapter();
+
+  adapter_->GetDevices();
+
+  SimulatePairedClassicDevice(1, /*notify_callback=*/true);
+
+  BluetoothDevice* device = adapter_->GetDevice(kTestDeviceAddress1);
+
+  TestBluetoothAdapterObserver observer(adapter_.get());
+  SimulateAclConnectStateChange(device, BLUETOOTH_TRANSPORT_INVALID,
+                                /*connected=*/false);
+  ASSERT_EQ(observer.device_changed_count(), 1);
+  EXPECT_EQ(observer.last_device()->GetAddress(), kTestDeviceAddress1);
+  EXPECT_FALSE(observer.last_device()->IsConnected());
 }
 
 TEST_F(BluetoothAdapterAndroidTest, ScanFailsWithoutLeSupport) {

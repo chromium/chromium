@@ -31,6 +31,7 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.device.bluetooth.wrapper.BluetoothAdapterWrapper;
 import org.chromium.device.bluetooth.wrapper.BluetoothDeviceWrapper;
 import org.chromium.device.bluetooth.wrapper.DeviceBondStateReceiverWrapper;
+import org.chromium.device.bluetooth.wrapper.DeviceConnectStateReceiverWrapper;
 import org.chromium.device.bluetooth.wrapper.ScanResultWrapper;
 
 import java.util.List;
@@ -54,6 +55,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
     private final @Nullable ChromeBluetoothLeScanner mLeScanner;
 
     private @Nullable DeviceBondStateReceiverWrapper mDeviceBondStateReceiver;
+    private @Nullable DeviceConnectStateReceiverWrapper mDeviceConnectStateReceiver;
 
     // ---------------------------------------------------------------------------------------------
     // Construction and handler for C++ object destruction.
@@ -93,6 +95,9 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         unregisterBroadcastReceiver();
         if (mDeviceBondStateReceiver != null && mAdapter != null) {
             mAdapter.getContext().unregisterReceiver(mDeviceBondStateReceiver);
+        }
+        if (mDeviceConnectStateReceiver != null && mAdapter != null) {
+            mAdapter.getContext().unregisterReceiver(mDeviceConnectStateReceiver);
         }
     }
 
@@ -234,18 +239,29 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         }
 
         for (BluetoothDeviceWrapper device : devices) {
-            populatePairedDevice(device, /* fromBroadcastReceiver= */ false);
+            populateOrUpdatePairedDevice(device, /* fromBroadcastReceiver= */ false);
         }
 
-        if (mDeviceBondStateReceiver != null) {
-            return;
+        if (mDeviceBondStateReceiver == null) {
+            mDeviceBondStateReceiver =
+                    mAdapter.createDeviceBondStateReceiver(new BondedStateReceiver());
+            ContextUtils.registerProtectedBroadcastReceiver(
+                    mAdapter.getContext(),
+                    mDeviceBondStateReceiver,
+                    new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
         }
-        mDeviceBondStateReceiver =
-                mAdapter.createDeviceBondStateReceiver(new BondedStateReceiver());
-        ContextUtils.registerProtectedBroadcastReceiver(
-                mAdapter.getContext(),
-                mDeviceBondStateReceiver,
-                new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED));
+
+        // Register connect state listener here because it requires the BLUETOOTH_CONNECT permission
+        // and this is used to provide correct connect states when Web Serial API is used.
+        if (mDeviceConnectStateReceiver == null) {
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
+            intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
+            mDeviceConnectStateReceiver =
+                    mAdapter.createDeviceConnectStateReceiver(new ConnectStateReceiver());
+            ContextUtils.registerProtectedBroadcastReceiver(
+                    mAdapter.getContext(), mDeviceConnectStateReceiver, intentFilter);
+        }
     }
 
     // ---------------------------------------------------------------------------------------------
@@ -295,10 +311,10 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         }
     }
 
-    private void populatePairedDevice(
+    private void populateOrUpdatePairedDevice(
             BluetoothDeviceWrapper deviceWrapper, boolean fromBroadcastReceiver) {
         ChromeBluetoothAdapterJni.get()
-                .populatePairedDevice(
+                .populateOrUpdatePairedDevice(
                         mNativeBluetoothAdapterAndroid,
                         this,
                         deviceWrapper.getAddress(),
@@ -397,11 +413,11 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         }
     }
 
-    public class BondedStateReceiver implements DeviceBondStateReceiverWrapper.Callback {
+    private class BondedStateReceiver implements DeviceBondStateReceiverWrapper.Callback {
         @Override
         public void onDeviceBondStateChanged(BluetoothDeviceWrapper device, int bondState) {
             if (bondState == BluetoothDevice.BOND_BONDED) {
-                populatePairedDevice(device, /* fromBroadcastReceiver= */ true);
+                populateOrUpdatePairedDevice(device, /* fromBroadcastReceiver= */ true);
             }
             if (bondState == BluetoothDevice.BOND_NONE) {
                 ChromeBluetoothAdapterJni.get()
@@ -410,6 +426,26 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
                                 ChromeBluetoothAdapter.this,
                                 device.getAddress());
             }
+        }
+    }
+
+    private class ConnectStateReceiver implements DeviceConnectStateReceiverWrapper.Callback {
+        @Override
+        public void onDeviceConnectStateChanged(
+                BluetoothDeviceWrapper device, int transport, boolean connected) {
+            if (transport == BluetoothDevice.TRANSPORT_AUTO) {
+                // EXTRA_TRANSPORT was added in API level 33 (Android 13/T), so just assign a value
+                // when it's absent.
+                transport = BluetoothDevice.TRANSPORT_BREDR;
+            }
+            ChromeBluetoothAdapterJni.get()
+                    .updateDeviceAclConnectState(
+                            mNativeBluetoothAdapterAndroid,
+                            ChromeBluetoothAdapter.this,
+                            device.getAddress(),
+                            device,
+                            transport,
+                            connected);
         }
     }
 
@@ -483,8 +519,8 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
                 Object[] manufacturerDataValues,
                 int advertiseFlags);
 
-        // Binds to BluetoothAdapterAndroid::PopulatePairedDevice.
-        void populatePairedDevice(
+        // Binds to BluetoothAdapterAndroid::PopulateOrUpdatePairedDevice.
+        void populateOrUpdatePairedDevice(
                 long nativeBluetoothAdapterAndroid,
                 ChromeBluetoothAdapter caller,
                 String address,
@@ -494,6 +530,15 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         // Binds to BluetoothAdapterAndroid::OnDeviceUnpaired.
         void onDeviceUnpaired(
                 long nativeBluetoothAdapterAndroid, ChromeBluetoothAdapter caller, String address);
+
+        // Binds to BluetoothAdapterAndroid::UpdateDeviceAclConnectState
+        void updateDeviceAclConnectState(
+                long nativeBluetoothAdapterAndroid,
+                ChromeBluetoothAdapter caller,
+                String address,
+                BluetoothDeviceWrapper deviceWrapper,
+                int transport,
+                boolean connected);
 
         // Binds to BluetoothAdapterAndroid::nativeOnAdapterStateChanged
         void onAdapterStateChanged(

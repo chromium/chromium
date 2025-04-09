@@ -161,6 +161,17 @@ void BluetoothTestAndroid::UnpairDevice(std::string address) {
                                          j_fake_bluetooth_adapter_, address);
 }
 
+void BluetoothTestAndroid::SimulateAclConnectStateChange(
+    BluetoothDevice* device,
+    uint8_t transport,
+    bool connected) {
+  BluetoothDeviceAndroid* device_android =
+      static_cast<BluetoothDeviceAndroid*>(device);
+  Java_FakeBluetoothDevice_aclConnectionStateChange(
+      AttachCurrentThread(), device_android->GetJavaObject(), transport,
+      connected);
+}
+
 void BluetoothTestAndroid::RememberDeviceForSubsequentAction(
     BluetoothDevice* device) {
   BluetoothDeviceAndroid* device_android =
