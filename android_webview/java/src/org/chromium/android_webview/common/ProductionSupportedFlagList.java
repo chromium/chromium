@@ -1082,6 +1082,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 MediaFeatures.MULTI_BUFFER_NEVER_DEFER,
                 "Controls behavior of network deferrals during media src=file playbacks."),
+        Flag.baseFeature("PrefetchScheduler"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
