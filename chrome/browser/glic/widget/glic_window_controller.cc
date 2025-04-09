@@ -806,7 +806,7 @@ gfx::Rect GlicWindowController::GetInitialDetachedBoundsFromBrowser(
   // If glic can't fit to the right of the browser,
   // set the origin so the top right of glic meets the bottom left of the glic
   // button.
-  if (display_bounds.width() - browser_bounds.right() > widget_size.width()) {
+  if (display_bounds.right() - browser_bounds.right() > widget_size.width()) {
     origin = glic_button_inset_bounds.bottom_right();
   } else {
     origin =
