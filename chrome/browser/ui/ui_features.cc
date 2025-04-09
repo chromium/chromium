@@ -67,7 +67,13 @@ BASE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault,
 // Shows an infobar on PDFs offering to become the default PDF viewer if Chrome
 // isn't the default already.
 BASE_FEATURE(kPdfInfoBar, "PdfInfoBar", base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
+constexpr base::FeatureParam<PdfInfoBarTrigger>::Option
+    kPdfInfoBarTriggerOptions[] = {{PdfInfoBarTrigger::kPdfLoad, "pdf-load"},
+                                   {PdfInfoBarTrigger::kStartup, "startup"}};
+constexpr base::FeatureParam<PdfInfoBarTrigger> kPdfInfoBarTrigger = {
+    &kPdfInfoBar, "trigger", PdfInfoBarTrigger::kPdfLoad,
+    &kPdfInfoBarTriggerOptions};
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Preloads a WebContents with a Top Chrome WebUI on BrowserView initialization,
 // so that it can be shown instantly at a later time when necessary.

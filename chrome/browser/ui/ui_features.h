@@ -49,7 +49,9 @@ BASE_DECLARE_FEATURE(kOfferPinToTaskbarWhenSettingToDefault);
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 BASE_DECLARE_FEATURE(kPdfInfoBar);
-#endif
+enum class PdfInfoBarTrigger { kPdfLoad = 0, kStartup = 1 };
+extern const base::FeatureParam<PdfInfoBarTrigger> kPdfInfoBarTrigger;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 BASE_DECLARE_FEATURE(kPreloadTopChromeWebUI);
 // This enum entry values must be in sync with
