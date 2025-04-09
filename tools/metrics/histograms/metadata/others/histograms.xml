@@ -3930,7 +3930,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DemoMode.SignedIn.AccountCleanupResult"
+<histogram name="DemoMode.SignedIn.Request.CleanupResult"
     enum="DemoModeSignedInAccountRequestResult" expires_after="2026-01-15">
   <owner>wanghaifan@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
@@ -3943,7 +3943,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DemoMode.SignedIn.AccountSetupResult"
+<histogram name="DemoMode.SignedIn.Request.SetupResult"
     enum="DemoModeSignedInAccountRequestResult" expires_after="2026-01-15">
   <owner>wanghaifan@google.com</owner>
   <owner>cros-demo-mode-eng@google.com</owner>
