@@ -846,7 +846,7 @@ message UnscannedFileEvent {
 
 // Event that indicates that content was transferred.
 //
-// Next ID: 22.
+// Next ID: 23.
 message ContentTransferEvent {
   // The id of the scan. This will be shared by all events that are triggered
   // from a single scan.
@@ -944,6 +944,9 @@ message ContentTransferEvent {
 
   // Whether the content is encrypted.
   bool is_encrypted = 21;
+
+  // Evidence locker filepath in Google Cloud Storage.
+  string evidence_locker_filepath = 22;
 }
 
 // Event sent when a user successfully logs in to a website, as determined by
