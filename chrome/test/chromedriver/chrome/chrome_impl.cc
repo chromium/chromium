@@ -280,6 +280,52 @@ Status ChromeImpl::GetActivePageByWebViewId(const std::string& id,
   return Status(kOk);
 }
 
+Status ChromeImpl::NewHiddenTarget(const std::string& target_id,
+                                   bool w3c_compliant,
+                                   std::string* window_handle) {
+  WebView* tab = nullptr;
+  Status status = GetWebViewById(target_id, &tab);
+  if (status.IsError()) {
+    return Status(kNoSuchWindow);
+  }
+
+  base::Value::Dict params;
+  params.Set("url", "about:blank");
+  params.Set("hidden", true);
+
+  base::Value::Dict result;
+  status = devtools_websocket_client_->SendCommandAndGetResult(
+      "Target.createTarget", params, &result);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const std::string* target_id_str = result.FindString("targetId");
+  if (!target_id_str) {
+    return Status(kUnknownError, "no targetId from createTarget");
+  }
+
+  // Refresh ChromeDriver's internal tab list to capture the newly created
+  // tab.
+  std::list<std::string> tab_view_ids;
+  // Hidden targets are only supported in W3C mode.
+  status = GetTopLevelWebViewIds(&tab_view_ids, w3c_compliant);
+  if (status.IsError()) {
+    return status;
+  }
+
+  WebView* new_page = nullptr;
+  status = GetActivePageByWebViewId(*target_id_str, &new_page,
+                                    /*wait_for_page=*/true);
+  if (status.IsError()) {
+    return status;
+  }
+
+  *window_handle = new_page->GetId();
+
+  return Status(kOk);
+}
+
 Status ChromeImpl::NewWindow(const std::string& target_id,
                              WindowType type,
                              bool is_background,

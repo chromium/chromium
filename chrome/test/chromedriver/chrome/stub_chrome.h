@@ -32,6 +32,9 @@ class StubChrome : public Chrome {
   Status GetActivePageByWebViewId(const std::string& id,
                                   WebView** web_view,
                                   bool wait_for_page) override;
+  Status NewHiddenTarget(const std::string& target_id,
+                         bool w3c_compliant,
+                         std::string* window_handle) override;
   Status NewWindow(const std::string& target_id,
                    WindowType type,
                    bool is_background,

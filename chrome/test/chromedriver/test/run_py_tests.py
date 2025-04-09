@@ -7583,7 +7583,7 @@ class PureBidiTest(ChromeDriverBaseTestWithWebServer):
       options['excludeSwitches'] = ['--enable-logging']
     if chrome_binary is not None:
       options['binary'] = chrome_binary
-    if _MINIDUMP_PATH:
+    if '_MINIDUMP_PATH' in globals() and _MINIDUMP_PATH:
       options['minidumpPath'] =  _MINIDUMP_PATH
     capabilities = {
       'alwaysMatch': {
@@ -8763,13 +8763,13 @@ class UnsafeExtensionsDebuggingTest(CustomBidiMapperTest):
 
     # We test for a success by expecting a custom error from the
     # custom mapper.
-    self.assertRaisesRegex(Exception,
-                           'unknown error: ' +
-                           'Failed to initialize BiDi Mapper: Error: ' +
-                           'custom bidi mapper error from test_bidi_mapper.js',
-                           self.CreateDriver,
-                           bidi_mapper_path=bidi_mapper_path,
-                           chrome_switches=['--enable-unsafe-extension-debugging'])
+    self.assertRaisesRegex(
+      Exception,
+      'unknown error: Failed to initialize BiDi Mapper: Error: custom bidi' +
+      ' mapper error from test_bidi_mapper.js',
+      self.CreateDriver,
+      bidi_mapper_path=bidi_mapper_path,
+      chrome_switches=['--enable-unsafe-extension-debugging'])
 
 class ClassicTest(ChromeDriverBaseTestWithWebServer):
 
@@ -9533,6 +9533,11 @@ if __name__ == '__main__':
       type=int,
       default=None,
       help='Maximum amount of failed attempts until the test is deemed failed')
+  parser.add_argument(
+      '--debug-bidi-mapper',
+      action='store_true',
+      default=False,
+      help='Run bidi mapper in a visible tab')
 
   ##############################################################################
   # Note for other Chromium based browsers!!!
@@ -9582,6 +9587,8 @@ if __name__ == '__main__':
   additional_args = []
   if options.disable_build_check:
     additional_args.append('--disable-build-check')
+  if options.debug_bidi_mapper:
+    additional_args.append('--debug-bidi-mapper')
 
   global chromedriver_server
   chromedriver_server = server.Server(
