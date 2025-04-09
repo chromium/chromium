@@ -1483,7 +1483,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
                           "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"}],
                           "out": {"sha256": "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2"}},
                         { "type": "puff",
-                          "from": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                          "previous": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
                         { "type": "crx3",
                           "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
                         }]}]}}]}})");
@@ -2048,7 +2048,7 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
                           "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"}],
                           "out": {"sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"}},
                         { "type": "puff",
-                          "from": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                          "previous": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
                         { "type": "crx3",
                           "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
                         }]},
@@ -3135,7 +3135,7 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
                           "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"}],
                           "out": {"sha256": "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2"}},
                         { "type": "puff",
-                          "from": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
+                          "previous": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
                         { "type": "crx3",
                           "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
                         }]},
