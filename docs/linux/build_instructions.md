@@ -150,7 +150,7 @@ $ gn gen out/Default
 This section contains some things you can change to speed up your builds,
 sorted so that the things that make the biggest difference are first.
 
-#### Use Reclient
+#### Use Remote Execution
 
 *** note
 **Warning:** If you are a Google employee, do not follow the instructions below.
@@ -181,13 +181,11 @@ in which case you will have to adapt the following instructions regarding the
 authentication method, instance name, etc. to work with your backend.
 
 Chromium's build uses a client developed by Google called
-[reclient](https://github.com/bazelbuild/reclient) to remotely execute build
-actions. If you would like to use `reclient` with RBE, you'll first need to:
+[Siso](https://pkg.go.dev/go.chromium.org/infra/build/siso#section-readme)
+to remotely execute build actions. If you would like to use `siso` with RBE,
+you'll first need to:
 
-1. [Install the gcloud CLI](https://cloud.google.com/sdk/docs/install). You can
-   pick any installation method from that page that works best for you.
-2. Run `gcloud auth login --update-adc` and login with your authorized
-   account. Ignore the message about the `--update-adc` flag being deprecated.
+1. Run `siso login` and login with your authorized account.
 
 Next, you'll have to specify your `rbe_instance` in your `.gclient`
 configuration to use the correct one for Chromium contributors:
@@ -215,24 +213,22 @@ solutions = [
 ```
 
 And run `gclient sync`. This will regenerate the config files in
-`buildtools/reclient_cfgs` to use the `rbe_instance` that you just added to your
-`.gclient` file.
+`build/config/siso/backend_config/backend.star` to use the `rbe_instance`
+that you just added to your `.gclient` file.
+If `rbe_instance` is not owned by Google, you may need to create your
+own `backend.star`. See
+[build/config/siso/backend_config/README.md](../../build/config/siso/backend_config/README.md).
 
 Then, add the following GN args to your `args.gn`:
 
 ```
 use_remoteexec = true
-reclient_cfg_dir = "../../buildtools/reclient_cfgs/linux"
+use_reclient = false
+use_siso = true
 ```
 
-*** note
-If you are building an older version of Chrome with reclient you will need to
-use `rbe_cfg_dir = "../../buildtools/reclient_cfgs_linux"`
-***
-
 That's it. Remember to always use `autoninja` for building Chromium as described
-below, which handles the startup and shutdown of the reproxy daemon process
-that's required during the build, instead of directly invoking `ninja`.
+below, instead of directly invoking `ninja`.
 
 #### Disable NaCl
 
@@ -260,7 +256,7 @@ can improve build speeds by setting the GN arg `v8_symbol_level=0`.
 
 [Icecc](https://github.com/icecc/icecream) is the distributed compiler with a
 central scheduler to share build load. Currently, many external contributors use
-it. e.g. Intel, Opera, Samsung (this is not useful if you're using Reclient).
+it. e.g. Intel, Opera, Samsung (this is not useful if you're using Siso).
 
 In order to use `icecc`, set the following GN args:
 
@@ -279,7 +275,7 @@ See [related bug](https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=808181).
 #### ccache
 
 You can use [ccache](https://ccache.dev) to speed up local builds (again,
-this is not useful if you're using Reclient).
+this is not useful if you're using Siso).
 
 Increase your ccache hit rate by setting `CCACHE_BASEDIR` to a parent directory
 that the working directories all have in common (e.g.,
