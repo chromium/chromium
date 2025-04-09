@@ -85,10 +85,13 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
 }
 }  // namespace
 
-PrivacySandboxNoticeService::PrivacySandboxNoticeService(Profile* profile)
-    : profile_(profile) {
-  notice_storage_ = std::make_unique<PrivacySandboxNoticeStorage>();
-  catalog_ = std::make_unique<NoticeCatalog>();
+PrivacySandboxNoticeService::PrivacySandboxNoticeService(
+    Profile* profile,
+    std::unique_ptr<NoticeCatalog> catalog,
+    std::unique_ptr<PrivacySandboxNoticeStorage> storage)
+    : profile_(profile),
+      catalog_(std::move(catalog)),
+      notice_storage_(std::move(storage)) {
   CHECK(profile_);
   CHECK(notice_storage_);
   CHECK(catalog_);

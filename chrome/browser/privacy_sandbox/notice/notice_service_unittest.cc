@@ -35,8 +35,9 @@ class PrivacySandboxNoticeServiceTest
   PrivacySandboxNoticeServiceTest() {
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment();
-    notice_service_ =
-        std::make_unique<PrivacySandboxNoticeService>(profile_.get());
+    notice_service_ = std::make_unique<PrivacySandboxNoticeService>(
+        profile_.get(), std::make_unique<NoticeCatalog>(),
+        std::make_unique<PrivacySandboxNoticeStorage>());
   }
 
  protected:

@@ -33,7 +33,11 @@ class PrivacySandboxNoticeService
     : public KeyedService,
       public PrivacySandboxNoticeServiceInterface {
  public:
-  explicit PrivacySandboxNoticeService(Profile* profile);
+  PrivacySandboxNoticeService(
+      Profile* profile,
+      std::unique_ptr<NoticeCatalog> catalog,
+      std::unique_ptr<PrivacySandboxNoticeStorage> storage);
+
   ~PrivacySandboxNoticeService() override;
 
   // NoticeServiceInterface:
