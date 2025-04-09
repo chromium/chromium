@@ -160,7 +160,8 @@ bool IsShopCardImpressionLimitsEnabled() {
   // Iterate through all subscriptions, find the first recent one with a drop
   // populate item.
   for (const bookmarks::BookmarkNode* bookmark : subscriptions) {
-    if ([self hasReachedImpressionLimit:bookmark->url()]) {
+    if ([self hasReachedImpressionLimit:bookmark->url()] ||
+        [self hasBeenOpened:bookmark->url()]) {
       continue;
     }
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
@@ -312,6 +313,9 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   [self.NTPActionsDelegate shopCardOpened];
   [self.shopCardActionDelegate openURL:item.shopCardData.productURL];
   [self.delegate removeShopCard];
+  [self logEngagementForItem:item];
+  [self reset];
+  [self fetchLatestShopCardItem];
 }
 
 #pragma mark - MagicStackModuleDelegate
@@ -365,6 +369,15 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
       shop_card_prefs::kShopCardPriceDropUrlImpressions);
 }
 
+- (void)logEngagementForItem:(ShopCardItem*)item {
+  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+    return;
+  }
+  _impressionLimitService->LogCardEngagement(
+      item.shopCardData.productURL,
+      shop_card_prefs::kShopCardPriceDropUrlImpressions);
+}
+
 - (BOOL)hasReachedImpressionLimit:(const GURL&)url {
   if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
     return NO;
@@ -372,6 +385,14 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   std::optional<int> count = _impressionLimitService->GetImpressionCount(
       url, shop_card_prefs::kShopCardPriceDropUrlImpressions);
   return count.has_value() && count.value() >= kShopCardMaxImpressions;
+}
+
+- (BOOL)hasBeenOpened:(const GURL&)url {
+  if (!_impressionLimitService || !IsShopCardImpressionLimitsEnabled()) {
+    return NO;
+  }
+  return _impressionLimitService->HasBeenEngagedWith(
+      url, shop_card_prefs::kShopCardPriceDropUrlImpressions);
 }
 
 #pragma mark - Testing category methods
@@ -389,6 +410,14 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 - (BOOL)hasReachedImpressionLimitForTesting:(const GURL&)url {
   return [self hasReachedImpressionLimit:url];
+}
+
+- (void)logEngagementForItemForTesting:(ShopCardItem*)item {
+  [self logEngagementForItem:item];
+}
+
+- (BOOL)hasBeenOpenedForTesting:(const GURL&)url {
+  return [self hasBeenOpened:url];
 }
 
 - (ShopCardItem*)shopCardItemForTesting {

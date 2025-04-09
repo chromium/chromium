@@ -159,3 +159,22 @@ TEST_F(ShopCardMediatorTest, TestImpressions) {
   EXPECT_TRUE([mediator()
       hasReachedImpressionLimitForTesting:GURL("https://example.com/")]);
 }
+
+// Test opening the ShopCard URL logs the engagement and the utility
+// function hasBeenOpened used to determine if we should show card for
+// the URL is working as expected.
+TEST_F(ShopCardMediatorTest, TestUrlOpened) {
+  ShopCardItem* item = [[ShopCardItem alloc] init];
+  item.shopCardData = [[ShopCardData alloc] init];
+  item.shopCardData.productURL = GURL("https://example.com/");
+  [mediator() logEngagementForItemForTesting:item];
+  EXPECT_TRUE(
+      [mediator() hasBeenOpenedForTesting:GURL("https://example.com/")]);
+}
+
+// Test hasBeenOpened works as expected when no engagement has been
+// logged for the URL.
+TEST_F(ShopCardMediatorTest, TestUrlNotOpened) {
+  EXPECT_FALSE(
+      [mediator() hasBeenOpenedForTesting:GURL("https://example.com/")]);
+}
