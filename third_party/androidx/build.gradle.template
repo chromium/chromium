@@ -84,6 +84,8 @@ dependencies {
     compileLatest 'androidx.mediarouter:mediarouter:+'
     compileLatest 'androidx.navigation:navigation-compose:+'
     compileLatest 'androidx.navigation:navigation-runtime:+'
+    compileLatest 'androidx.paging:paging-compose:+'
+    compileLatest 'androidx.paging:paging-runtime:+'
     // Take pdf library 1.0.0-alpha06 until beta release is thoroughly tested.
     // TODO(https://crbug.com/383610568): Switch to beta version of pdf library once ready.
     compile 'androidx.pdf:pdf-viewer:1.0.0-alpha06'
