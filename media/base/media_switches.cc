@@ -857,12 +857,6 @@ BASE_FEATURE(kExternalClearKeyForTesting,
 // Specifies the path to the MediaFoundation Clear Key CDM for testing.
 const base::FeatureParam<std::string> kMediaFoundationClearKeyCdmPathForTesting{
     &kExternalClearKeyForTesting, "media_foundation_cdm_path", ""};
-
-// Enables the use of a faulty GPU for MediaFoundation. This is used for testing
-// purposes only.
-BASE_FEATURE(kEnableFaultyGPUForMediaFoundation,
-             "EnableFaultyGPUForMediaFoundation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // Enables the On-Device Web Speech feature on supported devices.
