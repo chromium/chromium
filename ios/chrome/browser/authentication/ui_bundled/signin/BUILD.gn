@@ -30,13 +30,13 @@ source_set("signin_headers") {
   ]
 }
 
+source_set("stop_animated_chrome_coordinator") {
+  sources = [ "stop_animated_chrome_coordinator.h" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("interruptible_chrome_coordinator") {
   sources = [ "interruptible_chrome_coordinator.h" ]
-  deps = [
-    "//base",
-    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
-    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
-  ]
   frameworks = [ "UIKit.framework" ]
 }
 
