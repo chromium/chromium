@@ -101,6 +101,9 @@ tast_disabled_tests_from_chrome_all = [
   "peripherals.LaunchAppFromGuestSession.diagnostics",
   "health.MonitorKeyboardDiagnosticEvent.non_tablet_mode_form_factors",
 
+  # b/408523771
+  "diagnostics.CheckCPURoutine@jacuzzi",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
