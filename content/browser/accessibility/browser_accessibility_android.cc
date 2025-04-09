@@ -2354,12 +2354,14 @@ std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
   for (int error_message_id :
        GetIntListAttribute(ax::mojom::IntListAttribute::kErrormessageIds)) {
     BrowserAccessibility* node = manager()->GetFromID(error_message_id);
-    if (!node || !node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+    if (!node) {
       continue;
     }
 
     const auto& name =
-        node->GetString16Attribute(ax::mojom::StringAttribute::kName);
+        node->HasStringAttribute(ax::mojom::StringAttribute::kName)
+            ? node->GetString16Attribute(ax::mojom::StringAttribute::kName)
+            : node->GetTextContentUTF16();
     if (name.empty()) {
       continue;
     }
