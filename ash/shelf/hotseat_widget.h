@@ -27,6 +27,7 @@ class ScrollableShelfView;
 class Shelf;
 class ShelfView;
 class HotseatTransitionAnimator;
+class HotseatWidgetDelegateView;
 
 // The hotseat widget is part of the shelf and hosts app shortcuts.
 class ASH_EXPORT HotseatWidget : public ShelfComponent,
@@ -198,8 +199,6 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   bool CalculateShelfOverflow(bool use_target_bounds) const;
 
  private:
-  class DelegateView;
-
   struct LayoutInputs {
     gfx::Rect bounds;
     float shelf_view_opacity = 0.0f;
@@ -261,7 +260,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
 
   // The contents view of this widget. Contains |shelf_view_| and the background
   // of the hotseat.
-  raw_ptr<DelegateView> delegate_view_ = nullptr;
+  raw_ptr<HotseatWidgetDelegateView> delegate_view_ = nullptr;
 
   // Whether the widget is currently extended because the user has manually
   // dragged it. This will be reset with any visible shelf configuration change.
