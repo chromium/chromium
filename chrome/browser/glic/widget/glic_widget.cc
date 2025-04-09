@@ -17,6 +17,12 @@
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/win/shell.h"
+#endif
+
 namespace glic {
 namespace {
 
@@ -75,7 +81,11 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
 #if BUILDFLAG(IS_WIN)
-  params.dont_show_in_taskbar = true;
+  // If floaty won't be always on top, it should appear in the taskbar and
+  // alt tab list.
+  if (!base::FeatureList::IsEnabled(features::kGlicZOrderChanges)) {
+    params.dont_show_in_taskbar = true;
+  }
   params.force_system_menu_for_frameless = true;
 #endif
   params.bounds = initial_bounds;
@@ -107,6 +117,12 @@ std::unique_ptr<GlicWidget> GlicWidget::Create(
   widget->SetNativeWindowProperty(views::kWidgetIdentifierKey,
                                   kGlicWidgetIdentifier);
 
+#if BUILDFLAG(IS_WIN)
+  HWND hwnd = widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
+  if (hwnd != nullptr) {
+    ui::win::PreventWindowFromPinning(hwnd);
+  }  // BUILDFLAG(IS_WIN)
+#endif  //
   return widget;
 }
 
