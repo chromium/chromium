@@ -241,7 +241,8 @@ FamilyLinkUserInternalsMessageHandler::GetSupervisedUserService() {
 
 void FamilyLinkUserInternalsMessageHandler::HandleRegisterForEvents(
     const base::Value::List& args) {
-  DCHECK(args.empty());
+  CHECK(args.empty()) << "Expected call is (void)";
+
   AllowJavascript();
   if (!url_filter_observation_.IsObserving()) {
     url_filter_observation_.Observe(GetSupervisedUserService()->GetURLFilter());
@@ -263,10 +264,9 @@ void FamilyLinkUserInternalsMessageHandler::HandleGetBasicInfo(
 
 void FamilyLinkUserInternalsMessageHandler::HandleTryURL(
     const base::Value::List& args) {
-  DCHECK_EQ(2u, args.size());
-  if (!args[0].is_string() || !args[1].is_string()) {
-    return;
-  }
+  CHECK(args.size() == 2u && args[0].is_string() && args[1].is_string())
+      << "Expected call is (callback_id: string, url_str: string)";
+
   const std::string& callback_id = args[0].GetString();
   const std::string& url_str = args[1].GetString();
 
@@ -323,6 +323,9 @@ void FamilyLinkUserInternalsMessageHandler::ConfigureBrowserContentFilters() {
 
 void FamilyLinkUserInternalsMessageHandler::HandleChangeSearchContentFilters(
     const base::Value::List& args) {
+  CHECK(args.size() == 1u && args[0].is_string())
+      << "Expected call is (toggle_status: string)";
+
   Profile* profile = Profile::FromWebUI(web_ui());
   if (IsSubjectToFamilyLinkParentalControls(
           IdentityManagerFactory::GetForProfile(profile))) {
@@ -330,18 +333,16 @@ void FamilyLinkUserInternalsMessageHandler::HandleChangeSearchContentFilters(
     return;
   }
 
-  DCHECK_EQ(1u, args.size());
-  if (!args[0].is_string()) {
-    return;
-  }
-
-  search_content_filtering_status_ =
-      ToggleToWebContentFilters(args[0].GetString());
+  const std::string& toggle_status = args[0].GetString();
+  search_content_filtering_status_ = ToggleToWebContentFilters(toggle_status);
   ConfigureSearchContentFilters();
 }
 
 void FamilyLinkUserInternalsMessageHandler::HandleChangeBrowserContentFilters(
     const base::Value::List& args) {
+  CHECK(args.size() == 1u && args[0].is_string())
+      << "Expected call is (toggle_status: string)";
+
   Profile* profile = Profile::FromWebUI(web_ui());
   if (IsSubjectToFamilyLinkParentalControls(
           IdentityManagerFactory::GetForProfile(profile))) {
@@ -349,13 +350,8 @@ void FamilyLinkUserInternalsMessageHandler::HandleChangeBrowserContentFilters(
     return;
   }
 
-  DCHECK_EQ(1u, args.size());
-  if (!args[0].is_string()) {
-    return;
-  }
-
-  browser_content_filtering_status_ =
-      ToggleToWebContentFilters(args[0].GetString());
+  const std::string& toggle_status = args[0].GetString();
+  browser_content_filtering_status_ = ToggleToWebContentFilters(toggle_status);
   ConfigureBrowserContentFilters();
 }
 
