@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/capture_mode/lens_overlay_request_id_generator.h"
@@ -33,6 +34,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+class ApplicationLocaleStorage;
 class Profile;
 
 namespace signin {
@@ -62,7 +64,9 @@ using OAuthHeadersCreatedCallback =
 // Manages queries on behalf of a Capture Mode delegate.
 class LensOverlayQueryController {
  public:
+  // `application_locale_storage` must not be null and must outlive `this`.
   LensOverlayQueryController(
+      ApplicationLocaleStorage* application_locale_storage,
       LensOverlayFullImageResponseCallback full_image_callback,
       LensOverlayUrlResponseCallback url_callback,
       LensOverlaySuggestInputsCallback suggest_inputs_callback,
@@ -378,6 +382,8 @@ class LensOverlayQueryController {
   // Callback for when the interaction endpoint fetcher is created.
   void OnInteractionEndpointFetcherCreated(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher);
+
+  const raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   // The request id generator.
   std::unique_ptr<LensOverlayRequestIdGenerator> request_id_generator_;

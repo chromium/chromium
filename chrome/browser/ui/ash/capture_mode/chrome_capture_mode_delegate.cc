@@ -393,8 +393,11 @@ bool ParseQueryFormulationMetadataResponse(
 
 }  // namespace
 
-ChromeCaptureModeDelegate::ChromeCaptureModeDelegate(PrefService* local_state)
-    : local_state_(CHECK_DEREF(local_state)) {
+ChromeCaptureModeDelegate::ChromeCaptureModeDelegate(
+    PrefService* local_state,
+    ApplicationLocaleStorage* application_locale_storage)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)) {
   DCHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
@@ -842,6 +845,7 @@ void ChromeCaptureModeDelegate::SendRegionSearch(
   if (!lens_overlay_query_controller_) {
     lens_overlay_query_controller_ =
         std::make_unique<LensOverlayQueryController>(
+            &application_locale_storage_.get(),
             base::BindRepeating(
                 &ChromeCaptureModeDelegate::HandleStartQueryResponse,
                 weak_ptr_factory_.GetWeakPtr()),

@@ -65,6 +65,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  # TODO(crbug.com/403153076): This should be removed along with browser_process.h.
+  "chrome_shell_delegate.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+
   ".*browsertest\.cc": [
     "+chrome/browser/ui/tabs/tab_enums.h",
     "+chrome/browser/ui/tabs/tab_strip_model_observer.h",

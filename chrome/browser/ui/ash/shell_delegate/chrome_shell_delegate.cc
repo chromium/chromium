@@ -46,6 +46,7 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/nearby_sharing/nearby_share_delegate_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -159,7 +160,12 @@ bool ChromeShellDelegate::CanShowWindowForUser(
 
 std::unique_ptr<ash::CaptureModeDelegate>
 ChromeShellDelegate::CreateCaptureModeDelegate(PrefService* local_state) const {
-  return std::make_unique<ChromeCaptureModeDelegate>(local_state);
+  // TODO(crbug.com/403153076): Remove g_browser_process usage.
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
+  return std::make_unique<ChromeCaptureModeDelegate>(
+      local_state, application_locale_storage);
 }
 
 std::unique_ptr<ash::ClipboardHistoryControllerDelegate>
