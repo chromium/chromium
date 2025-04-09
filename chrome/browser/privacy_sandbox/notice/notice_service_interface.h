@@ -9,7 +9,6 @@
 
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 
-
 namespace privacy_sandbox {
 
 enum class SurfaceType;

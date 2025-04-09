@@ -6,7 +6,8 @@
 
 namespace privacy_sandbox {
 
-DesktopViewManager::DesktopViewManager() = default;
+DesktopViewManager::DesktopViewManager(
+    PrivacySandboxNoticeServiceInterface* notice_service) {}
 DesktopViewManager::~DesktopViewManager() = default;
 
 }  // namespace privacy_sandbox

@@ -6,6 +6,8 @@
 
 namespace privacy_sandbox {
 
+class PrivacySandboxNoticeServiceInterface;
+
 // This class will:
 // 1. Manage the showing, hiding and closing of notices in the correct order on
 // the desktop side.
@@ -13,8 +15,12 @@ namespace privacy_sandbox {
 // 3. Manage sticky behavior of notices across tabs
 class DesktopViewManager {
  public:
-  DesktopViewManager();
+  explicit DesktopViewManager(
+      PrivacySandboxNoticeServiceInterface* notice_service);
   virtual ~DesktopViewManager();
+
+  // TODO(chrstne): Create a member variable for notice_service when it gets
+  // used.
 };
 
 }  // namespace privacy_sandbox

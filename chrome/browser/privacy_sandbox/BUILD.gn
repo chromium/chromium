@@ -8,6 +8,7 @@ group("privacy_sandbox") {
   public_deps = [
     "notice",
     "notice:core",
+    "notice:interfaces",
   ]
 }
 

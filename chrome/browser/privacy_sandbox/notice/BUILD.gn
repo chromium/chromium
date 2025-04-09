@@ -37,11 +37,16 @@ source_set("core") {
   public_deps = [ ":notice_mojom" ]
 }
 
+source_set("interfaces") {
+  public = [ "notice_service_interface.h" ]
+  deps = [ ":notice_mojom" ]
+}
+
 source_set("notice") {
   sources = [ "notice_service.cc" ]
-  public = [ "notice_service_interface.h" ]
   deps = [
     ":core",
+    ":interfaces",
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
@@ -59,6 +64,7 @@ if (!is_android) {
     public = [ "desktop_view_manager.h" ]
     deps = [
       ":core",
+      ":interfaces",
       "//base",
     ]
   }
@@ -74,6 +80,21 @@ test("fuzz_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_notice_service.cc",
+    "mock_notice_service.h",
+  ]
+  deps = [
+    ":interfaces",
+    ":notice_mojom",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//testing/gmock",
   ]
 }
 

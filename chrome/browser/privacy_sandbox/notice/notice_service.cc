@@ -97,7 +97,7 @@ PrivacySandboxNoticeService::PrivacySandboxNoticeService(
   CHECK(catalog_);
 
 #if !BUILDFLAG(IS_ANDROID)
-  desktop_view_manager_ = std::make_unique<DesktopViewManager>();
+  desktop_view_manager_ = std::make_unique<DesktopViewManager>(this);
   CHECK(desktop_view_manager_);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
