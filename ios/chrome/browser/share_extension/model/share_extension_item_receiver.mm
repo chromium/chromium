@@ -315,6 +315,13 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
       // needed here.
       break;
     }
+    case app_group::OPEN_IN_CHROME_INCOGNITO_ITEM:
+    case app_group::IMAGE_SEARCH_ITEM:
+    case app_group::TEXT_SEARCH_ITEM:
+    case app_group::INCOGNITO_IMAGE_SEARCH_ITEM:
+    case app_group::INCOGNITO_TEXT_SEARCH_ITEM:
+      // TODO(crbug.com/398803565): Log the metrics for each new item type.
+      break;
   }
 
   if (completion && _taskRunner) {

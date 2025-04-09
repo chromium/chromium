@@ -177,9 +177,7 @@ const CGFloat kShareSheetCornerRadius = 20;
     [command executeInApp];
     [self queueActionItemURL:_shareURL
                        title:_shareText
-                      // TODO(crbug.com/398803565): Add and handle search text
-                      // and image in ShareExtensionItemType.
-                      action:app_group::OPEN_IN_CHROME_ITEM
+                      action:app_group::TEXT_SEARCH_ITEM
                       cancel:NO
                   completion:^{
                     [weakSelf dismissAndReturnItem:weakSelf.shareItem
@@ -193,9 +191,7 @@ const CGFloat kShareSheetCornerRadius = 20;
     [command executeInApp];
     [self queueActionItemURL:_shareURL
                        title:_shareTitle
-                      // TODO(crbug.com/398803565): Add and handle search text
-                      // and image in ShareExtensionItemType.
-                      action:app_group::OPEN_IN_CHROME_ITEM
+                      action:app_group::IMAGE_SEARCH_ITEM
                       cancel:NO
                   completion:^{
                     [weakSelf dissmissAndShowShareItem];
@@ -218,9 +214,7 @@ const CGFloat kShareSheetCornerRadius = 20;
     [command executeInApp];
     [self queueActionItemURL:_shareURL
                        title:_shareText
-                      // TODO(crbug.com/398803565): Add and handle search text
-                      // and image in ShareExtensionItemType.
-                      action:app_group::OPEN_IN_CHROME_ITEM
+                      action:app_group::INCOGNITO_TEXT_SEARCH_ITEM
                       cancel:NO
                   completion:^{
                     [weakSelf dismissAndReturnItem:weakSelf.shareItem
@@ -234,9 +228,7 @@ const CGFloat kShareSheetCornerRadius = 20;
     [command executeInApp];
     [self queueActionItemURL:_shareURL
                        title:_shareTitle
-                      // TODO(crbug.com/398803565): Add and handle search text
-                      // and image in ShareExtensionItemType.
-                      action:app_group::OPEN_IN_CHROME_ITEM
+                      action:app_group::INCOGNITO_IMAGE_SEARCH_ITEM
                       cancel:NO
                   completion:^{
                     [weakSelf dissmissAndShowShareItem];
@@ -614,7 +606,7 @@ const CGFloat kShareSheetCornerRadius = 20;
 
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
-                    action:app_group::OPEN_IN_CHROME_ITEM
+                    action:app_group::OPEN_IN_CHROME_INCOGNITO_ITEM
                     cancel:NO
                 completion:^{
                   [weakSelf dissmissAndShowShareItem];
