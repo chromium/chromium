@@ -52,6 +52,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -115,6 +116,7 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "Flaky, crbug.com/409610521")
     public void testOnAllBookmarksButtonClick() {
         onViewWaiting(bookmarkBarItemWithText("All Bookmarks")).perform(click());
         onViewWaiting(bookmarkManagerToolbarWithText("Bookmarks")).check(matches(isDisplayed()));
