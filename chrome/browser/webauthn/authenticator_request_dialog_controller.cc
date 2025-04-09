@@ -1899,8 +1899,9 @@ void AuthenticatorRequestDialogController::StartEnclave() {
 
 void AuthenticatorRequestDialogController::ReauthForSyncRestore() {
   signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-      Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext()),
-      signin_metrics::AccessPoint::kWebauthnModalDialog);
+    Profile::FromBrowserContext(GetRenderFrameHost()->GetBrowserContext())
+        ->GetOriginalProfile(),
+    signin_metrics::AccessPoint::kWebauthnModalDialog);
   CancelAuthenticatorRequest();
 }
 
