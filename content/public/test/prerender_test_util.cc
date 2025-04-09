@@ -40,6 +40,16 @@ constexpr char kAddSpeculationRuleScript[] = R"({
     document.head.appendChild(script);
   })";
 
+constexpr char kAddSpeculationRuleWithRulesetTagScript[] = R"({
+    const script = document.createElement('script');
+    script.type = 'speculationrules';
+    script.text = `{
+      "tag": "$1",
+      "prerender": [{ $2 }]
+    }`;
+    document.head.appendChild(script);
+  })";
+
 std::string ConvertEagernessToString(
     blink::mojom::SpeculationEagerness eagerness) {
   switch (eagerness) {
@@ -57,7 +67,8 @@ std::string BuildScriptElementSpeculationRules(
     const std::vector<GURL>& prerendering_urls,
     std::optional<blink::mojom::SpeculationEagerness> eagerness,
     std::optional<std::string> no_vary_search_hint,
-    const std::string& target_hint) {
+    const std::string& target_hint,
+    std::optional<std::string> ruleset_tag) {
   std::stringstream ss;
 
   // Add source filed.
@@ -92,8 +103,12 @@ std::string BuildScriptElementSpeculationRules(
     ss << base::StringPrintf(R"(, "target_hint": "%s")", target_hint.c_str());
   }
 
-  return base::ReplaceStringPlaceholders(kAddSpeculationRuleScript, {ss.str()},
-                                         nullptr);
+  return ruleset_tag.has_value()
+             ? base::ReplaceStringPlaceholders(
+                   kAddSpeculationRuleWithRulesetTagScript,
+                   {ruleset_tag.value(), ss.str()}, nullptr)
+             : base::ReplaceStringPlaceholders(kAddSpeculationRuleScript,
+                                               {ss.str()}, nullptr);
 }
 
 constexpr char kAddSpeculationRulePrefetchScript[] = R"({
@@ -549,7 +564,7 @@ FrameTreeNodeId PrerenderTestHelper::AddPrerender(
     int32_t world_id) {
   return AddPrerender(prerendering_url, eagerness,
                       /*no_vary_search_hint=*/std::nullopt, target_hint,
-                      world_id);
+                      /*ruleset_tag=*/std::nullopt, world_id);
 }
 
 FrameTreeNodeId PrerenderTestHelper::AddPrerender(
@@ -557,6 +572,7 @@ FrameTreeNodeId PrerenderTestHelper::AddPrerender(
     std::optional<blink::mojom::SpeculationEagerness> eagerness,
     std::optional<std::string> no_vary_search_hint,
     const std::string& target_hint,
+    std::optional<std::string> ruleset_tag,
     int32_t world_id) {
   TRACE_EVENT("test", "PrerenderTestHelper::AddPrerender", "prerendering_url",
               prerendering_url);
@@ -573,14 +589,14 @@ FrameTreeNodeId PrerenderTestHelper::AddPrerender(
           run_loop.QuitClosure().Run();
         }));
     AddPrerendersAsync({prerendering_url}, eagerness, no_vary_search_hint,
-                       target_hint, world_id);
+                       target_hint, ruleset_tag, world_id);
     run_loop.Run();
   } else {
     // For other target hints, the initiator's WebContents will host a
     // prerendered page.
     prerender_web_contents = GetWebContents();
     AddPrerendersAsync({prerendering_url}, eagerness, no_vary_search_hint,
-                       target_hint, world_id);
+                       target_hint, ruleset_tag, world_id);
   }
 
   WaitForPrerenderLoadCompletion(*prerender_web_contents, prerendering_url);
@@ -602,7 +618,7 @@ void PrerenderTestHelper::AddPrerendersAsync(
     int32_t world_id) {
   AddPrerendersAsync(prerendering_urls, eagerness,
                      /*no_vary_search_hint=*/std::nullopt, target_hint,
-                     world_id);
+                     /*ruleset_tag=*/std::nullopt, world_id);
 }
 
 void PrerenderTestHelper::AddPrerendersAsync(
@@ -610,6 +626,7 @@ void PrerenderTestHelper::AddPrerendersAsync(
     std::optional<blink::mojom::SpeculationEagerness> eagerness,
     std::optional<std::string> no_vary_search_hint,
     const std::string& target_hint,
+    std::optional<std::string> ruleset_tag,
     int32_t world_id) {
   TRACE_EVENT(
       "test", "PrerenderTestHelper::AddPrerendersAsync", "prerendering_urls",
@@ -621,7 +638,8 @@ void PrerenderTestHelper::AddPrerendersAsync(
       "target_hint", target_hint.empty() ? "(empty)" : target_hint);
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(BrowserThread::UI));
   std::string script = BuildScriptElementSpeculationRules(
-      prerendering_urls, eagerness, no_vary_search_hint, target_hint);
+      prerendering_urls, eagerness, no_vary_search_hint, target_hint,
+      ruleset_tag);
 
   if (world_id == ISOLATED_WORLD_ID_GLOBAL) {
     // Have to use ExecuteJavaScriptForTests instead of ExecJs/EvalJs here,

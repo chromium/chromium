@@ -186,6 +186,7 @@ class PrerenderTestHelper {
       std::optional<blink::mojom::SpeculationEagerness> eagerness,
       std::optional<std::string> no_vary_search_hint,
       const std::string& target_hint,
+      std::optional<std::string> ruleset_tag = std::nullopt,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
   // AddPrerenderAsync() is the same as AddPrerender(), but does not wait until
   // the completion of prerendering.
@@ -201,6 +202,7 @@ class PrerenderTestHelper {
       std::optional<blink::mojom::SpeculationEagerness> eagerness,
       std::optional<std::string> no_vary_search_hint,
       const std::string& target_hint,
+      std::optional<std::string> ruleset_tag = std::nullopt,
       int32_t world_id = ISOLATED_WORLD_ID_GLOBAL);
 
   void AddPrefetchAsync(const GURL& prefetch_url);

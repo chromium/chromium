@@ -428,12 +428,20 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     return prerender_helper_->AddPrerender(prerendering_url, world_id);
   }
 
+  FrameTreeNodeId AddPrerenderWithTags(const GURL& prerendering_url,
+                                       std::optional<std::string> tag) {
+    return prerender_helper_->AddPrerender(
+        prerendering_url, /*eagerness=*/std::nullopt,
+        /*no_vary_search_hint=*/std::string(),
+        /*target_hint=*/std::string(), tag);
+  }
+
   FrameTreeNodeId AddPrerender(const GURL& prerendering_url,
                                std::string no_vary_search_hint,
                                int32_t world_id = ISOLATED_WORLD_ID_GLOBAL) {
     return prerender_helper_->AddPrerender(
         prerendering_url, /*eagerness=*/std::nullopt, no_vary_search_hint,
-        /*target_hint=*/std::string(), world_id);
+        /*target_hint=*/std::string(), /*ruleset_tag=*/std::nullopt, world_id);
   }
 
   void AddPrerenderAsync(const GURL& prerendering_url) {
@@ -12770,6 +12778,26 @@ IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
   if (IsSpeculationRulesTagsEnabled()) {
     EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
     EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"tag1\", \"tag2\"");
+  } else {
+    EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(PrerenderRequestHeadersBrowserTest,
+                       SpeculationRulesTagForSameSiteCrossOrigin) {
+  const GURL initial_url = GetUrl("/prerender/empty.html");
+  const GURL prerender_url =
+      GetSameSiteCrossOriginUrl("/prerender/prerender_with_opt_in_header.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  FrameTreeNodeId host_id = AddPrerenderWithTags(prerender_url, "tag1");
+  auto* prerendered_rfh = GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(prerendered_rfh != nullptr);
+
+  if (IsSpeculationRulesTagsEnabled()) {
+    EXPECT_TRUE(HasSecSpeculationTagsHeader(prerender_url));
+    EXPECT_EQ(GetSecSpeculationTagsHeader(prerender_url), "\"tag1\"");
   } else {
     EXPECT_FALSE(HasSecSpeculationTagsHeader(prerender_url));
   }
