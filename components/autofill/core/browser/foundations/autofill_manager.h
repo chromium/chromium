@@ -174,7 +174,11 @@ class AutofillManager
     // Fired when the field types predictions of a form *may* have changed.
     // At the moment, we cannot distinguish whether autocomplete attributes or
     // local heuristics changed.
-    enum class FieldTypeSource { kHeuristicsOrAutocomplete, kAutofillServer };
+    enum class FieldTypeSource {
+      kHeuristicsOrAutocomplete,
+      kAutofillServer,
+      kAutofillAiModel
+    };
     virtual void OnFieldTypesDetermined(AutofillManager& manager,
                                         FormGlobalId form,
                                         FieldTypeSource source) {}

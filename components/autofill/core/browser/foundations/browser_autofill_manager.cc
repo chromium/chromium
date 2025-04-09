@@ -2213,6 +2213,9 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
           auto* self_as_bam = static_cast<BrowserAutofillManager*>(self.get());
           form->RationalizeAndAssignSections(self_as_bam->log_manager());
           self_as_bam->LogCurrentFieldTypes(*form);
+          self->NotifyObservers(&Observer::OnFieldTypesDetermined,
+                                form->global_id(),
+                                Observer::FieldTypeSource::kAutofillAiModel);
         };
     if (features::kAutofillAiServerModelSendPageContent.Get()) {
       LOG_AF(log_manager())

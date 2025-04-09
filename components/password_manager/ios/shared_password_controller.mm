@@ -1176,6 +1176,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
       base::ToVector(form.fields(), &autofill::FormFieldData::global_id);
   switch (source) {
     case AutofillManager::Observer::FieldTypeSource::kAutofillServer:
+    case AutofillManager::Observer::FieldTypeSource::kAutofillAiModel:
       _passwordManager->ProcessAutofillPredictions(
           driver, form,
           manager.GetServerPredictionsForForm(globalFormId, field_ids));

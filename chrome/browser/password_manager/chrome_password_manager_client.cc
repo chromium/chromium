@@ -1915,6 +1915,7 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
         base::ToVector(form.fields(), &autofill::FormFieldData::global_id);
     switch (source) {
       case FieldTypeSource::kAutofillServer:
+      case FieldTypeSource::kAutofillAiModel:
         password_manager_.ProcessAutofillPredictions(
             driver, form,
             manager.GetServerPredictionsForForm(form_id, field_ids));
