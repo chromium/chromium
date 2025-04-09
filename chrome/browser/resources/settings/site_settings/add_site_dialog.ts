@@ -86,11 +86,11 @@ export class AddSiteDialogElement extends AddSiteDialogElementBase {
     };
   }
 
-  contentSetting: ContentSetting;
-  hasIncognito: boolean;
-  cookiesExceptionType: CookiesExceptionType;
-  private site_: string;
-  private errorMessage_: string;
+  declare contentSetting: ContentSetting;
+  declare hasIncognito: boolean;
+  declare cookiesExceptionType: CookiesExceptionType;
+  declare private site_: string;
+  declare private errorMessage_: string;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

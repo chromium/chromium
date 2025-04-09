@@ -95,13 +95,13 @@ export class CategorySettingExceptionsElement extends
     ];
   }
 
-  description: string;
-  private readOnlyList: boolean;
-  private defaultManaged_: boolean;
-  blockHeader: string;
-  allowHeader: string;
-  searchFilter: string;
-  private showAllowSiteList_: boolean;
+  declare description: string;
+  declare private readOnlyList: boolean;
+  declare private defaultManaged_: boolean;
+  declare blockHeader: string;
+  declare allowHeader: string;
+  declare searchFilter: string;
+  declare private showAllowSiteList_: boolean;
 
   override ready() {
     super.ready();

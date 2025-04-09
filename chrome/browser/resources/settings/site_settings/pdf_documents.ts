@@ -33,7 +33,7 @@ class SettingsPdfDocumentsElement extends PolymerElement {
     };
   }
 
-  prefs: {[key: string]: any};
+  declare prefs: {[key: string]: any};
 }
 
 customElements.define(

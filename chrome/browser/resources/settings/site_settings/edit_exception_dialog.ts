@@ -59,10 +59,10 @@ export class SettingsEditExceptionDialogElement extends PolymerElement {
     };
   }
 
-  model: SiteException;
-  private origin_: string;
-  private errorMessage_: string;
-  private invalid_: boolean;
+  declare model: SiteException;
+  declare private origin_: string;
+  declare private errorMessage_: string;
+  declare private invalid_: boolean;
   private browserProxy_: SiteSettingsPrefsBrowserProxy =
       SiteSettingsPrefsBrowserProxyImpl.getInstance();
 

@@ -107,21 +107,21 @@ export class SettingsSecurityKeysBioEnrollDialogElement extends
     };
   }
 
-  private cancelButtonDisabled_: boolean;
-  private cancelButtonVisible_: boolean;
-  private confirmButtonDisabled_: boolean;
-  private confirmButtonVisible_: boolean;
-  private confirmButtonLabel_: string;
-  private deleteInProgress_: boolean;
-  private dialogPage_: BioEnrollDialogPage;
-  private doneButtonVisible_: boolean;
-  private enrollments_: Enrollment[];
-  private minPinLength_: number;
-  private progressArcLabel_: string;
-  private recentEnrollmentName_: string;
-  private enrollmentNameError_: string|null;
-  private enrollmentNameMaxUtf8Length_: number;
-  private errorMsg_: string;
+  declare private cancelButtonDisabled_: boolean;
+  declare private cancelButtonVisible_: boolean;
+  declare private confirmButtonDisabled_: boolean;
+  declare private confirmButtonVisible_: boolean;
+  declare private confirmButtonLabel_: string;
+  declare private deleteInProgress_: boolean;
+  declare private dialogPage_: BioEnrollDialogPage;
+  declare private doneButtonVisible_: boolean;
+  declare private enrollments_: Enrollment[];
+  declare private minPinLength_: number;
+  declare private progressArcLabel_: string;
+  declare private recentEnrollmentName_: string;
+  declare private enrollmentNameError_: string|null;
+  declare private enrollmentNameMaxUtf8Length_: number;
+  declare private errorMsg_: string;
 
   private browserProxy_: SecurityKeysBioEnrollProxy =
       SecurityKeysBioEnrollProxyImpl.getInstance();

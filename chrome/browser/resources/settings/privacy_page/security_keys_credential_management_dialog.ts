@@ -85,6 +85,8 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
         observer: 'dialogPageChanged_',
       },
 
+      dialogTitle_: String,
+
       /**
        * The list of credentials displayed in the dialog.
        */
@@ -115,24 +117,24 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
     };
   }
 
-  private cancelButtonVisible_: boolean;
-  private closeButtonVisible_: boolean;
-  private confirmButtonDisabled_: boolean;
-  private confirmButtonLabel_: string;
-  private confirmButtonVisible_: boolean;
-  private confirmMsg_: string;
-  private credentialIdToDelete_: string;
-  private credentials_: Credential[];
-  private dialogPage_: CredentialManagementDialogPage;
-  private dialogTitle_: string;
-  private displayNameInputError_: string;
-  private editingCredential_: Credential;
-  private editButtonVisible_: boolean;
-  private errorMsg_: string;
-  private minPinLength_: number;
-  private newDisplayName_: string;
-  private newUsername_: string;
-  private userNameInputError_: string;
+  declare private cancelButtonVisible_: boolean;
+  declare private closeButtonVisible_: boolean;
+  declare private confirmButtonDisabled_: boolean;
+  declare private confirmButtonLabel_: string;
+  declare private confirmButtonVisible_: boolean;
+  declare private confirmMsg_: string;
+  declare private credentialIdToDelete_: string;
+  declare private credentials_: Credential[];
+  declare private dialogPage_: CredentialManagementDialogPage;
+  declare private dialogTitle_: string;
+  declare private displayNameInputError_: string;
+  declare private editingCredential_: Credential;
+  declare private editButtonVisible_: boolean;
+  declare private errorMsg_: string;
+  declare private minPinLength_: number;
+  declare private newDisplayName_: string;
+  declare private newUsername_: string;
+  declare private userNameInputError_: string;
 
   private browserProxy_: SecurityKeysCredentialBrowserProxy =
       SecurityKeysCredentialBrowserProxyImpl.getInstance();

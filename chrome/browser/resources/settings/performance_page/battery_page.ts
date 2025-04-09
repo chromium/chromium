@@ -67,8 +67,8 @@ export class SettingsBatteryPageElement extends SettingsBatteryPageElementBase {
     };
   }
 
-  private isBatterySaverModeManagedByOs_: boolean;
-  private numericUncheckedValues_: BatterySaverModeState[];
+  declare private isBatterySaverModeManagedByOs_: boolean;
+  declare private numericUncheckedValues_: BatterySaverModeState[];
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();
 

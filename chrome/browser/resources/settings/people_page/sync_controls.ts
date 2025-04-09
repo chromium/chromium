@@ -73,9 +73,9 @@ export class SettingsSyncControlsElement extends
     };
   }
 
-  override hidden: boolean;
-  syncPrefs?: SyncPrefs;
-  syncStatus: SyncStatus;
+  declare hidden: boolean;
+  declare syncPrefs?: SyncPrefs;
+  declare syncStatus: SyncStatus;
   private browserProxy_: SyncBrowserProxy = SyncBrowserProxyImpl.getInstance();
   private cachedSyncPrefs_: {[key: string]: any}|null;
 

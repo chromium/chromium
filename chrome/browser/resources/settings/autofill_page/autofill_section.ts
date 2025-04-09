@@ -72,7 +72,12 @@ export class SettingsAutofillSectionElement extends
 
   static get properties() {
     return {
-      accountInfo_: Object,
+      prefs: Object,
+
+      accountInfo_: {
+        type: Object,
+        value: null,
+      },
 
       /** An array of saved addresses. */
       addresses: Array,
@@ -90,13 +95,13 @@ export class SettingsAutofillSectionElement extends
     };
   }
 
-  prefs: {[key: string]: any};
-  addresses: chrome.autofillPrivate.AddressEntry[];
-  activeAddress: chrome.autofillPrivate.AddressEntry|null;
-  private accountInfo_: chrome.autofillPrivate.AccountInfo|null = null;
-  private showAddressDialog_: boolean;
-  private showAddressRemoveConfirmationDialog_: boolean;
-  private isPlusAddressEnabled_: boolean;
+  declare prefs: {[key: string]: any};
+  declare addresses: chrome.autofillPrivate.AddressEntry[];
+  declare activeAddress: chrome.autofillPrivate.AddressEntry|null;
+  declare private accountInfo_: chrome.autofillPrivate.AccountInfo|null;
+  declare private showAddressDialog_: boolean;
+  declare private showAddressRemoveConfirmationDialog_: boolean;
+  declare private isPlusAddressEnabled_: boolean;
   private autofillManager_: AutofillManagerProxy =
       AutofillManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;

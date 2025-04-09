@@ -106,15 +106,15 @@ export class SettingsCategoryDefaultRadioGroupElement extends
     ];
   }
 
-  header: string;
-  description: string;
-  allowOptionLabel: string;
-  allowOptionSubLabel: string;
-  allowOptionIcon: string;
-  blockOptionLabel: string;
-  blockOptionSubLabel: string;
-  blockOptionIcon: string;
-  private pref_: chrome.settingsPrivate.PrefObject<number>;
+  declare header: string;
+  declare description: string;
+  declare allowOptionLabel: string;
+  declare allowOptionSubLabel: string;
+  declare allowOptionIcon: string;
+  declare blockOptionLabel: string;
+  declare blockOptionSubLabel: string;
+  declare blockOptionIcon: string;
+  declare private pref_: chrome.settingsPrivate.PrefObject<number>;
 
   override ready() {
     super.ready();

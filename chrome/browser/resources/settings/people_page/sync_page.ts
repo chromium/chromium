@@ -226,30 +226,30 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     ];
   }
 
-  prefs: {[key: string]: any};
-  focusConfig: FocusConfig;
-  private pageStatus_: PageStatus;
-  pageVisibility: PageVisibility;
-  syncPrefs?: SyncPrefs;
-  syncStatus: SyncStatus;
-  private dataEncrypted_: boolean;
-  private encryptionExpanded_: boolean;
-  forceEncryptionExpanded: boolean;
-  private existingPassphrase_: string;
-  private showExistingPassphraseBelowAccount_: boolean;
-  private signedIn_: boolean;
-  private syncDisabledByAdmin_: boolean;
-  private syncSectionDisabled_: boolean;
-  private enableLinkedServicesSetting_: boolean;
-  private isEeaChoiceCountry_: boolean;
-  private personalizationCollapseExpanded_: boolean;
+  declare prefs: {[key: string]: any};
+  declare focusConfig: FocusConfig;
+  declare private pageStatus_: PageStatus;
+  declare pageVisibility: PageVisibility;
+  declare syncPrefs?: SyncPrefs;
+  declare syncStatus: SyncStatus;
+  declare private dataEncrypted_: boolean;
+  declare private encryptionExpanded_: boolean;
+  declare forceEncryptionExpanded: boolean;
+  declare private existingPassphrase_: string;
+  declare private showExistingPassphraseBelowAccount_: boolean;
+  declare private signedIn_: boolean;
+  declare private syncDisabledByAdmin_: boolean;
+  declare private syncSectionDisabled_: boolean;
+  declare private enableLinkedServicesSetting_: boolean;
+  declare private isEeaChoiceCountry_: boolean;
+  declare private personalizationCollapseExpanded_: boolean;
 
   // <if expr="not chromeos_ash">
-  private showSetupCancelDialog_: boolean;
+  declare private showSetupCancelDialog_: boolean;
   // </if>
 
-  private enterPassphraseLabel_: TrustedHTML;
-  private existingPassphraseLabel_: TrustedHTML;
+  declare private enterPassphraseLabel_: TrustedHTML;
+  declare private existingPassphraseLabel_: TrustedHTML;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

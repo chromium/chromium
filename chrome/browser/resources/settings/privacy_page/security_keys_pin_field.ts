@@ -65,10 +65,10 @@ export class SettingsSecurityKeysPinFieldElement extends
     };
   }
 
-  minPinLength: number;
-  private error_: string;
-  private value_: string;
-  private inputVisible_: boolean;
+  declare minPinLength: number;
+  declare private error_: string;
+  declare private value_: string;
+  declare private inputVisible_: boolean;
 
   /** Focuses the PIN input field. */
   override focus() {

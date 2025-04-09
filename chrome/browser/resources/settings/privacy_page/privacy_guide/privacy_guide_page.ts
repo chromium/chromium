@@ -146,20 +146,20 @@ export class SettingsPrivacyGuidePageElement extends PrivacyGuideBase {
     ];
   }
 
-  private privacyGuideStep_: PrivacyGuideStep;
-  private stepIndicatorModel_: StepIndicatorModel;
+  declare private privacyGuideStep_: PrivacyGuideStep;
+  declare private stepIndicatorModel_: StepIndicatorModel;
   private privacyGuideStepToComponentsMap_:
       Map<PrivacyGuideStep, PrivacyGuideStepComponents>;
   private syncBrowserProxy_: SyncBrowserProxy =
       SyncBrowserProxyImpl.getInstance();
-  private syncStatus_: SyncStatus;
+  declare private syncStatus_: SyncStatus;
   private animationsEnabled_: boolean = true;
-  private translateMultiplier_: number;
+  declare private translateMultiplier_: number;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
       PrivacyGuideBrowserProxyImpl.getInstance();
-  private shouldShowAdTopicsCard_: boolean;
+  declare private shouldShowAdTopicsCard_: boolean;
 
   constructor() {
     super();

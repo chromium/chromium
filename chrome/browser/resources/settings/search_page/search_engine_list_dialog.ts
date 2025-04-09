@@ -85,11 +85,11 @@ export class SettingsSearchEngineListDialogElement extends
     };
   }
 
-  searchEngines: SearchEngine[];
+  declare searchEngines: SearchEngine[];
 
-  private selectedEngineId_: string;
-  private showSaveGuestChoice_: boolean;
-  private saveGuestChoice_: boolean|null = null;
+  declare private selectedEngineId_: string;
+  declare private showSaveGuestChoice_: boolean;
+  declare private saveGuestChoice_: boolean|null;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 

@@ -58,7 +58,7 @@ export class StorageAccessStaticSiteListEntryElement extends
     };
   }
 
-  model: StorageAccessStaticSiteListEntry;
+  declare model: StorageAccessStaticSiteListEntry;
 
   /**
    * Triggered when the reset button is clicked. Resets a single storage access

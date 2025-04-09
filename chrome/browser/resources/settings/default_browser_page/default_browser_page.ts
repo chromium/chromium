@@ -41,10 +41,10 @@ export class SettingsDefaultBrowserPageElement extends
     };
   }
 
-  private isDefault_: boolean;
-  private isSecondaryInstall_: boolean;
-  private isUnknownError_: boolean;
-  private maySetDefaultBrowser_: boolean;
+  declare private isDefault_: boolean;
+  declare private isSecondaryInstall_: boolean;
+  declare private isUnknownError_: boolean;
+  declare private maySetDefaultBrowser_: boolean;
   private browserProxy_: DefaultBrowserBrowserProxy =
       DefaultBrowserBrowserProxyImpl.getInstance();
 

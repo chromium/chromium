@@ -129,11 +129,11 @@ export class SettingsClearBrowsingDataTimePicker extends
     ];
   }
 
-  private selectedTimePeriod_: TimePeriod;
-  private defaultTimePeriodList_: TimePeriod[];
-  private allTimePeriodList_: TimePeriod[];
-  private expandedOptionList_: TimePeriodOption[];
-  private moreOptionList_: TimePeriodOption[];
+  declare private selectedTimePeriod_: TimePeriod;
+  declare private defaultTimePeriodList_: TimePeriod[];
+  declare private allTimePeriodList_: TimePeriod[];
+  declare private expandedOptionList_: TimePeriodOption[];
+  declare private moreOptionList_: TimePeriodOption[];
 
   private onTimePeriodPrefUpdated_() {
     const timePeriodValue =

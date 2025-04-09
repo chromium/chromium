@@ -75,11 +75,11 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase {
     ];
   }
 
-  prefs: {proxy: chrome.settingsPrivate.PrefObject};
-  private isProxyEnforcedByPolicy_: boolean;
-  private isProxyDefault_: boolean;
+  declare prefs: {proxy: chrome.settingsPrivate.PrefObject};
+  declare private isProxyEnforcedByPolicy_: boolean;
+  declare private isProxyDefault_: boolean;
   // <if expr="_google_chrome and is_win">
-  private showFeatureNotificationsSetting_: boolean;
+  declare private showFeatureNotificationsSetting_: boolean;
   // </if>
 
   private observeProxyPrefChanged_() {

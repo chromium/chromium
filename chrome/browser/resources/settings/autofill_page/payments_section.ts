@@ -209,30 +209,31 @@ export class SettingsPaymentsSectionElement extends
     };
   }
 
-  prefs: {[key: string]: any};
-  creditCards: chrome.autofillPrivate.CreditCardEntry[];
-  ibans: chrome.autofillPrivate.IbanEntry[];
-  payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
-  private showIbanSettingsEnabled_: boolean;
-  private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|null;
-  private activeIban_: chrome.autofillPrivate.IbanEntry|null;
-  private showCreditCardDialog_: boolean;
-  private showIbanDialog_: boolean;
-  private showLocalCreditCardRemoveConfirmationDialog_: boolean;
-  private showLocalIbanRemoveConfirmationDialog_: boolean;
-  private showVirtualCardUnenrollDialog_: boolean;
+  declare prefs: {[key: string]: any};
+  declare creditCards: chrome.autofillPrivate.CreditCardEntry[];
+  declare ibans: chrome.autofillPrivate.IbanEntry[];
+  declare payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
+  declare private showIbanSettingsEnabled_: boolean;
+  declare private activeCreditCard_: chrome.autofillPrivate.CreditCardEntry|
+      null;
+  declare private activeIban_: chrome.autofillPrivate.IbanEntry|null;
+  declare private showCreditCardDialog_: boolean;
+  declare private showIbanDialog_: boolean;
+  declare private showLocalCreditCardRemoveConfirmationDialog_: boolean;
+  declare private showLocalIbanRemoveConfirmationDialog_: boolean;
+  declare private showVirtualCardUnenrollDialog_: boolean;
   // <if expr="is_win or is_macosx">
-  private deviceAuthAvailable_: boolean;
+  declare private deviceAuthAvailable_: boolean;
   // </if>
-  private cvcStorageAvailable_: boolean;
-  private showBulkRemoveCvcConfirmationDialog_: boolean;
+  declare private cvcStorageAvailable_: boolean;
+  declare private showBulkRemoveCvcConfirmationDialog_: boolean;
   private paymentsManager_: PaymentsManagerProxy =
       PaymentsManagerImpl.getInstance();
   private setPersonalDataListener_: PersonalDataChangedListener|null = null;
-  private cardBenefitsFlagEnabled_: boolean;
-  private cardBenefitsSublabel_: string;
-  private shouldShowPayOverTimeSettings_: boolean;
-  private payOverTimeSublabel_: string;
+  declare private cardBenefitsFlagEnabled_: boolean;
+  declare private cardBenefitsSublabel_: string;
+  declare private shouldShowPayOverTimeSettings_: boolean;
+  declare private payOverTimeSublabel_: string;
 
   override connectedCallback() {
     super.connectedCallback();

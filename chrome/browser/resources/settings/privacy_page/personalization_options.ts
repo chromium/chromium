@@ -141,26 +141,27 @@ export class SettingsPersonalizationOptionsElement extends
     };
   }
 
-  pageVisibility: PrivacyPageVisibility;
-  focusConfig: FocusConfig;
-  syncStatus: SyncStatus;
+  declare pageVisibility: PrivacyPageVisibility;
+  declare focusConfig: FocusConfig;
+  declare syncStatus: SyncStatus;
 
   // <if expr="_google_chrome and not chromeos_ash">
-  private metricsReportingPref_: chrome.settingsPrivate.PrefObject<boolean>;
-  private showRestart_: boolean;
+  declare private metricsReportingPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
+  declare private showRestart_: boolean;
   // </if>
 
-  private showSignoutDialog_: boolean;
-  private syncFirstSetupInProgress_: boolean;
+  declare private showSignoutDialog_: boolean;
+  declare private syncFirstSetupInProgress_: boolean;
 
   // <if expr="not is_chromeos">
-  private signinAvailable_: boolean;
+  declare private signinAvailable_: boolean;
 
-  private chromeSigninUserChoiceInfo_: ChromeSigninUserChoiceInfo;
+  declare private chromeSigninUserChoiceInfo_: ChromeSigninUserChoiceInfo;
   // </if>
 
-  private enableAiSettingsPageRefresh_: boolean;
-  private showHistorySearchControl_: boolean;
+  declare private enableAiSettingsPageRefresh_: boolean;
+  declare private showHistorySearchControl_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();

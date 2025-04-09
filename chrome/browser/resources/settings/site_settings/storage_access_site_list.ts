@@ -81,11 +81,11 @@ export class StorageAccessSiteListElement extends
     return ['populateList_(categorySubtype, storageAccessExceptions_)'];
   }
 
-  categorySubtype: ContentSetting;
-  categoryHeader: string;
-  searchFilter: string;
+  declare categorySubtype: ContentSetting;
+  declare categoryHeader: string;
+  declare searchFilter: string;
 
-  private storageAccessExceptions_: StorageAccessSiteException[];
+  declare private storageAccessExceptions_: StorageAccessSiteException[];
 
   override connectedCallback() {
     super.connectedCallback();

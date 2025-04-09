@@ -75,10 +75,10 @@ export class SettingsSignoutDialogElement extends
     };
   }
 
-  syncStatus: SyncStatus|null;
-  private deleteProfile_: boolean;
-  private deleteProfileWarningVisible_: boolean;
-  private deleteProfileWarning_: string;
+  declare syncStatus: SyncStatus|null;
+  declare private deleteProfile_: boolean;
+  declare private deleteProfileWarningVisible_: boolean;
+  declare private deleteProfileWarning_: string;
 
   override connectedCallback() {
     super.connectedCallback();

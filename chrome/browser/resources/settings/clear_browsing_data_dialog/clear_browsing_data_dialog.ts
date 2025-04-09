@@ -243,28 +243,28 @@ export class SettingsClearBrowsingDataDialogElement extends
   }
 
   // TODO(dpapad): make |syncStatus| private.
-  syncStatus: SyncStatus|undefined;
-  private counters_: {[k: string]: string};
-  private clearFromOptions_: DropdownMenuOptionList;
-  private clearingInProgress_: boolean;
-  private clearingDataAlertString_: string;
-  private clearButtonDisabled_: boolean;
-  private showHistoryDeletionDialog_: boolean;
-  private showPasswordsDeletionDialogLater_: boolean;
-  private showPasswordsDeletionDialog_: boolean;
-  private isSyncingHistory_: boolean;
-  private shouldShowCookieException_: boolean;
+  declare syncStatus: SyncStatus|undefined;
+  declare private counters_: {[k: string]: string};
+  declare private clearFromOptions_: DropdownMenuOptionList;
+  declare private clearingInProgress_: boolean;
+  declare private clearingDataAlertString_: string;
+  declare private clearButtonDisabled_: boolean;
+  declare private showHistoryDeletionDialog_: boolean;
+  declare private showPasswordsDeletionDialogLater_: boolean;
+  declare private showPasswordsDeletionDialog_: boolean;
+  declare private isSyncingHistory_: boolean;
+  declare private shouldShowCookieException_: boolean;
   // <if expr="not is_chromeos">
-  private isClearPrimaryAccountAllowed_: boolean;
-  private isSyncPaused_: boolean;
-  private hasPassphraseError_: boolean;
-  private hasOtherSyncError_: boolean;
+  declare private isClearPrimaryAccountAllowed_: boolean;
+  declare private isSyncPaused_: boolean;
+  declare private hasPassphraseError_: boolean;
+  declare private hasOtherSyncError_: boolean;
   // </if>
-  private selectedTabIndex_: number;
-  private tabsNames_: string[];
-  private googleSearchHistoryString_: TrustedHTML;
-  private isNonGoogleDse_: boolean;
-  private nonGoogleSearchHistoryString_: TrustedHTML;
+  declare private selectedTabIndex_: number;
+  declare private tabsNames_: string[];
+  declare private googleSearchHistoryString_: TrustedHTML;
+  declare private isNonGoogleDse_: boolean;
+  declare private nonGoogleSearchHistoryString_: TrustedHTML;
   private focusOutlineManager_: FocusOutlineManager;
 
   private browserProxy_: ClearBrowsingDataBrowserProxy =

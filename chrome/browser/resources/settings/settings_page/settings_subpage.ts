@@ -119,16 +119,16 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     };
   }
 
-  pageTitle: string;
-  titleIcon: string;
-  faviconSiteUrl: string;
-  learnMoreUrl: string;
-  searchLabel: string;
-  searchTerm: string;
-  hideCloseButton: boolean;
-  associatedControl: HTMLElement|null;
-  preserveSearchTerm: boolean;
-  private active_: boolean;
+  declare pageTitle: string;
+  declare titleIcon: string;
+  declare faviconSiteUrl: string;
+  declare learnMoreUrl: string;
+  declare searchLabel: string;
+  declare searchTerm: string;
+  declare hideCloseButton: boolean;
+  declare associatedControl: HTMLElement|null;
+  declare preserveSearchTerm: boolean;
+  declare private active_: boolean;
   private lastActiveValue_: boolean = false;
   private eventTracker_: EventTracker|null = null;
 

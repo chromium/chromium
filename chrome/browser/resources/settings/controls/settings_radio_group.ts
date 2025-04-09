@@ -61,10 +61,10 @@ export class SettingsRadioGroupElement extends SettingsRadioGroupElementBase {
     ];
   }
 
-  groupAriaLabel: string;
-  noSetPref: boolean;
-  selected?: string;
-  selectableElements: string;
+  declare groupAriaLabel: string;
+  declare noSetPref: boolean;
+  declare selected?: string;
+  declare selectableElements: string;
 
   override ready() {
     super.ready();

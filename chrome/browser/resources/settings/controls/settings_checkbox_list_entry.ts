@@ -78,10 +78,8 @@ export class SettingsCheckboxListEntryElement extends PolymerElement {
     };
   }
 
-  checked: boolean;
-  private posinset: number;
-  private setsize: number;
-  private tabindex: number;
+  declare checked: boolean;
+  declare private tabindex: number;
 
   override ready() {
     super.ready();

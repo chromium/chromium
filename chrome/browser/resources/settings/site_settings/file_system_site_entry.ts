@@ -42,7 +42,7 @@ export class FileSystemSiteEntryElement extends FileSystemSiteEntryElementBase {
       grantsPerOrigin: Object,
     };
   }
-  grantsPerOrigin: OriginFileSystemGrants;
+  declare grantsPerOrigin: OriginFileSystemGrants;
 
   private onNavigateToDetailsPageClick_() {
     /**

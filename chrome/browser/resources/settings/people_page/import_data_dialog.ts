@@ -87,10 +87,10 @@ export class SettingsImportDataDialogElement extends
     };
   }
 
-  private browserProfiles_: BrowserProfile[];
-  private selected_: BrowserProfile;
-  private noImportDataTypeSelected_: boolean;
-  private importStatus_: ImportDataStatus;
+  declare private browserProfiles_: BrowserProfile[];
+  declare private selected_: BrowserProfile;
+  declare private noImportDataTypeSelected_: boolean;
+  declare private importStatus_: ImportDataStatus;
   private browserProxy_: ImportDataBrowserProxy =
       ImportDataBrowserProxyImpl.getInstance();
 

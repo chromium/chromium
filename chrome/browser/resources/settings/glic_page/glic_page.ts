@@ -83,12 +83,12 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
 
   private shortcutInput_: string;
   private removedShortcut_: string|null = null;
-  private registeredShortcut_: string;
-  private fakePref_: chrome.settingsPrivate.PrefObject;
+  declare private registeredShortcut_: string;
+  declare private fakePref_: chrome.settingsPrivate.PrefObject;
   private browserProxy_: GlicBrowserProxy = GlicBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private tabAccessToggleExpanded_: boolean;
+  declare private tabAccessToggleExpanded_: boolean;
 
   override async connectedCallback() {
     super.connectedCallback();

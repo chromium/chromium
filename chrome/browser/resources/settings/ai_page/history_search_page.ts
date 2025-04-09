@@ -89,12 +89,12 @@ export class SettingsHistorySearchPageElement extends
     };
   }
 
-  private enableAiSettingsPageRefresh_: boolean;
-  private isAnswersFeatureEnabled_: boolean;
-  private numericUncheckedValues_: FeatureOptInState[];
-  private toggleSubLabel_: string;
-  private toggleSubLabelV2_: string;
-  private enterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare private enableAiSettingsPageRefresh_: boolean;
+  declare private isAnswersFeatureEnabled_: boolean;
+  declare private numericUncheckedValues_: FeatureOptInState[];
+  declare private toggleSubLabel_: string;
+  declare private toggleSubLabelV2_: string;
+  declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

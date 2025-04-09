@@ -75,15 +75,15 @@ export class SettingsSearchEngineEditDialogElement extends
     };
   }
 
-  model: SearchEngine|null;
-  private searchEngine_: string;
-  private keyword_: string;
-  private queryUrl_: string;
-  private dialogTitle_: string;
-  private actionButtonText_: string;
-  private cancelButtonHidden_: boolean;
-  private readonly_: boolean;
-  private urlIsReadonly_: boolean;
+  declare model: SearchEngine|null;
+  declare private searchEngine_: string;
+  declare private keyword_: string;
+  declare private queryUrl_: string;
+  declare private dialogTitle_: string;
+  declare private actionButtonText_: string;
+  declare private cancelButtonHidden_: boolean;
+  declare private readonly_: boolean;
+  declare private urlIsReadonly_: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
 

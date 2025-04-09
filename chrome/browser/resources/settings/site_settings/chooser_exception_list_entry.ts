@@ -44,8 +44,8 @@ export class ChooserExceptionListEntryElement extends PolymerElement {
     };
   }
 
-  exception: ChooserException;
-  private lastFocused_: HTMLElement|null;
+  declare exception: ChooserException;
+  declare private lastFocused_: HTMLElement|null;
 }
 
 declare global {

@@ -89,10 +89,10 @@ export class SettingsAutofillPageElement extends
     };
   }
 
-  private passkeyFilter_: string;
-  private userEligibleForAutofillAi_: boolean;
-  private autofillAiAvailable_: boolean;
-  private focusConfig_: Map<string, string>;
+  declare private passkeyFilter_: string;
+  declare private userEligibleForAutofillAi_: boolean;
+  declare private autofillAiAvailable_: boolean;
+  declare private focusConfig_: Map<string, string>;
 
   /**
    * Shows the manage addresses sub page.

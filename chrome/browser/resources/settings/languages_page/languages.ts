@@ -161,15 +161,15 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
     ];
   }
 
-  languages?: LanguagesModel|undefined;
-  languageHelper: LanguageHelper;
-  private resolver_: PromiseResolver<void>;
-  private supportedLanguageMap_:
+  declare languages?: LanguagesModel|undefined;
+  declare languageHelper: LanguageHelper;
+  declare private resolver_: PromiseResolver<void>;
+  declare private supportedLanguageMap_:
       Map<string, chrome.languageSettingsPrivate.Language>;
-  private enabledLanguageSet_: Set<string>;
+  declare private enabledLanguageSet_: Set<string>;
 
   // <if expr="is_win">
-  private originalProspectiveUILanguage_: string;
+  declare private originalProspectiveUILanguage_: string;
   // </if>
 
   // <if expr="not is_macosx">
@@ -857,9 +857,9 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
   canEnableLanguage(language: chrome.languageSettingsPrivate.Language):
       boolean {
     return !(
-        this.isLanguageEnabled(language.code) ||
-        language.isProhibitedLanguage ||
-        this.isLanguageCodeForArcIme(language.code) /* internal use only */);
+        (this.isLanguageEnabled(language.code) ||
+         language.isProhibitedLanguage ||
+         this.isLanguageCodeForArcIme(language.code)) /* internal use only */);
   }
 
   /**

@@ -39,7 +39,7 @@ export class SettingsAiCompareSubpageElement extends
     };
   }
 
-  private enterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
 

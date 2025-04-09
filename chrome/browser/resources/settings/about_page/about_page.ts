@@ -134,19 +134,19 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase {
   }
   // </if>
 
-  private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
-  private isManaged_: boolean;
-  private managedByIcon_: string;
+  declare private currentUpdateStatusEvent_: UpdateStatusChangedEvent|null;
+  declare private isManaged_: boolean;
+  declare private managedByIcon_: string;
 
   // <if expr="_google_chrome and is_macosx">
-  private promoteUpdaterStatus_: PromoteUpdaterStatus;
+  declare private promoteUpdaterStatus_: PromoteUpdaterStatus;
   // </if>
 
   // <if expr="not chromeos_ash">
-  private obsoleteSystemInfo_: {obsolete: boolean, endOfLine: boolean};
-  private showUpdateStatus_: boolean;
-  private showButtonContainer_: boolean;
-  private showRelaunch_: boolean;
+  declare private obsoleteSystemInfo_: {obsolete: boolean, endOfLine: boolean};
+  declare private showUpdateStatus_: boolean;
+  declare private showButtonContainer_: boolean;
+  declare private showRelaunch_: boolean;
   // </if>
 
   private aboutBrowserProxy_: AboutPageBrowserProxy =

@@ -55,12 +55,12 @@ export class SettingsStartupUrlsPageElement extends
     };
   }
 
-  prefs: Object;
-  private startupPages_: StartupPageInfo[];
-  private showStartupUrlDialog_: boolean;
-  private startupUrlDialogModel_: StartupPageInfo|null;
-  private lastFocused_: HTMLElement;
-  private listBlurred_: boolean;
+  declare prefs: Object;
+  declare private startupPages_: StartupPageInfo[];
+  declare private showStartupUrlDialog_: boolean;
+  declare private startupUrlDialogModel_: StartupPageInfo|null;
+  declare private lastFocused_: HTMLElement;
+  declare private listBlurred_: boolean;
   private browserProxy_: StartupUrlsPageBrowserProxy =
       StartupUrlsPageBrowserProxyImpl.getInstance();
   private startupUrlDialogAnchor_: HTMLElement|null;

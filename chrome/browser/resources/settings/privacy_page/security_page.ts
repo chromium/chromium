@@ -248,32 +248,32 @@ export class SettingsSecurityPageElement extends
     };
   }
   // <if expr="chrome_root_store_cert_management_ui">
-  private enableCertManagementUIV2_: boolean;
+  declare private enableCertManagementUIV2_: boolean;
   // </if>
-  private showSecureDnsSetting_: boolean;
+  declare private showSecureDnsSetting_: boolean;
 
   // <if expr="is_chromeos">
-  private showSecureDnsSettingLink_: boolean;
+  declare private showSecureDnsSettingLink_: boolean;
   // </if>
 
-  private enableSecurityKeysSubpage_: boolean;
+  declare private enableSecurityKeysSubpage_: boolean;
   // <if expr="is_win">
-  private enableSecurityKeysPhonesSubpage_: boolean;
+  declare private enableSecurityKeysPhonesSubpage_: boolean;
   // </if>
-  focusConfig: FocusConfig;
-  private showDisableSafebrowsingDialog_: boolean;
-  private enableHashPrefixRealTimeLookups_: boolean;
-  private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
-  private enableHttpsFirstModeNewSettings_: boolean;
-  private lastFocusTime_: number|undefined;
-  private totalTimeInFocus_: number;
-  private lastInteraction_: SecurityPageInteraction;
-  private safeBrowsingStateOnOpen_: SafeBrowsingSetting;
-  private isRouteSecurity_: boolean;
+  declare focusConfig: FocusConfig;
+  declare private showDisableSafebrowsingDialog_: boolean;
+  declare private enableHashPrefixRealTimeLookups_: boolean;
+  declare private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
+  declare private enableHttpsFirstModeNewSettings_: boolean;
+  declare private lastFocusTime_: number|undefined;
+  declare private totalTimeInFocus_: number;
+  declare private lastInteraction_: SecurityPageInteraction;
+  declare private safeBrowsingStateOnOpen_: SafeBrowsingSetting;
+  declare private isRouteSecurity_: boolean;
   private eventTracker_: EventTracker = new EventTracker();
-  private enableEsbAiStringUpdate_: boolean;
-  private hideExtendedReportingRadioButton_: boolean;
-  private enablePasswordLeakToggleMove_: boolean;
+  declare private enableEsbAiStringUpdate_: boolean;
+  declare private hideExtendedReportingRadioButton_: boolean;
+  declare private enablePasswordLeakToggleMove_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();

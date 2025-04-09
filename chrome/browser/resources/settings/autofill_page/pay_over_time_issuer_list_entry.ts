@@ -34,7 +34,7 @@ export class SettingsPayOverTimeIssuerListEntryElement extends PolymerElement {
     };
   }
 
-  payOverTimeIssuer: chrome.autofillPrivate.PayOverTimeIssuerEntry;
+  declare payOverTimeIssuer: chrome.autofillPrivate.PayOverTimeIssuerEntry;
 
   /**
    * When the provided `imageSrc` points toward an issuer's default logo art,

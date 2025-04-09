@@ -47,7 +47,7 @@ export class SettingsOmniboxExtensionEntryElement extends
     };
   }
 
-  engine: SearchEngine;
+  declare engine: SearchEngine;
   private browserProxy_: ExtensionControlBrowserProxy =
       ExtensionControlBrowserProxyImpl.getInstance();
 

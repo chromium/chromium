@@ -182,22 +182,22 @@ export class SettingsCreditCardEditDialogElement extends
     };
   }
 
-  prefs: {[key: string]: any};
-  creditCard: chrome.autofillPrivate.CreditCardEntry;
-  private title_: string;
-  private monthList_: string[];
-  private yearList_: string[];
-  private name_?: string;
-  private rawCardNumber_: string;
-  private cvc_?: string;
-  private nickname_?: string;
-  private expirationYear_?: string;
-  private expirationMonth_?: string;
-  private sanitizedCardNumber_: string;
-  private nicknameInvalid_: boolean;
-  private cardNumberValidationState_: CardNumberValidationState;
-  private expired_: boolean;
-  private cvcStorageAvailable_: boolean;
+  declare prefs: {[key: string]: any};
+  declare creditCard: chrome.autofillPrivate.CreditCardEntry;
+  declare private title_: string;
+  declare private monthList_: string[];
+  declare private yearList_: string[];
+  declare private name_?: string;
+  declare private rawCardNumber_: string;
+  declare private cvc_?: string;
+  declare private nickname_?: string;
+  declare private expirationYear_?: string;
+  declare private expirationMonth_?: string;
+  declare private sanitizedCardNumber_: string;
+  declare private nicknameInvalid_: boolean;
+  declare private cardNumberValidationState_: CardNumberValidationState;
+  declare private expired_: boolean;
+  declare private cvcStorageAvailable_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

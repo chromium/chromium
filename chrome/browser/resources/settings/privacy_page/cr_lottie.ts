@@ -89,10 +89,10 @@ export class CrLottieElement extends CrLitElement {
     };
   }
 
-  animationUrl: string = '';
-  autoplay: boolean = false;
-  override hidden: boolean = false;
-  singleLoop: boolean = false;
+  accessor animationUrl: string = '';
+  accessor autoplay: boolean = false;
+  override accessor hidden: boolean = false;
+  accessor singleLoop: boolean = false;
 
   private canvasElement_: CanvasElementWithOffscreen|null = null;
   private isAnimationLoaded_: boolean = false;

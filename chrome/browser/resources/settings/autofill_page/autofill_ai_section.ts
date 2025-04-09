@@ -137,14 +137,14 @@ export class SettingsAutofillAiSectionElement extends
     };
   }
 
-  ineligibleUser: boolean;
-  private optedIn_: chrome.settingsPrivate.PrefObject;
-  private activeEntityInstance_: EntityInstance|null;
-  private completeEntityTypesList_: EntityType[];
-  private showAddOrEditEntityInstanceDialog_: boolean;
-  private addOrEditEntityInstanceDialogTitle_: string;
-  private showRemoveEntityInstanceDialog_: boolean;
-  private entityInstances_: EntityInstanceWithLabels[];
+  declare ineligibleUser: boolean;
+  declare private optedIn_: chrome.settingsPrivate.PrefObject;
+  declare private activeEntityInstance_: EntityInstance|null;
+  declare private completeEntityTypesList_: EntityType[];
+  declare private showAddOrEditEntityInstanceDialog_: boolean;
+  declare private addOrEditEntityInstanceDialogTitle_: string;
+  declare private showRemoveEntityInstanceDialog_: boolean;
+  declare private entityInstances_: EntityInstanceWithLabels[];
 
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;

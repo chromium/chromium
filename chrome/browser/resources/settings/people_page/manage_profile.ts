@@ -110,14 +110,14 @@ export class SettingsManageProfileElement extends
     };
   }
 
-  private profileAvatar_: AvatarIcon;
-  profileName: string;
-  private hasProfileShortcut_: boolean;
-  availableIcons: AvatarIcon[];
-  syncStatus: SyncStatus|null;
-  private isProfileShortcutSettingVisible_: boolean;
-  private hasEnterpriseLabel_: boolean;
-  private pattern_: string;
+  declare private profileAvatar_: AvatarIcon;
+  declare profileName: string;
+  declare private hasProfileShortcut_: boolean;
+  declare availableIcons: AvatarIcon[];
+  declare syncStatus: SyncStatus|null;
+  declare private isProfileShortcutSettingVisible_: boolean;
+  declare private hasEnterpriseLabel_: boolean;
+  declare private pattern_: string;
   private browserProxy_: ManageProfileBrowserProxy =
       ManageProfileBrowserProxyImpl.getInstance();
 

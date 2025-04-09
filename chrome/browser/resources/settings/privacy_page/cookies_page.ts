@@ -130,14 +130,14 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     };
   }
 
-  searchTerm: string;
-  private cookiesContentSettingType_: ContentSettingsTypes;
-  private blockAllPref_: chrome.settingsPrivate.PrefObject;
-  focusConfig: FocusConfig;
-  private is3pcdRedesignEnabled_: boolean;
-  private isIpProtectionAvailable_: boolean;
-  private isFingerprintingProtectionAvailable_: boolean;
-  private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
+  declare searchTerm: string;
+  declare private cookiesContentSettingType_: ContentSettingsTypes;
+  declare private blockAllPref_: chrome.settingsPrivate.PrefObject;
+  declare focusConfig: FocusConfig;
+  declare private is3pcdRedesignEnabled_: boolean;
+  declare private isIpProtectionAvailable_: boolean;
+  declare private isFingerprintingProtectionAvailable_: boolean;
+  declare private isAlwaysBlock3pcsIncognitoEnabled_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

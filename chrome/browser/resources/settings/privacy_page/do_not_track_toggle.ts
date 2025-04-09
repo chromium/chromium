@@ -47,8 +47,8 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
     };
   }
 
-  prefs: {enable_do_not_track: chrome.settingsPrivate.PrefObject};
-  private showDialog_: boolean;
+  declare prefs: {enable_do_not_track: chrome.settingsPrivate.PrefObject};
+  declare private showDialog_: boolean;
 
   private onDomChange_() {
     if (this.showDialog_) {

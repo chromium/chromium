@@ -107,12 +107,12 @@ export class ExceptionListElement extends
     ];
   }
 
-  private siteList_: ExceptionEntry[];
-  private overflowSiteListExpanded: boolean;
-  private selectedRule_: string;
-  private showTabbedAddDialog_: boolean;
-  private showEditDialog_: boolean;
-  private tooltipText_: string;
+  declare private siteList_: ExceptionEntry[];
+  declare private overflowSiteListExpanded: boolean;
+  declare private selectedRule_: string;
+  declare private showTabbedAddDialog_: boolean;
+  declare private showEditDialog_: boolean;
+  declare private tooltipText_: string;
 
   private metricsProxy_: PerformanceMetricsProxy =
       PerformanceMetricsProxyImpl.getInstance();

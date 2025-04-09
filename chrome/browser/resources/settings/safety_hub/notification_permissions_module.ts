@@ -104,7 +104,10 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
       lastUserAction_: String,
 
       // The last origins that the user interacted with.
-      lastOrigins_: Array,
+      lastOrigins_: {
+        type: Array,
+        value: () => [],
+      },
 
       // List of domains that sends a lot of notifications.
       sites_: {
@@ -127,15 +130,15 @@ export class SettingsSafetyHubNotificationPermissionsModuleElement extends
     ];
   }
 
-  private headerString_: string;
-  private subheaderString_: string;
-  private headerIconString_: string;
-  private toastText_: string|null;
-  private sites_: NotificationPermissionsDisplay[]|null;
-  private shouldShowCompletionInfo_: boolean;
-  private lastOrigins_: string[] = [];
+  declare private headerString_: string;
+  declare private subheaderString_: string;
+  declare private headerIconString_: string;
+  declare private toastText_: string|null;
+  declare private sites_: NotificationPermissionsDisplay[]|null;
+  declare private shouldShowCompletionInfo_: boolean;
+  declare private lastOrigins_: string[];
   private renderedOrigins_: string[] = [];
-  private lastUserAction_: Actions|null;
+  declare private lastUserAction_: Actions|null;
   private eventTracker_: EventTracker = new EventTracker();
   private browserProxy_: SafetyHubBrowserProxy =
       SafetyHubBrowserProxyImpl.getInstance();

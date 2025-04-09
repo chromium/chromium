@@ -211,15 +211,15 @@ export class SettingsCaptionsElement extends SettingsCaptionsElementBase {
     };
   }
 
-  languages: LanguagesModel;
-  languageHelper: LanguageHelper;
-  private readonly backgroundOpacityOptions_: DropdownMenuOptionList;
-  private readonly colorOptions_: DropdownMenuOptionList;
-  private textFontOptions_: DropdownMenuOptionList;
-  private readonly textOpacityOptions_: DropdownMenuOptionList;
-  private readonly textShadowOptions_: DropdownMenuOptionList;
-  private readonly textSizeOptions_: DropdownMenuOptionList;
-  private enableLiveCaption_: boolean;
+  declare languages: LanguagesModel;
+  declare languageHelper: LanguageHelper;
+  declare private readonly backgroundOpacityOptions_: DropdownMenuOptionList;
+  declare private readonly colorOptions_: DropdownMenuOptionList;
+  declare private textFontOptions_: DropdownMenuOptionList;
+  declare private readonly textOpacityOptions_: DropdownMenuOptionList;
+  declare private readonly textShadowOptions_: DropdownMenuOptionList;
+  declare private readonly textSizeOptions_: DropdownMenuOptionList;
+  declare private enableLiveCaption_: boolean;
 
   override ready() {
     super.ready();

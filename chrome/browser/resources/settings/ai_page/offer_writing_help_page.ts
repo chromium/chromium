@@ -67,11 +67,11 @@ export class SettingsOfferWritingHelpPageElement extends
         prefs.${COMPOSE_PROACTIVE_NUDGE_DISABLED_SITES_PREF}.value.*)`];
   }
 
-  private siteList_: string[];
-  private enableAiSettingsPageRefresh_: boolean;
-  private enableComposeProactiveNudge_: boolean;
-  private disabledSitesLabel_: string;
-  private enterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare private siteList_: string[];
+  declare private enableAiSettingsPageRefresh_: boolean;
+  declare private enableComposeProactiveNudge_: boolean;
+  declare private disabledSitesLabel_: string;
+  declare private enterprisePref_: chrome.settingsPrivate.PrefObject;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();

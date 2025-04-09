@@ -61,7 +61,7 @@ export class PrivacyGuideSafeBrowsingFragmentElement extends
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateEnhanced_: boolean;
-  private enableHashPrefixRealTimeLookups_: boolean;
+  declare private enableHashPrefixRealTimeLookups_: boolean;
 
   override ready() {
     super.ready();

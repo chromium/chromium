@@ -88,12 +88,12 @@ export class ChooserExceptionListElement extends
     };
   }
 
-  chooserExceptions: ChooserException[];
-  chooserType: ChooserType;
-  private emptyListMessage_: string;
-  private hasIncognito_: boolean;
-  private resetPermissionsMessage_: string;
-  private tooltipText_: string;
+  declare chooserExceptions: ChooserException[];
+  declare chooserType: ChooserType;
+  declare private emptyListMessage_: string;
+  declare private hasIncognito_: boolean;
+  declare private resetPermissionsMessage_: string;
+  declare private tooltipText_: string;
 
   override connectedCallback() {
     super.connectedCallback();

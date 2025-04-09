@@ -35,7 +35,7 @@ export class PrivacySandboxInterestItemElement extends
     };
   }
 
-  interest: PrivacySandboxInterest;
+  declare interest: PrivacySandboxInterest;
 
   private getDisplayString_(): string {
     if (this.interest.topic !== undefined) {

@@ -74,14 +74,14 @@ export class SettingsSearchEngineEntryElement extends
     };
   }
 
-  engine: SearchEngine;
-  showShortcut: boolean;
-  showQueryUrl: boolean;
-  isDefault: boolean;
+  declare engine: SearchEngine;
+  declare showShortcut: boolean;
+  declare showQueryUrl: boolean;
+  declare isDefault: boolean;
   private browserProxy_: SearchEnginesBrowserProxy =
       SearchEnginesBrowserProxyImpl.getInstance();
-  private showEditIcon_: boolean;
-  private showDownloadedIcon_: boolean;
+  declare private showEditIcon_: boolean;
+  declare private showDownloadedIcon_: boolean;
   private timeoutId_: number|null = null;
 
   private onEngineChanged_(

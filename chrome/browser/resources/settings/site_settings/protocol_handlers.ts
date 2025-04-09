@@ -138,15 +138,16 @@ export class ProtocolHandlersElement extends ProtocolHandlersElementBase {
     };
   }
 
-  protocols: ProtocolEntry[];
-  appAllowedProtocols: AppProtocolEntry[];
-  appDisallowedProtocols: AppProtocolEntry[];
-  private showAppsProtocolHandlersTitle_: boolean;
-  private actionMenuModel_: HandlerEntry|null;
-  toggleOffLabel: string;
-  toggleOnLabel: string;
-  ignoredProtocols: HandlerEntry[];
-  private handlersEnabledPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare protocols: ProtocolEntry[];
+  declare appAllowedProtocols: AppProtocolEntry[];
+  declare appDisallowedProtocols: AppProtocolEntry[];
+  declare private showAppsProtocolHandlersTitle_: boolean;
+  declare private actionMenuModel_: HandlerEntry|null;
+  declare toggleOffLabel: string;
+  declare toggleOnLabel: string;
+  declare ignoredProtocols: HandlerEntry[];
+  declare private handlersEnabledPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
 
   override ready() {
     super.ready();

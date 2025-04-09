@@ -55,8 +55,8 @@ export class SettingsOnStartupPageElement extends
     };
   }
 
-  prefs: Object;
-  private ntpExtension_: NtpExtension|null;
+  declare prefs: Object;
+  declare private ntpExtension_: NtpExtension|null;
 
   override connectedCallback() {
     super.connectedCallback();

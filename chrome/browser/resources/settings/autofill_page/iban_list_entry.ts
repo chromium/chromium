@@ -64,9 +64,9 @@ export class SettingsIbanListEntryElement extends
     };
   }
 
-  iban: chrome.autofillPrivate.IbanEntry;
+  declare iban: chrome.autofillPrivate.IbanEntry;
 
-  private showNewFopDisplayEnabled_: boolean;
+  declare private showNewFopDisplayEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot!.getElementById('ibanMenu');

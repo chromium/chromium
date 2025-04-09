@@ -99,11 +99,11 @@ export class SettingsUiElement extends SettingsUiElementBase {
     };
   }
 
-  prefs: {[key: string]: any};
-  private toolbarSpinnerActive_: boolean;
-  private narrow_: boolean;
-  private pageVisibility_: PageVisibility;
-  private lastSearchQuery_: string;
+  declare prefs: {[key: string]: any};
+  declare private toolbarSpinnerActive_: boolean;
+  declare private narrow_: boolean;
+  declare private pageVisibility_: PageVisibility;
+  declare private lastSearchQuery_: string;
 
   constructor() {
     super();

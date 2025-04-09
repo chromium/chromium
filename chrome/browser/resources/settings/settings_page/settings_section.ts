@@ -71,10 +71,10 @@ export class SettingsSectionElement extends PolymerElement {
     };
   }
 
-  section: string;
-  pageTitle: string;
-  hiddenBySearch: boolean;
-  showSendFeedbackButton: boolean;
+  declare section: string;
+  declare pageTitle: string;
+  declare hiddenBySearch: boolean;
+  declare showSendFeedbackButton: boolean;
 
   /**
    * Get the value to which to set the aria-hidden attribute of the section

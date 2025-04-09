@@ -45,7 +45,7 @@ export class FileSystemSiteEntryItemElement extends
     };
   }
 
-  grant: FileSystemGrant;
+  declare grant: FileSystemGrant;
 
   private getClassForListItem_(): string {
     return this.grant.isDirectory ? 'icon-folder-open' : 'icon-file';

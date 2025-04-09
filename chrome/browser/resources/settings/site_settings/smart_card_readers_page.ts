@@ -56,7 +56,7 @@ export class SettingsSmartCardReadersPageElement extends
     };
   }
 
-  private readersWithGrants_: SmartCardReaderGrants[];
+  declare private readersWithGrants_: SmartCardReaderGrants[];
 
   override connectedCallback() {
     super.connectedCallback();

@@ -60,9 +60,9 @@ export class SettingsCreditCardListEntryElement extends
     };
   }
 
-  creditCard: chrome.autofillPrivate.CreditCardEntry;
+  declare creditCard: chrome.autofillPrivate.CreditCardEntry;
 
-  private showNewFopDisplayEnabled_: boolean;
+  declare private showNewFopDisplayEnabled_: boolean;
 
   get dotsMenu(): HTMLElement|null {
     return this.shadowRoot!.getElementById('creditCardMenu');

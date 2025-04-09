@@ -83,10 +83,10 @@ export class SettingsEditDictionaryPageElement extends
     };
   }
 
-  private newWordValue_: string;
-  subpageRoute: Route;
-  private words_: string[];
-  private hasWords_: boolean;
+  declare private newWordValue_: string;
+  declare subpageRoute: Route;
+  declare private words_: string[];
+  declare private hasWords_: boolean;
   private languageSettingsPrivate_:
       (typeof chrome.languageSettingsPrivate)|null = null;
 

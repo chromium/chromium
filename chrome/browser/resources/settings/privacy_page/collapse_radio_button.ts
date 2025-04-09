@@ -89,16 +89,16 @@ export class SettingsCollapseRadioButtonElement extends
     ];
   }
 
-  expanded: boolean;
-  noAutomaticCollapse: boolean;
-  noCollapse: boolean;
-  override label: string;
-  indicatorAriaLabel: string;
-  icon: string;
-  pref?: chrome.settingsPrivate.PrefObject;
-  override disabled: boolean;
-  subLabel: string;
-  expandAriaLabel: string;
+  declare expanded: boolean;
+  declare noAutomaticCollapse: boolean;
+  declare noCollapse: boolean;
+  declare label: string;
+  declare indicatorAriaLabel: string;
+  declare icon: string;
+  declare pref?: chrome.settingsPrivate.PrefObject;
+  declare disabled: boolean;
+  declare subLabel: string;
+  declare expandAriaLabel: string;
   private pendingUpdateCollapsed_: boolean;
 
   constructor() {

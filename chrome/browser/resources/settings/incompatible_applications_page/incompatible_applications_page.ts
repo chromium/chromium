@@ -89,12 +89,12 @@ export class SettingsIncompatibleApplicationsPageElement extends
     };
   }
 
-  private hasAdminRights_: boolean;
-  private applications_: IncompatibleApplication[];
-  private isDone_: boolean;
-  private subtitleText_: string;
-  private subtitleNoAdminRightsText_: string;
-  private listTitleText_: string;
+  declare private hasAdminRights_: boolean;
+  declare private applications_: IncompatibleApplication[];
+  declare private isDone_: boolean;
+  declare private subtitleText_: string;
+  declare private subtitleNoAdminRightsText_: string;
+  declare private listTitleText_: string;
 
   override ready() {
     super.ready();

@@ -141,22 +141,22 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
       PrivacySandboxBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
-  private topicsList_: PrivacySandboxInterest[];
-  private blockedTopicsList_: PrivacySandboxInterest[];
+  declare private topicsList_: PrivacySandboxInterest[];
+  declare private blockedTopicsList_: PrivacySandboxInterest[];
   private currentChildTopics_: CanonicalTopic[];
   private currentInterest_?: PrivacySandboxInterest;
-  private focusConfig: FocusConfig;
+  declare private focusConfig: FocusConfig;
 
-  private isTopicsListLoaded_: boolean;
-  private emptyState_: boolean;
-  private blockedTopicsExpanded_: boolean;
+  declare private isTopicsListLoaded_: boolean;
+  declare private emptyState_: boolean;
+  declare private blockedTopicsExpanded_: boolean;
 
-  private shouldShowBlockTopicDialog_: boolean;
-  private blockTopicDialogTitle_: string;
-  private blockTopicDialogBody_: string;
-  private shouldShowV2_: boolean;
-  private shouldShowAdTopicsContentParity_: boolean;
-  private adTopicsToggleSubLabel_: string;
+  declare private shouldShowBlockTopicDialog_: boolean;
+  declare private blockTopicDialogTitle_: string;
+  declare private blockTopicDialogBody_: string;
+  declare private shouldShowV2_: boolean;
+  declare private shouldShowAdTopicsContentParity_: boolean;
+  declare private adTopicsToggleSubLabel_: string;
 
   override ready() {
     super.ready();

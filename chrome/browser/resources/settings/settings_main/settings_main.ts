@@ -101,13 +101,13 @@ export class SettingsMainElement extends SettingsMainElementBase {
     };
   }
 
-  prefs: {[key: string]: any};
-  private showPages_: MainPageVisibility;
-  private inSearchMode_: boolean;
-  private showNoResultsFound_: boolean;
-  private showingSubpage_: boolean;
-  toolbarSpinnerActive: boolean;
-  pageVisibility?: PageVisibility;
+  declare prefs: {[key: string]: any};
+  declare private showPages_: MainPageVisibility;
+  declare private inSearchMode_: boolean;
+  declare private showNoResultsFound_: boolean;
+  declare private showingSubpage_: boolean;
+  declare toolbarSpinnerActive: boolean;
+  declare pageVisibility?: PageVisibility;
 
   /**
    * Updates the hidden state of the about and settings pages based on the

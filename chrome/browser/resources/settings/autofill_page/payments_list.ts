@@ -81,12 +81,12 @@ export class SettingsPaymentsListElement extends PolymerElement {
     };
   }
 
-  creditCards: chrome.autofillPrivate.CreditCardEntry[];
-  ibans: chrome.autofillPrivate.IbanEntry[];
-  payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
-  private enableIbans_: boolean;
-  private enablePayOverTime_: boolean;
-  private showAnyPaymentMethods_: boolean;
+  declare creditCards: chrome.autofillPrivate.CreditCardEntry[];
+  declare ibans: chrome.autofillPrivate.IbanEntry[];
+  declare payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[];
+  declare private enableIbans_: boolean;
+  declare private enablePayOverTime_: boolean;
+  declare private showAnyPaymentMethods_: boolean;
 
   /**
    * Focuses the next most appropriate element after removing a specific

@@ -45,8 +45,8 @@ export class SmartCardReaderOriginEntryElement extends
       },
     };
   }
-  smartCardReaderName: string;
-  origin: OriginWithDisplayName;
+  declare smartCardReaderName: string;
+  declare origin: OriginWithDisplayName;
 
   private onRemoveOriginClick_() {
     this.browserProxy.revokeSmartCardReaderGrant(

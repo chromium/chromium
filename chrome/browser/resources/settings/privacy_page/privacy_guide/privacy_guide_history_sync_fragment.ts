@@ -73,7 +73,8 @@ export class PrivacyGuideHistorySyncFragmentElement extends
    * set with the next sync prefs update.
    */
   private syncAllCache_: boolean|null = null;
-  private historySyncVirtualPref_: chrome.settingsPrivate.PrefObject<boolean>;
+  declare private historySyncVirtualPref_:
+      chrome.settingsPrivate.PrefObject<boolean>;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private startStateHistorySyncOn_: boolean;

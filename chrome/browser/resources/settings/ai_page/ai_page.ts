@@ -116,15 +116,15 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
     };
   }
 
-  private enableAiSettingsPageRefresh_: boolean;
-  private showAutofillAiControl_: boolean;
-  private showComposeControl_: boolean;
-  private showCompareControl_: boolean;
-  private showHistorySearchControl_: boolean;
-  private showTabOrganizationControl_: boolean;
-  private showPasswordChangeControl_: boolean;
-  private focusConfig_: FocusConfig;
-  private historySearchRowSublabel_: string;
+  declare private enableAiSettingsPageRefresh_: boolean;
+  declare private showAutofillAiControl_: boolean;
+  declare private showComposeControl_: boolean;
+  declare private showCompareControl_: boolean;
+  declare private showHistorySearchControl_: boolean;
+  declare private showTabOrganizationControl_: boolean;
+  declare private showPasswordChangeControl_: boolean;
+  declare private focusConfig_: FocusConfig;
+  declare private historySearchRowSublabel_: string;
   private shouldRecordMetrics_: boolean = true;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
