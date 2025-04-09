@@ -12,6 +12,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -34,7 +36,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 
-using base::test::RunUntil;
 using content::MessageLoopRunner;
 
 // anonymous namespace for signin with UI helper functions.
@@ -155,6 +156,20 @@ void RunLoopFor(base::TimeDelta duration) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(), duration);
   run_loop.Run();
+}
+
+bool RunUntil(base::FunctionRef<bool(void)> condition) {
+#if BUILDFLAG(IS_MAC)
+  while (!condition()) {
+    base::test::TestFuture<void> future;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, future.GetCallback(), TestTimeouts::tiny_timeout());
+    future.Get();
+  }
+  return true;
+#else
+  return base::test::RunUntil(condition);
+#endif
 }
 
 // Returns the RenderFrameHost where Gaia credentials can be filled in.
