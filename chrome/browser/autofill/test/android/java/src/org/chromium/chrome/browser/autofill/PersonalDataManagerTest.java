@@ -136,6 +136,10 @@ public class PersonalDataManagerTest {
                         .build();
         String profileOneGUID = mHelper.setProfile(profile);
         assertEquals(1, mHelper.getNumberOfProfilesForSettings());
+        assertEquals(
+                "First name should be set",
+                "John",
+                mHelper.getProfile(profileOneGUID).getInfo(FieldType.NAME_FIRST));
 
         AutofillProfile profile2 =
                 AutofillProfile.builder()
@@ -154,12 +158,18 @@ public class PersonalDataManagerTest {
 
         profile.setGUID(profileOneGUID);
         profile.setCountryCode("CA");
+        profile.setFullName("");
         mHelper.setProfile(profile);
         assertEquals(
                 "Should still have only two profiles", 2, mHelper.getNumberOfProfilesForSettings());
 
         AutofillProfile storedProfile = mHelper.getProfile(profileOneGUID);
         assertEquals(profileOneGUID, storedProfile.getGUID());
+
+        // Name full and its children should be cleared.
+        assertEquals("", storedProfile.getInfo(FieldType.NAME_FULL));
+        assertEquals("", storedProfile.getInfo(FieldType.NAME_FIRST));
+
         assertEquals("CA", storedProfile.getInfo(FieldType.ADDRESS_HOME_COUNTRY));
         assertEquals("San Francisco", storedProfile.getInfo(FieldType.ADDRESS_HOME_CITY));
         assertNotNull(mHelper.getProfile(profileTwoGUID));

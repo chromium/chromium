@@ -341,6 +341,12 @@ BASE_FEATURE(kAutofillFixSplitCreditCardImport,
              "AutofillFixSplitCreditCardImport",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, empty autofill settings fields will be correctly saved.
+// TODO: crbug.com/402020076 - Clean up when confirmed that this is safe.
+BASE_FEATURE(kAutofillFixEmptyFieldAndroidSettingsBug,
+             "AutofillFixEmptyFieldAndroidSettingsBug",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, focusing on a credit card number field that was traditionally
 // autofilled will yield all credit card suggestions.
 // TODO(crbug.com/354175563): Remove when launched.

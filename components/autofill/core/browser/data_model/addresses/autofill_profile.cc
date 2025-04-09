@@ -357,6 +357,8 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
   std::vector<int> field_types =
       Java_AutofillProfile_getFieldTypes(env, jprofile);
 
+  std::vector<std::tuple<FieldType, std::u16string, VerificationStatus>>
+      modified_fields;
   for (int int_field_type : field_types) {
     FieldType field_type = ToSafeFieldType(int_field_type, NO_SERVER_DATA);
     CHECK(field_type != NO_SERVER_DATA);
@@ -364,9 +366,22 @@ AutofillProfile AutofillProfile::CreateFromJavaObject(
         Java_AutofillProfile_getInfoStatus(env, jprofile, field_type);
     std::u16string value =
         Java_AutofillProfile_getInfo(env, jprofile, field_type);
-    if (value.empty()) {
-      continue;
+
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillFixEmptyFieldAndroidSettingsBug)) {
+      if (value != profile.GetInfo(field_type, app_locale) ||
+          status != profile.GetVerificationStatus(field_type)) {
+        modified_fields.emplace_back(field_type, value, status);
+      }
+    } else {
+      if (!value.empty()) {
+        modified_fields.emplace_back(field_type, value, status);
+      }
     }
+  }
+
+  for (const auto& field_data : modified_fields) {
+    const auto& [field_type, value, status] = field_data;
     // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
     // below.
     if (field_type == NAME_FULL || field_type == ADDRESS_HOME_COUNTRY) {
