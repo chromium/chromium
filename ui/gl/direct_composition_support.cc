@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/win/windows_version.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/win/d3d_shared_fence.h"
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
@@ -1182,12 +1183,17 @@ bool DirectCompositionTextureSupported() {
   // |InitializeDirectComposition|.
   g_direct_composition_texture_supported = false;
 
+  if (!gfx::D3DSharedFence::IsSupported(d3d11_device.Get())) {
+    LOG(WARNING) << "IDCompositionTexture is not supported without fences.";
+    return false;
+  }
+
   Microsoft::WRL::ComPtr<IDCompositionDevice4> dcomp_device4;
   HRESULT hr = dcomp_device.As(&dcomp_device4);
   if (FAILED(hr)) {
     // Not a recent enough Windows system
-    LOG(ERROR) << "QueryInterface to IDCompositionDevice4 failed: "
-               << logging::SystemErrorCodeToString(hr);
+    LOG(WARNING) << "QueryInterface to IDCompositionDevice4 failed: "
+                 << logging::SystemErrorCodeToString(hr);
     return false;
   }
 
@@ -1201,7 +1207,7 @@ bool DirectCompositionTextureSupported() {
   }
 
   if (supports_composition_textures == FALSE) {
-    LOG(ERROR) << "CheckCompositionTextureSupport reported unsupported";
+    LOG(WARNING) << "CheckCompositionTextureSupport reported unsupported";
     return false;
   }
 
