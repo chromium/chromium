@@ -312,17 +312,14 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 
-    if (URL.IsAboutBlank()) {
+    // Minimize bottom sheet URLs are still delivered but are not handled in a
+    // special way anymore. Refrain from adding them to the navigation stack.
+    if (URL.IsAboutBlank() || IsMinimizeBottomSheetURL(URL)) {
       return;
     }
 
     if (IsMaximizeBottomSheetURL(URL)) {
       [self.presentationDelegate requestMaximizeBottomSheet];
-      return;
-    }
-
-    if (IsMinimizeBottomSheetURL(URL)) {
-      [self.presentationDelegate requestMinimizeBottomSheet];
       return;
     }
 
