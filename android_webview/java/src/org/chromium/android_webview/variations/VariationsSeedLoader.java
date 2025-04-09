@@ -35,16 +35,18 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.variations.LoadSeedResult;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * VariationsSeedLoader asynchronously loads and updates the variations seed. VariationsSeedLoader
@@ -76,6 +78,7 @@ import java.util.concurrent.TimeoutException;
  *    before AwFeatureListCreator::SetUpFieldTrials() runs.
  */
 @JNINamespace("android_webview")
+@NullMarked
 public class VariationsSeedLoader {
     private static final String TAG = "VariationsSeedLoader";
 
@@ -115,9 +118,9 @@ public class VariationsSeedLoader {
     private static long sCachedSeedFreshness;
     private static long sCachedAppSeedFreshness;
 
-    private FutureTask<SeedLoadResult> mLoadTask;
+    @Nullable private FutureTask<SeedLoadResult> mLoadTask;
     private final SeedServerCallback mSeedServerCallback = new SeedServerCallback();
-    private AtomicBoolean mIsServiceBound = new AtomicBoolean();
+    private final AtomicBoolean mIsServiceBound = new AtomicBoolean();
 
     private static void recordLoadSeedResult(@LoadSeedResult int result) {
         RecordHistogram.recordEnumeratedHistogram(
@@ -484,6 +487,7 @@ public class VariationsSeedLoader {
         long start = SystemClock.elapsedRealtime();
         try {
             try {
+                assert mLoadTask != null : "startVariationsInit should be called first.";
                 SeedLoadResult loadResult =
                         mLoadTask.get(getSeedLoadTimeoutMillis(), TimeUnit.MILLISECONDS);
                 maybeRecordSeedFileTime(loadResult.mSeedFileTime);
