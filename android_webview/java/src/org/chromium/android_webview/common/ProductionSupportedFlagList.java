@@ -733,6 +733,10 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND,
                 "Register, un-register Accessibility broadcast receiver on a background thread."),
         Flag.baseFeature(
+                "BatteryStatusManagerBroadcastReceiverInBackground",
+                "Register, unregister Battery Status Manager broadcast receiver on a background"
+                        + " thread."),
+        Flag.baseFeature(
                 BlinkFeatures.INCREMENT_LOCAL_SURFACE_ID_FOR_MAINFRAME_SAME_DOC_NAVIGATION,
                 "When enabled, every mainframe same-doc navigation will increment the"
                         + " `viz::LocalSurfaceId` from the impl thread."),
