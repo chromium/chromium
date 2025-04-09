@@ -359,6 +359,7 @@ public class ReadingListTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.PHONE})
+    @DisabledTest(message = "Flaky, crbug.com/409606217")
     public void testReadingListOpenInRegularTab() throws Exception {
         SigninPromoCoordinator.disablePromoForTesting();
         BookmarkPromoHeader.forcePromoVisibilityForTesting(false);
