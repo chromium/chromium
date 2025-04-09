@@ -13,6 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
+#include "base/check_is_test.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
@@ -156,7 +157,20 @@ TabAndroid::TabAndroid(JNIEnv* env,
 TabAndroid::~TabAndroid() {
   GetContentLayer()->RemoveAllChildren();
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_TabImpl_clearNativePtr(env, weak_java_tab_.get(env));
+  const jni_zero::JavaRef<jobject>& obj = weak_java_tab_.get(env);
+  if (obj) {
+    Java_TabImpl_clearNativePtr(env, obj);
+  }
+}
+
+// static
+std::unique_ptr<TabAndroid> TabAndroid::CreateForTesting(
+    Profile* profile,
+    int tab_id,
+    std::unique_ptr<content::WebContents> web_contents) {
+  std::unique_ptr<TabAndroid> tab(new TabAndroid(profile, tab_id));
+  tab->web_contents_ = std::move(web_contents);
+  return tab;
 }
 
 SessionID TabAndroid::GetWindowId() const {
@@ -546,6 +560,15 @@ void TabAndroid::SetDevToolsAgentHost(
 bool TabAndroid::IsTrustedWebActivity() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isTrustedWebActivity(env, weak_java_tab_.get(env));
+}
+
+TabAndroid::TabAndroid(Profile* profile, int tab_id)
+    : tab_id_(tab_id),
+      session_window_id_(SessionID::InvalidValue()),
+      content_layer_(cc::slim::Layer::Create()),
+      synced_tab_delegate_(new browser_sync::SyncedTabDelegateAndroid(this)),
+      profile_(profile->GetWeakPtr()) {
+  CHECK_IS_TEST();
 }
 
 base::android::ScopedJavaLocalRef<jobject> JNI_TabImpl_FromWebContents(

@@ -77,6 +77,11 @@ class TabAndroid : public TabAndroidDataProvider,
 
   ~TabAndroid() override;
 
+  static std::unique_ptr<TabAndroid> CreateForTesting(
+      Profile* profile,
+      int tab_id,
+      std::unique_ptr<content::WebContents> web_contents);
+
   // TabAndroidDataProvider
   SessionID GetWindowId() const override;
   int GetAndroidId() const override;
@@ -197,6 +202,8 @@ class TabAndroid : public TabAndroidDataProvider,
   TabFeaturesAndroid* tab_features() { return tab_features_.get(); }
 
  private:
+  // This constructor bypassing JVM setup is for CreateForTesting only.
+  TabAndroid(Profile* profile, int tab_id);
   JavaObjectWeakGlobalRef weak_java_tab_;
 
   int tab_id_;
