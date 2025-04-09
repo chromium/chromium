@@ -18,78 +18,29 @@
   // preloading type param.
   function getPreloadingType() {
     const params = new URLSearchParams(window.location.search);
-    const level = params.get('type');
-    if (level === null)
+    const type = params.get('type');
+    if (type === null)
       throw new Error('window.location does not have a preloading type param');
-    if (level !== 'prefetch' && level !== 'prerender')
+    if (type !== 'prefetch' && type !== 'prerender')
       throw new Error('window.location does not have a valid preloading type param');
-    return level;
+    return type;
   }
 
-  function testPrefetchRulesetTag(tag, expectedTag, description) {
-    promise_test(async t => {
-        const agent = await spawnWindow(t);
-        const nextUrl = agent.getExecutorURL({ page: 2 });
-        await agent.forceSpeculationRules({
-            tag,
-            prefetch: [{source: "list", urls: [nextUrl]}]
-        });
-        await agent.navigate(nextUrl);
-
-        const headers = await agent.getRequestHeaders();
-        assert_prefetched(headers, "must be prefetched");
-        assert_equals(headers.sec_speculation_tags, expectedTag, "Sec-Speculation-Tags");
-    }, "Sec-Speculation-Tags [ruleset-based]: " + description);
-  }
-
-  function testPrefetchInvalidRulesetTag(tag, description) {
-    testPrefetchRulesetTag(tag, 'null', description);
-  }
-
-  function testPrefetchRuleTag(tag, expectedTag, description) {
-    promise_test(async t => {
-        const agent = await spawnWindow(t);
-        const nextUrl = agent.getExecutorURL({ page: 2 });
-        await agent.forceSpeculationRules({
-            prefetch: [{tag, source: "list", urls: [nextUrl]}]
-        });
-        await agent.navigate(nextUrl);
-
-        const headers = await agent.getRequestHeaders();
-        assert_prefetched(headers, "must be prefetched");
-        assert_equals(headers.sec_speculation_tags, expectedTag, "Sec-Speculation-Tags");
-    }, "Sec-Speculation-Tags [rule-based]: " + description);
-  }
-
-  function testPrefetchInvalidRuleTag(tag, description) {
-    promise_test(async t => {
-        const agent = await spawnWindow(t);
-        const nextUrl = agent.getExecutorURL({ page: 2 });
-        await agent.forceSpeculationRules({
-            prefetch: [{tag, source: "list", urls: [nextUrl]}]
-        });
-        await agent.navigate(nextUrl);
-
-        const headers = await agent.getRequestHeaders();
-        assert_not_prefetched(headers, "must not be prefetched");
-        assert_equals(headers.sec_speculation_tags, "", "Sec-Speculation-Tags");
-    }, "Sec-Speculation-Tags [rule-based]: " + description);
-  }
-
-  function testPrerenderRulesetTag(tag, expectedTag, description) {
+  function testRulesetTag(tag, expectedTag, description) {
     promise_test(async t => {
         const rcHelper = new RemoteContextHelper();
         const referrerRC = await rcHelper.addWindow(undefined, { features: 'noopener' });
 
         const extraConfig = {};
-        const prerenderedRC = await referrerRC.helper.createContext({
+        const preloadingType = getPreloadingType();
+        const preloadedRC = await referrerRC.helper.createContext({
             executorCreator(url) {
-              return referrerRC.executeScript((tag, url) => {
+              return referrerRC.executeScript((preloadingType, tag, url) => {
                   const script = document.createElement("script");
                   script.type = "speculationrules";
                   script.textContent = JSON.stringify({
                       tag,
-                      prerender: [
+                      [preloadingType]: [
                         {
                           source: "list",
                           urls: [url]
@@ -97,35 +48,36 @@
                       ]
                   });
                   document.head.append(script);
-              }, [tag, url]);
+              }, [preloadingType, tag, url]);
             }, extraConfig
         });
 
-        // Check the prerender request headers embedded in the prerendered page.
-        // Don't need to activate the page.
-        const headers = await prerenderedRC.getRequestHeaders();
-        assert_equals(headers.get("sec-purpose"), "prefetch;prerender");
+        // Navigate to the preloaded page.
+        referrerRC.navigateTo(preloadedRC.url);
+
+        const headers = await preloadedRC.getRequestHeaders();
+        // Make sure the page is preloaded.
+        assert_equals(
+            headers.get("sec-purpose"),
+            preloadingType === "prefetch" ? "prefetch" : "prefetch;prerender");
         assert_equals(headers.get("sec-speculation-tags"), expectedTag);
     }, "Sec-Speculation-Tags [ruleset-based]: " + description);
   }
 
-  function testPrerenderInvalidRulesetTag(tag, description) {
-    testPrerenderRulesetTag(tag, 'null', description);
-  }
-
-  function testPrerenderRuleTag(tag, expectedTag, description) {
+  function testRuleTag(tag, expectedTag, description) {
     promise_test(async t => {
         const rcHelper = new RemoteContextHelper();
         const referrerRC = await rcHelper.addWindow(undefined, { features: 'noopener' });
 
         const extraConfig = {};
-        const prerenderedRC = await referrerRC.helper.createContext({
+        const preloadingType = getPreloadingType();
+        const preloadedRC = await referrerRC.helper.createContext({
             executorCreator(url) {
-              return referrerRC.executeScript((tag, url) => {
+              return referrerRC.executeScript((preloadingType, tag, url) => {
                   const script = document.createElement("script");
                   script.type = "speculationrules";
                   script.textContent = JSON.stringify({
-                      prerender: [
+                      [preloadingType]: [
                         {
                           tag,
                           source: "list",
@@ -134,88 +86,48 @@
                       ]
                   });
                   document.head.append(script);
-              }, [tag, url]);
+              }, [preloadingType, tag, url]);
             }, extraConfig
         });
 
-        // Check the prerender request headers embedded in the prerendered page.
-        // Don't need to activate the page.
-        const headers = await prerenderedRC.getRequestHeaders();
-        assert_equals(headers.get("sec-purpose"), "prefetch;prerender");
-        assert_equals(headers.get("sec-speculation-tags"), expectedTag);
+        // Navigate to the preloaded page.
+        referrerRC.navigateTo(preloadedRC.url);
+
+        const headers = await preloadedRC.getRequestHeaders();
+
+        if (expectedTag === undefined) {
+          // If `tag` on the rule level is invalid, preloading should not be
+          // triggered, and the navigation should fall back to network. Confirm
+          // this behavior by checking the request headers.
+          assert_false(headers.has("sec-purpose"));
+          assert_false(headers.has("sec-speculation-tags"));
+        } else {
+          // Make sure the page is preloaded.
+          assert_equals(
+            headers.get("sec-purpose"),
+            preloadingType === "prefetch" ? "prefetch" : "prefetch;prerender");
+          assert_equals(headers.get("sec-speculation-tags"), expectedTag);
+        }
+
     }, "Sec-Speculation-Tags [rule-based]: " + description);
   }
 
-  function testPrerenderInvalidRuleTag(tag, description) {
-    promise_test(async t => {
-        const rcHelper = new RemoteContextHelper();
-        const referrerRC = await rcHelper.addWindow(undefined, { features: 'noopener' });
-
-        const extraConfig = {};
-        const prerenderedRC = await referrerRC.helper.createContext({
-            executorCreator(url) {
-              return referrerRC.executeScript((tag, url) => {
-                  const script = document.createElement("script");
-                  script.type = "speculationrules";
-                  script.textContent = JSON.stringify({
-                      prerender: [
-                        {
-                          tag,
-                          source: "list",
-                          urls: [url]
-                        }
-                      ]
-                  });
-                  document.head.append(script);
-              }, [tag, url]);
-            }, extraConfig
-        });
-
-        // Prerender should fail when an invalid tag is specified, and this
-        // navigation should fall back to network.
-        await referrerRC.navigateTo(prerenderedRC.url);
-
-        // Confirm that the page was loaded from network, not activated, by
-        // checking the prerender request headers.
-        const headers = await prerenderedRC.getRequestHeaders();
-        assert_false(headers.has("sec-purpose"));
-        assert_false(headers.has("sec-speculation-tags"));
-    }, "Sec-Speculation-Tags [rule-based]: " + description);
-  }
-
-  // Runs the test function for valid tag cases based on the tag level and the
-  // preloading type.
+  // Runs the test function for valid tag cases based on the tag level.
   globalThis.testTag = (tag, expectedTag, description) => {
     if (getTagLevel() === 'ruleset') {
-      if (getPreloadingType() === 'prefetch') {
-        testPrefetchRulesetTag(tag, expectedTag, description);
-      } else {
-        testPrerenderRulesetTag(tag, expectedTag, description);
-      }
+      testRulesetTag(tag, expectedTag, description);
     } else {
-      if (getPreloadingType() === ' prefetch') {
-        testPrefetchRuleTag(tag, expectedTag, description);
-      } else {
-        testPrerenderRuleTag(tag, expectedTag, description);
-      }
+      testRuleTag(tag, expectedTag, description);
     }
   };
 
-  // Runs the test function for invalid tag cases based on the tag level and the
-  // preloading type.
+  // Runs the test function for invalid tag cases based on the tag level.
   globalThis.testInvalidTag = (tag, description) => {
     if (getTagLevel() === 'ruleset') {
-      if (getPreloadingType() === 'prefetch') {
-        testPrefetchInvalidRulesetTag(tag, description);
-      } else {
-        testPrerenderInvalidRulesetTag(tag, description);
-      }
+      testRulesetTag(tag, 'null', description);
     } else {
-      if (getPreloadingType() === 'prefetch') {
-        testPrefetchInvalidRuleTag(tag, description);
-      } else {
-        testPrerenderInvalidRuleTag(tag, description);
-      }
+      // Pass `undefined` to indicate this preloading is expected to fail.
+      testRuleTag(tag, undefined, description);
     }
   };
 }
