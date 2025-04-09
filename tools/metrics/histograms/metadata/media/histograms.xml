@@ -80,11 +80,16 @@ chromium-metrics-reviews@google.com.
 
 <variants name="KeySystem">
   <variant name="ClearKey" summary="Clear Key key system"/>
+  <variant name="PlayReady" summary="PlayReady key system"/>
   <variant name="Widevine" summary="Widevine key system"/>
 </variants>
 
 <variants name="KeySystemWithRobustness">
   <variant name="ClearKey" summary="Clear Key key system"/>
+  <variant name="PlayReady.HardwareSecure"
+      summary="Hardware secure PlayReady key system"/>
+  <variant name="PlayReady.SoftwareSecure"
+      summary="Software secure PlayReady key system"/>
   <variant name="Widevine.HardwareSecure"
       summary="Hardware secure Widevine key system"/>
   <variant name="Widevine.SoftwareSecure"

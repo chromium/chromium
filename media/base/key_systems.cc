@@ -18,11 +18,17 @@ const char kUnknownKeySystemNameForUMA[] = "Unknown";
 const char kHardwareSecureForUMA[] = "HardwareSecure";
 const char kSoftwareSecureForUMA[] = "SoftwareSecure";
 
+#if BUILDFLAG(IS_WIN)
+const char kPlayReadyKeySystemNameForUMA[] = "PlayReady";
+const char kPlayReadyKeySystemBase[] = "com.microsoft.playready";
+#endif  // BUILDFLAG(IS_WIN)
+
 enum KeySystemForUkm {
   // These values reported to UKM. Do not change their ordinal values.
   kUnknownKeySystemForUkm = 0,
   kClearKeyKeySystemForUkm,
   kWidevineKeySystemForUkm,
+  kPlayReadyKeySystemForUkm,
 };
 }  // namespace
 
@@ -45,6 +51,14 @@ std::string GetKeySystemNameForUMA(const std::string& key_system,
     return key_system_name;
   }
 
+#if BUILDFLAG(IS_WIN)
+  if (key_system == kPlayReadyKeySystemBase &&
+      use_hw_secure_codecs.value_or(false)) {
+    return std::string(kPlayReadyKeySystemNameForUMA) + "." +
+           kHardwareSecureForUMA;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   // For Clear Key and unknown key systems we don't to differentiate between
   // software and hardware security.
 
@@ -58,6 +72,12 @@ std::string GetKeySystemNameForUMA(const std::string& key_system,
 // Returns an int mapping to `key_system` suitable for UKM reporting. CdmConfig
 // is not needed here because we can report CdmConfig fields in UKM directly.
 MEDIA_EXPORT int GetKeySystemIntForUKM(const std::string& key_system) {
+#if BUILDFLAG(IS_WIN)
+  if (key_system == kPlayReadyKeySystemBase) {
+    return KeySystemForUkm::kPlayReadyKeySystemForUkm;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   if (key_system == kWidevineKeySystem) {
     return KeySystemForUkm::kWidevineKeySystemForUkm;
   }
