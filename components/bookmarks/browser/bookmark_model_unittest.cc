@@ -169,7 +169,7 @@ class TestBookmarkClientWithUndo : public TestBookmarkClient {
   }
 
  private:
-  raw_ptr<const BookmarkNode, DanglingUntriaged> parent_ = nullptr;
+  raw_ptr<const BookmarkNode> parent_ = nullptr;
   size_t index_ = 0;
   std::unique_ptr<BookmarkNode> last_removed_node_;
 };
