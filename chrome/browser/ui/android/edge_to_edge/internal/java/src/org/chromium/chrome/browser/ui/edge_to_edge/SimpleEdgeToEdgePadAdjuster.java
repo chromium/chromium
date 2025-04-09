@@ -4,28 +4,32 @@
 
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.ScrollView;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ValueChangedCallback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 
 /**
  * A simple implementation of {@link EdgeToEdgePadAdjuster} which can add a padding when e2e is on
  * and then remove when it is off.
  */
+@NullMarked
 public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
 
     private final View mViewToPad;
     private final int mDefaultBottomPadding;
     private final boolean mEnableClipToPadding;
-    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private final @Nullable ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private @Nullable ValueChangedCallback<EdgeToEdgeController> mControllerChangedCallback;
 
     SimpleEdgeToEdgePadAdjuster(View view, boolean enableClipToPadding) {
@@ -69,6 +73,7 @@ public class SimpleEdgeToEdgePadAdjuster implements EdgeToEdgePadAdjuster {
 
         if (mEdgeToEdgeControllerSupplier == null) return;
 
+        assumeNonNull(mControllerChangedCallback);
         mEdgeToEdgeControllerSupplier.removeObserver(mControllerChangedCallback);
         if (mEdgeToEdgeControllerSupplier.get() != null) {
             mEdgeToEdgeControllerSupplier.get().unregisterAdjuster(this);

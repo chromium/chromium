@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import android.graphics.Color;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
@@ -25,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * for an edge-to-edge like experience, with the ability to scroll back the bottom chin / "OS
  * navbar" to better view and access bottom-anchored web content.
  */
+@NullMarked
 public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarColorHelper {
     private final EdgeToEdgeBottomChinMediator mMediator;
     private final LayoutManager mLayoutManager;
@@ -47,13 +48,13 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
      */
     public EdgeToEdgeBottomChinCoordinator(
             View androidView,
-            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            @NonNull InsetObserver insetObserver,
-            @NonNull LayoutManager layoutManager,
-            @NonNull Runnable requestRenderRunnable,
-            @NonNull EdgeToEdgeController edgeToEdgeController,
-            @NonNull BottomControlsStacker bottomControlsStacker,
-            @NonNull FullscreenManager fullscreenManager) {
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            InsetObserver insetObserver,
+            LayoutManager layoutManager,
+            Runnable requestRenderRunnable,
+            EdgeToEdgeController edgeToEdgeController,
+            BottomControlsStacker bottomControlsStacker,
+            FullscreenManager fullscreenManager) {
         this(
                 androidView,
                 keyboardVisibilityDelegate,
@@ -68,13 +69,13 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarCo
     @VisibleForTesting
     EdgeToEdgeBottomChinCoordinator(
             View androidView,
-            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            @NonNull InsetObserver insetObserver,
-            @NonNull LayoutManager layoutManager,
-            @NonNull EdgeToEdgeController edgeToEdgeController,
-            @NonNull BottomControlsStacker bottomControlsStacker,
-            @NonNull EdgeToEdgeBottomChinSceneLayer sceneLayer,
-            @NonNull FullscreenManager fullscreenManager) {
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            InsetObserver insetObserver,
+            LayoutManager layoutManager,
+            EdgeToEdgeController edgeToEdgeController,
+            BottomControlsStacker bottomControlsStacker,
+            EdgeToEdgeBottomChinSceneLayer sceneLayer,
+            FullscreenManager fullscreenManager) {
         mLayoutManager = layoutManager;
         mSceneLayer = sceneLayer;
 

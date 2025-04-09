@@ -5,7 +5,6 @@
 package org.chromium.content_public.browser;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.TerminationStatus;
 import org.chromium.blink.mojom.ViewportFit;
@@ -48,7 +47,7 @@ public abstract class WebContentsObserver {
 
     private @Nullable WebContents mWebContents;
 
-    public WebContentsObserver(@NonNull WebContents webContents) {
+    public WebContentsObserver(@Nullable WebContents webContents) {
         observe(webContents);
     }
 

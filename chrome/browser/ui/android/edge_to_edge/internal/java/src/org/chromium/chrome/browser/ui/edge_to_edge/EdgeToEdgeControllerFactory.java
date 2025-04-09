@@ -12,13 +12,13 @@ import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -36,6 +36,7 @@ import org.chromium.ui.base.WindowAndroid;
  * Creates an {@link EdgeToEdgeController} used to control drawing using the Android Edge to Edge
  * Feature. This allows drawing under Android System Bars.
  */
+@NullMarked
 public class EdgeToEdgeControllerFactory {
     private static boolean sHas3ButtonNavBarForTesting;
 
@@ -59,8 +60,8 @@ public class EdgeToEdgeControllerFactory {
     public static @Nullable EdgeToEdgeController create(
             Activity activity,
             WindowAndroid windowAndroid,
-            @NonNull ObservableSupplier<Tab> tabObservableSupplier,
-            @NonNull EdgeToEdgeManager edgeToEdgeManager,
+            ObservableSupplier<Tab> tabObservableSupplier,
+            EdgeToEdgeManager edgeToEdgeManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager) {
@@ -97,7 +98,7 @@ public class EdgeToEdgeControllerFactory {
             KeyboardVisibilityDelegate keyboardVisibilityDelegate,
             InsetObserver insetObserver,
             LayoutManager layoutManager,
-            @NonNull Runnable requestRenderRunnable,
+            Runnable requestRenderRunnable,
             EdgeToEdgeController edgeToEdgeController,
             BottomControlsStacker bottomControlsStacker,
             FullscreenManager fullscreenManager) {

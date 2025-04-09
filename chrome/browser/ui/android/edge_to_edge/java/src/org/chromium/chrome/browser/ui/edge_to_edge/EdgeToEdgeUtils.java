@@ -230,7 +230,7 @@ public class EdgeToEdgeUtils {
     /**
      * @return whether the page is opted into edge-to-edge based on the given Tab
      */
-    public static boolean isPageOptedIntoEdgeToEdge(Tab tab) {
+    public static boolean isPageOptedIntoEdgeToEdge(@Nullable Tab tab) {
         if (tab == null || tab.isNativePage()) {
             return isNativeTabDrawingToEdge(tab);
         }
@@ -248,7 +248,7 @@ public class EdgeToEdgeUtils {
      *     viewport-fit value.
      */
     static boolean isPageOptedIntoEdgeToEdge(
-            Tab tab, @WebContentsObserver.ViewportFitType int value) {
+            @Nullable Tab tab, @WebContentsObserver.ViewportFitType int value) {
         if (tab == null || tab.isNativePage()) {
             return isNativeTabDrawingToEdge(tab);
         }
@@ -265,7 +265,7 @@ public class EdgeToEdgeUtils {
     }
 
     /** Return whether there's any safe area constraint found for the given tab. */
-    static boolean hasSafeAreaConstraintForTab(Tab tab) {
+    static boolean hasSafeAreaConstraintForTab(@Nullable Tab tab) {
         if (tab == null || !isSafeAreaConstraintEnabled()) return false;
 
         SafeAreaInsetsTracker safeAreaInsetsTracker =
@@ -274,7 +274,7 @@ public class EdgeToEdgeUtils {
     }
 
     /** Whether a native tab will be drawn edge to to edge. */
-    static boolean isNativeTabDrawingToEdge(Tab activeTab) {
+    static boolean isNativeTabDrawingToEdge(@Nullable Tab activeTab) {
         if (!isDrawKeyNativePageToEdgeEnabled()) return false;
 
         // TODO(crbug.com/339025702): Check if we are in tab switcher when activeTab is null.

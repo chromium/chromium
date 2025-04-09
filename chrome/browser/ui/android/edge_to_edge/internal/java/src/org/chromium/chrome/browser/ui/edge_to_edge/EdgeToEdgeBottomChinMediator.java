@@ -12,8 +12,7 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinPr
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils.isBottomChinAllowed;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
@@ -31,6 +30,7 @@ import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class EdgeToEdgeBottomChinMediator
         implements LayoutStateProvider.LayoutStateObserver,
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener,
@@ -66,12 +66,12 @@ class EdgeToEdgeBottomChinMediator
     private int mKeyboardInset;
     private boolean mHasSafeAreaConstraint;
 
-    private final @NonNull KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
-    private final @NonNull InsetObserver mInsetObserver;
-    private final @NonNull LayoutManager mLayoutManager;
-    private final @NonNull EdgeToEdgeController mEdgeToEdgeController;
-    private final @NonNull BottomControlsStacker mBottomControlsStacker;
-    private final @NonNull FullscreenManager mFullscreenManager;
+    private final KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    private final InsetObserver mInsetObserver;
+    private final LayoutManager mLayoutManager;
+    private final EdgeToEdgeController mEdgeToEdgeController;
+    private final BottomControlsStacker mBottomControlsStacker;
+    private final FullscreenManager mFullscreenManager;
     private final boolean mIsConstraintChinScrollableWhenStacking;
 
     /**
@@ -91,12 +91,12 @@ class EdgeToEdgeBottomChinMediator
      */
     EdgeToEdgeBottomChinMediator(
             PropertyModel model,
-            @NonNull KeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            @NonNull InsetObserver insetObserver,
-            @NonNull LayoutManager layoutManager,
-            @NonNull EdgeToEdgeController edgeToEdgeController,
-            @NonNull BottomControlsStacker bottomControlsStacker,
-            @NonNull FullscreenManager fullscreenManager) {
+            KeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            InsetObserver insetObserver,
+            LayoutManager layoutManager,
+            EdgeToEdgeController edgeToEdgeController,
+            BottomControlsStacker bottomControlsStacker,
+            FullscreenManager fullscreenManager) {
         mModel = model;
         mKeyboardVisibilityDelegate = keyboardVisibilityDelegate;
         mInsetObserver = insetObserver;
