@@ -266,13 +266,13 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
     // of available memory when running the test (otherwise low-memory bots may
     // run into test failures).
     feature_list_.InitAndEnableFeatureWithParameters(
-        site_isolation::features::kSiteIsolationMemoryThresholds,
+        site_isolation::features::kSiteIsolationMemoryThresholdsAndroid,
         {{site_isolation::features::
               kStrictSiteIsolationMemoryThresholdParamName,
           "0"},
-         { site_isolation::features::
-               kPartialSiteIsolationMemoryThresholdParamName,
-           "0" }});
+         {site_isolation::features::
+              kPartialSiteIsolationMemoryThresholdParamName,
+          "0"}});
 #else
     feature_list_.InitAndEnableFeature(
         trusted_vault::kSetClientEncryptionKeysJsApi);
