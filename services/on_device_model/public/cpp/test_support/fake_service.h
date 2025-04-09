@@ -96,6 +96,8 @@ class FakeOnDeviceSession final : public mojom::Session {
   void Clone(
       mojo::PendingReceiver<on_device_model::mojom::Session> session) override;
 
+  void SetPriority(mojom::Priority priority) override {}
+
  private:
   void GenerateImpl(mojom::GenerateOptionsPtr options,
                     mojo::PendingRemote<mojom::StreamingResponder> response);

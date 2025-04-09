@@ -213,6 +213,17 @@ struct GenerateOptions {
   [MinVersion=1] string? response_json_schema;
 };
 
+// Priorities which determine how requests to a session are scheduled.
+[Stable, Extensible]
+enum Priority {
+  // Requests should be treated as high priority, the user may be actively
+  // waiting for a response.
+  [Default] kForeground,
+  // Requests are not urgent and may be queued. Background requests will only
+  // run if there are no active foreground requests.
+  kBackground,
+};
+
 // A session for a model that allows adding context and then executing an input
 // with that context.
 [Stable]
@@ -247,6 +258,12 @@ interface Session {
   // and should only be used in debugging/testing.
   [MinVersion=3]
   GetProbabilitiesBlocking@8(string text) => (array<float> probabilities);
+
+  // Sets the priority for currently queued requests to this session and future
+  // requests. Any clones made of this session will inherit the current
+  // priority. Priority for new sessions defaults to kForeground.
+  [MinVersion=4]
+  SetPriority@9(Priority priority);
 };
 
 // A loaded model which can be queried. This interface must be controlled by the
