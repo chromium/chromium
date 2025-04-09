@@ -285,10 +285,10 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   DCHECK(!forms.empty());
   OnBeforeProcessParsedForms();
 
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> queryable_forms;
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> queryable_forms;
   DenseSet<FormType> form_types;
   for (const FormData& form : forms) {
-    FormStructure& form_structure =
+    const FormStructure& form_structure =
         CHECK_DEREF(FindCachedFormById(form.global_id()));
 
     form_types.insert_all(form_structure.GetFormTypes());

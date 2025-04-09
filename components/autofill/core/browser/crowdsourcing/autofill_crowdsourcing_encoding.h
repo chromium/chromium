@@ -131,7 +131,7 @@ std::vector<AutofillUploadContents> EncodeUploadRequest(
 // signatures.
 std::pair<AutofillPageQueryRequest, std::vector<FormSignature>>
 EncodeAutofillPageQueryRequest(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
+    const std::vector<raw_ptr<const FormStructure, VectorExperimental>>& forms);
 
 // Parses `payload` as AutofillQueryResponse proto and calls
 // `ProcessServerPredictionsQueryResponse`.

@@ -1898,7 +1898,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
 
   FormStructure form_structure(form);
 
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
 
   std::vector<FormSignature> expected_signatures;
@@ -2027,7 +2027,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   EXPECT_THAT(encoded_query5, SerializesSameAs(query));
 
   // Check that we fail if there are only bad form(s).
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> bad_forms;
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> bad_forms;
   bad_forms.push_back(&malformed_form_structure);
   auto [encoded_query6, encoded_signatures6] =
       EncodeAutofillPageQueryRequest(bad_forms);
@@ -2047,7 +2047,7 @@ TEST_F(AutofillCrowdsourcingEncoding, SkipFieldTest) {
   });
 
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
 
   // Create the expected query and serialize it to a string.
@@ -2085,7 +2085,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
       .action = "http://cool.com/login",
   });
 
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> forms;
   FormStructure form_structure(form);
   forms.push_back(&form_structure);
 
@@ -2131,7 +2131,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
   });
 
   FormStructure form_structure(form);
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
 
   // Create the expected query and serialize it to a string.
@@ -2172,7 +2172,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
     fs_field->set_host_form_signature(form_structure.form_signature());
   }
 
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
 
   // Create the expected query and serialize it to a string.
@@ -2206,7 +2206,7 @@ TEST_F(AutofillCrowdsourcingEncoding, AllowBigForms) {
 
   FormStructure form_structure(form);
 
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> forms;
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> forms;
   forms.push_back(&form_structure);
   auto [encoded_query, encoded_signatures] =
       EncodeAutofillPageQueryRequest(forms);

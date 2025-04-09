@@ -27,12 +27,13 @@ class MockAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
   MockAutofillCrowdsourcingManager& operator=(
       const MockAutofillCrowdsourcingManager&) = delete;
 
-  MOCK_METHOD(bool,
-              StartQueryRequest,
-              ((const std::vector<raw_ptr<FormStructure, VectorExperimental>>&),
-               std::optional<net::IsolationInfo>,
-               base::OnceCallback<void(std::optional<QueryResponse>)>),
-              (override));
+  MOCK_METHOD(
+      bool,
+      StartQueryRequest,
+      ((const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&),
+       std::optional<net::IsolationInfo>,
+       base::OnceCallback<void(std::optional<QueryResponse>)>),
+      (override));
 
   MOCK_METHOD(bool,
               StartUploadRequest,

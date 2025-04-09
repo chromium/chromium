@@ -87,9 +87,9 @@ constexpr int METHOD_POST = 1;
 constexpr int CACHE_MISS = 0;
 constexpr int CACHE_HIT = 1;
 
-std::vector<raw_ptr<FormStructure, VectorExperimental>> ToRawPointerVector(
-    const std::vector<std::unique_ptr<FormStructure>>& list) {
-  std::vector<raw_ptr<FormStructure, VectorExperimental>> result;
+std::vector<raw_ptr<const FormStructure, VectorExperimental>>
+ToRawPointerVector(const std::vector<std::unique_ptr<FormStructure>>& list) {
+  std::vector<raw_ptr<const FormStructure, VectorExperimental>> result;
   for (const auto& item : list) {
     result.push_back(item.get());
   }
