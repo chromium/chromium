@@ -105,7 +105,6 @@ bool IsLabelHigherQualityThanPlaceholder(
     case FormFieldData::LabelSource::kPTag:
       return true;
     case FormFieldData::LabelSource::kAriaLabel:
-    case FormFieldData::LabelSource::kDefaultSelectText:
     case FormFieldData::LabelSource::kDdTag:
     case FormFieldData::LabelSource::kDivTable:
     case FormFieldData::LabelSource::kLiTag:

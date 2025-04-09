@@ -353,7 +353,6 @@ struct FormFieldData {
     kForShadowHostName, // <label> for-attribute that links to an control
                         // (inside a shadow DOM) via it's name attribute.
     kOverlayingLabel,   // Succeeding DOM node overlaying the input.
-    kDefaultSelectText, // The text of a <select> element's first <option>.
   };
 
   mojo_base.mojom.String16 label;

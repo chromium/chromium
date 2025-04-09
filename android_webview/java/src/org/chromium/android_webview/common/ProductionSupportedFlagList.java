@@ -273,9 +273,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_CURRENT_VALUE_IN_IMPORT,
                 "Prevents the AutofillField's current value from being reset for import"),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_INFER_LABEL_FROM_DEFAULT_SELECT_TEXT,
-                "Considers the text of a <select> element's first <option> as a potential label"),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_IMPROVE_CITY_FIELD_CLASSIFICATION,
                 "Reduces city field false positive classifications"),
         Flag.baseFeature(

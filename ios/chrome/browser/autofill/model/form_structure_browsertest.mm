@@ -351,16 +351,6 @@ const auto& GetFailingTestNames() {
       "115_checkout_walgreens.com.html",
       "116_cc_checkout_walgreens.com.html",
       "150_checkout_venus.com_search_field.html",
-      // TODO(crbug.com/320965828): Infering labels from default options of
-      // <select> elements is not implemented on iOS.
-      "040_checkout_urbanoutfitters.com.html",
-      "061_register_myspace.com.html",
-      "105_checkout_m_lowes.com.html",
-      "106_checkout_m_amazon.com.html",
-      "109_checkout_m_nordstroms.com.html",
-      "112_checkout_m_llbean.com.html",
-      "132_bug_469012.html",
-      "144_cc_checkout_m_jcp.com.html",
       // TODO(crbug.com/360322019): Even though the page language detection
       // feature is enabled, is it not triggered properly for this test on iOS.
       "153_fmm-en_inm.gob.mx.html",

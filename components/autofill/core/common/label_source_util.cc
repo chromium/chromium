@@ -42,8 +42,6 @@ std::string LabelSourceToString(FormFieldData::LabelSource label_source) {
       return "ForShadowHostName";
     case FormFieldData::LabelSource::kOverlayingLabel:
       return "OverlayingLabel";
-    case FormFieldData::LabelSource::kDefaultSelectText:
-      return "DefaultSelectText";
   }
 }
 

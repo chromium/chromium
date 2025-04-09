@@ -741,14 +741,6 @@ BASE_FEATURE(kAutofillGreekRegexes,
              "AutofillGreekRegexes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the text of a <select> element's first <option> is considered
-// as a potential label.
-// TODO(crbug.com/320965828): Remove when launched.
-COMPONENT_EXPORT(AUTOFILL)
-BASE_FEATURE(kAutofillInferLabelFromDefaultSelectText,
-             "AutofillInferLabelFromDefaultSelectText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, votes are uploaded already when the AutofillDriver becomes
 // inactive, i.e., the underlying frame enters the bfcache. Otherwise, a
 // bfcached AutofillDriver and its votes may stay around until the WebContents

@@ -18,11 +18,9 @@
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -121,8 +119,6 @@ class DomLabelTest : public content::RenderViewTest,
   }
 
  private:
-  base::test::ScopedFeatureList feature{
-      features::kAutofillInferLabelFromDefaultSelectText};
   scoped_refptr<FieldDataManager> field_data_manager_ =
       base::MakeRefCounted<FieldDataManager>();
 };

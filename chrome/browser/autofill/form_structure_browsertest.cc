@@ -215,8 +215,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
           features::kAutofillUseITAddressModel,
-          // TODO(crbug.com/320965828): Remove once launched.
-          features::kAutofillInferLabelFromDefaultSelectText,
       },
       // Disabled
       {// TODO(crbug.com/320965828): This feature is not supported on the iOS

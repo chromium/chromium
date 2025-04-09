@@ -1043,43 +1043,6 @@ std::optional<InferredLabel> InferLabelFromAncestors(
   return std::nullopt;
 }
 
-// The first <option> of <select> elements sometimes represents a default value
-// like <option>Select country</option> (with no value attribute). In this case,
-// the text of this <option> is a useful label.
-// `InferLabelFromDefaultSelectValue()` attempts to decide if this is the case,
-// by checking if only the first <option> is lacking a value.
-std::optional<InferredLabel> InferLabelFromDefaultSelectText(
-    const WebFormControlElement& element) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillInferLabelFromDefaultSelectText)) {
-    return std::nullopt;
-  }
-  CHECK(IsSelectElement(element));
-  std::vector<WebElement> options =
-      element.To<WebSelectElement>().GetListItems();
-  // `options` can contain other elements like <optgroup>.
-  std::erase_if(options, [](const WebElement& e) {
-    return !e.DynamicTo<WebOptionElement>();
-  });
-  auto has_non_empty_value_attribute = [](const WebElement& e) {
-    // If an <option>'s value is unspecified, it default to its text content.
-    // For this reason the `HasAttribute<>()` check is necessary.
-    if (!HasAttribute<kValue>(e)) {
-      return false;
-    }
-    std::u16string value = GetAttribute<kValue>(e).Utf16();
-    base::TrimWhitespace(value, base::TRIM_ALL, &value);
-    return !value.empty();
-  };
-  if (options.size() >= 2 && !has_non_empty_value_attribute(options[0]) &&
-      std::all_of(options.begin() + 1, options.end(),
-                  has_non_empty_value_attribute)) {
-    return InferredLabel::BuildIfValid(FindChildText(options[0]),
-                                       LabelSource::kDefaultSelectText);
-  }
-  return std::nullopt;
-}
-
 // Infers corresponding label for `element` from surrounding context in the DOM,
 // e.g. the contents of the preceding <p> tag or text element. Returns an empty
 // string if it could not find a label for `element`.
@@ -1109,11 +1072,6 @@ std::optional<InferredLabel> InferLabelForElement(
   // If we didn't find a label, check the `element`'s ancestors.
   if (auto r = InferLabelFromAncestors(element)) {
     return r;
-  }
-  if (IsSelectElement(element)) {
-    if (auto r = InferLabelFromDefaultSelectText(element)) {
-      return r;
-    }
   }
   // If we didn't find a label, check the value attr used as the placeholder.
   if (auto r = InferLabelFromValueAttribute(element)) {

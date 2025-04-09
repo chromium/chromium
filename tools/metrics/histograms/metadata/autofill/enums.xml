@@ -3648,8 +3648,6 @@ Called by update_autofill_enums.py.-->
       label="&lt;label&gt; for attribute linked to a control element inside a
              shadow DOM via its name attribute"/>
   <int value="15" label="Succeeding DOM node overlaying the input"/>
-  <int value="16"
-      label="The text of a &lt;select&gt; element's first &lt;option&gt;"/>
 </enum>
 
 <!-- LINT.IfChange(InvalidSubmittedFormReasonIOS) -->
