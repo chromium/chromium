@@ -1137,6 +1137,7 @@ public class WebPaymentIntentHelperTest {
                         methodDataMap,
                         /* clearIdFields= */ false,
                         /* removeDeprecatedFields= */ false);
+        Assert.assertEquals(WebPaymentIntentHelper.ACTION_IS_READY_TO_PAY, intent.getAction());
         Assert.assertEquals("package.name", intent.getComponent().getPackageName());
         Assert.assertEquals("service.name", intent.getComponent().getClassName());
         Bundle bundle = intent.getExtras();
@@ -1264,6 +1265,7 @@ public class WebPaymentIntentHelperTest {
                         methodDataMap,
                         /* clearIdFields= */ true,
                         /* removeDeprecatedFields= */ false);
+        Assert.assertEquals(WebPaymentIntentHelper.ACTION_IS_READY_TO_PAY, intent.getAction());
         Assert.assertEquals("package.name", intent.getComponent().getPackageName());
         Assert.assertEquals("service.name", intent.getComponent().getClassName());
         Bundle bundle = intent.getExtras();
@@ -1333,6 +1335,8 @@ public class WebPaymentIntentHelperTest {
         Intent intent =
                 WebPaymentIntentHelper.createPaymentDetailsUpdateServiceIntent(
                         "package.name", "service.name");
+        Assert.assertEquals(
+                WebPaymentIntentHelper.ACTION_UPDATE_PAYMENT_DETAILS, intent.getAction());
         Assert.assertEquals("package.name", intent.getComponent().getPackageName());
         Assert.assertEquals("service.name", intent.getComponent().getClassName());
         Assert.assertNull(intent.getExtras());

@@ -35,6 +35,17 @@ public class WebPaymentIntentHelper {
     /** The action name for the Pay Intent. */
     public static final String ACTION_PAY = "org.chromium.intent.action.PAY";
 
+    /**
+     * The name of the intent for the service that updates the payment method, the shipping address,
+     * or the shipping option in response to user actions in the payment app.
+     */
+    public static final String ACTION_UPDATE_PAYMENT_DETAILS =
+            "org.chromium.intent.action.UPDATE_PAYMENT_DETAILS";
+
+    /** The name of the intent for the service to check whether an app is ready to pay. */
+    public static final String ACTION_IS_READY_TO_PAY =
+            "org.chromium.intent.action.IS_READY_TO_PAY";
+
     // Freshest parameters sent to the payment app.
     public static final String EXTRA_CERTIFICATE = "certificate";
     public static final String EXTRA_MERCHANT_NAME = "merchantName";
@@ -305,6 +316,7 @@ public class WebPaymentIntentHelper {
         checkStringNotEmpty(packageName, "packageName");
         checkStringNotEmpty(serviceName, "serviceName");
         intent.setClassName(packageName, serviceName);
+        intent.setAction(ACTION_UPDATE_PAYMENT_DETAILS);
         return intent;
     }
 
@@ -343,6 +355,7 @@ public class WebPaymentIntentHelper {
         checkStringNotEmpty(serviceName, "serviceName");
         checkStringNotEmpty(packageName, "packageName");
         isReadyToPayIntent.setClassName(packageName, serviceName);
+        isReadyToPayIntent.setAction(ACTION_IS_READY_TO_PAY);
         Bundle extras = new Bundle();
         if (!clearIdFields) {
             addCommonExtrasWithIdentity(
