@@ -496,8 +496,6 @@ crbug.com/40786644 [ win nvidia-0x2783 angle-vulkan passthrough ] conformance/gl
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/rendering/bind-framebuffer-flush-bug.html [ Failure ]
 crbug.com/1523062 [ win11 qualcomm-0x41333430 angle-d3d11 ] conformance/textures/misc/mipmap-fbo.html [ Failure ]
 
-## win-swangle-chromium-x86
-crbug.com/365680832 [ angle-swiftshader graphite-enabled passthrough renderer-skia-gl win ] conformance/extensions/oes-texture-float-linear.html [ Failure ]
 
 ## Win / Intel / D3D9
 crbug.com/395934162 [ win intel angle-d3d9 passthrough ] conformance/uniforms/out-of-bounds-uniform-array-access.html [ RetryOnFailure ]
