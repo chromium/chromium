@@ -160,6 +160,7 @@ source_set("unit_tests") {
     ":prefs",
     "//base",
     "//components/password_manager/core/common",
+    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager",

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
 #import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/safety_check/safety_check_prefs.h"
@@ -348,4 +349,38 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetInteger(
                 prefs::kHomeCustomizationMagicStackSafetyCheckIssuesCount),
             0);
+}
+
+TEST_F(BrowserPrefsTest, VerifyUserDefaultsToProfilePrefsMigration) {
+  NSString* kSyncDisabledAlertShownKey = @"SyncDisabledAlertShown";
+
+  // Sets the value to migrate.
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  [defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
+  ASSERT_TRUE([defaults boolForKey:kSyncDisabledAlertShownKey]);
+
+  EXPECT_FALSE(
+      pref_service_.GetBoolean(policy::policy_prefs::kSyncDisabledAlertShown));
+
+  auto* sync_disabled_alert_shown_pref = pref_service_.FindPreference(
+      policy::policy_prefs::kSyncDisabledAlertShown);
+  ASSERT_TRUE(sync_disabled_alert_shown_pref);
+  ASSERT_TRUE(sync_disabled_alert_shown_pref->IsDefaultValue());
+
+  // Perform migration.
+  MigrateObsoleteProfilePrefs(&pref_service_);
+
+  // Verify migration.
+  ASSERT_FALSE(sync_disabled_alert_shown_pref->IsDefaultValue());
+  ASSERT_FALSE([defaults boolForKey:kSyncDisabledAlertShownKey]);
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(policy::policy_prefs::kSyncDisabledAlertShown));
+
+  // Perform migration again.
+  MigrateObsoleteProfilePrefs(&pref_service_);
+
+  ASSERT_FALSE(sync_disabled_alert_shown_pref->IsDefaultValue());
+  ASSERT_FALSE([defaults boolForKey:kSyncDisabledAlertShownKey]);
+  EXPECT_TRUE(
+      pref_service_.GetBoolean(policy::policy_prefs::kSyncDisabledAlertShown));
 }

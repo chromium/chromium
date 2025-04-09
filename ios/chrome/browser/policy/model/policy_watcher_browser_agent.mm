@@ -15,6 +15,7 @@
 #import "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/sync/base/pref_names.h"
@@ -29,8 +30,6 @@
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
-
-NSString* kSyncDisabledAlertShownKey = @"SyncDisabledAlertShown";
 
 BROWSER_USER_DATA_KEY_IMPL(PolicyWatcherBrowserAgent)
 
@@ -123,14 +122,13 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
 }
 
 void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
-  NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
+  auto* profile_prefs = browser_->GetProfile()->GetPrefs();
   BOOL syncDisabledAlertShown =
-      [standard_defaults boolForKey:kSyncDisabledAlertShownKey];
+      profile_prefs->GetBoolean(policy::policy_prefs::kSyncDisabledAlertShown);
   // TODO(crbug.com/40265119): Instead of directly accessing internal sync
   // prefs, go through proper APIs (SyncService/SyncUserSettings).
   BOOL isSyncDisabledByAdministrator =
-      browser_->GetProfile()->GetPrefs()->GetBoolean(
-          syncer::prefs::internal::kSyncManaged);
+      profile_prefs->GetBoolean(syncer::prefs::internal::kSyncManaged);
 
   if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
     SceneState* scene_state = browser_->GetSceneState();
@@ -139,11 +137,13 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
     if (scene_is_active) {
       [handler_ showSyncDisabledPrompt];
       // Will never trigger again unless policy changes.
-      [standard_defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
+      profile_prefs->SetBoolean(policy::policy_prefs::kSyncDisabledAlertShown,
+                                true);
     }
   } else if (syncDisabledAlertShown && !isSyncDisabledByAdministrator) {
     // Will trigger again, if policy is turned back on.
-    [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
+    profile_prefs->SetBoolean(policy::policy_prefs::kSyncDisabledAlertShown,
+                              false);
   }
 }
 

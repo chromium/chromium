@@ -126,6 +126,7 @@ source_set("browser_agent") {
   ]
   deps = [
     "//base",
+    "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/sync/base",
     "//ios/chrome/app/application_delegate:app_state",

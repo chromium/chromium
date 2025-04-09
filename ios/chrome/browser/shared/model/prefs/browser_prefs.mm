@@ -372,6 +372,21 @@ void MigrateTimePrefFromProfilePrefsToLocalStatePrefs(
                   profile_pref_service);
 }
 
+void MigrateBooleanFromUserDefaultsToProfilePrefs(
+    NSString* user_defaults_key,
+    std::string_view pref_name,
+    PrefService* profile_pref_service) {
+  auto* pref = profile_pref_service->FindPreference(pref_name);
+  CHECK(pref);
+  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+  // Only migrate if the pref is not set in the prefs.
+  if (pref->IsDefaultValue()) {
+    profile_pref_service->SetBoolean(pref_name,
+                                     [defaults boolForKey:user_defaults_key]);
+  }
+  [defaults removeObjectForKey:user_defaults_key];
+}
+
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -760,6 +775,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // already shown.
   registry->RegisterBooleanPref(
       policy::policy_prefs::kUserPolicyNotificationWasShown, false);
+
+  registry->RegisterBooleanPref(policy::policy_prefs::kSyncDisabledAlertShown,
+                                false);
 
   registry->RegisterIntegerPref(prefs::kIosShareChromeCount, 0,
                                 PrefRegistry::LOSSY_PREF);
@@ -1225,6 +1243,11 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 04/2025.
   prefs->ClearPref(kMixedContentAutoupgradeEnabled);
+
+  // Added 04/2025
+  MigrateBooleanFromUserDefaultsToProfilePrefs(
+      @"SyncDisabledAlertShown", policy::policy_prefs::kSyncDisabledAlertShown,
+      prefs);
 }
 
 void MigrateObsoleteUserDefault() {
