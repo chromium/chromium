@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/check.h"
 #import "base/files/file_path.h"
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
@@ -23,18 +24,16 @@ NSString* const kOriginDetectedKey = @"OriginDetectedKey";
 void SyncBreadcrumbsLog() {
   static dispatch_once_t once;
   dispatch_once(&once, ^{
-    base::FilePath storage_dir;
-    bool result = base::PathService::Get(ios::DIR_USER_DATA, &storage_dir);
-    DCHECK(result);
-    const base::FilePath breadcrumbs_file_path =
-        breadcrumbs::GetBreadcrumbPersistentStorageFilePath(storage_dir);
+    const base::FilePath storage_dir =
+        base::PathService::CheckedGet(ios::DIR_USER_DATA);
+    NSURL* breadcrumbs_file_url = base::apple::FilePathToNSURL(
+        breadcrumbs::GetBreadcrumbPersistentStorageFilePath(storage_dir));
     dispatch_async(
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-          NSString* breadcrumbs = [NSString
-              stringWithContentsOfFile:base::SysUTF8ToNSString(
-                                           breadcrumbs_file_path.value())
-                              encoding:NSUTF8StringEncoding
-                                 error:NULL];
+          NSString* breadcrumbs =
+              [NSString stringWithContentsOfURL:breadcrumbs_file_url
+                                       encoding:NSUTF8StringEncoding
+                                          error:NULL];
           [[PreviousSessionInfo sharedInstance] setBreadcrumbsLog:breadcrumbs];
         });
   });
@@ -42,21 +41,6 @@ void SyncBreadcrumbsLog() {
 }  // namespace
 
 @implementation SceneDelegate
-
-@synthesize sceneState = _sceneState;
-@synthesize sceneController = _sceneController;
-
-- (SceneState*)sceneState {
-  if (!_sceneState) {
-    MainApplicationDelegate* appDelegate =
-        base::apple::ObjCCastStrict<MainApplicationDelegate>(
-            UIApplication.sharedApplication.delegate);
-    _sceneState = [[SceneState alloc] initWithAppState:appDelegate.appState];
-    _sceneController = [[SceneController alloc] initWithSceneState:_sceneState];
-    _sceneState.controller = _sceneController;
-  }
-  return _sceneState;
-}
 
 #pragma mark - UIWindowSceneDelegate
 
@@ -90,23 +74,30 @@ void SyncBreadcrumbsLog() {
 - (void)scene:(UIScene*)scene
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions {
-  SceneState* sceneState = self.sceneState;
-  sceneState.scene = base::apple::ObjCCastStrict<UIWindowScene>(scene);
-  sceneState.currentOrigin = [self originFromSession:session
-                                             options:connectionOptions];
-  sceneState.activationLevel = SceneActivationLevelBackground;
-  sceneState.connectionOptions = connectionOptions;
+  CHECK(!_sceneState);
+  MainApplicationDelegate* appDelegate =
+      base::apple::ObjCCastStrict<MainApplicationDelegate>(
+          UIApplication.sharedApplication.delegate);
+  _sceneState = [[SceneState alloc] initWithAppState:appDelegate.appState];
+  _sceneController = [[SceneController alloc] initWithSceneState:_sceneState];
+  _sceneState.controller = _sceneController;
+
+  _sceneState.scene = base::apple::ObjCCastStrict<UIWindowScene>(scene);
+  _sceneState.currentOrigin = [self originFromSession:session
+                                              options:connectionOptions];
+  _sceneState.activationLevel = SceneActivationLevelBackground;
+  _sceneState.connectionOptions = connectionOptions;
   if (connectionOptions.shortcutItem != nil ||
       connectionOptions.URLContexts.count != 0 ||
       connectionOptions.userActivities.count != 0) {
-    sceneState.startupHadExternalIntent = YES;
+    _sceneState.startupHadExternalIntent = YES;
   }
 }
 
 - (void)sceneDidDisconnect:(UIScene*)scene {
   CHECK(_sceneState);
-  [self.sceneState setRootViewController:nil makeKeyAndVisible:NO];
-  self.sceneState.activationLevel = SceneActivationLevelDisconnected;
+  [_sceneState setRootViewController:nil makeKeyAndVisible:NO];
+  _sceneState.activationLevel = SceneActivationLevelDisconnected;
   _sceneState = nil;
   // Setting the level to Disconnected had the side effect of tearing down the
   // controller’s UI.
@@ -147,30 +138,30 @@ void SyncBreadcrumbsLog() {
 #pragma mark Transitioning to the Foreground
 
 - (void)sceneWillEnterForeground:(UIScene*)scene {
-  self.sceneState.currentOrigin = WindowActivityRestoredOrigin;
-  self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
+  _sceneState.currentOrigin = WindowActivityRestoredOrigin;
+  _sceneState.activationLevel = SceneActivationLevelForegroundInactive;
 }
 
 - (void)sceneDidBecomeActive:(UIScene*)scene {
-  self.sceneState.currentOrigin = WindowActivityRestoredOrigin;
-  self.sceneState.activationLevel = SceneActivationLevelForegroundActive;
+  _sceneState.currentOrigin = WindowActivityRestoredOrigin;
+  _sceneState.activationLevel = SceneActivationLevelForegroundActive;
 }
 
 #pragma mark Transitioning to the Background
 
 - (void)sceneWillResignActive:(UIScene*)scene {
-  self.sceneState.activationLevel = SceneActivationLevelForegroundInactive;
+  _sceneState.activationLevel = SceneActivationLevelForegroundInactive;
 }
 
 - (void)sceneDidEnterBackground:(UIScene*)scene {
-  self.sceneState.activationLevel = SceneActivationLevelBackground;
+  _sceneState.activationLevel = SceneActivationLevelBackground;
 }
 
 - (void)scene:(UIScene*)scene
     openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts {
-  DCHECK(!self.sceneState.URLContextsToOpen);
-  self.sceneState.startupHadExternalIntent = YES;
-  self.sceneState.URLContextsToOpen = URLContexts;
+  DCHECK(!_sceneState.URLContextsToOpen);
+  _sceneState.startupHadExternalIntent = YES;
+  _sceneState.URLContextsToOpen = URLContexts;
 }
 
 - (void)windowScene:(UIWindowScene*)windowScene
@@ -182,7 +173,7 @@ void SyncBreadcrumbsLog() {
 
 - (void)scene:(UIScene*)scene
     continueUserActivity:(NSUserActivity*)userActivity {
-  self.sceneState.pendingUserActivity = userActivity;
+  _sceneState.pendingUserActivity = userActivity;
 }
 
 @end

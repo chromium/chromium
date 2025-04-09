@@ -1647,15 +1647,16 @@ void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
 
     // Pretend the scene has been disconnected, then reconnect it.
     const SceneActivationLevel savedLevel = sceneState.activationLevel;
-    const WindowActivityOrigin savedOrigin = sceneState.currentOrigin;
-    UISceneConnectionOptions* savedConnectionOptions =
-        sceneState.connectionOptions;
+    UISceneConnectionOptions* savedOptions = sceneState.connectionOptions;
 
-    [sceneDelegate sceneDidDisconnect:scene];  // destroy the old SceneState
-    sceneState = sceneDelegate.sceneState;     // recreate a new SceneState
-    sceneState.currentOrigin = savedOrigin;
-    sceneState.connectionOptions = savedConnectionOptions;
-    sceneState.scene = scene;
+    // Destroy the old SceneState and recreate it.
+    [sceneDelegate sceneDidDisconnect:scene];
+    [sceneDelegate scene:scene
+        willConnectToSession:scene.session
+                     options:savedOptions];
+
+    sceneState = sceneDelegate.sceneState;
+    DCHECK(sceneState);
 
     // Reconnect the scene. This will attach a profile automatically based
     // on the information stored in the ProfileAttributesStorageIOS.
