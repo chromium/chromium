@@ -651,7 +651,7 @@
 <translation id="1448779317883494811">ブラシツール</translation>
 <translation id="1448963928642384376">デバイスのアクセス ポイント</translation>
 <translation id="1449191289887455076">割り当てを確定して<ph name="RESPONSE" />には、もう一度「<ph name="CURRENTKEY" />」キーを押してください</translation>
-<translation id="1450484535522155181">ゲスト プロフィールを開く</translation>
+<translation id="1450484535522155181">ゲスト プロファイルを開く</translation>
 <translation id="1451375123200651445">ウェブページ、1 つのファイル</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />デバッグログ<ph name="END_LINK" />を送信する（推奨）</translation>
 <translation id="1454223536435069390">スクリーンショットを撮る(&amp;A)</translation>
@@ -2493,7 +2493,7 @@
 <translation id="2721695630904737430">監視対象ユーザーは管理者によって無効にされています。</translation>
 <translation id="2722540561488096675">デバイスは、<ph name="TIME_LEFT" /> 後にシャットダウンします。デバイスが再起動する前に USB を取り外してください。再起動すると、<ph name="DEVICE_OS" /> のご利用を開始できます。</translation>
 <translation id="2722547199758472013">ID: <ph name="EXTENSION_ID" /></translation>
-<translation id="2722817840640790566">ゲスト プロフィールを開く</translation>
+<translation id="2722817840640790566">ゲスト プロファイルを開く</translation>
 <translation id="2723819893410108315">シトロン</translation>
 <translation id="2724822892847436256">制約</translation>
 <translation id="2724841811573117416">WebRTC ログ</translation>
@@ -7441,7 +7441,7 @@
 <translation id="6265159465845424232">Microsoft のファイルを Microsoft OneDrive にコピーまたは移動する前に確認する</translation>
 <translation id="6265687851677020761">ポートを削除</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> に接続しています</translation>
-<translation id="6266984048393265562">プロフィールをカスタマイズ</translation>
+<translation id="6266984048393265562">プロファイルをカスタマイズ</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> での認証に使用する証明書を選択してください</translation>
 <translation id="6268252012308737255"><ph name="APP" /> で開く</translation>
 <translation id="6269050081341530851">重複しているタブを閉じると、最も古いタブが保持されます</translation>

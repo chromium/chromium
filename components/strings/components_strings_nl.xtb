@@ -728,7 +728,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2241693394036365668">Bestand wordt gedownload</translation>
 <translation id="2242389809734574253">IBAN opslaan gesloten.</translation>
 <translation id="2246264294482514010">10 x 12 inch</translation>
-<translation id="2246480341630108201">Je ouder heeft nog niet aangegeven dat het goed is</translation>
+<translation id="2246480341630108201">Je ouder of voogd heeft nog niet aangegeven dat het goed is</translation>
 <translation id="2247789808226901522">Kaart verlopen</translation>
 <translation id="2248949050832152960">WebAuthn gebruiken</translation>
 <translation id="2250931979407627383">Inbinden met nietjes links</translation>
@@ -3259,7 +3259,7 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="677257480647123231">Internetveiligheid van kinderen</translation>
 <translation id="6772959465807028761">Ga door met je Google-account om YouTube te gebruiken</translation>
 <translation id="6775759552199460396">JIS B2</translation>
-<translation id="6777088782163649345">YouTube gebruiken met de keuzes van je ouder</translation>
+<translation id="6777088782163649345">YouTube gebruiken met de keuzes van je ouder of voogd</translation>
 <translation id="6779348349813025131">Google Wachtwoordmanager heeft toegang tot macOS-sleutelhanger nodig</translation>
 <translation id="6782656837469339439">Vervaljaar</translation>
 <translation id="6785990323398321538">Je kunt je zoekmachine op elk moment wijzigen via de instellingen van Chrome.</translation>
@@ -3838,7 +3838,7 @@ Aanvullende informatie:
 <translation id="7751971323486164747">Lettertypen en lettergrootten aanpassen in Chrome</translation>
 <translation id="7752995774971033316">Niet-beheerd</translation>
 <translation id="7754587126786572336">Je Chrome-tabbladen en apps worden gesloten als de update wordt gestart</translation>
-<translation id="7755287808199759310">Je ouder of voogd kan de blokkering van deze site opheffen</translation>
+<translation id="7755287808199759310">Je ouder of voogd kan de blokkering voor je opheffen</translation>
 <translation id="7755624218968747854">Primaire rol</translation>
 <translation id="7758069387465995638">De verbinding is mogelijk geblokkeerd door de firewall of antivirussoftware.</translation>
 <translation id="7759147511335618829">MIDI-apparaatbediening en -herprogrammering</translation>
