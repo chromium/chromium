@@ -108,6 +108,7 @@ using signin_metrics::PromoAction;
 }
 
 - (void)stop {
+  [self.mediator disconnect];
   _signOutCoordinator = nil;
   [self dismissSignoutCoordinator];
 }

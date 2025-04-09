@@ -193,6 +193,21 @@ bool GetStatusForSigninPolicy() {
   return self;
 }
 
+- (void)disconnect {
+  [_allowChromeSigninPreference stop];
+  _allowChromeSigninPreference = nil;
+  [_sendDataUsageWifiOnlyPreference stop];
+  _sendDataUsageWifiOnlyPreference = nil;
+  [_anonymizedDataCollectionPreference stop];
+  _anonymizedDataCollectionPreference = nil;
+  [_improveSearchSuggestionsPreference stop];
+  _improveSearchSuggestionsPreference = nil;
+  [_sendDataUsagePreference stop];
+  _sendDataUsagePreference = nil;
+  [_trackPricesOnTabsPreference stop];
+  _trackPricesOnTabsPreference = nil;
+}
+
 - (TableViewItem*)allowChromeSigninItem {
   // Supervised users cannot manually enable/disable sign-in.
   if (![self isSubjectToParentalControls] &&
