@@ -1,30 +1,9 @@
-    <style include="cr-hidden-style">
-      :host {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        overflow: hidden;
-      }
+<cr-tabs .tabNames="${this.tabs}" .selected="${this.selected}"
+    @selected-changed="${this.onSelectedChanged_}">
+</cr-tabs>
 
-      cr-page-selector {
-        flex: 1;
-        overflow: hidden;
-      }
-
-      cr-page-selector > * {
-        display: block;
-        height: 100%;
-        overflow: auto;
-      }
-
-      graph-tab {
-        overflow: hidden;
-      }
-    </style>
-    <cr-tabs selected="{{selected}}" tab-names="[[tabs]]"></cr-tabs>
-
-    <cr-page-selector selected="[[selected]]">
-      <discards-tab></discards-tab>
-      <database-tab></database-tab>
-      <graph-tab></graph-tab>
-    </cr-page-selector>
+<cr-page-selector selected="${this.selected}">
+  <discards-tab></discards-tab>
+  <database-tab></database-tab>
+  <graph-tab></graph-tab>
+</cr-page-selector>

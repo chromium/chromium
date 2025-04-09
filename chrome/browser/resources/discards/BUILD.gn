@@ -27,6 +27,7 @@ build_webui("build") {
 
   css_files = [
     "database_tab.css",
+    "discards_main.css",
     "discards_tab.css",
     "graph_tab.css",
   ]
