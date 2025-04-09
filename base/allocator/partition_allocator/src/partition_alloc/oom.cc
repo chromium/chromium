@@ -103,6 +103,12 @@ namespace internal {
   PA_IMMEDIATE_CRASH();
 }
 
+[[noreturn]] PA_NOINLINE PA_NOT_TAIL_CALLED void OnErrnoNoMem() {
+  RunPartitionAllocOomCallback();
+  TerminateBecauseOutOfMemory(0u);
+  PA_IMMEDIATE_CRASH();
+}
+
 }  // namespace internal
 
 }  // namespace partition_alloc
