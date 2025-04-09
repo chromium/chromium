@@ -337,8 +337,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
                       gpu::SyncToken& completion_sync_token);
 
   virtual bool HasUnusedResourcesForTesting() const { return false; }
-  bool unused_resources_reclaim_timer_is_running_for_testing() const {
-    return unused_resources_reclaim_timer_.IsRunning();
+  virtual bool unused_resources_reclaim_timer_is_running_for_testing() const {
+    return false;
   }
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
@@ -397,7 +397,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // CanvasResourceProviderSharedImage.
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
-  base::OneShotTimer unused_resources_reclaim_timer_;
 
  private:
   friend class FlushForImageListener;

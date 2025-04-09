@@ -310,6 +310,9 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
     }
     return !canvas_resources_.empty();
   }
+  bool unused_resources_reclaim_timer_is_running_for_testing() const override {
+    return unused_resources_reclaim_timer_.IsRunning();
+  }
   scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
       gpu::SyncToken* internal_access_sync_token,
@@ -950,6 +953,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   // When and if |resource_recycling_enabled_| is false, |canvas_resources_|
   // will only hold one resource at most.
   WTF::Vector<UnusedResource> canvas_resources_;
+  base::OneShotTimer unused_resources_reclaim_timer_;
   bool resource_recycling_enabled_ = true;
 
   // `raster_context_provider_` holds a reference on the shared
