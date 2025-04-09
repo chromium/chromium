@@ -465,9 +465,6 @@ WebMediaPlayerImpl::WebMediaPlayerImpl(
           this,
           media_task_runner_,
           media_log_.get(),
-          frame_->GetDocument().SiteForCookies(),
-          frame_->GetDocument().TopFrameOrigin(),
-          frame_->GetDocument().StorageAccessApiStatus(),
           enable_instant_source_buffer_gc,
           std::move(demuxer_override))),
       tick_clock_(base::DefaultTickClock::GetInstance()),
@@ -3428,14 +3425,6 @@ void WebMediaPlayerImpl::MakeDemuxerThreadDumper(media::Demuxer* demuxer) {
 
 bool WebMediaPlayerImpl::CouldPlayIfEnoughData() {
   return client_->CouldPlayIfEnoughData();
-}
-
-bool WebMediaPlayerImpl::IsMediaPlayerRendererClient() {
-  // MediaPlayerRendererClientFactory is the only factory that a uses
-  // MediaResource::Type::URL for the moment.
-  return renderer_factory_selector_->GetCurrentFactory()
-             ->GetRequiredMediaResourceType() ==
-         media::MediaResource::Type::KUrl;
 }
 
 void WebMediaPlayerImpl::ReportMemoryUsage() {

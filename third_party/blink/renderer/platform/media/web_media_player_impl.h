@@ -442,7 +442,6 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
                                 const std::vector<uint8_t>& init_data) override;
   void MakeDemuxerThreadDumper(media::Demuxer* demuxer) override;
   bool CouldPlayIfEnoughData() override;
-  bool IsMediaPlayerRendererClient() override;
   void StopForDemuxerReset() override;
   void RestartForHls() override;
   bool IsSecurityOriginCryptographic() const override;

@@ -64,11 +64,6 @@ class MEDIA_EXPORT DemuxerManager {
     // Can be called quite often.
     virtual void OnProgress() = 0;
 
-    // Used to determine if the client is additionally a client for Android's
-    // MediaPlayerRenderer, which can inform us if we need to create a
-    // MediaUrlDemuxer.
-    virtual bool IsMediaPlayerRendererClient() = 0;
-
     virtual void OnError(media::PipelineStatus status) = 0;
 
     // Used for controlling the client when a demuxer swap happens.
@@ -114,9 +109,6 @@ class MEDIA_EXPORT DemuxerManager {
   DemuxerManager(Client* client,
                  scoped_refptr<base::SequencedTaskRunner> media_task_runner,
                  MediaLog* log,
-                 net::SiteForCookies site_for_cookies,
-                 url::Origin top_frame_origin,
-                 net::StorageAccessApiStatus storage_access_api_status,
                  bool enable_instant_source_buffer_gc,
                  std::unique_ptr<Demuxer> demuxer_override);
   ~DemuxerManager();
@@ -225,13 +217,6 @@ class MEDIA_EXPORT DemuxerManager {
   const scoped_refptr<base::SequencedTaskRunner> media_task_runner_;
   std::unique_ptr<MediaLog> media_log_;
 
-  // Android's MediaUrlDemuxer needs access to these.
-  net::SiteForCookies site_for_cookies_;
-  url::Origin top_frame_origin_;
-#if BUILDFLAG(IS_ANDROID)
-  net::StorageAccessApiStatus storage_access_api_status_;
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // When MSE memory pressure based garbage collection is enabled, the
   // |enable_instant_source_buffer_gc| controls whether the GC is done
   // immediately on memory pressure notification or during the next
@@ -250,11 +235,6 @@ class MEDIA_EXPORT DemuxerManager {
 
   // Holds whichever demuxer implementation is being used.
   std::unique_ptr<Demuxer> demuxer_;
-
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  // Records stats about HLS playbacks in MediaPlayer.
-  std::unique_ptr<HlsMediaPlayerTagRecorder> media_player_hls_tag_recorder_;
-#endif
 
   // Refers to the owned object that can query information about a data source.
   // For most playbacks, this is a raw ptr to `data_source_`, and so it is safe,
