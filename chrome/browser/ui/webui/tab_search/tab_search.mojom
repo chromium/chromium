@@ -102,6 +102,9 @@ struct Tab {
   // Whether the tab is active.
   bool active;
 
+  // Whether the tab is visible.
+  bool visible;
+
   // The alert states of the tab.
   array<tabs.mojom.TabAlertState> alert_states;
 

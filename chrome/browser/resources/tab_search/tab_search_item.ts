@@ -78,6 +78,7 @@ export class TabSearchItemElement extends TabSearchItemBase {
   accessor data: TabData = new TabData(
       {
         active: false,
+        visible: false,
         faviconUrl: null,
         groupId: null,
         alertStates: [],

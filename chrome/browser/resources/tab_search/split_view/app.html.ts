@@ -14,17 +14,27 @@ export function getHtml(this: SplitNewTabPageAppElement) {
     iron-icon="tab-search:close"
     @click="${this.onClose_}">
 </cr-icon-button>
-<div class="title">$i18n{splitViewTitle}</div>
-<div class="contents">
+${
+      this.openTabs_.length === 0 && this.mediaTabs_.length === 0 ?
+          html`
+  <div class="title">$i18n{splitViewEmptyTitle}</div>
+  <div class="body">$i18n{splitViewEmptyBody}</div>
+  ` :
+          html`
+  <div class="title">$i18n{splitViewTitle}</div>
+  <div class="contents">
   ${
-      this.mediaTabs_.length > 0 ? html`
+              this.mediaTabs_.length > 0 ? html`
     <div class="heading">$i18n{splitViewMediaHeading}</div>
     ${getTabList(this.mediaTabs_)}
   ` :
-                                   html``}
-  <div class="heading">$i18n{splitViewOpenHeading}</div>
-  ${getTabList(this.openTabs_)}
-  </div>
+                                           html``}
+  ${
+              this.openTabs_.length > 0 ? html`
+    <div class="heading">$i18n{splitViewOpenHeading}</div>
+    ${getTabList(this.openTabs_)}
+  ` :
+                                          html``}`}
 </div>
 <!--_html_template_end_-->`;
 }

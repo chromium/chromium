@@ -1406,6 +1406,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   const tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
 
   tab_data->active = tab->IsActivated();
+  tab_data->visible = tab->IsVisible();
   tab_data->tab_id = tab->GetHandle().raw_value();
   tab_data->index = index;
   const std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();

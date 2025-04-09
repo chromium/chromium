@@ -26,6 +26,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/views/widget/native_widget.h"
@@ -199,7 +200,7 @@ base::CallbackListSubscription TabModel::RegisterWillDeactivate(
 }
 
 bool TabModel::IsVisible() const {
-  return GetModelForTabInterface()->GetActiveTab() == this;
+  return contents_->GetVisibility() != content::Visibility::HIDDEN;
 }
 
 base::CallbackListSubscription TabModel::RegisterDidBecomeVisible(

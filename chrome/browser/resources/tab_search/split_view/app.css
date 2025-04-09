@@ -21,26 +21,34 @@
   margin: 24px;
 }
 
+.body {
+  align-self: center;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  margin-top: 4px;
+}
+
 .contents {
   margin: 0 106px 24px 106px;
 }
 
 .heading {
-  line-height: 20px;
   font-size: 14px;
   font-weight: 500;
+  line-height: 20px;
   margin: 26px 0;
 }
 
 .tab-list {
-  border-radius: 16px;
   background-color: var(--color-tab-search-background);
+  border-radius: 16px;
   padding: 10px 0;
 }
 
 .title {
   align-self: center;
-  line-height: 24px;
   font-size: 16px;
   font-weight: 500;
+  line-height: 24px;
 }

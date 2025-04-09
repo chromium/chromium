@@ -9807,6 +9807,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Strings for split view -->
+      <message name="IDS_SPLIT_VIEW_NTP_EMPTY_TITLE" desc="The title of the split view new tab page in its empty state.">
+        Complete your split view
+      </message>
+      <message name="IDS_SPLIT_VIEW_NTP_EMPTY_BODY" desc="The body text of the split view new tab page in its empty state.">
+        Visit a site or start a search in the address bar
+      </message>
       <message name="IDS_SPLIT_VIEW_NTP_TITLE" desc="The title of the split view new tab page.">
         Choose a tab to add to split view
       </message>

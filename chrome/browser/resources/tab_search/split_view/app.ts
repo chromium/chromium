@@ -71,8 +71,10 @@ export class SplitNewTabPageAppElement extends CrLitElement {
   private onTabsChanged_(profileData: ProfileData) {
     const allTabs: TabData[] =
         profileData.windows.reduce((acc, {active, tabs}) => {
-          acc.push(...tabs.map(
-              tab => this.getTabData_(tab, active, TabItemType.OPEN_TAB)));
+          acc.push(...tabs.filter(tab => !tab.visible)
+                       .map(
+                           tab => this.getTabData_(
+                               tab, active, TabItemType.OPEN_TAB)));
           return acc;
         }, [] as TabData[]);
     this.mediaTabs_ =
