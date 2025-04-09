@@ -99,7 +99,10 @@ enum class CreateAndroidInputReceiverResult {
   kFailedNullCallbacks = 5,
   kSuccessfulButNullTransferToken = 6,
   kReuseExistingInputReceiver = 7,
-  kMaxValue = kReuseExistingInputReceiver,
+  kNullBrowserInputToken = 8,
+  kNotCreatingMoreThanOneReceiver = 9,
+  kRootCompositorFrameSinkDestroyed = 10,
+  kMaxValue = kRootCompositorFrameSinkDestroyed,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -603,6 +606,16 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
   if (receiver_data_ && receiver_data_->root_frame_sink_id().is_valid()) {
     // Only allow input receiver "creation" for single root compositor frame
     // sink.
+    UMA_HISTOGRAM_ENUMERATION(
+        kInputReceiverCreationResultHistogram,
+        CreateAndroidInputReceiverResult::kNotCreatingMoreThanOneReceiver);
+    return;
+  }
+
+  if (!frame_sink_manager_->IsFrameSinkIdInRootSinkMap(frame_sink_id)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kInputReceiverCreationResultHistogram,
+        CreateAndroidInputReceiverResult::kRootCompositorFrameSinkDestroyed);
     return;
   }
 
@@ -656,7 +669,15 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
     return;
   }
 
-  CHECK(surface_record.host_input_token);
+  // TODO(crbug.com/409003682): Investigate in what scenarios Browser can send a
+  // null token.
+  if (!surface_record.host_input_token) {
+    UMA_HISTOGRAM_ENUMERATION(
+        kInputReceiverCreationResultHistogram,
+        CreateAndroidInputReceiverResult::kNullBrowserInputToken);
+    return;
+  }
+
   input::ScopedInputTransferToken browser_input_token(
       surface_record.host_input_token.obj());
   if (!browser_input_token) {

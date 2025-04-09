@@ -881,6 +881,9 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="FailedNullCallbacks"/>
   <int value="6" label="SuccessfulButNullTransferToken"/>
   <int value="7" label="ReuseExistingInputReceiver"/>
+  <int value="8" label="NullBrowserInputToken"/>
+  <int value="9" label="NotCreatingMoreThanOneReceiver"/>
+  <int value="10" label="RootCompositorFrameSinkDestroyed"/>
 </enum>
 
 <enum name="DebuggingEnabled">
