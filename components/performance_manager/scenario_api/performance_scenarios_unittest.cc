@@ -274,6 +274,50 @@ TEST_P(PerformanceScenariosAllLoadingScenariosTest,
                               kDefaultIdleScenarios));
 }
 
+// Ensure that all values of LoadingScenario are ordered correctly.
+TEST_P(PerformanceScenariosAllLoadingScenariosTest, LoadingScenarioOrdering) {
+  // When adding a new scenario to this switch, make sure that everything
+  // comparing less than the new scenario is less performance-sensitive.
+  switch (GetParam()) {
+    case LoadingScenario::kFocusedPageLoading:
+      EXPECT_LT(LoadingScenario::kVisiblePageLoading, GetParam());
+      [[fallthrough]];
+    case LoadingScenario::kVisiblePageLoading:
+      EXPECT_LT(LoadingScenario::kBackgroundPageLoading, GetParam());
+      [[fallthrough]];
+    case LoadingScenario::kBackgroundPageLoading:
+      EXPECT_LT(LoadingScenario::kNoPageLoading, GetParam());
+      [[fallthrough]];
+    case LoadingScenario::kNoPageLoading:
+      // This is the lowest priority scenario.
+      break;
+  }
+}
+
+// Ensure that all values of InputScenario are ordered correctly.
+TEST_P(PerformanceScenariosAllInputScenariosTest, InputScenarioOrdering) {
+  // When adding a new scenario to this switch, make sure that everything
+  // comparing less than the new scenario is less performance-sensitive.
+  switch (GetParam()) {
+    case InputScenario::kScroll:
+      // Scrolling is the most performance-sensitive because scroll jank is
+      // very obvious to the user.
+      EXPECT_LT(InputScenario::kTap, GetParam());
+      [[fallthrough]];
+    case InputScenario::kTap:
+      // Tap is more performance-sensitive than typing because there's a tactile
+      // link: users expect immediate screen feedback when touching the screen.
+      EXPECT_LT(InputScenario::kTyping, GetParam());
+      [[fallthrough]];
+    case InputScenario::kTyping:
+      EXPECT_LT(InputScenario::kNoInput, GetParam());
+      [[fallthrough]];
+    case InputScenario::kNoInput:
+      // This is the lowest priority scenario.
+      break;
+  }
+}
+
 }  // namespace
 
 }  // namespace performance_scenarios

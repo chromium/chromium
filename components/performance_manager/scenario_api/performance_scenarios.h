@@ -27,23 +27,25 @@ namespace performance_scenarios {
 // list over the entire browser (eg. some page is loading) or a scenario list
 // targeted only to that process (eg. a page hosted in this process is loading).
 
-// Scenarios indicating a page is loading.
+// Scenarios indicating a page is loading, ordered from least-specific to
+// most-specific.
 enum class LoadingScenario {
   // No pages covered by the scenario are loading.
   kNoPageLoading = 0,
-  // The focused page is loading. Implies the page is also visible.
-  kFocusedPageLoading,
-  // The focused page (if any) is not loading, but a visible page is loading.
-  kVisiblePageLoading,
   // No visible pages are loading, but a non-visible page is.
   kBackgroundPageLoading,
+  // The focused page (if any) is not loading, but a visible page is.
+  kVisiblePageLoading,
+  // The focused page is loading. Implies the page is also visible.
+  kFocusedPageLoading,
+  kMax = kFocusedPageLoading,
 };
-using LoadingScenarios =
-    base::EnumSet<LoadingScenario,
-                  /*Min=*/LoadingScenario::kNoPageLoading,
-                  /*Max=*/LoadingScenario::kBackgroundPageLoading>;
+using LoadingScenarios = base::EnumSet<LoadingScenario,
+                                       LoadingScenario::kNoPageLoading,
+                                       LoadingScenario::kMax>;
 
-// Scenarios indicating user input.
+// Scenarios indicating user input, ordered from least-specific to
+// most-specific.
 enum class InputScenario {
   // No input was detected.
   kNoInput = 0,
@@ -55,10 +57,10 @@ enum class InputScenario {
   // The user is scrolling in a focused page. There may also be recent typing or
   // taps.
   kScroll,
+  kMax = kScroll,
 };
-using InputScenarios = base::EnumSet<InputScenario,
-                                     /*Min=*/InputScenario::kNoInput,
-                                     /*Max=*/InputScenario::kScroll>;
+using InputScenarios =
+    base::EnumSet<InputScenario, InputScenario::kNoInput, InputScenario::kMax>;
 
 // The scope that a scenario covers.
 enum class ScenarioScope {

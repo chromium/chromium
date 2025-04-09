@@ -15,7 +15,6 @@
 #include "base/memory/structured_shared_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -59,10 +58,6 @@ struct ScenarioTraits {
   // Returns a reference to the Scenario slot in shared memory.
   std::atomic<Scenario>& ScenarioRef();
 
-  // Returns the trace event nesting level for `scenario`. Implement this if
-  // this Scenario type nests cleanly in traces.
-  size_t NestingLevel(Scenario scenario) const;
-
   // Records trace events for a switch from `old_scenario` to `new_scenario` if
   // a tracing track is registered.
   void MaybeRecordTraceEvent(Scenario old_scenario,
@@ -78,25 +73,11 @@ struct ScenarioTraits<LoadingScenario> {
     return state_ptr->shared_state().WritableRef().loading;
   }
 
-  size_t NestingLevel(LoadingScenario scenario) const {
-    switch (scenario) {
-      case LoadingScenario::kNoPageLoading:
-        return 0;
-      case LoadingScenario::kBackgroundPageLoading:
-        return 1;
-      case LoadingScenario::kVisiblePageLoading:
-        return 2;
-      case LoadingScenario::kFocusedPageLoading:
-        return 3;
-    }
-    NOTREACHED();
-  }
-
   void MaybeRecordTraceEvent(LoadingScenario old_scenario,
                              LoadingScenario new_scenario) const {
     MaybeEmitNestingChangeEvent(
-        state_ptr->loading_tracing_track(), NestingLevel(old_scenario),
-        NestingLevel(new_scenario),
+        state_ptr->loading_tracing_track(), static_cast<size_t>(old_scenario),
+        static_cast<size_t>(new_scenario),
         {"AnyPageLoading", "VisiblePageLoading", "FocusedPageLoading"});
   }
 
@@ -112,25 +93,12 @@ struct ScenarioTraits<InputScenario> {
     return state_ptr->shared_state().WritableRef().input;
   }
 
-  size_t NestingLevel(InputScenario scenario) const {
-    switch (scenario) {
-      case InputScenario::kNoInput:
-        return 0;
-      case InputScenario::kTyping:
-        return 1;
-      case InputScenario::kTap:
-        return 2;
-      case InputScenario::kScroll:
-        return 3;
-    }
-    NOTREACHED();
-  }
-
   void MaybeRecordTraceEvent(InputScenario old_scenario,
                              InputScenario new_scenario) const {
-    MaybeEmitNestingChangeEvent(
-        state_ptr->input_tracing_track(), NestingLevel(old_scenario),
-        NestingLevel(new_scenario), {"AnyInput", "TapOrScroll", "Scroll"});
+    MaybeEmitNestingChangeEvent(state_ptr->input_tracing_track(),
+                                static_cast<size_t>(old_scenario),
+                                static_cast<size_t>(new_scenario),
+                                {"TypingTapOrScroll", "TapOrScroll", "Scroll"});
   }
 
   raw_ptr<PerformanceScenarioData> state_ptr;
