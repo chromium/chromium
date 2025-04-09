@@ -201,16 +201,16 @@ BtmNavigationFlowDetector::BtmNavigationFlowDetector(WebContents* web_contents)
 BtmNavigationFlowDetector::~BtmNavigationFlowDetector() = default;
 
 void BtmNavigationFlowDetector::OnPageVisitReported(
-    const BtmPageVisitInfo& page_visit,
-    const BtmNavigationInfo& navigation) {
+    BtmPageVisitInfo page_visit,
+    BtmNavigationInfo navigation) {
   CHECK(!previous_page_to_current_page_.has_value() ||
         previous_page_to_current_page_->destination.url == page_visit.url);
 
   // Slide our sliding window by one report (page visit + navigation).
   two_pages_ago_ = std::move(previous_page_);
   two_pages_ago_to_previous_page_ = std::move(previous_page_to_current_page_);
-  previous_page_ = page_visit;
-  previous_page_to_current_page_ = navigation;
+  previous_page_ = std::move(page_visit);
+  previous_page_to_current_page_ = std::move(navigation);
 
   // Update IFSI tracking state based on the visit. To have all the information
   // we need, we have to do this after the visit is reported but before we

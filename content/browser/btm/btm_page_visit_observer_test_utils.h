@@ -49,8 +49,7 @@ class BtmPageVisitRecorder {
   };
 
   // Called by `observer_` on each page visit; appends to `visits_`.
-  void OnVisit(const BtmPageVisitInfo& prev_page,
-               const BtmNavigationInfo& navigation);
+  void OnVisit(BtmPageVisitInfo prev_page, BtmNavigationInfo navigation);
 
   std::vector<VisitTuple> visits_;
   // Populated only during a call to `WaitForSize()`. Mostly a `RunLoop` wrapped

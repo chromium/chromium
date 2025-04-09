@@ -26,9 +26,6 @@ BtmNavigationInfo::BtmNavigationInfo(NavigationHandle& navigation_handle)
                    navigation_handle.GetNextPageUkmSourceId()}) {
   CHECK(navigation_handle.HasCommitted());
 }
-BtmNavigationInfo::BtmNavigationInfo(const BtmNavigationInfo&) = default;
-BtmNavigationInfo& BtmNavigationInfo::operator=(const BtmNavigationInfo&) =
-    default;
 BtmNavigationInfo::BtmNavigationInfo(BtmNavigationInfo&&) = default;
 BtmNavigationInfo& BtmNavigationInfo::operator=(BtmNavigationInfo&&) = default;
 BtmNavigationInfo::~BtmNavigationInfo() = default;
@@ -206,9 +203,9 @@ void BtmPageVisitObserver::DidFinishNavigation(
 
 void BtmPageVisitObserver::ReportVisit() {
   CHECK(!pending_visits_.empty());
-  VisitTuple& visit = pending_visits_.front();
-  callback_.Run(visit.prev_page, visit.navigation);
+  VisitTuple visit = std::move(pending_visits_.front());
   pending_visits_.pop_front();
+  callback_.Run(std::move(visit.prev_page), std::move(visit.navigation));
 }
 
 void BtmPageVisitObserver::NotifyStorageAccessed(

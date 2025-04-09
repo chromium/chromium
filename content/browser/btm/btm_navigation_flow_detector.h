@@ -139,8 +139,8 @@ class CONTENT_EXPORT BtmNavigationFlowDetector
   friend class WebContentsUserData<BtmNavigationFlowDetector>;
 
   // Callback to be called by `BtmPageVisitObserver`.
-  void OnPageVisitReported(const BtmPageVisitInfo& page_visit,
-                           const BtmNavigationInfo& navigation);
+  void OnPageVisitReported(BtmPageVisitInfo page_visit,
+                           BtmNavigationInfo navigation);
 
   btm::FlowStatus FlowStatusAfterNavigation(
       bool did_most_recent_navigation_start_new_flow) const;

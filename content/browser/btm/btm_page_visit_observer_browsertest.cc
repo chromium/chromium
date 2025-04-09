@@ -665,12 +665,12 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url3));
   ASSERT_TRUE(recorder.WaitForSize(3));
 
-  BtmPageVisitRecorder::VisitTuple first_visit = recorder.visits()[0];
+  const BtmPageVisitRecorder::VisitTuple& first_visit = recorder.visits()[0];
   EXPECT_THAT(first_visit.prev_page, HasUrlAndSourceIdForBlankPage());
   EXPECT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
-  BtmPageVisitRecorder::VisitTuple second_visit = recorder.visits()[1];
+  const BtmPageVisitRecorder::VisitTuple& second_visit = recorder.visits()[1];
   EXPECT_THAT(second_visit.prev_page,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
   // Navigational cookie writes are active storage accesses and should be
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
   EXPECT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
 
-  BtmPageVisitRecorder::VisitTuple third_visit = recorder.visits()[2];
+  const BtmPageVisitRecorder::VisitTuple& third_visit = recorder.visits()[2];
   EXPECT_THAT(third_visit.prev_page,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
   // Navigational cookie reads are passive storage accesses and shouldn't be
@@ -714,11 +714,11 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url2));
   ASSERT_TRUE(recorder.WaitForSize(2));
 
-  BtmPageVisitRecorder::VisitTuple first_visit = recorder.visits()[0];
+  const BtmPageVisitRecorder::VisitTuple& first_visit = recorder.visits()[0];
   ASSERT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1, &ukm_recorder()));
 
-  BtmPageVisitRecorder::VisitTuple second_visit = recorder.visits()[1];
+  const BtmPageVisitRecorder::VisitTuple& second_visit = recorder.visits()[1];
   ASSERT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
   ASSERT_THAT(second_visit.prev_page,
@@ -755,14 +755,14 @@ IN_PROC_BROWSER_TEST_F(BtmPageVisitObserverBrowserTest,
   ASSERT_TRUE(NavigateToURL(web_contents, url2));
   ASSERT_TRUE(recorder.WaitForSize(2));
 
-  BtmPageVisitRecorder::VisitTuple first_visit = recorder.visits()[0];
+  const BtmPageVisitRecorder::VisitTuple& first_visit = recorder.visits()[0];
   ASSERT_THAT(first_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url1b, &ukm_recorder()));
   // The navigational cookie write of the redirect should be reported even
   // if delayed.
   EXPECT_TRUE(first_visit.navigation.server_redirects[0].did_write_cookies);
 
-  BtmPageVisitRecorder::VisitTuple second_visit = recorder.visits()[1];
+  const BtmPageVisitRecorder::VisitTuple& second_visit = recorder.visits()[1];
   ASSERT_THAT(second_visit.navigation.destination,
               HasUrlAndMatchingSourceId(url2, &ukm_recorder()));
   ASSERT_THAT(second_visit.prev_page,
