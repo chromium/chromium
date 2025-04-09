@@ -4,33 +4,20 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.ui.signin.R;
 
+import java.util.Objects;
+
 /* Class containing IDs of resources for the fullscreen sign-in view. */
-public final class FullscreenSigninConfig implements Parcelable {
+public final class FullscreenSigninConfig {
     public final @StringRes int titleId;
     public final @StringRes int subtitleId;
     public final @StringRes int dismissTextId;
     public final @DrawableRes int logoId;
-
-    public static final Parcelable.Creator<FullscreenSigninConfig> CREATOR =
-            new Parcelable.Creator<FullscreenSigninConfig>() {
-                @Override
-                public FullscreenSigninConfig createFromParcel(Parcel in) {
-                    return new FullscreenSigninConfig(in);
-                }
-
-                @Override
-                public FullscreenSigninConfig[] newArray(int size) {
-                    return new FullscreenSigninConfig[size];
-                }
-            };
 
     /** Constructor of FullscreenSigninConfig using default values. */
     public FullscreenSigninConfig() {
@@ -61,26 +48,21 @@ public final class FullscreenSigninConfig implements Parcelable {
         this.logoId = logoId;
     }
 
-    private FullscreenSigninConfig(Parcel in) {
-        this(
-                /* titleId= */ in.readInt(),
-                /* subtitleId= */ in.readInt(),
-                /* dismissTextId= */ in.readInt(),
-                /* logoId= */ in.readInt());
+    @Override
+    public boolean equals(@Nullable Object object) {
+        if (!(object instanceof FullscreenSigninConfig)) {
+            return false;
+        }
+
+        FullscreenSigninConfig other = (FullscreenSigninConfig) object;
+        return titleId == other.titleId
+                && subtitleId == other.subtitleId
+                && dismissTextId == other.dismissTextId
+                && logoId == other.logoId;
     }
 
-    /** Implements {@link Parcelable} */
     @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    /** Implements {@link Parcelable} */
-    @Override
-    public void writeToParcel(Parcel out, int flags) {
-        out.writeInt(titleId);
-        out.writeInt(subtitleId);
-        out.writeInt(dismissTextId);
-        out.writeInt(logoId);
+    public int hashCode() {
+        return Objects.hash(titleId, subtitleId, dismissTextId, logoId);
     }
 }
