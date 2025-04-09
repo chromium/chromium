@@ -19,7 +19,7 @@
     "@types/google.analytics": "0.0.42",
     "@types/mocha": "10.0.6",
     "@types/offscreencanvas": "2019.6.4",
-    "@types/trusted-types": "1.0.6",
+    "@types/trusted-types": "2.0.7",
     "@types/w3c-image-capture": "1.0.10",
     "@types/webrtc": "0.0.45",
     "@types/wicg-file-system-access": "2020.09.05",
@@ -30,7 +30,7 @@
     "eslint": "9.20.1",
     "eslint-plugin-jsdoc": "50.2.2",
     "html-minifier": "4.0.0",
-    "lit": "3.0.2",
+    "lit": "3.2.1",
     "svgo": "3.0.2",
     "terser": "5.37.0",
     "typescript": "5.8.2"

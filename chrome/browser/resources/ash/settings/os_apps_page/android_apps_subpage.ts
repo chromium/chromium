@@ -63,7 +63,7 @@ export class SettingsAndroidAppsSubpageElement extends
       },
 
       dialogBody_: {
-        type: TrustedHTML,
+        type: Object,
         value(this: SettingsAndroidAppsSubpageElement): TrustedHTML {
           return this.i18nAdvanced(
               'androidAppsDisableDialogMessage',

@@ -134,11 +134,11 @@ export class CrLitElement extends LitElement {
   //    writing, ongoing discussion.
   //
   //  Need to use ts-ignore because of overriding requires using the minified
-  //  internal name of '_$changeProperty' which is 'C'.
+  //  internal name of '_$changeProperty' which is 'P'.
   //  @ts-ignore
-  override C(name: PropertyKey, oldValue: any, options: any) {
+  override P(name: PropertyKey, oldValue: any, options: any) {
     // @ts-ignore
-    super.C(name, this.hasUpdated ? oldValue : undefined, options);
+    super.P(name, this.hasUpdated ? oldValue : undefined, options);
   }
 
   override willUpdate(_changedProperties: PropertyValues<this>) {
