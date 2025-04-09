@@ -257,8 +257,9 @@ class EventGenerator {
     MoveMouseRelativeTo(window, gfx::Point(x, y));
   }
 
-  void MoveMouseBy(int x, int y) {
-    MoveMouseTo(current_screen_location_ + gfx::Vector2d(x, y));
+  void MoveMouseBy(int x, int y) { MoveMouseBy(x, y, /*count=*/1); }
+  void MoveMouseBy(int x, int y, int count) {
+    MoveMouseTo(current_screen_location_ + gfx::Vector2d(x, y), count);
   }
 
   // Generates events to drag mouse to given |point|.
@@ -312,22 +313,31 @@ class EventGenerator {
       int touch_id,
       const std::optional<gfx::Point>& touch_location_in_screen = std::nullopt);
 
-  // Generates a EventType::kTouchMoved event to |point|.
-  void MoveTouch(const gfx::Point& point);
+  // Generates EventType::kTouchMoved events to |point|.
+  void MoveTouch(const gfx::Point& point, int count);
+  void MoveTouch(const gfx::Point& point) { MoveTouch(point, /*count=*/1); }
 
-  // Generates a EventType::kTouchMoved event moving by (x, y) from current
+  // Generates EventType::kTouchMoved events moving by (x, y) from current
   // location.
-  void MoveTouchBy(int x, int y) {
-    MoveTouch(current_screen_location_ + gfx::Vector2d(x, y));
+  void MoveTouchBy(int x, int y, int count) {
+    MoveTouch(current_screen_location_ + gfx::Vector2d(x, y), count);
   }
+  void MoveTouchBy(int x, int y) { MoveTouchBy(x, y, /*count=*/1); }
 
-  // Generates a EventType::kTouchMoved event to |point| with |touch_id|.
-  void MoveTouchId(const gfx::Point& point, int touch_id);
+  // Generates EventType::kTouchMoved events to |point| with |touch_id|.
+  void MoveTouchId(const gfx::Point& point, int touch_id, int count);
+  void MoveTouchId(const gfx::Point& point, int touch_id) {
+    MoveTouchId(point, touch_id, /*count=*/1);
+  }
 
   // Generates a EventType::kTouchMoved event moving (x, y) from current
   // location with |touch_id|.
+  void MoveTouchIdBy(int touch_id, int x, int y, int count) {
+    MoveTouchId(current_screen_location_ + gfx::Vector2d(x, y), touch_id,
+                count);
+  }
   void MoveTouchIdBy(int touch_id, int x, int y) {
-    MoveTouchId(current_screen_location_ + gfx::Vector2d(x, y), touch_id);
+    MoveTouchIdBy(touch_id, x, y, /*count=*/1);
   }
 
   // Generates a touch release event.

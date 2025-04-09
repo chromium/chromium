@@ -81,6 +81,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -2966,14 +2967,10 @@ class ShelfLayoutManagerDragDropTest
 
   // Drags a view vertically by `dy` pixels. Assumes the drag has been started.
   void MoveDragBy(int dy) {
-    auto move_fn =
-        base::BindRepeating(GetParam() == DragEventType::kMouse
-                                ? &ui::test::EventGenerator::MoveMouseBy
-                                : &ui::test::EventGenerator::MoveTouchBy,
-                            base::Unretained(generator_));
-    const int step = dy / abs(dy);
-    for (int i = 0; i < abs(dy); ++i) {
-      move_fn.Run(0, step);
+    if (GetParam() == DragEventType::kMouse) {
+      generator_->MoveMouseBy(0, dy, /*count=*/abs(dy));
+    } else {
+      generator_->MoveTouchBy(0, dy, /*count=*/abs(dy));
     }
   }
 
