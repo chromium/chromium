@@ -443,7 +443,8 @@ URLLoader::URLLoader(
       ad_auction_event_record_request_helper_(
           request.attribution_reporting_eligibility,
           url_loader_network_observer_.get()),
-      has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
+      has_fetch_streaming_upload_body_(
+          url_loader_util::HasFetchStreamingUploadBody(request)),
       accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
       allow_cookies_from_browser_(
           request.trusted_params &&
@@ -1415,19 +1416,6 @@ void URLLoader::ContinueOnReceiveRedirect(
   DCHECK(response);
   url_loader_client_.Get()->OnReceiveRedirect(redirect_info,
                                               std::move(response));
-}
-
-// static
-bool URLLoader::HasFetchStreamingUploadBody(const ResourceRequest* request) {
-  const ResourceRequestBody* request_body = request->request_body.get();
-  if (!request_body)
-    return false;
-  const std::vector<DataElement>* elements = request_body->elements();
-  if (elements->size() != 1u)
-    return false;
-  const auto& element = elements->front();
-  return element.type() == mojom::DataElementDataView::Tag::kChunkedDataPipe &&
-         element.As<network::DataElementChunkedDataPipe>().read_only_once();
 }
 
 void URLLoader::OnAuthRequired(net::URLRequest* url_request,

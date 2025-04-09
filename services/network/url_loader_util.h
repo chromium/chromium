@@ -44,6 +44,11 @@ class ResourceRequestBody;
 
 namespace url_loader_util {
 
+// Returns true if `request` represents a fetch upload request with a streaming
+// body. This is determined by checking if the request body contains exactly
+// one element, which is a read-only-once chunked data pipe.
+bool HasFetchStreamingUploadBody(const ResourceRequest&);
+
 // Creates a net::UploadDataStream from the passed `body` and `opened_files`.
 // `file_task_runner` will be used for reading file elements in the `body`.
 std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(

@@ -280,6 +280,22 @@ class FileElementReader : public net::UploadFileElementReader {
 };
 
 }  // namespace
+
+// Returns if `request` is fetch upload request with a streaming body.
+bool HasFetchStreamingUploadBody(const ResourceRequest& request) {
+  const ResourceRequestBody* request_body = request.request_body.get();
+  if (!request_body) {
+    return false;
+  }
+  const std::vector<DataElement>* elements = request_body->elements();
+  if (elements->size() != 1u) {
+    return false;
+  }
+  const auto& element = elements->front();
+  return element.type() == mojom::DataElementDataView::Tag::kChunkedDataPipe &&
+         element.As<network::DataElementChunkedDataPipe>().read_only_once();
+}
+
 std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
     ResourceRequestBody* body,
     std::vector<base::File>& opened_files,

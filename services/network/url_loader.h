@@ -300,8 +300,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   static const void* const kUserDataKey;
 
-  static bool HasFetchStreamingUploadBody(const ResourceRequest*);
-
   // Returns an optional reference to a constant permissions policy that belongs
   // to the request. `this` must outlive the caller of this method.
   base::optional_ref<const network::PermissionsPolicy> GetPermissionsPolicy()
