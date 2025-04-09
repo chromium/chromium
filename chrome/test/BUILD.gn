@@ -789,8 +789,6 @@ static_library("test_support") {
       "../browser/badging/test_badge_manager_delegate.h",
       "../browser/banners/test_app_banner_manager_desktop.cc",
       "../browser/banners/test_app_banner_manager_desktop.h",
-      "../browser/devtools/protocol/devtools_protocol_test_support.cc",
-      "../browser/devtools/protocol/devtools_protocol_test_support.h",
       "../browser/download/download_browsertest_utils.cc",
       "../browser/download/download_browsertest_utils.h",
       "../browser/net/profile_network_context_service_test_utils.cc",
@@ -861,6 +859,13 @@ static_library("test_support") {
       "base/test_browser_window.h",
     ]
     allow_circular_includes_from = [ ":test_support_ui" ]
+  }
+
+  if (enable_devtools_frontend) {
+    sources += [
+      "../browser/devtools/protocol/devtools_protocol_test_support.cc",
+      "../browser/devtools/protocol/devtools_protocol_test_support.h",
+    ]
   }
 
   if (use_nss_certs) {
@@ -1561,10 +1566,15 @@ source_set("platform_browser_tests") {
   }
 
   if (enable_devtools_frontend) {
-    sources += [ "../browser/devtools/devtools_browsertest.cc" ]
+    sources += [
+      "../browser/devtools/devtools_browsertest.cc",
+      "../browser/devtools/protocol/devtools_protocol_browsertest.cc",
+    ]
     deps += [
       ":sync_integration_test_support",
+      "//chrome/browser/data_saver",
       "//chrome/browser/devtools:test_support",
+      "//chrome/browser/preloading:prefs",
       "//chrome/browser/ui/autofill",
       "//components/infobars/content",
       "//components/javascript_dialogs",
@@ -1573,7 +1583,10 @@ source_set("platform_browser_tests") {
       "//ui/compositor",
     ]
     if (!is_android) {
-      deps += [ "//chrome/browser/ui/browser_window" ]
+      deps += [
+        "//chrome/browser/apps/app_service",
+        "//chrome/browser/ui/browser_window",
+      ]
     }
   }
 }
@@ -2954,7 +2967,6 @@ if (!is_android) {
       "../browser/devtools/global_confirm_info_bar_browsertest.cc",
       "../browser/devtools/protocol/devtools_autofill_browsertest.cc",
       "../browser/devtools/protocol/devtools_extensions_browsertest.cc",
-      "../browser/devtools/protocol/devtools_protocol_browsertest.cc",
       "../browser/devtools/protocol/devtools_pwa_browsertest.cc",
       "../browser/devtools/protocol/form_devtools_issues_browsertest.cc",
       "../browser/direct_sockets/direct_sockets_apitest.cc",

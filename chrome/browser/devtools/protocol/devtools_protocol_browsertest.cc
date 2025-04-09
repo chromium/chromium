@@ -32,10 +32,6 @@
 #include "chrome/browser/data_saver/data_saver.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
-#include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/profiles/profile.h"
@@ -43,16 +39,12 @@
 #include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/tpcd/metadata/manager_factory.h"
 #include "chrome/browser/tpcd/support/trial_test_utils.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
-#include "components/guest_view/browser/guest_view_base.h"
-#include "components/guest_view/browser/guest_view_manager_delegate.h"
-#include "components/guest_view/browser/test_guest_view_manager.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -71,15 +63,6 @@
 #include "content/public/test/btm_service_test_utils.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
-#include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/browser/process_manager.h"
-#include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/test/extension_test_message_listener.h"
 #include "net/base/ip_address.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
@@ -96,6 +79,31 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "url/origin.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager_delegate.h"
+#include "components/guest_view/browser/test_guest_view_manager.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
+#include "chrome/browser/extensions/unpacked_installer.h"
+#include "extensions/browser/api/extensions_api_client.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_system.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/test/extension_test_message_listener.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
 #include "base/test/scoped_path_override.h"
@@ -109,9 +117,11 @@ using testing::Not;
 
 namespace {
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        VisibleSecurityStateChangedNeutralState) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), GURL("about:blank")));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents()));
 
   Attach();
@@ -173,7 +183,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        CreateBrowserContextAcceptsProxyServer) {
   ScopedAllowHttpForHostnamesForTesting allow_http(
-      {"this-page-does-not-exist.com"}, browser()->profile()->GetPrefs());
+      {"this-page-does-not-exist.com"},
+      chrome_test_utils::GetProfile(this)->GetPrefs());
 
   AttachToBrowserTarget();
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
@@ -238,13 +249,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
       ].forEach((event) =>
         window.addEventListener(event, (e) => logs.push(e.type)));)";
   content::WebContents* target_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* other_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+      chrome_test_utils::GetActiveWebContents(this);
   EXPECT_TRUE(
       content::EvalJs(target_web_contents, setup_logging).error.empty());
   EXPECT_TRUE(content::EvalJs(other_web_contents, setup_logging).error.empty());
@@ -301,6 +312,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
               AllOf(Not(Contains("click")), Not(Contains("dragenter")),
                     Not(Contains("keydown"))));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        NoInputEventsSentToBrowserWhenDisallowed) {
@@ -336,8 +348,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        PreloadEnabledStateUpdatedDisabledByPreference) {
   Attach();
 
-  prefetch::SetPreloadPagesState(browser()->profile()->GetPrefs(),
-                                 prefetch::PreloadPagesState::kNoPreloading);
+  prefetch::SetPreloadPagesState(
+      chrome_test_utils::GetProfile(this)->GetPrefs(),
+      prefetch::PreloadPagesState::kNoPreloading);
 
   SendCommandAsync("Preload.enable");
   const base::Value::Dict result =
@@ -414,7 +427,8 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
 
   const std::string add_specrules = R"(
     const specrules = document.createElement("script");
@@ -444,6 +458,7 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
     DevToolsProtocolTest,
     NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation) {
@@ -512,13 +527,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetRPHRegistrationMode) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
   Attach();
 
   // Initial value
   custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(
-          browser()->profile());
+          chrome_test_utils::GetProfile(this));
   EXPECT_EQ(custom_handlers::RphRegistrationMode::kNone,
             registry->registration_mode());
 
@@ -564,7 +580,7 @@ class DevToolsProtocolTest_BounceTrackingMitigations
   }
 
   void SetBlockThirdPartyCookies(bool value) {
-    browser()->profile()->GetPrefs()->SetInteger(
+    chrome_test_utils::GetProfile(this)->GetPrefs()->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(
             value ? content_settings::CookieControlsMode::kBlockThirdParty
@@ -651,7 +667,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_BounceTrackingMitigations,
   SetBlockThirdPartyCookies(true);
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
   Attach();
 
   const GURL bouncer(
@@ -739,7 +756,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId, ReturnsManifestAppId) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL(
       "/banners/manifest_test_page.html?manifest=manifest_with_id.json"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
   Attach();
 
   const base::Value::Dict* result = SendCommandSync("Page.getAppId");
@@ -752,7 +770,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId,
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(
       embedded_test_server()->GetURL("/web_apps/no_service_worker.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
   Attach();
 
   const base::Value::Dict* result = SendCommandSync("Page.getAppId");
@@ -765,7 +784,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId,
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_AppId, ReturnsNoAppIdIfNoManifest) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
   Attach();
 
   const base::Value::Dict* result = SendCommandSync("Page.getAppId");
@@ -974,7 +994,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        AutomationOverrideShowsAndRemovesInfoBar) {
   Attach();
   auto* manager = infobars::ContentInfoBarManager::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      chrome_test_utils::GetActiveWebContents(this));
   {
     base::Value::Dict params;
     params.Set("enabled", true);
@@ -993,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        AutomationOverrideAddsOneInfoBarOnly) {
   Attach();
   auto* manager = infobars::ContentInfoBarManager::FromWebContents(
-      browser()->tab_strip_model()->GetActiveWebContents());
+      chrome_test_utils::GetActiveWebContents(this));
   {
     base::Value::Dict params;
     params.Set("enabled", true);
@@ -1007,6 +1027,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   }
   EXPECT_EQ(manager->infobars().size(), 1u);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
   SetIsTrusted(false);
@@ -1019,6 +1040,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
   EXPECT_TRUE(SendCommandSync("Accessibility.enable"));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class DevToolsProtocolScreenshotTest : public DevToolsProtocolTest {
  protected:
   void SetUp() override {
@@ -1044,8 +1066,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolScreenshotTest, ScreenshotInactiveTab) {
       R"(data:text/html,<body style="background-color: blue"></body>)";
   static constexpr char kRedPageURL[] =
       R"(data:text/html,<body style="background-color: red"></body>)";
-  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-      browser(), GURL(kBluePageURL), 1);
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), GURL(kBluePageURL)));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   Attach();
   constexpr int kIndex = 1;
@@ -1056,12 +1077,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolScreenshotTest, ScreenshotInactiveTab) {
   SkColor pixel_color = bitmap.getColor(100, 100);
   EXPECT_EQ(SK_ColorBLUE, pixel_color);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionProtocolTest : public DevToolsProtocolTest {
  protected:
   void SetUpOnMainThread() override {
     DevToolsProtocolTest::SetUpOnMainThread();
-    Profile* profile = browser()->profile();
+    Profile* profile = chrome_test_utils::GetProfile(this);
     extension_service_ =
         extensions::ExtensionSystem::Get(profile)->extension_service();
     extension_registry_ = extensions::ExtensionRegistry::Get(profile);
@@ -1094,7 +1117,7 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
     ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
     const extensions::Extension* extension = LoadExtensionOrApp(extension_path);
     auto* process_manager =
-        extensions::ProcessManager::Get(browser()->profile());
+        extensions::ProcessManager::Get(chrome_test_utils::GetProfile(this));
     if (extensions::BackgroundInfo::IsServiceWorkerBased(extension)) {
       EXPECT_TRUE(activated_listener.WaitUntilSatisfied());
       auto worker_ids =
@@ -1113,7 +1136,8 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
     apps::AppLaunchParams params(
         app_id, apps::LaunchContainer::kLaunchContainerNone,
         WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-    apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
+    apps::AppServiceProxyFactory::GetForProfile(
+        chrome_test_utils::GetProfile(this))
         ->BrowserAppLauncher()
         ->LaunchAppWithParamsForTesting(std::move(params));
   }
@@ -1351,8 +1375,9 @@ class ExtensionProtocolTestWithGuestViewMPArch : public ExtensionProtocolTest {
 
   guest_view::TestGuestViewManager* GetGuestViewManager() {
     return guest_view_manager_factory_.GetOrCreateTestGuestViewManager(
-        browser()->profile(), extensions::ExtensionsAPIClient::Get()
-                                  ->CreateGuestViewManagerDelegate());
+        chrome_test_utils::GetProfile(this),
+        extensions::ExtensionsAPIClient::Get()
+            ->CreateGuestViewManagerDelegate());
   }
 
  private:
@@ -1514,6 +1539,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewMPArch,
       *frame_id,
       guest_view->GetGuestMainFrame()->GetDevToolsFrameToken().ToString());
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class PrerenderDataSaverProtocolTest : public DevToolsProtocolTest {
  public:
@@ -1535,11 +1561,11 @@ class PrerenderDataSaverProtocolTest : public DevToolsProtocolTest {
 
   void TearDown() override {
     data_saver::ResetIsDataSaverEnabledForTesting();
-    InProcessBrowserTest::TearDown();
+    DevToolsProtocolTest::TearDown();
   }
 
   content::WebContents* GetActiveWebContents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
+    return chrome_test_utils::GetActiveWebContents(this);
   }
 
  private:
@@ -1560,7 +1586,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
 
   content::test::PrerenderHostRegistryObserver observer(
       *GetActiveWebContents());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), initial_url));
   prerender_helper()->AddPrerenderAsync(prerendering_url);
   observer.WaitForTrigger(prerendering_url);
 
@@ -1578,7 +1605,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
       /*PrerenderFinalStatus::kDataSaverEnabled=*/38, 1);
 }
 
-class PrivacySandboxAttestationsOverrideTest : public DevToolsProtocolTest {
+#if !BUILDFLAG(IS_ANDROID)
+class PrivacySandboxAttestationsOverrideTest
+    : public InProcessBrowserTestMixinHostSupport<DevToolsProtocolTest> {
  public:
   PrivacySandboxAttestationsOverrideTest() = default;
 
@@ -1644,7 +1673,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest_RelatedWebsiteSets,
                        GetRelatedWebsiteSets) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(content::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), url));
   Attach();
 
   SendCommandSync("Storage.getRelatedWebsiteSets");
@@ -1930,5 +1960,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   SendCommandSync("Target.getTargets");
   EXPECT_EQ(2u, result()->FindList("targetInfos")->size());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
