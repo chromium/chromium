@@ -656,6 +656,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1137946367" label="chrome://webrt-logs/"/>
   <int value="-1108319739" label="chrome://sync-internals/"/>
   <int value="-1087461470" label="chrome://management/"/>
+  <int value="-1084687099" label="chrome://newtab-footer/"/>
   <int value="-1082746738" label="chrome://credits/"/>
   <int value="-1078583150" label="chrome://view-cert-dialog/"/>
   <int value="-1051629910" label="chrome://mall/"/>

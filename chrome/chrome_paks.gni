@@ -188,6 +188,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/lens_shared_resources.pak",
         "$root_gen_dir/chrome/lens_untrusted_resources.pak",
         "$root_gen_dir/chrome/management_resources.pak",
+        "$root_gen_dir/chrome/new_tab_footer_resources.pak",
         "$root_gen_dir/chrome/new_tab_page_instant_resources.pak",
         "$root_gen_dir/chrome/new_tab_page_resources.pak",
         "$root_gen_dir/chrome/new_tab_page_third_party_resources.pak",

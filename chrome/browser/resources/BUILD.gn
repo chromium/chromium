@@ -41,6 +41,7 @@ group("resources") {
       "lens/overlay:resources",
       "lens/shared:resources",
       "management:resources",
+      "new_tab_footer:resources",
       "new_tab_page:resources",
       "new_tab_page/untrusted:resources",
       "new_tab_page_instant:resources",

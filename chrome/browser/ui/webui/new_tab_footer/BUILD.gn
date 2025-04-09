@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("new_tab_footer") {
+  sources = [ "new_tab_footer_ui.h" ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "new_tab_footer_ui.cc" ]
+  deps = [
+    ":new_tab_footer",
+    "//chrome/browser/resources/new_tab_footer:resources_grit",
+    "//components/search:search",
+    "//ui/webui",
+  ]
+}

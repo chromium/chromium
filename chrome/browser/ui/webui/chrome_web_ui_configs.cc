@@ -87,6 +87,7 @@
 #endif  // BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/media_router/media_router_internals_ui.h"
+#include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
@@ -297,8 +298,9 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ManagementUIConfig>());
   map.AddWebUIConfig(
       std::make_unique<media_router::MediaRouterInternalsUIConfig>());
-  map.AddWebUIConfig(std::make_unique<NewTabPageThirdPartyUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NewTabFooterUIConfig>());
   map.AddWebUIConfig(std::make_unique<NewTabPageUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NewTabPageThirdPartyUIConfig>());
   map.AddWebUIConfig(std::make_unique<NewTabUIConfig>());
   map.AddWebUIConfig(std::make_unique<OmniboxPopupUIConfig>());
   map.AddWebUIConfig(std::make_unique<OnDeviceInternalsUIConfig>());

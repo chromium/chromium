@@ -1780,6 +1780,8 @@ static_library("ui") {
       "//chrome/browser/ui/webui/commerce",
       "//chrome/browser/ui/webui/commerce:impl",
       "//chrome/browser/ui/webui/cr_components/theme_color_picker",
+      "//chrome/browser/ui/webui/new_tab_footer",
+      "//chrome/browser/ui/webui/new_tab_footer:impl",
       "//chrome/browser/ui/webui/searchbox",
       "//chrome/browser/ui/webui/settings",
       "//chrome/browser/ui/webui/settings:impl",

@@ -43,6 +43,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/lens/overlay:build_ts",
     "//chrome/browser/resources/management:build_ts",
     "//chrome/browser/resources/media_router/cast_feedback:build_ts",
+    "//chrome/browser/resources/new_tab_footer:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
     "//chrome/browser/resources/omnibox_popup:build_ts",
     "//chrome/browser/resources/on_device_internals:build_ts",
