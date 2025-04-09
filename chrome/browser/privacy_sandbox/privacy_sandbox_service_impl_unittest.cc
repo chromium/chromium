@@ -26,6 +26,7 @@
 #include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_constants.h"
+#include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -534,7 +535,7 @@ class PrivacySandboxServiceTest : public testing::Test {
 
  protected:
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<privacy_sandbox::PrivacySandboxNoticeStorage> notice_storage_;
+  std::unique_ptr<privacy_sandbox::NoticeStorage> notice_storage_;
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;

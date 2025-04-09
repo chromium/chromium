@@ -88,13 +88,14 @@ source_set("test_support") {
   sources = [
     "mock_notice_service.cc",
     "mock_notice_service.h",
+    "mock_notice_storage.cc",
+    "mock_notice_storage.h",
   ]
   deps = [
+    ":core",
     ":interfaces",
     ":notice_mojom",
     "//base",
-    "//components/keyed_service/core",
-    "//content/public/browser",
     "//testing/gmock",
   ]
 
@@ -120,6 +121,7 @@ source_set("unit_tests") {
   deps = [
     ":core",
     ":notice",
+    ":test_support",
     "//base/test:test_support",
     "//base/version_info",
     "//chrome/test:test_support",

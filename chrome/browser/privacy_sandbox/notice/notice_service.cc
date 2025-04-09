@@ -88,7 +88,7 @@ void PopulateNoticeCatalog(std::unique_ptr<NoticeCatalog>& catalog) {
 PrivacySandboxNoticeService::PrivacySandboxNoticeService(
     Profile* profile,
     std::unique_ptr<NoticeCatalog> catalog,
-    std::unique_ptr<PrivacySandboxNoticeStorage> storage)
+    std::unique_ptr<NoticeStorage> storage)
     : profile_(profile),
       catalog_(std::move(catalog)),
       notice_storage_(std::move(storage)) {
@@ -137,7 +137,7 @@ PrivacySandboxNoticeService::GetRequiredNotices(SurfaceType surface) {
   return required_notices;
 }
 
-PrivacySandboxNoticeStorage* PrivacySandboxNoticeService::GetNoticeStorage() {
+NoticeStorage* PrivacySandboxNoticeService::GetNoticeStorage() {
   return notice_storage_.get();
 }
 

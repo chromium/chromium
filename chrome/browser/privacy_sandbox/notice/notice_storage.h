@@ -142,30 +142,47 @@ struct V1MigrationData {
   base::Time notice_last_shown;
 };
 
-class PrivacySandboxNoticeStorage {
+class NoticeStorage {
  public:
-  PrivacySandboxNoticeStorage() = default;
-  ~PrivacySandboxNoticeStorage() = default;
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  virtual ~NoticeStorage();
 
   // Reads PrivacySandbox notice & consent prefs. Returns std::nullopt if all
   // prefs aren't set. If an event is tracked but the event timestamp is
   // missing, return base::Time(). If an event timestamp is tracked but the
   // event itself is missing, return PrivacySandboxNoticeEvent::kUnknownAction.
-  std::optional<PrivacySandboxNoticeData> ReadNoticeData(
+  virtual std::optional<PrivacySandboxNoticeData> ReadNoticeData(
       PrefService* pref_service,
-      std::string_view notice) const;
+      std::string_view notice) const = 0;
 
   // Records histograms tracking the state of notice flow on startup.
-  void RecordHistogramsOnStartup(PrefService* pref_service,
-                                 std::string_view notice) const;
+  virtual void RecordHistogramsOnStartup(PrefService* pref_service,
+                                         std::string_view notice) const = 0;
 
   // Records a Notice Event.
+  virtual void RecordEvent(PrefService* pref_service,
+                           std::string_view notice,
+                           notice::mojom::PrivacySandboxNoticeEvent event,
+                           base::Time event_time) = 0;
+};
+
+class PrivacySandboxNoticeStorage : public NoticeStorage {
+ public:
+  PrivacySandboxNoticeStorage();
+  ~PrivacySandboxNoticeStorage() override;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
+  std::optional<PrivacySandboxNoticeData> ReadNoticeData(
+      PrefService* pref_service,
+      std::string_view notice) const override;
+
+  void RecordHistogramsOnStartup(PrefService* pref_service,
+                                 std::string_view notice) const override;
+
   void RecordEvent(PrefService* pref_service,
                    std::string_view notice,
                    notice::mojom::PrivacySandboxNoticeEvent event,
-                   base::Time event_time);
+                   base::Time event_time) override;
 
   // Migration functions.
 

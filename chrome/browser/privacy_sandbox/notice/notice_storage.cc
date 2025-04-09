@@ -346,6 +346,11 @@ void PrivacySandboxNoticeStorage::UpdateNoticeSchemaV2(
   }
 }
 
+NoticeStorage::~NoticeStorage() = default;
+
+PrivacySandboxNoticeStorage::PrivacySandboxNoticeStorage() = default;
+PrivacySandboxNoticeStorage::~PrivacySandboxNoticeStorage() = default;
+
 void PrivacySandboxNoticeStorage::RecordHistogramsOnStartup(
     PrefService* pref_service,
     std::string_view notice) const {

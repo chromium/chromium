@@ -33,10 +33,9 @@ class PrivacySandboxNoticeService
     : public KeyedService,
       public PrivacySandboxNoticeServiceInterface {
  public:
-  PrivacySandboxNoticeService(
-      Profile* profile,
-      std::unique_ptr<NoticeCatalog> catalog,
-      std::unique_ptr<PrivacySandboxNoticeStorage> storage);
+  PrivacySandboxNoticeService(Profile* profile,
+                              std::unique_ptr<NoticeCatalog> catalog,
+                              std::unique_ptr<NoticeStorage> storage);
 
   ~PrivacySandboxNoticeService() override;
 
@@ -48,7 +47,7 @@ class PrivacySandboxNoticeService
                      notice::mojom::PrivacySandboxNoticeEvent event) override;
 
   // Service Accessors.
-  PrivacySandboxNoticeStorage* GetNoticeStorage();
+  NoticeStorage* GetNoticeStorage();
   PrefService* GetPrefService();
   NoticeCatalog* GetCatalog();
 
@@ -63,7 +62,7 @@ class PrivacySandboxNoticeService
   // TODO(crbug.com/392612108): Create eligibility and notice result callbacks.
   raw_ptr<Profile> profile_;
   std::unique_ptr<NoticeCatalog> catalog_;
-  std::unique_ptr<PrivacySandboxNoticeStorage> notice_storage_;
+  std::unique_ptr<NoticeStorage> notice_storage_;
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DesktopViewManager> desktop_view_manager_;
 #endif  // !BUILDFLAG(IS_ANDROID)
