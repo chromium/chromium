@@ -92,9 +92,7 @@ export class SplitNewTabPageAppElement extends CrLitElement {
       tabData.inActiveWindow = inActiveWindow;
     }
 
-    tabData.a11yTypeText = loadTimeData.getString(
-        type === TabItemType.OPEN_TAB ? 'a11yOpenTab' :
-                                        'a11yRecentlyClosedTab');
+    tabData.a11yTypeText = loadTimeData.getString('a11yOpenTab');
 
     return tabData;
   }

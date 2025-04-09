@@ -42,11 +42,13 @@ ${
 function getTabList(tabDatas: TabData[]) {
   return html`
     <div class="tab-list">
-      ${
-      tabDatas.map(
-          data => html`
-        <tab-search-item class="mwb-list-item" .data="${
-              data}"></tab-search-item>
+      ${tabDatas.map(data => html`
+        <tab-search-item class="mwb-list-item"
+            hide-close-button
+            hide-timestamp
+            size="large"
+            .data="${data}">
+        </tab-search-item>
       `)}
     </div>
   `;
