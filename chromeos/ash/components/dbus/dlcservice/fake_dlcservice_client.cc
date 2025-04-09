@@ -34,6 +34,16 @@ void FakeDlcserviceClient::Install(
   if (!skip_adding_dlc_info_on_error_ || error == dlcservice::kErrorNone) {
     dlcs_with_content_.add_dlc_infos()->set_id(id);
   }
+
+  // Simulate the progress. If progress has not yet been completed, the
+  // progress_callback will be invoked and subsequently marked as completed. The
+  // progress_callback is only invoked when should_simulate_install_progress_ is
+  // set to true through the set_simulate_install_progress method.
+  if (should_trigger_install_progress_ && !is_progress_completed_) {
+    progress_callback.Run(1.0);
+    is_progress_completed_ = true;
+  }
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), std::move(install_result)));
