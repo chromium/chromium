@@ -5231,8 +5231,8 @@ IN_PROC_BROWSER_TEST_P(
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry,
       MainResourceLoadCompletedUkmEntry::kMatchedFirstRouterSourceTypeName,
-      static_cast<std::int64_t>(
-          network::mojom::ServiceWorkerRouterSourceType::kRace));
+      static_cast<std::int64_t>(network::mojom::ServiceWorkerRouterSourceType::
+                                    kRaceNetworkAndFetchEvent));
 
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, MainResourceLoadCompletedUkmEntry::kActualRouterSourceTypeName,
@@ -5606,8 +5606,8 @@ IN_PROC_BROWSER_TEST_P(
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry,
       MainResourceLoadCompletedUkmEntry::kMatchedFirstRouterSourceTypeName,
-      static_cast<std::int64_t>(
-          network::mojom::ServiceWorkerRouterSourceType::kRace));
+      static_cast<std::int64_t>(network::mojom::ServiceWorkerRouterSourceType::
+                                    kRaceNetworkAndFetchEvent));
 
   ukm::TestAutoSetUkmRecorder::ExpectEntryMetric(
       entry, MainResourceLoadCompletedUkmEntry::kActualRouterSourceTypeName,

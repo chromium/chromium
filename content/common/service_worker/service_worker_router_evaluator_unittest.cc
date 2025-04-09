@@ -280,8 +280,9 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-      source.race_source.emplace();
+      source.type = network::mojom::ServiceWorkerRouterSourceType::
+          kRaceNetworkAndFetchEvent;
+      source.race_network_and_fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     rules.rules.push_back(rule);
@@ -299,8 +300,9 @@ TEST(ServiceWorkerRouterEvaluator, ChooseMatchedRoute) {
   // Four sources rule should match because of *.css URLPattern.
   EXPECT_TRUE(eval_result.has_value());
   EXPECT_EQ(1U, eval_result->sources.size());
-  EXPECT_EQ(network::mojom::ServiceWorkerRouterSourceType::kRace,
-            eval_result->sources[0].type);
+  EXPECT_EQ(
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent,
+      eval_result->sources[0].type);
 }
 
 TEST(ServiceWorkerRouterEvaluator, SimpleHostnameMatch) {
@@ -1356,8 +1358,9 @@ TEST(ServiceWorkerRouterEvaluator, ToValueBasicSimpleRule) {
     }
     {
       blink::ServiceWorkerRouterSource source;
-      source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-      source.race_source.emplace();
+      source.type = network::mojom::ServiceWorkerRouterSourceType::
+          kRaceNetworkAndFetchEvent;
+      source.race_network_and_fetch_event_source.emplace();
       rule.sources.push_back(source);
     }
     {

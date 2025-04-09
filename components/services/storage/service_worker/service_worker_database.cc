@@ -148,6 +148,8 @@ namespace {
 // set a low write buffer size to trigger compaction more often.
 constexpr size_t kWriteBufferSize = 512 * 1024;
 
+using RouterSourceType = network::mojom::ServiceWorkerRouterSourceType;
+
 class ServiceWorkerEnv : public leveldb_env::ChromiumEnv {
  public:
   ServiceWorkerEnv() : ChromiumEnv(storage::CreateFilesystemProxy()) {}
@@ -2788,45 +2790,42 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
             return Status::kErrorCorrupted;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kNetworkSource:
-            source.type =
-                network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+            source.type = RouterSourceType::kNetwork;
             source.network_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
-              kRaceSource: {
-            source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-            blink::ServiceWorkerRouterRaceSource race_source;
-            if (s.race_source().has_target()) {
-              switch (s.race_source().target()) {
-                case ServiceWorkerRegistrationData::RouterRules::RuleV1::
-                    Source::RaceSource::kNetworkAndFetchHandler:
-                  race_source.target = blink::ServiceWorkerRouterRaceSource::
-                      TargetEnum::kNetworkAndFetchHandler;
-                  break;
-              }
-            } else {
-              // This happens when reading an old registration.
-              // It means kNetworkAndFetchHandler.
-              race_source.target = blink::ServiceWorkerRouterRaceSource::
-                  TargetEnum::kNetworkAndFetchHandler;
-            }
-            source.race_source = race_source;
+              kRaceNetworkAndFetchEventSource:
+            source.type = RouterSourceType::kRaceNetworkAndFetchEvent;
+            source.race_network_and_fetch_event_source.emplace();
             break;
-          }
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kFetchEventSource:
-            source.type =
-                network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
+            source.type = RouterSourceType::kFetchEvent;
             source.fetch_event_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kCacheSource: {
-            source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
+            source.type = RouterSourceType::kCache;
             blink::ServiceWorkerRouterCacheSource cache_source;
             if (s.cache_source().has_cache_name()) {
               cache_source.cache_name = s.cache_source().cache_name();
             }
             source.cache_source = cache_source;
+            break;
+          }
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
+              kRaceNetworkAndCacheSource: {
+            source.type = RouterSourceType::kRaceNetworkAndCache;
+            source.race_network_and_cache_source.emplace();
+
+            const auto& cache_source =
+                s.race_network_and_cache_source().cache_source();
+            blink::ServiceWorkerRouterCacheSource cache_source_data;
+            if (cache_source.has_cache_name()) {
+              cache_source_data.cache_name = cache_source.cache_name();
+            }
+            source.race_network_and_cache_source->cache_source =
+                cache_source_data;
             break;
           }
         }
@@ -3028,28 +3027,30 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
         ServiceWorkerRegistrationData::RouterRules::RuleV1::Source* source =
             v1->add_source();
         switch (s.type) {
-          case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+          case RouterSourceType::kNetwork:
             source->mutable_network_source();
             break;
-          case network::mojom::ServiceWorkerRouterSourceType::kRace: {
-            auto* race_source = source->mutable_race_source();
-            switch (s.race_source->target) {
-              case blink::ServiceWorkerRouterRaceSource::TargetEnum::
-                  kNetworkAndFetchHandler:
-                race_source->set_target(
-                    ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
-                        RaceSource::kNetworkAndFetchHandler);
-                break;
-            }
+          case RouterSourceType::kRaceNetworkAndFetchEvent:
+            source->mutable_race_network_and_fetch_event_source();
             break;
-          }
-          case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
+          case RouterSourceType::kFetchEvent:
             source->mutable_fetch_event_source();
             break;
-          case network::mojom::ServiceWorkerRouterSourceType::kCache: {
+          case RouterSourceType::kCache: {
             auto* cache_source = source->mutable_cache_source();
             if (s.cache_source->cache_name) {
               cache_source->set_cache_name(*s.cache_source->cache_name);
+            }
+            break;
+          }
+          case RouterSourceType::kRaceNetworkAndCache: {
+            auto* race_network_and_cache_source =
+                source->mutable_race_network_and_cache_source();
+            auto* cache_source =
+                race_network_and_cache_source->mutable_cache_source();
+            if (s.race_network_and_cache_source->cache_source.cache_name) {
+              cache_source->set_cache_name(
+                  *s.race_network_and_cache_source->cache_source.cache_name);
             }
             break;
           }

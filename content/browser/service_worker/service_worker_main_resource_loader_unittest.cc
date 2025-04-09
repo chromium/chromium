@@ -617,13 +617,18 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
       case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
         source.network_source.emplace();
         break;
-      case network::mojom::ServiceWorkerRouterSourceType::kRace:
-        source.race_source.emplace();
+      case network::mojom::ServiceWorkerRouterSourceType::
+          kRaceNetworkAndFetchEvent:
+        source.race_network_and_fetch_event_source.emplace();
         break;
-      case network::mojom::ServiceWorkerRouterSourceType::kCache:
+      case network::mojom::ServiceWorkerRouterSourceType::kCache: {
         blink::ServiceWorkerRouterCacheSource cache_source;
         cache_source.cache_name = kTestCacheName;
         source.cache_source = cache_source;
+        break;
+      }
+      case network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache:
+        // TODO(crbug.com/370844790): implement race network and cache
         break;
     }
     rule.sources.emplace_back(source);
@@ -1536,7 +1541,8 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingNetwork) {
 TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceNetworkWin) {
   base::HistogramTester histogram_tester;
 
-  SetupStaticRoutingRules(network::mojom::ServiceWorkerRouterSourceType::kRace);
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent);
 
   service_worker_->DeferResponse();
   SetupNetworkResponse();
@@ -1559,7 +1565,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceNetworkWin) {
   auto expected_info = CreateResponseInfoFromServiceWorker();
   expected_info->was_fetched_via_service_worker = false;
   auto expected_router_info = CreateExpectedMatchingServiceWorkerRouterInfo(
-      network::mojom::ServiceWorkerRouterSourceType::kRace);
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent);
   expected_router_info->actual_source_type =
       network::mojom::ServiceWorkerRouterSourceType::kNetwork;
   expected_info->service_worker_router_info = std::move(expected_router_info);
@@ -1587,7 +1593,8 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceNetworkWin) {
 TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceFetchWin) {
   base::HistogramTester histogram_tester;
 
-  SetupStaticRoutingRules(network::mojom::ServiceWorkerRouterSourceType::kRace);
+  SetupStaticRoutingRules(
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent);
 
   SetupErrorNetworkResponse();
 
@@ -1603,7 +1610,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceFetchWin) {
   EXPECT_EQ(200, info->headers->response_code());
   auto expected_info = CreateResponseInfoFromServiceWorker();
   auto expected_router_info = CreateExpectedMatchingServiceWorkerRouterInfo(
-      network::mojom::ServiceWorkerRouterSourceType::kRace);
+      network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent);
   expected_router_info->actual_source_type =
       network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
   expected_info->service_worker_router_info = std::move(expected_router_info);

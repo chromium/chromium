@@ -207,21 +207,24 @@ message ServiceWorkerRegistrationData {
       }
       message Source {
         message NetworkSource {}
-        message RaceSource {
-          enum Target {
-            kNetworkAndFetchHandler = 0;
-          }
-          optional Target target = 1;
+        message RaceNetworkAndFetchEventSource {
+          reserved 1;         // Deprecated
+          reserved "target";  // Deprecated
         }
         message FetchEventSource {}
         message CacheSource {
           optional string cache_name = 1;
         }
+        message RaceNetworkAndCacheSource {
+          required CacheSource cache_source = 1;
+        }
         oneof source {
           NetworkSource network_source = 1;
-          RaceSource race_source = 2;
+          RaceNetworkAndFetchEventSource race_network_and_fetch_event_source =
+              2;
           FetchEventSource fetch_event_source = 3;
           CacheSource cache_source = 4;
+          RaceNetworkAndCacheSource race_network_and_cache_source = 5;
         }
       }
       repeated Condition condition = 1;

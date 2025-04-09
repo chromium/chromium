@@ -92,8 +92,10 @@ bool ServiceWorkerResourceLoader::ShouldRecordServiceWorkerFetchStart() {
   switch (*matched_router_source_type_) {
     case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
     case network::mojom::ServiceWorkerRouterSourceType::kCache:
+    case network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache:
       return false;
-    case network::mojom::ServiceWorkerRouterSourceType::kRace:
+    case network::mojom::ServiceWorkerRouterSourceType::
+        kRaceNetworkAndFetchEvent:
     case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
       // These source should start ServiceWorker and trigger fetch-event.
       return true;

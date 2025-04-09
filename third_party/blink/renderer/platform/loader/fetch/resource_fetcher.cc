@@ -3541,8 +3541,12 @@ void ResourceFetcher::UpdateServiceWorkerSubresourceMetrics(
     case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
       metrics.matched_network_router_source_count++;
       break;
-    case network::mojom::ServiceWorkerRouterSourceType::kRace:
+    case network::mojom::ServiceWorkerRouterSourceType::
+        kRaceNetworkAndFetchEvent:
       metrics.matched_race_network_and_fetch_router_source_count++;
+      break;
+    case network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache:
+      // TODO(crbug.com/370844790): implement race network and cache
       break;
   }
 }

@@ -628,13 +628,17 @@ String BuildServiceWorkerRouterSourceType(
   switch (type) {
     case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
       return protocol::Network::ServiceWorkerRouterSourceEnum::Network;
-    case network::mojom::ServiceWorkerRouterSourceType::kRace:
+    case network::mojom::ServiceWorkerRouterSourceType::
+        kRaceNetworkAndFetchEvent:
       return protocol::Network::ServiceWorkerRouterSourceEnum::
           RaceNetworkAndFetchHandler;
     case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
       return protocol::Network::ServiceWorkerRouterSourceEnum::FetchEvent;
     case network::mojom::ServiceWorkerRouterSourceType::kCache:
       return protocol::Network::ServiceWorkerRouterSourceEnum::Cache;
+    case network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndCache:
+      return protocol::Network::ServiceWorkerRouterSourceEnum::
+          RaceNetworkAndCache;
   }
 }
 
