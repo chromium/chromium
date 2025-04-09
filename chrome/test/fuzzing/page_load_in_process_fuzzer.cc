@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 #include <fuzzer/FuzzedDataProvider.h>
 #include <google/protobuf/descriptor.h>
+
 #include <memory>
+
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/escape.h"
@@ -192,8 +194,18 @@ int PageLoadInProcessFuzzer::Fuzz(
         return -1;
     }
   }
-
-  base::IgnoreResult(ui_test_utils::NavigateToURL(browser(), test_url));
+  int browser_test_flags =
+      ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_LOAD_STOP;
+  if (!test_url.is_empty() && !test_url.is_valid()) {
+    // Calling `NavigateToURLWithDisposition` with
+    // `BROWSER_TEST_WAIT_FOR_LOAD_STOP` causes hangs on invalid urls. Set
+    // `browser_test_flags` to `BROWSER_TEST_NO_WAIT` to workaround this issue.
+    browser_test_flags =
+        ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_NO_WAIT;
+  }
+  base::IgnoreResult(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), test_url, WindowOpenDisposition::CURRENT_TAB,
+      browser_test_flags));
   return 0;
 }
 
