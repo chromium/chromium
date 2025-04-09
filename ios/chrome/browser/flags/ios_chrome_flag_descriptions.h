@@ -446,6 +446,9 @@ extern const char kLensOverlayForceShowOnboardingScreenDescription[];
 extern const char kLensOverlayAlternativeOnboardingName[];
 extern const char kLensOverlayAlternativeOnboardingDescription[];
 
+extern const char kLensOverlayDisableIPHPanGestureName[];
+extern const char kLensOverlayDisableIPHPanGestureDescription[];
+
 extern const char kLensOverlayDisablePriceInsightsName[];
 extern const char kLensOverlayDisablePriceInsightsDescription[];
 

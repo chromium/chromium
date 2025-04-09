@@ -380,7 +380,10 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
     [parentView addGestureRecognizer:self.outsideBubbleTapRecognizer];
   }
 
-  if (!IsIPHGestureRecognitionPanAblationEnabled()) {
+  BOOL shouldEnablePanGestureRecognizer =
+      !IsIPHGestureRecognitionPanAblationEnabled() &&
+      !self.forceDisablePanGestureRecognizer;
+  if (shouldEnablePanGestureRecognizer) {
     self.outsideBubblePanRecognizer = [[UIPanGestureRecognizer alloc]
         initWithTarget:self
                 action:@selector(tapOutsideBubbleRecognized:)];

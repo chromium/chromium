@@ -1017,6 +1017,9 @@ BASE_DECLARE_FEATURE(kNewShareExtension);
 // Feature that disables all IPH messages.
 BASE_DECLARE_FEATURE(kIPHAblation);
 
+// Feature that disables IPH dismissal pan gesture for lens overlay promos.
+BASE_DECLARE_FEATURE(kLensOverlayDisableIPHPanGesture);
+
 // Returns true if IPH ablation is enabled.
 bool IsIPHAblationEnabled();
 
