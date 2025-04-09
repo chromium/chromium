@@ -1551,7 +1551,7 @@ void Converter::WriteTagSize(const char (&tag)[4], const size_t size) {
 
 // Writes num as a big endian number.
 void Converter::WriteBigEndian(base::StrictNumeric<uint32_t> num) {
-  auto arr = base::numerics::U32ToBigEndian(num);
+  auto arr = base::U32ToBigEndian(num);
   output_.insert(output_.end(), arr.begin(), arr.end());
 }
 
