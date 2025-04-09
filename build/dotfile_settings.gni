@@ -41,8 +41,4 @@ build_dotfile_settings = {
     "//build/toolchain/zos/BUILD.gn",
     "//build/util/branding.gni",
   ]
-
-  # TODO(crbug.com/389986807) - move other clients to `exec_script_allowlist`
-  # so that we don't need to keep supporting `exec_script_whitelist`.
-  exec_script_whitelist = exec_script_allowlist
 }
