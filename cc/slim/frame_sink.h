@@ -14,10 +14,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 
-namespace gpu {
-class GpuMemoryBufferManager;
-}
-
 namespace cc::slim {
 
 // Abstraction and ownership over connections to the GPU process:
@@ -33,7 +29,6 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSink {
       scoped_refptr<viz::RasterContextProvider> context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       // Parameters below only used when wrapping cc.
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       base::PlatformThreadId io_thread_id);
 
   virtual ~FrameSink() = default;

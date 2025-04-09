@@ -21,7 +21,6 @@ std::unique_ptr<FrameSink> FrameSink::Create(
     scoped_refptr<viz::RasterContextProvider> context_provider,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     // Parameters below only used when wrapping cc.
-    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     base::PlatformThreadId io_thread_id) {
   return base::WrapUnique<FrameSink>(
       new FrameSinkImpl(std::move(task_runner),
