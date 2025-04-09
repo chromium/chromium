@@ -300,7 +300,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageSettings.SplitInstallFinalStatus"
-    enum="LanguageSettingsSplitInstallStatus" expires_after="2025-04-13">
+    enum="LanguageSettingsSplitInstallStatus" expires_after="2025-12-10">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -517,7 +517,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="LanguageUsage.ULP.Initiation.Count" units="count"
-    expires_after="2025-04-13">
+    expires_after="2025-12-10">
   <owner>perrier@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
