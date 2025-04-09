@@ -4,16 +4,29 @@
 
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 
+#include <optional>
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/permissions/permission_request.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/installable_params.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -57,6 +70,12 @@ void WebInstallServiceImpl::CreateIfAllowed(
     return;
   }
 
+  // TODO(crbug.com/402547563): Installing web apps is not supported from
+  // off-the-record profiles.
+  // This check stops the ServiceImpl from being
+  // created in Incognito mode. (To exclude Guest mode too, switch to
+  // AreWebAppsUserInstallable). It may need to be removed depending where the
+  // auto rejection is implemented.
   if (!AreWebAppsEnabled(Profile::FromBrowserContext(
           content::WebContents::FromRenderFrameHost(render_frame_host)
               ->GetBrowserContext()))) {
@@ -82,8 +101,9 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
     // No parameters means we want to install the current document.
     install_target = current_url;
   } else {
-    install_target = options->install_url;
+    install_target = GURL(options->install_url);
   }
+  install_options_ = std::move(options);
 
   // Do not allow installation of file:// or chrome:// urls.
   if (!install_target.SchemeIsHTTPOrHTTPS()) {
@@ -92,13 +112,15 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
     return;
   }
 
+  // TODO(crbug.com/402547563): Installing web apps is not supported from
+  // off-the-record profiles.
+
   // Initiate installation of the current document.
+  // TODO(crbug.com/407473727): Treat install(self) and install(self, self) as
+  // background installs, but skip the permissions checking code. Tests will
+  // also likely need updating.
   if (install_target == current_url) {
-    // TODO(crbug.com/381214488): Implement 0-param install. Queue a web app
-    // command against the current document. For the time being, stub out the
-    // callback to prevent the calls from hanging for zero parameters given.
-    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kSuccess,
-                            GURL());
+    TryInstallCurrentDocument(std::move(callback));
 
     // Current document installs don't require the permissions checking code.
     return;
@@ -122,7 +144,91 @@ void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
   RequestWebInstallPermission(
       base::BindOnce(&WebInstallServiceImpl::OnPermissionDecided,
                      weak_ptr_factory_.GetWeakPtr(), install_target,
-                     options->manifest_id, std::move(callback)));
+                     install_options_->manifest_id, std::move(callback)));
+}
+
+void WebInstallServiceImpl::TryInstallCurrentDocument(
+    InstallCallback callback) {
+  auto* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  auto* provider = WebAppProvider::GetForWebContents(web_contents);
+  // TODO(crbug.com/402547563): Installing web apps is not supported from
+  // off-the-record profiles.
+  // As of now, WebInstallServiceImpl is only created if `AreWebAppsEnabled` for
+  // the current browsing context (see `CreateIfAllowed`), so the provider
+  // should always be available. If this changes, this check can be
+  // reevaluated.
+  CHECK(provider);
+
+  // Check if the current document is already installed.
+  const webapps::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  if (app_id) {
+    // TODO(crbug.com/402547565) Use IntentPickerBubbleView to launch the app if
+    // already installed. Add test cases when this is implemented.
+  } else {
+    // The current document is not installed yet. Retrieve the manifest to
+    // perform id validation checks.
+    std::unique_ptr<WebAppDataRetriever> data_retriever =
+        provider->web_contents_manager().CreateDataRetriever();
+    webapps::InstallableParams params;
+    params.installable_criteria =
+        webapps::InstallableCriteria::kValidManifestWithIcons;
+    data_retriever->CheckInstallabilityAndRetrieveManifest(
+        web_contents,
+        base::BindOnce(&WebInstallServiceImpl::
+                           OnDidRetrieveManifestForCurrentDocumentInstall,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       provider),
+        params);
+  }
+}
+
+void WebInstallServiceImpl::OnDidRetrieveManifestForCurrentDocumentInstall(
+    InstallCallback callback,
+    WebAppProvider* provider,
+    blink::mojom::ManifestPtr opt_manifest,
+    bool valid_manifest_for_web_app,
+    webapps::InstallableStatusCode error_code) {
+  // If for some reason a valid manifest was not found, cancel with the generic
+  // abort error.
+  if (!opt_manifest || !valid_manifest_for_web_app) {
+    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
+                            GURL());
+    return;
+  }
+  // Ensure that the manifest is from the same trusted origin as the current
+  // document.
+  if (!origin().IsSameOriginWith(opt_manifest->id)) {
+    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
+                            GURL());
+    return;
+  }
+
+  // The manifest must have a developer-specified id if navigator.install was
+  // invoked without a `manifest_id` (ie. the 0 or 1 parameter version).
+  bool manifest_must_have_id =
+      !install_options_ || !install_options_->manifest_id;
+  if (manifest_must_have_id && !opt_manifest->has_custom_id) {
+    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kDataError,
+                            GURL());
+    return;
+  }
+  // navigator.install was invoked with a manifest_id, so the current document
+  // is not required to have a developer-specified id. However, the id passed to
+  // navigator.install must match the current document's computed id.
+  if (!manifest_must_have_id &&
+      install_options_->manifest_id.value() != opt_manifest->id) {
+    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kDataError,
+                            GURL());
+    return;
+  }
+
+  provider->ui_manager().TriggerInstallDialog(
+      content::WebContents::FromRenderFrameHost(&render_frame_host()),
+      webapps::WebappInstallSource::WEB_INSTALL,
+      base::BindOnce(&WebInstallServiceImpl::OnAppInstalled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void WebInstallServiceImpl::RequestWebInstallPermission(
@@ -163,8 +269,7 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
       break;
   }
 
-  GURL requesting_origin =
-      render_frame_host().GetLastCommittedOrigin().GetURL();
+  GURL requesting_origin = origin().GetURL();
   // User gesture requirement is enforced in NavigatorWebInstall::InstallImpl.
   permission_controller->RequestPermissionsFromCurrentDocument(
       &render_frame_host(),
@@ -181,7 +286,6 @@ void WebInstallServiceImpl::OnPermissionDecided(
     const std::optional<GURL>& manifest_id,
     InstallCallback callback,
     const std::vector<PermissionStatus>& permission_status) {
-  // TODO(crbug.com/381282538): Throw different error if permission not granted.
   CHECK_EQ(permission_status.size(), 1u);
   if (permission_status[0] != PermissionStatus::GRANTED) {
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
@@ -199,17 +303,30 @@ void WebInstallServiceImpl::OnPermissionDecided(
 }
 
 void WebInstallServiceImpl::OnAppInstalled(InstallCallback callback,
-                                           const GURL& manifest_id,
+                                           const webapps::AppId& app_id,
                                            webapps::InstallResultCode code) {
-  // TODO(crbug.com/381282538): Add error types for additional granularity.
-  blink::mojom::WebInstallServiceResult result =
+  // Results to report for generic failures.
+  blink::mojom::WebInstallServiceResult install_result =
       blink::mojom::WebInstallServiceResult::kAbortError;
+  webapps::ManifestId manifest_id_result;
 
   if (webapps::IsSuccess(code)) {
-    result = blink::mojom::WebInstallServiceResult::kSuccess;
+    install_result = blink::mojom::WebInstallServiceResult::kSuccess;
+
+    auto* profile =
+        Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+    auto* provider = WebAppProvider::GetForWebApps(profile);
+    CHECK(provider);
+
+    manifest_id_result =
+        provider->registrar_unsafe().GetComputedManifestId(app_id);
+    CHECK(!manifest_id_result.is_empty());
+  } else if (code == webapps::InstallResultCode::kNoCustomManifestId ||
+             code == webapps::InstallResultCode::kManifestIdMismatch) {
+    install_result = blink::mojom::WebInstallServiceResult::kDataError;
   }
 
-  std::move(callback).Run(result, manifest_id);
+  std::move(callback).Run(install_result, manifest_id_result);
 }
 
 }  // namespace web_app

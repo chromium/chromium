@@ -26424,6 +26424,8 @@ others/histograms.xml -->
   <int value="8" label="Picture-in-Picture"/>
 </enum>
 
+<!-- LINT.IfChange(WebAppInstallResultCode) -->
+
 <enum name="WebAppInstallResultCode">
   <int value="0" label="Success"/>
   <int value="1" label="AlreadyInstalled"/>
@@ -26458,7 +26460,11 @@ others/histograms.xml -->
   <int value="30" label="kIconDownloadingFailed"/>
   <int value="31" label="kCancelledDueToMainFrameNavigation"/>
   <int value="32" label="kNoValidIconsInManifest"/>
+  <int value="33" label="kNoCustomManifestId"/>
+  <int value="34" label="kManifestIdMismatch"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/webapps/browser/install_result_code.h:InstallResultCode) -->
 
 <enum name="WebappInstallSource">
   <int value="0" label="Menu via a browser tab"/>

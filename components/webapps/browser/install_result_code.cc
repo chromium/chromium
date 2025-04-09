@@ -87,6 +87,10 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
       return os << "kCancelledDueToMainFrameNavigation";
     case InstallResultCode::kNoValidIconsInManifest:
       return os << "kNoValidIconsInManifest";
+    case InstallResultCode::kNoCustomManifestId:
+      return os << "kNoCustomManifestId";
+    case InstallResultCode::kManifestIdMismatch:
+      return os << "kManifestIdMismatch";
   }
 }
 

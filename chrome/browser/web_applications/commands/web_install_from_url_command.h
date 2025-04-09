@@ -36,7 +36,7 @@ class SharedWebContentsWithAppLock;
 class WebAppDataRetriever;
 
 using WebInstallFromUrlCommandCallback =
-    base::OnceCallback<void(const GURL& manifest_id,
+    base::OnceCallback<void(const webapps::AppId& app_id,
                             webapps::InstallResultCode code)>;
 
 using IconUrlSizeSet = base::flat_set<IconUrlWithSize>;
@@ -64,7 +64,7 @@ using DownloadedIconsHttpResults =
 // or if the user rejects the installation.
 class WebInstallFromUrlCommand
     : public WebAppCommand<SharedWebContentsLock,
-                           const GURL&,
+                           const webapps::AppId&,
                            webapps::InstallResultCode> {
  public:
   WebInstallFromUrlCommand(Profile& profile,

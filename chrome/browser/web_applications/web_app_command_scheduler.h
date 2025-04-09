@@ -97,7 +97,7 @@ class WebAppCommandScheduler {
   using WebAppIconDiagnosticResultCallback =
       base::OnceCallback<void(std::optional<WebAppIconDiagnosticResult>)>;
   using WebInstallFromUrlCommandCallback =
-      base::OnceCallback<void(const GURL& manifest_id,
+      base::OnceCallback<void(const webapps::AppId& app_id,
                               webapps::InstallResultCode code)>;
   using UninstallCallback =
       base::OnceCallback<void(webapps::UninstallResultCode)>;
