@@ -19,8 +19,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -433,25 +433,14 @@ void ScrollView::SetViewportRoundedCornerRadius(
   contents_viewport_->layer()->SetRoundedCornerRadius(radii);
 }
 
-void ScrollView::SetBackgroundColor(const std::optional<SkColor>& color) {
-  if (background_color_ == color && !background_color_id_) {
+void ScrollView::SetBackgroundColor(
+    const std::optional<ui::ColorVariant>& color) {
+  if (background_color_ == color) {
     return;
   }
   background_color_ = color;
-  background_color_id_ = std::nullopt;
   UpdateBackground();
   OnPropertyChanged(&background_color_, kPropertyEffectsPaint);
-}
-
-void ScrollView::SetBackgroundThemeColorId(
-    const std::optional<ui::ColorId>& color_id) {
-  if (background_color_id_ == color_id && !background_color_) {
-    return;
-  }
-  background_color_id_ = color_id;
-  background_color_ = std::nullopt;
-  UpdateBackground();
-  OnPropertyChanged(&background_color_id_, kPropertyEffectsPaint);
 }
 
 gfx::Rect ScrollView::GetVisibleRect() const {
@@ -1294,10 +1283,9 @@ void ScrollView::UpdateBorder() {
     return;
   }
 
-  SetBorder(CreateSolidBorder(
-      1, GetColorProvider()->GetColor(
-             draw_focus_indicator_ ? ui::kColorFocusableBorderFocused
-                                   : ui::kColorFocusableBorderUnfocused)));
+  SetBorder(CreateSolidBorder(1, draw_focus_indicator_
+                                     ? ui::kColorFocusableBorderFocused
+                                     : ui::kColorFocusableBorderUnfocused));
 }
 
 void ScrollView::UpdateBackground() {
@@ -1305,7 +1293,7 @@ void ScrollView::UpdateBackground() {
     return;
   }
 
-  const std::optional<SkColor> background_color = GetBackgroundColor();
+  const std::optional<ui::ColorVariant> background_color = GetBackgroundColor();
 
   auto create_background = [background_color]() {
     return background_color ? CreateSolidBackground(background_color.value())
@@ -1330,14 +1318,8 @@ void ScrollView::UpdateBackground() {
   }
 }
 
-std::optional<SkColor> ScrollView::GetBackgroundColor() const {
-  return background_color_id_
-             ? GetColorProvider()->GetColor(background_color_id_.value())
-             : background_color_;
-}
-
-std::optional<ui::ColorId> ScrollView::GetBackgroundThemeColorId() const {
-  return background_color_id_;
+std::optional<ui::ColorVariant> ScrollView::GetBackgroundColor() const {
+  return background_color_;
 }
 
 void ScrollView::PositionOverflowIndicators() {
@@ -1388,8 +1370,7 @@ BEGIN_METADATA(ScrollView)
 ADD_READONLY_PROPERTY_METADATA(int, MinHeight)
 ADD_READONLY_PROPERTY_METADATA(int, MaxHeight)
 ADD_PROPERTY_METADATA(bool, AllowKeyboardScrolling)
-ADD_PROPERTY_METADATA(std::optional<SkColor>, BackgroundColor)
-ADD_PROPERTY_METADATA(std::optional<ui::ColorId>, BackgroundThemeColorId)
+ADD_PROPERTY_METADATA(std::optional<ui::ColorVariant>, BackgroundColor)
 ADD_PROPERTY_METADATA(bool, DrawOverflowIndicator)
 ADD_PROPERTY_METADATA(bool, HasFocusIndicator)
 ADD_PROPERTY_METADATA(ScrollView::ScrollBarMode, HorizontalScrollBarMode)

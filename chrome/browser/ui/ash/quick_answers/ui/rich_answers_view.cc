@@ -200,7 +200,7 @@ void RichAnswersView::SetUpBaseView() {
   views::ScrollView* scroll_view = AddChildView(
       views::Builder<views::ScrollView>()
           .ClipHeightTo(kMinimumRichCardHeight, kMaximumRichCardHeight)
-          .SetBackgroundThemeColorId(ui::kColorPrimaryBackground)
+          .SetBackgroundColor(ui::kColorPrimaryBackground)
           .SetHorizontalScrollBarMode(
               views::ScrollView::ScrollBarMode::kDisabled)
           .SetDrawOverflowIndicator(false)

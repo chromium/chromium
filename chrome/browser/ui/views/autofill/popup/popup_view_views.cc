@@ -1081,7 +1081,7 @@ void PopupViewViews::CreateSuggestionViews() {
 
     std::unique_ptr<views::ScrollView> scroll_view =
         views::Builder<views::ScrollView>()
-            .SetBackgroundThemeColorId(ui::kColorDropdownBackground)
+            .SetBackgroundColor(ui::kColorDropdownBackground)
             .SetHorizontalScrollBarMode(
                 views::ScrollView::ScrollBarMode::kDisabled)
             .SetDrawOverflowIndicator(false)

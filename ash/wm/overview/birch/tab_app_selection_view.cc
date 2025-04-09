@@ -511,7 +511,7 @@ TabAppSelectionView::TabAppSelectionView(const base::Token& group_id,
   // std::nullopt and apply a rounded rectangle background above on the whole
   // view. We still need to set the viewport rounded corner radius to clip the
   // child backgrounds when they are hovered over.
-  scroll_view_->SetBackgroundThemeColorId(std::nullopt);
+  scroll_view_->SetBackgroundColor(std::nullopt);
   scroll_view_->SetBorder(std::make_unique<views::HighlightBorder>(
       kTabAppItemsContainerCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));

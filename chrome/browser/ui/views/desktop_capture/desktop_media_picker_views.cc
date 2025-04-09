@@ -280,7 +280,7 @@ bool ShouldSelectTab(DesktopMediaList::Type type,
 
 std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
   auto scroll_view = std::make_unique<views::ScrollView>();
-  scroll_view->SetBackgroundThemeColorId(ui::kColorSysSurface4);
+  scroll_view->SetBackgroundColor(ui::kColorSysSurface4);
   // The overflow indicator is disabled to reduce clutter next to the
   // separator to the audio control when audio is requested or the bottom of
   // the dialog when audio is not requested.

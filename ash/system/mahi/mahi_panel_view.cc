@@ -376,7 +376,7 @@ class MahiScrollView : public views::ScrollView,
   explicit MahiScrollView(MahiUiController* ui_controller)
       : MahiUiController::Delegate(ui_controller) {
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
-    SetBackgroundThemeColorId(cros_tokens::kCrosSysSystemOnBase);
+    SetBackgroundColor(cros_tokens::kCrosSysSystemOnBase);
     ClipHeightTo(/*min_height=*/0, /*max_height=*/INT_MAX);
     SetDrawOverflowIndicator(false);
     auto scroll_bar = std::make_unique<RoundedScrollBar>(
