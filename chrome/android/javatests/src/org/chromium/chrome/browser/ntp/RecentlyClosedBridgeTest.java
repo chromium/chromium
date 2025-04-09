@@ -27,6 +27,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -1058,6 +1059,7 @@ public class RecentlyClosedBridgeTest {
     @Test
     @LargeTest
     @RequiresRestart
+    @DisabledTest(message = "Flaky, crbug.com/407607684")
     public void testOpenRecentlyClosedEntry_Group_FromGroupClosure_WithRestart() {
         if (mTabGroupModelFilter == null) return;
 
