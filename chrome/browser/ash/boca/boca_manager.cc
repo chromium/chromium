@@ -124,7 +124,7 @@ BocaManager::BocaManager(Profile* profile,
       ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
   bool is_consumer = ash::boca_util::IsConsumer(user);
   boca_session_manager_ = std::make_unique<boca::BocaSessionManager>(
-      session_client_impl_.get(), global_prefs, user->GetAccountId(),
+      session_client_impl_.get(), user->GetProfilePrefs(), user->GetAccountId(),
       /*is_producer=*/!is_consumer);
   if (ash::features::IsBabelOrcaAvailable()) {
     babel_orca_manager_ =
