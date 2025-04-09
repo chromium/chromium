@@ -604,7 +604,7 @@ void WebRtcEventLogManager::EnableLocalLogging(
     const base::FilePath& base_path,
     base::OnceCallback<void(bool)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  EnableLocalLogging(base_path, kDefaultMaxLocalLogFileSizeBytes,
+  EnableLocalLogging(base_path, kDefaultMaxLocalEventLogFileSizeBytes,
                      std::move(reply));
 }
 
@@ -907,7 +907,7 @@ void WebRtcEventLogManager::EnableLocalLoggingInternal(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   const bool result =
-      local_logs_manager_.EnableLogging(base_path, max_file_size_bytes);
+      local_logs_manager_.EnableEventLogging(base_path, max_file_size_bytes);
 
   MaybeReply(FROM_HERE, std::move(reply), result);
 }
@@ -916,7 +916,7 @@ void WebRtcEventLogManager::DisableLocalLoggingInternal(
     base::OnceCallback<void(bool)> reply) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  const bool result = local_logs_manager_.DisableLogging();
+  const bool result = local_logs_manager_.DisableEventLogging();
 
   MaybeReply(FROM_HERE, std::move(reply), result);
 }

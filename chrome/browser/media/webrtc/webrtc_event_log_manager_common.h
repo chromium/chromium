@@ -30,7 +30,7 @@ namespace webrtc_event_logging {
 
 extern const size_t kWebRtcEventLogManagerUnlimitedFileSize;
 
-extern const size_t kDefaultMaxLocalLogFileSizeBytes;
+extern const size_t kDefaultMaxLocalEventLogFileSizeBytes;
 extern const size_t kMaxNumberLocalWebRtcEventLogFiles;
 
 extern const size_t kMaxRemoteLogFileSizeBytes;
