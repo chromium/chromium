@@ -8771,6 +8771,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "sync-trusted-vault-infobar-improvements",
+    "owners": ["rgod@google.com", "ylahodiuk@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "sync-webauthn-credentials",
     "owners": [ "chrome-webauthn@google.com" ],
     "expiry_milestone": 136

@@ -2627,6 +2627,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"contained-tab-group", flag_descriptions::kContainedTabGroupName,
      flag_descriptions::kContainedTabGroupDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kContainedTabGroup)},
+    {"sync-trusted-vault-infobar-improvements",
+     flag_descriptions::kSyncTrustedVaultInfobarImprovementsName,
+     flag_descriptions::kSyncTrustedVaultInfobarImprovementsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(syncer::kSyncTrustedVaultInfobarImprovements)},
+
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

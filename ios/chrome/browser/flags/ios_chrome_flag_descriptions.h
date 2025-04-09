@@ -780,6 +780,9 @@ extern const char kSupervisedUserLocalWebApprovalsDescription[];
 extern const char kSyncSandboxName[];
 extern const char kSyncSandboxDescription[];
 
+extern const char kSyncTrustedVaultInfobarImprovementsName[];
+extern const char kSyncTrustedVaultInfobarImprovementsDescription[];
+
 extern const char kTabGroupIndicatorName[];
 extern const char kTabGroupIndicatorDescription[];
 
