@@ -181,11 +181,21 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_SingleURL) {
         "Omnibox.SuggestionUsed.ClientSummarizedResultType",
         ClientSummarizedResultType::kUrl,
         /*expected_count=*/1);
+
     histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.ClientSummarizedResultType",
         ClientSummarizedResultType::kUrl, /*expected_count=*/1);
     histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType.ByPageContext.NTP_"
+        "REALBOX",
+        ClientSummarizedResultType::kUrl, /*expected_count=*/1);
+
+    histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl, /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType."
+        "ByPageContext.NTP_REALBOX",
         ClientSummarizedResultType::kUrl, /*expected_count=*/1);
 
     // Verify the UKM event.
@@ -215,11 +225,21 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_SingleURL) {
         "Omnibox.SuggestionUsed.ClientSummarizedResultType",
         ClientSummarizedResultType::kUrl,
         /*expected_count=*/1);
+
     histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.ClientSummarizedResultType",
         ClientSummarizedResultType::kUrl, /*expected_count=*/1);
     histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType.ByPageContext.NTP_"
+        "REALBOX",
+        ClientSummarizedResultType::kUrl, /*expected_count=*/1);
+
+    histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl, /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType."
+        "ByPageContext.NTP_REALBOX",
         ClientSummarizedResultType::kUrl, /*expected_count=*/1);
 
     // Verify the UKM event.
@@ -249,11 +269,21 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_SingleSearch) {
         "Omnibox.SuggestionUsed.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch,
         /*expected_count=*/1);
+
     histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch, /*expected_count=*/1);
     histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType.ByPageContext.NTP_"
+        "REALBOX",
+        ClientSummarizedResultType::kSearch, /*expected_count=*/1);
+
+    histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch, /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType."
+        "ByPageContext.NTP_REALBOX",
         ClientSummarizedResultType::kSearch, /*expected_count=*/1);
 
     // Verify the UKM event.
@@ -281,11 +311,21 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_SingleSearch) {
         "Omnibox.SuggestionUsed.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch,
         /*expected_count=*/1);
+
     histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch, /*expected_count=*/1);
     histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType.ByPageContext.NTP_"
+        "REALBOX",
+        ClientSummarizedResultType::kSearch, /*expected_count=*/1);
+
+    histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch, /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType."
+        "ByPageContext.NTP_REALBOX",
         ClientSummarizedResultType::kSearch, /*expected_count=*/1);
 
     // Verify the UKM event.
@@ -325,7 +365,17 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
         ClientSummarizedResultType::kSearch,
         /*expected_count=*/1);
     histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType.ByPageContext.NTP_"
+        "REALBOX",
+        ClientSummarizedResultType::kSearch,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType."
+        "ByPageContext.NTP_REALBOX",
         ClientSummarizedResultType::kSearch,
         /*expected_count=*/1);
 
@@ -334,7 +384,17 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
         ClientSummarizedResultType::kUrl,
         /*expected_count=*/1);
     histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType.ByPageContext.NTP_"
+        "REALBOX",
+        ClientSummarizedResultType::kUrl,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType."
+        "ByPageContext.NTP_REALBOX",
         ClientSummarizedResultType::kUrl,
         /*expected_count=*/1);
 
@@ -404,7 +464,17 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
         ClientSummarizedResultType::kSearch,
         /*expected_count=*/1);
     histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType.ByPageContext.NTP_"
+        "REALBOX",
+        ClientSummarizedResultType::kSearch,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kSearch,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType."
+        "ByPageContext.NTP_REALBOX",
         ClientSummarizedResultType::kSearch,
         /*expected_count=*/1);
 
@@ -413,7 +483,17 @@ TEST_F(OmniboxMetricsProviderTest, RecordMetrics_MultipleSearch) {
         ClientSummarizedResultType::kUrl,
         /*expected_count=*/1);
     histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ClientSummarizedResultType.ByPageContext.NTP_"
+        "REALBOX",
+        ClientSummarizedResultType::kUrl,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
         "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl,
+        /*expected_count=*/1);
+    histogram_tester.ExpectBucketCount(
+        "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType."
+        "ByPageContext.NTP_REALBOX",
         ClientSummarizedResultType::kUrl,
         /*expected_count=*/1);
 
