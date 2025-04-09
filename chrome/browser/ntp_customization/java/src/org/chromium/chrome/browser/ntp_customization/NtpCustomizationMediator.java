@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.DISCOVER_FEED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
@@ -140,8 +140,8 @@ public class NtpCustomizationMediator {
                 switch (type) {
                     case NTP_CARDS:
                         return context.getString(R.string.home_modules_configuration);
-                    case DISCOVER_FEED:
-                        return context.getString(R.string.ntp_customization_feed_setting_title);
+                    case FEED:
+                        return context.getString(R.string.ntp_customization_feed_settings_title);
                     default:
                         assert false : "Bottom sheet type not supported!";
                         return null;
@@ -151,7 +151,7 @@ public class NtpCustomizationMediator {
             @Override
             @Nullable
             public String getListItemSubtitle(int type, Context context) {
-                if (type == DISCOVER_FEED) {
+                if (type == FEED) {
                     // TODO(crbug.com/397439004): Add logics to display "off".
                     return context.getString(R.string.ntp_customization_feed_section_on);
                 }
@@ -199,9 +199,8 @@ public class NtpCustomizationMediator {
         Profile profile = mProfileSupplier.get().getOriginalProfile();
         List<Integer> content = new ArrayList<>();
         content.add(NTP_CARDS);
-
         if (FeedFeatures.isFeedEnabled(profile)) {
-            content.add(DISCOVER_FEED);
+            content.add(FEED);
         }
         return content;
     }

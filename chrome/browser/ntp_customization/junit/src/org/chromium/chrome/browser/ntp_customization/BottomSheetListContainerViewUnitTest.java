@@ -13,7 +13,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.DISCOVER_FEED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 
 import android.content.Context;
@@ -58,7 +58,7 @@ public class BottomSheetListContainerViewUnitTest {
         // requires complicated setting of themes.
         doReturn(mListItemView).when(mContainerView).createListItemView();
 
-        mListContent = List.of(NTP_CARDS, DISCOVER_FEED);
+        mListContent = List.of(NTP_CARDS, FEED);
         when(mDelegate.getListItems()).thenReturn(mListContent);
     }
 

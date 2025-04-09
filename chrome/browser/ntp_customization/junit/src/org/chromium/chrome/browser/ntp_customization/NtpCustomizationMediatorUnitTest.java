@@ -19,7 +19,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.DISCOVER_FEED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
@@ -283,7 +283,7 @@ public class NtpCustomizationMediatorUnitTest {
     @SmallTest
     public void testListContainerViewDelegate() {
         // Verifies the subtitle of the "feeds" list item is "On" and is null for other list item.
-        assertEquals("On", mListDelegate.getListItemSubtitle(DISCOVER_FEED, mContext));
+        assertEquals("On", mListDelegate.getListItemSubtitle(FEED, mContext));
         assertNull(mListDelegate.getListItemSubtitle(MAIN, mContext));
 
         // Verifies the listener returned from the delegate is in mTypeToListeners map.
@@ -292,9 +292,9 @@ public class NtpCustomizationMediatorUnitTest {
         View.OnClickListener ntpListener = mock(View.OnClickListener.class);
         View.OnClickListener feedsListener = mock(View.OnClickListener.class);
         typeToListenerMap.put(NTP_CARDS, ntpListener);
-        typeToListenerMap.put(DISCOVER_FEED, feedsListener);
+        typeToListenerMap.put(FEED, feedsListener);
         assertEquals(ntpListener, mListDelegate.getListener(NTP_CARDS));
-        assertEquals(feedsListener, mListDelegate.getListener(DISCOVER_FEED));
+        assertEquals(feedsListener, mListDelegate.getListener(FEED));
     }
 
     @Test
@@ -323,7 +323,7 @@ public class NtpCustomizationMediatorUnitTest {
     @Test
     @SmallTest
     public void testBuildListContent() {
-        // Verifies that "DISCOVER_FEED" misses from the result list if and if only isFeedEnabled()
+        // Verifies that "FEED" misses from the result list if and if only isFeedEnabled()
         // is false;
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         mSupplier.set(mProfileProvider);
@@ -335,7 +335,7 @@ public class NtpCustomizationMediatorUnitTest {
         when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
 
         assertTrue(FeedFeatures.isFeedEnabled(mProfile));
-        assertEquals(List.of(NTP_CARDS, DISCOVER_FEED), mMediator.buildListContent());
+        assertEquals(List.of(NTP_CARDS, FEED), mMediator.buildListContent());
 
         // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return false.
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(false);

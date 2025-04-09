@@ -1285,7 +1285,7 @@
       <message name="IDS_NTP_CUSTOMIZATION_SUBTITLE" desc="Subtitle of the new tab page customization bottom sheet">
         Quickly get to what matters to you
       </message>
-      <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTING_TITLE" desc="Open setting page for feed section customization when clicked">
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTINGS_TITLE" desc="Open setting page for feed section customization when clicked">
         Discover feed
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_FEED_SECTION_ON" desc="This texts show the feed section is visible at the new tab page">
@@ -1299,6 +1299,9 @@
       </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes closing the new tab page customization main bottom sheet">
         Customize your new tab page bottom sheet closed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_LIST_ITEMS_TITLE" desc="Title of the list items in the new tab page customization discover feed bottom sheet">
+        Manage your feed
       </message>
 
       <!-- What's New page strings -->

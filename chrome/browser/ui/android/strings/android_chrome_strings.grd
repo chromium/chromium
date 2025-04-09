@@ -4050,6 +4050,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_FEED_MANAGE_FOLLOWING_DESCRIPTION" desc="Content description to manage followed sites.">
         Manage the topics and sites you're interested in
       </message>
+      <message name="IDS_FEED_MANAGE_INTERESTS" desc="Title of the list item Interests in the new tab page customization feed settings bottom sheet.">
+        Interests
+      </message>
       <message name="IDS_FOLLOW_MANAGE_FOLLOWING" desc="Header for Following Management activity.">
         Following
       </message>

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.DISCOVER_FEED;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.ViewFlipper;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -38,16 +39,18 @@ public class NtpCustomizationCoordinator {
     private final BottomSheetDelegate mDelegate;
 
     private final Context mContext;
+    private final Supplier<ProfileProvider> mProfileSupplier;
     private NtpCustomizationMediator mMediator;
     private NtpCardsCoordinator mNtpCardsCoordinator;
+    private FeedSettingsCoordinator mFeedSettingsCoordinator;
     private ViewFlipper mViewFlipperView;
 
-    @IntDef({BottomSheetType.MAIN, BottomSheetType.NTP_CARDS, BottomSheetType.DISCOVER_FEED})
+    @IntDef({BottomSheetType.MAIN, BottomSheetType.NTP_CARDS, BottomSheetType.FEED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface BottomSheetType {
         int MAIN = 0;
         int NTP_CARDS = 1;
-        int DISCOVER_FEED = 2;
+        int FEED = 2;
         int NUM_ENTRIES = 3;
     }
 
@@ -64,6 +67,7 @@ public class NtpCustomizationCoordinator {
             BottomSheetController bottomSheetController,
             Supplier<ProfileProvider> profileSupplier) {
         mContext = context;
+        mProfileSupplier = profileSupplier;
         View contentView =
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.ntp_customization_bottom_sheet, /* root= */ null);
@@ -98,7 +102,7 @@ public class NtpCustomizationCoordinator {
                         bottomSheetContent,
                         viewFlipperPropertyModel,
                         containerPropertyModel,
-                        profileSupplier);
+                        mProfileSupplier);
         mMediator.registerBottomSheetLayout(MAIN);
 
         mDelegate = createBottomSheetDelegate();
@@ -106,6 +110,7 @@ public class NtpCustomizationCoordinator {
         // The click listener for each list item in the main bottom sheet should be registered
         // before calling renderListContent().
         mMediator.registerClickListener(NTP_CARDS, getOptionClickListener(NTP_CARDS));
+        mMediator.registerClickListener(FEED, getOptionClickListener(FEED));
         mMediator.renderListContent();
     }
 
@@ -128,8 +133,17 @@ public class NtpCustomizationCoordinator {
                     }
                     mMediator.showBottomSheet(NTP_CARDS);
                 };
-            case DISCOVER_FEED:
-                return null;
+            case FEED:
+                return v -> {
+                    if (mFeedSettingsCoordinator == null) {
+                        mFeedSettingsCoordinator =
+                                new FeedSettingsCoordinator(
+                                        mContext,
+                                        mDelegate,
+                                        mProfileSupplier.get().getOriginalProfile());
+                    }
+                    mMediator.showBottomSheet(FEED);
+                };
             default:
                 assert false : "Bottom sheet type not supported!";
                 return null;
@@ -175,6 +189,9 @@ public class NtpCustomizationCoordinator {
         mMediator.destroy();
         if (mNtpCardsCoordinator != null) {
             mNtpCardsCoordinator.destroy();
+        }
+        if (mFeedSettingsCoordinator != null) {
+            mFeedSettingsCoordinator.destroy();
         }
     }
 

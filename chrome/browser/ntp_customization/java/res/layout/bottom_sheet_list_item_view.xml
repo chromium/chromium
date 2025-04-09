@@ -7,7 +7,7 @@ found in the LICENSE file.
 
 <org.chromium.chrome.browser.ntp_customization.BottomSheetListItemView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_marginTop="@dimen/ntp_customization_discover_feed_margin_top"
+    android:layout_marginTop="@dimen/ntp_customization_feed_margin_top"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="true"
