@@ -29,7 +29,7 @@ class AggregationDetails:
   def GetSortedMapElements(self) -> list[tuple[str, str]]:
     """Returns sorted mapping of all elements, including aliases."""
     keys = sorted(self.elements.keys())
-    return [[key, self.elements[key]] for key in keys]
+    return [(key, self.elements[key]) for key in keys]
 
 
 def GetAggregationDetails(description) -> AggregationDetails:

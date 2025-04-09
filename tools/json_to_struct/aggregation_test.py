@@ -110,7 +110,7 @@ class AggregationTest(unittest.TestCase):
     })
 
     # Expect the result to be sorted as well.
-    self.assertEqual([["a", "a"], ["b", "b"], ["c", "c"], ["d", "d"]],
+    self.assertEqual([("a", "a"), ("b", "b"), ("c", "c"), ("d", "d")],
                      aggregation.GetSortedMapElements())
 
   def testGetSortedMapElementsWithAliases(self):
@@ -131,9 +131,8 @@ class AggregationTest(unittest.TestCase):
     })
 
     # Expect the result to be sorted as well.
-    self.assertEqual(
-        [["a", "d"], ["b", "c"], ["c", "c"], ["d", "d"], ["e", "c"]],
-        aggregation.GetSortedMapElements())
+    self.assertEqual([("a", "d"), ("b", "c"), ("c", "c"), ("d", "d"),
+                      ("e", "c")], aggregation.GetSortedMapElements())
 
   def testGenerateMapWithConflictingAliases(self):
     self.assertRaisesRegex(
