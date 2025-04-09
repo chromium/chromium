@@ -38,7 +38,7 @@ class SegmentationPlatformServiceFactory
       ProfileIOS* profile);
 
   // Returns the default factory used to build SegmentationPlatformService. Can
-  // be registered with SetTestingFactory to use real instances during testing.
+  // be registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:

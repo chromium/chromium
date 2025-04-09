@@ -24,7 +24,7 @@ class IOSChromeTabRestoreServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static IOSChromeTabRestoreServiceFactory* GetInstance();
 
   // Returns the default factory used to build TabRestoreServices. Can be
-  // registered with SetTestingFactory to use real instances during testing.
+  // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:

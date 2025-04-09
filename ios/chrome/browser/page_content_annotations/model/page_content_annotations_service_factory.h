@@ -24,7 +24,7 @@ class PageContentAnnotationsServiceFactory
   static PageContentAnnotationsServiceFactory* GetInstance();
 
   // Returns the default factory used to build PageContentAnnotationsService.
-  // Can be registered with SetTestingFactory to use real instances during
+  // Can be registered with AddTestingFactory to use real instances during
   // testing.
   static TestingFactory GetDefaultFactory();
 

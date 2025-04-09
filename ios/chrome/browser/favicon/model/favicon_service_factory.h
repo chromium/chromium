@@ -24,7 +24,7 @@ class FaviconServiceFactory : public ProfileKeyedServiceFactoryIOS {
                                                 ServiceAccessType access_type);
   static FaviconServiceFactory* GetInstance();
   // Returns the default factory used to build FaviconService. Can be
-  // registered with SetTestingFactory to use real instances during testing.
+  // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:
