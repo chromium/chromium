@@ -9,6 +9,7 @@
 
 #import <map>
 
+#import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
 #import "components/data_sharing/public/protocol/group_data.pb.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -62,6 +63,18 @@ class TestShareKitService : public ShareKitService {
   void Shutdown() override;
 
  private:
+  // Shares the group with `tab_group_id` to the `collab_id`.
+  // `continuation_block` will be called once the group is ready to be shared.
+  void ShareGroup(tab_groups::LocalTabGroupID tab_group_id,
+                  NSString* collab_id,
+                  ProceduralBlock continuation_block);
+
+  // Prepares to share the group with `tab_group_id` to the `collab_id` as
+  // `owner`. This is updating the fake sync server.
+  void PrepareToShareGroup(bool owner,
+                           tab_groups::LocalTabGroupID tab_group_id,
+                           NSString* collab_id);
+
   // Sets the `collab_id` for the given `tab_group_id` and sets the user as
   // `owner`.
   void SetTabGroupCollabIdFromGroupId(bool owner,
@@ -86,6 +99,7 @@ class TestShareKitService : public ShareKitService {
 
   raw_ptr<data_sharing::DataSharingService> data_sharing_service_;
   raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+  raw_ptr<TabGroupService> tab_group_service_;
 
   // The set of group ID that is being shared.
   std::set<base::Uuid> processing_group_guids_;

@@ -14,6 +14,7 @@
 @class AlertCoordinator;
 class Browser;
 class FaviconLoader;
+enum class ShareKitFlowOutcome;
 @class ShareKitPreviewItem;
 class ShareKitService;
 typedef NS_ENUM(NSUInteger, SigninCoordinatorResult);
@@ -64,6 +65,15 @@ class IOSCollaborationControllerDelegate
   void PromoteCurrentScreen() override;
   void OnFlowFinished() override;
 
+  // Shares the tab group this delegate is associated with to the
+  // `collaboration_group_id`, then, once the group is shared, generates the
+  // share link from `collaboration_group_id` and `access_token` and passes it
+  // to `callback`. This can only be called for a "share" flow, after
+  // `ShowShareDialog` has been called.
+  void ShareGroupAndGenerateLink(std::string collaboration_group_id,
+                                 std::string access_token,
+                                 base::OnceCallback<void(GURL)> callback);
+
  private:
   using PreviewItemsCallBack =
       base::OnceCallback<void(NSArray<ShareKitPreviewItem*>*)>;
@@ -77,6 +87,9 @@ class IOSCollaborationControllerDelegate
   // but the tab group hasn't been sync'ed yet. `dismiss_join_screen` needs to
   // be called to dismiss the join screen.
   void OnCollaborationJoinSuccess(ProceduralBlock dismiss_join_screen);
+
+  // Called when the share flow is finished with an `outcome`.
+  void OnShareFlowComplete(ShareKitFlowOutcome outcome);
 
   // Called when a group is about to be unshared. The unsharing is blocked until
   // `continuation_block` is called.
@@ -139,6 +152,15 @@ class IOSCollaborationControllerDelegate
   // The tab group id used to register this delegate to the TabGroupService, if
   // any.
   std::optional<tab_groups::LocalTabGroupID> tab_group_service_registration_id_;
+
+  // Callback that needs to be called to continue the share flow. This is set
+  // when the "Share" screen is actually presented. Calling it with success
+  // shares the group associated with this delegate and allows link generation.
+  ResultWithGroupTokenCallback share_screen_callback_;
+
+  // The callback to generate the link and continue the share flow (present the
+  // share sheet).
+  base::OnceCallback<void(GURL)> link_generation_callback_;
 
   base::WeakPtrFactory<IOSCollaborationControllerDelegate> weak_ptr_factory_{
       this};

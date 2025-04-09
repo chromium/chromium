@@ -282,7 +282,11 @@ void IOSCollaborationControllerDelegate::ShowShareDialog(
 void IOSCollaborationControllerDelegate::OnUrlReadyToShare(
     const data_sharing::GroupId& group_id,
     const GURL& url,
-    ResultCallback result) {}
+    ResultCallback result) {
+  CHECK(link_generation_callback_);
+  std::move(link_generation_callback_).Run(url);
+  std::move(result).Run(CollaborationControllerDelegate::Outcome::kSuccess);
+}
 
 void IOSCollaborationControllerDelegate::ShowManageDialog(
     const tab_groups::EitherGroupID& either_id,
@@ -363,6 +367,19 @@ void IOSCollaborationControllerDelegate::OnFlowFinished() {
   [scrim_view_ removeFromSuperview];
 }
 
+void IOSCollaborationControllerDelegate::ShareGroupAndGenerateLink(
+    std::string collaboration_group_id,
+    std::string access_token,
+    base::OnceCallback<void(GURL)> callback) {
+  CHECK(share_screen_callback_);
+  link_generation_callback_ = std::move(callback);
+  data_sharing::GroupToken token(data_sharing::GroupId(collaboration_group_id),
+                                 access_token);
+
+  std::move(share_screen_callback_)
+      .Run(CollaborationControllerDelegate::Outcome::kSuccess, token);
+}
+
 void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
     ResultCallback result,
     SigninCoordinatorResult sign_in_result,
@@ -390,6 +407,16 @@ void IOSCollaborationControllerDelegate::OnAuthenticationComplete(
 void IOSCollaborationControllerDelegate::OnCollaborationJoinSuccess(
     void (^dismiss_join_screen)()) {
   dismiss_join_screen_callback_ = base::BindOnce(dismiss_join_screen);
+}
+
+void IOSCollaborationControllerDelegate::OnShareFlowComplete(
+    ShareKitFlowOutcome outcome) {
+  if (!share_screen_callback_) {
+    // The screen has already been continued (for example by sharing the link).
+    return;
+  }
+  std::move(share_screen_callback_)
+      .Run(ConvertOutcome(outcome), data_sharing::GroupToken());
 }
 
 void IOSCollaborationControllerDelegate::WillUnshareGroup(
@@ -550,6 +577,8 @@ void IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup(
     return;
   }
 
+  share_screen_callback_ = std::move(result);
+
   ShareKitShareGroupConfiguration* config =
       [[ShareKitShareGroupConfiguration alloc] init];
   config.tabGroup = tab_group;
@@ -557,10 +586,9 @@ void IOSCollaborationControllerDelegate::ConfigureAndShareTabGroup(
   config.baseViewController = base_view_controller_;
   config.applicationHandler =
       HandlerForProtocol(browser_->GetCommandDispatcher(), ApplicationCommands);
-  auto completion_block = base::CallbackToBlock(std::move(result));
-  config.completion = ^(ShareKitFlowOutcome outcome) {
-    completion_block(ConvertOutcome(outcome), data_sharing::GroupToken());
-  };
+  config.completion = base::CallbackToBlock(
+      base::BindOnce(&IOSCollaborationControllerDelegate::OnShareFlowComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   session_id_ = share_kit_service_->ShareTabGroup(config);
 }
