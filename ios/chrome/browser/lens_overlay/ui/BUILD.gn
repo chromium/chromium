@@ -106,6 +106,7 @@ source_set("view_controller") {
     "//ios/chrome/common/ui/promo_style:utils",
     "//ios/chrome/common/ui/util",
     "//ios/components/ui_util",
+    "//ios/public/provider/chrome/browser/font:font_api",
     "//ios/public/provider/chrome/browser/lens:lens_overlay_api",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//url",
