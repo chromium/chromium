@@ -9,19 +9,13 @@
 
 class Browser;
 
-// Creates and shows a dialog or bubble for |browser| displaying the Privacy
-// Sandbox notice or consent to the user.
-void ShowPrivacySandboxPrompt(Browser* browser,
-                              PrivacySandboxService::PromptType prompt_type);
-
-// Creates and shows a dialog for |browser| displaying the Privacy Sandbox
-// notice or consent to the user. Specific implementations are responsible for
-// altering the content as appropriate based on |prompt_type|.
-void ShowPrivacySandboxDialog(Browser* browser,
-                              PrivacySandboxService::PromptType prompt_type);
-
-// Returns whether a Privacy Sandbox prompt can be shown in the |browser|.
-// Checks if the maximum dialog height fits the prompt height.
-bool CanWindowHeightFitPrivacySandboxPrompt(Browser* browser);
+class PrivacySandboxDialog {
+ public:
+  // Creates and shows a dialog for |browser| displaying the Privacy Sandbox
+  // notice or consent to the user. Specific implementations are responsible for
+  // altering the content as appropriate based on |prompt_type|.
+  static void Show(Browser* browser,
+                   PrivacySandboxService::PromptType prompt_type);
+};
 
 #endif  // CHROME_BROWSER_UI_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PROMPT_H_

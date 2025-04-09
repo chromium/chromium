@@ -154,7 +154,7 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
-    ShowPrivacySandboxDialog(browser(), prompt_type);
+    PrivacySandboxDialog::Show(browser(), prompt_type);
     waiter.WaitIfNeededAndGet();
   }
 
@@ -299,7 +299,7 @@ class PrivacySandboxDialogViewPrivacyPolicyBrowserTest
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
-    ShowPrivacySandboxDialog(browser(), prompt_type);
+    PrivacySandboxDialog::Show(browser(), prompt_type);
     views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
     views::test::WidgetVisibleWaiter(dialog_widget).Wait();
     ASSERT_TRUE(dialog_widget->IsVisible());
@@ -395,7 +395,7 @@ class PrivacySandboxDialogViewAdsApiUxEnhancementsLearnMoreBrowserTest
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         PrivacySandboxDialogView::kViewClassName);
-    ShowPrivacySandboxDialog(browser(), GetPromptType(name));
+    PrivacySandboxDialog::Show(browser(), GetPromptType(name));
     views::Widget* dialog_widget = waiter.WaitIfNeededAndGet();
     views::test::WidgetVisibleWaiter(dialog_widget).Wait();
     ASSERT_TRUE(dialog_widget->IsVisible());
