@@ -31,6 +31,7 @@ if (use_blink) {
     ]
     deps = [
       "//components/fingerprinting_protection_filter/browser",
+      "//components/variations:variations",
       "//content/public/common",
       "//net",
       "//services/network/public/cpp",
@@ -68,6 +69,7 @@ if (use_blink) {
       "//components/subresource_filter/core/common",
       "//components/subresource_filter/core/common:test_support",
       "//components/subresource_filter/core/mojom",
+      "//components/variations:variations",
       "//content/public/renderer",
       "//net",
       "//services/network/public/cpp",

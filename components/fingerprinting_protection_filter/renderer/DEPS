@@ -4,6 +4,7 @@ include_rules = [
   "+components/subresource_filter/content/shared/renderer",
   "+components/subresource_filter/content/shared/common",
   "+components/url_pattern_index/proto",
+  "+components/variations",
   "+content/public/common",
   "+content/public/renderer",
   "+mojo/public/cpp/bindings",

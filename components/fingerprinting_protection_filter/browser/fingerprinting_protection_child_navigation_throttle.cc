@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
@@ -16,7 +17,9 @@
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/base/url_util.h"
 
 class GURL;
 
@@ -119,6 +122,11 @@ FingerprintingProtectionChildNavigationThrottle::GetNameForLogging() {
 
 bool FingerprintingProtectionChildNavigationThrottle::ShouldDeferNavigation()
     const {
+  if (net::IsLocalhost(navigation_handle()->GetURL()) &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          variations::switches::kEnableBenchmarking)) {
+    return false;
+  }
   // If the embedder document has activation enabled, we calculate frame load
   // policy before proceeding with navigation as filtered navigations are not
   // allowed to get a response. As a result, we must defer while we wait for
