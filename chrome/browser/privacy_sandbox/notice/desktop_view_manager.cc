@@ -8,6 +8,16 @@ namespace privacy_sandbox {
 
 DesktopViewManager::DesktopViewManager(
     PrivacySandboxNoticeServiceInterface* notice_service) {}
-DesktopViewManager::~DesktopViewManager() = default;
+DesktopViewManager::~DesktopViewManager() {
+  observers_.Clear();
+}
+
+void DesktopViewManager::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void DesktopViewManager::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
 
 }  // namespace privacy_sandbox

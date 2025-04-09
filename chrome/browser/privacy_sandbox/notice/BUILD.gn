@@ -92,10 +92,20 @@ source_set("test_support") {
   deps = [
     ":interfaces",
     ":notice_mojom",
+    "//base",
     "//components/keyed_service/core",
     "//content/public/browser",
     "//testing/gmock",
   ]
+
+  # (Desktop Only)
+  if (!is_android) {
+    sources += [
+      "mock_desktop_view_manager_observer.cc",
+      "mock_desktop_view_manager_observer.h",
+    ]
+    deps += [ ":desktop_view_manager" ]
+  }
 }
 
 source_set("unit_tests") {
