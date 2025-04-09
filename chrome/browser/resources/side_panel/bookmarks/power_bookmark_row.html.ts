@@ -94,7 +94,6 @@ export function getHtml(this: PowerBookmarkRowElement) {
           .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
           .draggable="${String(this.canDrag)}"
           ?can-drag="${this.canDrag}"
-          .keyArrowNavigationService="${this.keyArrowNavigationService}"
           .contextMenuBookmark="${this.contextMenuBookmark}">
       </power-bookmark-row>
     `)}`: ''

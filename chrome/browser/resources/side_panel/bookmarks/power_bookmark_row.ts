@@ -20,7 +20,7 @@ import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_l
 import {CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import type {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
+import {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
 import {getCss} from './power_bookmark_row.css.js';
 import {getHtml} from './power_bookmark_row.html.js';
 import {PowerBookmarksService} from './power_bookmarks_service.js';
@@ -66,7 +66,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
       rowAriaDescription: {type: String},
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
-      keyArrowNavigationService: {type: Object},
       toggleExpand: {type: Boolean},
       updatedElementIds: {type: Array},
       canDrag: {type: Boolean},
@@ -99,7 +98,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
       PriceTrackingBrowserProxyImpl.getInstance();
   private shoppingListenerIds_: number[] = [];
-  keyArrowNavigationService: KeyArrowNavigationService;
+  private keyArrowNavigationService_: KeyArrowNavigationService =
+      KeyArrowNavigationService.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
@@ -261,7 +261,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // child elements need to be visible and present in the dom in order to be
     // seen by the parent list element and therefore remove them.
     if (!this.toggleExpand) {
-      this.keyArrowNavigationService.removeElementsWithin(this);
+      this.keyArrowNavigationService_.removeElementsWithin(this);
     }
 
     this.dispatchEvent(new CustomEvent('power-bookmark-toggle', {
@@ -296,7 +296,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // the folder.
     if (this.shouldExpand_() && !this.hasCheckbox) {
       // If clicking on a row that's a folder in compact view, move focus to it.
-      this.keyArrowNavigationService.setCurrentFocusIndex(this);
+      this.keyArrowNavigationService_.setCurrentFocusIndex(this);
       return;
     }
     event.preventDefault();

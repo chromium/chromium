@@ -309,8 +309,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
     PowerBookmarksService.setInstance(bookmarksService);
     this.bookmarksService_ = PowerBookmarksService.getInstance();
 
-    this.keyArrowNavigationService_ =
+    const keyArrowNavigationService =
         new KeyArrowNavigationService(this, 'power-bookmark-row:not([hidden])');
+    KeyArrowNavigationService.setInstance(keyArrowNavigationService);
+    this.keyArrowNavigationService_ = KeyArrowNavigationService.getInstance();
+
     this.bookmarksDragManager_ = new PowerBookmarksDragManager(this);
   }
 
