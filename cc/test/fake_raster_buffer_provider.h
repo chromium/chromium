@@ -15,7 +15,7 @@ namespace cc {
 // Fake RasterBufferProvider that just no-ops all calls.
 class FakeRasterBufferProviderImpl : public RasterBufferProvider {
  public:
-  FakeRasterBufferProviderImpl();
+  explicit FakeRasterBufferProviderImpl(const viz::SharedImageFormat& format);
   ~FakeRasterBufferProviderImpl() override;
 
   // RasterBufferProvider methods.
@@ -36,10 +36,11 @@ class FakeRasterBufferProviderImpl : public RasterBufferProvider {
       uint64_t pending_callback_id) override;
   void Shutdown() override;
 
-  bool is_software_ = false;
-
  protected:
   void Flush() override;
+
+ private:
+  viz::SharedImageFormat tile_format_;
 };
 
 }  // namespace cc
