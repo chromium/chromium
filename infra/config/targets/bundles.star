@@ -157,6 +157,14 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_14_automotive_landscape_emulator_gtests",
+    targets = [
+        "android_trichrome_smoke_tests",
+        "android_smoke_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_14_device_ci_only_gtests",
     targets = [
         "system_webview_shell_instrumentation_tests",
