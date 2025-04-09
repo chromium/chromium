@@ -28,6 +28,7 @@ import static org.hamcrest.Matchers.nullValue;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.content.res.Configuration;
 import android.os.SystemClock;
 import android.view.KeyEvent;
 import android.view.View;
@@ -95,9 +96,12 @@ public class BookmarkBarTest {
     @Before
     public void setUp() {
         mCtaTestRule.startOnBlankPage();
+
+        BookmarkBarUtils.setFeatureAllowedForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(() -> setBookmarkBarSetting(/* enabled= */ true));
         waitForBookmarkBarVisibility(/* visible= */ true);
         BookmarkTestUtil.waitForBookmarkModelLoaded();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = mCtaTestRule.getActivity().getBookmarkModelForTesting();
@@ -139,14 +143,14 @@ public class BookmarkBarTest {
         ThreadUtils.runOnUiThreadBlocking(() -> setBookmarkBarSetting(/* enabled= */ false));
         waitForBookmarkBarVisibility(/* visible= */ false);
 
-        // Case: Toggle w/ feature enabled.
+        // Case: Toggle w/ feature allowed.
         ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
         waitForBookmarkBarVisibility(/* visible= */ true);
         ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
         waitForBookmarkBarVisibility(/* visible= */ false);
 
-        // Case: Toggle w/ feature disabled.
-        BookmarkBarUtils.setFeatureEnabledForTesting(false);
+        // Case: Toggle w/ feature disallowed.
+        BookmarkBarUtils.setFeatureAllowedForTesting(false);
         ThreadUtils.runOnUiThreadBlocking(() -> activity.onKeyDown(evt.getKeyCode(), evt));
         waitForBookmarkBarVisibility(/* visible= */ false);
     }
@@ -220,6 +224,22 @@ public class BookmarkBarTest {
                         Criteria.checkThat(currentTab.getUrl(), is(url));
                     });
         }
+    }
+
+    @Test
+    @MediumTest
+    public void testOnConfigurationChange() {
+        waitForBookmarkBarVisibility(/* visible= */ true);
+
+        // Case: Configuration changed to disallow feature.
+        BookmarkBarUtils.setFeatureAllowedForTesting(false);
+        ThreadUtils.runOnUiThreadBlocking(this::notifyConfigurationChanged);
+        waitForBookmarkBarVisibility(/* visible= */ false);
+
+        // Case: Configuration changed to allow feature.
+        BookmarkBarUtils.setFeatureAllowedForTesting(true);
+        ThreadUtils.runOnUiThreadBlocking(this::notifyConfigurationChanged);
+        waitForBookmarkBarVisibility(/* visible= */ true);
     }
 
     @Test
@@ -325,6 +345,12 @@ public class BookmarkBarTest {
 
     private @NonNull GURL getTestServerUrl(@NonNull String relativeUrl) {
         return new GURL(mCtaTestRule.getTestServer().getURL(relativeUrl));
+    }
+
+    private void notifyConfigurationChanged() {
+        final var activity = mCtaTestRule.getActivity();
+        final var newConfig = new Configuration(activity.getSavedConfigurationForTesting());
+        activity.onConfigurationChanged(newConfig);
     }
 
     private <T> @NonNull Optional<T> optionalOfThrowable(@NonNull Callable<T> callable) {

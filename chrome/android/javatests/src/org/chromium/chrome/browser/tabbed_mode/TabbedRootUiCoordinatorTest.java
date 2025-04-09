@@ -76,7 +76,7 @@ public class TabbedRootUiCoordinatorTest {
                     doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
                 });
 
-        BookmarkBarUtils.setSettingEnabledForTesting(true);
+        BookmarkBarUtils.setFeatureVisibleForTesting(true);
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
         mTabbedRootUiCoordinator =

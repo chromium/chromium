@@ -90,7 +90,7 @@ public class ToolbarTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        BookmarkBarUtils.setSettingEnabledForTesting(true);
+        BookmarkBarUtils.setFeatureVisibleForTesting(true);
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);
         mActivityTestRule.startMainActivityOnBlankPage();
     }

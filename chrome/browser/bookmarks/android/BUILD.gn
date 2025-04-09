@@ -90,6 +90,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSettingProvider.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtils.java",
     "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarViewBinder.java",
+    "java/src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarVisibilityProvider.java",
   ]
 
   deps = [

@@ -51,8 +51,8 @@ import org.chromium.chrome.browser.bookmarks.BookmarkOpener;
 import org.chromium.chrome.browser.bookmarks.BookmarkOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarCoordinator;
-import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarSettingProvider;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.collaboration.CollaborationControllerDelegateFactory;
@@ -257,7 +257,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private final @NonNull EdgeToEdgeManager mEdgeToEdgeManager;
     protected @Nullable InstantMessageDelegateImpl mInstantMessageDelegateImpl;
     private @Nullable BookmarkBarCoordinator mBookmarkBarCoordinator;
-    private @Nullable BookmarkBarSettingProvider mBookmarkBarSettingProvider;
+    private @Nullable BookmarkBarVisibilityProvider mBookmarkBarVisibilityProvider;
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @NonNull ObservableSupplier<BookmarkManagerOpener> mBookmarkManagerOpenerSupplier;
@@ -638,10 +638,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mInstantMessageDelegateImpl.detachWindow(mWindowAndroid);
         }
 
-        if (mBookmarkBarSettingProvider != null) {
+        if (mBookmarkBarVisibilityProvider != null) {
             destroyBookmarkBarIfNecessary();
-            mBookmarkBarSettingProvider.destroy();
-            mBookmarkBarSettingProvider = null;
+            mBookmarkBarVisibilityProvider.destroy();
+            mBookmarkBarVisibilityProvider = null;
         }
 
         if (mLoadingFullscreenCoordinator != null) {
@@ -888,9 +888,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         new OneShotCallback<>(mProfileSupplier, this::initCollaborationDelegatesOnProfile);
 
         if (BookmarkBarUtils.isFeatureEnabled(mActivity)) {
-            mBookmarkBarSettingProvider =
-                    new BookmarkBarSettingProvider(
-                            mProfileSupplier, /* callback= */ this::updateBookmarkBarIfNecessary);
+            mBookmarkBarVisibilityProvider =
+                    new BookmarkBarVisibilityProvider(
+                            mActivity,
+                            mActivityLifecycleDispatcher,
+                            mProfileSupplier,
+                            /* callback= */ this::updateBookmarkBarIfNecessary);
         }
     }
 
@@ -1720,8 +1723,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    private void updateBookmarkBarIfNecessary(boolean isSettingEnabled) {
-        if (isSettingEnabled) {
+    private void updateBookmarkBarIfNecessary(boolean visible) {
+        if (visible) {
             createBookmarkBarIfNecessary();
         } else {
             destroyBookmarkBarIfNecessary();
@@ -1748,6 +1751,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         } else if (id == R.id.focus_bookmarks) {
             if (mBookmarkBarCoordinator != null) mBookmarkBarCoordinator.requestFocus();
             return true;
+        } else if (id == R.id.toggle_bookmark_bar) {
+            if (BookmarkBarUtils.isFeatureAllowed(mActivity)) {
+                BookmarkBarUtils.toggleSettingEnabled(mProfileSupplier.get());
+                return true;
+            }
         }
 
         return false;

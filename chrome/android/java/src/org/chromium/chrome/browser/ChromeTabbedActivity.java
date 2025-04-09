@@ -94,7 +94,6 @@ import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHan
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.bookmarks.BookmarkPane;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -3304,8 +3303,6 @@ public class ChromeTabbedActivity extends ChromeActivity {
             NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);
             RecordUserAction.record("MobileMenuNtpCustomization");
-        } else if (id == R.id.toggle_bookmark_bar) {
-            BookmarkBarUtils.toggleSettingEnabled(this, getProfileProviderSupplier());
         } else {
             return super.onMenuOrKeyboardAction(id, fromMenu);
         }

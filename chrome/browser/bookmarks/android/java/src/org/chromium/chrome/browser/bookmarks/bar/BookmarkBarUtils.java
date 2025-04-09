@@ -16,13 +16,11 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.LazyOneshotSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
@@ -47,8 +45,14 @@ public class BookmarkBarUtils {
         int ITEM = 1;
     }
 
+    /** Whether the bookmark bar feature is forcibly allowed/disallowed for testing. */
+    private static Boolean sFeatureAllowedForTesting;
+
     /** Whether the bookmark bar feature is forcibly enabled/disabled for testing. */
     private static Boolean sFeatureEnabledForTesting;
+
+    /** Whether the bookmark bar feature is forcibly visible/invisible for testing. */
+    private static Boolean sFeatureVisibleForTesting;
 
     /** Whether the bookmark bar user setting is forcibly enabled/disabled for testing. */
     private static Boolean sSettingEnabledForTesting;
@@ -57,6 +61,22 @@ public class BookmarkBarUtils {
     private static Collection<PrefObserver> sSettingObserverCacheForTesting;
 
     private BookmarkBarUtils() {}
+
+    /**
+     * Returns whether the bookmark bar feature is currently allowed. Note that even when the
+     * associated feature flag is enabled and device form factor restrictions are satisified, the
+     * feature may still not be allowed in certain device configurations.
+     *
+     * @param context The context in which feature eligibility should be assessed.
+     * @return Whether the feature is currently allowed.
+     */
+    public static boolean isFeatureAllowed(@NonNull Context context) {
+        if (sFeatureAllowedForTesting != null) {
+            return sFeatureAllowedForTesting;
+        }
+        return isFeatureEnabled(context)
+                && context.getResources().getBoolean(R.bool.bookmark_bar_allowed);
+    }
 
     /**
      * Returns whether the bookmark bar feature is currently enabled. The feature is considered to
@@ -72,6 +92,21 @@ public class BookmarkBarUtils {
         }
         return ChromeFeatureList.sAndroidBookmarkBar.isEnabled()
                 && DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
+    }
+
+    /**
+     * Returns whether the bookmark bar feature is currently visible. The feature is visible when it
+     * is allowed in the given context and the user setting for the given profile is enabled.
+     *
+     * @param context The context in which feature eligibility should be assessed.
+     * @param profile The profile for which the user setting should be assessed.
+     * @return Whether the feature is currently visible.
+     */
+    public static boolean isFeatureVisible(@NonNull Context context, @Nullable Profile profile) {
+        if (sFeatureVisibleForTesting != null) {
+            return sFeatureVisibleForTesting;
+        }
+        return isFeatureAllowed(context) && isSettingEnabled(profile);
     }
 
     /**
@@ -95,24 +130,6 @@ public class BookmarkBarUtils {
      */
     public static void setSettingEnabled(@NonNull Profile profile, boolean enabled) {
         getPrefService(profile).setBoolean(Pref.SHOW_BOOKMARK_BAR, enabled);
-    }
-
-    /**
-     * Toggles whether the bookmark bar user setting is currently enabled, if and only if the
-     * bookmark bar feature is enabled and a non-null profile is supplied. Otherwise no-ops.
-     *
-     * @param context The context in which feature enablement should be assessed.
-     * @param profileProviderSupplier The supplier of the profile for which to toggle the setting.
-     */
-    public static void toggleSettingEnabled(
-            @NonNull Context context, @Nullable Supplier<ProfileProvider> profileProviderSupplier) {
-        if (profileProviderSupplier == null || !isFeatureEnabled(context)) return;
-
-        final var profileProvider = profileProviderSupplier.get();
-        if (profileProvider == null) return;
-
-        final var profile = profileProvider.getOriginalProfile();
-        if (profile != null) toggleSettingEnabled(profile);
     }
 
     /**
@@ -207,6 +224,16 @@ public class BookmarkBarUtils {
     }
 
     /**
+     * Sets whether the bookmark bar feature is forcibly allowed/disallowed for testing.
+     *
+     * @param allowed Whether the feature is forcibly allowed/disallowed.
+     */
+    public static void setFeatureAllowedForTesting(@Nullable Boolean allowed) {
+        sFeatureAllowedForTesting = allowed;
+        ResettersForTesting.register(() -> sFeatureAllowedForTesting = null);
+    }
+
+    /**
      * Sets whether the bookmark bar feature is forcibly enabled/disabled for testing.
      *
      * @param enabled Whether the feature is forcibly enabled/disabled.
@@ -214,6 +241,16 @@ public class BookmarkBarUtils {
     public static void setFeatureEnabledForTesting(@Nullable Boolean enabled) {
         sFeatureEnabledForTesting = enabled;
         ResettersForTesting.register(() -> sFeatureEnabledForTesting = null);
+    }
+
+    /**
+     * Sets whether the bookmark bar feature is forcibly visible/invisible for testing.
+     *
+     * @param visible Whether the feature is forcibly visible/invisible.
+     */
+    public static void setFeatureVisibleForTesting(@Nullable Boolean visible) {
+        sFeatureVisibleForTesting = visible;
+        ResettersForTesting.register(() -> sFeatureVisibleForTesting = null);
     }
 
     /**
