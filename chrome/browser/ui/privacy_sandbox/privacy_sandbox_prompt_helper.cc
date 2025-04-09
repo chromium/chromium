@@ -32,6 +32,7 @@
 namespace {
 constexpr char kPrivacySandboxPromptHelperEventHistogram[] =
     "Settings.PrivacySandbox.PromptHelperEvent";
+constexpr int kMinRequiredDialogHeight = 100;
 
 // Gets the type of prompt that should be displayed for |profile|, this includes
 // the possibility of no prompt being required.
@@ -216,10 +217,11 @@ void PrivacySandboxPromptHelper::DidFinishNavigation(
   // The PrivacySandbox prompt can always fit inside a normal tabbed window due
   // to its minimum width, so checking the height is enough here. Other non
   // normal tabbed browsers will be exlcuded in a later check.
-  const bool is_window_height_too_small = browser->window()
-                                              ->GetWebContentsModalDialogHost()
-                                              ->GetMaximumDialogSize()
-                                              .height() < 100;
+  const bool is_window_height_too_small =
+      browser->window()
+          ->GetWebContentsModalDialogHost()
+          ->GetMaximumDialogSize()
+          .height() < kMinRequiredDialogHeight;
   // If the windows height is too small, it is difficult to read or interact
   // with the dialog. The dialog is blocking modal, that is why we want to
   // prevent it from showing if there isn't enough space.
