@@ -122,20 +122,7 @@ export class Page {
       sendWithPromise('reloadPolicies');
     };
 
-    const moreActionsButton = getRequiredElement('more-actions-button');
-    const moreActionsIcon = getRequiredElement('dropdown-icon');
-    const moreActionsList = getRequiredElement('more-actions-list');
-    moreActionsButton.onclick = () => {
-      moreActionsList.classList.toggle('more-actions-visibility');
-    };
-
-    // Close dropdown if user clicks anywhere on page.
-    document.addEventListener('click', function(event) {
-      if (moreActionsList && event.target !== moreActionsButton &&
-          event.target !== moreActionsIcon) {
-        moreActionsList.classList.add('more-actions-visibility');
-      }
-    });
+    this.setupMoreActionsMenuNavigation_();
 
     const exportButton = getRequiredElement('export-policies');
     const hideExportButton = loadTimeData.valueExists('hideExportButton') &&
@@ -239,6 +226,94 @@ export class Page {
     );
     // </if>
     this.reloadPoliciesDone();
+  }
+
+  /**
+   * Sets up event listeners for the more actions dropdown menu.
+   *
+   * The dropdown menu is opened when the more actions button is clicked.
+   * The menu items are focused in order when the arrow keys are pressed.
+   * HOME and END keys are used to focus the first and last menu items
+   * respectively.
+   * The menu is closed when the escape key is pressed.
+   */
+  private setupMoreActionsMenuNavigation_() {
+    const moreActionsButton = getRequiredElement('more-actions-button');
+    const moreActionsIcon = getRequiredElement('dropdown-icon');
+    const moreActionsList = getRequiredElement('more-actions-list');
+    const moreActionsDropdown = getRequiredElement('more-actions-dropdown');
+    const menuItems = moreActionsList?.querySelectorAll<HTMLButtonElement>(
+        '[role="menuitem"]');
+
+    document.getElementById('view-logs')?.addEventListener('click', () => {
+      window.location.href = 'chrome://policy/logs';
+    });
+
+    // Close dropdown if user clicks anywhere on page.
+    document.addEventListener('click', function(event) {
+      if (moreActionsList && event.target !== moreActionsButton &&
+          event.target !== moreActionsIcon) {
+        moreActionsList.classList.add('more-actions-visibility');
+      }
+    });
+
+    if (!moreActionsDropdown || !moreActionsButton || !moreActionsList ||
+        !menuItems || menuItems.length === 0) {
+      return;
+    }
+    let currentIndex = -1;
+
+    const focusMenuItem = (index: number) => {
+      if (index >= 0 && index < menuItems.length &&
+          menuItems[index] !== undefined) {
+        menuItems[index].focus();
+        currentIndex = index;
+      }
+    };
+    moreActionsDropdown.addEventListener('keydown', (event) => {
+      if (moreActionsList.classList.contains('more-actions-visibility')) {
+        return;
+      }
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (currentIndex < menuItems.length - 1) {
+          currentIndex++;
+        } else {
+          currentIndex = 0;
+        }
+        focusMenuItem(currentIndex);
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (currentIndex > 0) {
+          currentIndex--;
+        } else {
+          currentIndex = menuItems.length - 1;
+        }
+        focusMenuItem(currentIndex);
+      } else if (event.key === 'Home') {
+        event.preventDefault();
+        currentIndex = 0;
+        focusMenuItem(currentIndex);
+      } else if (event.key === 'End') {
+        event.preventDefault();
+        currentIndex = menuItems.length - 1;
+        focusMenuItem(currentIndex);
+      } else if (event.key === 'Escape') {
+        event.preventDefault();
+        moreActionsList.classList.add('more-actions-visibility');
+      }
+    });
+
+    // Event listener to handle opening the dropdown and setting initial focus
+    moreActionsButton.addEventListener('click', () => {
+      moreActionsList.classList.toggle('more-actions-visibility');
+      if (moreActionsList.classList.contains('more-actions-visibility')) {
+        currentIndex = 0;
+        focusMenuItem(currentIndex);
+      } else {
+        currentIndex = -1;
+      }
+    });
   }
 
   /**
