@@ -176,13 +176,6 @@ void ContextualCueingService::OnNudgeActivity(
         web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId(), interaction,
         document_available_time, *nudge_time);
   }
-
-  // Temporary trigger for suggestions request, to be removed when UI is ready.
-  if (activity == tabs::GlicNudgeActivity::kNudgeClicked &&
-      base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
-    GetContextualGlicZeroStateSuggestions(web_contents, /*is_fre=*/false,
-                                          base::DoNothing());
-  }
 }
 
 void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
