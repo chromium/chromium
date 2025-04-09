@@ -163,7 +163,8 @@ void ClearProfilePasswordStore() {
 
 // Saves an example profile in the store.
 void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
-                        bool isAccountProfile) {
+                        std::optional<autofill::AutofillProfile::RecordType>
+                            recordType = std::nullopt) {
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
   // If the test profile is already in the store, adding it will be a no-op.
   // In that case, early return.
@@ -176,9 +177,8 @@ void AddAutofillProfile(autofill::PersonalDataManager* personalDataManager,
   size_t profileCount =
       personalDataManager->address_data_manager().GetProfiles().size();
 
-  if (isAccountProfile) {
-    test_api(profile).set_record_type(
-        autofill::AutofillProfile::RecordType::kAccount);
+  if (recordType.has_value()) {
+    test_api(profile).set_record_type(recordType.value());
   }
   personalDataManager->address_data_manager().AddProfile(profile);
 
@@ -424,11 +424,17 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 }
 
 + (void)saveExampleProfile {
-  AddAutofillProfile([self personalDataManager], false);
+  AddAutofillProfile([self personalDataManager]);
 }
 
 + (void)saveExampleAccountProfile {
-  AddAutofillProfile([self personalDataManager], true);
+  AddAutofillProfile([self personalDataManager],
+                     autofill::AutofillProfile::RecordType::kAccount);
+}
+
++ (void)saveExampleHomeWorkAccountProfile {
+  AddAutofillProfile([self personalDataManager],
+                     autofill::AutofillProfile::RecordType::kAccountHome);
 }
 
 + (NSString*)exampleProfileName {

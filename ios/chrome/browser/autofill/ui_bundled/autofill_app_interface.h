@@ -51,6 +51,10 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Saves a sample account profile (address) in the data manager.
 + (void)saveExampleAccountProfile;
 
+// Saves a sample account profile (address) with Home record type in the data
+// manager.
++ (void)saveExampleHomeWorkAccountProfile;
+
 // Returns the name of the sample profile.
 + (NSString*)exampleProfileName;
 

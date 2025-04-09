@@ -13,9 +13,11 @@
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_prefs.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
@@ -253,6 +255,12 @@ void SlowlyTypeText(NSString* text) {
             (testFillCreditCardFieldsOnForm_WithUserEditedFix_NotUserEdited)]) {
     config.features_enabled.push_back(
         kAutofillCorrectUserEditedBitInParsedField);
+  }
+  if ([self isRunningTest:@selector(testAddressHomeAndWorkIPH)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillEnableSupportForHomeAndWork);
+    config.iph_feature_enabled =
+        feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature.name;
   }
   return config;
 }
@@ -766,6 +774,24 @@ id<GREYMatcher> PaymentsBottomSheetUseKeyboardButton() {
   // correctly recorded.
   CheckAddressAutofillSuggestionAcceptedIndexMetricsCount(
       /*suggestion_index=*/0);
+}
+
+// Tests the IPH feature for a Home and Work account profile.
+- (void)testAddressHomeAndWorkIPH {
+  // Delete the profile that is added on `-setUp`.
+  [AutofillAppInterface clearProfilesStore];
+  // Store one address.
+  [AutofillAppInterface saveExampleHomeWorkAccountProfile];
+
+  [self loadAddressPage];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormZip)];
+
+  id<GREYMatcher> iph_chip = grey_text(l10n_util::GetNSString(
+      IDS_AUTOFILL_IPH_HOME_AND_WORK_ACCOUNT_PROFILE_SUGGESTION));
+
+  // Ensure the Home and Work suggestion IPH appears.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iph_chip];
 }
 
 // Tests that the manual fill button opens the expanded manual fill view.
