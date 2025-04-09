@@ -400,7 +400,9 @@ class PLATFORM_EXPORT ParkableString final {
   // Causes the string to be unparked. Note that the pointer must not be
   // cached.
   const LChar* Characters8() const { return ToString().Characters8(); }
-  const UChar* Characters16() const { return ToString().Characters16(); }
+  const base::span<const uint16_t> SpanUint16() const {
+    return ToString().SpanUint16();
+  }
 
  private:
   scoped_refptr<ParkableStringImpl> impl_;

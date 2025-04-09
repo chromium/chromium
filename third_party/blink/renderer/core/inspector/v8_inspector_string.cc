@@ -165,18 +165,11 @@ void ProtocolTypeTraits<WTF::String>::Serialize(const String& value,
     return;
   }
   if (value.Is8Bit()) {
-    crdtp::cbor::EncodeFromLatin1(
-        crdtp::span<uint8_t>(
-            reinterpret_cast<const uint8_t*>(value.Characters8()),
-            value.length()),
-        bytes);
+    crdtp::cbor::EncodeFromLatin1(crdtp::span<uint8_t>(value.Span8()), bytes);
     return;
   }
-  crdtp::cbor::EncodeFromUTF16(
-      crdtp::span<uint16_t>(
-          reinterpret_cast<const uint16_t*>(value.Characters16()),
-          value.length()),
-      bytes);
+  crdtp::cbor::EncodeFromUTF16(crdtp::span<uint16_t>(value.SpanUint16()),
+                               bytes);
 }
 
 // static

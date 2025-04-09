@@ -144,6 +144,14 @@ class WTF_EXPORT String {
     return impl_->Span16();
   }
 
+  base::span<const uint16_t> SpanUint16() const {
+    if (!impl_) {
+      return {};
+    }
+    DCHECK(!impl_->Is8Bit());
+    return impl_->SpanUint16();
+  }
+
   // This exposes the underlying representation of the string. Use with
   // care. When interpreting the string as a sequence of code units
   // Span8()/Span16() should be used.

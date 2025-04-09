@@ -207,7 +207,7 @@ class StringResource16 final : public StringResource16Base {
 
   size_t length() const override { return GetStringImpl()->length(); }
   const uint16_t* data() const override {
-    return reinterpret_cast<const uint16_t*>(GetStringImpl()->Characters16());
+    return GetStringImpl()->SpanUint16().data();
   }
 };
 
@@ -230,8 +230,7 @@ class ParkableStringResource16 final : public StringResource16Base {
   size_t length() const override { return GetParkableString().length(); }
 
   const uint16_t* data() const override {
-    return reinterpret_cast<const uint16_t*>(
-        GetParkableString().Characters16());
+    return GetParkableString().SpanUint16().data();
   }
 };
 
