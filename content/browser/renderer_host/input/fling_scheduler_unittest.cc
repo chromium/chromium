@@ -15,7 +15,9 @@
 #include "content/test/test_render_widget_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN)
+#include "ui/display/win/test/scoped_screen_win.h"
+#elif BUILDFLAG(IS_CHROMEOS)
 #include "ui/display/test/test_screen.h"
 #endif
 
@@ -147,7 +149,10 @@ class FlingSchedulerTest : public testing::Test,
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
   std::unique_ptr<TestRenderWidgetHostView> view_;
   std::unique_ptr<MockRenderWidgetHostDelegate> delegate_;
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN)
+  // This is necessary for static methods of `display::ScreenWin`.
+  display::win::test::ScopedScreenWin scoped_screen_win_;
+#elif BUILDFLAG(IS_CHROMEOS)
   // This is necessary on ChromeOS as it needs to access tablet mode info.
   display::test::TestScreen test_screen_{/*create_dispay=*/true,
                                          /*register_screen=*/true};
