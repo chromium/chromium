@@ -2088,9 +2088,6 @@ void BrowserAutofillManager::OnSelectFieldOptionsDidChangeImpl(
   if (!form_structure) {
     return;
   }
-
-  driver().SendTypePredictionsToRenderer(*form_structure);
-
   form_filler_->MaybeTriggerRefill(
       form, *form_structure, RefillTriggerReason::kSelectOptionsChanged,
       AutofillTriggerSource::kSelectOptionsChanged);
@@ -2213,8 +2210,9 @@ void BrowserAutofillManager::OnLoadedServerPredictionsImpl(
             return;
           }
           AddCachedAutofillAiPredictions(*model_cache, *form);
-          form->RationalizeAndAssignSections(
-              self->client().GetCurrentLogManager());
+          auto* self_as_bam = static_cast<BrowserAutofillManager*>(self.get());
+          form->RationalizeAndAssignSections(self_as_bam->log_manager());
+          self_as_bam->LogCurrentFieldTypes(*form);
         };
     if (features::kAutofillAiServerModelSendPageContent.Get()) {
       LOG_AF(log_manager())

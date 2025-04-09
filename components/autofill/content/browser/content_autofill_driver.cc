@@ -482,10 +482,8 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
 
 void ContentAutofillDriver::SendTypePredictionsToRenderer(
     const FormStructure& form) {
-  if (!base::FeatureList::IsEnabled(
-          features::test::kAutofillShowTypePredictions)) {
-    return;
-  }
+  CHECK(base::FeatureList::IsEnabled(
+      features::test::kAutofillShowTypePredictions));
   RouteToAgent(router(), &AutofillDriverRouter::SendTypePredictionsToRenderer,
                &mojom::AutofillAgent::FieldTypePredictionsAvailable,
                form.GetFieldTypePredictions());

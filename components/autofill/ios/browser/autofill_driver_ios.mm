@@ -270,10 +270,8 @@ void AutofillDriverIOS::ExtractForm(
 
 void AutofillDriverIOS::SendTypePredictionsToRenderer(
     const FormStructure& form) {
-  if (!base::FeatureList::IsEnabled(
-          autofill::features::test::kAutofillShowTypePredictions)) {
-    return;
-  }
+  CHECK(base::FeatureList::IsEnabled(
+      features::test::kAutofillShowTypePredictions));
   auto callback = [](AutofillDriver& driver,
                      const std::vector<FormDataPredictions>& preds) {
     web::WebFrame* frame = cast(&driver)->web_frame();

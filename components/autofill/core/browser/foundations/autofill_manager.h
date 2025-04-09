@@ -453,6 +453,11 @@ class AutofillManager
     return &form_structures_;
   }
 
+  // Logs the field types of `form` to chrome://autofill-internals and the
+  // autofill-information attribute (if
+  // `features::test::kAutofillShowTypePredictions` is enabled).
+  void LogCurrentFieldTypes(const FormStructure& form);
+
  private:
   friend class AutofillManagerTestApi;
 
