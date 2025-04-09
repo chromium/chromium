@@ -527,7 +527,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1890171020361705182">Trò chơi khủng long. Chú khủng long pixel cần phải tránh các bụi xương rồng và thằn lằn có cánh khi vượt qua vùng đất hoang. Khi bạn nghe thấy tín hiệu âm thanh, hãy nhấn để giúp chú khủng long nhảy qua chướng ngại vật.</translation>
 <translation id="1898423065542865115">Lọc</translation>
 <translation id="1901443836186977402">{1,plural, =1{Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này đã hết hạn ngày hôm qua. Nguyên nhân có thể là do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn. Ngày tháng trong đồng hồ trên máy tính của bạn hiện là <ph name="CURRENT_DATE" />. Thông tin này có chính xác không? Nếu không, bạn cần sửa lại đồng hồ của hệ thống rồi làm mới trang này.}other{Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này đã hết hạn # ngày trước. Nguyên nhân có thể là do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn. Ngày tháng trong đồng hồ trên máy tính của bạn hiện là <ph name="CURRENT_DATE" />. Thông tin này có chính xác không? Nếu không, bạn cần sửa lại đồng hồ của hệ thống rồi làm mới trang này.}}</translation>
-<translation id="190166348986967700">Quản trị viên sẽ bắt đầu tải các tệp của bạn lên <ph name="CLOUD_PROVIDER" /> vào <ph name="DATE_TIME" />. Hãy duy trì kết nối thiết bị cho đến khi quá trình tải tệp lên hoàn tất. Trong quá trình tải lên, bạn sẽ chỉ có thể đọc các tệp trên máy.</translation>
+<translation id="190166348986967700">Quản trị viên sẽ bắt đầu tải các tệp của bạn lên <ph name="CLOUD_PROVIDER" /> vào <ph name="DATE_TIME" />. Hãy tiếp tục kết nối thiết bị cho đến khi quá trình tải tệp lên hoàn tất. Trong quá trình tải lên, bạn sẽ chỉ có thể đọc các tệp trên máy.</translation>
 <translation id="1902576642799138955">Thời gian Có hiệu lực</translation>
 <translation id="1908217026282415406">Sử dụng và di chuyển máy ảnh</translation>
 <translation id="1908690643053136980">Quản trị viên của bạn không cho phép trang web này sử dụng <ph name="PERMISSION" /></translation>
@@ -2625,7 +2625,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5536471014287260753">{DOMAIN_COUNT,plural, =1{+ 1 trang web (nhiều trang web khác trên các thiết bị đã đồng bộ hoá)}other{+ # trang web (nhiều trang web khác trên các thiết bị đã đồng bộ hoá)}}</translation>
 <translation id="553782666181800029">Phong bì Chou 2</translation>
 <translation id="5538270463355278784">tự động mở toàn màn hình</translation>
-<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />, tìm kiếm <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="5538859347764346097"><ph name="KEYWORD_SHORTCUT" />, Tìm kiếm <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="5539243836947087108">Bè nổi</translation>
 <translation id="5540224163453853">Không thể tìm thấy bài viết đã yêu cầu.</translation>
 <translation id="5540969246441091044">Cưỡi ngựa</translation>
@@ -4164,7 +4164,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8216640997712497593">14 x 18 inch</translation>
 <translation id="8218327578424803826">Vị trí được gán:</translation>
 <translation id="8220602974062798186">Chặn <ph name="TOPIC" /> và mọi chủ đề có liên quan?</translation>
-<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, yêu cầu <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="8226408512771130794"><ph name="KEYWORD_SHORTCUT" />, Yêu cầu <ph name="KEYWORD_SUFFIX" /></translation>
 <translation id="8228419419708659934">Chế độ xem hai trang</translation>
 <translation id="8228477714872026922"><ph name="ORIGIN" /> muốn truy cập vào một thiết bị trong mạng của bạn:</translation>
 <translation id="822925450938886901">Để biết thêm thông tin và các chính sách có thể áp dụng, hãy mở chrome://management trong trình duyệt của bạn.</translation>

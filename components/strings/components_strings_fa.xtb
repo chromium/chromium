@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">توسعه املاک</translation>
 <translation id="1824402189105105503">رول هشتم</translation>
 <translation id="1826516787628120939">در حال بررسی</translation>
+<translation id="1832730227369924598">همگام‌سازی میزکار</translation>
 <translation id="1834452765064623979">ساخت‌وساز و تعمیر و نگهداری</translation>
 <translation id="1838374766361614909">پاک کردن جستجو</translation>
 <translation id="1839331950812095887">چند کلمه که افکار شما را خلاصه می‌کند</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">قدیمی</translation>
 <translation id="2413528052993050574">این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ ممکن است گواهی امنیتی آن باطل شده باشد. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجمی اتصال شما را قطع کرده است.</translation>
 <translation id="2414886740292270097">تاریک</translation>
+<translation id="2418292431699242678">‏سرپرست شما امکان همگام‌سازی موارد زیر را بین جلسه‌های قبلی و فعلی شما در هر دستگاه ChromeOS فراهم می‌کند:</translation>
 <translation id="2429716554270894715">پارچه (ضدآب)</translation>
 <translation id="2436186046335138073">به <ph name="HANDLER_HOSTNAME" /> امکان داده شود همه پیوندهای <ph name="PROTOCOL" /> را باز کند؟</translation>
 <translation id="2436976580469434549">هنر نساجی و بافت</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
 <translation id="3037605927509011580">اوه، نه!</translation>
 <translation id="3039406992698062762">سفر خانوادگی</translation>
+<translation id="3040636468789770340">کوکی‌ها (وضعیت ورود به سیستم در وب‌سایت‌های اخیراً بازدیدشده)</translation>
 <translation id="3041176923638368519">دیدن شرایط مزایای کارت</translation>
 <translation id="3041612393474885105">اطلاعات گواهی</translation>
 <translation id="3045769629416806687">ورزش‌های سنگین</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">فایل‌های محلی شما تا <ph name="MINUTES" /> دقیقه دیگر حذف خواهد شد</translation>
 <translation id="3872834068356954457">علم</translation>
 <translation id="3875783148670536197">نمایش روش انجام کار</translation>
+<translation id="387681220560687945">پنجره‌ها (ترتیب و سازمان‌دهی پنجره‌ها و برگه‌ها)</translation>
 <translation id="3879748587602334249">مدیریت بارگیری</translation>
 <translation id="3880456882942693779">هنر و سرگرمی</translation>
 <translation id="3880589673277376494">اینترنت و مخابرات</translation>
@@ -4748,6 +4752,7 @@
 <translation id="950736567201356821">سه سوراخ در بالا</translation>
 <translation id="950926967802086924">‏گذرکلید • مدیر گذرواژه Google</translation>
 <translation id="955429569736351433">«واقعیت مجازی» مجاز شد</translation>
+<translation id="955627189349169688">‏می‌توانید در <ph name="BEGIN_LINK" />تنظیمات همگام‌سازی Chrome<ph name="END_LINK" /> از این خط‌مشی انصراف دهید.</translation>
 <translation id="95721182352849470">زرد ۲</translation>
 <translation id="961663415146723894">به‌هم چسباندن از پایین</translation>
 <translation id="961856697154696964">حذف کردن داده‌های مرور</translation>

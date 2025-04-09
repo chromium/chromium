@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">Aménagement des immeubles</translation>
 <translation id="1824402189105105503">Huitième rouleau</translation>
 <translation id="1826516787628120939">Vérification en cours…</translation>
+<translation id="1832730227369924598">Synchronisation du bureau</translation>
 <translation id="1834452765064623979">Construction et entretien</translation>
 <translation id="1838374766361614909">Effacer les termes de recherche</translation>
 <translation id="1839331950812095887">quelques mots qui résument vos pensées</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">Anciennes</translation>
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2414886740292270097">Foncé</translation>
+<translation id="2418292431699242678">Votre administrateur permet la synchronisation des éléments suivants entre vos sessions précédentes et actuelles sur n'importe quel appareil ChromeOS :</translation>
 <translation id="2429716554270894715">Tissu (imperméable)</translation>
 <translation id="2436186046335138073">Autoriser <ph name="HANDLER_HOSTNAME" /> à ouvrir tous les liens <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Arts textiles</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">Suivi du prix en cours…</translation>
 <translation id="3037605927509011580">Aïe aïe aïe!</translation>
 <translation id="3039406992698062762">Voyages en famille</translation>
+<translation id="3040636468789770340">Témoins (état de connexion sur vos sites Web récemment visités)</translation>
 <translation id="3041176923638368519">Voir les conditions des avantages de la carte</translation>
 <translation id="3041612393474885105">Information relative au certificat</translation>
 <translation id="3045769629416806687">Sports extrêmes</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">Vos fichiers locaux seront supprimés dans <ph name="MINUTES" /> minutes</translation>
 <translation id="3872834068356954457">Sciences</translation>
 <translation id="3875783148670536197">Afficher la marche à suivre</translation>
+<translation id="387681220560687945">Fenêtres (disposition et organisation des fenêtres et des onglets)</translation>
 <translation id="3879748587602334249">Gestionnaire de téléchargement</translation>
 <translation id="3880456882942693779">Arts et spectacles</translation>
 <translation id="3880589673277376494">Internet et télécommunications</translation>
@@ -4746,6 +4750,7 @@ Détails supplémentaires :
 <translation id="950736567201356821">Triple perforation en haut</translation>
 <translation id="950926967802086924">Clé d'accès • Gestionnaire de mots de passe Google</translation>
 <translation id="955429569736351433">RV autorisée</translation>
+<translation id="955627189349169688">Vous pouvez désactiver cette politique dans les <ph name="BEGIN_LINK" />paramètres Synchronisation Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Jaune 2</translation>
 <translation id="961663415146723894">Reliure en bas</translation>
 <translation id="961856697154696964">Supp. données de navigation</translation>

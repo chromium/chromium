@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">تطوير عقاري</translation>
 <translation id="1824402189105105503">اللفافة الثامنة</translation>
 <translation id="1826516787628120939">حساب شيكات</translation>
+<translation id="1832730227369924598">مزامنة سطح المكتب</translation>
 <translation id="1834452765064623979">بناء وترميم</translation>
 <translation id="1838374766361614909">محو البحث</translation>
 <translation id="1839331950812095887">بضع كلمات تلخِّص أفكارك</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">القديم</translation>
 <translation id="2413528052993050574">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان ربما تم إلغاء صلاحيتها. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="2414886740292270097">داكن</translation>
+<translation id="2418292431699242678">‏يسمح المشرف بمزامنة ما يلي بين جلساتك السابقة والحالية على أي جهاز ChromeOS:</translation>
 <translation id="2429716554270894715">نسيج (ضد الماء)</translation>
 <translation id="2436186046335138073">هل تريد السماح لـ <ph name="HANDLER_HOSTNAME" /> بفتح كل روابط <ph name="PROTOCOL" />؟</translation>
 <translation id="2436976580469434549">أعمال فنية بالغزل والنسيج</translation>
@@ -1161,6 +1163,7 @@
 <translation id="3037177537145227281">تتبُّع السعر</translation>
 <translation id="3037605927509011580">عذرًا!</translation>
 <translation id="3039406992698062762">سياحة عائلية</translation>
+<translation id="3040636468789770340">ملفات تعريف الارتباط (حالة تسجيل الدخول على المواقع الإلكترونية التي زرتها مؤخرًا)</translation>
 <translation id="3041176923638368519">الاطّلاع على أحكام مزايا البطاقة</translation>
 <translation id="3041612393474885105">معلومات الشهادة</translation>
 <translation id="3045769629416806687">رياضات خطرة</translation>
@@ -1671,6 +1674,7 @@
 <translation id="3869939189466884821">سيتم حذف ملفاتك على الجهاز بعد <ph name="MINUTES" /> من الدقائق</translation>
 <translation id="3872834068356954457">علوم</translation>
 <translation id="3875783148670536197">الاطّلاع على الإرشادات</translation>
+<translation id="387681220560687945">النوافذ (ترتيب وتنظيم النوافذ وعلامات التبويب)</translation>
 <translation id="3879748587602334249">تطبيق إدارة التنزيل</translation>
 <translation id="3880456882942693779">فنون وترفيه</translation>
 <translation id="3880589673277376494">إنترنت واتصالات</translation>
@@ -4753,6 +4757,7 @@
 <translation id="950736567201356821">عمل ثلاثة ثقوب من الأعلى</translation>
 <translation id="950926967802086924">‏مفتاح المرور • مدير كلمات المرور في Google</translation>
 <translation id="955429569736351433">تم السماح باستخدام الواقع الافتراضي</translation>
+<translation id="955627189349169688">‏يمكنك إيقاف هذه السياسة من خلال <ph name="BEGIN_LINK" />إعدادات مزامنة Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">أصفر 2</translation>
 <translation id="961663415146723894">التجليد من الأسفل</translation>
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>
