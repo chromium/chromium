@@ -21,6 +21,9 @@ Are you a Google employee? See
     to a Python v3.9+ binary). Depot_tools bundles an appropriate version
     of Python in `$depot_tools/python-bin`, if you don't have an appropriate
     version already on your system.
+* Chromium's build infrastructure and `depot_tools` currently use Python 3.11.
+  If something is broken with an older Python version, feel free to report or
+  send us fixes.
 * `libc++` is currently the only supported STL. `clang` is the only
   officially-supported compiler, though external community members generally
   keep things building with `gcc`. For more details, see the
