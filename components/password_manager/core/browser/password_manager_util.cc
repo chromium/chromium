@@ -476,7 +476,7 @@ std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
                              maybe_facet_uri.android_package_name() + "/");
   }
   GURL realm(signon_realm);
-  if (realm.is_valid()) {
+  if (realm.is_valid() && realm.has_host()) {
     return base::UTF8ToUTF16(realm.host());
   }
   return base::UTF8ToUTF16(signon_realm);
