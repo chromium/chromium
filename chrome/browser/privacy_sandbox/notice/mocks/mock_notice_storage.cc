@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/privacy_sandbox/notice/mock_notice_storage.h"
+#include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_storage.h"
 
 namespace privacy_sandbox {
 

@@ -5,7 +5,7 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_service.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/privacy_sandbox/notice/mock_notice_storage.h"
+#include "chrome/browser/privacy_sandbox/notice/mocks/mock_notice_storage.h"
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_catalog.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_features.h"

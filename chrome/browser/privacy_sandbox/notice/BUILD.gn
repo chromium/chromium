@@ -86,10 +86,10 @@ test("fuzz_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "mock_notice_service.cc",
-    "mock_notice_service.h",
-    "mock_notice_storage.cc",
-    "mock_notice_storage.h",
+    "mocks/mock_notice_service.cc",
+    "mocks/mock_notice_service.h",
+    "mocks/mock_notice_storage.cc",
+    "mocks/mock_notice_storage.h",
   ]
   deps = [
     ":core",
@@ -102,8 +102,8 @@ source_set("test_support") {
   # (Desktop Only)
   if (!is_android) {
     sources += [
-      "mock_desktop_view_manager_observer.cc",
-      "mock_desktop_view_manager_observer.h",
+      "mocks/mock_desktop_view_manager_observer.cc",
+      "mocks/mock_desktop_view_manager_observer.h",
     ]
     deps += [ ":desktop_view_manager" ]
   }
