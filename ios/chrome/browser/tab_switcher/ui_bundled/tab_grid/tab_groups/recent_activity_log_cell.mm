@@ -38,6 +38,7 @@
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _descriptionLabel.adjustsFontForContentSizeCategory = YES;
     _descriptionLabel.numberOfLines = 1;
+    _descriptionLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
     UIStackView* verticalStack = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _titleLabel, _descriptionLabel ]];

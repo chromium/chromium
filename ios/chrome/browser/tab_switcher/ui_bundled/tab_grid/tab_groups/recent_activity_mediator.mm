@@ -214,7 +214,7 @@ const int kMaxNumberOfLogs = 5;
         GURL(log.activity_metadata.tab_metadata.value().last_known_url.value());
     item.title = base::SysUTF16ToNSString(log.title_text);
     item.actionDescription = base::SysUTF16ToNSString(log.description_text);
-    item.timestamp = base::SysUTF16ToNSString(log.time_delta_text);
+    item.elapsedTime = base::SysUTF16ToNSString(log.time_delta_text);
     item.action = log.action;
     item.activityMetadata = log.activity_metadata;
 

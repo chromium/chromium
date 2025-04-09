@@ -39,8 +39,8 @@ enum class RecentActivityAction;
 // Description of the item.
 @property(nonatomic, strong) NSString* actionDescription;
 
-// Timestamp when an action is taken.
-@property(nonatomic, strong) NSString* timestamp;
+// Elapsed time since the action occurred (e.g., "6h ago", "just now").
+@property(nonatomic, strong) NSString* elapsedTime;
 
 // The type of action to be taken when this activity row is clicked.
 // Not to be used by the UI.

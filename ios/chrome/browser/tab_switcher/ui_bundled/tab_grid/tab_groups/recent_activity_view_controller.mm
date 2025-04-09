@@ -166,7 +166,10 @@ NSString* const kRecentActivitySectionIdentifier =
   RecentActivityLogCell* cell =
       DequeueTableViewCell<RecentActivityLogCell>(tableView);
   cell.titleLabel.text = itemIdentifier.title;
-  cell.descriptionLabel.text = itemIdentifier.actionDescription;
+  NSString* descriptionString =
+      [NSString stringWithFormat:@"%@ • %@", itemIdentifier.actionDescription,
+                                 itemIdentifier.elapsedTime];
+  cell.descriptionLabel.text = descriptionString;
   [cell.faviconView configureWithAttributes:itemIdentifier.attributes];
 
   NSString* uniqueIdentifier = cell.uniqueIdentifier;
