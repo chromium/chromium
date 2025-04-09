@@ -5,6 +5,7 @@ use crate::gen::{builtin, include, Opt};
 use crate::syntax::atom::Atom::{self, *};
 use crate::syntax::instantiate::{ImplKey, NamedImplKey};
 use crate::syntax::map::UnorderedMap as Map;
+use crate::syntax::primitive::{self, PrimitiveKind};
 use crate::syntax::set::UnorderedSet;
 use crate::syntax::symbol::{self, Symbol};
 use crate::syntax::trivial::{self, TrivialReason};
@@ -21,6 +22,7 @@ pub(super) fn gen(apis: &[Api], types: &Types, opt: &Opt, header: bool) -> Vec<u
     pick_includes_and_builtins(out, apis);
     out.include.extend(&opt.include);
 
+    write_macros(out, apis);
     write_forward_declarations(out, apis);
     write_data_structures(out, apis);
     write_functions(out, apis);
@@ -30,6 +32,28 @@ pub(super) fn gen(apis: &[Api], types: &Types, opt: &Opt, header: bool) -> Vec<u
     include::write(out);
 
     out_file.content()
+}
+
+fn write_macros(out: &mut OutFile, apis: &[Api]) {
+    let mut needs_default_value = false;
+    for api in apis {
+        if let Api::Struct(strct) = api {
+            if !out.types.cxx.contains(&strct.name.rust) {
+                for field in &strct.fields {
+                    needs_default_value |= primitive::kind(&field.ty).is_some();
+                }
+            }
+        }
+    }
+
+    if needs_default_value {
+        out.next_section();
+        writeln!(out, "#if __cplusplus >= 201402L");
+        writeln!(out, "#define CXX_DEFAULT_VALUE(value) = value");
+        writeln!(out, "#else");
+        writeln!(out, "#define CXX_DEFAULT_VALUE(value)");
+        writeln!(out, "#endif");
+    }
 }
 
 fn write_forward_declarations(out: &mut OutFile, apis: &[Api]) {
@@ -42,6 +66,7 @@ fn write_forward_declarations(out: &mut OutFile, apis: &[Api]) {
     let apis_by_namespace =
         NamespaceEntries::new(apis.iter().filter(needs_forward_declaration).collect());
 
+    out.next_section();
     write(out, &apis_by_namespace, 0);
 
     fn write(out: &mut OutFile, ns_entries: &NamespaceEntries, indent: usize) {
@@ -260,7 +285,16 @@ fn write_struct<'a>(out: &mut OutFile<'a>, strct: &'a Struct, methods: &[&Extern
         write_doc(out, "  ", &field.doc);
         write!(out, "  ");
         write_type_space(out, &field.ty);
-        writeln!(out, "{};", field.name.cxx);
+        write!(out, "{}", field.name.cxx);
+        if let Some(primitive) = primitive::kind(&field.ty) {
+            let default_value = match primitive {
+                PrimitiveKind::Boolean => "false",
+                PrimitiveKind::Number => "0",
+                PrimitiveKind::Pointer => "nullptr",
+            };
+            write!(out, " CXX_DEFAULT_VALUE({})", default_value);
+        }
+        writeln!(out, ";");
     }
 
     out.next_section();

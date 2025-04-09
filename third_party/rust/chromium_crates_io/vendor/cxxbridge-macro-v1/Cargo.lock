@@ -16,9 +16,9 @@ checksum = "55cc3b69f167a1ef2e161439aa98aed94e6028e5f9a59be9a6ffb47aef1651f9"
 
 [[package]]
 name = "cc"
-version = "1.2.17"
+version = "1.2.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1fcb57c740ae1daf453ae85f16e37396f672b039e00d9d866e07ddb24e328e3a"
+checksum = "525046617d8376e3db1deffb079e91cef90a89fc3ca5c185bbf8c9ecdd15cd5c"
 dependencies = [
  "shlex",
 ]
@@ -41,18 +41,18 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.34"
+version = "4.5.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e958897981290da2a852763fe9cdb89cd36977a5d729023127095fa94d95e2ff"
+checksum = "d8aa86934b44c19c50f87cc2790e19f54f7a67aedb64101c2e1a2e5ecfb73944"
 dependencies = [
  "clap_builder",
 ]
 
 [[package]]
 name = "clap_builder"
-version = "4.5.34"
+version = "4.5.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83b0f35019843db2160b5bb19ae09b4e6411ac33fc6a712003c33e03090e2489"
+checksum = "2414dbb2dd0695280da6ea9261e327479e9d37b0630f6b53ba2a11c60c679fd9"
 dependencies = [
  "anstyle",
  "clap_lex",
@@ -87,23 +87,23 @@ dependencies = [
 
 [[package]]
 name = "cxx"
-version = "1.0.152"
+version = "1.0.155"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "31aca84b8d0b0e5493898b42872bd5c2ab8e71703e31a097c2d063d41a5286d1"
+checksum = "76751bca18309cbce06f9821698d6c05b3af5c3fde8af5caf57f11611729397b"
 dependencies = [
  "cc",
  "cxxbridge-cmd",
  "cxxbridge-flags",
- "cxxbridge-macro 1.0.152",
+ "cxxbridge-macro 1.0.155",
  "foldhash",
  "link-cplusplus",
 ]
 
 [[package]]
 name = "cxxbridge-cmd"
-version = "1.0.152"
+version = "1.0.155"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "70f695e85ed7b5a0b04ab36059d472cb900dad5c978cb87d29800400afbbce33"
+checksum = "78ce717e582fc3b56bd2f1eb3cda9916e9b4629721e4c2ce637ac5e7d4beef11"
 dependencies = [
  "clap",
  "codespan-reporting",
@@ -114,15 +114,15 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-flags"
-version = "1.0.152"
+version = "1.0.155"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ca3611d4b776dea482c33289b4cc8d75354f917badc3f6090dd29a55258dc63d"
+checksum = "aa7fdd4b264a3335a8b21221092bd2fbfba35c3606bd50feb28d22ba3fb0a6e5"
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.152"
+version = "1.0.155"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49f552a55feb5f232ae1261419fd26f000117dc32291db4077b5030cd4ec51fe"
+checksum = "c36a0a2b78ff9232a3dc584340471d4fa1751a81026cf62f3661a06d5a8bae17"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -132,7 +132,7 @@ dependencies = [
 
 [[package]]
 name = "cxxbridge-macro"
-version = "1.0.153"
+version = "1.0.156"
 dependencies = [
  "clang-ast",
  "cxx",
@@ -149,9 +149,9 @@ dependencies = [
 
 [[package]]
 name = "flate2"
-version = "1.1.0"
+version = "1.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11faaf5a5236997af9848be0bef4db95824b1d534ebc64d0f0c6cf3e67bd38dc"
+checksum = "7ced92e76e966ca2fd84c8f7aa01a4aea65b0eb6648d72f7c8f3e2764a67fece"
 dependencies = [
  "crc32fast",
  "miniz_oxide",
@@ -202,9 +202,9 @@ dependencies = [
 
 [[package]]
 name = "miniz_oxide"
-version = "0.8.5"
+version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8e3e04debbb59698c15bacbb6d93584a8c0ca9cc3213cb423d31f760d8843ce5"
+checksum = "ff70ce3e48ae43fa075863cef62e8b43b71a4f2382229920e0df362592919430"
 dependencies = [
  "adler2",
 ]
