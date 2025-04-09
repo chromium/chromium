@@ -45,6 +45,21 @@
     "owners": ["wjmaclean@chromium.org", "pdr@chromium.org"],
     "expires": "Sep 1, 2025"
   },
+
+  "All PNA tests are only tested exclusively in Virtual Test Suites as we move",
+  "over to LNA. All suites will be removed after PNA is removed.",
+  {
+    "prefix": "pna-only-force-lna-off",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": ["external/wpt/fetch/private-network-access"],
+    "args": ["--disable-features=LocalNetworkAccessChecks"],
+    "exclusive_tests": "ALL",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"],
+    "expires": "July 31, 2025"
+  },
   {
     "prefix": "pna-permission",
     "platforms": ["Linux", "Mac", "Win"],
@@ -53,16 +68,24 @@
       "--enable-features=PrivateNetworkAccessPermissionPrompt",
       "--disable-features=LocalNetworkAccessChecks",
       "--enable-blink-features=PrivateNetworkAccessPermissionPrompt"],
-    "owners": ["clamy@google.com"],
-    "expires": "May 2, 2025"
+    "exclusive_tests": "ALL",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"],
+    "expires": "July 31, 2025"
   },
   {
     "prefix": "pna-workers-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/private-network-access"],
     "args": ["--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessForWorkers"],
-    "owners": ["clamy@google.com"],
-    "expires": "May 2, 2025"
+    "exclusive_tests": "ALL",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"],
+    "expires": "July 31, 2025"
   },
   {
     "prefix": "pna-workers-enabled",
@@ -71,8 +94,12 @@
     "args": [
       "--enable-features=PrivateNetworkAccessForWorkers",
       "--disable-features=LocalNetworkAccessChecks,PrivateNetworkAccessForWorkersWarningOnly"],
-    "owners": ["clamy@google.com"],
-    "expires": "May 2, 2025"
+    "exclusive_tests": "ALL",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"],
+    "expires": "July 31, 2025"
   },
   {
     "prefix": "pna-navigations-enabled",
@@ -81,8 +108,12 @@
     "args": [
       "--enable-features=LocalNetworkAccessChecks,PrivateNetworkAccessForNavigations",
       "--disable-features=LocalNetworkAccessChecks"],
-    "owners": ["clamy@google.com"],
-    "expires": "May 2, 2025"
+    "exclusive_tests": "ALL",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"],
+    "expires": "July 31, 2025"
   },
   {
     "prefix": "pna-navigations-warning",
@@ -91,8 +122,12 @@
     "args": [
       "--enable-features=PrivateNetworkAccessForNavigations,PrivateNetworkAccessForNavigationsWarningOnly",
       "--disable-features=LocalNetworkAccessChecks"],
-    "owners": ["clamy@google.com"],
-    "expires": "May 2, 2025"
+    "exclusive_tests": "ALL",
+    "owners": [
+      "cthomp@chromium.org",
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"],
+    "expires": "July 31, 2025"
   },
 
   "This never expires because it tests a shipping configuration",
