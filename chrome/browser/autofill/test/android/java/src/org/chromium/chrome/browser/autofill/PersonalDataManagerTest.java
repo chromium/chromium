@@ -16,8 +16,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 
-import android.graphics.Bitmap;
-
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Description;
@@ -29,7 +27,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -44,12 +41,10 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.IbanRecordType;
-import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VerificationStatus;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
-import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -61,8 +56,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class PersonalDataManagerTest {
-    private static final Bitmap TEST_CARD_ART_IMAGE =
-            Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
     @Rule public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
 
     private AutofillTestHelper mHelper;
@@ -70,11 +63,6 @@ public class PersonalDataManagerTest {
     @Before
     public void setUp() {
         mHelper = new AutofillTestHelper();
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        AutofillTestHelper.getPersonalDataManagerForLastUsedProfile()
-                                .setImageFetcherForTesting(
-                                        new TestImageFetcher(TEST_CARD_ART_IMAGE)));
     }
 
     @After
@@ -387,64 +375,6 @@ public class PersonalDataManagerTest {
         CreditCard storedCardWithNickname = mHelper.getCreditCard(cardWithNicknameGuid);
         assertThat(storedCardWithoutNickname.getNickname()).isEmpty();
         assertThat(storedCardWithNickname.getNickname()).isEqualTo(nickname);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Autofill"})
-    public void testAddCreditCardWithCardArtUrl_imageDownloaded() throws TimeoutException {
-        AutofillUiUtils.CardIconSpecs cardIconSpecsLarge =
-                AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
-        AutofillUiUtils.CardIconSpecs cardIconSpecsSmall =
-                AutofillUiUtils.CardIconSpecs.create(
-                        ContextUtils.getApplicationContext(), ImageSize.LARGE);
-        GURL cardArtUrl = new GURL("http://google.com/test.png");
-        CreditCard cardWithCardArtUrl =
-                new CreditCard(
-                        /* guid= */ "serverGuid",
-                        /* origin= */ "",
-                        /* isLocal= */ false,
-                        "John Doe Server",
-                        "41111111111111111",
-                        /* networkAndLastFourDigits= */ "",
-                        "3",
-                        "2019",
-                        "Visa",
-                        /* issuerIconDrawableId= */ 0,
-                        /* billingAddressId= */ "",
-                        /* serverId= */ "serverId");
-        cardWithCardArtUrl.setCardArtUrl(cardArtUrl);
-
-        // Adding a server card triggers card art image fetching for all server credit cards.
-        mHelper.addServerCreditCard(cardWithCardArtUrl);
-
-        // Verify card art images are fetched in both small and large sizes.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    assertTrue(
-                            AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                                            TEST_CARD_ART_IMAGE,
-                                            cardIconSpecsLarge,
-                                            /* addRoundedCornersAndGreyBorder= */ true)
-                                    .sameAs(
-                                            AutofillTestHelper
-                                                    .getPersonalDataManagerForLastUsedProfile()
-                                                    .getCustomImageForAutofillSuggestionIfAvailable(
-                                                            cardArtUrl, cardIconSpecsLarge)
-                                                    .get()));
-                    assertTrue(
-                            AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                                            TEST_CARD_ART_IMAGE,
-                                            cardIconSpecsSmall,
-                                            /* addRoundedCornersAndGreyBorder= */ true)
-                                    .sameAs(
-                                            AutofillTestHelper
-                                                    .getPersonalDataManagerForLastUsedProfile()
-                                                    .getCustomImageForAutofillSuggestionIfAvailable(
-                                                            cardArtUrl, cardIconSpecsSmall)
-                                                    .get()));
-                });
     }
 
     @Test
