@@ -2239,9 +2239,6 @@ extern const char kTranslateForceTriggerOnEnglishName[];
 extern const char kTranslateForceTriggerOnEnglishDescription[];
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-extern const char kEnableHistorySyncOptinExpansionPillName[];
-extern const char kEnableHistorySyncOptinExpansionPillDescription[];
-
 extern const char kEnableHistorySyncOptinName[];
 extern const char kEnableHistorySyncOptinDescription[];
 
@@ -4793,7 +4790,10 @@ extern const char kProfilesReorderingDescription[];
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 extern const char kBatchUploadDesktopName[];
 extern const char kBatchUploadDesktopDescription[];
-#endif
+
+extern const char kEnableHistorySyncOptinExpansionPillName[];
+extern const char kEnableHistorySyncOptinExpansionPillDescription[];
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
 extern const char kEnableExtensionsExplicitBrowserSigninName[];

@@ -3847,11 +3847,6 @@ const char kTranslateForceTriggerOnEnglishDescription[] =
     "with the selected language model active.";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-const char kEnableHistorySyncOptinExpansionPillName[] =
-    "History Sync Opt-in Expansion Pill";
-const char kEnableHistorySyncOptinExpansionPillDescription[] =
-    "Enables the History Sync Opt-in expansion pill on Desktop platforms.";
-
 const char kEnableHistorySyncOptinName[] = "History Sync Opt-in";
 const char kEnableHistorySyncOptinDescription[] =
     "Enables the History Sync Opt-in screen on Desktop platforms. The screen "
@@ -8086,7 +8081,12 @@ const char kBatchUploadDesktopDescription[] =
     "Enables the Batch Upload feature for Desktop. This allows to upload local "
     "data to the account data when signed in. Currently only supports "
     "Passwords and Addresses";
-#endif
+
+const char kEnableHistorySyncOptinExpansionPillName[] =
+    "History Sync Opt-in Expansion Pill";
+const char kEnableHistorySyncOptinExpansionPillDescription[] =
+    "Enables the History Sync Opt-in expansion pill on Desktop platforms.";
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
 const char kEnableExtensionsExplicitBrowserSigninName[] =

@@ -60,7 +60,9 @@ BASE_FEATURE(kUseHostedDomainForManagementCheckOnSignin,
 BASE_FEATURE(kEnableHistorySyncOptin,
              "EnableHistorySyncOptin",
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Enables the History Sync Opt-in expansion pill on Desktop.
 BASE_FEATURE(kEnableHistorySyncOptinExpansionPill,
              "EnableHistorySyncOptinExpansionPill",
@@ -73,9 +75,13 @@ constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>::Option
         {HistorySyncOptinExpansionPillOption::kSyncTabsAndHistory,
          "sync-tabs-and-history"},
         {HistorySyncOptinExpansionPillOption::kSeeTabsFromOtherDevices,
-         "see-tabs-from-other-devices"}};
+         "see-tabs-from-other-devices"},
+        {HistorySyncOptinExpansionPillOption::kSyncTabsAndHistoryProfileMenu,
+         "sync-tabs-and-history-profile-menu"}};
 
-// Determines the text to be shown in the History Sync Opt-in expansion pill.
+// Determines the experiment arm of the History Sync Opt-in expansion pill (it
+// can be either a different text or a different action after the pill is
+// clicked).
 // It is no-op unless "EnableHistorySyncOptin" is enabled.
 constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>
     kHistorySyncOptinExpansionPillOption = {
@@ -84,12 +90,9 @@ constexpr base::FeatureParam<HistorySyncOptinExpansionPillOption>
         HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices,
         &kHistorySyncOptinExpansionPillOptions};
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // Force enable the default browser step in the first run experience on Desktop.
 const char kForceFreDefaultBrowserStep[] = "force-fre-default-browser-step";
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Clears the token service before using it. This allows simulating the
 // expiration of credentials during testing.

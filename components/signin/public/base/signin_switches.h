@@ -55,19 +55,6 @@ BASE_DECLARE_FEATURE(kUseHostedDomainForManagementCheckOnSignin);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableHistorySyncOptin);
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableHistorySyncOptinExpansionPill);
-
-enum class HistorySyncOptinExpansionPillOption {
-  kBrowseAcrossDevices,
-  kSyncTabsAndHistory,
-  kSeeTabsFromOtherDevices,
-};
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<HistorySyncOptinExpansionPillOption>
-    kHistorySyncOptinExpansionPillOption;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
@@ -120,8 +107,22 @@ BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableHistorySyncOptinExpansionPill);
+
+enum class HistorySyncOptinExpansionPillOption {
+  kBrowseAcrossDevices,
+  kSyncTabsAndHistory,
+  kSeeTabsFromOtherDevices,
+  kSyncTabsAndHistoryProfileMenu,
+};
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<HistorySyncOptinExpansionPillOption>
+    kHistorySyncOptinExpansionPillOption;
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kForceFreDefaultBrowserStep[];
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

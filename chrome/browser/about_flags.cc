@@ -10138,6 +10138,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kBatchUploadDesktopDescription,
      kOsMac | kOsWin | kOsLinux,
      FEATURE_VALUE_TYPE(switches::kBatchUploadDesktop)},
+    {"enable-history-sync-optin-expansion-pill",
+     flag_descriptions::kEnableHistorySyncOptinExpansionPillName,
+     flag_descriptions::kEnableHistorySyncOptinExpansionPillDescription,
+     kOsWin | kOsMac | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kEnableHistorySyncOptinExpansionPill)},
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
@@ -10779,11 +10784,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kCanvas2DHibernation)},
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"enable-history-sync-optin-expansion-pill",
-     flag_descriptions::kEnableHistorySyncOptinExpansionPillName,
-     flag_descriptions::kEnableHistorySyncOptinExpansionPillDescription,
-     kOsWin | kOsMac | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kEnableHistorySyncOptinExpansionPill)},
     {"enable-history-sync-optin",
      flag_descriptions::kEnableHistorySyncOptinName,
      flag_descriptions::kEnableHistorySyncOptinDescription,
