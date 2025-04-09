@@ -118,6 +118,7 @@ aggregate_vector_icons("components_vector_icons") {
     "help_outline.icon",
     "history.icon",
     "history_chrome_refresh.icon",
+    "home.icon",
     "https_valid.icon",
     "id_card.icon",
     "iframe.icon",
@@ -266,6 +267,7 @@ aggregate_vector_icons("components_vector_icons") {
     "vr_headset_off_chrome_refresh.icon",
     "warning.icon",
     "warning_outline.icon",
+    "work.icon",
   ]
 
   if (is_chromeos) {

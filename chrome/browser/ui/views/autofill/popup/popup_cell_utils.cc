@@ -258,10 +258,11 @@ std::unique_ptr<views::TableLayoutView> CreateSuggestionContentTable(
 std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
   switch (icon) {
     case Suggestion::Icon::kNoIcon:
-      // TODO(crbug.com/381994105): Implement Home/Work icons.
-    case Suggestion::Icon::kHome:
-    case Suggestion::Icon::kWork:
       return std::nullopt;
+    case Suggestion::Icon::kHome:
+      return ImageModelFromVectorIcon(vector_icons::kHomeIcon, kIconSize);
+    case Suggestion::Icon::kWork:
+      return ImageModelFromVectorIcon(vector_icons::kWorkIcon, kIconSize);
     case Suggestion::Icon::kAccount:
       return ImageModelFromVectorIcon(kAccountCircleIcon, kIconSize);
     case Suggestion::Icon::kClear:
