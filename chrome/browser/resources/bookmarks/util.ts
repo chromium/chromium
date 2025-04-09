@@ -18,7 +18,9 @@ export function getDisplayedList(state: BookmarksPageState): string[] {
     return state.search.results;
   }
 
-  const children = state.nodes[state.selectedFolder]!.children;
+  const selectedNode = state.nodes[state.selectedFolder];
+  assert(selectedNode);
+  const children = selectedNode.children;
   assert(children);
   return children;
 }
