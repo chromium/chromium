@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/most_visited_sites_provider.h"
 
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
@@ -89,6 +90,15 @@ bool IsURLBlocklisted(GURL url) {
   return false;
 }
 
+GURL StripURL(AutocompleteProviderClient* client,
+              const GURL& url,
+              const GURL::Replacements& replacements) {
+  return AutocompleteMatch::GURLToStrippedGURL(
+      url.ReplaceComponents(replacements), AutocompleteInput(),
+      client->GetTemplateURLService(), std::u16string(),
+      /*keep_search_intent_params=*/false);
+}
+
 // GENERATED_JAVA_ENUM_PACKAGE: (
 // org.chromium.chrome.browser.omnibox.suggestions.mostvisited)
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SuggestTileType
@@ -134,6 +144,10 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
     return false;
   }
 
+  // Sets to ensure uniqueness of titles and urls for returned suggestions.
+  std::unordered_set<std::u16string> match_titles;
+  std::unordered_set<std::string> match_urls;
+
   const TabMatcher& tab_matcher = client->GetTabMatcher();
   // Explicitly clear the query since this isn't done in the
   // `GURLToStrippedGURL()`.
@@ -143,13 +157,17 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
   TemplateURLService* const url_service = client->GetTemplateURLService();
   int relevance = kMostVisitedTilesIndividualHighRelevance;
   for (const auto& url : urls) {
+    GURL stripped_url = StripURL(client, url.url, replacements);
     // Skip the match if the following is true:
     // - It is an SRP result from DSP
-    // - A tab already exists with the match url
+    // - A tab already exists with the same title or stripped URL
+    // - Match with the same title already exists
+    // - Match with the same stripped url already exists
     if (url_service->IsSearchResultsPageFromDefaultSearchProvider(url.url) ||
         tab_matcher.IsTabOpenWithSameTitleOrSimilarURL(
             url.title, url.url, replacements, /*exclude_active_tab=*/false) ||
-        IsURLBlocklisted(url.url)) {
+        IsURLBlocklisted(url.url) || match_titles.contains(url.title) ||
+        match_urls.contains(stripped_url.spec())) {
       continue;
     }
     auto match = BuildMatch(provider, client, url.title, url.url, relevance,
@@ -159,6 +177,8 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
     match.subtypes.emplace(omnibox::SUBTYPE_ZERO_PREFIX_LOCAL_FREQUENT_URLS);
     match.subtypes.emplace(omnibox::SUBTYPE_URL_BASED);
     matches.emplace_back(std::move(match));
+    match_titles.insert(url.title);
+    match_urls.insert(stripped_url.spec());
     --relevance;
   }
   return true;

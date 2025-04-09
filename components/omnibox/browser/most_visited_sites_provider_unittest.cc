@@ -899,4 +899,35 @@ TEST_F(MostVisitedSitesProviderTest, TestDeleteWithPrefetching) {
   ASSERT_EQ(3u, provider_->matches().size());
 }
 
+TEST_F(MostVisitedSitesProviderTest, DuplicateSuggestions) {
+  AutocompleteInput input(BuildAutocompleteInputForWebOnFocus());
+  history::MostVisitedURLList result;
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus>
+      scoped_config;
+  scoped_config.Get().enabled = true;
+  std::vector<TestData> test_data = {
+      {false, {GURL("http://www.mail.com"), u"Mail"}},
+      {false, {GURL("http://different.mail.com/signin"), u"Mail"}},
+      {false, {GURL("http://www.samesites.com/c/#ref"), u"Same URL"}},
+      {false,
+       {GURL("http://www.samesites.com/c/#differentref"), u"Same URL 2"}},
+      {false,
+       {GURL("http://www.samesites.com/differentpath/#ref"),
+        u"Different URL"}}};
+  for (auto& data : test_data) {
+    result.push_back(data.entry);
+  }
+  provider_->OnMostVisitedUrlsAvailable(input, result);
+  // Filter by same titles and stripped urls when deduping suggestions within
+  // the suggestion list.
+  ASSERT_EQ(3u, provider_->matches().size());
+  ASSERT_EQ("http://www.mail.com/",
+            provider_->matches().at(0).destination_url.spec());
+  ASSERT_EQ("http://www.samesites.com/c/#ref",
+            provider_->matches().at(1).destination_url.spec());
+  ASSERT_EQ("http://www.samesites.com/differentpath/#ref",
+            provider_->matches().at(2).destination_url.spec());
+}
+
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
