@@ -243,15 +243,19 @@ void DeviceServiceImpl::Create(
   CHECK(host);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!IsTrustedContext(*host,
-                        host->GetMainFrame()->GetLastCommittedOrigin())) {
+  if (host->GetParentOrOuterDocument()) {
+    mojo::ReportBadMessage(
+        "Device Attributes are allowed only in top level frames.");
+    return;
+  }
+  if (!IsTrustedContext(*host, host->GetLastCommittedOrigin())) {
     // Not sending bad message here since the API is always exposed to the end
     // user.
     return;
   }
   if (!IsAllowedByPermissionsPolicy(*host)) {
     mojo::ReportBadMessage(
-        "Permissions policy blocks access to Device Attribtes.");
+        "Permissions policy blocks access to Device Attributes.");
     return;
   }
   // The object is bound to the lifetime of |host| and the mojo

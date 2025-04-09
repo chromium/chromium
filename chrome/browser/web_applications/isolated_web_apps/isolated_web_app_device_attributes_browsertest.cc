@@ -65,6 +65,9 @@ constexpr char kAdminPolicyError[] =
     "The current origin cannot use this web API because it is not allowed by "
     "the DeviceAttributesAllowedForOrigins policy.";
 
+constexpr char kChildFrameError[] =
+    "This API is allowed only in top level frames.";
+
 }  // namespace
 
 class IsolatedWebAppDeviceAttributesBrowserTest
@@ -198,6 +201,37 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
           HasSubstr(IsFeatureFlagEnabled() ? kPermissionsPolicyError
                                            : kAdminPolicyError));
     }
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
+                       ObtainingDeviceAttributesFromChildFrame) {
+  IsolatedWebAppUrlInfo url_info = InstallApp(IsPermissionsPolicyGranted());
+  if (IsAdminPolicyAllowed()) {
+    AllowDeviceAttributesForOrigin(url_info.origin().Serialize());
+  }
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_ =
+      GetLoggedInAffiliatedUser();
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_NE(app_frame, nullptr);
+
+  ASSERT_TRUE(ExecJs(app_frame, R"(
+      const noopPolicy = trustedTypes.createPolicy("policy", {
+        createHTML: (string) => string,
+      });
+      new Promise(resolve => {
+        const f = document.createElement('iframe');
+        f.srcdoc = noopPolicy.createHTML('<p>Child frame</p>');
+        f.addEventListener('load', resolve);
+        document.body.appendChild(f);
+      });
+  )"));
+  content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 0);
+  ASSERT_NE(iframe, nullptr);
+
+  for (const std::string& attribute_name : kDeviceAttributeNames) {
+    EXPECT_THAT(CallDeviceAttributesApi(iframe, attribute_name).error,
+                HasSubstr(kChildFrameError));
   }
 }
 

@@ -23,19 +23,22 @@ namespace blink {
 
 namespace {
 
-const char kNotHighTrustedAppExceptionMessage[] =
+constexpr char kNotHighTrustedAppExceptionMessage[] =
     "Managed configuration is empty. This API is available only for "
     "managed apps.";
-const char kServiceConnectionExceptionMessage[] =
+constexpr char kServiceConnectionExceptionMessage[] =
     "Service connection error. This API is available only for managed apps.";
 
 #if BUILDFLAG(IS_ANDROID)
-const char kManagedConfigNotSupported[] =
+constexpr char kManagedConfigNotSupported[] =
     "Managed Configuration API is not supported on this platform.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-const char kDeviceAttributesNotAllowedByPermissionsPolicy[] =
+constexpr char kDeviceAttributesNotAllowedByPermissionsPolicy[] =
     "Permissions-Policy: device-attributes are disabled.";
+
+constexpr char kDeviceAttributesNotAllowedInChildFrames[] =
+    "This API is allowed only in top level frames.";
 
 bool IsDeviceAttributesPermissionsPolicyFeatureEnabled() {
   return RuntimeEnabledFeatures::DeviceAttributesPermissionPolicyEnabled();
@@ -272,6 +275,14 @@ bool NavigatorManagedData::CheckDeviceAttributesAllowed(
     ExceptionState& exception_state) {
   ExecutionContext* const context = GetExecutionContext();
   if (!context) {
+    return false;
+  }
+  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
+  CHECK(window);
+  if (!window->GetFrame()->IsMainFrame() ||
+      window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      kDeviceAttributesNotAllowedInChildFrames);
     return false;
   }
   if (!AreDeviceAttributesAllowedByPermissionsPolicy(context)) {
