@@ -21,6 +21,7 @@ class PasswordManagerUtilBridge : public PasswordManagerUtilBridgeInterface {
 
   bool IsInternalBackendPresent() override;
   bool IsPlayStoreAppPresent() override;
+  bool IsGooglePlayServicesUpdatable() override;
 };
 
 }  // namespace password_manager_android_util

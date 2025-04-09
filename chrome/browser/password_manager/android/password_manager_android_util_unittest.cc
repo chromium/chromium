@@ -457,19 +457,48 @@ TEST_F(PasswordManagerAndroidUtilTest, PasswordManagerAvailableUpmMigration) {
       IsPasswordManagerAvailable(pref_service(), std::move(mock_util_bridge)));
 }
 
-TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmNotActivateWhenGmsTooOld) {
+TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmNotActiveWhenNoGms) {
   base::test::ScopedFeatureList feature_list{
       password_manager::features::kLoginDbDeprecationAndroid};
   base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
       base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
 
   base::HistogramTester histogram_tester;
+  std::unique_ptr<MockPasswordManagerUtilBridge> mock_bridge =
+      GetMockBridgeWithBackendPresent();
+  EXPECT_CALL(*mock_bridge, IsGooglePlayServicesUpdatable)
+      .WillOnce(Return(false));
   SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory(),
-                                   GetMockBridgeWithBackendPresent());
+                                   std::move(mock_bridge));
   histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
                                       false, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.LocalUpmActivationStatus", kOff, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Android.NotAvailableReason",
+      PasswordManagerNotAvailableReason::kNoGmsCore, 1);
+}
+
+TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmNotActiveWhenGmsTooOld) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kLoginDbDeprecationAndroid};
+  base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
+      base::NumberToString(GetLocalUpmMinGmsVersion() - 1));
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<MockPasswordManagerUtilBridge> mock_bridge =
+      GetMockBridgeWithBackendPresent();
+  EXPECT_CALL(*mock_bridge, IsGooglePlayServicesUpdatable)
+      .WillOnce(Return(true));
+  SetUsesSplitStoresAndUPMForLocal(pref_service(), login_db_directory(),
+                                   std::move(mock_bridge));
+  histogram_tester.ExpectUniqueSample("PasswordManager.LocalUpmActivated",
+                                      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.LocalUpmActivationStatus", kOff, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Android.NotAvailableReason",
+      PasswordManagerNotAvailableReason::kOutdatedGmsCore, 1);
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
@@ -491,9 +520,12 @@ TEST_F(PasswordManagerAndroidUtilTest,
                                       false, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.LocalUpmActivationStatus", kOff, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.Android.NotAvailableReason",
+      PasswordManagerNotAvailableReason::kAutoExportPending, 1);
 }
 
-TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmActivateIfExported) {
+TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmActiveIfExported) {
   base::test::ScopedFeatureList feature_list{
       password_manager::features::kLoginDbDeprecationAndroid};
   base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
@@ -511,9 +543,11 @@ TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmActivateIfExported) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.LocalUpmActivationStatus", kOn, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.Android.NotAvailableReason", 0);
 }
 
-TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmActivateIfAlreadyActive) {
+TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmActiveIfAlreadyActive) {
   base::test::ScopedFeatureList feature_list{
       password_manager::features::kLoginDbDeprecationAndroid};
   base::android::BuildInfo::GetInstance()->set_gms_version_code_for_test(
@@ -531,6 +565,8 @@ TEST_F(PasswordManagerAndroidUtilTest, TestRecordsUpmActivateIfAlreadyActive) {
                                       1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.LocalUpmActivationStatus", kOn, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.Android.NotAvailableReason", 0);
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,

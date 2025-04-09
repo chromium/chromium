@@ -73,6 +73,27 @@ enum class PasswordAccessLossWarningUserActions {
   kMaxValue = kDismissed,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(PasswordManagerNotAvailableReason)
+enum class PasswordManagerNotAvailableReason {
+  // The code wiring the requests to the internal backend is not part of
+  // the build. Note: Since this enum is used for metrics, this should never
+  // be recorded. Added here for completeness.
+  kInternalBackendNotPresent = 0,
+  // GmsCore is not available and Google Play Store is not available.
+  kNoGmsCore = 1,
+  // GmsCore version doesn't support UPM at all, or not fully.
+  kOutdatedGmsCore = 2,
+  // GmsCore version supports UPM, but there are still unmigrated passwords.
+  kAutoExportPending = 3,
+
+  kMaxValue = kAutoExportPending
+};
+
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordManagerNotAvailableReason)
+
 // Checks whether the password manager can be used on Android.
 // Once the login db is deprecated, for clients not fulfilling the criteria
 // for talking to the Android backend, the password manager will no longer
