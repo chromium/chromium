@@ -7,6 +7,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 
@@ -15,6 +16,7 @@ import org.chromium.ui.base.BackGestureEventSwipeEdge;
  * performed on a navigable tab page.
  */
 @JNINamespace("gesturenav")
+@NullMarked
 public class TabOnBackGestureHandler implements UserData {
     private static final Class<TabOnBackGestureHandler> USER_DATA_KEY =
             TabOnBackGestureHandler.class;

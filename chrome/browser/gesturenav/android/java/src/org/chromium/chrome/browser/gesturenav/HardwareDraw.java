@@ -25,6 +25,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.dynamics.CaptureObserver;
 import org.chromium.ui.resources.dynamics.CaptureUtils;
 
@@ -36,6 +38,7 @@ import java.nio.ByteBuffer;
  * executed to paint colors onto a {@link Bitmap}. Uses functionality that requires Android Q+.
  */
 @RequiresApi(Build.VERSION_CODES.Q)
+@NullMarked
 public class HardwareDraw {
 
     /**
@@ -55,14 +58,14 @@ public class HardwareDraw {
         // An ImageReader requires a listener to run in a separate thread.
         // Ideally, we would just post to the thread pool, but it doesn't implement a Handler like
         // the ImageReader requires.
-        private static Handler sHardwareThreadHandler;
+        private static @Nullable Handler sHardwareThreadHandler;
 
         // Only ever recreated in the UI thread.
         private ImageReader mImageReader;
 
         // Set in the UI thread before enqueuing a request.
         // Cleared in the hardware thread after posting the task back to the UI thread.
-        private Callback<Bitmap> mOnBitmapCapture;
+        private @Nullable Callback<@Nullable Bitmap> mOnBitmapCapture;
 
         /**
          * Each instance should be called by external clients only on the thread it is created. The
@@ -98,7 +101,8 @@ public class HardwareDraw {
         }
 
         // Posts a single draw request to the thread pool. It should only be called once.
-        private void requestDraw(RenderNode renderNode, Callback<Bitmap> onBitmapCapture) {
+        private void requestDraw(
+                RenderNode renderNode, Callback<@Nullable Bitmap> onBitmapCapture) {
             mUiThreadChecker.assertOnValidThread();
             assert mOnBitmapCapture == null;
             mOnBitmapCapture = onBitmapCapture;
@@ -175,7 +179,7 @@ public class HardwareDraw {
 
     private final ThreadUtils.ThreadChecker mUiThreadChecker = new ThreadUtils.ThreadChecker();
 
-    private Renderer mRenderer;
+    private @Nullable Renderer mRenderer;
 
     private boolean mPendingDraw;
 
@@ -197,7 +201,7 @@ public class HardwareDraw {
             int height,
             float scale,
             CaptureObserver observer,
-            Callback<Bitmap> onBitmapCapture) {
+            Callback<@Nullable Bitmap> onBitmapCapture) {
         try (TraceEvent e = TraceEvent.scoped("HardwareDraw::startBitmapCapture")) {
             mUiThreadChecker.assertOnValidThread();
             if (view.getWidth() == 0 || view.getHeight() == 0) {
