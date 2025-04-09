@@ -207,7 +207,8 @@ public class BookmarkManagerCoordinator
                         mModalDialogManager,
                         this::onEndSearch,
                         () -> IncognitoUtils.isIncognitoModeEnabled(profile),
-                        bookmarkManagerOpener);
+                        bookmarkManagerOpener,
+                        /* nextFocusableView= */ mMainView.findViewById(R.id.list_content));
         mSelectableListLayout.configureWideDisplayStyle();
 
         final @BookmarkRowDisplayPref int displayPref =

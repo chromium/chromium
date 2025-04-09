@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import android.view.View;
+
 import org.chromium.chrome.browser.bookmarks.BookmarkUiState.BookmarkUiMode;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -73,6 +75,9 @@ class BookmarkToolbarProperties {
     static final WritableObjectPropertyKey<Runnable> NAVIGATE_BACK_RUNNABLE =
             new WritableObjectPropertyKey<>();
 
+    static final WritableObjectPropertyKey<View> NEXT_FOCUSABLE_VIEW =
+            new WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS = {
         SELECTION_DELEGATE,
         TITLE,
@@ -97,6 +102,7 @@ class BookmarkToolbarProperties {
         SELECTION_MODE_SHOW_OPEN_IN_INCOGNITO,
         SELECTION_MODE_SHOW_MOVE,
         SELECTION_MODE_SHOW_MARK_READ,
-        SELECTION_MODE_SHOW_MARK_UNREAD
+        SELECTION_MODE_SHOW_MARK_UNREAD,
+        NEXT_FOCUSABLE_VIEW
     };
 }
