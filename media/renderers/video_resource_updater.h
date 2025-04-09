@@ -120,12 +120,10 @@ class MEDIA_EXPORT VideoResourceUpdater
       scoped_refptr<VideoFrame> video_frame);
 
   viz::SharedImageFormat YuvSharedImageFormat(int bits_per_channel);
-  scoped_refptr<gpu::SharedImageInterface> shared_image_interface() const;
+  gpu::SharedImageInterface* shared_image_interface() const;
 
  private:
   class FrameResource;
-  class HardwareFrameResource;
-  class SoftwareFrameResource;
 
   bool software_compositor() const { return context_provider_ == nullptr; }
 
@@ -185,7 +183,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   // format.
   bool WriteYUVPixelsForAllPlanesToTexture(
       scoped_refptr<VideoFrame> video_frame,
-      HardwareFrameResource* resource,
+      FrameResource* resource,
       size_t bits_per_channel);
 
   // Get resource ready to be appended into DrawQuad. This is always used for
