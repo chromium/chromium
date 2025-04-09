@@ -401,17 +401,28 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     public static final String OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME =
             "Cronet_override_network_thread_priority";
 
+    @VisibleForTesting
+    // This experiment wants to measure status quo vs brotli always enabled (regardless of
+    // CronetEngine.Builder brotli setting).
+    public static final String ALWAYS_ENABLE_BROTLI_FLAG_NAME = "Cronet_always_enable_brotli";
+
     private static RequestContextConfigOptions createRequestContextConfigOptions(
             CronetEngineBuilderImpl engineBuilder) {
         var networkThreadPriorityFlagValue =
                 CronetLibraryLoader.getHttpFlags()
                         .flags()
                         .get(OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME);
+        var alwaysEnableBrotliFlagValue =
+                CronetLibraryLoader.getHttpFlags().flags().get(ALWAYS_ENABLE_BROTLI_FLAG_NAME);
+        boolean alwaysEnableBrotli =
+                alwaysEnableBrotliFlagValue != null
+                        ? alwaysEnableBrotliFlagValue.getBoolValue()
+                        : false;
         RequestContextConfigOptions.Builder resultBuilder =
                 RequestContextConfigOptions.newBuilder()
                         .setQuicEnabled(engineBuilder.quicEnabled())
                         .setHttp2Enabled(engineBuilder.http2Enabled())
-                        .setBrotliEnabled(engineBuilder.brotliEnabled())
+                        .setBrotliEnabled(alwaysEnableBrotli || engineBuilder.brotliEnabled())
                         .setDisableCache(engineBuilder.cacheDisabled())
                         .setHttpCacheMode(engineBuilder.httpCacheMode())
                         .setHttpCacheMaxSize(engineBuilder.httpCacheMaxSize())
