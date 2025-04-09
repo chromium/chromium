@@ -12,6 +12,14 @@ void TabMatcher::FindMatchingTabs(GURLToTabInfoMap* map,
   }
 }
 
+bool TabMatcher::IsTabOpenWithSameTitleOrSimilarURL(
+    const std::u16string& title,
+    const GURL& url,
+    const GURL::Replacements& replacements,
+    bool exclude_active_tab) const {
+  return false;
+}
+
 std::vector<TabMatcher::TabWrapper> TabMatcher::GetOpenTabs(
     const AutocompleteInput* input) const {
   return std::vector<TabMatcher::TabWrapper>();

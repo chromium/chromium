@@ -129,6 +129,10 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
   }
 
   const TabMatcher& tab_matcher = client->GetTabMatcher();
+  // Explicitly clear the query since this isn't done in the
+  // `GURLToStrippedGURL()`.
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
 
   TemplateURLService* const url_service = client->GetTemplateURLService();
   int relevance = kMostVisitedTilesIndividualHighRelevance;
@@ -137,8 +141,8 @@ bool BuildAutocompleteMatches(AutocompleteProvider* provider,
     // - It is an SRP result from DSP
     // - A tab already exists with the match url
     if (url_service->IsSearchResultsPageFromDefaultSearchProvider(url.url) ||
-        tab_matcher.IsTabOpenWithURL(url.url, &input,
-                                     /*exclude_active_tab =*/false) ||
+        tab_matcher.IsTabOpenWithSameTitleOrSimilarURL(
+            url.title, url.url, replacements, /*exclude_active_tab=*/false) ||
         IsURLBlocklisted(url.url)) {
       continue;
     }

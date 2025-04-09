@@ -8,6 +8,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/navigation_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using TabMatcherDesktopTest = BrowserWithTestWindowTest;
@@ -143,4 +144,55 @@ TEST_F(TabMatcherDesktopTest, IsTabOpenIncludeActiveTab) {
   EXPECT_FALSE(matcher.IsTabOpenWithURL(GURL("http://baz.chromium.org"),
                                         nullptr,
                                         /*exclude_active_tab =*/true));
+}
+
+TEST_F(TabMatcherDesktopTest, IsTabOpenWithSameTitleOrSimilarURL) {
+  std::unique_ptr<TemplateURLService> turl_service =
+      TemplateURLServiceTestUtil::CreateTemplateURLServiceForTesting(
+          profile(), kServiceInitializers);
+  TabMatcherDesktop matcher(turl_service.get(), profile());
+
+  GURL foo("http://foo.org/path/#ref");
+  AddTab(browser(), foo);
+  auto* tab_1 = browser()->tab_strip_model()->GetWebContentsAt(0);
+  content::NavigationEntry* entry = tab_1->GetController().GetVisibleEntry();
+  tab_1->UpdateTitleForEntry(entry, u"Test");
+  GURL bar("http://bar.org");
+  AddTab(browser(), bar);
+  auto* tab_2 = browser()->tab_strip_model()->GetWebContentsAt(1);
+  content::NavigationEntry* entry_2 = tab_2->GetController().GetVisibleEntry();
+  tab_2->UpdateTitleForEntry(entry_2, u"Testing");
+
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+
+  // Tabs with same title and url should be considered matches.
+  EXPECT_TRUE(matcher.IsTabOpenWithSameTitleOrSimilarURL(
+      u"Testing", GURL("http://bar.org"), replacements,
+      /*exclude_active_tab =*/false));
+
+  // Tabs with same title should be considered matches even if urls are
+  // different.
+  EXPECT_TRUE(matcher.IsTabOpenWithSameTitleOrSimilarURL(
+      u"Testing", GURL("http://different.org"), replacements,
+      /*exclude_active_tab =*/false));
+
+  // Sites with same path and different refs should be considered matches.
+  EXPECT_TRUE(matcher.IsTabOpenWithSameTitleOrSimilarURL(
+      u"Different name", GURL("http://foo.org/path/#differentref"),
+      replacements,
+      /*exclude_active_tab =*/false));
+
+  // Sites with different path should not be considered matches.
+  EXPECT_FALSE(matcher.IsTabOpenWithSameTitleOrSimilarURL(
+      u"Different name", GURL("http://foo.org/differentpath/#ref"),
+      replacements,
+      /*exclude_active_tab =*/false));
+
+  // Sites with same match and different refs and query params should be
+  // considered matches.
+  EXPECT_TRUE(matcher.IsTabOpenWithSameTitleOrSimilarURL(
+      u"Different name", GURL("http://foo.org/path/#ref?param=123"),
+      replacements,
+      /*exclude_active_tab =*/false));
 }
