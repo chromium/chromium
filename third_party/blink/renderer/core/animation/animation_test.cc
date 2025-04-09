@@ -1854,6 +1854,12 @@ TEST_P(AnimationAnimationTestCompositing,
 
   UpdateAllLifecyclePhasesForTest();
   scroll_animation->play();
+
+  EXPECT_FALSE(GetDocument().GetPendingAnimations().Update(nullptr, true));
+  EXPECT_FALSE(scroll_animation->CompositorPending());
+  EXPECT_TRUE(scroll_animation->pending());
+  EXPECT_FALSE(scroll_animation->StartTimeInternal());
+
   scroll_animation->SetDeferredStartTimeForTesting();
   EXPECT_EQ(scroll_animation->CheckCanStartAnimationOnCompositor(nullptr),
             CompositorAnimations::kNoFailure);
