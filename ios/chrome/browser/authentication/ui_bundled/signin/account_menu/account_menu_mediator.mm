@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
@@ -48,6 +49,8 @@
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserver;
   raw_ptr<PrefService> _prefs;
+  // Whether this account menu was triggered from the web.
+  BOOL _fromWeb;
   raw_ptr<syncer::SyncService> _syncService;
   std::unique_ptr<SyncObserverBridge> _syncObserver;
   // The primary identity. During an authentication flow, it contains the
@@ -79,7 +82,8 @@
                   (ChromeAccountManagerService*)accountManagerService
                         authService:(AuthenticationService*)authService
                     identityManager:(signin::IdentityManager*)identityManager
-                              prefs:(PrefService*)prefs {
+                              prefs:(PrefService*)prefs
+                            fromWeb:(BOOL)fromWeb {
   self = [super init];
   if (self) {
     CHECK(syncService);
@@ -96,6 +100,7 @@
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
     _prefs = prefs;
+    _fromWeb = fromWeb;
     _primaryIdentityBeforeSignin = _authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     _syncService = syncService;
@@ -276,8 +281,13 @@
   _authenticationFlow = [self.delegate authenticationFlow:_identityToSignin
                                                anchorRect:targetRect];
   __weak __typeof(self) weakSelf = self;
+  __block BOOL fromWeb = _fromWeb;
   [_authenticationFlow
       startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        if (fromWeb) {
+          GetApplicationContext()->GetLocalState()->SetBoolean(
+              prefs::kHasSwitchedAccountsViaWebFlow, true);
+        }
         [weakSelf signinDidEndWithResult:result];
       }];
 }

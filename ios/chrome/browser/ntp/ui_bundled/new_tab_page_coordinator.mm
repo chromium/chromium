@@ -873,6 +873,7 @@
       __weak __typeof(self) weakSelf = self;
       [handler showAccountMenuWithAnchorView:identityDisc
                         skipIfUINotAvailable:NO
+                                     fromWeb:NO
                                   completion:^{
                                     [weakSelf showAccountMenuDidFinish];
                                   }];

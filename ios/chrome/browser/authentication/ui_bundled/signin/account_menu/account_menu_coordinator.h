@@ -20,6 +20,7 @@
                                    browser:(Browser*)browser
                               contextStyle:(SigninContextStyle)contextStyle
                                 anchorView:(UIView*)anchorView
+                                   fromWeb:(BOOL)fromWeb
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

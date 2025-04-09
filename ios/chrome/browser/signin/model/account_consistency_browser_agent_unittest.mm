@@ -188,6 +188,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   OCMExpect([application_commands_mock_
       showAccountMenuWithAnchorView:[OCMArg any]
                skipIfUINotAvailable:YES
+                            fromWeb:YES
                          completion:[OCMArg any]]);
   agent_->OnAddAccount();
   // Expect [application_commands_mock_ showSignin:baseViewController:] to not
@@ -235,6 +236,7 @@ TEST_F(AccountConsistencyBrowserAgentWithSeparateProfilesTest,
   OCMExpect([application_commands_mock_
       showAccountMenuWithAnchorView:[OCMArg any]
                skipIfUINotAvailable:YES
+                            fromWeb:YES
                          completion:[OCMArg any]]);
   agent_->OnManageAccounts();
   // Expect showAccountsSettingsFromViewController:skipIfUINotAvailable: to not

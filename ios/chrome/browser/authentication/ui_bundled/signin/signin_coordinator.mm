@@ -229,18 +229,20 @@ using signin_metrics::PromoAction;
                  fullscreenPromo:fullscreenPromo];
 }
 
-+ (instancetype)
-    accountMenuCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                         browser:(Browser*)browser
-                                    contextStyle:
-                                        (SigninContextStyle)contextStyle
-                                      anchorView:(UIView*)anchorView {
++ (instancetype)accountMenuCoordinatorWithBaseViewController:
+                    (UIViewController*)viewController
+                                                     browser:(Browser*)browser
+                                                contextStyle:
+                                                    (SigninContextStyle)
+                                                        contextStyle
+                                                  anchorView:(UIView*)anchorView
+                                                     fromWeb:(BOOL)fromWeb {
   return
       [[AccountMenuCoordinator alloc] initWithBaseViewController:viewController
                                                          browser:browser
                                                     contextStyle:contextStyle
-                                                      anchorView:anchorView];
+                                                      anchorView:anchorView
+                                                         fromWeb:fromWeb];
 }
 
 + (instancetype)

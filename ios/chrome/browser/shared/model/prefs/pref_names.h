@@ -114,6 +114,11 @@ inline constexpr char kFirstFollowUpdateUIShownCount[] =
 inline constexpr char kFeaturePushNotificationPermissions[] =
     "push_notifications.feature_permissions";
 
+// A boolean indicating if the user has ever switched accounts via an account
+// menu triggered from a web flow.
+inline constexpr char kHasSwitchedAccountsViaWebFlow[] =
+    "ios.signin.has_switched_accounts_via_web_flow";
+
 // Prefs for persisting HttpServerProperties.
 inline constexpr char kHttpServerProperties[] = "net.http_server_properties";
 

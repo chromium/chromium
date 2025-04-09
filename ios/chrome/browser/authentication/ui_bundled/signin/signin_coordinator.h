@@ -217,13 +217,14 @@ class PrefRegistrySyncable;
                                           fullscreenPromo:(BOOL)fullscreenPromo;
 
 // Returns a coordinator to switch account.
-+ (instancetype)
-    accountMenuCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                         browser:(Browser*)browser
-                                    contextStyle:
-                                        (SigninContextStyle)contextStyle
-                                      anchorView:(UIView*)anchorView;
++ (instancetype)accountMenuCoordinatorWithBaseViewController:
+                    (UIViewController*)viewController
+                                                     browser:(Browser*)browser
+                                                contextStyle:
+                                                    (SigninContextStyle)
+                                                        contextStyle
+                                                  anchorView:(UIView*)anchorView
+                                                     fromWeb:(BOOL)fromWeb;
 
 // Returns a coordinator to show the history sync.
 + (instancetype)

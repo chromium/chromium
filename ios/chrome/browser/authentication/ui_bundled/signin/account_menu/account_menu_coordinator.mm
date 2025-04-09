@@ -98,12 +98,15 @@
   // Clicked view, used to anchor the menu to it when using
   // UIModalPresentationPopover mode
   UIView* _anchorView;
+  // Whether this account menu was triggered from the web.
+  BOOL _fromWeb;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                               contextStyle:(SigninContextStyle)contextStyle
-                                anchorView:(UIView*)anchorView {
+                                anchorView:(UIView*)anchorView
+                                   fromWeb:(BOOL)fromWeb {
   self = [super
       initWithBaseViewController:viewController
                          browser:browser
@@ -111,6 +114,7 @@
                      accessPoint:signin_metrics::AccessPoint::kAccountMenu];
   if (self) {
     _anchorView = anchorView;
+    _fromWeb = fromWeb;
   }
   return self;
 }
@@ -157,7 +161,8 @@
                                  accountManagerService:_accountManagerService
                                            authService:_authenticationService
                                        identityManager:_identityManager
-                                                 prefs:prefs];
+                                                 prefs:prefs
+                                               fromWeb:_fromWeb];
   _mediator.delegate = self;
   _mediator.consumer = _viewController;
   _viewController.mutator = _mediator;

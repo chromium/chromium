@@ -170,6 +170,7 @@ enum class TabGridOpeningMode {
 // already a UI being presented.
 - (void)showAccountMenuWithAnchorView:(UIView*)anchorView
                  skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
+                              fromWeb:(BOOL)fromWeb
                            completion:(void (^)())completion;
 
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.

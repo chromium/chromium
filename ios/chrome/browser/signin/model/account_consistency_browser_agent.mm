@@ -161,9 +161,8 @@ void AccountConsistencyBrowserAgent::ShowAccountMenu() {
   // TODO(crbug.com/375605412): Adjust the account menu shown here so that it
   // has "Manage accounts on this device" as a top-level button, and no overflow
   // menu.
-  // TODO(crbug.com/375605412): If the user actually switches accounts/profiles
-  // in this menu, show an IPH on the next NTP.
   [application_handler_ showAccountMenuWithAnchorView:nil
                                  skipIfUINotAvailable:YES
+                                              fromWeb:YES
                                            completion:nil];
 }

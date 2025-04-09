@@ -2011,6 +2011,7 @@ using UserFeedbackDataCallback =
 
 - (void)showAccountMenuWithAnchorView:(UIView*)anchorView
                  skipIfUINotAvailable:(BOOL)skipIfUINotAvailable
+                              fromWeb:(BOOL)fromWeb
                            completion:(void (^)())completion {
   if (skipIfUINotAvailable && ![self isTabAvailableToPresentViewController]) {
     return;
@@ -2024,7 +2025,8 @@ using UserFeedbackDataCallback =
       accountMenuCoordinatorWithBaseViewController:baseViewController
                                            browser:browser
                                       contextStyle:SigninContextStyle::kDefault
-                                        anchorView:anchorView];
+                                        anchorView:anchorView
+                                           fromWeb:fromWeb];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.

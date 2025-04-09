@@ -132,7 +132,8 @@ class AccountMenuCoordinatorTest : public PlatformTest {
         initWithBaseViewController:nil
                            browser:browser_.get()
                       contextStyle:SigninContextStyle::kDefault
-                        anchorView:nil];
+                        anchorView:nil
+                           fromWeb:NO];
     coordinator_.signinCompletion =
         ^(SigninCoordinatorResult, id<SystemIdentity>) {
           signinCompletion();

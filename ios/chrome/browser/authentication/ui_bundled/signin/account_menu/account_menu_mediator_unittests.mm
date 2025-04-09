@@ -120,7 +120,8 @@ class AccountMenuMediatorTest
         accountManagerService:account_manager_service_
                   authService:authentication_service_
               identityManager:identity_manager_
-                        prefs:profile_->GetPrefs()];
+                        prefs:profile_->GetPrefs()
+                      fromWeb:NO];
     mediator_.delegate = delegate_mock_;
     mediator_.consumer = consumer_mock_;
     authentication_flow_mock_ = OCMStrictClassMock([AuthenticationFlow class]);
