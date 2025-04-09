@@ -267,12 +267,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
   private displayLists_: chrome.bookmarks.BookmarkTreeNode[][];
   private trackedProductInfos_: {[key: string]: BookmarkProductInfo} = {};
   private availableProductInfos_ = new Map<string, BookmarkProductInfo>();
-  private bookmarksService_: PowerBookmarksService =
-      new PowerBookmarksService(this);
-  private keyArrowNavigationService_: KeyArrowNavigationService =
-      new KeyArrowNavigationService(this, 'power-bookmark-row:not([hidden])');
-  private bookmarksDragManager_: PowerBookmarksDragManager =
-      new PowerBookmarksDragManager(this);
+  private bookmarksService_: PowerBookmarksService;
+  private keyArrowNavigationService_: KeyArrowNavigationService;
+  private bookmarksDragManager_: PowerBookmarksDragManager;
   private focusOutlineManager_: FocusOutlineManager;
   private compact_: boolean;
   private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
@@ -307,6 +304,14 @@ export class PowerBookmarksListElement extends PolymerElement implements
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
+
+    const bookmarksService = new PowerBookmarksService(this);
+    PowerBookmarksService.setInstance(bookmarksService);
+    this.bookmarksService_ = PowerBookmarksService.getInstance();
+
+    this.keyArrowNavigationService_ =
+        new KeyArrowNavigationService(this, 'power-bookmark-row:not([hidden])');
+    this.bookmarksDragManager_ = new PowerBookmarksDragManager(this);
   }
 
   override connectedCallback() {

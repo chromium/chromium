@@ -23,7 +23,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js';
 import {getCss} from './power_bookmark_row.css.js';
 import {getHtml} from './power_bookmark_row.html.js';
-import type {PowerBookmarksService} from './power_bookmarks_service.js';
+import {PowerBookmarksService} from './power_bookmarks_service.js';
 import {getFolderLabel} from './power_bookmarks_utils.js';
 
 export const NESTED_BOOKMARKS_BASE_MARGIN = 45;
@@ -66,7 +66,6 @@ export class PowerBookmarkRowElement extends CrLitElement {
       rowAriaDescription: {type: String},
       trailingIconTooltip: {type: String},
       listItemSize: {type: String},
-      bookmarksService: {type: Object},
       keyArrowNavigationService: {type: Object},
       toggleExpand: {type: Boolean},
       updatedElementIds: {type: Array},
@@ -95,8 +94,8 @@ export class PowerBookmarkRowElement extends CrLitElement {
 
   listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
 
-  // TODO(crbug.com/385159984) Update services to not be passed in as parameters
-  bookmarksService: PowerBookmarksService;
+  private bookmarksService_: PowerBookmarksService =
+      PowerBookmarksService.getInstance();
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
       PriceTrackingBrowserProxyImpl.getInstance();
   private shoppingListenerIds_: number[] = [];
@@ -413,7 +412,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   }
 
   private isPriceTracked_(): boolean {
-    return !!this.bookmarksService?.getPriceTrackedInfo(this.bookmark);
+    return !!this.bookmarksService_.getPriceTrackedInfo(this.bookmark);
   }
 
   /**
@@ -421,7 +420,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
    */
   protected showDiscountedPrice_(): boolean {
     const bookmarkProductInfo =
-        this.bookmarksService?.getPriceTrackedInfo(this.bookmark);
+        this.bookmarksService_.getPriceTrackedInfo(this.bookmark);
     if (bookmarkProductInfo) {
       return bookmarkProductInfo.info.previousPrice.length > 0;
     }
@@ -431,7 +430,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   protected getCurrentPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       string {
     const bookmarkProductInfo =
-        this.bookmarksService?.getPriceTrackedInfo(bookmark);
+        this.bookmarksService_.getPriceTrackedInfo(bookmark);
     if (bookmarkProductInfo) {
       return bookmarkProductInfo.info.currentPrice;
     } else {
@@ -442,7 +441,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   protected getPreviousPrice_(bookmark: chrome.bookmarks.BookmarkTreeNode):
       string {
     const bookmarkProductInfo =
-        this.bookmarksService?.getPriceTrackedInfo(bookmark);
+        this.bookmarksService_.getPriceTrackedInfo(bookmark);
     if (bookmarkProductInfo) {
       return bookmarkProductInfo.info.previousPrice;
     } else {
@@ -489,7 +488,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       }
       if (urlString && this.searchQuery && bookmark?.parentId) {
         const parentFolder =
-            this.bookmarksService.findBookmarkWithId(bookmark?.parentId);
+            this.bookmarksService_.findBookmarkWithId(bookmark?.parentId);
         const folderLabel = getFolderLabel(parentFolder);
         return loadTimeData.getStringF(
             'urlFolderDescription', urlString, folderLabel);
@@ -550,7 +549,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   protected getBookmarkA11yDescription_(): string {
     const bookmark = this.bookmark;
     let description = '';
-    if (this.bookmarksService?.getPriceTrackedInfo(bookmark)) {
+    if (this.bookmarksService_.getPriceTrackedInfo(bookmark)) {
       description += loadTimeData.getStringF(
           'a11yDescriptionPriceTracking', this.getCurrentPrice_(bookmark));
       const previousPrice = this.getPreviousPrice_(bookmark);
@@ -568,7 +567,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
     // tracked, return the current price which will be added to the description
     // meta section.
     const productInfo =
-        this.bookmarksService?.getAvailableProductInfo(this.bookmark);
+        this.bookmarksService_.getAvailableProductInfo(this.bookmark);
     if (productInfo && productInfo.info.currentPrice &&
         !this.isPriceTracked_()) {
       return productInfo.info.currentPrice;

@@ -274,8 +274,8 @@ export class PowerBookmarksService {
   filterBookmarks(
       activeFolder: chrome.bookmarks.BookmarkTreeNode|undefined,
       activeSortIndex: number, searchQuery: string|undefined, labels: Label[],
-      excludeFolder: chrome.bookmarks.BookmarkTreeNode|
-      undefined = undefined): chrome.bookmarks.BookmarkTreeNode[] {
+      excludeFolder?: chrome.bookmarks.BookmarkTreeNode):
+      chrome.bookmarks.BookmarkTreeNode[] {
     let bookmarks: chrome.bookmarks.BookmarkTreeNode[] = [];
     if (activeFolder) {
       bookmarks = activeFolder.children!.slice();
@@ -633,4 +633,15 @@ export class PowerBookmarksService {
           this.inactiveImageServiceRequests_.values().next().value!);
     }
   }
+
+  static getInstance(): PowerBookmarksService {
+    assert(instance);
+    return instance;
+  }
+
+  static setInstance(obj: PowerBookmarksService) {
+    instance = obj;
+  }
 }
+
+let instance: PowerBookmarksService|null = null;

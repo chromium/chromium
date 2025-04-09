@@ -92,7 +92,6 @@ export function getHtml(this: PowerBookmarkRowElement) {
           .renamingId="${this.renamingId}"
           .imageUrls="${this.imageUrls}"
           .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
-          .bookmarksService="${this.bookmarksService}"
           .draggable="${String(this.canDrag)}"
           ?can-drag="${this.canDrag}"
           .keyArrowNavigationService="${this.keyArrowNavigationService}"
