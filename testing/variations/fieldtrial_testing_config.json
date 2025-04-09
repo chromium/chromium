@@ -14225,7 +14225,7 @@
                 {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
-                        "LobsterUseRewrittenQuery"
+                        "LobsterDogfood"
                     ]
                 }
             ]
@@ -14240,7 +14240,7 @@
                 {
                     "name": "Enabled_Dogfood",
                     "enable_features": [
-                        "LobsterDogfood"
+                        "LobsterUseRewrittenQuery"
                     ]
                 }
             ]
