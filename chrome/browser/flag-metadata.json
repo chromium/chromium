@@ -4551,11 +4551,6 @@
     "expiry_milestone": 133
   },
   {
-    "name": "extension-web-file-handlers",
-    "owners": [ "solomonkinard@chromium.org" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "extensions-collapse-main-menu",
     "owners": [ "dfried@chromium.org" ],
     "expiry_milestone": 145
