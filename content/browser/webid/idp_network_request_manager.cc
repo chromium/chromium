@@ -260,8 +260,7 @@ IdentityRequestAccountPtr ParseAccount(const base::Value::Dict& account,
   const base::ListValue* labels_list = nullptr;
   if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
     labels_list = account.FindList(kLabelHintsKey);
-  }
-  if (!labels_list) {
+  } else {
     labels_list = account.FindList(kLabelsKey);
   }
   if (labels_list) {
@@ -663,8 +662,7 @@ void OnConfigParsed(const GURL& provider,
   const std::string* requested_label = nullptr;
   if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
     requested_label = response.FindString(kAccountLabelKey);
-  }
-  if (!requested_label) {
+  } else {
     const base::Value::Dict* accounts_dict = response.FindDict(kAccountsKey);
     if (accounts_dict) {
       requested_label = accounts_dict->FindString(kIncludeKey);
@@ -678,9 +676,7 @@ void OnConfigParsed(const GURL& provider,
     std::optional<bool> supports_add_account;
     if (IsFedCmUseOtherAccountAndLabelsNewSyntaxEnabled()) {
       supports_add_account = response.FindBool(kSupportsUseOtherAccountKey);
-    }
-
-    if (!supports_add_account) {
+    } else {
       const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
       const base::Value::Dict* selected_mode_dict = nullptr;
       if (modes_dict) {

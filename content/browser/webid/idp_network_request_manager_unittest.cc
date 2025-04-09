@@ -700,6 +700,35 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelsOldAndNewSyntax) {
   EXPECT_EQ("l2", accounts[0]->labels[1]);
 }
 
+// TODO(crbug.com/404568028): Delete when
+// kFedCmUseOtherAccountAndLabelsNewSyntax is removed.
+TEST_F(IdpNetworkRequestManagerTest, DoNotParseAccountLabelsOldSyntaxWithFlag) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
+  // With new syntax enabled, old syntax should be ignored.
+  const auto* test_accounts_json = R"({
+  "accounts" : [
+    {
+      "id": "1234",
+      "email": "ken@idp.test",
+      "name": "Ken R. Example",
+      "labels": ["x1", 42, "x2"]
+    }
+  ]
+  })";
+
+  FetchStatus accounts_response;
+  std::vector<IdentityRequestAccountPtr> accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestAndWaitForResponse(test_accounts_json);
+
+  ASSERT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ("1234", accounts[0]->id);
+  ASSERT_EQ(0u, accounts[0]->labels.size());
+}
+
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelHints) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
@@ -1259,6 +1288,33 @@ TEST_F(IdpNetworkRequestManagerTest,
   EXPECT_EQ(true, idp_metadata.supports_add_account);
 }
 
+// TODO(crbug.com/404568028): Delete when
+// kFedCmUseOtherAccountAndLabelsNewSyntax is removed.
+TEST_F(IdpNetworkRequestManagerTest,
+       DoNotParseConfigSupportsOtherAccountOldSyntaxWithFlag) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
+  // Old syntax should be ignored if new syntax is enabled.
+  const char test_json[] = R"({
+  "modes": {
+    "passive": {
+      "supports_use_other_account": true
+    }
+  }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) = SendConfigRequestAndWaitForResponse(
+      test_json, net::HTTP_OK, "application/json",
+      blink::mojom::RpMode::kPassive);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ(false, idp_metadata.supports_add_account);
+}
+
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigSupportsOtherAccountNewSyntax) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
@@ -1406,6 +1462,30 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabelOldAndNewSyntax) {
   EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
   EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
   EXPECT_EQ("l1", idp_metadata.requested_label);
+}
+
+// TODO(crbug.com/404568028): Delete when
+// kFedCmUseOtherAccountAndLabelsNewSyntax is removed.
+TEST_F(IdpNetworkRequestManagerTest,
+       DoNotParseConfigRequestedLabelOldSyntaxWithFlag) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
+  // Old syntax should be ignored if new syntax is enabled.
+  const char test_json[] = R"({
+    "accounts": {
+      "include": "l5"
+    }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) =
+      SendConfigRequestAndWaitForResponse(test_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ(net::HTTP_OK, fetch_status.response_code);
+  EXPECT_EQ("", idp_metadata.requested_label);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabel) {
