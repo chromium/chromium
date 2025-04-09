@@ -37,6 +37,12 @@ constexpr char kExampleResponseHeaders1[] =
     ",\"home_account_id\":\"homeaccountid1\"}],\"device_headers\":[{\"header\":"
     "{\"x-ms-DeviceCredential\":\"devicecredentials\"},\"tenant_id\":"
     "\"tenantidvalue\"}]}";
+constexpr char kExampleResponseHeaders2[] =
+    "{\"prt_headers\":[{\"header\":{},\"home_account_id\":\"homeaccountid\"},{"
+    "\"header\":{\"x-ms-RefreshTokenCredential1\":\"\"}"
+    ",\"home_account_id\":\"homeaccountid1\"}],\"device_headers\":[{\"tenant_"
+    "id\":"
+    "\"tenantidvalue\"}]}";
 constexpr char kRefreshTokenCredentialName[] = "x-ms-RefreshTokenCredential";
 constexpr char kRefreshTokenCredentialName1[] = "x-ms-RefreshTokenCredential1";
 constexpr char kDeviceCredentialName[] = "x-ms-DeviceCredential";
@@ -84,6 +90,100 @@ TEST_F(ExtensibleEnterpriseSSOUtil, CreateRequestForUrl) {
   if (@available(macOS 12, *)) {
     EXPECT_EQ(request.userInterfaceEnabled, NO);
   }
+}
+
+TEST_F(ExtensibleEnterpriseSSOUtil,
+       GetHeadersFromHttpResponseNoCrashWithNilResponse) {
+  auto auth_headers = [entra_delegate() getHeadersFromHttpResponse:nil];
+  ASSERT_TRUE(auth_headers.IsEmpty());
+}
+
+TEST_F(ExtensibleEnterpriseSSOUtil,
+       GetHeadersFromHttpResponseNoCrashWithMissingHeaders) {
+  // Setup response
+  NSHTTPURLResponse* response = [[NSHTTPURLResponse alloc] initWithURL:url()
+                                                            statusCode:404
+                                                           HTTPVersion:@""
+                                                          headerFields:nil];
+
+  auto auth_headers = [entra_delegate() getHeadersFromHttpResponse:response];
+  ASSERT_TRUE(auth_headers.IsEmpty());
+}
+
+TEST_F(ExtensibleEnterpriseSSOUtil,
+       GetHeadersFromHttpResponseNoCrashWithMissingSSOCookieJSON) {
+  // Setup response
+  NSMutableDictionary* allHeaderFields = [NSJSONSerialization
+      JSONObjectWithData:[kExampleResponse
+                             dataUsingEncoding:NSUTF8StringEncoding]
+                 options:NSJSONReadingMutableContainers
+                   error:nil];
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url()
+                                  statusCode:404
+                                 HTTPVersion:@""
+                                headerFields:allHeaderFields];
+
+  auto auth_headers = [entra_delegate() getHeadersFromHttpResponse:response];
+  ASSERT_TRUE(auth_headers.IsEmpty());
+}
+
+TEST_F(ExtensibleEnterpriseSSOUtil,
+       GetHeadersFromHttpResponseNoCrashWithInvalidSSOCookie) {
+  // Setup response
+  NSMutableDictionary* allHeaderFields = [NSJSONSerialization
+      JSONObjectWithData:[kExampleResponse
+                             dataUsingEncoding:NSUTF8StringEncoding]
+                 options:NSJSONReadingMutableContainers
+                   error:nil];
+  [allHeaderFields setObject:@"{\"Invalid: json}" forKey:kSSOCookies];
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url()
+                                  statusCode:404
+                                 HTTPVersion:@""
+                                headerFields:allHeaderFields];
+
+  auto auth_headers = [entra_delegate() getHeadersFromHttpResponse:response];
+  ASSERT_TRUE(auth_headers.IsEmpty());
+}
+
+TEST_F(ExtensibleEnterpriseSSOUtil,
+       GetHeadersFromHttpResponseNoCrashWithValidEmptySSOCookie) {
+  // Setup response
+  NSMutableDictionary* allHeaderFields = [NSJSONSerialization
+      JSONObjectWithData:[kExampleResponse
+                             dataUsingEncoding:NSUTF8StringEncoding]
+                 options:NSJSONReadingMutableContainers
+                   error:nil];
+  [allHeaderFields setObject:@"{}" forKey:kSSOCookies];
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url()
+                                  statusCode:404
+                                 HTTPVersion:@""
+                                headerFields:allHeaderFields];
+
+  auto auth_headers = [entra_delegate() getHeadersFromHttpResponse:response];
+  ASSERT_TRUE(auth_headers.IsEmpty());
+}
+
+TEST_F(ExtensibleEnterpriseSSOUtil,
+       GetHeadersFromHttpResponseNoCrashWithMissingInfoInSSOCookie) {
+  // Setup response
+  NSMutableDictionary* allHeaderFields = [NSJSONSerialization
+      JSONObjectWithData:[kExampleResponse
+                             dataUsingEncoding:NSUTF8StringEncoding]
+                 options:NSJSONReadingMutableContainers
+                   error:nil];
+  NSString* headers_json = base::SysUTF8ToNSString(kExampleResponseHeaders2);
+  [allHeaderFields setObject:headers_json forKey:kSSOCookies];
+  NSHTTPURLResponse* response =
+      [[NSHTTPURLResponse alloc] initWithURL:url()
+                                  statusCode:404
+                                 HTTPVersion:@""
+                                headerFields:allHeaderFields];
+
+  auto auth_headers = [entra_delegate() getHeadersFromHttpResponse:response];
+  ASSERT_TRUE(auth_headers.IsEmpty());
 }
 
 TEST_F(ExtensibleEnterpriseSSOUtil, GetHeadersFromHttpResponse) {

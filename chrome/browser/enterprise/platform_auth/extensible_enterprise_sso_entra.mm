@@ -62,9 +62,21 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
     NSString* headers_key) {
   NSArray* headers = sso_cookies_response[headers_key];
   auto headers_key_str = base::SysNSStringToUTF8(headers_key);
+  if (!headers) {
+    VLOG_POLICY(2, EXTENSIBLE_SSO)
+        << "[ExtensibleEnterpriseSSO] No headers found for key: "
+        << headers_key_str;
+    return;
+  }
 
   for (NSDictionary* header_data in headers) {
     NSDictionary* header_definition = header_data[kHeader];
+    if (!header_definition) {
+      VLOG_POLICY(2, EXTENSIBLE_SSO)
+          << "[ExtensibleEnterpriseSSO] No header definition found for key: "
+          << headers_key_str;
+      continue;
+    }
     for (NSString* key in header_definition) {
       auto header_name = base::SysNSStringToUTF8(key);
 
@@ -75,9 +87,16 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
         continue;
       }
 
+      if (!header_definition[key]) {
+        VLOG_POLICY(2, EXTENSIBLE_SSO)
+            << "[ExtensibleEnterpriseSSO] No header value found for key: "
+            << headers_key_str << " : " << header_name;
+        continue;
+      }
       auto header_value = base::SysNSStringToUTF8(
           net::FixNSStringIncorrectlyDecodedAsLatin1(header_definition[key]));
-      if (!net::HttpUtil::IsValidHeaderValue(header_value)) {
+      if (header_value.empty() ||
+          !net::HttpUtil::IsValidHeaderValue(header_value)) {
         VLOG_POLICY(2, EXTENSIBLE_SSO)
             << "[ExtensibleEnterpriseSSO] Invalid header value "
             << headers_key_str << " : " << header_value;
@@ -198,10 +217,24 @@ void AddMSAuthHeadersFromSSOCookiesResponse(
   //   "response_gen_timestamp": "1736954944.7778768539",
   //   "platform_sso_status": "platformSSONotEnabled"
   // }
+  net::HttpRequestHeaders auth_headers;
+
+  if (!response) {
+    return auth_headers;
+  }
+
   NSDictionary* all_headers = response.allHeaderFields;
+
+  if (!all_headers) {
+    return auth_headers;
+  }
+
   NSString* sso_cookies_json = all_headers[kSSOCookies];
 
-  net::HttpRequestHeaders auth_headers;
+  if (!sso_cookies_json) {
+    return auth_headers;
+  }
+
   NSDictionary* sso_cookies = [NSJSONSerialization
       JSONObjectWithData:[sso_cookies_json
                              dataUsingEncoding:NSUTF8StringEncoding]
