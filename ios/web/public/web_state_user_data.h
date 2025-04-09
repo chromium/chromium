@@ -13,7 +13,8 @@
 // This macro declares a static variable inside the class that inherits from
 // WebStateUserData. The address of this static variable is used as the key to
 // store/retrieve an instance of the class on/from a WebState.
-#define WEB_STATE_USER_DATA_KEY_DECL() static const int kUserDataKey = 0
+#define WEB_STATE_USER_DATA_KEY_DECL() \
+  [[maybe_unused]] static const int kUserDataKey = 0
 
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .mm/.cc file to ensure that there is only one instantiation
@@ -70,7 +71,10 @@ class WebStateUserData : public base::SupportsUserData::Data {
     web_state->RemoveUserData(UserDataKey());
   }
 
-  static const void* UserDataKey() { return &T::kUserDataKey; }
+  static inline const void* UserDataKey() {
+    static const int kId = 0;
+    return &kId;
+  }
 };
 
 }  // namespace web

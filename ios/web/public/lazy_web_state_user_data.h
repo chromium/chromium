@@ -9,20 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #include "ios/web/public/web_state.h"
-
-// This macro declares a static variable inside the class that inherits from
-// LazyWebStateUserData. The address of this static variable is used as the key
-// to store/retrieve an instance of the class on/from a WebState.
-#ifndef WEB_STATE_USER_DATA_KEY_DECL
-#define WEB_STATE_USER_DATA_KEY_DECL() static const int kUserDataKey = 0
-#endif
-
-// This macro instantiates the static variable declared by the previous macro.
-// It must live in a .mm/.cc file to ensure that there is only one instantiation
-// of the static variable.
-#ifndef WEB_STATE_USER_DATA_KEY_IMPL
-#define WEB_STATE_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey;
-#endif
+#include "ios/web/public/web_state_user_data.h"
 
 namespace web {
 
@@ -82,7 +69,10 @@ class LazyWebStateUserData : public base::SupportsUserData::Data {
     web_state->RemoveUserData(UserDataKey());
   }
 
-  static const void* UserDataKey() { return &T::kUserDataKey; }
+  static inline const void* UserDataKey() {
+    static const int kId = 0;
+    return &kId;
+  }
 
  private:
   // Retrieves the instance of type T that was attached to the specified
