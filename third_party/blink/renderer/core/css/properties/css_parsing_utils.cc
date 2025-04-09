@@ -4305,9 +4305,15 @@ CSSValue* ConsumeAnimationDelay(CSSParserTokenStream& stream,
 
 CSSValue* ConsumeAnimationRange(CSSParserTokenStream& stream,
                                 const CSSParserContext& context,
-                                double default_offset_percent) {
+                                double default_offset_percent,
+                                bool allow_auto) {
   if (CSSValue* ident = ConsumeIdent<CSSValueID::kNormal>(stream)) {
     return ident;
+  }
+  if (allow_auto) {
+    if (CSSValue* ident = ConsumeIdent<CSSValueID::kAuto>(stream)) {
+      return ident;
+    }
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   CSSValue* range_name = ConsumeTimelineRangeName(stream);
@@ -4465,11 +4471,17 @@ CSSValue* ConsumeAnimationTriggerValue(CSSPropertyID property,
     case CSSPropertyID::kAnimationTriggerTimeline:
       return css_parsing_utils::ConsumeAnimationTimeline(stream, context);
     case CSSPropertyID::kAnimationTriggerRangeStart:
+      return css_parsing_utils::ConsumeAnimationRange(stream, context, 0.0,
+                                                      /*allow_auto=*/false);
     case CSSPropertyID::kAnimationTriggerExitRangeStart:
-      return css_parsing_utils::ConsumeAnimationRange(stream, context, 0.0);
+      return css_parsing_utils::ConsumeAnimationRange(stream, context, 0.0,
+                                                      /*allow_auto=*/true);
     case CSSPropertyID::kAnimationTriggerRangeEnd:
+      return css_parsing_utils::ConsumeAnimationRange(stream, context, 100.0,
+                                                      /*allow_auto=*/false);
     case CSSPropertyID::kAnimationTriggerExitRangeEnd:
-      return css_parsing_utils::ConsumeAnimationRange(stream, context, 100.0);
+      return css_parsing_utils::ConsumeAnimationRange(stream, context, 100.0,
+                                                      /*allow_auto=*/true);
     default:
       NOTREACHED();
   }

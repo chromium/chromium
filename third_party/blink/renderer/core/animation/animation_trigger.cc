@@ -25,7 +25,8 @@ using RangeBoundary = AnimationTrigger::RangeBoundary;
 bool ValidateBoundary(ExecutionContext* execution_context,
                       const RangeBoundary* boundary,
                       ExceptionState& exception_state,
-                      double default_percent) {
+                      double default_percent,
+                      bool allow_auto) {
   if (boundary->IsString()) {
     CSSParserTokenStream stream(boundary->GetAsString());
     const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
@@ -35,7 +36,7 @@ bool ValidateBoundary(ExecutionContext* execution_context,
              ->ElementSheet()
              .Contents()
              ->ParserContext(),
-        /* default_offset_percent */ default_percent);
+        /* default_offset_percent */ default_percent, allow_auto);
     if (!value || !stream.AtEnd()) {
       exception_state.ThrowTypeError(
           "AnimationTrigger range must be a name <length-percent> pair");
@@ -77,13 +78,13 @@ AnimationTrigger* AnimationTrigger::Create(ExecutionContext* execution_context,
                                            AnimationTriggerOptions* options,
                                            ExceptionState& exception_state) {
   if (!ValidateBoundary(execution_context, options->rangeStart(),
-                        exception_state, 0) ||
+                        exception_state, 0, /*allow_auto=*/false) ||
       !ValidateBoundary(execution_context, options->rangeEnd(), exception_state,
-                        1) ||
+                        100, /*allow_auto=*/false) ||
       !ValidateBoundary(execution_context, options->exitRangeStart(),
-                        exception_state, 0) ||
+                        exception_state, 0, /*allow_auto=*/true) ||
       !ValidateBoundary(execution_context, options->exitRangeEnd(),
-                        exception_state, 1)) {
+                        exception_state, 100, /*allow_auto=*/true)) {
     return nullptr;
   }
   AnimationTimeline* timeline =
@@ -163,9 +164,9 @@ void AnimationTrigger::ActionAnimation(Animation* animation) {
       To<Element>(timeline_source), range_start_, 0, exception_state);
   std::optional<TimelineOffset> trigger_end = TimelineOffset::Create(
       To<Element>(timeline_source), range_end_, 1, exception_state);
-  std::optional<TimelineOffset> exit_start = TimelineOffset::Create(
+  TimelineOffsetOrAuto exit_start = TimelineOffsetOrAuto::Create(
       To<Element>(timeline_source), exit_range_start_, 0, exception_state);
-  std::optional<TimelineOffset> exit_end = TimelineOffset::Create(
+  TimelineOffsetOrAuto exit_end = TimelineOffsetOrAuto::Create(
       To<Element>(timeline_source), exit_range_end_, 1, exception_state);
 
   const TimelineState timeline_state = timeline->ComputeTimelineState();
@@ -182,11 +183,12 @@ void AnimationTrigger::ActionAnimation(Animation* animation) {
   double trigger_end_offset =
       ComputeTriggerBoundary(trigger_end, default_end_position, timeline,
                              *timeline_state.scroll_offsets);
-  double exit_start_offset =
-      ComputeTriggerBoundary(exit_start, trigger_start_offset, timeline,
-                             *timeline_state.scroll_offsets);
-  double exit_end_offset = ComputeTriggerBoundary(
-      exit_end, trigger_end_offset, timeline, *timeline_state.scroll_offsets);
+  double exit_start_offset = ComputeTriggerBoundary(
+      exit_start.GetTimelineOffset(), trigger_start_offset, timeline,
+      *timeline_state.scroll_offsets);
+  double exit_end_offset =
+      ComputeTriggerBoundary(exit_end.GetTimelineOffset(), trigger_end_offset,
+                             timeline, *timeline_state.scroll_offsets);
 
   bool within_trigger = false;
   bool within_exit = false;

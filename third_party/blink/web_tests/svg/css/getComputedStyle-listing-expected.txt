@@ -55,8 +55,8 @@ animation-range-end: normal
 animation-range-start: normal
 animation-timeline: auto
 animation-timing-function: ease
-animation-trigger-exit-range-end: normal
-animation-trigger-exit-range-start: normal
+animation-trigger-exit-range-end: auto
+animation-trigger-exit-range-start: auto
 animation-trigger-range-end: normal
 animation-trigger-range-start: normal
 animation-trigger-timeline: auto

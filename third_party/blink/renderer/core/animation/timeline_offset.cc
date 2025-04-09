@@ -98,7 +98,7 @@ std::optional<TimelineOffset> TimelineOffset::Create(
 
   const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
       stream, *document.ElementSheet().Contents()->ParserContext(),
-      /* default_offset_percent */ default_percent);
+      /* default_offset_percent */ default_percent, /*allow_auto=*/false);
 
   if (!value || !stream.AtEnd()) {
     ThrowExceptionForInvalidTimelineOffset(exception_state);
@@ -250,6 +250,27 @@ CSSValue* TimelineOffset::ParseOffset(Document* document, String css_text) {
   }
 
   return value;
+}
+
+/* static */
+TimelineOffsetOrAuto TimelineOffsetOrAuto::Create(
+    Element* element,
+    const V8UnionStringOrTimelineRangeOffset* range_offset,
+    double default_percent,
+    ExceptionState& exception_state) {
+  if (range_offset->IsString()) {
+    String offset_string = range_offset->GetAsString();
+    CSSParserTokenStream stream(offset_string);
+    stream.ConsumeWhitespace();
+
+    if (css_parsing_utils::ConsumeIdent<CSSValueID::kAuto>(stream) &&
+        stream.AtEnd()) {
+      return TimelineOffsetOrAuto();
+    }
+  }
+
+  return TimelineOffsetOrAuto(TimelineOffset::Create(
+      element, range_offset, default_percent, exception_state));
 }
 
 }  // namespace blink

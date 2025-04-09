@@ -2613,6 +2613,15 @@ Animation::RangeBoundary* Animation::ToRangeBoundary(
   return MakeGarbageCollected<RangeBoundary>(timeline_range_offset);
 }
 
+Animation::RangeBoundary* Animation::ToRangeBoundary(
+    TimelineOffsetOrAuto timeline_offset_or_auto) {
+  if (timeline_offset_or_auto.IsAuto()) {
+    return MakeGarbageCollected<RangeBoundary>("auto");
+  }
+
+  return ToRangeBoundary(timeline_offset_or_auto.GetTimelineOffset());
+}
+
 void Animation::UpdateAutoAlignedStartTime() {
   DCHECK(auto_align_start_time_ || !start_time_);
 

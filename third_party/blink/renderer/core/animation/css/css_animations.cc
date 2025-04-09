@@ -1572,10 +1572,10 @@ AnimationTrigger* CSSAnimations::ComputeTrigger(
   const std::optional<TimelineOffset>& new_end_offset =
       CSSAnimationData::GetRepeated(data->TriggerRangeEndList(),
                                     animation_index);
-  const std::optional<TimelineOffset>& new_exit_start_offset =
+  const TimelineOffsetOrAuto& new_exit_start_offset =
       CSSAnimationData::GetRepeated(data->TriggerExitRangeStartList(),
                                     animation_index);
-  const std::optional<TimelineOffset>& new_exit_end_offset =
+  const TimelineOffsetOrAuto& new_exit_end_offset =
       CSSAnimationData::GetRepeated(data->TriggerExitRangeEndList(),
                                     animation_index);
 

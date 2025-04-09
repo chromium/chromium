@@ -221,6 +221,15 @@ class CORE_EXPORT ComputedStyleUtils {
   static CSSValue* ValueForAnimationTriggerRangeEndList(
       const CSSAnimationData* animation_data,
       const ComputedStyle& style);
+  static CSSValue* ValueForAnimationRangeOrAuto(
+      const TimelineOffsetOrAuto& offset,
+      const ComputedStyle& style,
+      const Length& default_offset);
+  static CSSValue* ValueForAnimationTriggerExitRangeList(
+      const Vector<TimelineOffsetOrAuto>& range_list,
+      const CSSAnimationData* animation_data,
+      const ComputedStyle& style,
+      const Length& default_offset);
   static CSSValue* ValueForAnimationTriggerExitRangeStartList(
       const CSSAnimationData* animation_data,
       const ComputedStyle& style);

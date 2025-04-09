@@ -451,6 +451,7 @@ class CORE_EXPORT Animation : public EventTarget,
   NativePaintWorkletReasons GetNativePaintWorkletReasons() const;
 
   static RangeBoundary* ToRangeBoundary(std::optional<TimelineOffset> offset);
+  static RangeBoundary* ToRangeBoundary(TimelineOffsetOrAuto offset_or_auto);
 
   AnimationTrigger* trigger() {
     FlushPendingUpdates();

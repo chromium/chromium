@@ -9,6 +9,6 @@ dictionary AnimationTriggerOptions {
   AnimationTimeline? timeline;
   (DOMString or TimelineRangeOffset) rangeStart = "normal";
   (DOMString or TimelineRangeOffset) rangeEnd = "normal";
-  (DOMString or TimelineRangeOffset) exitRangeStart = "normal";
-  (DOMString or TimelineRangeOffset) exitRangeEnd = "normal";
+  (DOMString or TimelineRangeOffset) exitRangeStart = "auto";
+  (DOMString or TimelineRangeOffset) exitRangeEnd = "auto";
 };

@@ -2543,25 +2543,45 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTriggerRangeEndList(
       animation_data, style, Length::Percent(100.0));
 }
 
+CSSValue* ComputedStyleUtils::ValueForAnimationRangeOrAuto(
+    const TimelineOffsetOrAuto& offset,
+    const ComputedStyle& style,
+    const Length& default_offset) {
+  if (offset.IsAuto()) {
+    return MakeGarbageCollected<CSSIdentifierValue>(CSSValueID::kAuto);
+  }
+  return ValueForAnimationRange(offset.GetTimelineOffset(), style,
+                                default_offset);
+}
+
+CSSValue* ComputedStyleUtils::ValueForAnimationTriggerExitRangeList(
+    const Vector<TimelineOffsetOrAuto>& range_list,
+    const CSSAnimationData* animation_data,
+    const ComputedStyle& style,
+    const Length& default_offset) {
+  return CreateAnimationValueList(range_list, &ValueForAnimationRangeOrAuto,
+                                  style, default_offset);
+}
+
 CSSValue* ComputedStyleUtils::ValueForAnimationTriggerExitRangeStartList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
-  return ValueForAnimationRangeList(
-      animation_data ? animation_data->TriggerExitRangeStartList()
-                     : Vector<std::optional<
-                           TimelineOffset>>{CSSAnimationData::
-                                                InitialTriggerExitRangeStart()},
+  return ValueForAnimationTriggerExitRangeList(
+      animation_data
+          ? animation_data->TriggerExitRangeStartList()
+          : Vector<TimelineOffsetOrAuto>{CSSAnimationData::
+                                             InitialTriggerExitRangeStart()},
       animation_data, style, Length::Percent(0.0));
 }
 
 CSSValue* ComputedStyleUtils::ValueForAnimationTriggerExitRangeEndList(
     const CSSAnimationData* animation_data,
     const ComputedStyle& style) {
-  return ValueForAnimationRangeList(
-      animation_data ? animation_data->TriggerExitRangeEndList()
-                     : Vector<std::optional<
-                           TimelineOffset>>{CSSAnimationData::
-                                                InitialTriggerExitRangeEnd()},
+  return ValueForAnimationTriggerExitRangeList(
+      animation_data
+          ? animation_data->TriggerExitRangeEndList()
+          : Vector<TimelineOffsetOrAuto>{CSSAnimationData::
+                                             InitialTriggerExitRangeEnd()},
       animation_data, style, Length::Percent(100.0));
 }
 
