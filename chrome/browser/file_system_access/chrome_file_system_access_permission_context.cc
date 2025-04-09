@@ -262,131 +262,110 @@ bool MaybeIsLocalUNCPath(const base::FilePath& path) {
 // the struct below.
 constexpr const int kNoBasePathKey = -1;
 
-enum BlockType {
-  kBlockAllChildren,
-  kBlockNestedDirectories,
-  kDontBlockChildren
-};
+using BlockType = ChromeFileSystemAccessPermissionContext::BlockType;
 
-const struct {
-  // base::BasePathKey value (or one of the platform specific extensions to it)
-  // for a path that should be blocked. Specify kNoBasePathKey if |path| should
-  // be used instead.
-  int base_path_key;
-
-  // Explicit path to block instead of using |base_path_key|. Set to nullptr to
-  // use |base_path_key| on its own. If both |base_path_key| and |path| are set,
-  // |path| is treated relative to the path |base_path_key| resolves to.
-  const base::FilePath::CharType* path;
-
-  // If this is set to kDontBlockChildren, only the given path and its parents
-  // are blocked. If this is set to kBlockAllChildren, all children of the given
-  // path are blocked as well. Finally if this is set to kBlockNestedDirectories
-  // access is allowed to individual files in the directory, but nested
-  // directories are still blocked.
-  // The BlockType of the nearest ancestor of a path to check is what ultimately
-  // determines if a path is blocked or not. If a blocked path is a descendent
-  // of another blocked path, then it may override the child-blocking policy of
-  // its ancestor. For example, if /home blocks all children, but
-  // /home/downloads does not, then /home/downloads/file.ext will *not* be
-  // blocked.
-  BlockType type;
-} kBlockedPaths[] = {
-    // Don't allow users to share their entire home directory, entire desktop or
-    // entire documents folder, but do allow sharing anything inside those
-    // directories not otherwise blocked.
-    {base::DIR_HOME, nullptr, kDontBlockChildren},
-    {base::DIR_USER_DESKTOP, nullptr, kDontBlockChildren},
-    {chrome::DIR_USER_DOCUMENTS, nullptr, kDontBlockChildren},
-    // Similar restrictions for the downloads directory.
-    {chrome::DIR_DEFAULT_DOWNLOADS, nullptr, kDontBlockChildren},
-    {chrome::DIR_DEFAULT_DOWNLOADS_SAFE, nullptr, kDontBlockChildren},
-    // The Chrome installation itself should not be modified by the web.
-    {base::DIR_EXE, nullptr, kBlockAllChildren},
-    {base::DIR_MODULE, nullptr, kBlockAllChildren},
-    {base::DIR_ASSETS, nullptr, kBlockAllChildren},
-    // And neither should the configuration of at least the currently running
-    // Chrome instance (note that this does not take --user-data-dir command
-    // line overrides into account).
-    {chrome::DIR_USER_DATA, nullptr, kBlockAllChildren},
-    // ~/.ssh is pretty sensitive on all platforms, so block access to that.
-    {base::DIR_HOME, FILE_PATH_LITERAL(".ssh"), kBlockAllChildren},
-    // And limit access to ~/.gnupg as well.
-    {base::DIR_HOME, FILE_PATH_LITERAL(".gnupg"), kBlockAllChildren},
+std::vector<ChromeFileSystemAccessPermissionContext::BlockedPath>
+GenerateBlockedPath() {
+  return {
+      // Don't allow users to share their entire home directory, entire desktop
+      // or entire documents folder, but do allow sharing anything inside those
+      // directories not otherwise blocked.
+      {base::DIR_HOME, nullptr, BlockType::kDontBlockChildren},
+      {base::DIR_USER_DESKTOP, nullptr, BlockType::kDontBlockChildren},
+      {chrome::DIR_USER_DOCUMENTS, nullptr, BlockType::kDontBlockChildren},
+      // Similar restrictions for the downloads directory.
+      {chrome::DIR_DEFAULT_DOWNLOADS, nullptr, BlockType::kDontBlockChildren},
+      {chrome::DIR_DEFAULT_DOWNLOADS_SAFE, nullptr,
+       BlockType::kDontBlockChildren},
+      // The Chrome installation itself should not be modified by the web.
+      {base::DIR_EXE, nullptr, BlockType::kBlockAllChildren},
+      {base::DIR_MODULE, nullptr, BlockType::kBlockAllChildren},
+      {base::DIR_ASSETS, nullptr, BlockType::kBlockAllChildren},
+      // And neither should the configuration of at least the currently running
+      // Chrome instance (note that this does not take --user-data-dir command
+      // line overrides into account).
+      {chrome::DIR_USER_DATA, nullptr, BlockType::kBlockAllChildren},
+      // ~/.ssh is pretty sensitive on all platforms, so block access to that.
+      {base::DIR_HOME, FILE_PATH_LITERAL(".ssh"), BlockType::kBlockAllChildren},
+      // And limit access to ~/.gnupg as well.
+      {base::DIR_HOME, FILE_PATH_LITERAL(".gnupg"),
+       BlockType::kBlockAllChildren},
 #if BUILDFLAG(IS_WIN)
-    // Some Windows specific directories to block, basically all apps, the
-    // operating system itself, as well as configuration data for apps.
-    {base::DIR_PROGRAM_FILES, nullptr, kBlockAllChildren},
-    {base::DIR_PROGRAM_FILESX86, nullptr, kBlockAllChildren},
-    {base::DIR_PROGRAM_FILES6432, nullptr, kBlockAllChildren},
-    {base::DIR_WINDOWS, nullptr, kBlockAllChildren},
-    {base::DIR_ROAMING_APP_DATA, nullptr, kBlockAllChildren},
-    {base::DIR_LOCAL_APP_DATA, nullptr, kBlockAllChildren},
-    {base::DIR_COMMON_APP_DATA, nullptr, kBlockAllChildren},
-    // Opening a file from an MTP device, such as a smartphone or a camera, is
-    // implemented by Windows as opening a file in the temporary internet files
-    // directory. To support that, allow opening files in that directory, but
-    // not whole directories.
-    {base::DIR_IE_INTERNET_CACHE, nullptr, kBlockNestedDirectories},
+      // Some Windows specific directories to block, basically all apps, the
+      // operating system itself, as well as configuration data for apps.
+      {base::DIR_PROGRAM_FILES, nullptr, BlockType::kBlockAllChildren},
+      {base::DIR_PROGRAM_FILESX86, nullptr, BlockType::kBlockAllChildren},
+      {base::DIR_PROGRAM_FILES6432, nullptr, BlockType::kBlockAllChildren},
+      {base::DIR_WINDOWS, nullptr, BlockType::kBlockAllChildren},
+      {base::DIR_ROAMING_APP_DATA, nullptr, BlockType::kBlockAllChildren},
+      {base::DIR_LOCAL_APP_DATA, nullptr, BlockType::kBlockAllChildren},
+      {base::DIR_COMMON_APP_DATA, nullptr, BlockType::kBlockAllChildren},
+      // Opening a file from an MTP device, such as a smartphone or a camera, is
+      // implemented by Windows as opening a file in the temporary internet
+      // files directory. To support that, allow opening files in that
+      // directory, but not whole directories.
+      {base::DIR_IE_INTERNET_CACHE, nullptr,
+       BlockType::kBlockNestedDirectories},
 #endif
 #if BUILDFLAG(IS_MAC)
-    // Similar Mac specific blocks.
-    {base::DIR_APP_DATA, nullptr, kBlockAllChildren},
-    // Block access to the current bundle directory.
-    {chrome::DIR_OUTER_BUNDLE, nullptr, kBlockAllChildren},
-    // Block access to the user's Applications directory.
-    {base::DIR_HOME, FILE_PATH_LITERAL("Applications"), kBlockAllChildren},
-    // Block access to the root Applications directory.
-    {kNoBasePathKey, FILE_PATH_LITERAL("/Applications"), kBlockAllChildren},
-    {base::DIR_HOME, FILE_PATH_LITERAL("Library"), kBlockAllChildren},
-    // Allow access to other cloud files, such as Google Drive.
-    {base::DIR_HOME, FILE_PATH_LITERAL("Library/CloudStorage"),
-     kDontBlockChildren},
-    // Allow the site to interact with data from its corresponding natively
-    // installed (sandboxed) application. It would be nice to limit a site to
-    // access only _its_ corresponding natively installed application,
-    // but unfortunately there's no straightforward way to do that. See
-    // https://crbug.com/984641#c22.
-    {base::DIR_HOME, FILE_PATH_LITERAL("Library/Containers"),
-     kDontBlockChildren},
-    // Allow access to iCloud files...
-    {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"),
-     kDontBlockChildren},
-    // ... which may also appear at this directory.
-    {base::DIR_HOME,
-     FILE_PATH_LITERAL("Library/Mobile Documents/com~apple~CloudDocs"),
-     kDontBlockChildren},
+      // Similar Mac specific blocks.
+      {base::DIR_APP_DATA, nullptr, BlockType::kBlockAllChildren},
+      // Block access to the current bundle directory.
+      {chrome::DIR_OUTER_BUNDLE, nullptr, BlockType::kBlockAllChildren},
+      // Block access to the user's Applications directory.
+      {base::DIR_HOME, FILE_PATH_LITERAL("Applications"),
+       BlockType::kBlockAllChildren},
+      // Block access to the root Applications directory.
+      {kNoBasePathKey, FILE_PATH_LITERAL("/Applications"),
+       BlockType::kBlockAllChildren},
+      {base::DIR_HOME, FILE_PATH_LITERAL("Library"),
+       BlockType::kBlockAllChildren},
+      // Allow access to other cloud files, such as Google Drive.
+      {base::DIR_HOME, FILE_PATH_LITERAL("Library/CloudStorage"),
+       BlockType::kDontBlockChildren},
+      // Allow the site to interact with data from its corresponding natively
+      // installed (sandboxed) application. It would be nice to limit a site to
+      // access only _its_ corresponding natively installed application, but
+      // unfortunately there's no straightforward way to do that. See
+      // https://crbug.com/984641#c22.
+      {base::DIR_HOME, FILE_PATH_LITERAL("Library/Containers"),
+       BlockType::kDontBlockChildren},
+      // Allow access to iCloud files...
+      {base::DIR_HOME, FILE_PATH_LITERAL("Library/Mobile Documents"),
+       BlockType::kDontBlockChildren},
+      // ... which may also appear at this directory.
+      {base::DIR_HOME,
+       FILE_PATH_LITERAL("Library/Mobile Documents/com~apple~CloudDocs"),
+       BlockType::kDontBlockChildren},
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-    // On Linux also block access to devices via /dev.
-    {kNoBasePathKey, FILE_PATH_LITERAL("/dev"), kBlockAllChildren},
-    // And security sensitive data in /proc and /sys.
-    {kNoBasePathKey, FILE_PATH_LITERAL("/proc"), kBlockAllChildren},
-    {kNoBasePathKey, FILE_PATH_LITERAL("/sys"), kBlockAllChildren},
-    // And system files in /boot and /etc.
-    {kNoBasePathKey, FILE_PATH_LITERAL("/boot"), kBlockAllChildren},
-    {kNoBasePathKey, FILE_PATH_LITERAL("/etc"), kBlockAllChildren},
-    // And block all of ~/.config, matching the similar restrictions on mac
-    // and windows.
-    {base::DIR_HOME, FILE_PATH_LITERAL(".config"), kBlockAllChildren},
-    // Block ~/.dbus as well, just in case, although there probably isn't much a
-    // website can do with access to that directory and its contents.
-    {base::DIR_HOME, FILE_PATH_LITERAL(".dbus"), kBlockAllChildren},
+      // On Linux also block access to devices via /dev.
+      {kNoBasePathKey, FILE_PATH_LITERAL("/dev"), BlockType::kBlockAllChildren},
+      // And security sensitive data in /proc and /sys.
+      {kNoBasePathKey, FILE_PATH_LITERAL("/proc"),
+       BlockType::kBlockAllChildren},
+      {kNoBasePathKey, FILE_PATH_LITERAL("/sys"), BlockType::kBlockAllChildren},
+      // And system files in /boot and /etc.
+      {kNoBasePathKey, FILE_PATH_LITERAL("/boot"),
+       BlockType::kBlockAllChildren},
+      {kNoBasePathKey, FILE_PATH_LITERAL("/etc"), BlockType::kBlockAllChildren},
+      // And block all of ~/.config, matching the similar restrictions on mac
+      // and windows.
+      {base::DIR_HOME, FILE_PATH_LITERAL(".config"),
+       BlockType::kBlockAllChildren},
+      // Block ~/.dbus as well, just in case, although there probably isn't much
+      // a website can do with access to that directory and its contents.
+      {base::DIR_HOME, FILE_PATH_LITERAL(".dbus"),
+       BlockType::kBlockAllChildren},
 #endif
 #if BUILDFLAG(IS_ANDROID)
-    {base::DIR_ANDROID_APP_DATA, nullptr, kBlockAllChildren},
-    {base::DIR_CACHE, nullptr, kBlockAllChildren},
+      {base::DIR_ANDROID_APP_DATA, nullptr, BlockType::kBlockAllChildren},
+      {base::DIR_CACHE, nullptr, BlockType::kBlockAllChildren},
 #endif
-    // TODO(crbug.com/40095723): Refine this list, for example add
-    // XDG_CONFIG_HOME when it is not set ~/.config?
-};
-
-// Describes a rule for blocking a directory, which can be constructed
-// dynamically (based on state) or statically (from kBlockedPaths).
-struct BlockPathRule {
-  base::FilePath path;
-  BlockType type;
-};
+      // TODO(crbug.com/40095723): Refine this list, for example add
+      // XDG_CONFIG_HOME when it is not set ~/.config?
+  };
+}
 
 // A wrapper around `base::NormalizeFilePath` that returns its result instead of
 // using an out parameter.
@@ -403,10 +382,20 @@ base::FilePath NormalizeFilePath(const base::FilePath& path) {
   return normalized_path;
 }
 
-bool ShouldBlockAccessToPath(const base::FilePath& path,
-                             HandleType handle_type,
-                             std::vector<BlockPathRule> rules,
-                             const base::FilePath& profile_path) {
+// Checks if `path` should be blocked by the `rules`.
+// The BlockType of the nearest ancestor of a path to check is what
+// ultimately determines if a path is blocked or not. If a blocked path is a
+// descendent of another blocked path, then it may override the
+// child-blocking policy of its ancestor. For example, if /home blocks all
+// children, but /home/downloads does not, then /home/downloads/file.ext
+// will *not* be blocked.
+bool ShouldBlockAccessToPath(
+    const base::FilePath& path,
+    HandleType handle_type,
+    std::vector<ChromeFileSystemAccessPermissionContext::BlockPathRule> rules,
+    const std::vector<ChromeFileSystemAccessPermissionContext::BlockedPath>&
+        blocked_paths,
+    const base::FilePath& profile_path) {
   DCHECK(!path.empty());
 #if BUILDFLAG(IS_ANDROID)
   // The only check for content-URIs is that they are not from an internal
@@ -443,7 +432,7 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   constexpr bool kUseProfilePathForDirHome = BUILDFLAG(IS_CHROMEOS);
 
   // Add the hard-coded rules to the dynamic rules.
-  for (const auto& block : kBlockedPaths) {
+  for (const auto& block : blocked_paths) {
     base::FilePath blocked_path;
     if (block.base_path_key != kNoBasePathKey) {
       if (kUseProfilePathForDirHome && block.base_path_key == base::DIR_HOME) {
@@ -462,7 +451,7 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   }
 
   base::FilePath nearest_ancestor;
-  BlockType nearest_ancestor_block_type = kDontBlockChildren;
+  BlockType nearest_ancestor_block_type = BlockType::kDontBlockChildren;
   for (const auto& block : rules) {
     base::FilePath blocked_path =
         normalize_file_paths ? NormalizeFilePath(block.path) : block.path;
@@ -483,14 +472,14 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   // The path we're checking is not in a potentially blocked directory, or the
   // nearest ancestor does not block access to its children. Grant access.
   if (nearest_ancestor.empty() ||
-      nearest_ancestor_block_type == kDontBlockChildren) {
+      nearest_ancestor_block_type == BlockType::kDontBlockChildren) {
     return false;
   }
 
   // The path we're checking is a file, and the nearest ancestor only blocks
   // access to directories. Grant access.
   if (handle_type == HandleType::kFile &&
-      nearest_ancestor_block_type == kBlockNestedDirectories) {
+      nearest_ancestor_block_type == BlockType::kBlockNestedDirectories) {
     return false;
   }
 
@@ -1270,6 +1259,8 @@ ChromeFileSystemAccessPermissionContext::
     }
   }
 #endif
+
+  blocked_paths_ = GenerateBlockedPath();
 }
 
 ChromeFileSystemAccessPermissionContext::
@@ -1869,17 +1860,18 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
   // profile's directory, assuming the profile dir is a child of the user data
   // dir.
   std::vector<BlockPathRule> extra_rules;
-  extra_rules.emplace_back(profile_->GetPath().DirName(), kBlockAllChildren);
+  extra_rules.emplace_back(profile_->GetPath().DirName(),
+                           BlockType::kBlockAllChildren);
   if (g_browser_process->profile_manager()) {
     extra_rules.emplace_back(
         g_browser_process->profile_manager()->user_data_dir(),
-        kBlockAllChildren);
+        BlockType::kBlockAllChildren);
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ShouldBlockAccessToPath, path_info.path, handle_type,
-                     extra_rules,
+                     extra_rules, std::cref(blocked_paths_),
                      profile_path_override_.value_or(profile_->GetPath())),
       std::move(callback));
 }
