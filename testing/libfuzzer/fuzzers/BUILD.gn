@@ -192,6 +192,7 @@ if (v8_enable_webassembly) {
   v8_fuzzer("multi_return_fuzzer") {
     # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
+    high_end_debug_job_required = true
   }
 
   v8_fuzzer("wasm_code_fuzzer") {
@@ -199,6 +200,7 @@ if (v8_enable_webassembly) {
 
     # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
+    high_end_debug_job_required = true
   }
 
   v8_fuzzer("wasm_module_fuzzer") {
@@ -207,6 +209,7 @@ if (v8_enable_webassembly) {
 
     # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
+    high_end_debug_job_required = true
   }
 
   v8_fuzzer("wasm_async_fuzzer") {
@@ -215,6 +218,7 @@ if (v8_enable_webassembly) {
 
     # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
+    high_end_debug_job_required = true
   }
 
   v8_fuzzer("wasm_streaming_fuzzer") {
@@ -223,6 +227,7 @@ if (v8_enable_webassembly) {
 
     # TODO(https://crbug.com/394563978): Remove once experiment ends.
     high_end_job_required = true
+    high_end_debug_job_required = true
   }
 
   # These fuzzers are not supported in official builds as they depend on
@@ -234,6 +239,7 @@ if (v8_enable_webassembly) {
 
       # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
+      high_end_debug_job_required = true
     }
 
     v8_fuzzer("wasm_compile_fuzzer") {
@@ -241,6 +247,7 @@ if (v8_enable_webassembly) {
 
       # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
+      high_end_debug_job_required = true
     }
 
     v8_fuzzer("wasm_compile_simd_fuzzer") {
@@ -248,6 +255,7 @@ if (v8_enable_webassembly) {
 
       # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
+      high_end_debug_job_required = true
     }
 
     v8_fuzzer("wasm_compile_wasmgc_fuzzer") {
@@ -255,6 +263,7 @@ if (v8_enable_webassembly) {
 
       # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
+      high_end_debug_job_required = true
     }
 
     v8_fuzzer("wasm_init_expr_fuzzer") {
@@ -262,6 +271,7 @@ if (v8_enable_webassembly) {
 
       # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
+      high_end_debug_job_required = true
     }
 
     v8_fuzzer("wasm_deopt_fuzzer") {
@@ -269,6 +279,7 @@ if (v8_enable_webassembly) {
 
       # TODO(https://crbug.com/394563978): Remove once experiment ends.
       high_end_job_required = true
+      high_end_debug_job_required = true
     }
   }
 }

@@ -2885,6 +2885,27 @@
           }
         ]
       },
+      "Libfuzzer High End Upload Linux ASan Debug": {
+        "contact_team_email": "chrome-deet-core@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "Libfuzzer Upload Chrome OS ASan": {
         "contact_team_email": "chrome-deet-core@google.com",
         "problem_specs": [
