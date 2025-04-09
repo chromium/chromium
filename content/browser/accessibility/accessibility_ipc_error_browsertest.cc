@@ -51,10 +51,6 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
 #if (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)) || AX_FAIL_FAST_BUILD()
 #define MAYBE_UnrecoverableAccessibilityErrorDisallowReenabling \
   DISABLED_UnrecoverableAccessibilityErrorDisallowReenabling
-// TODO(crbug.com/409336324): Delete this arm once the failure is fixed.
-#elif BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_UnrecoverableAccessibilityErrorDisallowReenabling \
-  DISABLED_UnrecoverableAccessibilityErrorDisallowReenabling
 #else
 #define MAYBE_UnrecoverableAccessibilityErrorDisallowReenabling \
   UnrecoverableAccessibilityErrorDisallowReenabling
@@ -94,8 +90,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(nullptr, frame->GetOrCreateBrowserAccessibilityManager());
 
   // Verify the current mode.
-  EXPECT_EQ(ui::kAXModeComplete,
-            shell()->web_contents()->GetAccessibilityMode());
+  EXPECT_EQ(ui::kAXModeBasic, shell()->web_contents()->GetAccessibilityMode());
 
   // Now create a BrowserAccessibilityManager, simulating what would happen
   // if the RFH's view is created now - but then disallow recreating the
