@@ -414,14 +414,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Mojo
   void ProcessOutboundSharedStorageInterceptor();
   void ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
-      const ::net::RedirectInfo& redirect_info,
+      const net::RedirectInfo& redirect_info,
       mojom::URLResponseHeadPtr response);
   void ProcessInboundSharedStorageInterceptorOnResponseStarted();
 
   // Continuation of `OnReceivedRedirect` after possibly asynchronously
-  // concluding the request's Attribution and/or Shared Storage operations.
-  void ContinueOnReceiveRedirect(const ::net::RedirectInfo& redirect_info,
-                                 uint64_t response_index);
+  // concluding the request's Shared Storage operations.
+  void ContinueOnReceiveRedirect(const net::RedirectInfo& redirect_info,
+                                 mojom::URLResponseHeadPtr response);
 
   // A request with Trust Tokens parameters will (assuming preconditions pass
   // and operations are successful) have one TrustTokenRequestHelper::Begin
@@ -737,15 +737,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // there is a matching shared dictionary for the request.
   std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker_;
 
-  // The `SharedStorageRequestHelper` takes a callback to trigger
-  // `ContinueOnReceiveRedirect()`. To prevent re-entrancy, however, this
-  // callback is conditionally run only if the helper successfully parses
-  // operations and sends them via mojo to observer(s). We stash here the
-  // non-copyable `mojom::URLResponseHeadPtr` to which
-  // `ContinueOnReceiveRedirect()` needs access and pass the response's index in
-  // the map as a parameter.
-  std::map<uint64_t, mojom::URLResponseHeadPtr> on_receive_redirect_responses_;
-  uint64_t next_on_receive_redirect_response_index_ = 0;
 
   // Outlives `this`.
   const raw_ref<const cors::OriginAccessList> origin_access_list_;

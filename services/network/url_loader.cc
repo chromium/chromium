@@ -1396,28 +1396,23 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
 }
 
 void URLLoader::ProcessInboundSharedStorageInterceptorOnReceivedRedirect(
-    const ::net::RedirectInfo& redirect_info,
+    const net::RedirectInfo& redirect_info,
     mojom::URLResponseHeadPtr response) {
   DCHECK(shared_storage_request_helper_);
-  uint64_t response_index = next_on_receive_redirect_response_index_++;
-  on_receive_redirect_responses_[response_index] = std::move(response);
+
+  auto split = base::SplitOnceCallback(base::BindOnce(
+      &URLLoader::ContinueOnReceiveRedirect, weak_ptr_factory_.GetWeakPtr(),
+      redirect_info, std::move(response)));
   if (!shared_storage_request_helper_->ProcessIncomingResponse(
-          *url_request_, base::BindOnce(&URLLoader::ContinueOnReceiveRedirect,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        redirect_info, response_index))) {
-    ContinueOnReceiveRedirect(redirect_info, response_index);
+          *url_request_, std::move(split.first))) {
+    std::move(split.second).Run();
   }
 }
 
 void URLLoader::ContinueOnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
-    uint64_t response_index) {
-  auto iter = on_receive_redirect_responses_.find(response_index);
-  CHECK(iter != on_receive_redirect_responses_.end(),
-        base::NotFatalUntil::M130);
-  mojom::URLResponseHeadPtr response = std::move(iter->second);
+    mojom::URLResponseHeadPtr response) {
   DCHECK(response);
-  on_receive_redirect_responses_.erase(iter);
   url_loader_client_.Get()->OnReceiveRedirect(redirect_info,
                                               std::move(response));
 }
