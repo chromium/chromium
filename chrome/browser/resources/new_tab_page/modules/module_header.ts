@@ -78,17 +78,17 @@ export class ModuleHeaderElement extends PolymerElement {
     };
   }
 
-  iconSrc: string;
-  chipText: string;
-  descriptionText: string;
-  showInfoButton: boolean;
-  showInfoButtonDropdown: boolean;
-  showDismissButton: boolean;
-  hideMenuButton: boolean;
-  dismissText: string;
-  disableText: string;
-  moreActionsText: string;
-  private iconStyle_: string;
+  declare iconSrc: string;
+  declare chipText: string;
+  declare descriptionText: string;
+  declare showInfoButton: boolean;
+  declare showInfoButtonDropdown: boolean;
+  declare showDismissButton: boolean;
+  declare hideMenuButton: boolean;
+  declare dismissText: string;
+  declare disableText: string;
+  declare moreActionsText: string;
+  declare private iconStyle_: string;
 
   private computeIconStyle_() {
     return `-webkit-mask-image: url(${this.iconSrc});`;

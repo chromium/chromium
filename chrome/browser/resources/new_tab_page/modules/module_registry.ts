@@ -102,11 +102,12 @@ export class ModuleRegistry {
         descriptors.map(d => d.initialize(timeout, /*onNtpLoad=*/ true)));
     return elements.map((e, i) => ({elements: e, descriptor: descriptors[i]}))
         .filter(m => !!m.elements)
-        .map(m => ({
-                    elements: Array.isArray(m.elements) ? m.elements :
-                                                          [m.elements],
-                    descriptor: m.descriptor,
-                  }) as Module)
+        .map(m => (({
+                     elements: Array.isArray(m.elements) ? m.elements :
+                                                           [m.elements],
+
+                     descriptor: m.descriptor,
+                   }) as Module))
         .filter(m => m.elements.length !== 0);
   }
 

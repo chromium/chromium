@@ -42,10 +42,10 @@ export class FooterElement extends CrLitElement {
     };
   }
 
-  theme: Theme|null = null;
-  protected backgroundImageAttribution1_: string;
-  protected backgroundImageAttribution2_: string;
-  protected backgroundImageAttributionUrl_: string;
+  accessor theme: Theme|null = null;
+  protected accessor backgroundImageAttribution1_: string;
+  protected accessor backgroundImageAttribution2_: string;
+  protected accessor backgroundImageAttributionUrl_: string;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

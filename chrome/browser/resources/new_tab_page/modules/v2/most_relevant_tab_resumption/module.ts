@@ -76,16 +76,15 @@ export class ModuleElement extends I18nMixinLit
     };
   }
 
-  format: string = 'wide';
-  urlVisits: URLVisit[] = [];
-  protected fallbackToHost_: boolean =
+  accessor format: string = 'wide';
+  accessor urlVisits: URLVisit[] = [];
+  protected accessor fallbackToHost_: boolean =
       loadTimeData.getBoolean('mostRelevantTabResumptionModuleFallbackToHost');
-  protected shouldShowDeviceIcon_: boolean =
-    loadTimeData.getBoolean('mostRelevantTabResumptionDeviceIconEnabled');
-  protected showInfoDialog_: boolean = false;
-  protected useIsKnownToSync_:
-    boolean =
-        loadTimeData.getBoolean('mostRelevantTabResumptionUseIsKnownToSync');
+  protected accessor shouldShowDeviceIcon_: boolean =
+      loadTimeData.getBoolean('mostRelevantTabResumptionDeviceIconEnabled');
+  protected accessor showInfoDialog_: boolean = false;
+  protected accessor useIsKnownToSync_: boolean =
+      loadTimeData.getBoolean('mostRelevantTabResumptionUseIsKnownToSync');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

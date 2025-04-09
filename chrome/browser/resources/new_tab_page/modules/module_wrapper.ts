@@ -44,7 +44,7 @@ export class ModuleWrapperElement extends PolymerElement {
     };
   }
 
-  module: ModuleInstance;
+  declare module: ModuleInstance;
 
   private onModuleChange_(
       _newValue: ModuleInstance, oldValue?: ModuleInstance) {

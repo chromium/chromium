@@ -246,48 +246,50 @@ export class AppElement extends AppElementBase {
     };
   }
 
-  protected oneGoogleBarIframeOrigin_: string = OGB_IFRAME_ORIGIN;
-  protected oneGoogleBarIframePath_: string;
-  protected oneGoogleBarLoaded_: boolean;
-  protected theme_?: Theme;
-  protected showCustomize_: boolean;
-  protected showCustomizeChromeText_: boolean;
-  protected showWallpaperSearch_: boolean = false;
-  private selectedCustomizeDialogPage_: string|null;
-  protected showVoiceSearchOverlay_: boolean = false;
-  protected showBackgroundImage_: boolean;
-  protected backgroundColor_: SkColor|null;
-  protected colorSourceIsBaseline: boolean;
-  protected logoColor_: SkColor|null = null;
-  protected singleColoredLogo_: boolean;
-  realboxCanShowSecondarySide: boolean;
-  realboxHadSecondarySide: boolean;
-  protected realboxShown_: boolean;
-  protected showLensUploadDialog_: boolean = false;
-  protected logoEnabled_: boolean = loadTimeData.getBoolean('logoEnabled');
-  protected oneGoogleBarEnabled_: boolean =
+  protected accessor oneGoogleBarIframeOrigin_: string = OGB_IFRAME_ORIGIN;
+  protected accessor oneGoogleBarIframePath_: string;
+  protected accessor oneGoogleBarLoaded_: boolean;
+  protected accessor theme_: Theme|undefined;
+  protected accessor showCustomize_: boolean;
+  protected accessor showCustomizeChromeText_: boolean;
+  protected accessor showWallpaperSearch_: boolean = false;
+  private accessor selectedCustomizeDialogPage_: string|null;
+  protected accessor showVoiceSearchOverlay_: boolean = false;
+  protected accessor showBackgroundImage_: boolean;
+  protected accessor backgroundColor_: SkColor|null;
+  protected accessor colorSourceIsBaseline: boolean;
+  protected accessor logoColor_: SkColor|null = null;
+  protected accessor singleColoredLogo_: boolean;
+  accessor realboxCanShowSecondarySide: boolean;
+  accessor realboxHadSecondarySide: boolean;
+  protected accessor realboxShown_: boolean;
+  protected accessor showLensUploadDialog_: boolean = false;
+  protected accessor logoEnabled_: boolean =
+      loadTimeData.getBoolean('logoEnabled');
+  protected accessor oneGoogleBarEnabled_: boolean =
       loadTimeData.getBoolean('oneGoogleBarEnabled');
-  protected shortcutsEnabled_: boolean =
+  protected accessor shortcutsEnabled_: boolean =
       loadTimeData.getBoolean('shortcutsEnabled');
   private modulesFreShown: boolean;
-  protected middleSlotPromoEnabled_: boolean =
+  protected accessor middleSlotPromoEnabled_: boolean =
       loadTimeData.getBoolean('middleSlotPromoEnabled');
-  protected modulesEnabled_: boolean =
+  protected accessor modulesEnabled_: boolean =
       loadTimeData.getBoolean('modulesEnabled');
-  private middleSlotPromoLoaded_: boolean = false;
-  private modulesLoaded_: boolean = false;
-  protected modulesShownToUser: boolean;
-  protected microsoftModuleEnabled_: boolean =
+  private accessor middleSlotPromoLoaded_: boolean = false;
+  private accessor modulesLoaded_: boolean = false;
+  protected accessor modulesShownToUser: boolean;
+  protected accessor microsoftModuleEnabled_: boolean =
       loadTimeData.getBoolean('microsoftModuleEnabled');
-  protected microsoftAuthIframePath_: string = MSAL_IFRAME_ORIGIN;
-  protected promoAndModulesLoaded_: boolean = false;
-  protected lazyRender_: boolean;
-  protected scrolledToTop_: boolean = document.documentElement.scrollTop <= 0;
-  private wallpaperSearchButtonAnimationEnabled_: boolean =
+  protected accessor microsoftAuthIframePath_: string = MSAL_IFRAME_ORIGIN;
+  protected accessor promoAndModulesLoaded_: boolean = false;
+  protected accessor lazyRender_: boolean;
+  protected accessor scrolledToTop_: boolean =
+      document.documentElement.scrollTop <= 0;
+  private accessor wallpaperSearchButtonAnimationEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonAnimationEnabled');
-  protected wallpaperSearchButtonEnabled_: boolean =
+  protected accessor wallpaperSearchButtonEnabled_: boolean =
       loadTimeData.getBoolean('wallpaperSearchButtonEnabled');
-  protected showWallpaperSearchButton_: boolean;
+  protected accessor showWallpaperSearchButton_: boolean;
 
   private callbackRouter_: PageCallbackRouter;
   private pageHandler_: PageHandlerRemote;

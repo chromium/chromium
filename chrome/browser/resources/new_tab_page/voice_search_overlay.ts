@@ -206,15 +206,16 @@ export class VoiceSearchOverlayElement extends CrLitElement {
     };
   }
 
-  protected interimResult_: string;
-  protected finalResult_: string;
-  private state_: State = State.UNINITIALIZED;
-  private error_: Error;
-  protected helpUrl_: string =
+  protected accessor interimResult_: string;
+  protected accessor finalResult_: string;
+  private accessor state_: State = State.UNINITIALIZED;
+  private accessor error_: Error;
+  protected accessor helpUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
-  protected micVolumeLevel_: number = 0;
-  protected micVolumeDuration_: number = VOLUME_ANIMATION_DURATION_MIN_MS;
+  protected accessor micVolumeLevel_: number = 0;
+  protected accessor micVolumeDuration_: number =
+      VOLUME_ANIMATION_DURATION_MIN_MS;
 
   private pageHandler_: PageHandlerRemote;
   private voiceRecognition_: SpeechRecognition;

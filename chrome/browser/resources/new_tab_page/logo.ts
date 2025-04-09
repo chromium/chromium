@@ -82,25 +82,25 @@ export class LogoElement extends CrLitElement {
     };
   }
 
-  singleColored: boolean = false;
-  dark: boolean;
-  backgroundColor: SkColor;
-  private loaded_: boolean;
-  protected doodle_: Doodle|null;
-  protected imageDoodle_: ImageDoodle|null;
-  protected showLogo_: boolean;
-  protected showDoodle_: boolean;
-  private doodleBoxed_: boolean;
-  protected imageUrl_: string;
-  protected showAnimation_: boolean = false;
-  protected animationUrl_: string;
-  protected iframeUrl_: string;
-  private duration_: string;
-  private height_: string;
-  private width_: string;
-  protected expanded_: boolean;
-  protected showShareDialog_: boolean;
-  protected imageDoodleTabIndex_: number;
+  accessor singleColored: boolean = false;
+  accessor dark: boolean;
+  accessor backgroundColor: SkColor;
+  private accessor loaded_: boolean;
+  protected accessor doodle_: Doodle|null;
+  protected accessor imageDoodle_: ImageDoodle|null;
+  protected accessor showLogo_: boolean;
+  protected accessor showDoodle_: boolean;
+  private accessor doodleBoxed_: boolean;
+  protected accessor imageUrl_: string;
+  protected accessor showAnimation_: boolean = false;
+  protected accessor animationUrl_: string;
+  protected accessor iframeUrl_: string;
+  private accessor duration_: string;
+  private accessor height_: string;
+  private accessor width_: string;
+  protected accessor expanded_: boolean;
+  protected accessor showShareDialog_: boolean;
+  protected accessor imageDoodleTabIndex_: number;
 
   private eventTracker_: EventTracker = new EventTracker();
   private pageHandler_: PageHandlerRemote;

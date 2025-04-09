@@ -93,16 +93,17 @@ export class LensFormElement extends CrLitElement {
     };
   }
 
-  protected supportedFileTypes_: string = SUPPORTED_FILE_TYPES.join(',');
-  protected renderingEnvironment_: string = RENDERING_ENVIRONMENT;
-  protected chromiumSurface_: string = CHROMIUM_SURFACE;
-  protected language_: string = window.navigator.language;
-  protected uploadFileAction_: string = SCOTTY_UPLOAD_FILE_ACTION;
-  protected uploadUrlAction_: string = UPLOAD_BY_URL_ACTION;
-  protected uploadUrl_: string = '';
-  protected uploadUrlEntrypoint_: string = UPLOAD_URL_ENTRYPOINT;
-  protected startTime_: string|null = null;
-  protected clientData_: string =
+  protected accessor supportedFileTypes_: string =
+      SUPPORTED_FILE_TYPES.join(',');
+  protected accessor renderingEnvironment_: string = RENDERING_ENVIRONMENT;
+  protected accessor chromiumSurface_: string = CHROMIUM_SURFACE;
+  protected accessor language_: string = window.navigator.language;
+  protected accessor uploadFileAction_: string = SCOTTY_UPLOAD_FILE_ACTION;
+  protected accessor uploadUrlAction_: string = UPLOAD_BY_URL_ACTION;
+  protected accessor uploadUrl_: string = '';
+  protected accessor uploadUrlEntrypoint_: string = UPLOAD_URL_ENTRYPOINT;
+  protected accessor startTime_: string|null = null;
+  protected accessor clientData_: string =
       loadTimeData.getString('searchboxLensVariations');
 
   openSystemFilePicker() {

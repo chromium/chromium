@@ -45,7 +45,7 @@ export class MobilePromoElement extends CrLitElement {
     };
   }
 
-  protected qrCode: string;
+  protected accessor qrCode: string;
 
   private blocklistedPromo_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();

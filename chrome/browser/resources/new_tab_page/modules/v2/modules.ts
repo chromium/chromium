@@ -135,14 +135,14 @@ export class ModulesV2Element extends AppElementBase {
     };
   }
 
-  modulesShownToUser: boolean;
+  declare modulesShownToUser: boolean;
   private waitToLoadModules_: boolean =
       loadTimeData.getBoolean('waitToLoadModules');
   private maxColumnCount_: number;
   private containerMaxWidth_: number;
-  private disabledModules_: {all: boolean, ids: string[]};
+  declare private disabledModules_: {all: boolean, ids: string[]};
   private eventTracker_: EventTracker = new EventTracker();
-  private undoData_: {message: string, undo?: () => void}|null;
+  declare private undoData_: {message: string, undo?: () => void}|null;
   private setDisabledModulesListenerId_: number|null = null;
   private setModulesLoadableListenerId_: number|null = null;
   private containerObserver_: MutationObserver|null = null;

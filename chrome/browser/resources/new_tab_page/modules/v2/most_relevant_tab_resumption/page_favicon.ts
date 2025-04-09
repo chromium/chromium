@@ -59,10 +59,10 @@ class PageFavicon extends CrLitElement {
   // Properties
   //============================================================================
 
-  url?: Url;
-  fallbackToHost: boolean = true;
-  isKnownToSync: boolean = false;
-  size: number = 16;
+  accessor url: Url|undefined;
+  accessor fallbackToHost: boolean = true;
+  accessor isKnownToSync: boolean = false;
+  accessor size: number = 16;
 
   //============================================================================
   // Helper methods

@@ -49,8 +49,8 @@ export class MicrosoftFilesModuleElement extends
     };
   }
 
-  protected files_: File[] = [];
-  protected showInfoDialog_: boolean = false;
+  protected accessor files_: File[] = [];
+  protected accessor showInfoDialog_: boolean = false;
 
   private handler_: MicrosoftFilesPageHandlerRemote;
 

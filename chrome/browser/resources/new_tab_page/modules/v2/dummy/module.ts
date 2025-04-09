@@ -49,8 +49,8 @@ export class ModuleElement extends ModuleElementBase {
     };
   }
 
-  tiles: FooDataItem[];
-  override title: string;
+  accessor tiles: FooDataItem[];
+  override accessor title: string;
 
   protected onDisableButtonClick_() {
     this.fire('disable-module', {

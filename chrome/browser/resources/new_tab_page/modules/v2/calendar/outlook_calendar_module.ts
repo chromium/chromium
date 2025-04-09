@@ -47,8 +47,8 @@ export class OutlookCalendarModuleElement extends
     };
   }
 
-  protected events_: CalendarEvent[];
-  protected showInfoDialog_: boolean;
+  protected accessor events_: CalendarEvent[];
+  protected accessor showInfoDialog_: boolean;
 
   private handler_: OutlookCalendarPageHandlerRemote;
 
