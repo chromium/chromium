@@ -6,11 +6,13 @@
 
 #include <tuple>
 
+#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -20,23 +22,33 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_constrainlongrange_long.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/modules/mediastream/apply_constraints_processor.h"
 #include "third_party/blink/renderer/modules/mediastream/local_media_stream_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_content.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/webrtc/peer_connection_remote_audio_source.h"
+#include "third_party/webrtc/api/media_stream_interface.h"
+#include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using testing::_;
 
@@ -71,6 +83,11 @@ std::unique_ptr<MockMediaStreamVideoSource> MakeMockMediaStreamVideoSource() {
 class MockEventListener : public NativeEventListener {
  public:
   MOCK_METHOD(void, Invoke, (ExecutionContext*, Event*));
+};
+
+class MockWebMediaStreamObserver : public WebMediaStreamObserver {
+ public:
+  MOCK_METHOD(void, EnabledStateChangedForWebRtcAudio, (bool));
 };
 
 std::unique_ptr<blink::LocalMediaStreamAudioSource>
@@ -252,6 +269,127 @@ TEST_F(MediaStreamTrackImplTest, MutedStateUpdates) {
 
   source->SetReadyState(MediaStreamSource::kReadyStateLive);
   EXPECT_EQ(track->muted(), false);
+}
+
+class HtmlMediaElementForWebRtcAudioTest : public testing::Test {
+ public:
+  HtmlMediaElementForWebRtcAudioTest() { web_view_helper_.Initialize(); }
+
+  ~HtmlMediaElementForWebRtcAudioTest() override {
+    WebHeap::CollectAllGarbageForTesting();
+  }
+
+ protected:
+  MediaStreamComponent* MakeMockWebRtcAudioComponent() {
+    auto* source = MakeGarbageCollected<MediaStreamSource>(
+        "id", MediaStreamSource::StreamType::kTypeAudio, "name",
+        /*remote=*/true, MakeLocalMediaStreamAudioSource());
+
+    scoped_refptr<webrtc::AudioTrackInterface> remote_track(
+        blink::MockWebRtcAudioTrack::Create("track_id").get());
+    auto webrtc_audio_track =
+        std::make_unique<PeerConnectionRemoteAudioTrack>(remote_track);
+
+    return MakeGarbageCollected<MediaStreamComponentImpl>(
+        source, std::move(webrtc_audio_track));
+  }
+
+  MediaStreamComponent* MakeMockAudioComponent() {
+    MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+        "id", MediaStreamSource::StreamType::kTypeAudio, "name",
+        /*remote=*/false, MakeLocalMediaStreamAudioSource());
+    auto platform_track =
+        std::make_unique<MediaStreamAudioTrack>(true /* is_local_track */);
+    return MakeGarbageCollected<MediaStreamComponentImpl>(
+        source, std::move(platform_track));
+  }
+
+  Document* GetDocument() {
+    return web_view_helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  }
+
+  void SetupHtmlVideoElement() {
+    video_ = MakeGarbageCollected<HTMLVideoElement>(*GetDocument());
+    GetDocument()->body()->AppendChild(video_);
+  }
+  HTMLMediaElement* Video() const { return video_.Get(); }
+
+  test::TaskEnvironment task_environment_;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
+  WeakPersistent<HTMLMediaElement> video_;
+};
+
+TEST_F(HtmlMediaElementForWebRtcAudioTest,
+       MuteWebRtcAudioTrackPropagatesToMediaStream) {
+  V8TestingScope v8_scope;
+
+  // pc.ontrack = function(event) {
+  //    let track = event.track;
+  // }
+  MediaStreamComponent* component = MakeMockWebRtcAudioComponent();
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+
+  MockWebMediaStreamObserver observer;
+  if (base::FeatureList::IsEnabled(kPropagateEnabledEventForWebRtcAudioTrack)) {
+    EXPECT_CALL(observer, EnabledStateChangedForWebRtcAudio(false)).Times(1);
+  } else {
+    EXPECT_CALL(observer, EnabledStateChangedForWebRtcAudio(_)).Times(0);
+  }
+
+  // let media_stream = new MediaStream();
+  // media_stream.addTrack(track);
+  MediaStreamTrackVector audio_tracks = {track};
+  auto* media_stream =
+      MediaStream::Create(v8_scope.GetExecutionContext(), audio_tracks);
+  auto* descriptor = media_stream->Descriptor();
+  descriptor->SetActive(true);
+  descriptor->AddObserver(&observer);
+
+  // let video = document.createElement('video');
+  // video.srcObject = media_stream;
+  SetupHtmlVideoElement();
+  Video()->SetSrcObjectVariant(descriptor);
+  test::RunPendingTasks();
+
+  // track.enabled = false;
+  track->setEnabled(false);
+}
+
+TEST_F(HtmlMediaElementForWebRtcAudioTest,
+       MuteWebLocalAudioTrackDoNotPropagatesToMediaStream) {
+  V8TestingScope v8_scope;
+
+  // Create local audio track.
+  MediaStreamComponent* component = MakeMockAudioComponent();
+  MediaStreamTrack* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      v8_scope.GetExecutionContext(), component);
+
+  MockWebMediaStreamObserver observer;
+  if (base::FeatureList::IsEnabled(kPropagateEnabledEventForWebRtcAudioTrack)) {
+    EXPECT_CALL(observer, EnabledStateChangedForWebRtcAudio(_)).Times(0);
+  } else {
+    EXPECT_CALL(observer, EnabledStateChangedForWebRtcAudio(_)).Times(0);
+  }
+
+  // let media_stream = new MediaStream();
+  // media_stream.addTrack(track);
+  MediaStreamTrackVector audio_tracks = {track};
+  auto* media_stream =
+      MediaStream::Create(v8_scope.GetExecutionContext(), audio_tracks);
+  auto* descriptor = media_stream->Descriptor();
+  descriptor->SetActive(true);
+  descriptor->AddObserver(&observer);
+
+  // let video = document.createElement('video');
+  // video.srcObject = media_stream;
+  SetupHtmlVideoElement();
+  Video()->SetSrcObjectVariant(descriptor);
+  test::RunPendingTasks();
+
+  // track.enabled = false;
+  track->setEnabled(false);
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

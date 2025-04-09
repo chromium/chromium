@@ -22,6 +22,30 @@ async function ensureSilence(audioTrack) {
   assertTrue(result);
 }
 
+async function isSilentAudioBlob(blob) {
+  console.log('Blob size:' + blob.size);
+  const arrayBuffer = await blob.arrayBuffer();
+
+  const audioCtx = new AudioContext();
+  const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+  let silent = true;
+  for (let ch = 0; ch < audioBuffer.numberOfChannels; ch++) {
+    const channelData = audioBuffer.getChannelData(ch);
+    for (let i = 0; i < channelData.length; i++) {
+      if (Math.abs(channelData[i]) >
+          1e-5) {  // threshold to ignore tiny float errors
+        silent = false;
+        break;
+      }
+    }
+    if (!silent)
+      break;
+  }
+
+  return silent;
+}
+
 /**
  * @private
  */

@@ -94,6 +94,40 @@
     .then(logSuccess);
   }
 
+  function callAndEnsureMuteWorksForMediaRecorder(constraints) {
+    return setupCallAndPromiseAudioPlaying(constraints).then(() => {
+      // Mute and ensure the MediaRecorder has silent data.
+      enableRemoteAudio(false);
+
+      let blobParts = [];
+      const mediaRecorder = setupMediaRecorder();
+      mediaRecorder.ondataavailable =function(event) {
+        console.log('ondataavailable size:' + event.data.size);
+        blobParts.push(event.data);
+      };
+
+      mediaRecorder.start();
+      const onStopPromise = new Promise(resolve => {
+        mediaRecorder.onstop = function() {
+          console.log('onstop');
+          assertTrue(blobParts.length > 0, 'Blob should have data');
+          const blob = new Blob(blobParts, { type: 'audio/ogg; codecs=opus' });
+          isSilentAudioBlob(blob).then(isSilent => {
+            assertTrue(isSilent, 'Blob should be silent');
+            resolve(); // finish the promise chain
+          });
+        };
+      });
+
+      return new Promise(resolve => setTimeout(resolve, 1000))
+        .then(() => {
+          mediaRecorder.stop();
+          return onStopPromise; // wait for MediaRecorder to finish
+        });
+    })
+    .then(logSuccess);
+  }
+
   function callAndEnsureLocalVideoMutingDoesntMuteAudio(constraints) {
     return setupCallAndPromiseAudioPlaying(constraints).then(() => {
       enableLocalVideo(false);
@@ -295,6 +329,13 @@
 
   function enableLocalAudio(enabled) {
     localAudioTrack.enabled = enabled;
+  }
+
+  function setupMediaRecorder() {
+    const stream = new MediaStream();
+    stream.addTrack(remoteAudioTrack);
+    const mediaRecorder = new MediaRecorder(stream);
+    return mediaRecorder;
   }
 
   </script>

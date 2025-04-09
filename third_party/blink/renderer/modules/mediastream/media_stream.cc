@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/webrtc/peer_connection_remote_audio_source.h"
 
 namespace blink {
 
@@ -420,6 +421,18 @@ void MediaStream::TrackEnded() {
   }
 
   StreamEnded();
+}
+
+void MediaStream::NotifyEnabledStateChangeForWebRtcAudio(bool enabled) {
+  CHECK(
+      base::FeatureList::IsEnabled(kPropagateEnabledEventForWebRtcAudioTrack));
+  if (!GetExecutionContext()) {
+    return;
+  }
+
+  if (active()) {
+    descriptor_->NotifyEnabledStateChangeForWebRtcAudio(enabled);
+  }
 }
 
 void MediaStream::RegisterObserver(MediaStreamObserver* observer) {

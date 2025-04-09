@@ -377,6 +377,7 @@ WebMediaPlayerMS::WebMediaPlayerMS(
       gpu_factories_(gpu_factories),
       initial_audio_output_device_id_(sink_id),
       volume_(1.0),
+      volume_before_muted_(1.0),
       volume_multiplier_(1.0),
       should_play_upon_shown_(false),
       create_bridge_callback_(std::move(create_bridge_callback)),
@@ -665,6 +666,24 @@ void WebMediaPlayerMS::ActiveStateChanged(bool is_active) {
     audio_renderer_->Stop();
 }
 
+void WebMediaPlayerMS::EnabledStateChangedForWebRtcAudio(bool is_enabled) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  SendLogMessage(String::Format("%s({is_enabled=%s})", __func__,
+                                base::ToString(is_enabled).c_str()));
+  if (enabled_ == is_enabled) {
+    return;
+  }
+
+  if (is_enabled) {
+    enabled_ = true;
+    SetVolume(volume_ != 0.0 ? volume_ : volume_before_muted_);
+  } else {
+    volume_before_muted_ = volume_;
+    SetVolume(0.0);
+    enabled_ = false;
+  }
+}
+
 std::optional<viz::SurfaceId> WebMediaPlayerMS::GetSurfaceId() {
   if (bridge_)
     return bridge_->GetSurfaceId();
@@ -897,7 +916,12 @@ void WebMediaPlayerMS::SetRate(double rate) {
 void WebMediaPlayerMS::SetVolume(double volume) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(String::Format("%s({volume=%.2f})", __func__, volume));
+
   volume_ = volume;
+  if (!enabled_) {
+    return;
+  }
+
   if (audio_renderer_.get())
     audio_renderer_->SetVolume(volume_ * volume_multiplier_);
   if (watch_time_reporter_)

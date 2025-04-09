@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_web_audio_source.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/webrtc/peer_connection_remote_audio_source.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -345,6 +346,11 @@ void MediaStreamTrackImpl::setEnabled(bool enabled) {
   }
 
   component_->SetEnabled(enabled);
+
+  if (base::FeatureList::IsEnabled(kPropagateEnabledEventForWebRtcAudioTrack)) {
+    // Propagate the enabled state to the underlying platform track.
+    PropagateTrackEnabled(enabled);
+  }
 
   SendLogMessage(String::Format("%s({enabled=%s})", __func__,
                                 base::ToString(enabled).c_str()));
@@ -972,6 +978,34 @@ void MediaStreamTrackImpl::PropagateTrackEnded() {
            registered_media_streams_.begin();
        iter != registered_media_streams_.end(); ++iter) {
     (*iter)->TrackEnded();
+  }
+  is_iterating_registered_media_streams_ = false;
+}
+
+void MediaStreamTrackImpl::PropagateTrackEnabled(bool enabled) {
+  CHECK(
+      base::FeatureList::IsEnabled(kPropagateEnabledEventForWebRtcAudioTrack));
+  // The enabled state is propagated only when the track belongs to a WebRTC
+  // stream, because in that case, the Audio Media Element receives the stream
+  // directly from the source, bypassing WebMediaStreamAudioSink. Therefore,
+  // volume control must be applied at the source level. Since the volume update
+  // occurs after the source has already sent data to WebMediaStreamAudioSink,
+  // any clients using WebMediaStreamAudioSink will remain unaffected by the
+  // NotifyEnabledStateChangeForWebRtcAudio call below.
+  if (!component_->Source() ||
+      component_->GetSourceType() != MediaStreamSource::kTypeAudio) {
+    return;
+  }
+
+  if (!PeerConnectionRemoteAudioTrack::From(
+          MediaStreamAudioTrack::From(Component()))) {
+    return;
+  }
+
+  CHECK(!is_iterating_registered_media_streams_);
+  is_iterating_registered_media_streams_ = true;
+  for (const auto& stream : registered_media_streams_) {
+    stream->NotifyEnabledStateChangeForWebRtcAudio(enabled);
   }
   is_iterating_registered_media_streams_ = false;
 }

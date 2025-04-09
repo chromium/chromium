@@ -46,6 +46,11 @@ class BLINK_PLATFORM_EXPORT WebMediaStreamObserver {
   // active or inactive.
   virtual void ActiveStateChanged(bool is_active) {}
 
+  // EnabledStateChangedForWebRtcAudio is called only when the observed
+  // MediaStream that has a WebRTC remote audio track and that track is enabled
+  // or disabled.
+  virtual void EnabledStateChangedForWebRtcAudio(bool is_enabled) {}
+
  protected:
   virtual ~WebMediaStreamObserver() = default;
 };

@@ -110,6 +110,8 @@ class PLATFORM_EXPORT MediaStreamDescriptor final
   bool Active() const { return active_; }
   void SetActive(bool active);
 
+  void NotifyEnabledStateChangeForWebRtcAudio(bool enabled);
+
   void AddObserver(WebMediaStreamObserver*);
   void RemoveObserver(WebMediaStreamObserver*);
 

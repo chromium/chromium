@@ -202,6 +202,7 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void TrackAdded(const WebString& track_id) override;
   void TrackRemoved(const WebString& track_id) override;
   void ActiveStateChanged(bool is_active) override;
+  void EnabledStateChangedForWebRtcAudio(bool is_enabled) override;
   int GetPlayerId() override { return player_id_; }
   std::optional<viz::SurfaceId> GetSurfaceId() override;
 
@@ -342,7 +343,9 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   // (ducking) for a transient sound.  Playout volume is derived by volume *
   // multiplier.
   double volume_;
+  double volume_before_muted_;
   double volume_multiplier_;
+  bool enabled_ = true;
 
   // True if playback should be started upon the next call to OnShown(). Only
   // used on Android.

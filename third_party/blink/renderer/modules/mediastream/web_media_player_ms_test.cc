@@ -1806,6 +1806,61 @@ TEST_P(WebMediaPlayerMSTest, VolumeMultiplierAdjustsOutputVolume) {
   testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
 }
 
+TEST_P(WebMediaPlayerMSTest, EnabledStateChangedForWebRtcAudio) {
+  InitializeWebMediaPlayerMS();
+  is_audio_element_ = true;
+  auto audio_renderer = base::MakeRefCounted<MockMediaStreamAudioRenderer>();
+  render_factory_->set_audio_renderer(audio_renderer);
+
+  player_->Load(WebMediaPlayer::kLoadTypeURL, WebMediaPlayerSource(),
+                WebMediaPlayer::kCorsModeUnspecified,
+                /*is_cache_disabled=*/false);
+
+  message_loop_controller_.RunAndWaitForStatus(media::PIPELINE_OK);
+
+  // Setting the volume multiplier should adjust the volume sent to the audio
+  // renderer.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.4));
+  player_->SetVolume(0.4);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // disabled make volume 0.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.0));
+  player_->EnabledStateChangedForWebRtcAudio(false);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // re-enable should restore volume.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.4));
+  player_->EnabledStateChangedForWebRtcAudio(true);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // set multiplier should adjust volume.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.32));
+  player_->SetVolumeMultiplier(0.8);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // calling enabled again does not change volume.
+  EXPECT_CALL(*audio_renderer, SetVolume(_)).Times(0);
+  player_->EnabledStateChangedForWebRtcAudio(true);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // disabled make volume 0.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.0));
+  player_->EnabledStateChangedForWebRtcAudio(false);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // SetVolume during disabled state should not affect the renderer, but
+  // change the volume internally.
+  EXPECT_CALL(*audio_renderer, SetVolume(_)).Times(0);
+  player_->SetVolume(0.5);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+
+  // re-enable should restore volume that was set while disabled.
+  EXPECT_CALL(*audio_renderer, SetVolume(0.4));
+  player_->EnabledStateChangedForWebRtcAudio(true);
+  testing::Mock::VerifyAndClearExpectations(audio_renderer.get());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          WebMediaPlayerMSTest,
                          ::testing::Combine(::testing::Bool(),

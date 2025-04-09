@@ -19,6 +19,10 @@
 
 namespace blink {
 
+BASE_FEATURE(kPropagateEnabledEventForWebRtcAudioTrack,
+             "PropagateEnabledEventForWebRtcAudioTrack",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 // Used as an identifier for the down-casters.
 void* const kPeerConnectionRemoteTrackIdentifier =
@@ -62,14 +66,17 @@ void PeerConnectionRemoteAudioTrack::SetEnabled(bool enabled) {
       "PCRAT::SetEnabled([id=%s] {enabled=%s})", track_interface_->id().c_str(),
       base::ToString(enabled).c_str()));
 
-  // This affects the shared state of the source for whether or not it's a part
-  // of the mixed audio that's rendered for remote tracks from WebRTC.
-  // All tracks from the same source will share this state and thus can step
-  // on each other's toes.
-  // This is also why we can't check the enabled state for equality with
-  // |enabled| before setting the mixing enabled state. This track's enabled
-  // state and the shared state might not be the same.
-  track_interface_->set_enabled(enabled);
+  if (!base::FeatureList::IsEnabled(
+          kPropagateEnabledEventForWebRtcAudioTrack)) {
+    // This affects the shared state of the source for whether or not it's a
+    // part of the mixed audio that's rendered for remote tracks from WebRTC.
+    // All tracks from the same source will share this state and thus can step
+    // on each other's toes.
+    // This is also why we can't check the enabled state for equality with
+    // |enabled| before setting the mixing enabled state. This track's enabled
+    // state and the shared state might not be the same.
+    track_interface_->set_enabled(enabled);
+  }
 
   MediaStreamAudioTrack::SetEnabled(enabled);
 }
