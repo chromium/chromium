@@ -309,7 +309,8 @@ SharedStorageEventParams::SharedStorageEventParams(
     std::optional<bool> ignore_if_present,
     std::optional<int> worklet_id,
     std::optional<std::string> with_lock,
-    std::optional<int> batch_update_id)
+    std::optional<int> batch_update_id,
+    std::optional<int> batch_size)
     : script_source_url(std::move(script_source_url)),
       data_origin(std::move(data_origin)),
       operation_name(std::move(operation_name)),
@@ -324,7 +325,8 @@ SharedStorageEventParams::SharedStorageEventParams(
       ignore_if_present(ignore_if_present),
       worklet_id(worklet_id),
       with_lock(std::move(with_lock)),
-      batch_update_id(batch_update_id) {}
+      batch_update_id(batch_update_id),
+      batch_size(batch_size) {}
 
 // static
 SharedStorageEventParams SharedStorageEventParams::CreateForAddModule(
@@ -467,6 +469,28 @@ SharedStorageEventParams SharedStorageEventParams::CreateWithWorkletId(
 }
 
 // static
+SharedStorageEventParams SharedStorageEventParams::CreateForBatchUpdate(
+    std::optional<int> worklet_id,
+    std::optional<std::string> with_lock,
+    int batch_update_id,
+    size_t batch_size) {
+  return SharedStorageEventParams(
+      /*script_source_url=*/std::nullopt,
+      /*data_origin=*/std::nullopt,
+      /*operation_name=*/std::nullopt,
+      /*keep_alive=*/std::nullopt,
+      /*private_aggregation_config=*/std::nullopt,
+      /*serialized_data=*/std::nullopt,
+      /*urls_with_metadata=*/std::nullopt,
+      /*resolve_to_config=*/std::nullopt,
+      /*saved_query=*/std::nullopt,
+      /*key=*/std::nullopt,
+      /*value=*/std::nullopt,
+      /*ignore_if_present=*/std::nullopt, worklet_id, std::move(with_lock),
+      batch_update_id, static_cast<int>(batch_size));
+}
+
+// static
 SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
     const GURL& script_source_url,
     std::optional<std::string> data_origin,
@@ -484,7 +508,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletCreation(
       /*value=*/std::nullopt,
       /*ignore_if_present=*/std::nullopt, worklet_id,
       /*with_lock=*/std::nullopt,
-      /*batch_update_id=*/std::nullopt);
+      /*batch_update_id=*/std::nullopt,
+      /*batch_size=*/std::nullopt);
 }
 
 // static
@@ -508,7 +533,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForWorkletOperation(
       /*value=*/std::nullopt,
       /*ignore_if_present=*/std::nullopt, worklet_id,
       /*with_lock=*/std::nullopt,
-      /*batch_update_id=*/std::nullopt);
+      /*batch_update_id=*/std::nullopt,
+      /*batch_size=*/std::nullopt);
 }
 
 // static
@@ -534,7 +560,8 @@ SharedStorageEventParams::CreateForWorkletOperationForTesting(
       /*value=*/std::nullopt,
       /*ignore_if_present=*/std::nullopt, worklet_id,
       /*with_lock=*/std::nullopt,
-      /*batch_update_id=*/std::nullopt);
+      /*batch_update_id=*/std::nullopt,
+      /*batch_size=*/std::nullopt);
 }
 
 // static
@@ -555,7 +582,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForModifierMethod(
       /*urls_with_metadata=*/std::nullopt,
       /*resolve_to_config=*/std::nullopt,
       /*saved_query=*/std::nullopt, std::move(key), std::move(value),
-      ignore_if_present, worklet_id, std::move(with_lock), batch_update_id);
+      ignore_if_present, worklet_id, std::move(with_lock), batch_update_id,
+      /*batch_size=*/std::nullopt);
 }
 
 // static
@@ -575,7 +603,8 @@ SharedStorageEventParams SharedStorageEventParams::CreateForGetterMethod(
       /*value=*/std::nullopt,
       /*ignore_if_present=*/std::nullopt, worklet_id,
       /*with_lock=*/std::nullopt,
-      /*batch_update_id=*/std::nullopt);
+      /*batch_update_id=*/std::nullopt,
+      /*batch_size=*/std::nullopt);
 }
 
 // Note that for `serialized_data`, we only match its presence or absence.
@@ -593,7 +622,8 @@ bool operator==(const SharedStorageEventParams& lhs,
          lhs.value == rhs.value &&
          lhs.ignore_if_present == rhs.ignore_if_present &&
          lhs.worklet_id == rhs.worklet_id && lhs.with_lock == rhs.with_lock &&
-         lhs.batch_update_id == rhs.batch_update_id;
+         lhs.batch_update_id == rhs.batch_update_id &&
+         lhs.batch_size == rhs.batch_size;
 }
 
 std::ostream& operator<<(std::ostream& os,
@@ -620,7 +650,7 @@ std::ostream& operator<<(std::ostream& os,
      << "; Worklet ID: " << SerializeOptionalInt(params.worklet_id)
      << "; With Lock: " << SerializeOptionalString(params.with_lock)
      << "; Batch Update ID: " << SerializeOptionalInt(params.batch_update_id)
-     << " }";
+     << "; Batch Size: " << SerializeOptionalInt(params.batch_size) << " }";
   return os;
 }
 

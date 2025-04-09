@@ -176,6 +176,7 @@ class CONTENT_EXPORT SharedStorageLockManager
       FrameTreeNodeId main_frame_id,
       std::optional<int> worklet_id,
       SharedStorageUpdateCallback callback,
+      std::optional<std::string> with_lock,
       mojo::AssociatedRemote<blink::mojom::LockHandle> lock_handle,
       mojo::Remote<blink::mojom::LockManager> lock_manager);
 

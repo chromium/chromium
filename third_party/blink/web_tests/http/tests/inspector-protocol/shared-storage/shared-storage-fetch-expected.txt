@@ -15,7 +15,7 @@ Events: [
     [0] : {
         accessTime : <number>
         mainFrameId : <string>
-        method : clear
+        method : batchUpdate
         ownerOrigin : http://127.0.0.1:8000
         ownerSite : http://127.0.0.1
         params : {
@@ -23,6 +23,16 @@ Events: [
         scope : header
     }
     [1] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : clear
+        ownerOrigin : http://127.0.0.1:8000
+        ownerSite : http://127.0.0.1
+        params : {
+        }
+        scope : header
+    }
+    [2] : {
         accessTime : <number>
         mainFrameId : <string>
         method : set
@@ -35,7 +45,7 @@ Events: [
         }
         scope : header
     }
-    [2] : {
+    [3] : {
         accessTime : <number>
         mainFrameId : <string>
         method : set
@@ -48,7 +58,7 @@ Events: [
         }
         scope : header
     }
-    [3] : {
+    [4] : {
         accessTime : <number>
         mainFrameId : <string>
         method : append
@@ -60,7 +70,7 @@ Events: [
         }
         scope : header
     }
-    [4] : {
+    [5] : {
         accessTime : <number>
         mainFrameId : <string>
         method : delete

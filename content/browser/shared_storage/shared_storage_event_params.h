@@ -130,6 +130,12 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::optional<int> worklet_id = std::nullopt);
   static SharedStorageEventParams CreateWithWorkletId(int worklet_id);
 
+  static SharedStorageEventParams CreateForBatchUpdate(
+      std::optional<int> worklet_id,
+      std::optional<std::string> with_lock,
+      int batch_update_id,
+      size_t batch_size);
+
   SharedStorageEventParams(const SharedStorageEventParams&);
   ~SharedStorageEventParams();
   SharedStorageEventParams& operator=(const SharedStorageEventParams&);
@@ -150,6 +156,7 @@ class CONTENT_EXPORT SharedStorageEventParams {
   std::optional<int> worklet_id;
   std::optional<std::string> with_lock;
   std::optional<int> batch_update_id;
+  std::optional<int> batch_size;
 
  private:
   SharedStorageEventParams();
@@ -169,7 +176,8 @@ class CONTENT_EXPORT SharedStorageEventParams {
       std::optional<bool> ignore_if_present,
       std::optional<int> worklet_id,
       std::optional<std::string> with_lock,
-      std::optional<int> batch_update_id);
+      std::optional<int> batch_update_id,
+      std::optional<int> batch_size);
 
   static SharedStorageEventParams CreateForWorkletCreation(
       const GURL& script_source_url,

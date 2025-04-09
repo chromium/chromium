@@ -4172,23 +4172,32 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WebLocksUsageHistograms) {
             blink::CloneableMessage(), /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+        SharedStorageEventParams::CreateForSet("key0", "value0",
+                                               /*ignore_if_present=*/false,
                                                /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+        SharedStorageEventParams::CreateForSet("key0", "value0",
+                                               /*ignore_if_present=*/false,
                                                /*worklet_id=*/0)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
         SharedStorageEventParams::CreateForSet(
-            "key0", "value0", false,
+            "key0", "value0", /*ignore_if_present=*/false,
             /*worklet_id=*/0,
             /*with_lock=*/"lock2",
             /*batch_update_id=*/std::nullopt)},
-       // TODO(crbug.com/401011862): Observe batchUpdate access here.
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kBatchUpdate,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForBatchUpdate(
+            /*worklet_id=*/0,
+            /*with_lock=*/"lock1",
+            /*batch_update_id=*/0,
+            /*batch_size=*/2u)},
        {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
         origin_str,
-        SharedStorageEventParams::CreateForSet("key0", "value0", false,
+        SharedStorageEventParams::CreateForSet("key0", "value0",
+                                               /*ignore_if_present=*/false,
                                                /*worklet_id=*/0,
                                                /*with_lock=*/std::nullopt,
                                                /*batch_update_id=*/0)},
@@ -4198,6 +4207,160 @@ IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, WebLocksUsageHistograms) {
                                                   /*worklet_id=*/0,
                                                   /*with_lock=*/std::nullopt,
                                                   /*batch_update_id=*/0)}});
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, MulipleBatchUpdates) {
+  // The test assumes pages gets deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      shell()->web_contents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      await sharedStorage.batchUpdate([
+        new SharedStorageSetMethod('key0', 'value0'),
+        new SharedStorageAppendMethod('key1', 'value1')
+      ]);
+
+      await sharedStorage.batchUpdate([
+        new SharedStorageSetMethod('key2', 'value2'),
+      ], { withLock: 'lock1' });
+
+      await sharedStorage.batchUpdate([
+        new SharedStorageSetMethod("key1", "value0", {ignoreIfPresent: true}),
+        new SharedStorageAppendMethod("key1", "value1"),
+        new SharedStorageDeleteMethod("key2"),
+        new SharedStorageClearMethod()
+      ], { withLock: 'lock1' });
+    )",
+                         &out_script_url);
+
+  // Navigate again to record histograms.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  histogram_tester_.ExpectBucketCount(
+      "Storage.SharedStorage.BatchUpdateMethod.HasLockOption", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Storage.SharedStorage.BatchUpdateMethod.HasLockOption", true, 2);
+
+  std::string origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kBatchUpdate,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForBatchUpdate(
+            /*worklet_id=*/0,
+            /*with_lock=*/std::nullopt,
+            /*batch_update_id=*/0,
+            /*batch_size=*/2u)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForSet(
+            "key0", "value0", /*ignore_if_present=*/false,
+            /*worklet_id=*/0, /*with_lock=*/std::nullopt,
+            /*batch_update_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForAppend("key1", "value1",
+                                                  /*worklet_id=*/0,
+                                                  /*with_lock=*/std::nullopt,
+                                                  /*batch_update_id=*/0)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kBatchUpdate,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForBatchUpdate(
+            /*worklet_id=*/0,
+            /*with_lock=*/"lock1",
+            /*batch_update_id=*/1,
+            /*batch_size=*/1u)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForSet(
+            "key2", "value2", /*ignore_if_present=*/false,
+            /*worklet_id=*/0, /*with_lock=*/std::nullopt,
+            /*batch_update_id=*/1)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kBatchUpdate,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForBatchUpdate(
+            /*worklet_id=*/0,
+            /*with_lock=*/"lock1",
+            /*batch_update_id=*/2,
+            /*batch_size=*/4u)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kSet, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForSet("key1", "value0",
+                                               /*ignore_if_present=*/true,
+                                               /*worklet_id=*/0,
+                                               /*with_lock=*/std::nullopt,
+                                               /*batch_update_id=*/2)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kAppend,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForAppend("key1", "value1",
+                                                  /*worklet_id=*/0,
+                                                  /*with_lock=*/std::nullopt,
+                                                  /*batch_update_id=*/2)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kDelete,
+        MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForDelete("key2",
+                                                  /*worklet_id=*/0,
+                                                  /*with_lock=*/std::nullopt,
+                                                  /*batch_update_id=*/2)},
+       {AccessScope::kSharedStorageWorklet, AccessMethod::kClear, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForClear(/*worklet_id=*/0,
+                                                 /*with_lock=*/std::nullopt,
+                                                 /*batch_update_id=*/2)}});
+}
+
+IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest, EmptyBatchUpdate) {
+  // The test assumes pages gets deleted after navigation. To ensure this,
+  // disable back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      shell()->web_contents(),
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  GURL url = https_server()->GetURL("a.test", kSimplePagePath);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+
+  GURL out_script_url;
+  ExecuteScriptInWorklet(shell(), R"(
+      await sharedStorage.batchUpdate([], { withLock: 'lock1' });
+    )",
+                         &out_script_url);
+
+  // Navigate again to record histograms.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Storage.SharedStorage.BatchUpdateMethod.HasLockOption", true, 1);
+
+  // The empty batchUpdate does not receive an event notification.
+  std::string origin_str = url::Origin::Create(url).Serialize();
+  ExpectAccessObserved(
+      {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
+        origin_str,
+        SharedStorageEventParams::CreateForAddModule(out_script_url,
+                                                     /*worklet_id=*/0)},
+       {AccessScope::kWindow, AccessMethod::kRun, MainFrameId(), origin_str,
+        SharedStorageEventParams::CreateForRunForTesting(
+            "test-operation", /*keep_alive=*/true,
+            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
+            blink::CloneableMessage(), /*worklet_id=*/0)}});
 }
 
 IN_PROC_BROWSER_TEST_P(SharedStorageBrowserTest,

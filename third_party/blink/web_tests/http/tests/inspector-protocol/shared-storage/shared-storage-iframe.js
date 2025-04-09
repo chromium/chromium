@@ -46,12 +46,12 @@
   await dp.Network.setCacheDisabled({cacheDisabled: true});
   await dp.Storage.setSharedStorageTracking({enable: true});
 
-  eventPromise = getPromiseForEventCount(5);
+  eventPromise = getPromiseForEventCount(6);
 
   // The following calls should trigger events if shared storage is enabled, as
   // tracking is now enabled.
   //
-  // Generates 5 events.
+  // Generates 6 events.
   session.evaluateAsync(`
       let iframe = document.createElement('iframe');
       iframe.sharedStorageWritable = true;
