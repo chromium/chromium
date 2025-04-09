@@ -3,6 +3,7 @@ use super::{
     ValuesMut,
 };
 use crate::util::{slice_eq, try_simplify_range};
+use crate::GetDisjointMutError;
 
 use alloc::boxed::Box;
 use alloc::vec::Vec;
@@ -269,6 +270,51 @@ impl<K, V> Slice<K, V> {
     {
         self.entries
             .partition_point(move |a| pred(&a.key, &a.value))
+    }
+
+    /// Get an array of `N` key-value pairs by `N` indices
+    ///
+    /// Valid indices are *0 <= index < self.len()* and each index needs to be unique.
+    pub fn get_disjoint_mut<const N: usize>(
+        &mut self,
+        indices: [usize; N],
+    ) -> Result<[(&K, &mut V); N], GetDisjointMutError> {
+        let indices = indices.map(Some);
+        let key_values = self.get_disjoint_opt_mut(indices)?;
+        Ok(key_values.map(Option::unwrap))
+    }
+
+    #[allow(unsafe_code)]
+    pub(crate) fn get_disjoint_opt_mut<const N: usize>(
+        &mut self,
+        indices: [Option<usize>; N],
+    ) -> Result<[Option<(&K, &mut V)>; N], GetDisjointMutError> {
+        // SAFETY: Can't allow duplicate indices as we would return several mutable refs to the same data.
+        let len = self.len();
+        for i in 0..N {
+            if let Some(idx) = indices[i] {
+                if idx >= len {
+                    return Err(GetDisjointMutError::IndexOutOfBounds);
+                } else if indices[..i].contains(&Some(idx)) {
+                    return Err(GetDisjointMutError::OverlappingIndices);
+                }
+            }
+        }
+
+        let entries_ptr = self.entries.as_mut_ptr();
+        let out = indices.map(|idx_opt| {
+            match idx_opt {
+                Some(idx) => {
+                    // SAFETY: The base pointer is valid as it comes from a slice and the reference is always
+                    // in-bounds & unique as we've already checked the indices above.
+                    let kv = unsafe { (*(entries_ptr.add(idx))).ref_mut() };
+                    Some(kv)
+                }
+                None => None,
+            }
+        });
+
+        Ok(out)
     }
 }
 

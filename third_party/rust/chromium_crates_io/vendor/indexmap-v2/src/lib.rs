@@ -35,16 +35,15 @@
 //!   to [`IndexMap`] and [`IndexSet`]. Alternative implementations for
 //!   (de)serializing [`IndexMap`] as an ordered sequence are available in the
 //!   [`map::serde_seq`] module.
-//! * `borsh`: Adds implementations for [`BorshSerialize`] and [`BorshDeserialize`]
-//!   to [`IndexMap`] and [`IndexSet`]. **Note:** When this feature is enabled,
-//!   you cannot enable the `derive` feature of [`borsh`] due to a cyclic
-//!   dependency. Instead, add the `borsh-derive` crate as an explicit
-//!   dependency in your Cargo.toml and import as e.g.
-//!   `use borsh_derive::{BorshSerialize, BorshDeserialize};`.
 //! * `arbitrary`: Adds implementations for the [`arbitrary::Arbitrary`] trait
 //!   to [`IndexMap`] and [`IndexSet`].
 //! * `quickcheck`: Adds implementations for the [`quickcheck::Arbitrary`] trait
 //!   to [`IndexMap`] and [`IndexSet`].
+//! * `borsh` (**deprecated**): Adds implementations for [`BorshSerialize`] and
+//!   [`BorshDeserialize`] to [`IndexMap`] and [`IndexSet`]. Due to a cyclic
+//!   dependency that arose between [`borsh`] and `indexmap`, `borsh v1.5.6`
+//!   added an `indexmap` feature that should be used instead of enabling the
+//!   feature here.
 //!
 //! _Note: only the `std` feature is enabled by default._
 //!
@@ -269,3 +268,33 @@ impl core::fmt::Display for TryReserveError {
 #[cfg(feature = "std")]
 #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
 impl std::error::Error for TryReserveError {}
+
+// NOTE: This is copied from the slice module in the std lib.
+/// The error type returned by [`get_disjoint_indices_mut`][`IndexMap::get_disjoint_indices_mut`].
+///
+/// It indicates one of two possible errors:
+/// - An index is out-of-bounds.
+/// - The same index appeared multiple times in the array.
+//    (or different but overlapping indices when ranges are provided)
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum GetDisjointMutError {
+    /// An index provided was out-of-bounds for the slice.
+    IndexOutOfBounds,
+    /// Two indices provided were overlapping.
+    OverlappingIndices,
+}
+
+impl core::fmt::Display for GetDisjointMutError {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+        let msg = match self {
+            GetDisjointMutError::IndexOutOfBounds => "an index is out of bounds",
+            GetDisjointMutError::OverlappingIndices => "there were overlapping indices",
+        };
+
+        core::fmt::Display::fmt(msg, f)
+    }
+}
+
+#[cfg(feature = "std")]
+#[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+impl std::error::Error for GetDisjointMutError {}

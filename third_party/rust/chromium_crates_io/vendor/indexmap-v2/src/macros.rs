@@ -1,5 +1,5 @@
 /// Create an [`IndexMap`][crate::IndexMap] from a list of key-value pairs
-/// and a `BuildHasherDefault`-wrapped custom hasher.
+/// and a [`BuildHasherDefault`][core::hash::BuildHasherDefault]-wrapped custom hasher.
 ///
 /// ## Example
 ///
@@ -73,7 +73,7 @@ macro_rules! indexmap {
 }
 
 /// Create an [`IndexSet`][crate::IndexSet] from a list of values
-/// and a `BuildHasherDefault`-wrapped custom hasher.
+/// and a [`BuildHasherDefault`][core::hash::BuildHasherDefault]-wrapped custom hasher.
 ///
 /// ## Example
 ///
