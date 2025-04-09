@@ -21,10 +21,12 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_S
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ENABLE_MAXIMIZATION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_ENABLED;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_NETWORK;
 import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
@@ -271,21 +273,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     public static final String EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE =
             "androidx.browser.customtabs.extra.ACTIVITY_SCROLL_CONTENT_RESIZE";
-
-    /**
-     * Extra that specifies the {@link Network} to be bound when launching a custom tab or tabs that
-     * have been pre-created. TODO(xiaom): Remove this once the public extra constant defined in
-     * CustomTabsIntent lands.
-     */
-    public static final String EXTRA_NETWORK = "androidx.browser.customtabs.extra.NETWORK";
-
-    /**
-     * Extra to enable the close button and show it in the toolbar. The close button is enabled by
-     * default, this extra provides a way to disable the close button in the toolbar. TODO(xiaom):
-     * Remove this once the public extra constant defined in CustomTabsIntent lands.
-     */
-    public static final String EXTRA_CLOSE_BUTTON_ENABLED =
-            "androidx.browser.customtabs.extra.CLOSE_BUTTON_ENABLED";
 
     private final Intent mIntent;
     private final SessionHolder<CustomTabsSessionToken> mSession;

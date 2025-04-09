@@ -1609,7 +1609,7 @@ public class CustomTabIntentDataProviderTest {
 
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.putExtra(
-                CustomTabIntentDataProvider.EXTRA_NETWORK,
+                CustomTabsIntent.EXTRA_NETWORK,
                 network);
         intent.putExtra(
                 CustomTabIntentDataProvider.EXTRA_UI_TYPE,
@@ -1636,7 +1636,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void setCloseButtonDisabled() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_ENABLED, false);
+        intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ENABLED, false);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertFalse(dataProvider.isCloseButtonEnabled());
     }
@@ -1644,7 +1644,7 @@ public class CustomTabIntentDataProviderTest {
     @Test
     public void setCloseButtonEnabled() {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_ENABLED, true);
+        intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ENABLED, true);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertTrue(dataProvider.isCloseButtonEnabled());
     }
@@ -1654,7 +1654,7 @@ public class CustomTabIntentDataProviderTest {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         Bitmap icon =
                 Bitmap.createBitmap(/* width= */ 16, /* height= */ 16, Bitmap.Config.ARGB_8888);
-        intent.putExtra(CustomTabIntentDataProvider.EXTRA_CLOSE_BUTTON_ENABLED, false);
+        intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ENABLED, false);
         intent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, icon);
         var dataProvider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
         assertFalse(dataProvider.isCloseButtonEnabled());
