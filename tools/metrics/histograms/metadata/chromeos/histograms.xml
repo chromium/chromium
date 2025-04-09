@@ -698,8 +698,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="ChromeOS.Camera.HDRnet.AverageLatency.{ProcessingType}"
+<histogram name="ChromeOS.Camera.HDRnet.AverageLatency.{ProcessingType}"
     units="microseconds" expires_after="2026-02-10">
   <owner>jcliang@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
@@ -744,7 +743,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram base="true" name="ChromeOS.Camera.HDRnet.MaxStreamSize.{StreamType}"
+<histogram name="ChromeOS.Camera.HDRnet.MaxStreamSize.{StreamType}"
     units="pixels" expires_after="2026-02-10">
   <owner>jcliang@chromium.org</owner>
   <owner>chromeos-camera-eng@google.com</owner>
@@ -4740,12 +4739,43 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram base="true" name="ChromeOS.USB.DeviceAttached"
+<histogram name="ChromeOS.USB.DeviceAttached.{Status}.{USBDeviceClass}"
     enum="ChromeOSUsbEventTiming" expires_after="2026-01-01">
   <owner>allenwebb@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <owner>mnissler@chromium.org</owner>
   <summary>Timing and number of USB devices attached.</summary>
+  <token key="Status">
+    <variant name="Recognized"
+        summary="A device that was already added to the list of trusted
+                 devices."/>
+    <variant name="Unrecognized"
+        summary="A device that was not in the list of trusted devices yet."/>
+  </token>
+  <token key="USBDeviceClass">
+    <variant name="App"
+        summary="A device with only the application specific interface class."/>
+    <variant name="Audio" summary="An audio device."/>
+    <variant name="AV" summary="An audio/video device."/>
+    <variant name="Card" summary="A smart card reader."/>
+    <variant name="Comm" summary="A communication device."/>
+    <variant name="Health" summary="A personal healthcare device."/>
+    <variant name="HID" summary="A human-interface device."/>
+    <variant name="Hub" summary="A USB hub."/>
+    <variant name="Image" summary="A still image capture device."/>
+    <variant name="Misc"
+        summary="A device with only the misc. interface class."/>
+    <variant name="Other"
+        summary="All devices not covered by the other groups."/>
+    <variant name="Phys" summary="A physical device."/>
+    <variant name="Print" summary="A printer."/>
+    <variant name="Sec" summary="A security device (e.g. fingerprint reader)."/>
+    <variant name="Storage" summary="A storage device."/>
+    <variant name="Vendor"
+        summary="A device with only the vendor specific interface class."/>
+    <variant name="Video" summary="A video device."/>
+    <variant name="Wireless" summary="A wireless controller device."/>
+  </token>
 </histogram>
 
 <histogram name="ChromeOS.USB.DeviceError" enum="ChromeOSUsbDeviceError"

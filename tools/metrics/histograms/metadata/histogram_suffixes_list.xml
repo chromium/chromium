@@ -325,39 +325,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="CertificateType2.NonBR"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ChromeOS_USBDeviceClass" separator=".">
-  <suffix name="App"
-      label="A device with only the application specific interface class."/>
-  <suffix name="Audio" label="An audio device."/>
-  <suffix name="AV" label="An audio/video device."/>
-  <suffix name="Card" label="A smart card reader."/>
-  <suffix name="Comm" label="A communication device."/>
-  <suffix name="Health" label="A personal healthcare device."/>
-  <suffix name="HID" label="A human-interface device."/>
-  <suffix name="Hub" label="A USB hub."/>
-  <suffix name="Image" label="A still image capture device."/>
-  <suffix name="Misc" label="A device with only the misc. interface class."/>
-  <suffix name="Other" label="All devices not covered by the other groups."/>
-  <suffix name="Phys" label="A physical device."/>
-  <suffix name="Print" label="A printer."/>
-  <suffix name="Sec" label="A security device (e.g. fingerprint reader)."/>
-  <suffix name="Storage" label="A storage device."/>
-  <suffix name="Vendor"
-      label="A device with only the vendor specific interface class."/>
-  <suffix name="Video" label="A video device."/>
-  <suffix name="Wireless" label="A wireless controller device."/>
-  <affected-histogram name="ChromeOS.USB.DeviceAttached.Recognized"/>
-  <affected-histogram name="ChromeOS.USB.DeviceAttached.Unrecognized"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ChromeOS_USBDeviceRecognized" separator=".">
-  <suffix base="true" name="Recognized"
-      label="A device that was already added to the list of trusted devices."/>
-  <suffix base="true" name="Unrecognized"
-      label="A device that was not in the list of trusted devices yet."/>
-  <affected-histogram name="ChromeOS.USB.DeviceAttached"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ContentSetting" separator=".">
   <suffix name="Allow" label="Allow"/>
   <suffix name="AllowThirdParty" label="All third parties allowed on a domain"/>
