@@ -4,7 +4,7 @@
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {GraphChangeStreamInterface, GraphDumpRemote} from './discards.mojom-webui.js';
+import type {GraphDumpRemote} from './discards.mojom-webui.js';
 import {GraphChangeStreamReceiver, GraphDump} from './discards.mojom-webui.js';
 import {Graph} from './graph.js';
 import {getCss} from './graph_tab.css.js';
@@ -30,17 +30,10 @@ export class GraphTabElement extends CrLitElement {
     return getHtml.bind(this)();
   }
 
-  private client_: GraphChangeStreamReceiver;
-
   /**
    * The Mojo graph data source.
    */
   private graphDump_: GraphDumpRemote|null = null;
-
-  /**
-   * The graph change listener.
-   */
-  private changeListener_: GraphChangeStreamInterface|null = null;
 
   /**
    * The WebView's content window object.
@@ -61,16 +54,14 @@ export class GraphTabElement extends CrLitElement {
     });
     this.resizeObserver_.observe(this.$.graphBody);
     this.graphDump_ = GraphDump.getRemote();
-    this.client_ = new GraphChangeStreamReceiver(this.graph_);
+    const client = new GraphChangeStreamReceiver(this.graph_);
     // Subscribe for graph updates.
-    this.graphDump_.subscribeToChanges(
-        this.client_.$.bindNewPipeAndPassRemote());
+    this.graphDump_.subscribeToChanges(client.$.bindNewPipeAndPassRemote());
   }
 
   override disconnectedCallback() {
     // TODO(siggi): Is there a way to tear down the binding explicitly?
     this.graphDump_ = null;
-    this.changeListener_ = null;
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
       this.resizeObserver_ = null;

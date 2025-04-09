@@ -1,9 +1,7 @@
 {
-  "extends": "../../../../tools/typescript/tsconfig_base_polymer.json",
+  "extends": "../../../../tools/typescript/tsconfig_base_lit.json",
   "compilerOptions": {
     "allowUmdGlobalAccess": true,
-    "lib": ["ES2024", "DOM", "DOM.Iterable"],
-    "target": "ES2024",
     "typeRoots": [ "../../../../third_party/node/node_modules/@types" ],
     "types": [ "d3" ]
   }

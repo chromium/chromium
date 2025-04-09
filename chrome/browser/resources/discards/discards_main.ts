@@ -35,7 +35,7 @@ export class DiscardsMainElement extends CrLitElement {
   }
 
   protected accessor selected: number = 0;
-  protected accessor tabs: string[] = ['Discards', 'Database', 'Graph'];
+  protected accessor tabs: string[] = ['discards', 'database', 'graph'];
 
   override firstUpdated() {
     const router = CrRouter.getInstance();
@@ -47,18 +47,16 @@ export class DiscardsMainElement extends CrLitElement {
 
   /** Updates the location hash on selection change. */
   protected onSelectedChanged_(e: CustomEvent<{value: number}>) {
-    const newValue = e.detail.value;
-    if (newValue === this.selected) {
+    const newIndex = e.detail.value;
+    if (newIndex === this.selected) {
       return;
     }
 
-    this.selected = newValue;
+    this.selected = newIndex;
 
     // The first tab is special-cased to the empty path.
-    const defaultTab = this.tabs[0].toLowerCase();
-    const tabName = this.tabs[newValue].toLowerCase();
-    CrRouter.getInstance().setPath(
-        '/' + (tabName === defaultTab ? '' : tabName));
+    const tabName = this.tabs[newIndex];
+    CrRouter.getInstance().setPath('/' + (newIndex === 0 ? '' : tabName));
   }
 
   /**
@@ -66,7 +64,7 @@ export class DiscardsMainElement extends CrLitElement {
    * path or zero if no match.
    */
   private selectedFromPath_(path: string): number {
-    const index = this.tabs.findIndex(tab => path === tab.toLowerCase());
+    const index = this.tabs.findIndex(tab => path === tab);
     return Math.max(index, 0);
   }
 

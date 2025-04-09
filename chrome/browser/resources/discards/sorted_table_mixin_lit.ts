@@ -25,8 +25,8 @@ export const SortedTableMixinLit = <T extends Constructor<CrLitElement>>(
       };
     }
 
-    accessor sortKey: string;
-    accessor sortReverse: boolean;
+    accessor sortKey: string = '';
+    accessor sortReverse: boolean = false;
 
     /**
      * Invoked when a header is clicked, sets a new sort key and updates

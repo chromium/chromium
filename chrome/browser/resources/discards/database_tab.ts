@@ -7,7 +7,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './database_tab.css.js';
@@ -173,6 +173,7 @@ function formatLoadTimeEstimate(
   const value =
       (item.value.loadTimeEstimates as unknown as
        {[key: string]: number})[propertyName];
+  assert(value);
   if (propertyName.endsWith('Us')) {
     return microsecondsToString(value);
   } else if (propertyName.endsWith('Kb')) {
@@ -220,10 +221,10 @@ export class DatabaseTabElement extends DatabaseTabElementBase {
     };
   }
 
-  protected accessor rows_: SiteDataEntry[]|null;
+  protected accessor rows_: SiteDataEntry[]|null = null;
   protected accessor size_:
       SiteDataDatabaseSize = {numRows: -1n, onDiskSizeKb: -1n};
-  protected accessor newOrigin_: string;
+  protected accessor newOrigin_: string = '';
 
   private updateTableTimer_: number = 0;
   private updateSizesTimer_: number = 0;
@@ -340,12 +341,6 @@ export class DatabaseTabElement extends DatabaseTabElementBase {
    */
   private computeSortFunction_(sortKey: string, sortReverse: boolean):
       (a: SiteDataEntry, b: SiteDataEntry) => number {
-    // Polymer 2 may invoke multi-property observers before all properties
-    // are defined.
-    if (!sortKey) {
-      return (_a, _b) => 0;
-    }
-
     const sortFunction = getSortFunctionForKey(sortKey);
     return (a, b) => {
       const comp = sortFunction(a, b);
