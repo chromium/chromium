@@ -622,6 +622,11 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   }
   DCHECK(device_);
 
+  // Validate the texture descriptor as required by the spec for
+  // GPUCanvasContext.getCurrentTexture(). This is required on each call,
+  // so it must appear before the cached texture early-out below.
+  device_->GetHandle().ValidateTextureDescriptor(&texture_descriptor_);
+
   // Calling getCurrentTexture returns a texture that is valid until the
   // animation frame it gets presented. If getCurrentTexture is called multiple
   // time, the same texture should be returned. |texture_| is set to

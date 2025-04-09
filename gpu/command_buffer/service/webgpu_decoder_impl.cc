@@ -492,11 +492,55 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       }
 
       const bool is_initialized = representation->IsCleared();
+      // Create a wgpu::Texture to hold the image contents.
+      // It must be internally copyable as this class itself uses the texture as
+      // the dest and source of copies for transfer back and forth between Skia
+      // and Dawn.
+      wgpu::DawnTextureInternalUsageDescriptor internal_usage_desc;
+      internal_usage_desc.internalUsage = internal_usage |
+                                          wgpu::TextureUsage::CopyDst |
+                                          wgpu::TextureUsage::CopySrc;
+      wgpu::TextureDescriptor texture_desc = {
+          .nextInChain = &internal_usage_desc,
+          .usage = usage,
+          .dimension = wgpu::TextureDimension::e2D,
+          .size = {static_cast<uint32_t>(representation->size().width()),
+                   static_cast<uint32_t>(representation->size().height()), 1},
+          .format = ToDawnFormat(representation->format()),
+          .mipLevelCount = 1,
+          .sampleCount = 1,
+          .viewFormatCount = view_formats.size(),
+          .viewFormats =
+              reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()),
+      };
+
+      // CreateTexture() may cause a validation error on an invalid texture
+      // descriptor, but is suppressed here. It will be caught in by the
+      // ValidateTextureDescriptor() call in
+      // GPUCanvasContext::getCurrentTexture() instead.
+      device.PushErrorScope(wgpu::ErrorFilter::Validation);
+      auto texture = device.CreateTexture(&texture_desc);
+      bool error = false;
+      device.PopErrorScope(
+          wgpu::CallbackMode::AllowSpontaneous,
+          [&error](wgpu::PopErrorScopeStatus status, wgpu::ErrorType type,
+                   wgpu::StringView message) {
+            if (type == wgpu::ErrorType::Validation) {
+              error = true;
+            }
+          });
+      auto status = instance.WaitAny(0, nullptr, 0);
+      DCHECK(status == wgpu::WaitStatus::Success);
+      if (error) {
+        // If the CreateTexture() call failed, fail this function so that an
+        // ErrorSharedImageRepresentationAndAccess is created instead.
+        return nullptr;
+      }
       auto result =
           base::WrapUnique(new SharedImageRepresentationAndAccessSkiaFallback(
               std::move(shared_context_state), std::move(representation),
-              std::move(instance), std::move(device), usage, internal_usage,
-              std::move(view_formats)));
+              std::move(instance), std::move(device), std::move(texture), usage,
+              internal_usage));
       if (is_initialized && !result->PopulateFromSkia()) {
         return nullptr;
       }
@@ -532,40 +576,16 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
         std::unique_ptr<SkiaImageRepresentation> representation,
         wgpu::Instance instance,
         wgpu::Device device,
+        wgpu::Texture texture,
         wgpu::TextureUsage usage,
-        wgpu::TextureUsage internal_usage,
-        std::vector<wgpu::TextureFormat> view_formats)
+        wgpu::TextureUsage internal_usage)
         : shared_context_state_(std::move(shared_context_state)),
           representation_(std::move(representation)),
           instance_(std::move(instance)),
           device_(std::move(device)),
+          texture_(std::move(texture)),
           usage_(usage),
-          internal_usage_(internal_usage) {
-      // Create a wgpu::Texture to hold the image contents.
-      // It must be internally copyable as this class itself uses the texture as
-      // the dest and source of copies for transfer back and forth between Skia
-      // and Dawn.
-      wgpu::DawnTextureInternalUsageDescriptor internal_usage_desc;
-      internal_usage_desc.internalUsage = internal_usage |
-                                          wgpu::TextureUsage::CopyDst |
-                                          wgpu::TextureUsage::CopySrc;
-      wgpu::TextureDescriptor texture_desc = {
-          .nextInChain = &internal_usage_desc,
-          .usage = usage,
-          .dimension = wgpu::TextureDimension::e2D,
-          .size = {static_cast<uint32_t>(representation_->size().width()),
-                   static_cast<uint32_t>(representation_->size().height()), 1},
-          .format = ToDawnFormat(representation_->format()),
-          .mipLevelCount = 1,
-          .sampleCount = 1,
-          .viewFormatCount = view_formats.size(),
-          .viewFormats =
-              reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()),
-      };
-
-      texture_ = device_.CreateTexture(&texture_desc);
-      DCHECK(texture_);
-    }
+          internal_usage_(internal_usage) {}
 
     bool ComputeStagingBufferParams(viz::SharedImageFormat format,
                                     const gfx::Size& size,

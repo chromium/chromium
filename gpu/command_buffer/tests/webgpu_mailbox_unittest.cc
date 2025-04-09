@@ -1416,6 +1416,47 @@ TEST_P(WebGPUMailboxTextureTest, ReflectionOfDescriptor) {
       webgpu::WEBGPU_MAILBOX_NONE, shared_image2->mailbox());
 }
 
+// Test that passing a texture with invalid view formats to AssociateMailbox
+// does not cause WebGPU validation errors on a later call to DissociateMailbox.
+TEST_P(WebGPUMailboxTextureTest, AssociateInvalidViewFormats) {
+  wgpu::TextureDescriptor desc = {};
+  desc.size = {1, 1, 1};
+  desc.format = ToDawnFormat(GetParam().format);
+  desc.usage = wgpu::TextureUsage::RenderAttachment;
+  desc.dimension = wgpu::TextureDimension::e2D;
+  desc.sampleCount = 1;
+  desc.mipLevelCount = 1;
+  gpu::webgpu::ReservedTexture reservation = webgpu()->ReserveTexture(
+      device_.Get(), reinterpret_cast<const WGPUTextureDescriptor*>(&desc));
+  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+
+  SharedImageInterface* sii = GetSharedImageInterface();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              GetSharedImageUsage(AccessType::ReadWrite),
+                              "TestLabel"},
+                             kNullSurfaceHandle);
+  WGPUTextureFormat view_formats = {
+      WGPUTextureFormat_R8Unorm,
+  };
+
+  // AssociateMailbox may cause validation errors, given the invalid
+  // viewFormats, so wrap it in an error scope.
+  device_.PushErrorScope(wgpu::ErrorFilter::Validation);
+  webgpu()->AssociateMailbox(
+      reservation.deviceId, reservation.deviceGeneration, reservation.id,
+      reservation.generation, static_cast<WGPUTextureUsage>(desc.usage),
+      &view_formats, 1, webgpu::WEBGPU_MAILBOX_NONE, shared_image->mailbox());
+  device_.PopErrorScope(
+      wgpu::CallbackMode::AllowSpontaneous,
+      [](wgpu::PopErrorScopeStatus, wgpu::ErrorType, wgpu::StringView) {});
+
+  // DissociateMailbox should NOT cause validation errors.
+  webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+}
+
 // Test that if some other GL context is current when
 // Associate/DissociateMailbox occurs, the operations do not fail. Some WebGPU
 // shared image backings rely on GL and need to be responsible for making the
