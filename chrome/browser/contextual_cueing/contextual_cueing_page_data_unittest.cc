@@ -6,6 +6,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_enums.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -14,20 +15,16 @@
 
 namespace contextual_cueing {
 
-class ContextualCueingPageDataTest : public content::RenderViewHostTestHarness {
+class ContextualCueingPageDataTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
-    content::RenderViewHostTestHarness::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
     web_contents_ = CreateTestWebContents();
   }
 
   void TearDown() override {
     web_contents_.reset();
-    content::RenderViewHostTestHarness::TearDown();
-  }
-
-  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
-    return std::make_unique<TestingProfile>();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void InvokePdfPageCountReceived(size_t page_count) {

@@ -13,13 +13,19 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
+#include "chrome/common/buildflags.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_pref_names.h"
+#endif
 
 namespace {
 
@@ -43,6 +49,12 @@ void LogNudgeInteractionUKM(ukm::SourceId source_id,
       .Record(ukm_recorder->Get());
 }
 
+#if BUILDFLAG(ENABLE_GLIC)
+bool IsGlicTabContextEnabled(PrefService* pref_service) {
+  return pref_service->GetBoolean(glic::prefs::kGlicTabContextEnabled);
+}
+#endif
+
 }  // namespace
 
 namespace contextual_cueing {
@@ -51,24 +63,26 @@ ContextualCueingService::ContextualCueingService(
     page_content_annotations::PageContentExtractionService*
         page_content_extraction_service,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
-    predictors::LoadingPredictor* loading_predictor)
+    predictors::LoadingPredictor* loading_predictor,
+    PrefService* pref_service)
     : recent_nudge_tracker_(kNudgeCapCount.Get(), kNudgeCapTime.Get()),
       recent_visited_origins_(kVisitedDomainsLimit.Get()),
       page_content_extraction_service_(page_content_extraction_service),
       optimization_guide_keyed_service_(optimization_guide_keyed_service),
       loading_predictor_(loading_predictor),
+      pref_service_(pref_service),
       mes_url_(optimization_guide::switches::GetModelExecutionServiceURL()) {
   CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) ||
         base::FeatureList::IsEnabled(
             contextual_cueing::kGlicZeroStateSuggestions));
 
-  if (kEnablePageContentExtraction.Get()) {
+  if (kEnablePageContentExtraction.Get() && page_content_extraction_service_) {
     page_content_extraction_service_->AddObserver(this);
   }
 }
 
 ContextualCueingService::~ContextualCueingService() {
-  if (kEnablePageContentExtraction.Get()) {
+  if (kEnablePageContentExtraction.Get() && page_content_extraction_service_) {
     page_content_extraction_service_->RemoveObserver(this);
   }
 }
@@ -184,6 +198,11 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
     return;
   }
 
+#if BUILDFLAG(ENABLE_GLIC)
+  if (!IsGlicTabContextEnabled(pref_service_)) {
+    return;
+  }
+
   // This call preflights grabbing the page content.
   ZeroStateSuggestionsPageData::CreateForPage(web_contents->GetPrimaryPage());
 
@@ -194,6 +213,7 @@ void ContextualCueingService::PrepareToFetchContextualGlicZeroStateSuggestions(
     loading_predictor_->PreconnectURLIfAllowed(
         mes_url_, /*allow_credentials=*/true, anonymization_key);
   }
+#endif
 }
 
 void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
@@ -201,6 +221,12 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     bool is_fre,
     GlicSuggestionsCallback callback) {
   if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+#if BUILDFLAG(ENABLE_GLIC)
+  if (!IsGlicTabContextEnabled(pref_service_)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -214,6 +240,9 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
   page_data->FetchSuggestions(
       is_fre, base::BindOnce(&ContextualCueingService::OnSuggestionsReceived,
                              GetWeakPtr(), web_contents, std::move(callback)));
+#else
+  std::move(callback).Run(std::nullopt);
+#endif
 }
 
 void ContextualCueingService::OnSuggestionsReceived(

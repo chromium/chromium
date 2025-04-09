@@ -14,10 +14,17 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_pref_names.h"
+#endif
 
 namespace contextual_cueing {
 
@@ -34,11 +41,17 @@ class ContextualCueingServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(ENABLE_GLIC)
 class ContextualCueingServiceBrowserTestZSSFlag
     : public ContextualCueingServiceBrowserTest {
  public:
   ContextualCueingServiceBrowserTestZSSFlag() {
     scoped_feature_list_.InitAndEnableFeature(kGlicZeroStateSuggestions);
+  }
+
+  void SetUpOnMainThread() override {
+    browser()->profile()->GetPrefs()->SetBoolean(
+        glic::prefs::kGlicTabContextEnabled, true);
   }
 };
 
@@ -100,6 +113,7 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
       "ZeroStateSuggestions",
       1);
 }
+#endif
 
 class ContextualCueingServiceBrowserTestCCFlag
     : public ContextualCueingServiceBrowserTest {

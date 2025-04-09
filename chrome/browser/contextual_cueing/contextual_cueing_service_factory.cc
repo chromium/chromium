@@ -52,13 +52,13 @@ ContextualCueingServiceFactory::BuildServiceInstanceForBrowserContext(
           contextual_cueing::kGlicZeroStateSuggestions)) {
     return nullptr;
   }
+  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<ContextualCueingService>(
       page_content_annotations::PageContentExtractionServiceFactory::
-          GetForProfile(Profile::FromBrowserContext(context)),
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(context)),
-      predictors::LoadingPredictorFactory::GetForProfile(
-          Profile::FromBrowserContext(context)));
+          GetForProfile(profile),
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+      predictors::LoadingPredictorFactory::GetForProfile(profile),
+      profile->GetPrefs());
 }
 
 bool ContextualCueingServiceFactory::ServiceIsCreatedWithBrowserContext()

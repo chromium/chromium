@@ -17,8 +17,10 @@ source_set("contextual_cueing") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/optimization_guide/core",
+    "//components/prefs",
     "//content/public/browser",
   ]
+  deps = [ "//chrome/common:buildflags" ]
 }
 
 source_set("impl") {
@@ -70,9 +72,14 @@ source_set("unit_tests") {
     "//chrome/browser:global_features",
     "//chrome/browser/content_extraction",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/common:buildflags",
     "//chrome/test:test_support",
+    "//components/prefs:test_support",
     "//pdf:buildflags",
     "//testing/gmock",
     "//testing/gtest",
   ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
+  }
 }
