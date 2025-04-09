@@ -274,7 +274,6 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
 
     case kRateLimitExceeded:
     case kInternalFailure:
-    case kAccessDenied:
       // Transient error.
       error = GoogleServiceAuthError::FromServiceUnavailable(response_str);
       break;
@@ -300,6 +299,12 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
       error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
           GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
               kAdminPolicyEnforced);
+      break;
+
+    case kAccessDenied:
+      error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
+          GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
+              kAccessDenied);
       break;
 
     case kInvalidRequest:

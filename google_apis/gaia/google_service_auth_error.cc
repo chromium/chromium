@@ -50,6 +50,8 @@ const char* ScopeLimitedUnrecoverableErrorReasonToString(
       return "admin policy enforced";
     case kRemoteConsentResolutionRequired:
       return "remote consent resolution required";
+    case kAccessDenied:
+      return "access denied";
   }
   NOTREACHED();
 }
