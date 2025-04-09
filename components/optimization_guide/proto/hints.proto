@@ -325,6 +325,10 @@ enum OptimizationType {
   // Provides information about FedCM API clickthrough rate aggregated across
   // all users on the page.
   FEDCM_CLICKTHROUGH_RATE = 93;
+  // Provides a list of commonly abused hosting service providers.
+  SOSS_HOSTING_SERVICE_PROVIDERS = 94;
+  // Provides a list of commonly abused TLDs.
+  SOSS_TLDS = 95;
 }
 
 // Presents semantics for how page load URLs should be matched.

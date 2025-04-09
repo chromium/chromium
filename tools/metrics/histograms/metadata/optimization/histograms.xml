@@ -394,6 +394,12 @@ chromium-metrics-reviews@google.com.
   <variant name="ShoppingPageTypes"
       summary="This optimization provides information about shopping page
                types of this page."/>
+  <variant name="SossHostingServiceProviders"
+      summary="This optimization determines whether a host corresponds to a
+               commonly abused hosting servicer provider."/>
+  <variant name="SossTlds"
+      summary="This optimization determines whether a the TLD of the host is
+               commonly abused."/>
   <variant name="TextClassifierEntityDetection"
       summary="Provides information about whether about whether a page is
                eligible for text classifier entity detection - iOS only."/>

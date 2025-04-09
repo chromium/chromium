@@ -752,6 +752,8 @@ chromium-metrics-reviews@google.com.
   <int value="91" label="GLIC_ZERO_STATE_SUGGESTIONS"/>
   <int value="92" label="GLIC_ACTION_PAGE_BLOCK"/>
   <int value="93" label="FEDCM_CLICKTHROUGH_RATE"/>
+  <int value="94" label="SOSS_HOSTING_SERVICE_PROVIDERS"/>
+  <int value="95" label="SOSS_TLDS"/>
 </enum>
 
 <enum name="PageContentAnnotationsStorageStatus">
