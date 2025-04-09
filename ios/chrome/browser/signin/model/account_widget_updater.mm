@@ -45,6 +45,10 @@ void AccountWidgetUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
   StoreIdentityDataInDict(accounts, identity);
 
   [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
+
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+  [WidgetTimelinesUpdater reloadAllTimelines];
+#endif
 }
 
 SystemIdentityManager::IteratorResult
