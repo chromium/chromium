@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_span.h"
+#include "base/memory/safety_checks.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
@@ -22,6 +23,13 @@
 namespace password_manager {
 
 namespace {
+
+// Kill switch guarding an investigation of PasswordGrouper double-free or
+// out-of-bounds writes. Behind a flag in case it finds too many issues and is
+// a stability risk, or there's an unexpected performance impact.
+BASE_FEATURE(kPasswordsGrouperHeapIntegrityKillSwitch,
+             "PasswordsGrouperHeapIntegrityKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 using affiliations::FacetBrandingInfo;
 using affiliations::FacetURI;
@@ -185,6 +193,7 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
   std::vector<AffiliatedGroup> affiliated_groups;
   for (auto const& [group_id, affiliated_group] :
        map_group_id_to_credentials_) {
+    CheckHeapIntegrity();
     // Convert each credential into CredentialUIEntry.
     std::vector<CredentialUIEntry> credentials;
     for (auto const& [username_password_key, forms] : affiliated_group.forms) {
@@ -207,6 +216,7 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
           CreateBrandingInfoFromFacetURI(credentials[0], psl_extensions_);
     }
     affiliated_groups.emplace_back(std::move(credentials), brandingInfo);
+    CheckHeapIntegrity();
   }
   // Sort affiliated groups.
   std::sort(affiliated_groups.begin(), affiliated_groups.end(),
@@ -229,11 +239,13 @@ PasswordsGrouper::GetAffiliatedGroupsWithGroupingInfo() const {
               // Compare names omitting scheme.
               return base::CompareCaseInsensitiveASCII(lhs_name, rhs_name) < 0;
             });
+  CheckHeapIntegrity();
   return affiliated_groups;
 }
 
 std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
   std::vector<CredentialUIEntry> credentials;
+  CheckHeapIntegrity();
   for (const auto& [group_id, affiliated_credentials] :
        map_group_id_to_credentials_) {
     for (const auto& [username_password_key, forms] :
@@ -245,6 +257,7 @@ std::vector<CredentialUIEntry> PasswordsGrouper::GetAllCredentials() const {
       credentials.emplace_back(passkey);
     }
   }
+  CheckHeapIntegrity();
   return credentials;
 }
 
@@ -284,6 +297,7 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
 
   // Get all username/password pairs related to this group.
   GroupId group_id = group_id_iterator->second;
+  CheckHeapIntegrity();
   auto group_iterator = map_group_id_to_credentials_.find(group_id);
   if (group_iterator == map_group_id_to_credentials_.end()) {
     return {};
@@ -297,6 +311,7 @@ std::vector<PasswordForm> PasswordsGrouper::GetPasswordFormsFor(
   if (forms_iterator == username_to_forms.end()) {
     return {};
   }
+  CheckHeapIntegrity();
 
   return forms_iterator->second;
 }
@@ -324,8 +339,28 @@ std::optional<PasskeyCredential> PasswordsGrouper::GetPasskeyFor(
 void PasswordsGrouper::ClearCache() {
   map_signon_realm_to_group_id_.clear();
   map_group_id_to_branding_info_.clear();
+  CheckHeapIntegrity();
   map_group_id_to_credentials_.clear();
+  CheckHeapIntegrity();
   blocked_sites_.clear();
+}
+
+void PasswordsGrouper::CheckHeapIntegrity() const {
+  if (base::FeatureList::IsEnabled(kPasswordsGrouperHeapIntegrityKillSwitch)) {
+    return;
+  }
+  for (const auto& pair : map_group_id_to_credentials_) {
+    const Credentials& credentials = pair.second;
+    for (const auto& forms_pair : credentials.forms) {
+      const std::vector<PasswordForm>& password_form_vector = forms_pair.second;
+      for (const auto& form : password_form_vector) {
+        base::CheckHeapIntegrity(&form);
+      }
+    }
+    for (const auto& passkey : credentials.passkeys) {
+      base::CheckHeapIntegrity(&passkey);
+    }
+  }
 }
 
 void PasswordsGrouper::GroupPasswordsImpl(
@@ -359,8 +394,10 @@ void PasswordsGrouper::GroupPasswordsImpl(
     // Store form for username/password key.
     UsernamePasswordKey key(
         CreateUsernamePasswordSortKey(CredentialUIEntry(form)));
+    CheckHeapIntegrity();
     map_group_id_to_credentials_[group_id].forms[key].push_back(
         std::move(form));
+    CheckHeapIntegrity();
   }
 
   for (auto& passkey : passkeys) {
@@ -368,8 +405,10 @@ void PasswordsGrouper::GroupPasswordsImpl(
     std::string facet_uri = GetFacetRepresentation(passkey);
     GroupId group_id = map_facet_to_group_id[facet_uri];
     map_signon_realm_to_group_id_[SignonRealm(facet_uri)] = group_id;
+    CheckHeapIntegrity();
     map_group_id_to_credentials_[group_id].passkeys.push_back(
         std::move(passkey));
+    CheckHeapIntegrity();
   }
 }
 
@@ -402,8 +441,10 @@ PasswordsGrouper::MapFacetsToGroupId(const std::vector<GroupedFacets>& groups) {
 
 void PasswordsGrouper::InitializePSLExtensionList(
     std::vector<std::string> psl_extension_list) {
+  CheckHeapIntegrity();
   psl_extensions_ =
       base::MakeFlatSet<std::string>(std::move(psl_extension_list));
+  CheckHeapIntegrity();
 }
 
 std::string GetFacetRepresentation(const PasswordForm& form) {
