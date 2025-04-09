@@ -317,9 +317,10 @@ void ImageContextImpl::CreateFallbackImage(
   std::vector<sk_sp<GrPromiseImageTexture>> promise_textures;
   for (int plane_index = 0; plane_index < num_planes; plane_index++) {
     DCHECK_NE(formats[plane_index].textureType(), GrTextureType::kExternal);
+    auto plane_size = format().GetPlaneSize(plane_index, size());
     auto fallback_texture =
         fallback_context_state_->gr_context()->createBackendTexture(
-            size().width(), size().height(), formats[plane_index],
+            plane_size.width(), plane_size.height(), formats[plane_index],
             GetFallbackColorForPlane(format(), plane_index),
             skgpu::Mipmapped::kNo, GrRenderable::kYes);
 
