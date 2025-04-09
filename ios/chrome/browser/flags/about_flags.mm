@@ -872,6 +872,18 @@ const FeatureEntry::FeatureParam kPriceDropForTrackedProductsFront[] = {
     {"ShopCardVariant", "arm_1"},
     {"ShopCardPosition", "shop_card_front"},
 };
+const FeatureEntry::FeatureParam kReviewsFrontt[] = {
+    {"ShopCardVariant", "arm_2"},
+    {"ShopCardPosition", "shop_card_front"},
+};
+const FeatureEntry::FeatureParam kPriceDropOnTabFront[] = {
+    {"ShopCardVariant", "arm_3"},
+    {"ShopCardPosition", "shop_card_front"},
+};
+const FeatureEntry::FeatureParam kPriceTrackableProductOnTabFront[] = {
+    {"ShopCardVariant", "arm_4"},
+    {"ShopCardPosition", "shop_card_front"},
+};
 
 // Address Bar Position
 const FeatureEntry::FeatureParam kTipsAddressBarPositionForceShowArm[] = {
@@ -964,6 +976,13 @@ const FeatureEntry::FeatureVariation kShopCardOverrideOptions[] = {
     {"Card 1 Price Drop at front of magic stack",
      kPriceDropForTrackedProductsFront,
      std::size(kPriceDropForTrackedProductsFront), nullptr},
+    {"Card 2 Reviews at front of magic stack", kReviewsFrontt,
+     std::size(kReviewsFrontt), nullptr},
+    {"Card 3 Price Drop on Tab Resumption at front of magic stack",
+     kPriceDropOnTabFront, std::size(kPriceDropOnTabFront), nullptr},
+    {"Card 4 Price Trackable on Tab Resumption at front of magic stack",
+     kPriceTrackableProductOnTabFront,
+     std::size(kPriceTrackableProductOnTabFront), nullptr},
 };
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =

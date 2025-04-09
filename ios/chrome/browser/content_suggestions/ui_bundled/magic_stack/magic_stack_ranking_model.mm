@@ -82,7 +82,14 @@ namespace {
 // of 3 impressions and an impression only counts if the card is at the
 // front of the Magic Stack.
 BOOL PromoteShopCardToFrontOfStack() {
-  return commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 &&
+  return (commerce::kShopCardVariation.Get() == commerce::kShopCardArm1 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm2) &&
+         commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
+}
+
+BOOL PromoteTabResumptionShopCardToFrontOfStack() {
+  return (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) &&
          commerce::kShopCardPosition.Get() == commerce::kShopCardFrontPosition;
 }
 
@@ -845,7 +852,12 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         if (ShouldHideIrrelevantModules() && [magicStackOrder count] > 1) {
           break;
         }
-        [magicStackOrder addObject:_tabResumptionMediator.itemConfig];
+        if (PromoteTabResumptionShopCardToFrontOfStack()) {
+          [magicStackOrder insertObject:_tabResumptionMediator.itemConfig
+                                atIndex:0];
+        } else {
+          [magicStackOrder addObject:_tabResumptionMediator.itemConfig];
+        }
         break;
       case ContentSuggestionsModuleType::kSafetyCheck: {
         // Handles adding Safety Check to Magic Stack. Disables/hides if:
