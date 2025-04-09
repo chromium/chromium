@@ -52,7 +52,13 @@ jobs:
       - name: Install Chromium-BiDi
         working-directory: playwright
         run: |
-          npm link chromium-bidi
+          npm link chromium-bidi --ignore-scripts
+      - name: Build playwright again
+        working-directory: playwright
+        run: npm run build
+      - name: Install playwright deps
+        working-directory: playwright
+        run: npx playwright install-deps chromium
       # Install chrome, chromedriver and headless shell is required to keep them cached.
       - name: Install all chrome binaries if needed
         uses: ./bidi/.github/actions/setup-chrome-binaries
@@ -65,5 +71,5 @@ jobs:
       - name: Run tests
         working-directory: playwright
         env:
-          playwright_EXECUTABLE_PATH: ${{ steps.browser.outputs.executablePath }}
+          BIDI_CRPATH: ${{ steps.browser.outputs.executablePath }}
         run: xvfb-run --auto-servernum --server-args="-screen 0 1280x960x24" -- npm run biditest -- --project=bidi-chromium*
