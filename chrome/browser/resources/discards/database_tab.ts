@@ -413,7 +413,8 @@ export class DatabaseTabElement extends DatabaseTabElementBase {
     }
 
     if (feature.observationDuration) {
-      return secondsToString(Number(feature.observationDuration));
+      return 'Observed without use for ' +
+          secondsToString(Number(feature.observationDuration));
     }
 
     return 'N/A';
