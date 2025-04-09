@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
@@ -608,9 +609,8 @@ PersistentSampleVector::PersistentSampleVector(
   // move any single-sample to it because sometimes the persistent memory is
   // read-only. Only non-const methods (which assume that memory is read/write)
   // can do that.
-  if (single_sample().IsDisabled()) {
-    bool success = MountExistingCountsStorage();
-    DCHECK(success);
+  if (single_sample().IsDisabled() && !MountExistingCountsStorage()) {
+    debug::DumpWithoutCrashing();
   }
 }
 
