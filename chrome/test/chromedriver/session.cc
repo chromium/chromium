@@ -325,13 +325,26 @@ void Session::HandleMessagesAndTerminateIfNecessary() {
   }
 
   Status status = session->chrome->Client()->HandleReceivedEvents();
+
+  if (session->chrome->GetWebViewCount() <= 1) {
+    // There can be web views created by BiDi Mapper. Update ChromeDriver web
+    // views.
+    std::list<std::string> tab_view_ids;
+    status = session->chrome->GetTopLevelWebViewIds(&tab_view_ids,
+                                                    session->w3c_compliant);
+    if (status.IsError()) {
+      VLOG(0) << "error while updating top level web views: "
+              << status.message();
+    }
+  }
+
   if (status.IsOk() && session->chrome->GetWebViewCount() > 1) {
     return;
   }
 
   // Either is true:
   // * status.IsError()
-  // * web view count <= 0
+  // * web view count <= 1
 
   if (status.code() != kDisconnected) {
     VLOG(0) << "error while processing messages from the browser: "
