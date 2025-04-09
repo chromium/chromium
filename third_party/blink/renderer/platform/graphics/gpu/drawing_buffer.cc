@@ -1743,7 +1743,7 @@ GLenum DrawingBuffer::StorageFormat() const {
   return requested_format_;
 }
 
-sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToDataArray(
+sk_sp<SkData> DrawingBuffer::PaintRenderingResultsToRGBADataArray(
     SourceDrawingBuffer source_buffer) {
   ScopedStateRestorer scoped_state_restorer(this);
 

@@ -295,7 +295,8 @@ class CORE_EXPORT CanvasRenderingContext
   // WebGL-specific interface
   virtual bool UsingSwapChain() const { return false; }
   virtual void MarkLayerComposited() { NOTREACHED(); }
-  virtual sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) {
+  virtual sk_sp<SkData> PaintRenderingResultsToRGBADataArray(
+      SourceDrawingBuffer) {
     NOTREACHED();
   }
   virtual gfx::Size DrawingBufferSize() const { NOTREACHED(); }

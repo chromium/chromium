@@ -2025,7 +2025,7 @@ gfx::Size WebGLRenderingContextBase::DrawingBufferSize() const {
   return GetDrawingBuffer()->Size();
 }
 
-sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToDataArray(
+sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToRGBADataArray(
     SourceDrawingBuffer source_buffer) {
   if (isContextLost())
     return nullptr;
@@ -2037,7 +2037,8 @@ sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToDataArray(
   if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
     return nullptr;
   ScopedFramebufferRestorer restorer(this);
-  return GetDrawingBuffer()->PaintRenderingResultsToDataArray(source_buffer);
+  return GetDrawingBuffer()->PaintRenderingResultsToRGBADataArray(
+      source_buffer);
 }
 
 void WebGLRenderingContextBase::Reshape(int width, int height) {

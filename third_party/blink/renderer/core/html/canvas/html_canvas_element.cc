@@ -1197,24 +1197,22 @@ scoped_refptr<StaticBitmapImage> HTMLCanvasElement::Snapshot(
         image_bitmap = ResourceProvider()->Snapshot(reason);
     } else {
       sk_sp<SkData> pixel_data =
-          context_->PaintRenderingResultsToDataArray(source_buffer);
+          context_->PaintRenderingResultsToRGBADataArray(source_buffer);
       if (pixel_data) {
         // If the accelerated canvas is too big, there is a logic in WebGL code
         // path that scales down the drawing buffer to the maximum supported
         // size. Hence, we need to query the adjusted size of DrawingBuffer.
         gfx::Size adjusted_size = context_->DrawingBufferSize();
         if (!adjusted_size.IsEmpty()) {
-          auto format = GetRenderingContextFormat();
-          if (format != viz::SinglePlaneFormat::kRGBA_8888) {
-            format = (format == viz::SinglePlaneFormat::kBGRA_8888)
-                         ? viz::SinglePlaneFormat::kRGBA_8888
-                         : viz::SinglePlaneFormat::kRGBA_F16;
-          }
           image_bitmap = StaticBitmapImage::Create(
               std::move(pixel_data),
               SkImageInfo::Make(
                   SkISize::Make(adjusted_size.width(), adjusted_size.height()),
-                  viz::ToClosestSkColorType(format), kUnpremul_SkAlphaType,
+                  (GetRenderingContextFormat() ==
+                   viz::SinglePlaneFormat::kRGBA_F16)
+                      ? kRGBA_F16_SkColorType
+                      : kRGBA_8888_SkColorType,
+                  kUnpremul_SkAlphaType,
                   GetRenderingContextColorSpace().ToSkColorSpace()));
         }
       }

@@ -604,7 +604,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public ScriptWrappable,
 
   void MarkLayerComposited() override;
 
-  sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) override;
+  sk_sp<SkData> PaintRenderingResultsToRGBADataArray(
+      SourceDrawingBuffer) override;
 
   unsigned MaxVertexAttribs() const { return max_vertex_attribs_; }
 
