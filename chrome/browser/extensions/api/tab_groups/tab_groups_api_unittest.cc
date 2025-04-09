@@ -869,4 +869,43 @@ TEST_F(TabGroupsApiUnitTest, IsTabStripEditable) {
   }
 }
 
+// Test that moving a group within the same window but specifying the window id
+// does not cause unexpected behavior.
+TEST_F(TabGroupsApiUnitTest, TabGroupsMoveGroupWithinSameWindowWithWindowId) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+
+  scoped_refptr<const Extension> extension = CreateTabGroupsExtension();
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a group with multiple tabs.
+  tab_groups::TabGroupId group = tab_strip_model->AddToNewGroup({1, 2, 3});
+  int group_id = ExtensionTabUtil::GetGroupId(group);
+  int window_id = ExtensionTabUtil::GetWindowId(browser());
+
+  // Move the group to index 1, specifying the current window id.
+  auto function = base::MakeRefCounted<TabGroupsMoveFunction>();
+  function->set_extension(extension);
+  constexpr char kFormatArgs[] = R"([%d, {"windowId": %d, "index": 1}])";
+  const std::string args = base::StringPrintf(kFormatArgs, group_id, window_id);
+  ASSERT_TRUE(api_test_utils::RunFunction(function.get(), args, profile(),
+                                          api_test_utils::FunctionMode::kNone));
+
+  // Verify the tabs are in the correct order.The group should now be at
+  // index 1.
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(0), web_contents(0));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(1), web_contents(1));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(2), web_contents(2));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(3), web_contents(3));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(4), web_contents(4));
+  EXPECT_EQ(tab_strip_model->GetWebContentsAt(5), web_contents(5));
+
+  // Verify that the group is still associated with the correct tabs.
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(1).value());
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(2).value());
+  EXPECT_EQ(group, tab_strip_model->GetTabGroupForTab(3).value());
+
+  tab_strip_model->CloseAllTabs();
+}
+
 }  // namespace extensions
