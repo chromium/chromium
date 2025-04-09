@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -263,6 +264,8 @@ void TabHoverCardController::UpdateHoverCard(
       target_tab_observation_.Observe(tab);
     }
     target_tab_ = tab;
+    DUMP_WILL_BE_CHECK(!in_show_hover_card_)
+        << "Changing target tab to " << (tab ? "non-null" : "null");
   }
 
   // If there's nothing to attach to then there's no point in creating a card.
@@ -390,15 +393,17 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
     return;
   }
 
+  // TODO(crbug.com/40865488): See below. Remove this after crash diagnosis.
+  base::AutoReset<bool> auto_resetter(&in_show_hover_card_, true);
+
   CreateHoverCard(target_tab_);
 
   // For some reason, `target_tab_` can be rendered invalid before the next
   // call. There may be an asynchronous operation buried deep within
   // CreateHoverCard() above. Regardless, the validity needs to be checked
-  // before the next call.
+  // before the next call. Note that this check helps, but isn't sufficient,
+  // as subsequent calls are also vulnerable.
   // See: crbug.com/1295601, crbug.com/1322117, crbug.com/1348956
-  // TODO(crbug.com/40865488): look into this and figure out what is actually
-  // happening.
   if (!TargetTabIsValid()) {
     HideHoverCard();
     return;
