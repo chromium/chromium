@@ -82,7 +82,6 @@ class TabStripActionContainer : public views::View,
   };
   explicit TabStripActionContainer(
       TabStripController* tab_strip_controller,
-      View* locked_expansion_view,
       tabs::TabDeclutterController* tab_declutter_controller,
       tabs::GlicNudgeController* tab_glic_nudge_controller);
   TabStripActionContainer(const TabStripActionContainer&) = delete;

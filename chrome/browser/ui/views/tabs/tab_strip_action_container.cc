@@ -207,16 +207,15 @@ void TabStripActionContainer::TabStripNudgeAnimationSession::MarkAnimationDone(
 
 TabStripActionContainer::TabStripActionContainer(
     TabStripController* tab_strip_controller,
-    View* locked_expansion_view,
     tabs::TabDeclutterController* tab_declutter_controller,
     tabs::GlicNudgeController* glic_nudge_controller)
     : AnimationDelegateViews(this),
-      locked_expansion_view_(locked_expansion_view),
+      locked_expansion_view_(this),
       tab_declutter_controller_(tab_declutter_controller),
       glic_nudge_controller_(glic_nudge_controller),
       tab_strip_controller_(tab_strip_controller) {
   mouse_watcher_ = std::make_unique<views::MouseWatcher>(
-      std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view,
+      std::make_unique<views::MouseWatcherViewHost>(locked_expansion_view_,
                                                     gfx::Insets()),
       this);
 
@@ -467,14 +466,16 @@ void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
 #if BUILDFLAG(ENABLE_GLIC)
 
   CHECK(glic_button_);
-  glic_button_->SetText(base::UTF8ToUTF16(label));
   if (!label.empty()) {
     glic_nudge_controller_->OnNudgeActivity(
         tabs::GlicNudgeActivity::kNudgeShown);
+    glic_button_->SetText(base::UTF8ToUTF16(label));
     ShowTabStripNudge(glic_button_);
   } else {
     HideTabStripNudge(glic_button_);
+    glic_button_->SetText(base::UTF8ToUTF16(label));
   }
+
 #else
   NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_GLIC)

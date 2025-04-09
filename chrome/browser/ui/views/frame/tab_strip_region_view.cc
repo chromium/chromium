@@ -136,7 +136,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip)
 
     if (features::IsTabSearchMoving()) {
       tab_strip_action_container = std::make_unique<TabStripActionContainer>(
-          tab_strip_->controller(), this,
+          tab_strip_->controller(),
           browser->GetFeatures().tab_declutter_controller(),
           browser->GetFeatures().glic_nudge_controller());
 
