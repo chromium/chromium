@@ -110,7 +110,6 @@ static const char kText[] = "text";
 static const char kWeb[] = "web";
 
 // Possible global flag values
-static const char kDisabled[] = "disabled";
 static const char kOff[] = "off";
 static const char kOn[] = "on";
 
@@ -195,8 +194,6 @@ void HandleAccessibilityRequestCallback(
   PrefService* pref = Profile::FromBrowserContext(current_context)->GetPrefs();
   ui::AXMode mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
-  bool is_a11y_allowed = content::BrowserAccessibilityState::GetInstance()
-                             ->IsAccessibilityAllowed();
   bool native = mode.has_mode(ui::AXMode::kNativeAPIs);
   bool web = mode.has_mode(ui::AXMode::kWebContents);
   bool text = mode.has_mode(ui::AXMode::kInlineTextBoxes);
@@ -206,16 +203,14 @@ void HandleAccessibilityRequestCallback(
 
   // The "native" and "web" flags are disabled if
   // --disable-renderer-accessibility is set.
-  data.Set(kNative, is_a11y_allowed ? (native ? kOn : kOff) : kDisabled);
-  data.Set(kWeb, is_a11y_allowed ? (web ? kOn : kOff) : kDisabled);
+  data.Set(kNative, native ? kOn : kOff);
+  data.Set(kWeb, web ? kOn : kOff);
 
   // The "text", "extendedProperties" and "html" flags are only
   // meaningful if "web" is enabled.
-  bool is_web_enabled = is_a11y_allowed && web;
-  data.Set(kText, is_web_enabled ? (text ? kOn : kOff) : kDisabled);
-  data.Set(kExtendedProperties,
-           is_web_enabled ? (extendedProperties ? kOn : kOff) : kDisabled);
-  data.Set(kHTML, is_web_enabled ? (html ? kOn : kOff) : kDisabled);
+  data.Set(kText, text ? kOn : kOff);
+  data.Set(kExtendedProperties, extendedProperties ? kOn : kOff);
+  data.Set(kHTML, html ? kOn : kOff);
 
   // The "pdfPrinting" flag is independent of the others.
   data.Set(kPDFPrinting, pdf_printing ? kOn : kOff);
@@ -280,9 +275,9 @@ void HandleAccessibilityRequestCallback(
     }
 
     base::Value::Dict descriptor = BuildTargetDescriptor(rvh);
-    descriptor.Set(kNative, is_a11y_allowed);
-    descriptor.Set(kExtendedProperties, is_web_enabled && extendedProperties);
-    descriptor.Set(kWeb, is_web_enabled);
+    descriptor.Set(kNative, native);
+    descriptor.Set(kExtendedProperties, extendedProperties);
+    descriptor.Set(kWeb, web);
     page_list.Append(std::move(descriptor));
   }
   data.Set(kPagesField, std::move(page_list));

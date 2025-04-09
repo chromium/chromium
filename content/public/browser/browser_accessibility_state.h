@@ -31,13 +31,6 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // Returns the singleton instance.
   static BrowserAccessibilityState* GetInstance();
 
-  // Returns true if accessibility is not disallowed via
-  // --disable-renderer-accessibility on the process's command line.
-  // Note: the command line flag --disable-renderer-accessibility is a misnomer
-  // because it also disables accessibility in non-renderer contexts, such as
-  // UI.
-  virtual bool IsAccessibilityAllowed() = 0;
-
   // Returns the effective accessibility mode for the process. Individual
   // WebContentses may have an effective mode that is a superset of this as a
   // result of any live ScopedAccessibilityMode instances targeting them

@@ -272,11 +272,6 @@ ui::AssistiveTech BrowserAccessibilityStateImpl::ActiveAssistiveTech() const {
   return ui::AXPlatform::GetInstance().active_assistive_tech();
 }
 
-bool BrowserAccessibilityStateImpl::IsAccessibilityAllowed() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableRendererAccessibility);
-}
-
 void BrowserAccessibilityStateImpl::SetPerformanceFilteringAllowed(
     bool allowed) {
   performance_filtering_allowed_ = allowed;

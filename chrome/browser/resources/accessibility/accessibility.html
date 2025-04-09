@@ -74,14 +74,14 @@ found in the LICENSE file.
         <label>
           <span class="checkbox-wrapper">
             <input type="checkbox" id="extendedProperties"
-                   aria-describedby="screenreader_secondary">
+                   aria-describedby="extended_properties_secondary">
           </span>
-          Screen reader support
+          Extended properties
         </label>
       </div>
-      <div id="screenreader_secondary" class="secondary">
-        Exposes accessibility APIs typically needed only by
-        screen readers.
+      <div id="extended_properties_secondary" class="secondary">
+        Exposes accessibility APIs needed by
+        advanced assistive technologies.
       </div>
 
       <div class="checkbox-row">
@@ -155,8 +155,7 @@ found in the LICENSE file.
       </h2>
       <p>
         Accessibility features in Chrome are off by default and enabled
-        automatically on-demand. Changes to these modes only take effect
-        until the next time Chrome is restarted.
+        automatically on-demand.
       </p>
       <div class="checkbox-row">
         <label>
@@ -174,10 +173,10 @@ found in the LICENSE file.
         <pre>--force-renderer-accessibility</pre>
       </p>
       <p>
-        To force the accessibility AXMode to one of the three predefined bundles
-        (basic, form-controls, or complete), run Chrome with the
-        --force-renderer-accessibility flag and optional argument:
-        <pre>--force-renderer-accessibility=[basic|form-controls|complete]</pre>
+        To force the accessibility AXMode to one of the predefined bundles, run
+        Chrome with the --force-renderer-accessibility flag and optional
+        argument:
+        <pre>--force-renderer-accessibility=[basic|complete]</pre>
 
         If the optional parameter is absent, the AXMode bundle will default to
         complete.

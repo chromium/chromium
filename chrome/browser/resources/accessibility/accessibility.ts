@@ -61,7 +61,7 @@ type WidgetData = Data&{
   widgetId: number,
 };
 
-type EnabledStatus = 'disabled'|'off'|'on';
+type EnabledStatus = 'off'|'on';
 
 interface InitData {
   browsers: BrowserData[];
@@ -302,10 +302,6 @@ function bindCheckbox(name: string, value: EnabledStatus) {
   const checkbox = getRequiredElement<HTMLInputElement>(name);
   if (value === 'on') {
     checkbox.checked = true;
-  }
-  if (value === 'disabled') {
-    checkbox.disabled = true;
-    checkbox.labels![0]!.classList.add('disabled');
   }
   checkbox.addEventListener('change', function() {
     browserProxy.setGlobalFlag(name, checkbox.checked);

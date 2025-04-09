@@ -59,7 +59,6 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
   static std::unique_ptr<BrowserAccessibilityStateImpl> Create();
 
   // BrowserAccessibilityState implementation.
-  bool IsAccessibilityAllowed() override;
   ui::AXMode GetAccessibilityMode() override;
   ui::AXMode GetAccessibilityModeForBrowserContext(
       BrowserContext* browser_context) override;
