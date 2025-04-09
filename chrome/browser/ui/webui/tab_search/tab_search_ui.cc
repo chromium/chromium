@@ -176,6 +176,10 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"backButtonAriaLabel", IDS_TAB_ORGANIZATION_BACK_BUTTON_ARIA_LABEL},
       {"declutterSelectorSubheading", IDS_DECLUTTER_SELECTOR_SUBHEADING},
       {"selectorAriaLabel", IDS_TAB_ORGANIZATION_SELECTOR_ARIA_LABEL},
+      // Split view empty state strings
+      {"splitViewMediaHeading", IDS_SPLIT_VIEW_NTP_MEDIA_HEADING},
+      {"splitViewOpenHeading", IDS_SPLIT_VIEW_NTP_OPEN_HEADING},
+      {"splitViewTitle", IDS_SPLIT_VIEW_NTP_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);

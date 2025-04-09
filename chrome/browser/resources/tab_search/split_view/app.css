@@ -13,3 +13,34 @@
   display: flex;
   flex-direction: column;
 }
+
+#closeButton {
+  --cr-icon-button-size: 20px;
+  --cr-icon-button-icon-size: 16px;
+  align-self: flex-end;
+  margin: 24px;
+}
+
+.contents {
+  margin: 0 106px 24px 106px;
+}
+
+.heading {
+  line-height: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  margin: 26px 0;
+}
+
+.tab-list {
+  border-radius: 16px;
+  background-color: var(--color-tab-search-background);
+  padding: 10px 0;
+}
+
+.title {
+  align-self: center;
+  line-height: 24px;
+  font-size: 16px;
+  font-weight: 500;
+}

@@ -9806,6 +9806,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <ph name="HEADING">$1<ex>Group tabs with AI</ex></ph>. <ph name="SUBHEADING">$2<ex>Get your tabs sorted</ex></ph>
       </message>
 
+      <!-- Strings for split view -->
+      <message name="IDS_SPLIT_VIEW_NTP_TITLE" desc="The title of the split view new tab page.">
+        Choose a tab to add to split view
+      </message>
+      <message name="IDS_SPLIT_VIEW_NTP_MEDIA_HEADING" desc="The header for the media tab list in the split view new tab page.">
+        Audio and Video
+      </message>
+      <message name="IDS_SPLIT_VIEW_NTP_OPEN_HEADING" desc="The header for the open tab list in the split view new tab page.">
+        Open Tabs
+      </message>
+
       <!-- Strings for experimental AI promo -->
       <message name="IDS_IPH_EXPERIMENTAL_AI_PROMO" desc="The title text of the IPH promo for experimental AI." translateable="false">
         Try out experimental AI features
