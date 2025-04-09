@@ -116,7 +116,7 @@ class AudioProcessorCaptureBus {
 
   float* const* channel_ptrs() {
     for (int i = 0; i < bus_->channels(); ++i) {
-      channel_ptrs_[i] = bus_->channel(i);
+      channel_ptrs_[i] = bus_->channel_span(i).data();
     }
     return channel_ptrs_.get();
   }
@@ -448,8 +448,9 @@ void AudioProcessor::AnalyzePlayoutData(const AudioBus& audio_bus,
   webrtc::StreamConfig input_stream_config(*playout_sample_rate_hz_,
                                            audio_bus.channels());
   std::array<const float*, media::limits::kMaxChannels> input_ptrs;
-  for (int i = 0; i < audio_bus.channels(); ++i)
-    input_ptrs[i] = audio_bus.channel(i);
+  for (int i = 0; i < audio_bus.channels(); ++i) {
+    input_ptrs[i] = audio_bus.channel_span(i).data();
+  }
 
   const int apm_error = webrtc_audio_processing_->AnalyzeReverseStream(
       input_ptrs.data(), input_stream_config);

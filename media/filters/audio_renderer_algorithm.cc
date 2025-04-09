@@ -524,8 +524,9 @@ bool AudioRendererAlgorithm::RunOneWsolaIteration(double playback_rate) {
     if (!channel_mask_[k])
       continue;
 
-    const float* const ch_opt_frame = optimal_block_->channel(k);
-    float* ch_output = wsola_output_->channel(k) + num_complete_frames_;
+    const float* const ch_opt_frame = optimal_block_->channel_span(k).data();
+    float* ch_output =
+        wsola_output_->channel_span(k).data() + num_complete_frames_;
     for (int n = 0; n < ola_hop_size_; ++n) {
       ch_output[n] = ch_output[n] * ola_window_[ola_hop_size_ + n] +
                      ch_opt_frame[n] * ola_window_[n];
@@ -582,7 +583,7 @@ int AudioRendererAlgorithm::WriteCompletedFramesTo(
   for (int k = 0; k < channels_; ++k) {
     if (!channel_mask_[k])
       continue;
-    float* ch = wsola_output_->channel(k);
+    float* ch = wsola_output_->channel_span(k).data();
     memmove(ch, &ch[rendered_frames], sizeof(*ch) * frames_to_move);
   }
   num_complete_frames_ -= rendered_frames;
@@ -638,8 +639,8 @@ void AudioRendererAlgorithm::GetOptimalBlock() {
     for (int k = 0; k < channels_; ++k) {
       if (!channel_mask_[k])
         continue;
-      float* ch_opt = optimal_block_->channel(k);
-      const float* const ch_target = target_block_->channel(k);
+      float* ch_opt = optimal_block_->channel_span(k).data();
+      const float* const ch_target = target_block_->channel_span(k).data();
       for (int n = 0; n < ola_window_size_; ++n) {
         ch_opt[n] = ch_opt[n] * transition_window_[n] +
                     ch_target[n] * transition_window_[ola_window_size_ + n];
@@ -676,8 +677,8 @@ void AudioRendererAlgorithm::CreateSearchWrappers() {
   std::vector<float*> active_search_channels;
   for (int ch = 0; ch < channels_; ++ch) {
     if (channel_mask_[ch]) {
-      active_target_channels.push_back(target_block_->channel(ch));
-      active_search_channels.push_back(search_block_->channel(ch));
+      active_target_channels.push_back(target_block_->channel_span(ch).data());
+      active_search_channels.push_back(search_block_->channel_span(ch).data());
     }
   }
 
