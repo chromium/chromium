@@ -253,13 +253,32 @@ void WebNNContextProviderImpl::CreateWebNNContext(
       return;
     }
 
+    OrtLoggingLevel ort_logging_level = ORT_LOGGING_LEVEL_WARNING;
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebNNOrtLoggingLevel)) {
+      std::string user_logging_level =
+          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+              switches::kWebNNOrtLoggingLevel);
+      if (user_logging_level == "VERBOSE") {
+        ort_logging_level = ORT_LOGGING_LEVEL_VERBOSE;
+      } else if (user_logging_level == "INFO") {
+        ort_logging_level = ORT_LOGGING_LEVEL_INFO;
+      } else if (user_logging_level == "WARNING") {
+        ort_logging_level = ORT_LOGGING_LEVEL_WARNING;
+      } else if (user_logging_level == "ERROR") {
+        ort_logging_level = ORT_LOGGING_LEVEL_ERROR;
+      } else if (user_logging_level == "FATAL") {
+        ort_logging_level = ORT_LOGGING_LEVEL_FATAL;
+      }
+    }
+
     // `OrtEnv` is reference counted. The first `CreateEnv()` will create the
     // `OrtEnv` instance. The following invocations return the reference of the
     // same instance.  It is released upon the last reference is removed via
     // `ReleaseEnv()`.
     ort::ScopedOrtEnv env;
     if (ORT_CALL_FAILED(ort::GetOrtApi()->CreateEnv(
-            ORT_LOGGING_LEVEL_WARNING, "WebNN",
+            ort_logging_level, "WebNN",
             ort::ScopedOrtEnv::Receiver(env).get()))) {
       std::move(callback).Run(ToError<mojom::CreateContextResult>(
           mojom::Error::Code::kNotSupportedError,

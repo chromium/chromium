@@ -56,6 +56,15 @@ inline constexpr char kWebNNOrtOVGpuPrecision[] = "webnn-ort-ov-gpu-precision";
 // This switch doesn't work if --webnn-ort-dump-model is enabled.
 inline constexpr char kWebNNOrtUseOVModelCache[] =
     "webnn-ort-use-ov-model-cache";
+
+// Configure the logging severity level of ONNX Runtime.
+// Usage: --no-sandbox --enable-logging --webnn-ort-logging-level=VERBOSE
+// Other severity levels could be "INFO", "WARNING" (default), "ERROR" and
+// "FATAL".
+// Please note if "--use-redist-ort" switch is used, this logging level
+// setting will be ignored, because an OrtEnv will be created before with
+// WARNING logging level.
+inline constexpr char kWebNNOrtLoggingLevel[] = "webnn-ort-logging-level";
 #endif  // BUILDFLAG(WEBNN_USE_ORT)
 
 }  // namespace switches
