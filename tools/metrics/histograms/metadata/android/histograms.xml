@@ -2599,18 +2599,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Android.IsolatedSplits.ContextCreateTime{AndroidFeatureModuleName}"
-    units="ms" expires_after="2025-04-27">
-  <owner>cduvall@chromium.org</owner>
-  <owner>agrieve@chromium.org</owner>
-  <owner>smaier@chromium.org</owner>
-  <summary>
-    Amount of time it takes to create a new Context for a split. This will only
-    be recorded if isolated splits are enabled. {AndroidFeatureModuleName}
-  </summary>
-</histogram>
-
-<histogram
     name="Android.IsolatedSplits.LoadFirstClassTime{AndroidFeatureModuleName}"
     units="ms" expires_after="2026-01-14">
   <owner>cduvall@chromium.org</owner>
