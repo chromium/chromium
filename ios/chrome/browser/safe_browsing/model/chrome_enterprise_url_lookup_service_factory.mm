@@ -13,6 +13,8 @@
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/model/management_service_ios.h"
+#import "ios/chrome/browser/policy/model/management_service_ios_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/user_population_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -72,6 +74,7 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
   // SyncServiceFactory dependency through GetUserPopulationForProfile.
   DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(policy::ManagementServiceIOSFactory::GetInstance());
 }
 
 ChromeEnterpriseRealTimeUrlLookupServiceFactory::
@@ -90,6 +93,10 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
 
+  auto* management_service =
+      policy::ManagementServiceIOSFactory::GetForProfile(profile);
+  CHECK(management_service);
+
   return std::make_unique<ChromeEnterpriseRealTimeUrlLookupService>(
       safe_browsing_service->GetURLLoaderFactory(),
       VerdictCacheManagerFactory::GetForProfile(profile),
@@ -102,10 +109,8 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       // TODO(crbug.com/40704516): Pass non-null delegate to display relevant
       // events once chrome://safe-browsing is supported on iOS.
       /*webui_delegate=*/nullptr,
-      IdentityManagerFactory::GetForProfile(profile),
-      // TODO(crbug.com/406988559): Pass management service once implemented for
-      // iOS.
-      /*management_service=*/nullptr, profile->IsOffTheRecord(),
+      IdentityManagerFactory::GetForProfile(profile), management_service,
+      profile->IsOffTheRecord(),
       /*is_guest_session=*/false,
       base::BindRepeating(&enterprise_connectors::GetProfileEmail,
                           identity_manager),
