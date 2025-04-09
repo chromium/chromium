@@ -33,6 +33,13 @@ typedef UITableViewDiffableDataSource<NSString*, RecentActivityLogItem*>
 NSString* const kRecentActivitySectionIdentifier =
     @"RecentActivitySectionIdentifier";
 
+// Returns the accessibility identifier to set on a RecentActivityLogCell when
+// positioned at the given index.
+NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
+  return [NSString
+      stringWithFormat:@"%@%ld", kRecentActivityLogCellIdentifierPrefix, index];
+}
+
 }  // namespace
 
 @interface RecentActivityViewController ()
@@ -170,6 +177,8 @@ NSString* const kRecentActivitySectionIdentifier =
       [NSString stringWithFormat:@"%@ • %@", itemIdentifier.actionDescription,
                                  itemIdentifier.elapsedTime];
   cell.descriptionLabel.text = descriptionString;
+  cell.accessibilityIdentifier =
+      RecentActivityLogCellAccessibilityIdentifier(indexPath.item);
   [cell.faviconView configureWithAttributes:itemIdentifier.attributes];
 
   NSString* uniqueIdentifier = cell.uniqueIdentifier;

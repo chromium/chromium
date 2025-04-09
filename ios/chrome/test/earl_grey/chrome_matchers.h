@@ -564,6 +564,10 @@ id<GREYMatcher> TabGroupsPanelCellAtIndex(unsigned int index);
 id<GREYMatcher> TabGroupsPanelCellWithName(NSString* group_name,
                                            NSInteger tab_count);
 
+// Returns a matcher for the recent activity log cell at `index` in the recent
+// activity in the tab group.
+id<GREYMatcher> TabGroupRecentActivityCellAtIndex(unsigned int index);
+
 // Returns a matcher for the button that closes the tab grid.
 id<GREYMatcher> TabGridDoneButton();
 
@@ -882,6 +886,10 @@ id<GREYMatcher> ShareGroupButton();
 // Returns the matcher for the manage group button in the context menu of a tab
 // group.
 id<GREYMatcher> ManageGroupButton();
+
+// Returns the matcher for the recent activity button in the context menu of a
+// tab group.
+id<GREYMatcher> RecentActivityButton();
 
 // Returns the matcher for `Leave Group` button in the context menu of a shared
 // tab group.

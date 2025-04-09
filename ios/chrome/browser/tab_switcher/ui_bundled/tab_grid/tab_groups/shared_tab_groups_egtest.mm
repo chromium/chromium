@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/features.h"
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
 #import "components/data_sharing/test_support/test_utils.h"
@@ -52,6 +53,7 @@ using chrome_test_util::ManageGroupButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarSaveButton;
 using chrome_test_util::OpenTabGroupAtIndex;
+using chrome_test_util::RecentActivityButton;
 using chrome_test_util::ShareGroupButton;
 using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridDoneButton;
@@ -60,6 +62,7 @@ using chrome_test_util::TabGridNewTabButton;
 using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupOverflowMenuButton;
+using chrome_test_util::TabGroupRecentActivityCellAtIndex;
 using chrome_test_util::TabGroupViewTitle;
 using chrome_test_util::WindowWithNumber;
 using data_sharing::features::kDataSharingFeature;
@@ -136,6 +139,8 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kTabGroupSync);
   config.features_enabled.push_back(kTabGroupIndicator);
+  config.features_enabled.push_back(
+      collaboration::features::kCollaborationMessaging);
   if (join_only) {
     config.features_enabled.push_back(kDataSharingJoinOnly);
     config.features_disabled.push_back(kDataSharingFeature);
@@ -716,14 +721,9 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       performAction:grey_tap()];
 
   // Open the Recent Activity.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kTabGroupOverflowMenuButtonIdentifier)]
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
       performAction:grey_tap()];
-  [[EarlGrey
-      selectElementWithMatcher:
-          chrome_test_util::ContextMenuItemWithAccessibilityLabel(
-              l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY))]
+  [[EarlGrey selectElementWithMatcher:RecentActivityButton()]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -919,6 +919,101 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(2)]
+      assertWithMatcher:grey_notNil()];
+}
+
+// Tests that tapping items on Recent Activity takes an action corresponded to
+// the item.
+- (void)testTapRecentActivityItems {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open a first tab and load https://example.com page.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey loadURL:GURL("https://example.com")];
+
+  // Add a new tab.
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open the Recent Activity.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:RecentActivityButton()]
+      performAction:grey_tap()];
+
+  // Verify that 2 items exist in the Recent Activity.
+  [[EarlGrey selectElementWithMatcher:TabGroupRecentActivityCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabGroupRecentActivityCellAtIndex(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the first item.
+  [[EarlGrey selectElementWithMatcher:TabGroupRecentActivityCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Verify that the newly added page (= new tab page) is open by tapping the
+  // item in the Recent Activity.
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  const GURL expectedURL(kChromeUINewTabURL);
+  GREYAssertEqual(expectedURL, currentURL, @"Unexpected page %s is open",
+                  currentURL.spec().c_str());
+
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Close the first item.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          TabGridCloseButtonForCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Wait for one tab is closed.
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the Recent Activity.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:RecentActivityButton()]
+      performAction:grey_tap()];
+
+  // Verify that 2 items exist in the Recent Activity.
+  [[EarlGrey selectElementWithMatcher:TabGroupRecentActivityCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:TabGroupRecentActivityCellAtIndex(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the first item to reopen the closed tab.
+  [[EarlGrey selectElementWithMatcher:TabGroupRecentActivityCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForWebStateVisible];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Verify that the closed page is open again by tapping the item in the Recent
+  // Activity.
+  const GURL currentURL2 = [ChromeEarlGrey webStateVisibleURL];
+  const GURL expectedURL2("https://example.com");
+  GREYAssertEqual(expectedURL2, currentURL2, @"Unexpected page %s is open",
+                  currentURL2.spec().c_str());
+
+  // Open the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Verify that there are 2 tabs in the group.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
       assertWithMatcher:grey_notNil()];
 }
 

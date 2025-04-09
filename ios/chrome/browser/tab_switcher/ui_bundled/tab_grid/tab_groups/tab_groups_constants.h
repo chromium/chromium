@@ -35,4 +35,7 @@ extern NSString* const kSharedTabGroupUserEducationAccessibilityIdentifier;
 // Name of the pref storing whether the user education has been shown or not.
 extern NSString* const kSharedTabGroupUserEducationShownOnceKey;
 
+// Accessibility identifier prefix of a cell in the recent activity.
+extern NSString* const kRecentActivityLogCellIdentifierPrefix;
+
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GROUPS_TAB_GROUPS_CONSTANTS_H_

@@ -689,6 +689,10 @@ id<GREYMatcher> TabGroupsPanelCellWithName(NSString* group_name,
                                                           count:tab_count];
 }
 
+id<GREYMatcher> TabGroupRecentActivityCellAtIndex(unsigned int index) {
+  return [ChromeMatchersAppInterface tabGroupRecentActivityCellAtIndex:index];
+}
+
 id<GREYMatcher> TabGridDoneButton() {
   return [ChromeMatchersAppInterface tabGridDoneButton];
 }
@@ -1077,6 +1081,10 @@ id<GREYMatcher> ShareGroupButton() {
 
 id<GREYMatcher> ManageGroupButton() {
   return [ChromeMatchersAppInterface manageGroupButton];
+}
+
+id<GREYMatcher> RecentActivityButton() {
+  return [ChromeMatchersAppInterface recentActivityButton];
 }
 
 id<GREYMatcher> LeaveSharedGroupButton() {

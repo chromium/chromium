@@ -108,6 +108,13 @@ NSString* IdentifierForTabGroupsPanelCellAtIndex(unsigned int index) {
       stringWithFormat:@"%@%u", kTabGroupsPanelCellIdentifierPrefix, index];
 }
 
+// Identifier for theRecentActivityLogCell at the given index in the recent
+// activity.
+NSString* IdentifierForRecentActivityLogCellAtIndex(unsigned int index) {
+  return [NSString
+      stringWithFormat:@"%@%u", kRecentActivityLogCellIdentifierPrefix, index];
+}
+
 id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
   GREYMatchesBlock matches = ^BOOL(id element) {
     TableViewSwitchCell* switch_cell =
@@ -1183,6 +1190,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       nil);
 }
 
++ (id<GREYMatcher>)tabGroupRecentActivityCellAtIndex:(unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(IdentifierForRecentActivityLogCellAtIndex(index)),
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)tabGridDoneButton {
   return grey_allOf(grey_accessibilityID(kTabGridDoneButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
@@ -1739,6 +1752,12 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return [ChromeMatchersAppInterface
       contextMenuItemWithAccessibilityLabelID:
           IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP];
+}
+
++ (id<GREYMatcher>)recentActivityButton {
+  return
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY];
 }
 
 + (id<GREYMatcher>)leaveSharedGroupButton {

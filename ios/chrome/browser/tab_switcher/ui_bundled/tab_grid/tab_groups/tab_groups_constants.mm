@@ -36,3 +36,6 @@ NSString* const kSharedTabGroupUserEducationAccessibilityIdentifier =
     @"SharedTabGroupUserEducationAccessibilityIdentifier";
 NSString* const kSharedTabGroupUserEducationShownOnceKey =
     @"SharedTabGroupUserEducationShownOnceKey";
+
+NSString* const kRecentActivityLogCellIdentifierPrefix =
+    @"kRecentActivityLogCellIdentifier";

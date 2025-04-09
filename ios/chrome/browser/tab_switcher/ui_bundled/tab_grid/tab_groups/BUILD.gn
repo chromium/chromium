@@ -358,6 +358,7 @@ source_set("eg2_tests") {
     ":eg_test_support+eg2",
     ":tab_groups_constant",
     "//base/test:test_support",
+    "//components/collaboration/public:features",
     "//components/data_sharing:test_support",
     "//components/data_sharing/public",
     "//components/sync/base",

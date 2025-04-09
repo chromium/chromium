@@ -24,6 +24,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/metrics/demographics/demographic_metrics_test_utils.h"
 #import "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
+#import "components/saved_tab_groups/internal/shared_tab_group_data_sync_bridge.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/sync/base/data_type.h"
