@@ -1440,6 +1440,7 @@ public class TabPersistentStoreTest {
     private TestTabModelSelector createAndRestoreRealTabModelImpls(
             TabModelMetaDataInfo info, boolean restoreIncognito, boolean expectMatchingIds)
             throws Exception {
+        MismatchedIndicesHandler mismatchedIndicesHandler = mock(MismatchedIndicesHandler.class);
         TestTabModelSelector selector =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -1462,9 +1463,7 @@ public class TabPersistentStoreTest {
                                                     profileProvider,
                                                     mChromeActivity,
                                                     null,
-                                                    (activityAtRequestedIndex,
-                                                            isActivityInAppTasks,
-                                                            isActivityInSameTask) -> false,
+                                                    mismatchedIndicesHandler,
                                                     0)
                                             .second;
                         });

@@ -213,6 +213,10 @@ public class TabWindowManagerImpl implements TabWindowManager {
             return assignedWindowId;
         }
 
+        if (mismatchedIndicesHandler.skipIndexReassignment()) {
+            return assignedWindowId;
+        }
+
         boolean assertMismatch = !BuildConfig.IS_FOR_TEST && BuildConfig.ENABLE_ASSERTS;
         boolean forceReportMismatch =
                 ChromeFeatureList.sTabWindowManagerReportIndicesMismatch.isEnabled();
@@ -385,8 +389,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
         int releasedWindowId = clearSelectorAndWindowIdAssignments(activityAtRequestedWindowId);
         if (releasedWindowId == INVALID_WINDOW_ID) {
             // If the window id mapping is already cleared for |activityAtRequestedWindowId| by this
-            // time,
-            // simply return the requested window id.
+            // time, simply return the requested window id.
             return requestedWindowId;
         }
         assert releasedWindowId == requestedWindowId

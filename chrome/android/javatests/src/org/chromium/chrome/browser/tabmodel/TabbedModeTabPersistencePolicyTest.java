@@ -77,6 +77,7 @@ public class TabbedModeTabPersistencePolicyTest {
     @Mock Profile mIncognitoProfile;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock ModalDialogManager mModalDialogManager;
+    @Mock MismatchedIndicesHandler mMismatchedIndicesHandler;
 
     private TestTabModelDirectory mMockDirectory;
     private AdvancedMockContext mAppContext;
@@ -171,9 +172,7 @@ public class TabbedModeTabPersistencePolicyTest {
                                     profileProviderSupplier,
                                     null,
                                     null,
-                                    (activityAtRequestedIndex,
-                                            isActivityInAppTasks,
-                                            isActivityInSameTask) -> false,
+                                    mMismatchedIndicesHandler,
                                     0);
                             TabModelSelector selector = tmpOrchestrator.getTabModelSelector();
                             ((MockTabModelSelector) selector)

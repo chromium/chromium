@@ -449,7 +449,8 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
     private final OnClickListener mNewTabButtonClickListener = this::onNewTabButtonClick;
     private final MismatchedIndicesHandler mMismatchedIndicesHandler =
-            new TabbedMismatchedIndicesHandler(this::getOnCreateTimestampMs);
+            new TabbedMismatchedIndicesHandler(
+                    this::getOnCreateTimestampMs, !MultiWindowUtils.isMultiInstanceApi31Enabled());
     private final SearchActivityClient mJumpStartSearchClient =
             new SearchActivityClientImpl(this, IntentOrigin.LAUNCHER);
     private final SearchActivityClient mHubSearchClient =
