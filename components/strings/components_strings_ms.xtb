@@ -492,6 +492,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1822995137827688764">Pembangunan Hartanah</translation>
 <translation id="1824402189105105503">Gulungan Kelapan</translation>
 <translation id="1826516787628120939">Menyemak</translation>
+<translation id="1832730227369924598">Penyegerakan meja</translation>
 <translation id="1834452765064623979">Pembinaan &amp; Penyelenggaraan</translation>
 <translation id="1838374766361614909">Kosongkan carian</translation>
 <translation id="1839331950812095887">beberapa perkataan yang menyimpulkan pendapat anda</translation>
@@ -829,6 +830,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2413155254802890957">Lama</translation>
 <translation id="2413528052993050574">Pelayan ini tidak dapat membuktikan bahawa domainnya ialah <ph name="DOMAIN" />; sijil keselamatannya mungkin dibatalkan. Ini mungkin disebabkan oleh kesilapan konfigurasi atau penyerang yang memintasi sambungan anda.</translation>
 <translation id="2414886740292270097">Gelap</translation>
+<translation id="2418292431699242678">Pentadbir anda mendayakan perkara yang berikut untuk disegerakkan antara sesi terdahulu dengan sesi semasa pada mana-mana peranti ChromeOS:</translation>
 <translation id="2429716554270894715">Fabrik (Kalis air)</translation>
 <translation id="2436186046335138073">Benarkan <ph name="HANDLER_HOSTNAME" /> untuk membuka semua <ph name="PROTOCOL" /> pautan?</translation>
 <translation id="2436976580469434549">Seni Kain &amp; Tekstil</translation>
@@ -1160,6 +1162,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3037177537145227281">Menjejaki harga</translation>
 <translation id="3037605927509011580">Oh, Tidak!</translation>
 <translation id="3039406992698062762">Perjalanan Keluarga</translation>
+<translation id="3040636468789770340">Kuki (keadaan log masuk pada laman web yang baru anda lawati)</translation>
 <translation id="3041176923638368519">Lihat syarat manfaat kad</translation>
 <translation id="3041612393474885105">Maklumat Sijil</translation>
 <translation id="3045769629416806687">Sukan Lasak</translation>
@@ -1671,6 +1674,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3869939189466884821">Fail setempat anda akan dipadamkan selepas <ph name="MINUTES" /> minit</translation>
 <translation id="3872834068356954457">Sains</translation>
 <translation id="3875783148670536197">Tunjukkan Caranya</translation>
+<translation id="387681220560687945">Tetingkap (penyusunan dan pengaturan tetingkap dan tabs)</translation>
 <translation id="3879748587602334249">Pengurus muat turun</translation>
 <translation id="3880456882942693779">Seni &amp; Hiburan</translation>
 <translation id="3880589673277376494">Internet &amp; Telekom</translation>
@@ -4750,6 +4754,7 @@ Butiran tambahan:
 <translation id="950736567201356821">Tiga tebukan atas</translation>
 <translation id="950926967802086924">Kunci laluan • Google Password Manager</translation>
 <translation id="955429569736351433">VR dibenarkan</translation>
+<translation id="955627189349169688">Anda boleh menarik diri daripada dasar ini dalam <ph name="BEGIN_LINK" />tetapan Penyegerakan Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Kuning 2</translation>
 <translation id="961663415146723894">Ikatan bawah</translation>
 <translation id="961856697154696964">Padamkan data semakan imbas</translation>
