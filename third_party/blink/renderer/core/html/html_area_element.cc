@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -107,7 +108,8 @@ PhysicalRect HTMLAreaElement::ComputeAbsoluteRect(
   return PhysicalRect::EnclosingRect(path.BoundingRect());
 }
 
-Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
+Path HTMLAreaElement::GetPath(const LayoutObject* container_object,
+                              const gfx::Vector2dF& path_offset) const {
   if (!container_object)
     return Path();
 
@@ -117,8 +119,11 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     Path path;
     // No need to zoom because it is already applied in
     // container_object->PhysicalBorderBoxRect().
-    if (const auto* box = DynamicTo<LayoutBox>(container_object))
-      path = Path::MakeRect(gfx::RectF(box->PhysicalBorderBoxRect()));
+    if (const auto* box = DynamicTo<LayoutBox>(container_object)) {
+      auto box_rect = gfx::RectF(box->PhysicalBorderBoxRect());
+      box_rect.Offset(path_offset);
+      path = Path::MakeRect(box_rect);
+    }
     path_ = nullptr;
     return path;
   }
@@ -173,13 +178,15 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     path_ = std::make_unique<Path>(path);
   }
 
-  // Zoom the path into coordinates of the container object.
+  // Zoom/offset the path into coordinates of the container object.
   float zoom_factor = container_object->StyleRef().EffectiveZoom();
-  if (zoom_factor != 1.0f) {
-    AffineTransform zoom_transform;
-    zoom_transform.Scale(zoom_factor);
-    path.Transform(zoom_transform);
+  if (zoom_factor != 1.0f || !path_offset.IsZero()) {
+    const auto transform =
+        AffineTransform::Translation(path_offset.x(), path_offset.y())
+            .Scale(zoom_factor);
+    path = PathBuilder(path).Transform(transform).Finalize();
   }
+
   return path;
 }
 

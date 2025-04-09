@@ -23,6 +23,8 @@
 #include "third_party/blink/renderer/core/style/geometry_box_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
@@ -30,7 +32,9 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -550,13 +554,15 @@ static AffineTransform MaskToContentTransform(
 std::optional<Path> ClipPathClipper::PathBasedClipInternal(
     const LayoutObject& clip_path_owner,
     const gfx::RectF& reference_box,
-    const LayoutObject& reference_box_object) {
+    const LayoutObject& reference_box_object,
+    const gfx::Vector2dF& clip_offset) {
   const ClipPathOperation& clip_path = *clip_path_owner.StyleRef().ClipPath();
   if (const auto* geometry_box_clip =
           DynamicTo<GeometryBoxClipPathOperation>(clip_path)) {
-    return RoundedReferenceBox(geometry_box_clip->GetGeometryBox(),
-                               reference_box_object)
-        .GetPath();
+    auto box = RoundedReferenceBox(geometry_box_clip->GetGeometryBox(),
+                                   reference_box_object);
+    box.Move(clip_offset);
+    return box.GetPath();
   }
 
   if (const auto* reference_clip =
@@ -571,14 +577,27 @@ std::optional<Path> ClipPathClipper::PathBasedClipInternal(
     std::optional<Path> path = resource_clipper->AsPath();
     if (!path)
       return path;
-    path->Transform(MaskToContentTransform(*resource_clipper, reference_box,
-                                           reference_box_object));
+
+    const auto clip_transform =
+        AffineTransform::Translation(clip_offset.x(), clip_offset.y()) *
+        MaskToContentTransform(*resource_clipper, reference_box,
+                               reference_box_object);
+    if (!clip_transform.IsIdentity()) {
+      path = PathBuilder(*path).Transform(clip_transform).Finalize();
+    }
+
     return path;
   }
 
   DCHECK_EQ(clip_path.GetType(), ClipPathOperation::kShape);
   const auto& shape = To<ShapeClipPathOperation>(clip_path);
-  return GetPathWithObjectZoom(shape, reference_box, reference_box_object);
+  Path path = GetPathWithObjectZoom(shape, reference_box, reference_box_object);
+
+  if (!clip_offset.IsZero()) {
+    path = PathBuilder(path).Translate(clip_offset).Finalize();
+  }
+
+  return path;
 }
 
 void ClipPathClipper::PaintClipPathAsMaskImage(
@@ -663,8 +682,9 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 
       if (resource_clipper->StyleRef().HasClipPath()) {
         // Try to apply nested clip-path as path-based clip.
-        if (const std::optional<Path>& path = PathBasedClipInternal(
-                *resource_clipper, reference_box, layout_object)) {
+        if (const std::optional<Path>& path =
+                PathBasedClipInternal(*resource_clipper, reference_box,
+                                      layout_object, gfx::Vector2dF())) {
           context.ClipPath(path->GetSkPath(), kAntiAliased);
           rest_of_the_chain_already_appled = true;
         }
@@ -686,14 +706,16 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
 }
 
 std::optional<Path> ClipPathClipper::PathBasedClip(
-    const LayoutObject& clip_path_owner) {
+    const LayoutObject& clip_path_owner,
+    const gfx::Vector2dF& clip_offset) {
   if (ClipPathClipper::HasCompositeClipPathAnimation(
           clip_path_owner, CompositedStateResolutionType::kReadCache)) {
     return std::nullopt;
   }
 
-  return PathBasedClipInternal(
-      clip_path_owner, LocalReferenceBox(clip_path_owner), clip_path_owner);
+  return PathBasedClipInternal(clip_path_owner,
+                               LocalReferenceBox(clip_path_owner),
+                               clip_path_owner, clip_offset);
 }
 
 }  // namespace blink

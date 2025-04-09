@@ -29,15 +29,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_PATH_H_
 
-#include <optional>
-
 #include "base/memory/raw_span.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathMeasure.h"
 #include "ui/gfx/geometry/transform.h"
@@ -46,7 +42,6 @@ namespace gfx {
 class PointF;
 class QuadF;
 class RectF;
-class Vector2dF;
 }  // namespace gfx
 
 namespace blink {
@@ -152,7 +147,6 @@ class PLATFORM_EXPORT Path {
                         const gfx::PointF& end_point);
   void CloseSubpath();
 
-  void Translate(const gfx::Vector2dF&);
   const SkPath& GetSkPath() const { return path_; }
 
   void Apply(void* info, PathApplierFunction) const;

@@ -360,10 +360,6 @@ Path Path::MakeEllipse(const gfx::PointF& center,
   return PathBuilder().AddEllipse(center, radius_x, radius_y).Finalize();
 }
 
-void Path::Translate(const gfx::Vector2dF& offset) {
-  path_.offset(offset.x(), offset.y());
-}
-
 bool EllipseIsRenderable(float start_angle, float end_angle) {
   const float abs_sweep = std::abs(end_angle - start_angle);
   return (abs_sweep < kTwoPiFloat) ||

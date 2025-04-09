@@ -35,9 +35,11 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/text_fragment_paint_info.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -127,16 +129,17 @@ PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
   return is_open ? direction_mode.BlockEnd() : direction_mode.InlineEnd();
 }
 
-Path CreatePath(base::span<const gfx::PointF, 4> path) {
-  Path result;
+PathBuilder CreatePath(base::span<const gfx::PointF, 4> path) {
+  PathBuilder result;
   result.MoveTo(path[0]);
   for (size_t i = 1; i < 4; ++i) {
-    result.AddLineTo(path[i]);
+    result.LineTo(path[i]);
   }
   return result;
 }
 
-Path GetCanonicalDisclosurePath(const ComputedStyle& style, bool is_open) {
+PathBuilder GetCanonicalDisclosurePath(const ComputedStyle& style,
+                                       bool is_open) {
   constexpr gfx::PointF kLeftPoints[4] = {
       {1.0f, 0.0f}, {0.14f, 0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
   constexpr gfx::PointF kRightPoints[4] = {
@@ -157,7 +160,7 @@ Path GetCanonicalDisclosurePath(const ComputedStyle& style, bool is_open) {
       return CreatePath(kDownPoints);
   }
 
-  return Path();
+  return PathBuilder();
 }
 
 }  // namespace
@@ -202,11 +205,12 @@ void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
     context.FillRect(snapped_rect, color, auto_dark_mode);
   } else if (type == keywords::kDisclosureOpen ||
              type == keywords::kDisclosureClosed) {
-    Path path =
-        GetCanonicalDisclosurePath(style, type == keywords::kDisclosureOpen);
-    path.Transform(AffineTransform::MakeScaleNonUniform(marker_rect.Width(),
-                                                        marker_rect.Height()));
-    path.Translate(gfx::Vector2dF(marker_rect.X(), marker_rect.Y()));
+    const Path path =
+        GetCanonicalDisclosurePath(style, type == keywords::kDisclosureOpen)
+            .Transform(AffineTransform::MakeScaleNonUniform(
+                marker_rect.Width(), marker_rect.Height()))
+            .Translate(gfx::Vector2dF(marker_rect.X(), marker_rect.Y()))
+            .Finalize();
     context.FillPath(path, auto_dark_mode);
   } else {
     NOTREACHED();

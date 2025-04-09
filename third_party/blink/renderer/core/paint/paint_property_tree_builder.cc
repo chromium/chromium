@@ -2274,8 +2274,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
                 : gfx::Vector2dF();
         precise_clip_path_rect_->Offset(paint_offset);
         if (std::optional<Path> path =
-                ClipPathClipper::PathBasedClip(object_)) {
-          path->Translate(paint_offset);
+                ClipPathClipper::PathBasedClip(object_, paint_offset)) {
           std::optional<FloatRoundedRect> rrect;
           // TODO(crbug.com/337191311): The optimization breaks
           // view-transition if the bounding box of clip-path is larger than
