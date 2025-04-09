@@ -85,6 +85,11 @@ BASE_DECLARE_FEATURE(kAllowWithholdingExtensionPermissionsOnInstall);
 // extension).
 BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
 
+// If enabled, defers the execution of WebRequestAPI call of
+// `ResetURLLoaderFactories()` to when there's no extension service worker
+// registrations in flight, to avoid disrupting the worker(s) registration(s).
+BASE_DECLARE_FEATURE(kDeferResetURLLoaderFactories);
+
 // If enabled, <webview>s will be allowed to request permission from an
 // embedding Chrome App to request access to Human Interface Devices.
 BASE_DECLARE_FEATURE(kEnableWebHidInWebView);

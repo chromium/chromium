@@ -39,7 +39,8 @@ content::ServiceWorkerContext* GetServiceWorkerContext(
 // Note: This class only works well when there is a *single* service worker
 // being registered. We could extend this to track multiple workers.
 class TestServiceWorkerContextObserver
-    : public content::ServiceWorkerContextObserver {
+    : public content::ServiceWorkerContextObserver,
+      public content::ServiceWorkerContextObserverSynchronous {
  public:
   explicit TestServiceWorkerContextObserver(
       content::ServiceWorkerContext* context,
@@ -57,6 +58,11 @@ class TestServiceWorkerContextObserver
   // Wait for the first service worker registration with an extension scheme
   // scope to be stored.
   void WaitForRegistrationStored();
+
+  // Wait for OnStartWorkerMessageSent event is triggered, so that the observer
+  // captures the version ID of the service worker that is about to be started.
+  // Returns the version ID.
+  int64_t WaitForStartWorkerMessageSent();
 
   // Wait for OnVersionStartedRunning event is triggered, so that the observer
   // captures the running service worker version ID. Returns the version ID.
@@ -89,6 +95,9 @@ class TestServiceWorkerContextObserver
   void OnVersionActivated(int64_t version_id, const GURL& scope) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
+  // ServiceWorkerContextObserverSynchronous:
+  void OnStartWorkerMessageSent(int64_t version_id, const GURL& scope) override;
+
   using RegistrationsMap = std::map<GURL, int>;
 
   RegistrationsMap registrations_completed_map_;
@@ -96,6 +105,7 @@ class TestServiceWorkerContextObserver
   // Multiple events may come in so we must wait for the specific event
   // to be triggered.
   base::OnceClosure activated_quit_closure_;
+  base::OnceClosure start_message_sent_quit_closure_;
   base::OnceClosure started_quit_closure_;
   base::OnceClosure stored_quit_closure_;
   base::OnceClosure stopped_quit_closure_;
@@ -104,6 +114,7 @@ class TestServiceWorkerContextObserver
 
   std::optional<bool> registration_stored_;
   std::optional<int64_t> activated_version_id_;
+  std::optional<int64_t> start_message_sent_version_id_;
   std::optional<int64_t> running_version_id_;
   std::optional<int64_t> stopped_version_id_;
 
@@ -112,6 +123,10 @@ class TestServiceWorkerContextObserver
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
+
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserverSynchronous>
+      scoped_sync_observation_{this};
 };
 
 // Observes ProcessManager::UnregisterServiceWorker.

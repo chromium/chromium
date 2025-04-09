@@ -348,6 +348,10 @@ class ServiceWorkerTaskQueue
     // it ultimately succeeds or fails).
     virtual void RequestedWorkerStart(const ExtensionId& extension_id) {}
 
+    virtual void OnWorkerRegistrationFailed(
+        const ExtensionId& extension_id,
+        blink::ServiceWorkerStatusCode status_code) {}
+
     virtual void DidStartWorkerFail(
         const ExtensionId& extension_id,
         size_t num_pending_tasks,

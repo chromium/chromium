@@ -199,6 +199,19 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   static BrowserContextKeyedAPIFactory<WebRequestAPI>* GetFactoryInstance();
   void Shutdown() override;
 
+  class TestObserver {
+   public:
+    TestObserver();
+    TestObserver(const TestObserver&) = delete;
+    TestObserver& operator=(const TestObserver&) = delete;
+    virtual ~TestObserver();
+
+    // Called when `ResetURLLoaderFactories()` has been performed.
+    virtual void OnDidResetURLLoaderFactories() {}
+  };
+
+  static void SetObserverForTest(TestObserver* observer);
+
   // EventRouter::Observer overrides:
   void OnListenerRemoved(const EventListenerInfo& details) override;
 
@@ -307,6 +320,8 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
   // Checks if |MayHaveProxies()| has changed from false to true, and resets
   // URLLoaderFactories if so.
   void UpdateMayHaveProxies();
+
+  void ResetURLLoaderFactories();
 
   // ExtensionRegistryObserver implementation.
   void OnExtensionLoaded(content::BrowserContext* browser_context,

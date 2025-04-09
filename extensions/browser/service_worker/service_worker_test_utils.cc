@@ -12,6 +12,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom-forward.h"
 
 namespace extensions {
@@ -45,6 +46,7 @@ TestServiceWorkerContextObserver::TestServiceWorkerContextObserver(
     : extension_scope_(GetScopeForExtensionID(std::move(extension_id))),
       context_(context) {
   scoped_observation_.Observe(context_);
+  scoped_sync_observation_.Observe(context_);
 }
 
 TestServiceWorkerContextObserver::TestServiceWorkerContextObserver(
@@ -53,6 +55,7 @@ TestServiceWorkerContextObserver::TestServiceWorkerContextObserver(
     : extension_scope_(GetScopeForExtensionID(std::move(extension_id))),
       context_(GetServiceWorkerContext(browser_context)) {
   scoped_observation_.Observe(context_);
+  scoped_sync_observation_.Observe(context_);
 }
 
 TestServiceWorkerContextObserver::~TestServiceWorkerContextObserver() = default;
@@ -62,13 +65,26 @@ void TestServiceWorkerContextObserver::WaitForRegistrationStored() {
     return;
   }
 
+  SCOPED_TRACE("Waiting for worker registration to be stored");
   base::RunLoop run_loop;
   stored_quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
 }
 
+int64_t TestServiceWorkerContextObserver::WaitForStartWorkerMessageSent() {
+  if (!start_message_sent_version_id_) {
+    SCOPED_TRACE("Waiting for StartWorker message to be sent");
+    base::RunLoop run_loop;
+    start_message_sent_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  return *start_message_sent_version_id_;
+}
+
 int64_t TestServiceWorkerContextObserver::WaitForWorkerStarted() {
   if (!running_version_id_) {
+    SCOPED_TRACE("Waiting for worker to be started");
     base::RunLoop run_loop;
     started_quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
@@ -84,6 +100,7 @@ int64_t TestServiceWorkerContextObserver::WaitForWorkerStopped() {
     return *stopped_version_id_;
   }
 
+  SCOPED_TRACE("Waiting for worker to be stopped");
   base::RunLoop run_loop;
   stopped_quit_closure_ = run_loop.QuitClosure();
   run_loop.Run();
@@ -93,6 +110,7 @@ int64_t TestServiceWorkerContextObserver::WaitForWorkerStopped() {
 
 int64_t TestServiceWorkerContextObserver::WaitForWorkerActivated() {
   if (!activated_version_id_) {
+    SCOPED_TRACE("Waiting for worker to be activated");
     base::RunLoop run_loop;
     activated_quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
@@ -120,6 +138,19 @@ void TestServiceWorkerContextObserver::OnRegistrationStored(
     if (stored_quit_closure_) {
       std::move(stored_quit_closure_).Run();
     }
+  }
+}
+
+void TestServiceWorkerContextObserver::OnStartWorkerMessageSent(
+    int64_t version_id,
+    const GURL& scope) {
+  if (extension_scope_ && extension_scope_ != scope) {
+    return;
+  }
+
+  start_message_sent_version_id_ = version_id;
+  if (start_message_sent_quit_closure_) {
+    std::move(start_message_sent_quit_closure_).Run();
   }
 }
 
@@ -161,6 +192,7 @@ void TestServiceWorkerContextObserver::OnVersionActivated(int64_t version_id,
 void TestServiceWorkerContextObserver::OnDestruct(
     content::ServiceWorkerContext* context) {
   scoped_observation_.Reset();
+  scoped_sync_observation_.Reset();
   context_ = nullptr;
 }
 

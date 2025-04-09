@@ -93,9 +93,7 @@ namespace web_request = api::web_request;
 
 namespace {
 
-BASE_FEATURE(kDeferResetURLLoaderFactories,
-             "DeferResetURLLoaderFactories",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+WebRequestAPI::TestObserver* g_test_observer = nullptr;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -344,7 +342,8 @@ WebRequestAPI::WebRequestAPI(content::BrowserContext* context)
   // We only have to observe ServiceWorkerTaskQueue and react to
   // `OnAllRegistrationsStored` if we need to defer calls to
   // `ResetURLLoaderFactories` to after registration storage.
-  if (base::FeatureList::IsEnabled(kDeferResetURLLoaderFactories)) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kDeferResetURLLoaderFactories)) {
     service_worker_task_queue_observation_.Observe(
         ServiceWorkerTaskQueue::Get(browser_context_));
   }
@@ -372,6 +371,15 @@ BrowserContextKeyedAPIFactory<WebRequestAPI>*
 WebRequestAPI::GetFactoryInstance() {
   return g_factory.Pointer();
 }
+
+// static
+void WebRequestAPI::SetObserverForTest(TestObserver* observer) {
+  g_test_observer = observer;
+}
+
+WebRequestAPI::TestObserver::TestObserver() = default;
+
+WebRequestAPI::TestObserver::~TestObserver() = default;
 
 void WebRequestAPI::OnListenerRemoved(const EventListenerInfo& details) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -715,10 +723,18 @@ bool WebRequestAPI::HasExtraHeadersListenerForTesting() {
       ->HasAnyExtraHeadersListener(browser_context_);
 }
 
+void WebRequestAPI::ResetURLLoaderFactories() {
+  browser_context_->GetDefaultStoragePartition()->ResetURLLoaderFactories();
+  if (g_test_observer) {
+    g_test_observer->OnDidResetURLLoaderFactories();
+  }
+}
+
 void WebRequestAPI::UpdateMayHaveProxies() {
   bool may_have_proxies = MayHaveProxies();
   if (!may_have_proxies_ && may_have_proxies) {
-    if (base::FeatureList::IsEnabled(kDeferResetURLLoaderFactories) &&
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kDeferResetURLLoaderFactories) &&
         has_pending_worker_registrations_) {
       // If any service worker registration is still in flight (started, but not
       // stored), it's not safe to call `ResetURLLoaderFactories`, since it
@@ -731,7 +747,7 @@ void WebRequestAPI::UpdateMayHaveProxies() {
       // can be reset safely.
     } else {
       // Otherwise, we can safely call it now.
-      browser_context_->GetDefaultStoragePartition()->ResetURLLoaderFactories();
+      ResetURLLoaderFactories();
     }
   }
   may_have_proxies_ = may_have_proxies;
@@ -761,7 +777,7 @@ void WebRequestAPI::OnAllRegistrationsStored() {
   service_worker_context_observation_.RemoveAllObservations();
   // ...and reset the URLLoaderFactories if we haven't done it already.
   if (deferred_reset_url_loader_factories_) {
-    browser_context_->GetDefaultStoragePartition()->ResetURLLoaderFactories();
+    ResetURLLoaderFactories();
     deferred_reset_url_loader_factories_ = false;
   }
 }

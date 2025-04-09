@@ -37,6 +37,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/devtools/url_constants.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
 #include "chrome/browser/extensions/error_console/error_console_test_observer.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -128,6 +129,7 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "ui/webui/untrusted_web_ui_browsertest_util.h"  // nogncheck
 #include "url/origin.h"
 
@@ -2609,7 +2611,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
         content::EvalJs(web_contents, "document.body.textContent.trim();"));
   }
 
-  // A callback allow waiting for responses to complete with an expected status
+  // A callback allow waiting for a response to complete with an expected status
   // and given content.
   auto make_browser_request =
       [](network::mojom::URLLoaderFactory* url_loader_factory, const GURL& url,
@@ -7564,5 +7566,195 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
     }
   }
 }
+
+// Allows test to wait for the failure of a worker registration.
+class WorkerRegistrationFailureObserver
+    : public ServiceWorkerTaskQueue::TestObserver {
+ public:
+  explicit WorkerRegistrationFailureObserver(const ExtensionId extension_id)
+      : extension_id_(extension_id) {
+    ServiceWorkerTaskQueue::SetObserverForTest(this);
+  }
+  ~WorkerRegistrationFailureObserver() override {
+    ServiceWorkerTaskQueue::SetObserverForTest(nullptr);
+  }
+
+  blink::ServiceWorkerStatusCode WaitForWorkerRegistrationFailure() {
+    if (!status_code_) {
+      SCOPED_TRACE("Waiting for worker registration to fail");
+      failure_loop_.Run();
+    }
+    return *status_code_;
+  }
+
+ private:
+  void OnWorkerRegistrationFailed(
+      const ExtensionId& extension_id,
+      blink::ServiceWorkerStatusCode status_code) override {
+    if (extension_id == extension_id_) {
+      status_code_ = status_code;
+      failure_loop_.Quit();
+    }
+  }
+
+  ExtensionId extension_id_;
+  base::RunLoop failure_loop_;
+  std::optional<blink::ServiceWorkerStatusCode> status_code_;
+};
+
+// Allows test to wait for the call of `ResetURLLoaderFactories()` in
+// WebRequestAPI.
+class URLLoaderFactoriesResetWaiter : public WebRequestAPI::TestObserver {
+ public:
+  URLLoaderFactoriesResetWaiter() { WebRequestAPI::SetObserverForTest(this); }
+  ~URLLoaderFactoriesResetWaiter() override {
+    WebRequestAPI::SetObserverForTest(nullptr);
+  }
+
+  URLLoaderFactoriesResetWaiter(const URLLoaderFactoriesResetWaiter&) = delete;
+  URLLoaderFactoriesResetWaiter& operator=(
+      const URLLoaderFactoriesResetWaiter&) = delete;
+
+  void WaitForResetURLLoaderFactoriesCalled() {
+    SCOPED_TRACE("Waiting for ResetURLLoaderFactories to be called");
+    url_loader_factory_reset_runloop_.Run();
+  }
+
+ private:
+  void OnDidResetURLLoaderFactories() override {
+    url_loader_factory_reset_runloop_.Quit();
+  }
+
+  base::RunLoop url_loader_factory_reset_runloop_;
+};
+
+class ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories
+    : public ManifestV3WebRequestApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories() {
+    feature_list_.InitWithFeatureState(
+        extensions_features::kDeferResetURLLoaderFactories, GetParam());
+  }
+  ~ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the call to `ResetURLLoaderFactories()` performed by WebRequestAPI
+// doesn't break the registration process of other extensions.
+// Regression test for https://crbug.com/394523691.
+IN_PROC_BROWSER_TEST_P(
+    ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories,
+    ResetURLLoaderFactoryDoesntBreakRegistration) {
+  // Skip if the proxy is forced since factories will not be reset in that case.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kForceWebRequestProxyForTest)) {
+    return;
+  }
+
+  bool feature_enabled = GetParam();
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // A simple extension that sends a message and waits for a response in its
+  // background script.
+  const ExtensionId extension_id("iegclhlplifhodhkoafiokenjoapiobj");
+  static constexpr const char kKey[] =
+      "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8P"
+      "Ffv8iucWvzO+3xpF/Dm5xNo7aQhPNiEaNfHwJQ7lsp4gc+C+4bbaVewBFspTruoSJhZc5uEf"
+      "qxwovJwN+v1/SUFXTXQmQBv6gs0qZB4gBbl4caNQBlqrFwAMNisnu1V6UROna8rOJQ90D7Nv"
+      "7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9i"
+      "L8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+Ydz"
+      "afIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB";
+  static constexpr char kManifest[] =
+      R"({
+           "name": "TestExtension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "key": "%s",
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.sendMessage('will_receive').then(() => {
+           console.log('received');
+         }))";
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(base::StringPrintf(kManifest, kKey));
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  ASSERT_TRUE(task_queue);
+  WebRequestAPI* web_request_api =
+      BrowserContextKeyedAPIFactory<WebRequestAPI>::Get(profile());
+  ASSERT_TRUE(web_request_api);
+
+  // Listen to "will_receive" message from the extension.
+  ExtensionTestMessageListener will_receive_listener("will_receive",
+                                                     ReplyBehavior::kWillReply);
+  // Listen to the completion of the registration storage.
+  service_worker_test_utils::TestServiceWorkerContextObserver
+      registration_observer(profile());
+  // Listen for a failure in the worker registration.
+  WorkerRegistrationFailureObserver worker_failure_observer(extension_id);
+
+  // Asynchronously load the extension so we can wait for a step in the loading
+  // process in the test.
+  std::optional<base::UnguessableToken> activation_token;
+  ChromeTestExtensionLoader(profile()).LoadUnpackedExtensionAsync(
+      extension_dir.UnpackedPath(),
+      base::BindLambdaForTesting([&](const Extension* extension) {
+        ASSERT_TRUE(extension);
+        activation_token =
+            task_queue->GetCurrentActivationToken(extension->id());
+        ASSERT_TRUE(activation_token.has_value());
+      }));
+  // ...and wait for the moment right after the worker is requested to start
+  // during the registration process.
+  registration_observer.WaitForStartWorkerMessageSent();
+  URLLoaderFactoriesResetWaiter url_loader_factories_reset_waiter;
+  // Simulate the effect of loading an extension with WebRequestAPI permissions.
+  // In other words, make sure we're proxying for the current profile.
+  // This will cause WebRequestAPI to attempt calling
+  // `ResetURLLoaderFactories()`. Because the extension is still in the early
+  // phases of starting its worker here, this would break its registration
+  // before it has a chance of being completed and stored.
+  // Instead, the call to `ResetURLLoaderFactories()` will be deferred.
+  // NOTE: We simulate the call to `ResetURLLoaderFactories()` rather
+  // than loading an extension with WebRequestAPI permissions, as that
+  // would take too long and won't trigger the bug in all cases.
+  web_request_api->ForceProxyForTesting();
+
+  if (feature_enabled) {
+    // DeferResetURLLoaderFactories feature enabled: expect successful
+    // execution. Check that the worker is still running and functional.
+    registration_observer.WaitForWorkerStarted();
+    std::optional<WorkerId> worker_id = GetWorkerIdForExtension(extension_id);
+    EXPECT_TRUE(worker_id);
+    SCOPED_TRACE(
+        "Waiting for extension background to signal that it can send messages");
+    ASSERT_TRUE(will_receive_listener.WaitUntilSatisfied());
+    will_receive_listener.Reply("go");
+    // Check `ResetURLLoaderFactories()` is called after registration is stored.
+    registration_observer.WaitForRegistrationStored();
+    url_loader_factories_reset_waiter.WaitForResetURLLoaderFactoriesCalled();
+  } else {
+    // DeferResetURLLoaderFactories feature disabled: expect worker registration
+    // to fail. We have observed that the registration can fail with either
+    // `kErrorStartWorkerFailed` or `kErrorNetwork` depending on when exactly
+    // it's interrupted.
+    auto status_code =
+        worker_failure_observer.WaitForWorkerRegistrationFailure();
+    EXPECT_NE(status_code, blink::ServiceWorkerStatusCode::kOk);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ManifestV3WebRequestApiTestWithDeferResetURLLoaderFactories,
+    testing::Bool());
+
 #endif  // !BUILDFLAG(IS_ANDROID)
+
 }  // namespace extensions
