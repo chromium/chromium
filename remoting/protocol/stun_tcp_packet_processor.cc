@@ -36,10 +36,10 @@ int GetExpectedStunPacketSize(const uint8_t* data_ptr,
   DCHECK_LE(kTurnChannelDataHeaderSize, data.size());
 
   // Get packet type (STUN or TURN).
-  uint16_t msg_type = base::numerics::U16FromBigEndian(data.subspan<0u, 2u>());
+  uint16_t msg_type = base::U16FromBigEndian(data.subspan<0u, 2u>());
   // Both stun and turn had length at offset 2.
   size_t packet_size =
-      base::numerics::U16FromBigEndian(data.subspan<kPacketLengthOffset, 2u>());
+      base::U16FromBigEndian(data.subspan<kPacketLengthOffset, 2u>());
 
   *pad_bytes = 0;
   // Add header length to packet length.

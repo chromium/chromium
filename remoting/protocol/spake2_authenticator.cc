@@ -78,7 +78,7 @@ bool DecodeBinaryValueFromXml(const jingle_xmpp::XmlElement* message,
 
 std::string PrefixWithLength(const std::string& str) {
   std::string out;
-  out += base::as_string_view(base::numerics::U32ToBigEndian(str.size()));
+  out += base::as_string_view(base::U32ToBigEndian(str.size()));
   out += str;
   return out;
 }
