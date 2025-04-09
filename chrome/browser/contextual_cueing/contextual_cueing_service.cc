@@ -201,6 +201,7 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     bool is_fre,
     GlicSuggestionsCallback callback) {
   if (!base::FeatureList::IsEnabled(kGlicZeroStateSuggestions)) {
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
