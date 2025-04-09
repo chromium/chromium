@@ -198,3 +198,9 @@ std::string AccessibilityControllerClient::GetDictationDefaultLocale(
   return ash::Dictation::DetermineDefaultSupportedLocale(
       ProfileManager::GetActiveUserProfile(), new_user);
 }
+
+void AccessibilityControllerClient::SendFaceGazeDisableDialogResultToSettings(
+    bool accepted) {
+  AccessibilityManager::Get()->SendFaceGazeDisableDialogResultToSettings(
+      accepted);
+}

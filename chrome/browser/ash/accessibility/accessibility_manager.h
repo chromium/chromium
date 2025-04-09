@@ -221,6 +221,13 @@ class AccessibilityManager
   // Returns true if FaceGaze is enabled.
   bool IsFaceGazeEnabled() const;
 
+  // Called from settings to turn FaceGaze on/off.
+  void RequestEnableFaceGaze(bool enable);
+
+  // Called when the FaceGaze disable dialog is accepted/rejected so that the
+  // settings UI can be properly updated.
+  void SendFaceGazeDisableDialogResultToSettings(bool accepted);
+
   // Adds the FaceGazeSettingsEventHandler to process events from FaceGaze.
   void AddFaceGazeSettingsEventHandler(FaceGazeSettingsEventHandler* handler);
 

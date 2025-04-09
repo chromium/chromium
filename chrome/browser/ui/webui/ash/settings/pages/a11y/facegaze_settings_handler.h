@@ -23,9 +23,11 @@ class FaceGazeSettingsHandler : public ::settings::SettingsPageUIHandler,
   FaceGazeSettingsHandler& operator=(const FaceGazeSettingsHandler&) = delete;
   ~FaceGazeSettingsHandler() override;
 
+  void HandleRequestEnableFaceGaze(const base::Value::List& args);
   void HandleToggleGestureInfoForSettings(const base::Value::List& args);
 
   // ash::FaceGazeSettingsEventHandler:
+  void HandleDisableDialogResult(bool accepted) override;
   void HandleSendGestureInfoToSettings(
       const std::vector<FaceGazeGestureInfo>& gesture_info) override;
 

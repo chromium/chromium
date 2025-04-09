@@ -1009,6 +1009,23 @@ bool AccessibilityManager::IsFaceGazeEnabled() const {
          profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityFaceGazeEnabled);
 }
 
+void AccessibilityManager::RequestEnableFaceGaze(bool enable) {
+  if (enable) {
+    EnableFaceGaze(enable);
+  } else {
+    AccessibilityController::Get()->RequestDisableFaceGaze();
+  }
+}
+
+void AccessibilityManager::SendFaceGazeDisableDialogResultToSettings(
+    bool accepted) {
+  if (!facegaze_settings_event_handler_) {
+    return;
+  }
+
+  facegaze_settings_event_handler_->HandleDisableDialogResult(accepted);
+}
+
 void AccessibilityManager::AddFaceGazeSettingsEventHandler(
     FaceGazeSettingsEventHandler* handler) {
   facegaze_settings_event_handler_ = handler;

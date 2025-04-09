@@ -88,10 +88,7 @@ export class WebCamFaceLandmarker {
             `Couldn't create FaceLandmarker because FaceGaze assets couldn't be
               installed.`);
 
-        chrome.settingsPrivate.setPref(
-            PrefNames.FACE_GAZE_ENABLED_SENTINEL_SHOW_DIALOG, false, undefined,
-            () => chrome.settingsPrivate.setPref(
-                PrefNames.FACE_GAZE_ENABLED_SENTINEL, false));
+        chrome.settingsPrivate.setPref(PrefNames.FACE_GAZE_ENABLED, false);
         return;
       }
 

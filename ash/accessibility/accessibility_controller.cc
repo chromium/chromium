@@ -2811,12 +2811,6 @@ void AccessibilityController::ObservePrefs(PrefService* prefs) {
   if (::features::IsAccessibilityFaceGazeEnabled()) {
     UpdateFaceGazeFromPrefs();
     pref_change_registrar_->Add(
-        prefs::kAccessibilityFaceGazeEnabledSentinel,
-        base::BindRepeating(&AccessibilityController::OnFaceGazeSentinelChanged,
-                            base::Unretained(this),
-                            prefs::kAccessibilityFaceGazeEnabledSentinel,
-                            prefs::kAccessibilityFaceGazeEnabled));
-    pref_change_registrar_->Add(
         prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel,
         base::BindRepeating(
             &AccessibilityController::OnFaceGazeSentinelChanged,
@@ -3068,24 +3062,6 @@ void AccessibilityController::UpdateFaceGazeFromPrefs() {
     return;
   }
 
-  const bool enabled =
-      active_user_prefs_->GetBoolean(prefs::kAccessibilityFaceGazeEnabled);
-  const bool sentinel_enabled = active_user_prefs_->GetBoolean(
-      prefs::kAccessibilityFaceGazeEnabledSentinel);
-  // Sentinel and behavior pref are not in sync.
-  if (enabled != sentinel_enabled) {
-    if (enabled) {
-      active_user_prefs_->SetBoolean(
-          prefs::kAccessibilityFaceGazeEnabledSentinel, true);
-    } else {
-      // Set sentinel pref to false without showing the dialog.
-      active_user_prefs_->SetBoolean(
-          prefs::kAccessibilityFaceGazeEnabledSentinelShowDialog, false);
-      active_user_prefs_->SetBoolean(
-          prefs::kAccessibilityFaceGazeEnabledSentinel, false);
-    }
-  }
-
   const bool cursor_control_enabled = active_user_prefs_->GetBoolean(
       prefs::kAccessibilityFaceGazeCursorControlEnabled);
   const bool cursor_control_sentinel_enabled = active_user_prefs_->GetBoolean(
@@ -3105,6 +3081,8 @@ void AccessibilityController::UpdateFaceGazeFromPrefs() {
         prefs::kAccessibilityFaceGazeActionsEnabledSentinel, actions_enabled);
   }
 
+  const bool enabled =
+      active_user_prefs_->GetBoolean(prefs::kAccessibilityFaceGazeEnabled);
   // Manage the pinned notification.
   if (enabled) {
     ShowAccessibilityNotification(A11yNotificationWrapper(
@@ -4138,26 +4116,16 @@ void AccessibilityController::OnFaceGazeSentinelChanged(
     return;
   }
 
-  // Set to FaceGaze disable confirmation text by default to ensure a valid
-  // value.
-  int window_title_text_id = IDS_ASH_FACEGAZE_DISABLE_CONFIRMATION_TEXT;
-  if (sentinel_pref == prefs::kAccessibilityFaceGazeEnabledSentinel) {
-    const bool show_dialog = active_user_prefs_->GetBoolean(
-        prefs::kAccessibilityFaceGazeEnabledSentinelShowDialog);
-    if (!show_dialog) {
-      face_gaze().SetEnabled(false);
-      // Reset show dialog pref to default after pref is handled.
-      active_user_prefs_->SetBoolean(
-          prefs::kAccessibilityFaceGazeEnabledSentinelShowDialog, true);
-      return;
-    }
-  } else if (sentinel_pref ==
-             prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel) {
+  int window_title_text_id = 0;
+  if (sentinel_pref ==
+      prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel) {
     window_title_text_id =
         IDS_ASH_FACEGAZE_CURSOR_CONTROL_DISABLE_CONFIRMATION_TEXT;
   } else if (sentinel_pref ==
              prefs::kAccessibilityFaceGazeActionsEnabledSentinel) {
     window_title_text_id = IDS_ASH_FACEGAZE_ACTIONS_DISABLE_CONFIRMATION_TEXT;
+  } else {
+    NOTREACHED();
   }
 
   ShowFeatureDisableDialog(
@@ -4223,13 +4191,22 @@ void AccessibilityController::EnableDragEventRewriter(bool enabled) {
 }
 
 void AccessibilityController::RequestDisableFaceGaze() {
-  if (!active_user_prefs_) {
-    return;
+  ShowFeatureDisableDialog(
+      IDS_ASH_FACEGAZE_DISABLE_CONFIRMATION_TEXT,
+      BindOnce(&AccessibilityController::OnRequestDisableFaceGazeAction,
+               GetWeakPtr(), /*dialog_accepted=*/true),
+      BindOnce(&AccessibilityController::OnRequestDisableFaceGazeAction,
+               GetWeakPtr(), /*dialog_accepted=*/false));
+}
+
+void AccessibilityController::OnRequestDisableFaceGazeAction(
+    bool dialog_accepted) {
+  if (dialog_accepted) {
+    active_user_prefs_->SetBoolean(prefs::kAccessibilityFaceGazeEnabled, false);
   }
 
-  active_user_prefs_->SetBoolean(prefs::kAccessibilityFaceGazeEnabledSentinel,
-                                 false);
-  active_user_prefs_->CommitPendingWrite();
+  disable_dialog_.reset();
+  client_->SendFaceGazeDisableDialogResultToSettings(dialog_accepted);
 }
 
 }  // namespace ash

@@ -4,6 +4,11 @@
 
 export interface FaceGazeSubpageBrowserProxy {
   /**
+   * Requests FaceGaze be enabled or disabled.
+   */
+  requestEnableFaceGaze(enable: boolean): void;
+
+  /**
    * Tells FaceGaze that the action settings is requesting information about
    * detected gestures.
    */
@@ -20,6 +25,10 @@ export class FaceGazeSubpageBrowserProxyImpl implements
 
   static setInstanceForTesting(obj: FaceGazeSubpageBrowserProxy): void {
     instance = obj;
+  }
+
+  requestEnableFaceGaze(enable: boolean): void {
+    chrome.send('requestEnableFaceGaze', [enable]);
   }
 
   toggleGestureInfoForSettings(enabled: boolean): void {
