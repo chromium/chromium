@@ -12,8 +12,9 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
@@ -34,13 +35,13 @@ class TouchToFillPaymentMethodViewBridge {
     private TouchToFillPaymentMethodViewBridge(
             TouchToFillPaymentMethodComponent.Delegate delegate,
             Context context,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
         mComponent = new TouchToFillPaymentMethodCoordinator();
         mComponent.initialize(
                 context,
-                personalDataManager,
+                imageFetcher,
                 bottomSheetController,
                 delegate,
                 new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
@@ -60,7 +61,7 @@ class TouchToFillPaymentMethodViewBridge {
         return new TouchToFillPaymentMethodViewBridge(
                 delegate,
                 context,
-                PersonalDataManagerFactory.getForProfile(profile),
+                AutofillImageFetcherFactory.getForProfile(profile),
                 bottomSheetController,
                 windowAndroid);
     }

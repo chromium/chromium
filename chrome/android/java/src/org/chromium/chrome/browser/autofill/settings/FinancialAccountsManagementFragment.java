@@ -212,7 +212,7 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
         eWalletPref.setIcon(
                 AutofillUiUtils.getCardIcon(
                         getStyledContext(),
-                        mPersonalDataManager,
+                        AutofillImageFetcherFactory.getForProfile(getProfile()),
                         eWallet.getDisplayIconUrl(),
                         R.drawable.ic_account_balance,
                         ImageSize.LARGE,

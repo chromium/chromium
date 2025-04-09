@@ -13,8 +13,8 @@ import android.widget.TextView;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -32,7 +32,7 @@ public class AutofillVirtualCardEnrollmentDialog {
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
-    private final PersonalDataManager mPersonalDataManager;
+    private final AutofillImageFetcher mImageFetcher;
     private final VirtualCardEnrollmentFields mVirtualCardEnrollmentFields;
     private final String mAcceptButtonText;
     private final String mDeclineButtonText;
@@ -43,7 +43,7 @@ public class AutofillVirtualCardEnrollmentDialog {
     public AutofillVirtualCardEnrollmentDialog(
             Context context,
             ModalDialogManager modalDialogManager,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             VirtualCardEnrollmentFields virtualCardEnrollmentFields,
             String acceptButtonText,
             String declineButtonText,
@@ -51,7 +51,7 @@ public class AutofillVirtualCardEnrollmentDialog {
             Callback<Integer> resultHandler) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
-        mPersonalDataManager = personalDataManager;
+        mImageFetcher = imageFetcher;
         mVirtualCardEnrollmentFields = virtualCardEnrollmentFields;
         mAcceptButtonText = acceptButtonText;
         mDeclineButtonText = declineButtonText;
@@ -131,7 +131,7 @@ public class AutofillVirtualCardEnrollmentDialog {
 
         AutofillUiUtils.addCardDetails(
                 mContext,
-                mPersonalDataManager,
+                mImageFetcher,
                 customView,
                 mVirtualCardEnrollmentFields.getCardName(),
                 mVirtualCardEnrollmentFields.getCardNumber(),

@@ -16,8 +16,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
@@ -172,7 +172,7 @@ public class KeyboardAccessoryCoordinator {
                                     mView,
                                     createUiConfiguration(
                                             context,
-                                            PersonalDataManagerFactory.getForProfile(profile))));
+                                            AutofillImageFetcherFactory.getForProfile(profile))));
                     mView.setFeatureEngagementTracker(TrackerFactory.getTrackerForProfile(profile));
                 });
 
@@ -184,14 +184,14 @@ public class KeyboardAccessoryCoordinator {
 
     @VisibleForTesting
     static KeyboardAccessoryViewBinder.UiConfiguration createUiConfiguration(
-            Context context, PersonalDataManager personalDataManager) {
+            Context context, AutofillImageFetcher imageFetcher) {
         KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration =
                 new KeyboardAccessoryViewBinder.UiConfiguration();
         uiConfiguration.suggestionDrawableFunction =
                 (suggestion) ->
                         getCardIcon(
                                 context,
-                                personalDataManager,
+                                imageFetcher,
                                 suggestion.getCustomIconUrl(),
                                 suggestion.getIconId(),
                                 ImageSize.SMALL,

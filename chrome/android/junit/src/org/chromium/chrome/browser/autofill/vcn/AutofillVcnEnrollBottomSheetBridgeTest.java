@@ -42,9 +42,9 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -81,7 +81,7 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     @Mock private Profile mProfile;
-    @Mock private PersonalDataManager mPersonalDataManager;
+    @Mock private AutofillImageFetcher mImageFetcher;
 
     private ShadowActivity mShadowActivity;
     private WindowAndroid mWindow;
@@ -92,14 +92,14 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
 
     @Before
     public void setUp() {
-        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
+        AutofillImageFetcherFactory.setInstanceForTesting(mImageFetcher);
         ProfileJni.setInstanceForTesting(mProfileNatives);
         when(mProfileNatives.fromWebContents(any())).thenReturn(mProfile);
         AutofillVcnEnrollBottomSheetBridgeJni.setInstanceForTesting(mBridgeNatives);
         Activity activity = Robolectric.buildActivity(Activity.class).create().get();
         mShadowActivity = shadowOf(activity);
         mWindow = new WindowAndroid(activity, /* trackOcclusion= */ true);
-        when(mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+        when(mImageFetcher.getImageIfAvailable(
                         ISSUER_ICON_URL,
                         CardIconSpecs.create(mWindow.getContext().get(), ImageSize.SMALL)))
                 .thenReturn(

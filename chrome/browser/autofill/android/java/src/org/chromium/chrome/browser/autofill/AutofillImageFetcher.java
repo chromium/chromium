@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.jni_zero.CalledByNative;
@@ -111,7 +112,8 @@ public class AutofillImageFetcher {
      * @param cardIconSpecs The sizing specifications for the image.
      * @return Bitmap image for the passed in URL if it exists in cache, an empty object otherwise.
      */
-    Optional<Bitmap> getImageIfAvailable(GURL url, CardIconSpecs cardIconSpecs) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public Optional<Bitmap> getImageIfAvailable(GURL url, CardIconSpecs cardIconSpecs) {
         GURL urlToCache =
                 AutofillUiUtils.getFifeIconUrlWithParams(
                         url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());

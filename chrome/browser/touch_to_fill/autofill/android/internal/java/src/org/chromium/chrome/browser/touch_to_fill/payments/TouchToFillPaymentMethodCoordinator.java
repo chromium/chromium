@@ -20,7 +20,7 @@ import android.graphics.drawable.Drawable;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
@@ -48,7 +48,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
     @Override
     public void initialize(
             Context context,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             BottomSheetController sheetController,
             Delegate delegate,
             BottomSheetFocusHelper bottomSheetFocusHelper) {
@@ -57,7 +57,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                 (metaData) ->
                         getCardIcon(
                                 context,
-                                personalDataManager,
+                                imageFetcher,
                                 metaData.artUrl,
                                 metaData.iconId,
                                 ImageSize.LARGE,

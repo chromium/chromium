@@ -72,8 +72,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.R;
@@ -126,7 +126,7 @@ public class KeyboardAccessoryViewTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Mock PersonalDataManager mMockPersonalDataManager;
+    @Mock AutofillImageFetcher mMockImageFetcher;
 
     private static class TestTracker implements Tracker {
         private boolean mWasDismissed;
@@ -215,7 +215,7 @@ public class KeyboardAccessoryViewTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
+        AutofillImageFetcherFactory.setInstanceForTesting(mMockImageFetcher);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel =
@@ -249,8 +249,7 @@ public class KeyboardAccessoryViewTest {
                             (view) -> {
                                 KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration =
                                         KeyboardAccessoryCoordinator.createUiConfiguration(
-                                                mActivityTestRule.getActivity(),
-                                                mMockPersonalDataManager);
+                                                mActivityTestRule.getActivity(), mMockImageFetcher);
                                 view.setBarItemsAdapter(
                                         KeyboardAccessoryCoordinator.createBarItemsAdapter(
                                                 mModel.get(BAR_ITEMS), view, uiConfiguration));
@@ -730,15 +729,14 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    public void testCustomIconUrlSet_imageReturnedByPersonalDataManager_customIconSetOnChipView()
+    public void testCustomIconUrlSet_imageReturnedByImageFetcher_customIconSetOnChipView()
             throws InterruptedException {
         GURL customIconUrl = mock(GURL.class);
         when(customIconUrl.isValid()).thenReturn(true);
         when(customIconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
-        // Return the cached image when
-        // PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is called for the
+        // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
+        when(mMockImageFetcher.getImageIfAvailable(any(), any()))
                 .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
         // Create an autofill suggestion and set the `customIconUrl`.
         AutofillBarItem customIconItem =
@@ -768,15 +766,14 @@ public class KeyboardAccessoryViewTest {
 
     @Test
     @MediumTest
-    public void testCustomIconUrlSet_imageNotCachedInPersonalDataManager_defaultIconSetOnChipView()
+    public void testCustomIconUrlSet_imageNotCachedInImageFetcher_defaultIconSetOnChipView()
             throws InterruptedException {
         GURL customIconUrl = mock(GURL.class);
         when(customIconUrl.isValid()).thenReturn(true);
         when(customIconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
-        // Return the response of PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable
-        // to null to indicate that the image is not present in the cache.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
-                .thenReturn(Optional.empty());
+        // Return null to AutofillImageFetcher.getImageIfAvailable to indicate that the image is not
+        // present in the cache.
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(Optional.empty());
         AutofillBarItem customIconItem =
                 new AutofillBarItem(
                         getDefaultAutofillSuggestionBuilder()

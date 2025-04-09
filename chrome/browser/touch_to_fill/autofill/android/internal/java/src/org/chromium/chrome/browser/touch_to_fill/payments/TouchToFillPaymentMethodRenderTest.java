@@ -324,7 +324,7 @@ public class TouchToFillPaymentMethodRenderTest {
                     mCoordinator = new TouchToFillPaymentMethodCoordinator();
                     mCoordinator.initialize(
                             mActivityTestRule.getActivity(),
-                            AutofillTestHelper.getPersonalDataManagerForLastUsedProfile(),
+                            AutofillTestHelper.getAutofillImageFetcherForLastUsedProfile(),
                             mBottomSheetController,
                             mDelegateMock,
                             mBottomSheetFocusHelper);

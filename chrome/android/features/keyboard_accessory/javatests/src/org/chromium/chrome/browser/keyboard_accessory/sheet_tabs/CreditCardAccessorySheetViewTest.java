@@ -43,8 +43,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -82,12 +82,12 @@ public class CreditCardAccessorySheetViewTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Mock PersonalDataManager mMockPersonalDataManager;
+    @Mock AutofillImageFetcher mMockImageFetcher;
 
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
+        AutofillImageFetcherFactory.setInstanceForTesting(mMockImageFetcher);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel = new AccessorySheetTabItemsModel();
@@ -116,7 +116,7 @@ public class CreditCardAccessorySheetViewTest {
                                                         CreditCardAccessorySheetCoordinator
                                                                 .createUiConfiguration(
                                                                         view.getContext(),
-                                                                        mMockPersonalDataManager),
+                                                                        mMockImageFetcher),
                                                         mModel);
                                             }
 
@@ -208,15 +208,13 @@ public class CreditCardAccessorySheetViewTest {
 
     @Test
     @MediumTest
-    public void testAddingUserInfoWithIconUrl_iconCachedInPersonalDataManager()
-            throws ExecutionException {
+    public void testAddingUserInfoWithIconUrl_iconCachedInImageFetcher() throws ExecutionException {
         GURL iconUrl = mock(GURL.class);
         when(iconUrl.isValid()).thenReturn(true);
         when(iconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
-        // Return the cached image when
-        // PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is called for the
+        // Return the cached image when AutofillImageFetcher.getImageIfAvailable is called for the
         // above url.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
+        when(mMockImageFetcher.getImageIfAvailable(any(), any()))
                 .thenReturn(Optional.of(TEST_CARD_ART_IMAGE));
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -247,7 +245,7 @@ public class CreditCardAccessorySheetViewTest {
         assertThat(getChipText(R.id.exp_year), is("2034"));
         assertThat(getChipText(R.id.cardholder), is("Kirby Puckett"));
         // Verify that the icon is set to the cached image returned by
-        // PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable.
+        // AutofillImageFetcher.getImageIfAvailable.
         ImageView iconImageView = (ImageView) mView.get().getChildAt(0).findViewById(R.id.icon);
         assertTrue(
                 ((BitmapDrawable) iconImageView.getDrawable())
@@ -257,15 +255,14 @@ public class CreditCardAccessorySheetViewTest {
 
     @Test
     @MediumTest
-    public void testAddingUserInfoWithIconUrl_iconNotCachedInPersonalDataManager()
+    public void testAddingUserInfoWithIconUrl_iconNotCachedInAutofillImageFetcher()
             throws ExecutionException {
         GURL iconUrl = mock(GURL.class);
         when(iconUrl.isValid()).thenReturn(true);
         when(iconUrl.getSpec()).thenReturn(CUSTOM_ICON_URL);
-        // Return null when PersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable is
-        // called for the above url.
-        when(mMockPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(any(), any()))
-                .thenReturn(Optional.empty());
+        // Return null to AutofillImageFetcher.getImageIfAvailable to indicate that the image is not
+        // present in the cache.
+        when(mMockImageFetcher.getImageIfAvailable(any(), any())).thenReturn(Optional.empty());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

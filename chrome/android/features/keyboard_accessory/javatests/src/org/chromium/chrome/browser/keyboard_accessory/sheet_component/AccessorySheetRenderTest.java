@@ -43,6 +43,8 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
@@ -107,6 +109,7 @@ public class AccessorySheetRenderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
+    @Mock private AutofillImageFetcher mImageFetcher;
     @Mock private PersonalDataManager mPersonalDataManager;
 
     public AccessorySheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
@@ -133,6 +136,7 @@ public class AccessorySheetRenderTest {
         FaviconHelper.setCreationStrategy((context, profile) -> new TestFaviconHelper(context));
 
         ProfileManager.setLastUsedProfileForTesting(mProfile);
+        AutofillImageFetcherFactory.setInstanceForTesting(mImageFetcher);
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
 
         mActivityTestRule.launchActivity(null);

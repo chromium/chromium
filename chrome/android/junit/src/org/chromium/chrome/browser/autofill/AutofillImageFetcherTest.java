@@ -34,6 +34,8 @@ import org.chromium.url.GURL;
 
 import java.util.Map;
 
+// TODO(crbug.com/388217006): Add tests for {@link AutofillImageFetcher#getImageIfAvailable(GURL,
+// CardIconSpecs)} after refactor.
 /** Unit tests for {@link AutofillImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AutofillImageFetcherTest {
