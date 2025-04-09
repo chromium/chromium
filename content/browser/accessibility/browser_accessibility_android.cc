@@ -437,6 +437,11 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
     return false;
   }
 
+  // Allows users to select options in a listbox with touch interaction.
+  if (GetRole() == ax::mojom::Role::kListBoxOption) {
+    return true;
+  }
+
   while (parent) {
     if (ui::IsControl(parent->GetRole()) && !IsFocusable()) {
       return false;
