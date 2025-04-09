@@ -1458,15 +1458,8 @@ UniqueFontSelector* BaseRenderingContext2D::GetFontSelector() const {
 }
 
 V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
-  // Query the canvas and return its actual texture format.
-  if (GetCanvasRenderingContextHost()) {
-    return FromDawnEnum(
-        AsDawnType(viz::ToClosestSkColorType(GetSharedImageFormat())));
-  }
-
-  // If that did not work (e.g., the canvas host does not yet exist), we can
-  // return the preferred canvas format.
-  return FromDawnEnum(GPU::GetPreferredCanvasFormat());
+  return FromDawnEnum(
+      AsDawnType(viz::ToClosestSkColorType(GetSharedImageFormat())));
 }
 
 GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
