@@ -56,7 +56,6 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
@@ -70,6 +69,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/utils/first_run_test_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -89,12 +89,17 @@
 #import "third_party/ocmock/gtest_support.h"
 
 using set_up_list_prefs::SetUpListItemState;
-using startup_metric_utils::FirstRunSentinelCreationResult;
 
 namespace {
 std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     web::BrowserState* browser_state) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
+  // Allow ShortcutsMediator to call WouldTriggerHelpUI() without causing log
+  // noise.
+  auto tracker = std::make_unique<feature_engagement::test::MockTracker>();
+  EXPECT_CALL(*tracker, WouldTriggerHelpUI(testing::Ref(
+                            feature_engagement::kIPHWhatsNewUpdatedFeature)))
+      .Times(testing::AnyNumber());
+  return std::move(tracker);
 }
 }  // namespace
 
@@ -402,22 +407,14 @@ class MagicStackRankingModelTest : public PlatformTest {
     [_safetyCheckMediator disconnect];
     [_tipsMediator disconnect];
     [_priceTrackingPromoMediator disconnect];
+    ResetFirstRunSentinel();
   }
 
  protected:
   // Clears and re-writes the FirstRun sentinel file, in order to allow Set Up
   // List to display.
   void WriteFirstRunSentinel() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    FirstRun::RemoveSentinel();
-    base::File::Error file_error = base::File::FILE_OK;
-    FirstRunSentinelCreationResult sentinel_created =
-        FirstRun::CreateSentinel(&file_error);
-    ASSERT_EQ(sentinel_created, FirstRunSentinelCreationResult::kSuccess)
-        << "Error creating FirstRun sentinel: "
-        << base::File::ErrorToString(file_error);
-    FirstRun::LoadSentinelInfo();
-    FirstRun::ClearStateForTesting();
+    ForceFirstRunRecency(1);
     EXPECT_FALSE(set_up_list_prefs::IsSetUpListDisabled(profile_->GetPrefs()));
     EXPECT_FALSE(FirstRun::IsChromeFirstRun());
     EXPECT_TRUE(set_up_list_utils::IsSetUpListActive(GetLocalState(),
