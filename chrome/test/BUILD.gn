@@ -6626,6 +6626,7 @@ test("unit_tests") {
     "//chrome/browser/ui/login:unit_tests",
     "//chrome/browser/ui/page_info:unit_tests",
     "//chrome/browser/ui/safety_hub:test_support",
+    "//chrome/browser/ui/serial:test_support",
     "//chrome/browser/ui/webui",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/updates/announcement_notification:unit_tests",

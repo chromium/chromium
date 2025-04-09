@@ -7,10 +7,12 @@
 #include <jni.h>
 #include <stddef.h>
 
+#include <string>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +21,6 @@
 #include "components/permissions/chooser_controller.h"
 #include "components/permissions/permission_util.h"
 #include "components/security_state/content/security_state_tab_helper.h"
-#include "components/security_state/core/security_state.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -32,12 +33,82 @@
 
 namespace {
 
+std::unique_ptr<SerialChooserDialogAndroid::JavaDialog>
+CreateJavaSerialChooserDialog(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>&
+        window_android,  // Java Type: WindowAndroid
+    const std::u16string& origin,
+    security_state::SecurityLevel security_level,
+    const base::android::JavaRef<jobject>& profile,  // Java Type: Profile
+    SerialChooserDialogAndroid* dialog) {
+  base::android::ScopedJavaLocalRef<jobject> j_dialog =
+      Java_SerialChooserDialog_create(env, window_android, origin,
+                                      security_level, profile,
+                                      reinterpret_cast<intptr_t>(dialog));
+  if (j_dialog.is_null()) {
+    return nullptr;
+  }
+  return std::make_unique<SerialChooserDialogAndroid::JavaDialog>(j_dialog);
+}
+
 SerialChooserDialogAndroid::CreateJavaDialogCallback
 GetCreateJavaSerialChooserDialogCallback() {
-  return base::BindOnce(&Java_SerialChooserDialog_create);
+  return base::BindOnce(&CreateJavaSerialChooserDialog);
 }
 
 }  // namespace
+
+// JavaDialog
+
+SerialChooserDialogAndroid::JavaDialog::JavaDialog(
+    const base::android::JavaRef<jobject>& dialog)
+    : j_dialog_(dialog) {}
+
+SerialChooserDialogAndroid::JavaDialog::~JavaDialog() {
+  Close();
+}
+
+void SerialChooserDialogAndroid::JavaDialog::Close() {
+  if (j_dialog_.is_null()) {
+    return;
+  }
+  Java_SerialChooserDialog_closeDialog(base::android::AttachCurrentThread(),
+                                       j_dialog_);
+  j_dialog_.Reset();
+}
+
+void SerialChooserDialogAndroid::JavaDialog::SetIdleState() const {
+  Java_SerialChooserDialog_setIdleState(base::android::AttachCurrentThread(),
+                                        j_dialog_);
+}
+
+void SerialChooserDialogAndroid::JavaDialog::AddDevice(
+    const std::string& item_id,
+    const std::u16string& device_name) const {
+  Java_SerialChooserDialog_addDevice(base::android::AttachCurrentThread(),
+                                     j_dialog_, item_id, device_name);
+}
+
+void SerialChooserDialogAndroid::JavaDialog::RemoveDevice(
+    const std::string& item_id) const {
+  Java_SerialChooserDialog_removeDevice(base::android::AttachCurrentThread(),
+                                        j_dialog_, item_id);
+}
+
+void SerialChooserDialogAndroid::JavaDialog::OnAdapterEnabledChanged(
+    bool enabled) const {
+  Java_SerialChooserDialog_onAdapterEnabledChanged(
+      base::android::AttachCurrentThread(), j_dialog_, enabled);
+}
+
+void SerialChooserDialogAndroid::JavaDialog::OnAdapterAuthorizationChanged(
+    bool authorized) const {
+  Java_SerialChooserDialog_onAdapterAuthorizationChanged(
+      base::android::AttachCurrentThread(), j_dialog_, authorized);
+}
+
+// SerialChooserDialogAndroid
 
 // static
 std::unique_ptr<SerialChooserDialogAndroid> SerialChooserDialogAndroid::Create(
@@ -97,11 +168,11 @@ SerialChooserDialogAndroid::CreateInternal(
   auto dialog = std::make_unique<SerialChooserDialogAndroid>(
       std::move(controller), std::move(on_close));
 
-  dialog->java_dialog_.Reset(
+  dialog->java_dialog_ =
       std::move(create_java_dialog_callback)
           .Run(env, window_android, origin_string, helper->GetSecurityLevel(),
-               j_profile_android, reinterpret_cast<intptr_t>(dialog.get())));
-  if (dialog->java_dialog_.is_null()) {
+               j_profile_android, dialog.get());
+  if (!dialog->java_dialog_) {
     return nullptr;
   }
 
@@ -116,10 +187,6 @@ SerialChooserDialogAndroid::SerialChooserDialogAndroid(
 }
 
 SerialChooserDialogAndroid::~SerialChooserDialogAndroid() {
-  if (!java_dialog_.is_null()) {
-    Java_SerialChooserDialog_closeDialog(base::android::AttachCurrentThread(),
-                                         java_dialog_);
-  }
   controller_->set_view(nullptr);
 }
 
@@ -136,31 +203,25 @@ void SerialChooserDialogAndroid::OnOptionsInitialized() {
     OnOptionAdded(i);
   }
 
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_SerialChooserDialog_setIdleState(env, java_dialog_);
+  java_dialog_->SetIdleState();
 }
 
 void SerialChooserDialogAndroid::OnOptionAdded(size_t index) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
   CHECK_LE(index, item_id_map_.size());
   int item_id = next_item_id_++;
   std::string item_id_str = base::NumberToString(item_id);
   item_id_map_.insert(item_id_map_.begin() + index, item_id_str);
 
   std::u16string device_name = controller_->GetOption(index);
-  Java_SerialChooserDialog_addDevice(env, java_dialog_, item_id_str,
-                                     device_name);
+  java_dialog_->AddDevice(item_id_str, device_name);
 }
 
 void SerialChooserDialogAndroid::OnOptionRemoved(size_t index) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
   CHECK_LT(index, item_id_map_.size());
   std::string item_id = item_id_map_[index];
   item_id_map_.erase(item_id_map_.begin() + index);
 
-  Java_SerialChooserDialog_removeDevice(env, java_dialog_, item_id);
+  java_dialog_->RemoveDevice(item_id);
 }
 
 void SerialChooserDialogAndroid::OnOptionUpdated(size_t index) {
@@ -168,8 +229,7 @@ void SerialChooserDialogAndroid::OnOptionUpdated(size_t index) {
 }
 
 void SerialChooserDialogAndroid::OnAdapterEnabledChanged(bool enabled) {
-  Java_SerialChooserDialog_onAdapterEnabledChanged(
-      base::android::AttachCurrentThread(), java_dialog_, enabled);
+  java_dialog_->OnAdapterEnabledChanged(enabled);
 }
 
 void SerialChooserDialogAndroid::OnRefreshStateChanged(bool refreshing) {
@@ -178,8 +238,7 @@ void SerialChooserDialogAndroid::OnRefreshStateChanged(bool refreshing) {
 
 void SerialChooserDialogAndroid::OnAdapterAuthorizationChanged(
     bool authorized) {
-  Java_SerialChooserDialog_onAdapterAuthorizationChanged(
-      base::android::AttachCurrentThread(), java_dialog_, authorized);
+  java_dialog_->OnAdapterAuthorizationChanged(authorized);
 }
 
 void SerialChooserDialogAndroid::OnItemSelected(JNIEnv* env,
