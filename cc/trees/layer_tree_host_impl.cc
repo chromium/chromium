@@ -1441,47 +1441,53 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   if (settings_.enable_compositing_based_throttling)
     throttle_decider_.Prepare();
 
-  if (!use_layer_context_for_display_) {
-    const auto& context = AppendQuadsContext{
-        GetDrawMode(), std::move(capture_view_transition_tokens),
-        /* for_view_transition_capture= */ false};
-    const auto& view_transition_capture_context = AppendQuadsContext{
-        context.draw_mode, context.capture_view_transition_tokens,
-        /* for_view_transition_capture= */ true};
+  const auto& context = AppendQuadsContext{
+      GetDrawMode(), std::move(capture_view_transition_tokens),
+      /* for_view_transition_capture= */ false};
+  const auto& view_transition_capture_context = AppendQuadsContext{
+      context.draw_mode, context.capture_view_transition_tokens,
+      /* for_view_transition_capture= */ true};
 
-    for (EffectTreeLayerListIterator it(active_tree());
-         it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
-      RenderSurfaceImpl* target_render_surface = it.target_render_surface();
+  // In TreesInViz mode, FrameData built in the renderer side is abandoned
+  // and later rebuilt in viz side. Therefore, certain steps can be skipped.
+  bool output_frame_data = !use_layer_context_for_display_;
 
-      viz::CompositorRenderPass* target_render_pass = FindRenderPassById(
-          frame->render_passes, target_render_surface->render_pass_id());
+  for (EffectTreeLayerListIterator it(active_tree());
+       it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
+    RenderSurfaceImpl* target_render_surface = it.target_render_surface();
 
-      viz::CompositorRenderPass* view_transition_capture_render_pass =
-          target_render_surface->has_view_transition_capture_contributions()
-              ? FindRenderPassById(
-                    frame->render_passes,
-                    it.target_render_surface()
-                        ->view_transition_capture_render_pass_id())
-              : nullptr;
+    viz::CompositorRenderPass* target_render_pass = FindRenderPassById(
+        frame->render_passes, target_render_surface->render_pass_id());
 
-      AppendQuadsData append_quads_data;
+    viz::CompositorRenderPass* view_transition_capture_render_pass =
+        (output_frame_data &&
+         target_render_surface->has_view_transition_capture_contributions())
+            ? FindRenderPassById(frame->render_passes,
+                                 it.target_render_surface()
+                                     ->view_transition_capture_render_pass_id())
+            : nullptr;
 
-      if (it.state() == EffectTreeLayerListIterator::State::kTargetSurface) {
-        RenderSurfaceImpl* render_surface = it.target_render_surface();
-        if (render_surface->HasCopyRequest()) {
-          active_tree()
-              ->property_trees()
-              ->effect_tree_mutable()
-              .TakeCopyRequestsAndTransformToSurface(
-                  render_surface->EffectTreeIndex(),
-                  &target_render_pass->copy_requests);
-        }
-        if (settings_.enable_compositing_based_throttling &&
-            target_render_pass) {
-          throttle_decider_.ProcessRenderPass(*target_render_pass);
-        }
-      } else if (it.state() ==
-                 EffectTreeLayerListIterator::State::kContributingSurface) {
+    AppendQuadsData append_quads_data;
+
+    if (it.state() == EffectTreeLayerListIterator::State::kTargetSurface) {
+      // TODO(zmo): Make sure EffectTree's copy requests are sent to viz.
+      if (target_render_surface->HasCopyRequest()) {
+        active_tree()
+            ->property_trees()
+            ->effect_tree_mutable()
+            .TakeCopyRequestsAndTransformToSurface(
+                target_render_surface->EffectTreeIndex(),
+                &target_render_pass->copy_requests);
+      }
+      // The only place where enable_compositing_based_throttling is set
+      // to true is AshWindowTreeHost::Create().
+      // TODO(zmo): Audit if this is necessary for UI in TreesInViz mode.
+      if (settings_.enable_compositing_based_throttling && target_render_pass) {
+        throttle_decider_.ProcessRenderPass(*target_render_pass);
+      }
+    } else if (it.state() ==
+               EffectTreeLayerListIterator::State::kContributingSurface) {
+      if (output_frame_data) {
         RenderSurfaceImpl* render_surface = it.current_render_surface();
         if (render_surface->contributes_to_drawn_surface()) {
           render_surface->AppendQuads(context, target_render_pass,
@@ -1493,39 +1499,57 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
                                         &data);
           }
         }
-      } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
-        LayerImpl* layer = it.current_layer();
-        if (layer->WillDraw(context.draw_mode, resource_provider_.get())) {
-          DCHECK_EQ(active_tree_.get(), layer->layer_tree_impl());
+      }
+    } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
+      LayerImpl* layer = it.current_layer();
+      if (use_layer_context_for_display_ &&
+          layer->GetLayerType() == mojom::LayerType::kVideo) {
+        // For VideoLayerImpl, WillDraw() and DidDraw() have to be called
+        // as a pair because one acquires the provider mutex and the other
+        // releases it.
+        // TODO(zmo): Do not skip video layer's WillDraw() once DidDraw() is
+        // also added back to renderer side for TreesInViz mode.
+      } else if (layer->WillDraw(context.draw_mode, resource_provider_.get())) {
+        DCHECK_EQ(active_tree_.get(), layer->layer_tree_impl());
 
+        if (output_frame_data) {
           frame->will_draw_layers.push_back(layer);
-          if (layer->may_contain_video()) {
-            num_of_layers_with_videos++;
+        }
+        if (layer->may_contain_video()) {
+          num_of_layers_with_videos++;
+          if (output_frame_data) {
             frame->may_contain_video = true;
           }
-          if (compute_video_layer_preferred_interval &&
-              layer->GetLayerType() == mojom::LayerType::kVideo) {
-            VideoLayerImpl* video_layer = static_cast<VideoLayerImpl*>(layer);
-            std::optional<base::TimeDelta> video_preferred_interval =
-                video_layer->GetPreferredRenderInterval();
-            if (video_preferred_interval) {
-              frame->video_layer_preferred_intervals[video_preferred_interval
-                                                         .value()]++;
-            }
+        }
+        if (output_frame_data && compute_video_layer_preferred_interval &&
+            layer->GetLayerType() == mojom::LayerType::kVideo) {
+          VideoLayerImpl* video_layer = static_cast<VideoLayerImpl*>(layer);
+          std::optional<base::TimeDelta> video_preferred_interval =
+              video_layer->GetPreferredRenderInterval();
+          if (video_preferred_interval) {
+            frame->video_layer_preferred_intervals[video_preferred_interval
+                                                       .value()]++;
           }
-          layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
+        }
+        layer->NotifyKnownResourceIdsBeforeAppendQuads(known_resource_ids);
+        if (output_frame_data) {
           layer->AppendQuads(context, target_render_pass, &append_quads_data);
           if (view_transition_capture_render_pass) {
             AppendQuadsData data;
             layer->AppendQuads(view_transition_capture_context,
                                view_transition_capture_render_pass, &data);
           }
-        } else {
-          if (settings_.enable_compositing_based_throttling) {
-            throttle_decider_.ProcessLayerNotToDraw(layer);
-          }
         }
+      } else {
+        // The only place where enable_compositing_based_throttling is set
+        // to true is AshWindowTreeHost::Create().
+        // TODO(zmo): Audit if this is necessary for UI in TreesInViz mode.
+        if (settings_.enable_compositing_based_throttling) {
+          throttle_decider_.ProcessLayerNotToDraw(layer);
+        }
+      }
 
+      if (output_frame_data) {
         rendering_stats_instrumentation_->AddVisibleContentArea(
             append_quads_data.visible_layer_area);
         rendering_stats_instrumentation_->AddApproximatedVisibleContentArea(
@@ -1541,10 +1565,14 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
           have_missing_animated_tiles |=
               layer->screen_space_transform_is_animating();
         }
-        if (settings_.is_layer_tree_for_ui) {
-          AccumulateInvalidatedArea(layer, total_invalidated_area_.value());
-        }
       }
+
+      // TODO(zmo): Audit if this is necessary when UI is moved to TreesInViz.
+      if (settings_.is_layer_tree_for_ui) {
+        AccumulateInvalidatedArea(layer, total_invalidated_area_.value());
+      }
+    }
+    if (output_frame_data) {
       frame->activation_dependencies.insert(
           frame->activation_dependencies.end(),
           append_quads_data.activation_dependencies.begin(),
@@ -3053,12 +3081,6 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   // drawn.
   if (active_tree_->hud_layer()) {
     TRACE_EVENT0("cc", "DrawLayers.UpdateHudTexture");
-    if (use_layer_context_for_display_) {
-      // We won't have ran WillDraw() for layers. This must run before calling
-      // into UpdateHudTexture().
-      active_tree_->hud_layer()->WillDraw(draw_mode, resource_provider_.get());
-    }
-
     active_tree_->hud_layer()->UpdateHudTexture(
         draw_mode, layer_tree_frame_sink_, resource_provider_.get(),
         raster_caps(), frame->render_passes);
