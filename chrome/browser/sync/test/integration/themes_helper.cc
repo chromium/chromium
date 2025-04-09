@@ -85,6 +85,10 @@ void UseCustomTheme(Profile* profile, int index) {
       profile, MakeName(index), extensions::Manifest::TYPE_THEME);
 }
 
+void UseGrayscaleTheme(Profile* profile) {
+  GetThemeService(profile)->SetIsGrayscale(true);
+}
+
 void UseDefaultTheme(Profile* profile) {
   GetThemeService(profile)->UseDefaultTheme();
 }

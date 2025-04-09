@@ -47,6 +47,9 @@ bool IsSystemThemeDistinctFromDefaultTheme(Profile* profile);
 // Sets |profile| to use the custom theme with the given index.
 void UseCustomTheme(Profile* profile, int index);
 
+// Sets `profile` to use the grayscale theme.
+void UseGrayscaleTheme(Profile* profile);
+
 // Sets |profile| to use the default theme.
 void UseDefaultTheme(Profile* profile);
 
