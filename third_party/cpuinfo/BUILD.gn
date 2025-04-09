@@ -18,6 +18,9 @@ config("cpuinfo_config") {
     # For clog.c.
     "-Wno-unused-result",
 
+    # For src/src/arm/windows/init-by-logical-sys-info.c.
+    "-Wno-tautological-pointer-compare",
+
     # A lot of locations.
     "-Wno-unused-function",
   ]
