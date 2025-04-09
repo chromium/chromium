@@ -57,13 +57,21 @@ NSArray<UNNotificationRequest*>* NotificationsWithIdentifiers(
 //  - The existence of a compromised password notification.
 //  - The current notification authorization status (provisional or not yet
 //  determined).
+//  - The status of ProvisionalNotificationsAllowed policy.
 bool CanSendProvisionalNotifications(
     PasswordSafetyCheckState password_check_state,
     password_manager::InsecurePasswordCounts insecure_password_counts,
-    PrefService* local_pref_service) {
+    PrefService* local_pref_service,
+    Browser* browser) {
   CHECK(local_pref_service);
 
   if (!ProvisionalSafetyCheckNotificationsEnabled()) {
+    return false;
+  }
+
+  if (!browser ||
+      ![PushNotificationUtil
+          provisionalAllowedByPolicyForProfile:browser->GetProfile()]) {
     return false;
   }
 
@@ -341,9 +349,9 @@ bool SafetyCheckNotificationClient::IsPermitted() {
 
   PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
 
-  if (CanSendProvisionalNotifications(password_check_state_,
-                                      insecure_password_counts_,
-                                      local_pref_service)) {
+  if (CanSendProvisionalNotifications(
+          password_check_state_, insecure_password_counts_, local_pref_service,
+          GetActiveForegroundBrowser())) {
     return true;
   }
 

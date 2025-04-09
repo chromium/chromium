@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -265,6 +266,33 @@ TEST_F(SafetyCheckNotificationClientTest, SchedulesPasswordNotification) {
   notification_client_->OnSceneActiveForegroundBrowserReady(
       run_loop.QuitClosure());
 
+  run_loop.Run();
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+// Tests that no notification is scheduled if the app's notification auth status
+// is provisional and provisional notifications are not allowed by policy.
+TEST_F(SafetyCheckNotificationClientTest, ProvisionalDisallowedByPolicy) {
+  browser_->GetProfile()->GetPrefs()->SetBoolean(
+      prefs::kProvisionalNotificationsAllowedByPolicy, false);
+  [PushNotificationUtil
+      updateAuthorizationStatusPref:UNAuthorizationStatusProvisional];
+  GetApplicationContext()->GetLocalState()->ClearPref(
+      prefs::kAppLevelPushNotificationPermissions);
+  StubGetPendingRequests(nil);
+  OCMReject([mock_notification_center_ addNotificationRequest:[OCMArg any]
+                                        withCompletionHandler:[OCMArg any]]);
+  password_manager::InsecurePasswordCounts counts = {
+      /* compromised */ 1, /* dismissed */ 0, /* reused */ 0,
+      /* weak */ 0};
+  safety_check_manager_->SetInsecurePasswordCountsForTesting(counts);
+  safety_check_manager_->SetPasswordCheckStateForTesting(
+      PasswordSafetyCheckState::kUnmutedCompromisedPasswords);
+
+  base::RunLoop run_loop;
+  notification_client_->OnSceneActiveForegroundBrowserReady(
+      run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
