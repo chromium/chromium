@@ -384,7 +384,7 @@ base::TimeDelta GetCleanupTaskPeriodMs() {
 
 - (BOOL)isPasswordFieldOnForm:(FormSuggestionProviderQuery*)formQuery
                      webFrame:(web::WebFrame*)webFrame {
-  if (![formQuery.fieldType isEqual:kObfuscatedFieldType]) {
+  if (![formQuery.fieldType isEqualToString:kObfuscatedFieldType]) {
     return NO;
   }
 
