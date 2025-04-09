@@ -1537,6 +1537,7 @@ domain Browser
     enum
       openTabSearch
       closeTabSearch
+      openGlic
 
   # Set permission settings for given origin.
   experimental command setPermission
