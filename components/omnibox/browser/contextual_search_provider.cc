@@ -134,9 +134,8 @@ void ContextualSearchProvider::Stop(bool clear_cached_results,
     AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
     lens_suggest_inputs_subscription_ = {};
     loader_.reset();
+    input_keyword_.clear();
   }
-
-  input_keyword_.clear();
 }
 
 void ContextualSearchProvider::AddProviderInfo(
