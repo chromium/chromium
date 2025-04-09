@@ -65,7 +65,6 @@
 ../../../../third_party/catapult/devil/devil/utils/run_tests_helper.py
 ../../../../third_party/catapult/devil/devil/utils/timeout_retry.py
 ../../../../third_party/catapult/devil/devil/utils/watchdog_timer.py
-../../../../third_party/catapult/devil/devil/utils/zip_utils.py
 ../../../../third_party/catapult/telemetry/third_party/websocket-client/websocket/__init__.py
 ../../../../third_party/catapult/telemetry/third_party/websocket-client/websocket/_abnf.py
 ../../../../third_party/catapult/telemetry/third_party/websocket-client/websocket/_app.py
