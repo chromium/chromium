@@ -19,8 +19,7 @@ _ALL_BENCHMARKS_BY_NAMES = dict(
     (b.Name(), b) for b in benchmark_finders.GetAllBenchmarks())
 
 OFFICIAL_BENCHMARKS = frozenset(
-    b for b in benchmark_finders.GetOfficialBenchmarks()
-    if not b.Name().startswith('UNSCHEDULED_'))
+    b for b in benchmark_finders.GetOfficialBenchmarks() if b.IsScheduled())
 CONTRIB_BENCHMARKS = frozenset(benchmark_finders.GetContribBenchmarks())
 ALL_SCHEDULEABLE_BENCHMARKS = OFFICIAL_BENCHMARKS | CONTRIB_BENCHMARKS
 GTEST_STORY_NAME = '_gtest_'

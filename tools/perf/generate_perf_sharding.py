@@ -326,7 +326,7 @@ def _ValidateShardMaps(args):
           'Benchmark {benchmark} is supposed to be scheduled on platform '
           '{platform} according to '
           'bot_platforms.py, but it is not yet scheduled. If this is a new '
-          'benchmark, please rename it to UNSCHEDULED_{benchmark}, and then '
+          'benchmark, please set {benchmark}.SCHEDULED = False, and then '
           'contact '
           'Telemetry and Chrome Client Infra team to schedule the benchmark. '
           'You can email chrome-benchmarking-request@ to get started.'.format(
@@ -336,10 +336,11 @@ def _ValidateShardMaps(args):
           'Benchmark {benchmark} is scheduled on shard map {path}, but '
           'bot_platforms.py '
           'says that it should not be on that shard map. This could be because '
-          'the benchmark was deleted. If that is the case, you can use '
+          'the benchmark was deleted or {benchmark}.SCHEDULED is not True. '
+          'If that is the case, you can use '
           '`generate_perf_sharding deschedule` to deschedule the benchmark '
-          'from the shard map.'.format(
-              benchmark=benchmark, path=platform.shards_map_file_path))
+          'from the shard map.'.format(benchmark=benchmark,
+                                       path=platform.shards_map_file_path))
 
   # Check that every official benchmark is scheduled on some shard map.
   # TODO(crbug.com/40627632): Note that this check can be deleted if we
@@ -355,8 +356,8 @@ def _ValidateShardMaps(args):
       bot_platforms.OFFICIAL_BENCHMARK_NAMES - scheduled_benchmarks):
     errors.append(
         'Benchmark {benchmark} is an official benchmark, but it is not '
-        'scheduled to run anywhere. please rename it to '
-        'UNSCHEDULED_{benchmark}'.format(benchmark=benchmark))
+        'scheduled to run anywhere. please set '
+        '{benchmark}.SCHEDULED = False'.format(benchmark=benchmark))
 
   for error in errors:
     print('*', error, '\n', file=sys.stderr)
