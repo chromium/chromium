@@ -67,12 +67,12 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
     // Adds the new ping to the set of URT lookup pings. Returns a token that
     // can be used in |AddToURTLookupResponses| to correlate a ping and
     // response.
-    virtual int AddToURTLookupPings(const RTLookupRequest request,
-                                    const std::string oauth_token) = 0;
+    virtual int AddToURTLookupPings(const RTLookupRequest& request,
+                                    const std::string& oauth_token) = 0;
 
     // Adds the new response to the set of URT lookup pings.
     virtual void AddToURTLookupResponses(int webui_token,
-                                         const RTLookupResponse response) = 0;
+                                         const RTLookupResponse& response) = 0;
   };
 
   explicit RealTimeUrlLookupServiceBase(
