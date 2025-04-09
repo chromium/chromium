@@ -5981,6 +5981,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         QR Code
       </message>
 
+      <message name="IDS_QR_CODE_A11Y_LABEL" desc="Accesibility label for the generated QR Code to be shared in the QR Code activity.">
+        Generated QR Code
+      </message>
+
       <message name="IDS_QR_CODE_SHARE_TAB_LABEL" desc="Share tab label for QR Code sharing activity."
         meaning="Sharing QR Code">
         Share
