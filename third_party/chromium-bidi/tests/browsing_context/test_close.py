@@ -13,13 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
+import websockets
 from anys import ANY_DICT, ANY_STR
 from test_helpers import (AnyExtending, execute_command, get_tree, goto_url,
                           read_JSON_message, send_JSON_command, subscribe)
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_close(websocket, context_id):
+async def test_browsingContext_close_last_command(websocket, context_id):
     await subscribe(websocket, ["browsingContext.contextDestroyed"])
 
     command_id = await send_JSON_command(websocket, {
@@ -46,10 +47,53 @@ async def test_browsingContext_close(websocket, context_id):
     resp = await read_JSON_message(websocket)
     assert resp == {"type": "success", "id": command_id, "result": {}}
 
+    try:
+        result = await get_tree(websocket)
+        assert result['contexts'] == []
+    except websockets.exceptions.ConnectionClosedError:
+        # Chromedriver closes the connection after the last context (not
+        # counting the mapper tab) is closed. NodeJS runner does not.
+        pass
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_close_not_last_command(websocket, context_id,
+                                                      another_context_id):
+    await subscribe(websocket, ["browsingContext.contextDestroyed"])
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.close",
+            "params": {
+                "context": another_context_id
+            }
+        })
+
+    # Assert "browsingContext.contextCreated" event emitted.
+    resp = await read_JSON_message(websocket)
+    assert resp == {
+        'type': 'event',
+        "method": "browsingContext.contextDestroyed",
+        "params": {
+            "context": another_context_id,
+            "parent": None,
+            "url": "about:blank",
+            "children": [],
+            "clientWindow": ANY_STR,
+            'originalOpener': None,
+            "userContext": "default"
+        }
+    }
+
+    resp = await read_JSON_message(websocket)
+    assert resp == {"type": "success", "id": command_id, "result": {}}
+
     result = await get_tree(websocket)
 
-    # Assert context is closed.
-    assert result == {'contexts': []}
+    # Assert only one context is left.
+    assert result == AnyExtending({'contexts': [{
+        "context": context_id,
+    }]})
 
 
 @pytest.mark.asyncio

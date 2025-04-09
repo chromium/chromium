@@ -277,7 +277,7 @@ export class WebSocketServer {
           connection,
           {},
           ErrorCode.InvalidArgument,
-          `Cannot parse data as JSON, ${error}`,
+          `unable to parse BiDi command: ${error}`,
         );
         return;
       }

@@ -56,7 +56,9 @@ async def test_browser_create_user_context(websocket):
 
 @pytest.mark.asyncio
 async def test_browser_create_user_context_proxy_server(
-        websocket, http_proxy_server):
+        websocket, http_proxy_server, test_chromedriver_mode):
+    if test_chromedriver_mode:
+        pytest.xfail(reason="TODO: #3294")
 
     # Localhost URLs are not proxied.
     example_url = "http://example.com"

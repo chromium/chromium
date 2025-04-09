@@ -39,14 +39,16 @@ jobs:
         run: 'exit 1'
       - run: 'exit 0'
   e2e:
-    name: ${{ matrix.this_chunk }}/${{ matrix.total_chunks }} ${{ matrix.os }}-${{ matrix.head }}
+    name: ${{ matrix.this_chunk }}/${{ matrix.total_chunks }} ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}
     strategy:
       fail-fast: false
       matrix:
         # TODO(#876): Add Windows CI.
         # TODO(#2154): Use macos-latest once Python setup supports mac arm64.
+        # TODO(#3294): Enable headful chromedriver on ubuntu.
         os: [ubuntu-latest, macos-13]
         head: [headful, 'new-headless', 'old-headless']
+        kind: [chromedriver, mapper]
         total_chunks: [4]
         this_chunk: [0, 1, 2, 3]
         exclude:
@@ -54,6 +56,9 @@ jobs:
             head: new-headless
           - os: macos-13
             head: old-headless
+          - os: ubuntu-latest
+            head: headful
+            kind: chromedriver
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
@@ -93,6 +98,7 @@ jobs:
           --total-chunks=${{ matrix.total_chunks }}
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
       - name: Run E2E tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
@@ -103,9 +109,10 @@ jobs:
           --total-chunks=${{ matrix.total_chunks }}
         env:
           VERBOSE: ${{ github.event.inputs.verbose }}
+          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
       - name: Upload artifacts
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: ${{ matrix.os }}-${{ matrix.head }}-${{ matrix.this_chunk }}-artifacts
+          name: ${{ matrix.kind }}-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.this_chunk }}-artifacts
           path: logs

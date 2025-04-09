@@ -221,7 +221,11 @@ async def test_preloadScript_add_sameScriptMultipleTimes(
 @pytest.mark.asyncio
 async def test_preloadScript_add_loadedInNewIframes(websocket, context_id,
                                                     url_all_origins, html,
-                                                    read_messages):
+                                                    read_messages,
+                                                    test_chromedriver_mode):
+    if test_chromedriver_mode:
+        pytest.xfail(reason="TODO: #3294")
+
     await subscribe(websocket, ["log.entryAdded"])
 
     await execute_command(
@@ -410,7 +414,11 @@ async def test_preloadScript_add_loadedInMultipleContexts(
 
 @pytest.mark.asyncio
 async def test_preloadScript_add_loadedInMultipleContexts_withIframes(
-        websocket, context_id, url_all_origins, html, read_messages):
+        websocket, context_id, url_all_origins, html, read_messages,
+        test_chromedriver_mode):
+    if test_chromedriver_mode:
+        pytest.xfail(reason="TODO: #3294")
+
     await subscribe(websocket, ["script.message"])
 
     await goto_url(websocket, context_id, html())

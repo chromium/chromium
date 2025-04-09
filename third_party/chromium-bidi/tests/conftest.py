@@ -114,6 +114,13 @@ async def test_headless_mode():
 
 
 @pytest_asyncio.fixture
+async def test_chromedriver_mode():
+    """Return the headless mode to use for the test. The default is "new" mode."""
+    maybe_chromedriver = os.getenv("CHROMEDRIVER")
+    return maybe_chromedriver == "true"
+
+
+@pytest_asyncio.fixture
 async def capabilities(request):
     if not hasattr(request, 'param') or request.param is None:
         return {}
