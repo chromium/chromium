@@ -68,22 +68,23 @@ aura::test::TestWindowDelegate* CreateTestWindowDelegate(int hittest_code) {
   return delegate;
 }
 
-class ResizeLoopWindowObserver : public aura::WindowObserver {
+class UserBoundsChangeObserver : public aura::WindowObserver {
  public:
-  explicit ResizeLoopWindowObserver(aura::Window* w) : window_(w) {
+  explicit UserBoundsChangeObserver(aura::Window* w) : window_(w) {
     window_->AddObserver(this);
   }
 
-  ResizeLoopWindowObserver(const ResizeLoopWindowObserver&) = delete;
-  ResizeLoopWindowObserver& operator=(const ResizeLoopWindowObserver&) = delete;
+  UserBoundsChangeObserver(const UserBoundsChangeObserver&) = delete;
+  UserBoundsChangeObserver& operator=(const UserBoundsChangeObserver&) = delete;
 
-  ~ResizeLoopWindowObserver() override {
+  ~UserBoundsChangeObserver() override {
     if (window_) {
       window_->RemoveObserver(this);
     }
   }
 
   bool in_resize_loop() const { return in_resize_loop_; }
+  bool in_move_loop() const { return in_move_loop_; }
 
   // aura::WindowObserver:
   void OnResizeLoopStarted(aura::Window* window) override {
@@ -94,6 +95,14 @@ class ResizeLoopWindowObserver : public aura::WindowObserver {
     EXPECT_TRUE(in_resize_loop_);
     in_resize_loop_ = false;
   }
+  void OnMoveLoopStarted(aura::Window* window) override {
+    EXPECT_FALSE(in_move_loop_);
+    in_move_loop_ = true;
+  }
+  void OnMoveLoopEnded(aura::Window* window) override {
+    EXPECT_TRUE(in_move_loop_);
+    in_move_loop_ = false;
+  }
   void OnWindowDestroying(aura::Window* window) override {
     window_->RemoveObserver(this);
     window_ = nullptr;
@@ -102,6 +111,7 @@ class ResizeLoopWindowObserver : public aura::WindowObserver {
  private:
   raw_ptr<aura::Window> window_;
   bool in_resize_loop_ = false;
+  bool in_move_loop_ = false;
 };
 
 class ToplevelWindowEventHandlerTest : public AshTestBase {
@@ -1112,33 +1122,53 @@ TEST_F(ToplevelWindowEventHandlerTest, DragSnappedWindowToExternalDisplay) {
 
 TEST_F(ToplevelWindowEventHandlerTest, MoveDoesntEnterResizeLoop) {
   std::unique_ptr<aura::Window> w1(CreateWindow(HTCAPTION));
-  ResizeLoopWindowObserver window_observer(w1.get());
+  UserBoundsChangeObserver window_observer(w1.get());
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w1.get());
   // A click on the caption does not trigger the resize loop.
   generator.PressLeftButton();
   EXPECT_FALSE(window_observer.in_resize_loop());
 
-  // A move in the caption does not trigger the resize loop either.
+  // It would start a user drag move.
+  EXPECT_TRUE(window_observer.in_move_loop());
+
+  // A move in the caption does not trigger the resize loop.
   generator.MoveMouseBy(100, 100);
   EXPECT_FALSE(window_observer.in_resize_loop());
+
+  // The user drag is still going on.
+  EXPECT_TRUE(window_observer.in_move_loop());
+
+  // Release button finishes the user drag move.
+  generator.ReleaseLeftButton();
+  EXPECT_FALSE(window_observer.in_move_loop());
+
   w1->RemoveObserver(&window_observer);
 }
 
 TEST_F(ToplevelWindowEventHandlerTest, EnterResizeLoopOnResize) {
   std::unique_ptr<aura::Window> w1(CreateWindow(HTGROWBOX));
-  ResizeLoopWindowObserver window_observer(w1.get());
+  UserBoundsChangeObserver window_observer(w1.get());
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w1.get());
   // The resize loop is entered once a possible resize is detected.
   generator.PressLeftButton();
   EXPECT_TRUE(window_observer.in_resize_loop());
 
+  // Resize does not start user drag move.
+  EXPECT_FALSE(window_observer.in_move_loop());
+
   // Should remain in the resize loop while dragging.
   generator.MoveMouseBy(100, 100);
   EXPECT_TRUE(window_observer.in_resize_loop());
 
+  // User drag move stays off during resizing.
+  EXPECT_FALSE(window_observer.in_move_loop());
+
   // Releasing the button should end the loop.
   generator.ReleaseLeftButton();
   EXPECT_FALSE(window_observer.in_resize_loop());
+
+  // User drag move stays off after resizing.
+  EXPECT_FALSE(window_observer.in_move_loop());
 }
 
 // Explicitly start a window drag using a child window as a target of drag

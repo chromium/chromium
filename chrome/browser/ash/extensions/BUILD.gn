@@ -162,6 +162,7 @@ source_set("browser_tests") {
     "default_keyboard_extension_browser_test.h",
     "incoming_native_messaging_apitest.cc",
     "input_method_apitest_chromeos.cc",
+    "windows_bounds_changed_event_browsertest.cc",
   ]
 
   deps = [

@@ -532,6 +532,10 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
   void NotifyResizeLoopStarted();
   void NotifyResizeLoopEnded();
 
+  // Notifies observers of the state of a move loop.
+  void NotifyMoveLoopStarted();
+  void NotifyMoveLoopEnded();
+
   // ui::GestureConsumer:
   bool RequiresDoubleTapGestureEvents() const override;
 

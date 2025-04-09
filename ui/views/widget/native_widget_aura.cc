@@ -1247,6 +1247,18 @@ void NativeWidgetAura::OnResizeLoopEnded(aura::Window* window) {
   }
 }
 
+void NativeWidgetAura::OnMoveLoopStarted(aura::Window* window) {
+  if (delegate_) {
+    delegate_->OnNativeWidgetBeginUserBoundsChange();
+  }
+}
+
+void NativeWidgetAura::OnMoveLoopEnded(aura::Window* window) {
+  if (delegate_) {
+    delegate_->OnNativeWidgetEndUserBoundsChange();
+  }
+}
+
 void NativeWidgetAura::OnWindowAddedToRootWindow(aura::Window* window) {
   if (delegate_) {
     delegate_->OnNativeWidgetAddedToCompositor();
