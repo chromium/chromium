@@ -41,7 +41,7 @@ export class ProfileInternalsAppElement extends CrLitElement {
   private profileInternalsBrowserProxy_: ProfileInternalsBrowserProxy =
       ProfileInternalsBrowserProxyImpl.getInstance();
 
-  protected profilesList_: ProfileStateElement[] = [];
+  protected accessor profilesList_: ProfileStateElement[] = [];
 
   override async connectedCallback() {
     super.connectedCallback();
