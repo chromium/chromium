@@ -66,7 +66,7 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
       const SessionKeysChangeCB& session_keys_change_cb,
       const SessionExpirationUpdateCB& session_expiration_update_cb,
       CdmCreatedCB cdm_created_cb,
-      const bool is_debugger_attached);
+      bool is_debugger_attached);
 
   CdmAdapter(base::PassKey<CdmAdapter>,
              const CdmConfig& cdm_config,
@@ -76,7 +76,7 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
              const SessionClosedCB& session_closed_cb,
              const SessionKeysChangeCB& session_keys_change_cb,
              const SessionExpirationUpdateCB& session_expiration_update_cb,
-             const bool is_debugger_attached);
+             bool is_debugger_attached);
   CdmAdapter(const CdmAdapter&) = delete;
   CdmAdapter& operator=(const CdmAdapter&) = delete;
 
@@ -235,6 +235,7 @@ class MEDIA_EXPORT CdmAdapter final : public ContentDecryptionModule,
   // CDM origin and crash key to be used in crash reporting.
   const url::Origin cdm_origin_;
   crash_reporter::ScopedCrashKeyString scoped_crash_key_;
+  crash_reporter::ScopedCrashKeyString debugger_attached_crash_key_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<AudioBufferMemoryPool> pool_;
