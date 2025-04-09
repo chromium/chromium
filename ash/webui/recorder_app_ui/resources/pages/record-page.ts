@@ -780,6 +780,19 @@ export class RecordPage extends ReactiveLitElement {
               </div>
             `;
           }
+          case 'needsReboot': {
+            return html`
+              <div id="transcription-consent">
+                <cra-image name="transcription_off"></cra-image>
+                <div class="header">
+                  ${i18n.recordTranscriptionUnusableHeader}
+                </div>
+                <div class="description">
+                  ${i18n.recordTranscriptionUnusableNeedsRebootDescription}
+                </div>
+              </div>
+            `;
+          }
           case 'unavailable':
           case 'error': {
             return html`

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import {
+  LoadModelResult,
   Model,
+  ModelExecutionError,
   ModelLoader as ModelLoaderBase,
+  ModelLoadError,
   ModelResponse,
-  ModelResponseError,
   ModelState,
 } from '../../core/on_device_model/types.js';
 import {signal} from '../../core/reactive/signal.js';
@@ -29,7 +31,7 @@ import {
 } from './on_device_model_utils.js';
 import {
   FormatFeature,
-  LoadModelResult,
+  LoadModelResult as MojoLoadModelResult,
   ModelInfo,
   ModelState as MojoModelState,
   ModelStateMonitorReceiver,
@@ -120,13 +122,13 @@ abstract class OnDeviceModel<T> implements Model<T> {
     if (size < MIN_TOKEN_LENGTH) {
       return {
         kind: 'error',
-        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
+        error: ModelExecutionError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT,
       };
     }
     if (size > this.modelInfo.inputTokenLimit) {
       return {
         kind: 'error',
-        error: ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG,
+        error: ModelExecutionError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG,
       };
     }
 
@@ -169,7 +171,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
     // When the model returns the canned response, show the same UI as
     // unsafe content for now.
     if (isCannedResponse(result)) {
-      return {kind: 'error', error: ModelResponseError.UNSAFE};
+      return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
 
     const parsedResult = parseResponse(result);
@@ -178,7 +180,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
           parsedResult,
           expectedBulletPointCount,
         )) {
-      return {kind: 'error', error: ModelResponseError.UNSAFE};
+      return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
 
     const finalBulletPoints = trimRepeatedBulletPoints(
@@ -190,7 +192,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
 
     // Show unsafe content if no valid bullet point.
     if (finalBulletPoints.length === 0) {
-      return {kind: 'error', error: ModelResponseError.UNSAFE};
+      return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
 
     // To align with model response type, concatenated bullet points back to one
@@ -262,10 +264,10 @@ abstract class OnDeviceModel<T> implements Model<T> {
     const prompt = await this.formatInput(formatFeature, fields);
     if (prompt === null) {
       console.error('formatInput returns null, wrong model?');
-      return {kind: 'error', error: ModelResponseError.GENERAL};
+      return {kind: 'error', error: ModelExecutionError.GENERAL};
     }
     if (await this.contentIsUnsafe(prompt, requestSafetyFeature, language)) {
-      return {kind: 'error', error: ModelResponseError.UNSAFE};
+      return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
     const response = await this.executeRaw(
       prompt,
@@ -281,7 +283,7 @@ abstract class OnDeviceModel<T> implements Model<T> {
           responseSafetyFeature,
           language,
         )) {
-      return {kind: 'error', error: ModelResponseError.UNSAFE};
+      return {kind: 'error', error: ModelExecutionError.UNSAFE};
     }
     return {kind: 'success', result: response.result};
   }
@@ -416,6 +418,8 @@ export function mojoModelStateToModelState(state: MojoModelState): ModelState {
       return {kind: 'installing', progress: assertExists(state.progress)};
     case ModelStateType.kInstalled:
       return {kind: 'installed'};
+    case ModelStateType.kNeedsReboot:
+      return {kind: 'needsReboot'};
     case ModelStateType.kError:
       return {kind: 'error'};
     case ModelStateType.kUnavailable:
@@ -427,6 +431,26 @@ export function mojoModelStateToModelState(state: MojoModelState): ModelState {
       );
     default:
       assertExhaustive(state.type);
+  }
+}
+
+function mojoLoadModelResultToModelLoadError(result: MojoLoadModelResult):
+  ModelLoadError {
+  switch (result) {
+    case MojoLoadModelResult.kFailedToLoadLibrary:
+    case MojoLoadModelResult.kGpuBlocked:
+      return ModelLoadError.LOAD_FAILURE;
+    case MojoLoadModelResult.kCrosNeedReboot:
+      return ModelLoadError.NEEDS_REBOOT;
+    case MojoLoadModelResult.kSuccess:
+      return assertNotReached(`Try transforming success load result to error`);
+    case MojoLoadModelResult.MIN_VALUE:
+    case MojoLoadModelResult.MAX_VALUE:
+      return assertNotReached(
+        `Got MIN_VALUE or MAX_VALUE from mojo LoadModelResult: ${result}`,
+      );
+    default:
+      assertExhaustive(result);
   }
 }
 
@@ -468,38 +492,36 @@ abstract class ModelLoader<T> extends ModelLoaderBase<T> {
     update(state);
   }
 
-  override async load(): Promise<Model<T>|null> {
+  override async load(): Promise<LoadModelResult<T>> {
     const newModel = new OnDeviceModelRemote();
     const {result} = await this.remote.loadModel(
       this.modelInfo.modelId,
       newModel.$.bindNewPipeAndPassReceiver(),
     );
-    if (result !== LoadModelResult.kSuccess) {
+    if (result !== MojoLoadModelResult.kSuccess) {
       console.error('Load model failed:', result);
-      // TODO(pihsun): Have dedicated error type.
-      return null;
+      return {
+        kind: 'error',
+        error: mojoLoadModelResultToModelLoadError(result),
+      };
     }
-    return this.createModel(newModel);
+    return {kind: 'success', model: this.createModel(newModel)};
   }
 
   override async loadAndExecute(content: string, language: LanguageCode):
     Promise<ModelResponse<T>> {
     if (!this.platformHandler.getLangPackInfo(language).isGenAiSupported) {
-      return {kind: 'error', error: ModelResponseError.UNSUPPORTED_LANGUAGE};
+      return {kind: 'error', error: ModelExecutionError.UNSUPPORTED_LANGUAGE};
     }
 
-    const model = await this.load();
-    if (model === null) {
-      // TODO(pihsun): Specific error type / message for model loading error.
-      return {
-        kind: 'error',
-        error: ModelResponseError.GENERAL,
-      };
+    const loadResult = await this.load();
+    if (loadResult.kind === 'error') {
+      return loadResult;
     }
     try {
-      return await model.execute(content, language);
+      return await loadResult.model.execute(content, language);
     } finally {
-      model.close();
+      loadResult.model.close();
     }
   }
 }

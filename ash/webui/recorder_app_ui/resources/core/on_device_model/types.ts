@@ -13,7 +13,7 @@ import {assertExists} from '../utils/assert.js';
  */
 // prettier-ignore
 export type ModelState = {
-  kind: 'error'|'installed'|'notInstalled'|'unavailable',
+  kind: 'error'|'installed'|'needsReboot'|'notInstalled'|'unavailable',
 }|{
   kind: 'installing',
 
@@ -31,8 +31,9 @@ const uiOrderMap = {
   unavailable: 0,
   notInstalled: 1,
   installing: 2,
-  error: 3,
-  installed: 4,
+  needsReboot: 3,
+  error: 4,
+  installed: 5,
 };
 
 /**
@@ -43,15 +44,11 @@ export function getModelUiOrder(state: ModelState): number {
 }
 
 /**
- * Possible error types from model responses.
+ * Possible error types of model execution.
  */
-export enum ModelResponseError {
+export enum ModelExecutionError {
   // General error.
   GENERAL = 'GENERAL',
-
-  // Model fails to load.
-  // TODO: b/366335321 - Add NeedsReboot error.
-  LOAD_FAILURE = 'LOAD_FAILURE',
 
   // The transcription language is not supported.
   UNSUPPORTED_LANGUAGE = 'UNSUPPORTED_LANGUAGE',
@@ -68,6 +65,22 @@ export enum ModelResponseError {
   UNSAFE = 'UNSAFE',
 }
 
+/**
+ * Possible error types of model load.
+ */
+export enum ModelLoadError {
+  // Unspecified load error.
+  LOAD_FAILURE = 'LOAD_FAILURE',
+
+  // Model requires OS reboot.
+  NEEDS_REBOOT = 'NEEDS_REBOOT',
+}
+
+/**
+ * Possible error types of model response.
+ */
+export type ModelResponseError = ModelExecutionError|ModelLoadError;
+
 export enum GenaiResultType {
   SUMMARY = 'SUMMARY',
   TITLE_SUGGESTION = 'TITLE_SUGGESTION',
@@ -82,6 +95,15 @@ export type ModelResponse<T> = {
   result: T,
 };
 
+// prettier-ignore
+export type LoadModelResult<T> = {
+  kind: 'error',
+  error: ModelLoadError,
+}|{
+  kind: 'success',
+  model: Model<T>,
+};
+
 export abstract class ModelLoader<T> {
   /**
    * The state of the model.
@@ -94,10 +116,8 @@ export abstract class ModelLoader<T> {
    * TODO(pihsun): Currently no usage reuse loaded models, so the
    * `loadAndExecute` API is sufficient. Define proper "stages" for the model
    * API when there's need to reuse the loaded model.
-   *
-   * TODO(pihsun): Returns specific error type when the model failed to load.
    */
-  protected abstract load(): Promise<Model<T>|null>;
+  protected abstract load(): Promise<LoadModelResult<T>>;
 
   /**
    * Loads the model and execute it on an input.
@@ -114,8 +134,10 @@ export abstract class ModelLoader<T> {
     // and then immediately unloads it. Check the performance overhead and
     // consider adding another API for only downloading the model if the
     // overhead is large.
-    void this.load().then((model) => {
-      model?.close();
+    void this.load().then((result) => {
+      if (result.kind === 'success') {
+        result.model.close();
+      }
     });
   }
 }

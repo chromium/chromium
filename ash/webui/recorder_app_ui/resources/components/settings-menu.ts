@@ -222,6 +222,16 @@ export class SettingsMenu extends ReactiveLitElement {
         );
       case 'notInstalled':
         return nothing;
+      case 'needsReboot':
+        return html`
+          <spoken-message
+            slot="status"
+            role="status"
+            aria-live="polite"
+          >
+            ${i18n.genAiNeedsRebootStatusMessage}
+          </spoken-message>
+        `;
       case 'error':
         return html`
           <spoken-message
@@ -316,6 +326,13 @@ export class SettingsMenu extends ReactiveLitElement {
         return assertNotReached(
           'Summary model unavailable but the setting is rendered.',
         );
+      case 'needsReboot':
+        return html`
+          <span slot="description" class="error">
+            ${i18n.settingsOptionsGenAiNeedsRebootDescription}
+          </span>
+          ${downloadButton}
+        `;
       case 'installing': {
         const progressDescription =
           i18n.settingsOptionsGenAiDownloadingProgressDescription(
@@ -538,6 +555,13 @@ export class SettingsMenu extends ReactiveLitElement {
         return assertNotReached(
           'SODA unavailable but the setting is rendered.',
         );
+      case 'needsReboot':
+        return html`
+          <span slot="description" class="error">
+            ${i18n.settingsOptionsTranscriptionNeedsRebootDescription}
+          </span>
+          ${downloadButton}
+        `;
       case 'installing': {
         const progressDescription =
           i18n.settingsOptionsTranscriptionDownloadingProgressDescription(

@@ -26,8 +26,11 @@ enum ModelStateType {
   // The model is installed and ready to be used.
   kInstalled,
 
-  // There is an error while trying to install The model.
+  // There is an unspecified error while trying to install the model.
   kError,
+
+  // The model requires an OS reboot.
+  kNeedsReboot,
 };
 
 // The state of the model installation, including download progress.

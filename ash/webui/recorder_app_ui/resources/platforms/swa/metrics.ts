@@ -50,7 +50,11 @@ import {
   SuggestTitleEventParams,
   SummarizeEventParams,
 } from '../../core/events_sender.js';
-import {ModelResponseError} from '../../core/on_device_model/types.js';
+import {
+  ModelExecutionError,
+  ModelLoadError,
+  ModelResponseError,
+} from '../../core/on_device_model/types.js';
 import {LanguageCode} from '../../core/soda/language_info.js';
 import {
   ExportAudioFormat,
@@ -226,18 +230,19 @@ function convertToModelResultStatus(
   } = CrOSEvents_RecorderAppModelResultStatus;
 
   switch (responseError) {
-    case ModelResponseError.GENERAL:
-    case ModelResponseError.LOAD_FAILURE:
+    case ModelLoadError.LOAD_FAILURE:
+    case ModelLoadError.NEEDS_REBOOT:
+    case ModelExecutionError.GENERAL:
       // Currently there's no plan to have specific error type for loading
       // error.
       return CrOSEvents_RecorderAppModelResultStatus.GENERAL_ERROR;
-    case ModelResponseError.UNSAFE:
+    case ModelExecutionError.UNSAFE:
       return CrOSEvents_RecorderAppModelResultStatus.UNSAFE;
-    case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT:
+    case ModelExecutionError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT:
       return UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT;
-    case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG:
+    case ModelExecutionError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG:
       return UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG;
-    case ModelResponseError.UNSUPPORTED_LANGUAGE:
+    case ModelExecutionError.UNSUPPORTED_LANGUAGE:
       return CrOSEvents_RecorderAppModelResultStatus.UNSUPPORTED_LANGUAGE;
     default:
       assertExhaustive(responseError);

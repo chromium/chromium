@@ -15,6 +15,8 @@ import {
 import {i18n} from '../core/i18n.js';
 import {
   GenaiResultType,
+  ModelExecutionError,
+  ModelLoadError,
   ModelResponseError,
 } from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
@@ -71,11 +73,7 @@ export class GenaiError extends ReactiveLitElement {
     let message: string;
     let action: RenderResult = nothing;
     switch (this.error) {
-      case ModelResponseError.GENERAL:
-        imageName = 'genai_error_general';
-        message = i18n.genAiErrorGeneralLabel;
-        break;
-      case ModelResponseError.LOAD_FAILURE:
+      case ModelLoadError.LOAD_FAILURE:
         imageName = 'genai_error_general';
         message = i18n.genAiErrorModelLoadFailureLabel;
         // Use native button element to make text clickable.
@@ -86,7 +84,26 @@ export class GenaiError extends ReactiveLitElement {
           >${i18n.genAiErrorModelDownloadButton}</button>
         `;
         break;
-      case ModelResponseError.UNSUPPORTED_LANGUAGE: {
+      case ModelLoadError.NEEDS_REBOOT: {
+        imageName = 'genai_error_general';
+        const resultType = assertExists(this.resultType);
+        switch (resultType) {
+          case GenaiResultType.SUMMARY:
+            message = i18n.genAiErrorSummaryNeedsRebootLabel;
+            break;
+          case GenaiResultType.TITLE_SUGGESTION:
+            message = i18n.genAiErrorTitleSuggestionNeedsRebootLabel;
+            break;
+          default:
+            assertExhaustive(resultType);
+        }
+        break;
+      }
+      case ModelExecutionError.GENERAL:
+        imageName = 'genai_error_general';
+        message = i18n.genAiErrorGeneralLabel;
+        break;
+      case ModelExecutionError.UNSUPPORTED_LANGUAGE: {
         imageName = 'genai_error_unsafe';
         const resultType = assertExists(this.resultType);
         switch (resultType) {
@@ -101,7 +118,7 @@ export class GenaiError extends ReactiveLitElement {
         }
         break;
       }
-      case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT: {
+      case ModelExecutionError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT: {
         imageName = 'genai_error_general';
         const resultType = assertExists(this.resultType);
         switch (resultType) {
@@ -117,7 +134,7 @@ export class GenaiError extends ReactiveLitElement {
         break;
       }
 
-      case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG: {
+      case ModelExecutionError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG: {
         imageName = 'genai_error_general';
         const resultType = assertExists(this.resultType);
         switch (resultType) {
@@ -133,7 +150,7 @@ export class GenaiError extends ReactiveLitElement {
         break;
       }
 
-      case ModelResponseError.UNSAFE: {
+      case ModelExecutionError.UNSAFE: {
         imageName = 'genai_error_unsafe';
         const resultType = assertExists(this.resultType);
         switch (resultType) {
