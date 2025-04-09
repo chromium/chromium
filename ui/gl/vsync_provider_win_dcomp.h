@@ -5,6 +5,7 @@
 #ifndef UI_GL_VSYNC_PROVIDER_WIN_DCOMP_H_
 #define UI_GL_VSYNC_PROVIDER_WIN_DCOMP_H_
 
+#include "ui/gl/direct_composition_support.h"
 #include "ui/gl/vsync_provider_win.h"
 
 namespace gl {
@@ -26,6 +27,9 @@ class GL_EXPORT VSyncProviderWinDComp : public gfx::VSyncProvider {
                                      base::TimeDelta* interval) override;
   bool SupportGetVSyncParametersIfAvailable() const override;
   bool IsHWClock() const override;
+
+ private:
+  std::optional<COMPOSITION_FRAME_STATS> prev_frame_stats_;
 };
 
 }  // namespace gl
