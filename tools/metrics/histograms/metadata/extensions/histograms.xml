@@ -4405,6 +4405,16 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Printing.UsesSupportedMargins" enum="Boolean"
+    expires_after="2026-04-01">
+  <owner>nmuggli@google.com</owner>
+  <owner>msisov@igalia.com</owner>
+  <summary>
+    Records whether users of the chrome.printing extension API are using margins
+    values that are supported by the printer.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.Printing.UsesSupportedPrintScaling" enum="Boolean"
     expires_after="2026-04-01">
   <owner>nmuggli@google.com</owner>

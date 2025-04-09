@@ -918,4 +918,100 @@ TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilities_PrintScalingHistogram) {
   }
 }
 
+TEST(PrintingApiUtilsTest, CheckSettingsAndCapabilities_MarginHistogram) {
+  std::unique_ptr<printing::PrintSettings> settings = ConstructPrintSettings();
+
+  const printing::PaperMargins kSupportedMargins(1500, 500, 3241, 3451);
+  const printing::PageMargins kMargins = {
+      /*header=*/0,
+      /*footer=*/0,
+      /*left=*/kSupportedMargins.left_margin_um,
+      /*right=*/kSupportedMargins.right_margin_um,
+      /*top=*/kSupportedMargins.top_margin_um,
+      /*bottom=*/kSupportedMargins.bottom_margin_um};
+  settings->SetCustomMargins(kMargins);
+  settings->set_margin_type(printing::mojom::MarginType::kCustomMargins);
+
+  // Try with the feature disabled first - no matter if the margins are correct
+  // or not, the histogram should not be recorded.
+  {
+    base::HistogramTester histogram_tester;
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        printing::features::kApiPrintingMarginsAndScale);
+
+    printing::PrinterSemanticCapsAndDefaults capabilities =
+        ConstructPrinterCapabilities();
+    // There must be no supported margins first.
+    for (const auto& paper : capabilities.papers) {
+      ASSERT_FALSE(paper.supported_margins_um().has_value());
+    }
+
+    ASSERT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+
+    // Add a paper with supported margins.
+    capabilities.papers.emplace_back(
+        /*display_name=*/"", /*vendor_id=*/"",
+        /*size_um=*/gfx::Size(kMediaSizeWidth, kMediaSizeHeight),
+        /*printable_area_um=*/gfx::Rect(kMediaSizeWidth, kMediaSizeHeight),
+        /*max_height_um=*/0, /*has_borderless_variant=*/false,
+        /*supported_margins_um=*/kSupportedMargins);
+
+    ASSERT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+    histogram_tester.ExpectTotalCount(
+        "Extensions.Printing.UsesSupportedMargins", 0);
+  }
+
+  // Enable the feature now. The histogram should be recorded.
+  base::test::ScopedFeatureList feature_list(
+      printing::features::kApiPrintingMarginsAndScale);
+  // Test with margins that are not supported.
+  {
+    base::HistogramTester histogram_tester;
+    printing::PrinterSemanticCapsAndDefaults capabilities =
+        ConstructPrinterCapabilities();
+    // There must be no supported margins first.
+    for (const auto& paper : capabilities.papers) {
+      ASSERT_FALSE(paper.supported_margins_um().has_value());
+    }
+
+    // Verify that the UMA histogram is recorded with false when unsupported
+    // margins are passed.
+    EXPECT_FALSE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+    histogram_tester.ExpectUniqueSample(
+        "Extensions.Printing.UsesSupportedMargins", false, 1);
+  }
+
+  // Test with margins that are supported.
+  {
+    base::HistogramTester histogram_tester;
+    printing::PrinterSemanticCapsAndDefaults capabilities =
+        ConstructPrinterCapabilities();
+    // Add a paper with supported margins.
+    capabilities.papers.emplace_back(
+        /*display_name=*/"", /*vendor_id=*/"",
+        /*size_um=*/gfx::Size(kMediaSizeWidth, kMediaSizeHeight),
+        /*printable_area_um=*/gfx::Rect(kMediaSizeWidth, kMediaSizeHeight),
+        /*max_height_um=*/0, /*has_borderless_variant=*/false,
+        /*supported_margins_um=*/kSupportedMargins);
+
+    // Verify that the UMA histogram is recorded with true when margins match
+    ASSERT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+    histogram_tester.ExpectUniqueSample(
+        "Extensions.Printing.UsesSupportedMargins", true, 1);
+
+    // If default margins are set, the histogram mustn't be recorded.
+    settings->SetCustomMargins(printing::PageMargins());
+    settings->set_margin_type(printing::mojom::MarginType::kDefaultMargins);
+    ASSERT_TRUE(
+        CheckSettingsAndCapabilitiesCompatibility(*settings, capabilities));
+    histogram_tester.ExpectUniqueSample(
+        "Extensions.Printing.UsesSupportedMargins", true, 1);
+  }
+}
+
 }  // namespace extensions

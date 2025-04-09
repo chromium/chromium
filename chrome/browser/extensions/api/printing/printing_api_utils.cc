@@ -400,7 +400,7 @@ bool CheckSettingsAndCapabilitiesCompatibility(
         printing::mojom::MarginType::kDefaultMargins) {
       const auto& requested_margins_um =
           settings.requested_custom_margins_in_microns();
-      bool result = std::ranges::any_of(
+      bool margins_value_supported = std::ranges::any_of(
           capabilities.papers,
           [requested_margins_um,
            needs_borderless_variant = settings.borderless()](
@@ -423,7 +423,9 @@ bool CheckSettingsAndCapabilitiesCompatibility(
                                          supported_margins.top_margin_um,
                                          supported_margins.bottom_margin_um);
           });
-      if (!result) {
+      base::UmaHistogramBoolean("Extensions.Printing.UsesSupportedMargins",
+                                margins_value_supported);
+      if (!margins_value_supported) {
         LOG(ERROR) << "Margin values " << requested_margins_um.ToString()
                    << " are not supported by the printer";
         return false;
