@@ -18,6 +18,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
@@ -31,17 +32,17 @@ import org.chromium.content_public.browser.WebContents;
 import java.io.File;
 
 /**
- * The Java-side implementations of paint_preview_tab_service.cc. The C++ side owns and controls
- * the lifecycle of the Java implementation.
- * This class provides the required functionalities for capturing the Paint Preview representation
- * of a tab.
+ * The Java-side implementations of paint_preview_tab_service.cc. The C++ side owns and controls the
+ * lifecycle of the Java implementation. This class provides the required functionalities for
+ * capturing the Paint Preview representation of a tab.
  */
+@NullMarked
 @JNINamespace("paint_preview")
 public class PaintPreviewTabService implements NativePaintPreviewServiceProvider {
     private static final long AUDIT_START_DELAY_MS = 2 * 60 * 1000; // Two minutes;
     private static boolean sIsAccessibilityEnabledForTesting;
 
-    private Runnable mAuditRunnable;
+    private boolean mIsRunningAudit;
     private long mNativePaintPreviewBaseService;
     private long mNativePaintPreviewTabService;
 
@@ -162,7 +163,9 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     public Destroyable onRestoreCompleted(TabModelSelector tabModelSelector, boolean runAudit) {
         Destroyable listener = new CaptureTriggerListener(tabModelSelector);
 
-        if (!runAudit || mAuditRunnable != null) return listener;
+        if (!runAudit || mIsRunningAudit) return listener;
+
+        mIsRunningAudit = true;
 
         // Delay actually performing the audit by a bit to avoid contention with the native task
         // runner that handles IO when showing at startup.
@@ -175,14 +178,11 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
             // Delete all previews keeping the current tab.
             ids = new int[] {id};
         }
-        mAuditRunnable = () -> auditArtifacts(ids);
         PostTask.postDelayedTask(
-                TaskTraits.UI_DEFAULT,
-                () -> {
-                    mAuditRunnable.run();
-                    mAuditRunnable = null;
-                },
-                AUDIT_START_DELAY_MS);
+                TaskTraits.UI_DEFAULT, () -> {
+                    auditArtifacts(ids);
+                    mIsRunningAudit = false;
+                }, AUDIT_START_DELAY_MS);
         return listener;
     }
 
@@ -210,7 +210,8 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
     }
 
     public void captureTab(Tab tab, Callback<Boolean> successCallback) {
-        if (mNativePaintPreviewTabService == 0) {
+        WebContents webContents = tab.getWebContents();
+        if (mNativePaintPreviewTabService == 0 || webContents == null) {
             successCallback.onResult(false);
             return;
         }
@@ -218,12 +219,12 @@ public class PaintPreviewTabService implements NativePaintPreviewServiceProvider
         boolean isAccessibilityEnabled =
                 sIsAccessibilityEnabledForTesting
                         || ChromeAccessibilityUtil.get().isAccessibilityEnabled();
-        RenderCoordinates coords = RenderCoordinates.fromWebContents(tab.getWebContents());
+        RenderCoordinates coords = RenderCoordinates.fromWebContents(webContents);
         PaintPreviewTabServiceJni.get()
                 .captureTabAndroid(
                         mNativePaintPreviewTabService,
                         tab.getId(),
-                        tab.getWebContents(),
+                        webContents,
                         isAccessibilityEnabled,
                         coords.getPageScaleFactor(),
                         coords.getScrollXPixInt(),
