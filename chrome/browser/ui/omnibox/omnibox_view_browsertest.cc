@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #include "components/omnibox/common/omnibox_features.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
@@ -128,13 +130,14 @@ const char* kBlockedHostnames[] = {
     "foo", "*.foo.com", "bar",        "*.bar.com", "abc", "*.abc.com",
     "def", "*.def.com", "*.site.com", "history",   "z"};
 
-const struct TestHistoryEntry {
+struct TestHistoryEntry {
   const char* url;
   const char* title;
   int visit_count;
   int typed_count;
   bool starred;
-} kHistoryEntries[] = {
+};
+const auto kHistoryEntries = std::to_array<TestHistoryEntry>({
     {"http://www.bar.com/1", "Page 1", 10, 10, false},
     {"http://www.bar.com/2", "Page 2", 9, 9, false},
     {"http://www.bar.com/3", "Page 3", 8, 8, false},
@@ -155,7 +158,7 @@ const struct TestHistoryEntry {
     // the interesting case when there's an intranet host with the same
     // name as the .com.
     {"http://bar/", "Bar", 1, 0, false},
-};
+});
 
 // Stores the given text to clipboard.
 void SetClipboardText(const std::u16string& text) {

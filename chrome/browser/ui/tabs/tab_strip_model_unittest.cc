@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
@@ -3475,7 +3477,8 @@ TEST_F(TabStripModelTest, MoveSelectedTabsTo) {
 
     // Expected state after the move (space separated list of indices).
     const std::string state_after_move;
-  } test_data[] = {
+  };
+  auto test_data = std::to_array<TestData>({
       // 1 selected tab.
       {2, 0, "0", 1, "1 0"},
       {3, 0, "0", 2, "1 2 0"},
@@ -3507,7 +3510,7 @@ TEST_F(TabStripModelTest, MoveSelectedTabsTo) {
       {8, 3, "1 3 4", 4, "0p 2p 1p 5 6 3 4 7"},
 
       {7, 4, "2 3 4", 3, "0p 1p 2p 3p 5 4 6"},
-  };
+  });
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     TestTabStripModelDelegate delegate;
