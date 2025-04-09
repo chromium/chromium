@@ -803,6 +803,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4742795653798179840">Chrome को ब्राउजिङ डेटा मेटाइयो</translation>
 <translation id="4742970037960872810">हाइलाइट हटाउनुहोस्</translation>
 <translation id="4749960740855309258">एउटा नयाँ ट्याब खोल्नुहोस्</translation>
+<translation id="4753600213727157212"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। <ph name="USER_EMAIL" />। Google खातासम्बन्धी त्रुटि भयो। यसले सेटिङ खोल्छ।</translation>
 <translation id="4758061975920522644">फोटो मात्र सेयर गर्नुहोस्</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4763480195061959176">भिडियो</translation>
@@ -997,6 +998,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5626134646977739690">नाम:</translation>
 <translation id="5628604359369369630">नपढिएको - अफलाइन उपलब्ध छ</translation>
 <translation id="5631483240431073854">खोलिएका ट्याबहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="564121214411935612"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। Google खातासम्बन्धी त्रुटि भयो। यसले सेटिङ खोल्छ।</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />सर्च हिस्ट्री<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK2" /> तपाईंको Google खातामा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="5648166631817621825">पछिल्ला ७ दिन</translation>
 <translation id="5655963694829536461">आफ्ना डाउनलोडहरू खोज्नुहोस्</translation>

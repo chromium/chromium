@@ -805,6 +805,7 @@
 <translation id="4742795653798179840">Данните в Chrome бяха изтрити</translation>
 <translation id="4742970037960872810">Премахване на открояването</translation>
 <translation id="4749960740855309258">Отваряне на нов раздел</translation>
+<translation id="4753600213727157212">Влезли сте като <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Грешка в профила в Google. Отваря настройките.</translation>
 <translation id="4758061975920522644">Споделяне само на изображението</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
 <translation id="4763480195061959176">видео</translation>
@@ -999,6 +1000,7 @@
 <translation id="5626134646977739690">Име:</translation>
 <translation id="5628604359369369630">Непрочетено – налице офлайн</translation>
 <translation id="5631483240431073854">Управление на отворените раздели</translation>
+<translation id="564121214411935612">Влезли сте като <ph name="USER_NAME" />. Грешка в профила в Google. Отваря настройките.</translation>
 <translation id="5641456720590409793">Възможно е <ph name="BEGIN_LINK1" />историята на търсенията<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други видове активност<ph name="END_LINK2" /> да се запазват в профила ви в Google</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
 <translation id="5655963694829536461">Търсете в изтеглянията</translation>

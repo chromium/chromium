@@ -259,6 +259,7 @@
 <translation id="22091350895006575">მომხმარებლის სახელის დამატება</translation>
 <translation id="221494669172414749">Chrome-ის გახსნა პროფილის ჩაკეტვის გარეშე ამოშლის თქვენს შენახულ პაროლებსა და გადახდის მეთოდებს მანქანიდან. პროფილის ჩაკეტვის გამოყენება უზრუნველყოფს ამ მონაცემების უსაფრთხოებას.</translation>
 <translation id="2227444325776770048">გაგრძელება, როგორც <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230288123399603508">ჩანართების ჯგუფში „<ph name="TAB_GROUP_TITLE" />“ ახალი აქტივობაა</translation>
 <translation id="2230777942707397948">ცარიელი ფანჯარა</translation>
 <translation id="223356358902285214">ვებსა და აპებში აქტივობა</translation>
 <translation id="2234827758954819389">კონფიდენციალურობის სახელმძღვანელო</translation>
@@ -804,6 +805,7 @@
 <translation id="4742795653798179840">Chrome-ის მონაცემები წაიშალა</translation>
 <translation id="4742970037960872810">გამოყოფის ამოშლა</translation>
 <translation id="4749960740855309258">ახალ ჩანართში გახსნა</translation>
+<translation id="4753600213727157212">შესული ხართ, როგორც <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google ანგარიშის შეცდომა. გახსნის პარამეტრებს.</translation>
 <translation id="4758061975920522644">მხოლოდ სურათის გაზიარება</translation>
 <translation id="4759238208242260848">ჩამოტვირთვები</translation>
 <translation id="4763480195061959176">ვიდეო</translation>
@@ -998,6 +1000,7 @@
 <translation id="5626134646977739690">სახელი:</translation>
 <translation id="5628604359369369630">წაუკითხავი — ხაზგარეშე რეჟიმში ხელმისაწვდომი</translation>
 <translation id="5631483240431073854">გახსნილი ჩანართების მართვა</translation>
+<translation id="564121214411935612">შესული ხართ, როგორც <ph name="USER_NAME" />. Google ანგარიშის შეცდომა. გახსნის პარამეტრებს.</translation>
 <translation id="5641456720590409793">თქვენს Google ანგარიშში, შესაძლოა, შეინახოს <ph name="BEGIN_LINK1" />ძიების ისტორია<ph name="END_LINK1" /> და <ph name="BEGIN_LINK2" />სხვა ტიპის აქტივობა<ph name="END_LINK2" /></translation>
 <translation id="5648166631817621825">ბოლო 7 დღე</translation>
 <translation id="5655963694829536461">თქვენს ჩამოტვირთვებში ძიება</translation>

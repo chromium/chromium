@@ -805,6 +805,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="4742795653798179840">Izbrisani Chromeovi podaci</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>
 <translation id="4749960740855309258">Otvaranje nove kartice</translation>
+<translation id="4753600213727157212">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Pogreška Google računa. Otvara postavke.</translation>
 <translation id="4758061975920522644">Podijeli samo sliku</translation>
 <translation id="4759238208242260848">Preuzimanje</translation>
 <translation id="4763480195061959176">videozapis</translation>
@@ -999,6 +1000,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5626134646977739690">Naziv:</translation>
 <translation id="5628604359369369630">Nepročitano – dostupno izvanmrežno</translation>
 <translation id="5631483240431073854">Upravljajte otvorenim karticama</translation>
+<translation id="564121214411935612">Prijavljeni ste kao <ph name="USER_NAME" />. Pogreška Google računa. Otvara postavke.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Povijest pretraživanja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />drugi oblici aktivnosti<ph name="END_LINK2" /> mogu se spremati na vaš Google račun</translation>
 <translation id="5648166631817621825">Posljednjih 7 dana</translation>
 <translation id="5655963694829536461">Pretražite preuzimanja</translation>

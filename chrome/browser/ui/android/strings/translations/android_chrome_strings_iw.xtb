@@ -518,7 +518,7 @@
 <translation id="3435465986463792564">פתוחים אצלך הרבה חלונות? יש לך אפשרות לנהל את כולם מכאן.</translation>
 <translation id="3435575784518354875">‏כדי לשמור על הגישה לסיסמאות, צריך לייצא אותן עכשיו, לעדכן את Google Play Services ואז לייבא אותן חזרה למנהל הסיסמאות של Google. <ph name="BEGIN_LINK" />לצפייה בהוראות המלאות<ph name="END_LINK" />.</translation>
 <translation id="3435738964857648380">אבטחה</translation>
-<translation id="3435914367318771664">הוספת כרטיסייה לקבוצה חדשה</translation>
+<translation id="3435914367318771664">הוספת הכרטיסייה לקבוצה חדשה</translation>
 <translation id="3439276997620616816">הכרטיסיות האחרונות יופיעו כאן</translation>
 <translation id="3443221991560634068">טעינה מחדש של הדף הנוכחי</translation>
 <translation id="3444179773590444986">רוצה לשתף משוב לגבי עיצוב כהה של אתרים?</translation>
@@ -804,6 +804,7 @@
 <translation id="4742795653798179840">‏הנתונים של Chrome נמחקו</translation>
 <translation id="4742970037960872810">הסרת ההדגשה</translation>
 <translation id="4749960740855309258">פתיחת כרטיסייה חדשה</translation>
+<translation id="4753600213727157212">‏נכנסת לחשבון בתור <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. שגיאה בחשבון Google. ההגדרות ייפתחו.</translation>
 <translation id="4758061975920522644">שיתוף התמונה בלבד</translation>
 <translation id="4759238208242260848">הורדות</translation>
 <translation id="4763480195061959176">סרטוני וידאו</translation>
@@ -998,6 +999,7 @@
 <translation id="5626134646977739690">שם:</translation>
 <translation id="5628604359369369630">לא נקראו – זמינים במצב אופליין</translation>
 <translation id="5631483240431073854">ניהול הכרטיסיות הפתוחות</translation>
+<translation id="564121214411935612">‏נכנסת לחשבון בתור <ph name="USER_NAME" />. שגיאה בחשבון Google. ההגדרות ייפתחו.</translation>
 <translation id="5641456720590409793">‏<ph name="BEGIN_LINK1" />היסטוריית החיפושים<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />סוגי פעילות אחרים<ph name="END_LINK2" /> עשויים להישמר בחשבון Google.</translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
 <translation id="5655963694829536461">חיפוש ההורדות שלך</translation>
@@ -1128,7 +1130,7 @@
 <translation id="6205314730813004066">פרטיות בפרסום</translation>
 <translation id="6210748933810148297">אינך <ph name="EMAIL" />?</translation>
 <translation id="6211386937064921208">מוצגת תצוגה מקדימה של הדף</translation>
-<translation id="6212567362666004597">הוספת כרטיסייה לקבוצה</translation>
+<translation id="6212567362666004597">הוספת הכרטיסייה לקבוצה</translation>
 <translation id="6221633008163990886">יש לבטל את הנעילה כדי לייצא סיסמאות</translation>
 <translation id="6225572914528673855">סרגל הכתובות</translation>
 <translation id="6232535412751077445">‏אם תופעל התכונה 'לא לעקוב (DNT), בקשה זו תיכלל בתנועת הגלישה שלך. השפעת הבקשה תלויה באופן הפעולה של כל אתר – אם הוא מגיב לבקשה או לא, וכיצד הוא מפרש אותה.

@@ -804,6 +804,7 @@
 <translation id="4742795653798179840">Дані Chrome видалено</translation>
 <translation id="4742970037960872810">Зняти виділення</translation>
 <translation id="4749960740855309258">Відкрити нову вкладку</translation>
+<translation id="4753600213727157212">Ви ввійшли як <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />). Помилка облікового запису Google. Ця опція відкриває налаштування.</translation>
 <translation id="4758061975920522644">Поділитися лише зображенням</translation>
 <translation id="4759238208242260848">Завантаження</translation>
 <translation id="4763480195061959176">відео</translation>
@@ -998,6 +999,7 @@
 <translation id="5626134646977739690">Ім'я:</translation>
 <translation id="5628604359369369630">Непрочитано: доступно в режимі офлайн</translation>
 <translation id="5631483240431073854">Керувати відкритими вкладками</translation>
+<translation id="564121214411935612">Ви ввійшли як <ph name="USER_NAME" />. Помилка облікового запису Google. Ця опція відкриває налаштування.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Історія пошуку<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />дані про інші дії<ph name="END_LINK2" /> можуть зберігатися в обліковому записі Google</translation>
 <translation id="5648166631817621825">Останні 7 днів</translation>
 <translation id="5655963694829536461">Пошук у завантаженнях</translation>

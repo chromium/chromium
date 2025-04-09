@@ -805,6 +805,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4742795653798179840">Đã xoá dữ liệu Chrome</translation>
 <translation id="4742970037960872810">Bỏ đánh dấu</translation>
 <translation id="4749960740855309258">Mở thẻ mới</translation>
+<translation id="4753600213727157212">Đã đăng nhập bằng <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Lỗi Tài khoản Google. Mở phần cài đặt.</translation>
 <translation id="4758061975920522644">Chỉ chia sẻ hình ảnh</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4763480195061959176">video</translation>
@@ -999,6 +1000,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5626134646977739690">Tên:</translation>
 <translation id="5628604359369369630">Chưa đọc – Có thể đọc khi không có mạng</translation>
 <translation id="5631483240431073854">Quản lý các thẻ đang mở</translation>
+<translation id="564121214411935612">Đã đăng nhập bằng <ph name="USER_NAME" />. Lỗi Tài khoản Google. Mở phần cài đặt.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Nhật ký tìm kiếm<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />các hình thức hoạt động khác<ph name="END_LINK2" /> có thể được lưu trong Tài khoản Google của bạn</translation>
 <translation id="5648166631817621825">7 ngày qua</translation>
 <translation id="5655963694829536461">Tìm kiếm trong các tệp đã tải xuống</translation>

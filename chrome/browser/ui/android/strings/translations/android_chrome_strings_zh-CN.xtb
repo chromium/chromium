@@ -805,6 +805,7 @@
 <translation id="4742795653798179840">已删除 Chrome 数据</translation>
 <translation id="4742970037960872810">撤消突出显示</translation>
 <translation id="4749960740855309258">打开新标签页</translation>
+<translation id="4753600213727157212">您已使用<ph name="USER_NAME" />的身份登录。<ph name="USER_EMAIL" />。Google 账号错误，打开设置。</translation>
 <translation id="4758061975920522644">仅分享图片</translation>
 <translation id="4759238208242260848">下载内容</translation>
 <translation id="4763480195061959176">视频</translation>
@@ -999,6 +1000,7 @@
 <translation id="5626134646977739690">名字：</translation>
 <translation id="5628604359369369630">未读 - 可离线阅读</translation>
 <translation id="5631483240431073854">管理打开的标签页</translation>
+<translation id="564121214411935612">您已使用<ph name="USER_NAME" />的身份登录。Google 账号错误，打开设置。</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜索记录<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活动记录<ph name="END_LINK2" />可能会保存在您的 Google 账号中</translation>
 <translation id="5648166631817621825">过去 7 天</translation>
 <translation id="5655963694829536461">搜索您的下载内容</translation>

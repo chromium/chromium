@@ -804,6 +804,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
 <translation id="4742970037960872810">Supprimer la surbrillance</translation>
 <translation id="4749960740855309258">Ouvrir un nouvel onglet</translation>
+<translation id="4753600213727157212">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Erreur liée au compte Google. Ouvre les paramètres.</translation>
 <translation id="4758061975920522644">Partager uniquement l'image</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4763480195061959176">vidéo</translation>
@@ -998,6 +999,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5628604359369369630">Non lu - Disponible hors connexion</translation>
 <translation id="5631483240431073854">Gérer les onglets ouverts</translation>
+<translation id="564121214411935612">Connecté en tant que <ph name="USER_NAME" />. Erreur liée au compte Google. Ouvre les paramètres.</translation>
 <translation id="5641456720590409793">L'<ph name="BEGIN_LINK1" />historique des recherches<ph name="END_LINK1" /> et d'<ph name="BEGIN_LINK2" />autres formes d'activité<ph name="END_LINK2" /> peuvent être enregistrés dans votre compte Google</translation>
 <translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5655963694829536461">Recherchez dans les téléchargements</translation>

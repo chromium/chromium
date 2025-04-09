@@ -804,6 +804,7 @@
 <translation id="4742795653798179840">Данные из Chrome удалены</translation>
 <translation id="4742970037960872810">Снять выделение</translation>
 <translation id="4749960740855309258">Открыть новую вкладку</translation>
+<translation id="4753600213727157212">Вы вошли как <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Ошибка в аккаунте Google. Открыть настройки.</translation>
 <translation id="4758061975920522644">Поделиться только изображением</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4763480195061959176">видео</translation>
@@ -998,6 +999,7 @@
 <translation id="5626134646977739690">Имя:</translation>
 <translation id="5628604359369369630">Не прочитано – доступно в офлайн-режиме</translation>
 <translation id="5631483240431073854">Управлять открытыми вкладками</translation>
+<translation id="564121214411935612">Вы вошли как <ph name="USER_NAME" />. Ошибка в аккаунте Google. Открыть настройки.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />История поиска<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />сведения о других действиях<ph name="END_LINK2" /> могут сохраняться в аккаунте Google.</translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
 <translation id="5655963694829536461">Поиск в загрузках</translation>

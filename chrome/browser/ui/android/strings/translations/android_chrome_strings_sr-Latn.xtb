@@ -805,6 +805,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="4742795653798179840">Izbrisani Chrome podaci</translation>
 <translation id="4742970037960872810">Ukloni isticanje</translation>
 <translation id="4749960740855309258">Otvorite novu karticu</translation>
+<translation id="4753600213727157212">Prijavljeni ste kao <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Greška u vezi sa Google nalogom. Otvara podešavanja.</translation>
 <translation id="4758061975920522644">Delite samo sliku</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4763480195061959176">video</translation>
@@ -999,6 +1000,7 @@ Google nalog možda ima druge oblike istorije pregledanja, poput pretraga i akti
 <translation id="5626134646977739690">Ime:</translation>
 <translation id="5628604359369369630">Nije pročitano. Dostupno je oflajn</translation>
 <translation id="5631483240431073854">Upravljaj otvorenim karticama</translation>
+<translation id="564121214411935612">Prijavljeni ste kao <ph name="USER_NAME" />. Greška u vezi sa Google nalogom. Otvara podešavanja.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Istorija pretrage<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />drugi oblici aktivnosti<ph name="END_LINK2" /> mogu da budu sačuvani na Google nalogu</translation>
 <translation id="5648166631817621825">Poslednjih 7 dana</translation>
 <translation id="5655963694829536461">Pretražite preuzimanja</translation>

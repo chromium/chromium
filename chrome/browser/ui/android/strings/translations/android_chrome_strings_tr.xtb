@@ -804,6 +804,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="4742795653798179840">Chrome verileri silindi</translation>
 <translation id="4742970037960872810">Vurgulamayı kaldır</translation>
 <translation id="4749960740855309258">Yeni sekme açar</translation>
+<translation id="4753600213727157212"><ph name="USER_NAME" /> olarak oturum açtınız. <ph name="USER_EMAIL" />. Google Hesabı hatası. Ayarları açar.</translation>
 <translation id="4758061975920522644">Yalnızca resim paylaşılıyor</translation>
 <translation id="4759238208242260848">İndirilenler</translation>
 <translation id="4763480195061959176">video</translation>
@@ -998,6 +999,7 @@ Diğer Google hizmetlerinden yapılan aramalar ve etkinlikler gibi Google hesab�
 <translation id="5626134646977739690">Adı:</translation>
 <translation id="5628604359369369630">Okunmadı; Çevrimdışı kullanılabilir</translation>
 <translation id="5631483240431073854">Açık sekmeleri yönetin</translation>
+<translation id="564121214411935612"><ph name="USER_NAME" /> olarak oturum açtınız. Google Hesabı hatası. Ayarları açar.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Arama geçmişi<ph name="END_LINK1" /> ve <ph name="BEGIN_LINK2" />diğer etkinlik biçimleri<ph name="END_LINK2" /> Google Hesabınıza kaydedilmiş olabilir</translation>
 <translation id="5648166631817621825">Son 7 gün</translation>
 <translation id="5655963694829536461">İndirdiklerinizde arama yapın</translation>

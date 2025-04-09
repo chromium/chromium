@@ -804,6 +804,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4742795653798179840">Izbrisani podatki v Chromu</translation>
 <translation id="4742970037960872810">Odstrani označitev</translation>
 <translation id="4749960740855309258">Odpiranje novega zavihka</translation>
+<translation id="4753600213727157212">Prijavljeni ste kot <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Napaka računa Google. Odpre nastavitve.</translation>
 <translation id="4758061975920522644">Deli samo sliko</translation>
 <translation id="4759238208242260848">Prenosi</translation>
 <translation id="4763480195061959176">video</translation>
@@ -998,6 +999,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5626134646977739690">Ime:</translation>
 <translation id="5628604359369369630">Neprebrano – na voljo brez povezave</translation>
 <translation id="5631483240431073854">Upravljanje odprtih zavihkov</translation>
+<translation id="564121214411935612">Prijavljeni ste kot <ph name="USER_NAME" />. Napaka računa Google. Odpre nastavitve.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Zgodovina iskanja<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />druge oblike dejavnosti<ph name="END_LINK2" /> se morda shranjujejo v računu Google</translation>
 <translation id="5648166631817621825">Zadnjih 7 dni</translation>
 <translation id="5655963694829536461">Poiščite prenose</translation>

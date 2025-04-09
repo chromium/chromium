@@ -804,6 +804,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4742795653798179840">Données Chrome supprimées</translation>
 <translation id="4742970037960872810">Retirer la surbrillance</translation>
 <translation id="4749960740855309258">Ouvrir un nouvel onglet</translation>
+<translation id="4753600213727157212">Connecté en tant que <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Erreur de compte Google. Ouvre les paramètres.</translation>
 <translation id="4758061975920522644">Partager l'image uniquement</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4763480195061959176">Vidéo</translation>
@@ -998,6 +999,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5628604359369369630">Non lus : accessibles hors ligne</translation>
 <translation id="5631483240431073854">Gérer les onglets ouverts</translation>
+<translation id="564121214411935612">Connecté en tant que <ph name="USER_NAME" />. Erreur de compte Google. Ouvre les paramètres.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />L'historique de recherches<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />les autres formes d'activité<ph name="END_LINK2" /> peuvent être enregistrées dans votre compte Google</translation>
 <translation id="5648166631817621825">Sept derniers jours</translation>
 <translation id="5655963694829536461">Rechercher vos téléchargements</translation>

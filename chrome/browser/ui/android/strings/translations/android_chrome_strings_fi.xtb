@@ -804,6 +804,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="4742795653798179840">Chrome-data poistettu</translation>
 <translation id="4742970037960872810">Poista korostus</translation>
 <translation id="4749960740855309258">Uuden välilehden avaaminen</translation>
+<translation id="4753600213727157212">Kirjautuneena käyttäjänä <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google-tilin virhe. Avaa asetukset.</translation>
 <translation id="4758061975920522644">Jaa vain kuva</translation>
 <translation id="4759238208242260848">Lataukset</translation>
 <translation id="4763480195061959176">video</translation>
@@ -998,6 +999,7 @@ Google-tililläsi voi olla muita selaushistoriatietoja, kuten hakuja ja toiminta
 <translation id="5626134646977739690">Nimi:</translation>
 <translation id="5628604359369369630">Lukematon – luettavissa ilman verkkoyhteyttä</translation>
 <translation id="5631483240431073854">Hallitse avoimia välilehtiä</translation>
+<translation id="564121214411935612">Kirjautuneena käyttäjänä <ph name="USER_NAME" />. Google-tilin virhe. Avaa asetukset.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Hakuhistoriaa<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />muita toimintoja<ph name="END_LINK2" /> voidaan tallentaa Google-tilillesi.</translation>
 <translation id="5648166631817621825">Viimeiset seitsemän päivää</translation>
 <translation id="5655963694829536461">Hae omista latauksistasi</translation>

@@ -804,6 +804,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="4742795653798179840">Slettede Chrome-data</translation>
 <translation id="4742970037960872810">Fjern markering</translation>
 <translation id="4749960740855309258">Åpne en ny fane</translation>
+<translation id="4753600213727157212">Logget på som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Feil med Google-kontoen. Åpner innstillinger.</translation>
 <translation id="4758061975920522644">Del kun bilde</translation>
 <translation id="4759238208242260848">Nedlastinger</translation>
 <translation id="4763480195061959176">video</translation>
@@ -998,6 +999,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5628604359369369630">Ulest – tilgjengelig uten nett</translation>
 <translation id="5631483240431073854">Administrer åpne faner</translation>
+<translation id="564121214411935612">Logget på som <ph name="USER_NAME" />. Feil med Google-kontoen. Åpner innstillinger.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Søkeloggen<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />annen typer aktivitet<ph name="END_LINK2" /> kan lagres i Google-kontoen din.</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
 <translation id="5655963694829536461">Søk i nedlastingene dine</translation>

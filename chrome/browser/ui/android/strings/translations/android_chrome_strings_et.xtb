@@ -804,6 +804,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4742795653798179840">Chrome'i andmed on kustutatud</translation>
 <translation id="4742970037960872810">Eemalda esiletõstmine</translation>
 <translation id="4749960740855309258">Uue vahelehe avamine</translation>
+<translation id="4753600213727157212">Sisse logitud kasutajana <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google'i konto viga. Avab seaded.</translation>
 <translation id="4758061975920522644">Jagatakse vaid pilti</translation>
 <translation id="4759238208242260848">Allalaadimised</translation>
 <translation id="4763480195061959176">video</translation>
@@ -998,6 +999,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5626134646977739690">Nimi:</translation>
 <translation id="5628604359369369630">Lugemata – võrguühenduseta saadaval</translation>
 <translation id="5631483240431073854">Avatud vahelehtede haldamine</translation>
+<translation id="564121214411935612">Sisse logitud kasutajana <ph name="USER_NAME" />. Google'i konto viga. Avab seaded.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Otsinguajalugu<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />muud tegevused<ph name="END_LINK2" /> võidakse salvestada teie Google'i kontole</translation>
 <translation id="5648166631817621825">Viimased seitse päeva</translation>
 <translation id="5655963694829536461">Otsige oma allalaadimiste hulgast</translation>

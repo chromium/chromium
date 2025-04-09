@@ -259,6 +259,7 @@
 <translation id="22091350895006575">ಬಳಕೆದಾರರ ಹೆಸರನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="221494669172414749">ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಇಲ್ಲದೆ Chrome ಅನ್ನು ತೆರೆಯುವುದರಿಂದ ನಿಮ್ಮ ಸೇವ್ ಮಾಡಿದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾವತಿ ವಿಧಾನಗಳನ್ನು ಕಾರ್‌ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ. ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಅನ್ನು ಬಳಸುವುದರಿಂದ ಈ ಡೇಟಾವನ್ನು ಸುರಕ್ಷಿತವಾಗಿರಿಸುತ್ತದೆ.</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ನಂತೆ ಮುಂದುವರಿಸಿ</translation>
+<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪು ಹೊಸ ಚಟುವಟಿಕೆಯನ್ನು ಹೊಂದಿದೆ</translation>
 <translation id="2230777942707397948">ಖಾಲಿ ವಿಂಡೋ</translation>
 <translation id="223356358902285214">ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ</translation>
 <translation id="2234827758954819389">ಗೌಪ್ಯತೆ ಗೈಡ್</translation>
@@ -803,6 +804,7 @@
 <translation id="4742795653798179840">Chrome ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗಿದೆ</translation>
 <translation id="4742970037960872810">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4749960740855309258">ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
+<translation id="4753600213727157212"><ph name="USER_NAME" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. <ph name="USER_EMAIL" />. Google ಖಾತೆಯ ದೋಷ. ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="4758061975920522644">ಚಿತ್ರವನ್ನು ಮಾತ್ರ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4759238208242260848">ಡೌನ್‌ಲೋಡ್‌ಗಳು</translation>
 <translation id="4763480195061959176">ವೀಡಿಯೊ</translation>
@@ -997,6 +999,7 @@
 <translation id="5626134646977739690">ಹೆಸರು:</translation>
 <translation id="5628604359369369630">ಓದಿಲ್ಲ - ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5631483240431073854">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="564121214411935612"><ph name="USER_NAME" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. Google ಖಾತೆಯ ದೋಷ. ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />ಚಟುವಟಿಕೆಯ ಇತರ ವಿಧಾನಗಳನ್ನು<ph name="END_LINK2" /> ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಬಹುದು</translation>
 <translation id="5648166631817621825">ಕಳೆದ 7 ದಿನಗಳು</translation>
 <translation id="5655963694829536461">ನಿಮ್ಮ ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>

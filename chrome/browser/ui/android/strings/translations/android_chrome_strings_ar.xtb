@@ -806,6 +806,7 @@
 <translation id="4742795653798179840">‏تم حذف بيانات Chrome</translation>
 <translation id="4742970037960872810">إزالة التمييز</translation>
 <translation id="4749960740855309258">فتح علامة تبويب جديدة</translation>
+<translation id="4753600213727157212">‏تم تسجيل الدخول باسم "<ph name="USER_NAME" />". عنوان البريد الإلكتروني للمستخدم هو <ph name="USER_EMAIL" />. حدث خطأ في حساب Google. يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="4758061975920522644">مشاركة الصورة فقط</translation>
 <translation id="4759238208242260848">عمليات التنزيل</translation>
 <translation id="4763480195061959176">فيديو</translation>
@@ -1000,6 +1001,7 @@
 <translation id="5626134646977739690">الاسم:</translation>
 <translation id="5628604359369369630">الصفحات غير المقروءة المتاحة بلا إنترنت</translation>
 <translation id="5631483240431073854">إدارة علامات التبويب المفتوحة</translation>
+<translation id="564121214411935612">‏تم تسجيل الدخول باسم "<ph name="USER_NAME" />". حدث خطأ في حساب Google. يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="5641456720590409793">‏قد يتم حفظ <ph name="BEGIN_LINK1" />سجلّ البحث<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بيانات الأنشطة الأخرى<ph name="END_LINK2" /> في حسابك على Google</translation>
 <translation id="5648166631817621825">آخر 7 أيام</translation>
 <translation id="5655963694829536461">البحث في صفحة عمليات التنزيل</translation>

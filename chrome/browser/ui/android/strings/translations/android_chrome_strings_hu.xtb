@@ -804,6 +804,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="4742795653798179840">Törölt Chrome-adatok</translation>
 <translation id="4742970037960872810">Kiemelés eltávolítása</translation>
 <translation id="4749960740855309258">Új lap megnyitása</translation>
+<translation id="4753600213727157212">A következőként van bejelentkezve: <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Hiba történt a Google-fiókkal. Ez a gomb megnyitja a beállításokat.</translation>
 <translation id="4758061975920522644">Csak kép megosztása</translation>
 <translation id="4759238208242260848">Letöltések</translation>
 <translation id="4763480195061959176">video</translation>
@@ -998,6 +999,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5626134646977739690">Név:</translation>
 <translation id="5628604359369369630">Olvasatlan (Offline hozzáférhető)</translation>
 <translation id="5631483240431073854">Megnyitott lapok kezelése</translation>
+<translation id="564121214411935612">A következőként van bejelentkezve: <ph name="USER_NAME" />. Hiba történt a Google-fiókkal. Ez a gomb megnyitja a beállításokat.</translation>
 <translation id="5641456720590409793">A <ph name="BEGIN_LINK1" />keresési előzményeket<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />más tevékenységtípusokat<ph name="END_LINK2" /> a rendszer elmentheti az Ön Google-fiókjába.</translation>
 <translation id="5648166631817621825">Az elmúlt 7 napból</translation>
 <translation id="5655963694829536461">Keresés a letöltések között</translation>

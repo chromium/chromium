@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">সম্পত্তিৰ বিকাশ</translation>
 <translation id="1824402189105105503">অষ্টম ৰোল</translation>
 <translation id="1826516787628120939">পৰীক্ষা কৰি থকা হৈছে</translation>
+<translation id="1832730227369924598">ডেস্ক ছিংক</translation>
 <translation id="1834452765064623979">নিৰ্মাণ আৰু তত্ত্বাৱধান</translation>
 <translation id="1838374766361614909">সন্ধান কৰা বস্তুবোৰ মচক</translation>
 <translation id="1839331950812095887">আপোনাৰ মনৰ ভাৱৰ চমু আভাস দিব পৰা কেইটামান শব্দ</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">পুৰণি</translation>
 <translation id="2413528052993050574">এই ছার্ভাৰে নিজকে <ph name="DOMAIN" /> বুলি প্ৰমাণ কৰিব নোৱাৰিলে আৰু ইয়াৰ সুৰক্ষা প্ৰমাণপত্ৰ হয়তো প্ৰত্যাহাৰ কৰা হৈছে। এয়া কোনো ভুল কনফিগাৰেশ্বনৰ বাবে বা কোনো আক্ৰমণকাৰীয়ে আপোনাৰ সংযোগ প্ৰতিৰোধ কৰাৰ বাবে হ‘ব পাৰে।</translation>
 <translation id="2414886740292270097">গাঢ়</translation>
+<translation id="2418292431699242678">আপোনাৰ প্ৰশাসকে যিকোনো ChromeOS ডিভাইচত আপোনাৰ পূৰ্বৰ আৰু বৰ্তমানৰ ছেশ্বনসমূহ মাজত ছিংক কৰাটো সক্ষম কৰিছে:</translation>
 <translation id="2429716554270894715">ফেব্ৰিক (ৱাটাৰপ্ৰুফ)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" />ক সকলো <ph name="PROTOCOL" />ৰ লিংক খুলিবলৈ অনুমতি দিবনে?</translation>
 <translation id="2436976580469434549">ফাইবাৰ আৰু টেক্সটাইল আৰ্ট</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">মূল্য ট্ৰেক কৰি থকা হৈছে</translation>
 <translation id="3037605927509011580">আমি দুঃখিত!</translation>
 <translation id="3039406992698062762">পৰিয়ালৰ ভ্ৰমণ</translation>
+<translation id="3040636468789770340">কুকি (আপুনি শেহতীয়াকৈ চোৱা ৱেবছাইটসমূহত ছাইন ইন হৈ থকা অৱস্থা)</translation>
 <translation id="3041176923638368519">কাৰ্ডৰ লাভালাভৰ চৰ্তাৱলী চাওক</translation>
 <translation id="3041612393474885105">প্ৰমাণপত্ৰৰ তথ্য</translation>
 <translation id="3045769629416806687">দুঃসাহসিক খেল</translation>
@@ -1667,6 +1670,7 @@
 <translation id="3869939189466884821">আপোনাৰ স্থানীয় ফাইলসমূহ <ph name="MINUTES" /> মিনিটত মচা হ’ব</translation>
 <translation id="3872834068356954457">বিজ্ঞান</translation>
 <translation id="3875783148670536197">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
+<translation id="387681220560687945">ৱিণ্ড’ (সজ্জা আৰু ৱিণ্ড’ আৰু টেবসমূহ সংগঠন)</translation>
 <translation id="3879748587602334249">ডাউনল’ড মেনেজাৰ</translation>
 <translation id="3880456882942693779">কলা আৰু মনোৰঞ্জন</translation>
 <translation id="3880589673277376494">ইণ্টাৰনেট আৰু টেলিকম</translation>
@@ -4742,6 +4746,7 @@
 <translation id="950736567201356821">ওপৰৰ অংশত তিনিবাৰ পাঞ্চ কৰা</translation>
 <translation id="950926967802086924">পাছকী • Google Password Manager</translation>
 <translation id="955429569736351433">VRৰ অনুমতি আছে</translation>
+<translation id="955627189349169688">আপুনি <ph name="BEGIN_LINK" />Chrome ছিংকৰ ছেটিঙ<ph name="END_LINK" />ত এই নীতিটোৰ পৰা অপ্ট আউট কৰিব পাৰে।</translation>
 <translation id="95721182352849470">হালধীয়া ২</translation>
 <translation id="961663415146723894">তলৰ অংশত সংযুক্ত কৰক</translation>
 <translation id="961856697154696964">ব্ৰাউজিঙৰ ডেটা মচক</translation>

@@ -804,6 +804,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4742795653798179840">Ezabatu Chrome-ko datuak</translation>
 <translation id="4742970037960872810">Kendu nabarmentzea</translation>
 <translation id="4749960740855309258">Ireki beste fitxa bat</translation>
+<translation id="4753600213727157212"><ph name="USER_NAME" /> gisa hasi duzu saioa. <ph name="USER_EMAIL" />. Google-ko kontuaren errorea. Ezarpenak irekitzen ditu.</translation>
 <translation id="4758061975920522644">Partekatu irudia soilik</translation>
 <translation id="4759238208242260848">Deskargak</translation>
 <translation id="4763480195061959176">video</translation>
@@ -998,6 +999,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5626134646977739690">Izena:</translation>
 <translation id="5628604359369369630">Irakurri gabeak (konexiorik gabe erabilgarri)</translation>
 <translation id="5631483240431073854">Kudeatu irekitako fitxak</translation>
+<translation id="564121214411935612"><ph name="USER_NAME" /> gisa hasi duzu saioa. Google-ko kontuaren errorea. Ezarpenak irekitzen ditu.</translation>
 <translation id="5641456720590409793">Baliteke <ph name="BEGIN_LINK1" />bilaketa-historia<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />beste jarduera batzuk<ph name="END_LINK2" /> Google-ko kontuan gordetzea</translation>
 <translation id="5648166631817621825">Azken zazpi egunetakoak</translation>
 <translation id="5655963694829536461">Bilatu deskargatutako fitxategietan</translation>

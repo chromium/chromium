@@ -259,6 +259,7 @@
 <translation id="22091350895006575">ব্যৱহাৰকাৰীৰ নাম যোগ দিয়ক</translation>
 <translation id="221494669172414749">এটা প্ৰ’ফাইল লকৰ অবিহনে Chrome খোলাটোৱে গাড়ীখনৰ পৰা আপোনাৰ ছেভ কৰি থোৱা পাছৱৰ্ড আৰু পৰিশোধ পদ্ধতিসমূহ আঁতৰাব। এটা প্ৰ’ফাইল লক ব্যৱহাৰ কৰাটোৱে এই ডেটাখিনি সুৰক্ষিত কৰি ৰাখে।</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> হিচাপে অব্যাহত ৰাখক</translation>
+<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> নামৰ টেবৰ গোটটোত নতুন কাৰ্যকলাপ আছে</translation>
 <translation id="2230777942707397948">খালী ৱিণ্ড’</translation>
 <translation id="223356358902285214">ৱেব আৰু এপৰ কাৰ্যকলাপ</translation>
 <translation id="2234827758954819389">গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনা</translation>
@@ -804,6 +805,7 @@
 <translation id="4742795653798179840">Chromeৰ ডেটা মচা হ’ল</translation>
 <translation id="4742970037960872810">হাইলাইট আঁতৰাওক</translation>
 <translation id="4749960740855309258">এটা নতুন টেব খোলক</translation>
+<translation id="4753600213727157212"><ph name="USER_NAME" /> হিচাপে ছাইন ইন কৰিছে। <ph name="USER_EMAIL" />। Google একাউণ্ট সম্পৰ্কীয় আসোঁৱাহ। ছেটিং খোলে।</translation>
 <translation id="4758061975920522644">কেৱল প্ৰতিচ্ছবি শ্বেয়াৰ কৰক</translation>
 <translation id="4759238208242260848">ডাউনল'ডসমূহ</translation>
 <translation id="4763480195061959176">ভিডিঅ’</translation>
@@ -998,6 +1000,7 @@
 <translation id="5626134646977739690">নাম:</translation>
 <translation id="5628604359369369630">নপঢ়া - অফলাইনত উপলব্ধ</translation>
 <translation id="5631483240431073854">খুলি থোৱা টেব পৰিচালনা কৰক</translation>
+<translation id="564121214411935612"><ph name="USER_NAME" /> হিচাপে ছাইন ইন কৰিছে। Google একাউণ্ট সম্পৰ্কীয় আসোঁৱাহ। ছেটিং খোলে।</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />সন্ধানৰ ইতিহাস<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />অন্য প্ৰকাৰৰ কাৰ্যকলাপ<ph name="END_LINK2" /> আপোনাৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে</translation>
 <translation id="5648166631817621825">যোৱা ৭ দিনত</translation>
 <translation id="5655963694829536461">আপোনাৰ ডাউনল’ড সন্ধান কৰক</translation>

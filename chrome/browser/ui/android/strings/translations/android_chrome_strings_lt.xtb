@@ -805,6 +805,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="4742795653798179840">Ištrinti „Chrome“ duomenys</translation>
 <translation id="4742970037960872810">Pašalinti paryškinimą</translation>
 <translation id="4749960740855309258">Atidaryti naują skirtuką</translation>
+<translation id="4753600213727157212">Prisijungta kaip <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. „Google“ paskyros klaida. Atidaromi nustatymai.</translation>
 <translation id="4758061975920522644">Bendrinti tik vaizdą</translation>
 <translation id="4759238208242260848">Atsisiuntimai</translation>
 <translation id="4763480195061959176">vaizdo įrašas</translation>
@@ -999,6 +1000,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5626134646977739690">Pavadinimas:</translation>
 <translation id="5628604359369369630">Neskaityta – pasiekiama neprisijungus</translation>
 <translation id="5631483240431073854">Tvarkyti atidarytus skirtukus</translation>
+<translation id="564121214411935612">Prisijungta kaip <ph name="USER_NAME" />. „Google“ paskyros klaida. Atidaromi nustatymai.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Paieškos istorija<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />kitos veiklos formos<ph name="END_LINK2" /> gali būti išsaugotos jūsų „Google“ paskyroje</translation>
 <translation id="5648166631817621825">Pastarosios 7 dienos</translation>
 <translation id="5655963694829536461">Ieškokite atsisiųstų elementų</translation>

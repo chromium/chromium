@@ -804,6 +804,7 @@
 <translation id="4742795653798179840">Տվյալները ջնջվել են Chrome-ից</translation>
 <translation id="4742970037960872810">Հեռացնել ընդգծումը</translation>
 <translation id="4749960740855309258">Բացել նոր ներդիր</translation>
+<translation id="4753600213727157212">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ <ph name="USER_EMAIL" />։ Google հաշվի սխալ։ Բացում է կարգավորումները։</translation>
 <translation id="4758061975920522644">Կիսվել միայն պատկերով</translation>
 <translation id="4759238208242260848">Ներբեռնումներ</translation>
 <translation id="4763480195061959176">video</translation>
@@ -998,6 +999,7 @@
 <translation id="5626134646977739690">Անուն՝</translation>
 <translation id="5628604359369369630">Չկարդացված – Հասանելի է անցանց ռեժիմում</translation>
 <translation id="5631483240431073854">Կառավարել բացված ներդիրները</translation>
+<translation id="564121214411935612">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ Google հաշվի սխալ։ Բացում է կարգավորումները։</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Որոնումների պատմությունը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />այլ գործողություններ<ph name="END_LINK2" /> կարող են պահվել ձեր Google հաշվում</translation>
 <translation id="5648166631817621825">Վերջին 7 օրվա</translation>
 <translation id="5655963694829536461">Որոնեք ձեր ներբեռնած տարրերում</translation>

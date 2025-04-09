@@ -805,6 +805,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4742795653798179840">Dados do Chrome excluídos</translation>
 <translation id="4742970037960872810">Remover destaque</translation>
 <translation id="4749960740855309258">Abrir uma nova guia</translation>
+<translation id="4753600213727157212">Login feito como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Erro na Conta do Google. Abre as configurações.</translation>
 <translation id="4758061975920522644">Compartilhar apenas a imagem</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">vídeo</translation>
@@ -999,6 +1000,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5628604359369369630">Não lidas - Disponíveis off-line</translation>
 <translation id="5631483240431073854">Gerenciar guias abertas</translation>
+<translation id="564121214411935612">Login feito como <ph name="USER_NAME" />. Erro na Conta do Google. Abre as configurações.</translation>
 <translation id="5641456720590409793">O <ph name="BEGIN_LINK1" />histórico de pesquisa<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outras formas de atividade<ph name="END_LINK2" /> podem ser salvos na sua Conta do Google.</translation>
 <translation id="5648166631817621825">Últimos sete dias</translation>
 <translation id="5655963694829536461">Pesquisar seus downloads</translation>

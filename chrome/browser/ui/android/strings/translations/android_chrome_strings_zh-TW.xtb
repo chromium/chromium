@@ -804,6 +804,7 @@
 <translation id="4742795653798179840">已刪除 Chrome 資料</translation>
 <translation id="4742970037960872810">移除醒目顯示</translation>
 <translation id="4749960740855309258">開啟新分頁</translation>
+<translation id="4753600213727157212">目前登入的帳戶是<ph name="USER_NAME" />。<ph name="USER_EMAIL" />。Google 帳戶錯誤。開啟設定。</translation>
 <translation id="4758061975920522644">僅分享圖片</translation>
 <translation id="4759238208242260848">下載</translation>
 <translation id="4763480195061959176">影片</translation>
@@ -998,6 +999,7 @@
 <translation id="5626134646977739690">名稱：</translation>
 <translation id="5628604359369369630">尚未閱讀 - 可離線閱讀</translation>
 <translation id="5631483240431073854">管理開啟的分頁</translation>
+<translation id="564121214411935612">目前登入的帳戶是<ph name="USER_NAME" />。Google 帳戶錯誤。開啟設定。</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜尋記錄<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活動<ph name="END_LINK2" />可能會儲存至你的 Google 帳戶</translation>
 <translation id="5648166631817621825">過去 7 天</translation>
 <translation id="5655963694829536461">搜尋下載內容</translation>

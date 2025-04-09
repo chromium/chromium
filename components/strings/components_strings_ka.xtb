@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">უძრავი ქონების განვითარება</translation>
 <translation id="1824402189105105503">მერვე რულონი</translation>
 <translation id="1826516787628120939">შემოწმება</translation>
+<translation id="1832730227369924598">სამუშაო მაგიდის სინქრონიზაცია</translation>
 <translation id="1834452765064623979">მშენებლობა და რემონტი</translation>
 <translation id="1838374766361614909">ძიების გასუფთავება</translation>
 <translation id="1839331950812095887">რამდენიმე სიტყვა, რომლებითაც შეაჯამებთ თქვენს აზრებს</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">ძველი</translation>
 <translation id="2413528052993050574">ეს სერვერი ვერ ამტკიცებს რომ ის არის <ph name="DOMAIN" />; მისი უსაფრთხოების სერთიფიკატი შესაძლოა გაუქმებულია. ეს შეიძლება იყოს გამოწვეული არასწორი კონფიგურაციით ან თავდამსხმელის მიერ თქვენი კავშირის გადაჭრით.</translation>
 <translation id="2414886740292270097">მუქი</translation>
+<translation id="2418292431699242678">თქვენმა ადმინისტრატორმა დაუშვა, რომ თქვენი ChromeOS მოწყობილობის წინა და მიმდინარე სესიებს შორის სინქრონიზებული იყოს შემდეგი კონტენტი:</translation>
 <translation id="2429716554270894715">ქსოვილი (წყალგაუმტარი)</translation>
 <translation id="2436186046335138073">დავრთოთ ნება <ph name="HANDLER_HOSTNAME" />-ს, გახსნას ყველა <ph name="PROTOCOL" /> ბმული?</translation>
 <translation id="2436976580469434549">ბოჭკოვანი მასალებით და ტექსტილით შექმნილი ხელოვნება</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">ფასისთვის თვალის მიდევნება</translation>
 <translation id="3037605927509011580">უი, ხარვეზი!</translation>
 <translation id="3039406992698062762">ოჯახური მოგზაურობა</translation>
+<translation id="3040636468789770340">ქუქი-ჩანაწერები (ავტორიზებული სტატუსი თქვენ მიერ ბოლოს მონახულებულ ვებსაიტებზე)</translation>
 <translation id="3041176923638368519">ბარათის უპირატესობებით სარგებლობის პირობების ნახვა</translation>
 <translation id="3041612393474885105">სერტიფიკატის ინფორმაცია</translation>
 <translation id="3045769629416806687">ექსტრემალური სპორტი</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">თქვენი ლოკალური ფაილები წაიშლება <ph name="MINUTES" /> წუთში</translation>
 <translation id="3872834068356954457">მეცნიერება</translation>
 <translation id="3875783148670536197">ინსტრუქციის ნახვა</translation>
+<translation id="387681220560687945">ფანჯრები (ფანჯრებისა და ჩანართების განლაგება და ორგანიზება)</translation>
 <translation id="3879748587602334249">ჩამოტვირთვის მენეჯერი</translation>
 <translation id="3880456882942693779">ხელოვნება და გართობა</translation>
 <translation id="3880589673277376494">ინტერნეტი და ტელეკომუნიკაცია</translation>
@@ -4747,6 +4751,7 @@
 <translation id="950736567201356821">სამმაგად გახვრეტა ზემოთ</translation>
 <translation id="950926967802086924">წვდომის გასაღები • Google პაროლების მმართველი</translation>
 <translation id="955429569736351433">VR ნებადართულია</translation>
+<translation id="955627189349169688">ამ წესებზე უარის თქმა შეგიძლიათ <ph name="BEGIN_LINK" />Chrome სინქის პარამეტრებში<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">ყვითელი 2</translation>
 <translation id="961663415146723894">აკინძვა ქვემოთ</translation>
 <translation id="961856697154696964">დათვალ. მონაცემების წაშლა</translation>

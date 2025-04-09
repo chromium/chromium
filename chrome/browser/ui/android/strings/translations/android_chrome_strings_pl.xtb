@@ -804,6 +804,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="4742795653798179840">Usunięte dane Chrome</translation>
 <translation id="4742970037960872810">Usuń podświetlenie</translation>
 <translation id="4749960740855309258">Otwórz nową kartę</translation>
+<translation id="4753600213727157212">Zalogowano jako <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Błąd konta Google. Otwiera ustawienia.</translation>
 <translation id="4758061975920522644">Udostępnij tylko obraz</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4763480195061959176">film</translation>
@@ -998,6 +999,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5626134646977739690">Nazwa:</translation>
 <translation id="5628604359369369630">Nieprzeczytane – dostępne offline</translation>
 <translation id="5631483240431073854">Zarządzaj otwartymi kartami</translation>
+<translation id="564121214411935612">Zalogowano jako <ph name="USER_NAME" />. Błąd konta Google. Otwiera ustawienia.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Historia wyszukiwania<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />inne formy aktywności<ph name="END_LINK2" /> mogą być zapisywane na Twoim koncie Google</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
 <translation id="5655963694829536461">Przeszukaj pobrane pliki</translation>

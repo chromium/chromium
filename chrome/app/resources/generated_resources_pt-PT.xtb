@@ -1628,7 +1628,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2114326799768592691">Atualizar &amp;frame</translation>
 <translation id="2114995631896158695">Nenhum cartão SIM inserido</translation>
 <translation id="2116619964159595185">Normalmente, os sites estabelecem ligação a dispositivos Bluetooth para funcionalidades como configurar ou sincronizar um beacon Bluetooth Low Energy, uma lâmpada inteligente ou um monitorizador de saúde ou fitness</translation>
-<translation id="2117655453726830283">Diapositivo seguinte</translation>
+<translation id="2117655453726830283">Slide seguinte</translation>
 <translation id="211803431539496924">Confirmar as atualizações de segurança alargadas?</translation>
 <translation id="2118594521750010466">Corrigir agora</translation>
 <translation id="2119461801241504254">A Navegação segura está ativada e a oferecer-lhe proteção contra transferências e sites prejudiciais.</translation>
@@ -3049,7 +3049,7 @@ Quer pará-lo?</translation>
 <translation id="3100071818310370858">Use a localização. Permita que as apps e os serviços com a autorização de acesso à localização usem a localização deste dispositivo. A Google pode recolher periodicamente dados de localização e usá-los de forma anónima para melhorar a precisão da localização e os serviços baseados na localização. <ph name="BEGIN_LINK1" />Saiba mais sobre a localização<ph name="BEGIN_LINK1_END" />Saiba mais<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Escurecer luz</translation>
 <translation id="3101709781009526431">Data e hora</translation>
-<translation id="310297983047869047">Diapositivo anterior</translation>
+<translation id="310297983047869047">Slide anterior</translation>
 <translation id="3103451787721578293">Introduza um motivo para o carregamento destes dados:</translation>
 <translation id="3103512663951238230">Alt + clique</translation>
 <translation id="3104763887980088552">Registo de atividade</translation>

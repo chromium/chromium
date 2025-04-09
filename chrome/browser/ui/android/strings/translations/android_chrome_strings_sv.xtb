@@ -806,6 +806,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4742795653798179840">Data i Chrome har raderats</translation>
 <translation id="4742970037960872810">Ta bort markering</translation>
 <translation id="4749960740855309258">Öppna en ny flik</translation>
+<translation id="4753600213727157212">Inloggad som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Fel i Google-kontot. Öppnar inställningarna.</translation>
 <translation id="4758061975920522644">Dela endast bild</translation>
 <translation id="4759238208242260848">Nedladdningar</translation>
 <translation id="4763480195061959176">video</translation>
@@ -1000,6 +1001,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5626134646977739690">Namn:</translation>
 <translation id="5628604359369369630">Oläst – Tillgänglig offline</translation>
 <translation id="5631483240431073854">Hantera öppna flikar</translation>
+<translation id="564121214411935612">Inloggad som <ph name="USER_NAME" />. Fel i Google-kontot. Öppnar inställningarna.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Sökhistorik<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />annan aktivitet<ph name="END_LINK2" /> kan sparas i Google-kontot</translation>
 <translation id="5648166631817621825">Senaste sju dagarna</translation>
 <translation id="5655963694829536461">Sök i dina nedladdningar</translation>

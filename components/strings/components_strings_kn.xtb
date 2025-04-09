@@ -491,6 +491,7 @@
 <translation id="1822995137827688764">ಆಸ್ತಿ ಅಭಿವೃದ್ಧಿ</translation>
 <translation id="1824402189105105503">ಎಂಟನೇ ರೋಲ್</translation>
 <translation id="1826516787628120939">ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="1832730227369924598">ಡೆಸ್ಕ್ ಸಿಂಕ್</translation>
 <translation id="1834452765064623979">ನಿರ್ಮಾಣ ಮತ್ತು ನಿರ್ವಹಣೆ</translation>
 <translation id="1838374766361614909">ಹುಡುಕಾಟ ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="1839331950812095887">ನಿಮ್ಮ ಆಲೋಚನೆಗಳನ್ನು ಸಂಕ್ಷಿಪ್ತಗೊಳಿಸುವ ಕೆಲವು ಪದಗಳು</translation>
@@ -828,6 +829,7 @@
 <translation id="2413155254802890957">ಹಳೆಯ</translation>
 <translation id="2413528052993050574">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳಲಾಗಿರಬಹುದು. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="2414886740292270097">ಗಾಢ</translation>
+<translation id="2418292431699242678">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಯಾವುದೇ ChromeOS ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಹಿಂದಿನ ಮತ್ತು ಪ್ರಸ್ತುತ ಸೆಷನ್‌ಗಳ ನಡುವೆ ಸಿಂಕ್ ಮಾಡಲು ಈ ಕೆಳಗಿನವುಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತಾರೆ:</translation>
 <translation id="2429716554270894715">ಬಟ್ಟೆ (ವಾಟರ್‌ಪ್ರೂಫ್)</translation>
 <translation id="2436186046335138073"><ph name="PROTOCOL" /> ಎಲ್ಲಾ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಲು <ph name="HANDLER_HOSTNAME" /> ಗೆ ಅನುಮತಿಸುವುದೇ?</translation>
 <translation id="2436976580469434549">ನಾರು ಮತ್ತು ಜವಳಿ ಕಲಾಕೃತಿಗಳು</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">ದರವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3037605927509011580">ಓಹ್, ಹೋಯ್ತು!</translation>
 <translation id="3039406992698062762">ಕುಟುಂಬ ಪ್ರವಾಸ</translation>
+<translation id="3040636468789770340">ಕುಕೀಗಳು (ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿ ಸೈನ್-ಇನ್ ಆಗಿರುವ ಸ್ಥಿತಿ)</translation>
 <translation id="3041176923638368519">ಕಾರ್ಡ್ ಪ್ರಯೋಜನದ ನಿಯಮಗಳನ್ನು ನೋಡಿ</translation>
 <translation id="3041612393474885105">ಪ್ರಮಾಣಪತ್ರ ಮಾಹಿತಿ</translation>
 <translation id="3045769629416806687">ಸಾಹಸಮಯ ಕ್ರೀಡೆಗಳು</translation>
@@ -1667,6 +1670,7 @@
 <translation id="3869939189466884821">ನಿಮ್ಮ ಸ್ಥಳೀಯ ಫೈಲ್‌ಗಳನ್ನು <ph name="MINUTES" /> ನಿಮಿಷಗಳಲ್ಲಿ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="3872834068356954457">ವಿಜ್ಞಾನ</translation>
 <translation id="3875783148670536197">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
+<translation id="387681220560687945">ವಿಂಡೋಸ್ (ವಿಂಡೋಸ್ ಮತ್ತು ಟ್ಯಾಬ್‌ಗಳ ಜೋಡಣೆ ಮತ್ತು ಸಂರಚನೆ)</translation>
 <translation id="3879748587602334249">ಡೌನ್‌ಲೋಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="3880456882942693779">ಕಲೆ ಮತ್ತು ಮನರಂಜನೆ</translation>
 <translation id="3880589673277376494">ಇಂಟರ್ನೆಟ್ ಮತ್ತು ಟೆಲಿಕಾಂ</translation>
@@ -4744,6 +4748,7 @@
 <translation id="950736567201356821">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಮೂರು ತೂತು ಮಾಡಿ</translation>
 <translation id="950926967802086924">ಪಾಸ್‌ಕೀ • Google Password Manager</translation>
 <translation id="955429569736351433">VR ಅನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
+<translation id="955627189349169688">ನೀವು <ph name="BEGIN_LINK" />Chrome ಸಿಂಕ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ<ph name="END_LINK" /> ಈ ನೀತಿಯಿಂದ ಹೊರಗುಳಿಯಬಹುದು.</translation>
 <translation id="95721182352849470">ಹಳದಿ 2</translation>
 <translation id="961663415146723894">ಕೆಳಭಾಗದಲ್ಲಿ ಬೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="961856697154696964">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>

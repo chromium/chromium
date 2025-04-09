@@ -804,6 +804,7 @@
 <translation id="4742795653798179840">Chrome డేటాను తొలగించడం జరిగింది</translation>
 <translation id="4742970037960872810">హైలైట్‌ను తీసివేయండి</translation>
 <translation id="4749960740855309258">కొత్త ట్యాబ్‌ను తెరవండి</translation>
+<translation id="4753600213727157212"><ph name="USER_NAME" />‌గా సైన్ ఇన్ చేశారు. <ph name="USER_EMAIL" />. Google ఖాతా ఎర్రర్. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="4758061975920522644">ఇమేజ్‌ను మాత్రమే షేర్ చేయండి</translation>
 <translation id="4759238208242260848">డౌన్‌లోడ్‌లు</translation>
 <translation id="4763480195061959176">వీడియో</translation>
@@ -998,6 +999,7 @@
 <translation id="5626134646977739690">పేరు:</translation>
 <translation id="5628604359369369630">చదవనివి - ఆఫ్‌లైన్‌లో అందుబాటులో ఉన్నాయి</translation>
 <translation id="5631483240431073854">తెరిచిన ట్యాబ్‌లను మేనేజ్ చేయండి</translation>
+<translation id="564121214411935612"><ph name="USER_NAME" />‌గా సైన్ ఇన్ చేశారు. Google ఖాతా ఎర్రర్. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />సెర్చ్ హిస్టరీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK2" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు</translation>
 <translation id="5648166631817621825">గత 7 రోజులు</translation>
 <translation id="5655963694829536461">మీ డౌన్‌లోడ్‌లను వెతకండి</translation>

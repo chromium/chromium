@@ -804,6 +804,7 @@
 <translation id="4742795653798179840">Chrome সম্পর্কিত ডেটা মুছে ফেলা হয়েছে</translation>
 <translation id="4742970037960872810">হাইলাইট সরিয়ে দিন</translation>
 <translation id="4749960740855309258">একটি নতুন ট্যাব খুলুন</translation>
+<translation id="4753600213727157212"><ph name="USER_NAME" /> হিসেবে সাইন-ইন করেছেন। <ph name="USER_EMAIL" />। Google অ্যাকাউন্ট সম্পর্কিত সমস্যা। সেটিংস খোলে।</translation>
 <translation id="4758061975920522644">শুধুমাত্র ইমেজ শেয়ার করুন</translation>
 <translation id="4759238208242260848">ডাউনলোড</translation>
 <translation id="4763480195061959176">ভিডিও</translation>
@@ -998,6 +999,7 @@
 <translation id="5626134646977739690">নাম:</translation>
 <translation id="5628604359369369630">পড়া হয়নি - অফলাইনে উপলভ্য</translation>
 <translation id="5631483240431073854">খোলা ট্যাব ম্যানেজ করুন</translation>
+<translation id="564121214411935612"><ph name="USER_NAME" /> হিসেবে সাইন-ইন করেছেন। Google অ্যাকাউন্ট সম্পর্কিত সমস্যা। সেটিংস খোলে।</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />সার্চ ইতিহাস<ph name="END_LINK1" /> এবং <ph name="BEGIN_LINK2" />অন্যান্য অ্যাক্টিভিটি<ph name="END_LINK2" /> আপনার Google অ্যাকাউন্টে সেভ হয়ে যেতে পারে।</translation>
 <translation id="5648166631817621825">গত ৭ দিন</translation>
 <translation id="5655963694829536461">আপনার ডাউনলোডগুলি খুঁজুন</translation>

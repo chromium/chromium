@@ -804,6 +804,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4742795653798179840">Chrome-dataene er slettet</translation>
 <translation id="4742970037960872810">Fjern fremhævning</translation>
 <translation id="4749960740855309258">Åbn en ny fane</translation>
+<translation id="4753600213727157212">Logget ind som <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Google-kontofejl. Åbner indstillinger.</translation>
 <translation id="4758061975920522644">Del kun billede</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4763480195061959176">video</translation>
@@ -998,6 +999,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5628604359369369630">Ulæst – Tilgængelig offline</translation>
 <translation id="5631483240431073854">Administrer åbne faner</translation>
+<translation id="564121214411935612">Logget ind som <ph name="USER_NAME" />. Google-kontofejl. Åbner indstillinger.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Søgehistorikken<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />andre former for aktivitet<ph name="END_LINK2" /> gemmes muligvis på din Google-konto</translation>
 <translation id="5648166631817621825">De seneste 7 dage</translation>
 <translation id="5655963694829536461">Søg i dine downloads</translation>

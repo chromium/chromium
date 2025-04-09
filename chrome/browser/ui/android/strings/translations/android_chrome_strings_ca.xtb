@@ -804,6 +804,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4742795653798179840">S'han suprimit les dades de Chrome</translation>
 <translation id="4742970037960872810">Suprimeix les marques</translation>
 <translation id="4749960740855309258">Obre una pestanya nova</translation>
+<translation id="4753600213727157212">Has iniciat la sessió com a <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Error del Compte de Google. Obre la configuració.</translation>
 <translation id="4758061975920522644">Comparteix només la imatge</translation>
 <translation id="4759238208242260848">Baixades</translation>
 <translation id="4763480195061959176">vídeo</translation>
@@ -998,6 +999,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5626134646977739690">Nom:</translation>
 <translation id="5628604359369369630">No llegits - Disponible sense connexió</translation>
 <translation id="5631483240431073854">Gestiona les pestanyes obertes</translation>
+<translation id="564121214411935612">Has iniciat la sessió com a <ph name="USER_NAME" />. Error del Compte de Google. Obre la configuració.</translation>
 <translation id="5641456720590409793">És possible que l'<ph name="BEGIN_LINK1" />historial de cerques<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />altres tipus d'activitats<ph name="END_LINK2" /> es desin al teu Compte de Google</translation>
 <translation id="5648166631817621825">7 darrers dies</translation>
 <translation id="5655963694829536461">Cerca a les baixades</translation>

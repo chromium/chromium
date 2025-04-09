@@ -804,6 +804,7 @@
 <translation id="4742795653798179840">ลบข้อมูลใน Chrome แล้ว</translation>
 <translation id="4742970037960872810">นำไฮไลต์ออก</translation>
 <translation id="4749960740855309258">เปิดแท็บใหม่</translation>
+<translation id="4753600213727157212">ลงชื่อเข้าใช้ด้วย <ph name="USER_NAME" /> <ph name="USER_EMAIL" /> ข้อผิดพลาดของบัญชี Google เปิดการตั้งค่า</translation>
 <translation id="4758061975920522644">แชร์รูปภาพเท่านั้น</translation>
 <translation id="4759238208242260848">ดาวน์โหลด</translation>
 <translation id="4763480195061959176">วิดีโอ</translation>
@@ -998,6 +999,7 @@
 <translation id="5626134646977739690">ชื่อ:</translation>
 <translation id="5628604359369369630">ยังไม่อ่าน - อ่านขณะออฟไลน์ได้</translation>
 <translation id="5631483240431073854">จัดการแท็บที่เปิดอยู่</translation>
+<translation id="564121214411935612">ลงชื่อเข้าใช้ด้วย <ph name="USER_NAME" /> ข้อผิดพลาดของบัญชี Google เปิดการตั้งค่า</translation>
 <translation id="5641456720590409793">ระบบอาจบันทึก<ph name="BEGIN_LINK1" />ประวัติการค้นหา<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />กิจกรรมรูปแบบอื่น<ph name="END_LINK2" />ในบัญชี Google</translation>
 <translation id="5648166631817621825">7 วันที่ผ่านมา</translation>
 <translation id="5655963694829536461">ค้นหาการดาวน์โหลด</translation>
