@@ -193,6 +193,28 @@ void ConfigureDesiredBoundsDelegate(views::WidgetDelegate* dialog_delegate,
 
 }  // namespace
 
+class BrowserModalHelper {
+ public:
+  static views::Widget* Show(std::unique_ptr<ui::DialogModel> dialog_model,
+                             gfx::NativeWindow parent) {
+    // TODO(crbug.com/41493925): Remove will_use_custom_frame once native frame
+    // dialogs support autosize.
+    bool will_use_custom_frame = views::DialogDelegate::CanSupportCustomFrame(
+        parent ? CurrentBrowserModalClient()->GetDialogHostView(parent)
+               : gfx::NativeView());
+    auto dialog = views::BubbleDialogModelHost::CreateModal(
+        std::move(dialog_model), ui::mojom::ModalType::kWindow,
+        will_use_custom_frame);
+    dialog->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
+    auto* widget = constrained_window::CreateBrowserModalDialogViews(
+        std::move(dialog), parent);
+    CHECK_EQ(widget->widget_delegate()->AsDialogDelegate()->use_custom_frame(),
+             will_use_custom_frame);
+    widget->Show();
+    return widget;
+  }
+};
+
 // static
 void SetConstrainedWindowViewsClient(
     std::unique_ptr<ConstrainedWindowViewsClient> new_client) {
@@ -340,21 +362,7 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
 
 views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
                                 gfx::NativeWindow parent) {
-  // TODO(crbug.com/41493925): Remove will_use_custom_frame once native frame
-  // dialogs support autosize.
-  bool will_use_custom_frame = views::DialogDelegate::CanSupportCustomFrame(
-      parent ? CurrentBrowserModalClient()->GetDialogHostView(parent)
-             : gfx::NativeView());
-  auto dialog = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::mojom::ModalType::kWindow,
-      will_use_custom_frame);
-  dialog->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
-  auto* widget = constrained_window::CreateBrowserModalDialogViews(
-      std::move(dialog), parent);
-  CHECK_EQ(widget->widget_delegate()->AsDialogDelegate()->use_custom_frame(),
-           will_use_custom_frame);
-  widget->Show();
-  return widget;
+  return BrowserModalHelper::Show(std::move(dialog_model), parent);
 }
 
 views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
