@@ -79,18 +79,6 @@ Uuid Uuid::GenerateRandomV4() {
 }
 
 // static
-Uuid Uuid::FormatRandomDataAsV4(
-    base::span<const uint8_t, 16> input,
-    base::PassKey<content::FileSystemAccessManagerImpl> /*pass_key*/) {
-  return FormatRandomDataAsV4Impl(input);
-}
-
-// static
-Uuid Uuid::FormatRandomDataAsV4ForTesting(base::span<const uint8_t, 16> input) {
-  return FormatRandomDataAsV4Impl(input);
-}
-
-// static
 Uuid Uuid::FormatRandomDataAsV4Impl(base::span<const uint8_t, 16> input) {
   DCHECK_EQ(input.size_bytes(), kGuidV4InputLength);
 
@@ -105,8 +93,8 @@ Uuid Uuid::FormatRandomDataAsV4Impl(base::span<const uint8_t, 16> input) {
   sixteen_bytes[0] &= 0xffffffff'ffff0fffULL;
   sixteen_bytes[0] |= 0x00000000'00004000ULL;
 
-  // Set the two most significant bits (bits 6 and 7) of the
-  // clock_seq_hi_and_reserved to zero and one, respectively:
+  // Clear bit 65 and set bit 64, to set the 'var' field to 0b10 per RFC 9562
+  // section 5.4.
   sixteen_bytes[1] &= 0x3fffffff'ffffffffULL;
   sixteen_bytes[1] |= 0x80000000'00000000ULL;
 

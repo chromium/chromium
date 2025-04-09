@@ -15,12 +15,6 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/types/pass_key.h"
-#include "build/build_config.h"
-
-namespace content {
-class FileSystemAccessManagerImpl;
-}
 
 namespace base {
 
@@ -37,21 +31,6 @@ class BASE_EXPORT Uuid {
   // A cryptographically secure random source will be used, but consider using
   // UnguessableToken for greater type-safety if Uuid format is unnecessary.
   static Uuid GenerateRandomV4();
-
-  // Formats a sequence of 16 random bytes as a Uuid in the form of version 4.
-  // `input` must:
-  // - have been randomly generated (e.g. created from an UnguessableToken), and
-  // - be of length 16 (this is checked at compile-time).
-  // Despite taking 128 bits of randomness, certain bits will always be
-  // masked over to adhere to the V4 Uuid format.
-  // Useful in cases where an opaque identifier that is generated from stable
-  // inputs needs to be formatted as a V4 Uuid. Currently only exposed to the
-  // File System Access API to return a V4 Uuid for the getUniqueId() method.
-  static Uuid FormatRandomDataAsV4(
-      base::span<const uint8_t, kGuidV4InputLength> input,
-      base::PassKey<content::FileSystemAccessManagerImpl> pass_key);
-  static Uuid FormatRandomDataAsV4ForTesting(
-      base::span<const uint8_t, kGuidV4InputLength> input);
 
   // Returns a valid Uuid if the input string conforms to the Uuid format, and
   // an invalid Uuid otherwise. Note that this does NOT check if the hexadecimal
