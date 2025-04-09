@@ -64,7 +64,8 @@ uint32_t DiscoverAssistiveTech() {
   DWORD narrator_value = 0;
   if (base::win::RegKey(HKEY_CURRENT_USER, kNarratorRegistryKey,
                         KEY_QUERY_VALUE)
-          .ReadValueDW(kNarratorRunningStateValueName, &narrator_value) &&
+              .ReadValueDW(kNarratorRunningStateValueName, &narrator_value) ==
+          ERROR_SUCCESS &&
       narrator_value) {
     discovered_ats |= kNarrator;
   }
