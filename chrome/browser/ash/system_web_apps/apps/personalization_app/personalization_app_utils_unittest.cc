@@ -385,13 +385,15 @@ TEST_F(PersonalizationAppUtilsTest, IsEligibleForSeaPenTextInputEnglishUsers) {
   // Set application locale.
   g_browser_process->SetApplicationLocale("en-GB");
 
-  ASSERT_TRUE(IsSystemInEnglishLanguage());
+  ASSERT_TRUE(IsSystemInSupportedLanguage());
   ASSERT_TRUE(IsEligibleForSeaPenTextInput(regular_profile));
 }
 
 TEST_F(PersonalizationAppUtilsTest,
-       IsEligibleForSeaPenTextInputNonEnglishUsers) {
-  base::test::ScopedFeatureList features(features::kSeaPenTextInput);
+       IsEligibleForSeaPenTextInputNonEnglishUsers_TranslationDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kSeaPenTextInput},
+                            {features::kSeaPenTextInputTranslation});
   const std::string email = "unknown@example.com";
   auto* regular_profile = profile_manager().CreateTestingProfile(email);
   auto* identity_manager =
@@ -415,7 +417,72 @@ TEST_F(PersonalizationAppUtilsTest,
   // Set application locale.
   g_browser_process->SetApplicationLocale("de");
 
-  ASSERT_FALSE(IsSystemInEnglishLanguage());
+  ASSERT_FALSE(IsSystemInSupportedLanguage());
+  ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile));
+}
+
+TEST_F(PersonalizationAppUtilsTest,
+       IsEligibleForSeaPenTextInputSupportedLanguageUsers_TranslationEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {features::kSeaPenTextInput, features::kSeaPenTextInputTranslation}, {});
+  const std::string email = "unknown@example.com";
+  auto* regular_profile = profile_manager().CreateTestingProfile(email);
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(regular_profile);
+  // Set up gaia id.
+  ash::FakeChromeUserManager* user_manager =
+      static_cast<ash::FakeChromeUserManager*>(
+          user_manager::UserManager::Get());
+  AccountInfo primary_account = signin::MakePrimaryAccountAvailable(
+      identity_manager, email, signin::ConsentLevel::kSignin);
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId(email, primary_account.gaia);
+  user_manager->AddUser(account_id);
+  user_manager->LoginUser(account_id);
+
+  // Set up capability.
+  AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+  mutator.set_can_use_manta_service(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, primary_account);
+
+  // Set application locale.
+  g_browser_process->SetApplicationLocale("de");
+
+  ASSERT_TRUE(IsSystemInSupportedLanguage());
+  ASSERT_TRUE(IsEligibleForSeaPenTextInput(regular_profile));
+}
+
+TEST_F(
+    PersonalizationAppUtilsTest,
+    IsEligibleForSeaPenTextInputUnsupportedLanguageUsers_TranslationEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {features::kSeaPenTextInput, features::kSeaPenTextInputTranslation}, {});
+  const std::string email = "unknown@example.com";
+  auto* regular_profile = profile_manager().CreateTestingProfile(email);
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(regular_profile);
+  // Set up gaia id.
+  ash::FakeChromeUserManager* user_manager =
+      static_cast<ash::FakeChromeUserManager*>(
+          user_manager::UserManager::Get());
+  AccountInfo primary_account = signin::MakePrimaryAccountAvailable(
+      identity_manager, email, signin::ConsentLevel::kSignin);
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId(email, primary_account.gaia);
+  user_manager->AddUser(account_id);
+  user_manager->LoginUser(account_id);
+
+  // Set up capability.
+  AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+  mutator.set_can_use_manta_service(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, primary_account);
+
+  // Set application locale.
+  g_browser_process->SetApplicationLocale("no");
+
+  ASSERT_FALSE(IsSystemInSupportedLanguage());
   ASSERT_FALSE(IsEligibleForSeaPenTextInput(regular_profile));
 }
 }  // namespace
