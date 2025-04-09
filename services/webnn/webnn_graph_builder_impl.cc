@@ -41,16 +41,6 @@ using IdToOperandMap = base::flat_map<uint64_t, mojom::OperandPtr>;
 
 using DependentOperationsMap = base::flat_map<uint64_t, base::flat_set<size_t>>;
 
-webnn::InputOperandLayout MojoInputOperandLayoutToComponent(
-    webnn::mojom::InputOperandLayout layout) {
-  switch (layout) {
-    case webnn::mojom::InputOperandLayout::kChannelsFirst:
-      return webnn::InputOperandLayout::kNchw;
-    case webnn::mojom::InputOperandLayout::kChannelsLast:
-      return webnn::InputOperandLayout::kNhwc;
-  }
-}
-
 webnn::Pool2dKind FromMojoPool2dType(mojom::Pool2d::Kind kind) {
   switch (kind) {
     case mojom::Pool2d::Kind::kAveragePool2d:
@@ -479,6 +469,7 @@ webnn::GruCellAttributes ConvertToGruCellAttributes(
 }
 
 webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
+    const webnn::ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const mojom::InstanceNormalization& instance_normalization) {
   webnn::InstanceNormalizationAttributes component_attributes;
@@ -494,8 +485,7 @@ webnn::InstanceNormalizationAttributes ConvertToInstanceNormalizationAttributes(
         *id_to_operand_map.at(bias_operand_id.value());
     component_attributes.bias = bias_operand.descriptor;
   }
-  component_attributes.layout =
-      MojoInputOperandLayoutToComponent(instance_normalization.layout);
+  component_attributes.layout = context_properties.input_operand_layout;
   component_attributes.label = instance_normalization.label;
 
   return component_attributes;
@@ -1887,8 +1877,8 @@ bool OperationValidationContext::ValidateInstanceNormalization(
 
   const auto validated_output = ValidateInstanceNormalizationAndInferOutput(
       *context_properties_, input->descriptor,
-      ConvertToInstanceNormalizationAttributes(*id_to_operand_map_,
-                                               instance_normalization));
+      ConvertToInstanceNormalizationAttributes(
+          *context_properties_, *id_to_operand_map_, instance_normalization));
   if (!validated_output.has_value()) {
     return false;
   }

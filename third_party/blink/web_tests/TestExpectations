@@ -2396,6 +2396,9 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/anonymous-table-box-width-
 # Custom-elements
 crbug.com/1365604 external/wpt/custom-elements/form-associated/ElementInternals-setFormValue.html [ Pass Timeout ]
 
+# `webnn` tests
+crbug.com/407797655 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/instance_normalization.https.any.html?gpu [ Failure ]  # Flaky output
+
 # `wdspec` tests
 external/wpt/webdriver/tests/classic/element_send_keys/interactability.py [ Failure ]  # Flaky output
 external/wpt/webdriver/tests/classic/element_click/navigate.py [ Failure ]  # Flaky output

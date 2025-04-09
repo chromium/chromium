@@ -358,7 +358,8 @@ union PaddingMode {
 
 // This operator performs the following normalization, defined as:
 // Output = scale * (input - mean) / sqrt(variance + epsilon) + bias, where
-// mean and variance are computed per instance per channel. The specified
+// mean and variance are computed per instance per channel. The input must
+// be in the layout defined by ContextProperties.input_operand_layout. The
 // layout determines how to choose the channel.
 struct InstanceNormalization {
   // The input operand (referenced by input_operand_id) must be distinct from
@@ -375,8 +376,6 @@ struct InstanceNormalization {
   // A float scalar which specifies a small value to prevent computational
   // error due to divide-by-zero.
   float epsilon = 1e-5;
-  // The layout format of the input.
-  InputOperandLayout layout;
   // User defined label from MLOperatorOptions.
   string label;
 };

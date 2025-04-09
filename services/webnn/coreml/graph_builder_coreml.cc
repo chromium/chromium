@@ -3908,11 +3908,6 @@ GraphBuilderCoreml::AddOperationForInstanceNormalization(
   CHECK(context_properties_.data_type_limits.instance_normalization_input
             .Supports(GetOperand(operation.input_operand_id).descriptor));
 
-  if (operation.layout != mojom::InputOperandLayout::kChannelsFirst) {
-    // TODO(crbug.com/338398666) Support channels-last by adding transposes.
-    return NewNotSupportedError("Unsupported input layout.");
-  }
-
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
   op->set_type(kOpInstanceNormalizationTypeName);
   RETURN_IF_ERROR(SetInputFromOperand(*op->mutable_inputs(), kOpParamX,

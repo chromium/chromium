@@ -773,8 +773,6 @@ struct Conv2dTester {
     std::vector<uint32_t> strides = {1, 1};
     std::vector<uint32_t> dilations = {1, 1};
     uint32_t groups = 1;
-    mojom::InputOperandLayout input_layout =
-        mojom::InputOperandLayout::kChannelsFirst;
     std::optional<OperandInfo<T>> bias;
   };
   Conv2dAttributes attributes;
@@ -2205,8 +2203,6 @@ struct InstanceNormalizationTester {
   struct InstanceNormalizationAttributes {
     std::optional<uint64_t> scale_operand_id;
     std::optional<uint64_t> bias_operand_id;
-    mojom::InputOperandLayout layout =
-        mojom::InputOperandLayout::kChannelsFirst;
     float epsilon = 1e-5;
   };
   InstanceNormalizationAttributes attributes;
@@ -3240,7 +3236,6 @@ struct Pool2dAttributes {
   std::vector<uint32_t> padding;
   std::vector<uint32_t> strides;
   std::vector<uint32_t> dilations;
-  mojom::InputOperandLayout layout;
 };
 
 // Test building a graph in the following topology.
@@ -3274,14 +3269,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsThirdOperator) {
   // Max pooling.
   uint64_t output_operand_id =
       builder.BuildOutput("output", {1, 1, 2, 2}, OperandDataType::kFloat32);
-  builder.BuildPool2d(
-      mojom::Pool2d::Kind::kMaxPool2d, intermediate_2_operand_id,
-      output_operand_id,
-      Pool2dAttributes{.window_dimensions = {1, 1},
-                       .padding = {0, 0, 0, 0},
-                       .strides = {1, 1},
-                       .dilations = {1, 1},
-                       .layout = mojom::InputOperandLayout::kChannelsFirst});
+  builder.BuildPool2d(mojom::Pool2d::Kind::kMaxPool2d,
+                      intermediate_2_operand_id, output_operand_id,
+                      Pool2dAttributes{.window_dimensions = {1, 1},
+                                       .padding = {0, 0, 0, 0},
+                                       .strides = {1, 1},
+                                       .dilations = {1, 1}});
 
   base::flat_map<std::string, base::span<const float>> named_inputs;
   std::vector<float> input_data = {1, 1, 1, 1};
@@ -3319,14 +3312,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsSecondOperator) {
   // Max pooling.
   uint64_t intermediate_2_operand_id =
       builder.BuildIntermediateOperand({1, 1, 2, 2}, OperandDataType::kFloat32);
-  builder.BuildPool2d(
-      mojom::Pool2d::Kind::kMaxPool2d, intermediate_1_operand_id,
-      intermediate_2_operand_id,
-      Pool2dAttributes{.window_dimensions = {1, 1},
-                       .padding = {0, 0, 0, 0},
-                       .strides = {1, 1},
-                       .dilations = {1, 1},
-                       .layout = mojom::InputOperandLayout::kChannelsFirst});
+  builder.BuildPool2d(mojom::Pool2d::Kind::kMaxPool2d,
+                      intermediate_1_operand_id, intermediate_2_operand_id,
+                      Pool2dAttributes{.window_dimensions = {1, 1},
+                                       .padding = {0, 0, 0, 0},
+                                       .strides = {1, 1},
+                                       .dilations = {1, 1}});
 
   // Relu.
   uint64_t output_operand_id =
@@ -3361,14 +3352,12 @@ TEST_F(WebNNGraphImplBackendTest, BuildMaxPooingAsFirstOperator) {
       builder.BuildInput("input_a", {1, 1, 2, 2}, OperandDataType::kFloat32);
   uint64_t intermediate_1_operand_id =
       builder.BuildIntermediateOperand({1, 1, 2, 2}, OperandDataType::kFloat32);
-  builder.BuildPool2d(
-      mojom::Pool2d::Kind::kMaxPool2d, input_a_operand_id,
-      intermediate_1_operand_id,
-      Pool2dAttributes{.window_dimensions = {1, 1},
-                       .padding = {0, 0, 0, 0},
-                       .strides = {1, 1},
-                       .dilations = {1, 1},
-                       .layout = mojom::InputOperandLayout::kChannelsFirst});
+  builder.BuildPool2d(mojom::Pool2d::Kind::kMaxPool2d, input_a_operand_id,
+                      intermediate_1_operand_id,
+                      Pool2dAttributes{.window_dimensions = {1, 1},
+                                       .padding = {0, 0, 0, 0},
+                                       .strides = {1, 1},
+                                       .dilations = {1, 1}});
 
   // Add operation.
   uint64_t input_b_operand_id =
