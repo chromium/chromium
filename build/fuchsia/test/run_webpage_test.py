@@ -55,10 +55,7 @@ class WebpageTestRunner(TestRunner):
     def run_test(self):
         catch_sigterm()
         self._runner.start()
-        device_ip = get_ip_address(self._target_id, ipv4_only=True)
-        addr = device_ip.exploded
-        if device_ip.version == 6:
-            addr = '[' + addr + ']'
+        addr = get_ip_address(self._target_id, ipv4_only=True).exploded
         addr += ':' + str(self._runner.devtools_port)
         if self.port_file:
             with open(self.port_file, 'w') as out:
