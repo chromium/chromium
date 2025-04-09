@@ -192,6 +192,7 @@ struct WebClientInitialState {
   bool open_os_settings_api_is_allowed;
   // Reflects the enabling state of always-detached mode.
   bool always_detached_mode;
+  bool enable_zero_state_suggestions;
 };
 
 // Options for getting tab context.
@@ -288,6 +289,22 @@ enum ScrollToErrorReason {
 
   // The search range starting from DOMNodeId did not result in a valid range.
   [MinVersion=5] kSearchRangeInvalid,
+};
+
+// A single suggestion.
+struct SuggestionContent {
+  // The suggestion. Always provided.
+  string suggestion;
+};
+
+// A list of suggestions for the currently focused tab.
+struct ZeroStateSuggestions {
+  // The list of suggestions to present to the user.
+  array<SuggestionContent> suggestions;
+  // The unique tab id of the tab associated with the suggestions.
+  int32 tab_id;
+  // The url of the tab associated with the suggestions.
+  url.mojom.Url tab_url;
 };
 
 // Access to the browser from the web client by proxy through the WebUI.
@@ -448,6 +465,11 @@ interface WebClientHandler {
 
   // Get the status of the OS Microphone permission currently granted to Chrome.
   GetOsMicrophonePermissionStatus() => (bool enabled);
+
+  // Returns zero-state suggestions from the currently active tab.
+  GetZeroStateSuggestionsForFocusedTab(bool? is_first_run)
+      => (ZeroStateSuggestions suggestions);
+
 };
 
 // Data sent from the browser to the web client with panel opening information.

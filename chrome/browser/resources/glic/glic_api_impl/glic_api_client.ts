@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GlicBrowserHost, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
@@ -245,6 +245,11 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
       (this as GlicBrowserHost).canAttachPanel = undefined;
       (this as GlicBrowserHost).getPanelState = undefined;
     }
+
+    if (!state.enableZeroStateSuggestions) {
+      (this as GlicBrowserHost).getZeroStateSuggestionsForFocusedTab =
+          undefined;
+    }
   }
 
   webClientInitialized(
@@ -470,6 +475,13 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
 
   getOsHotkeyState(): ObservableValueImpl<{hotkey: string}> {
     return this.osHotkeyState;
+  }
+
+  async getZeroStateSuggestionsForFocusedTab?
+      (isFirstRun?: boolean): Promise<ZeroStateSuggestions> {
+    const zeroStateResult = await this.sender.requestWithResponse(
+        'glicBrowserGetZeroStateSuggestionsForFocusedTab', {isFirstRun});
+    return zeroStateResult.suggestions;
   }
 }
 

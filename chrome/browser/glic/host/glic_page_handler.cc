@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_enabling.h"
 #include "chrome/browser/glic/glic_hotkey.h"
@@ -325,6 +326,9 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 #endif
 
     state->always_detached_mode = GlicWindowController::AlwaysDetached();
+
+    state->enable_zero_state_suggestions = base::FeatureList::IsEnabled(
+        contextual_cueing::kGlicZeroStateSuggestions);
 
     local_state_pref_change_registrar_.Init(g_browser_process->local_state());
     local_state_pref_change_registrar_.Add(
@@ -650,6 +654,25 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (web_client_) {
       web_client_->NotifyBrowserIsOpenChanged(is_open);
     }
+  }
+
+  void GetZeroStateSuggestionsForFocusedTab(
+      std::optional<bool> is_fre,
+      GetZeroStateSuggestionsForFocusedTabCallback callback) override {
+    if (!base::FeatureList::IsEnabled(
+            contextual_cueing::kGlicZeroStateSuggestions)) {
+      mojo::ReportBadMessage(
+          "Client should not call "
+          "GetZeroStateSuggestionsForFocusedTab "
+          "without the GlicZeroStateSuggestions feature enabled.");
+      return;
+    }
+    // TODO (crbug.com/405185362) Wire this to the correct service for the
+    // current tab.
+
+    auto suggestions = glic::mojom::ZeroStateSuggestions::New();
+
+    std::move(callback).Run(std::move(suggestions));
   }
 
   void OnOsPermissionSettingChanged(ContentSettingsType content_type,

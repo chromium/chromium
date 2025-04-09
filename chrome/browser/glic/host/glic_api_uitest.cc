@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -61,6 +62,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithOneTab",
       "GlicApiTestWithFastTimeout",
       "GlicApiTestSystemSettingsTest",
+      "GlicApiTestWithOneTabAndContextualCueing",
   };
 }
 
@@ -269,6 +271,29 @@ class GlicApiTestWithOneTab : public GlicApiTest {
                     OpenGlicWindow(GlicWindowMode::kDetached,
                                    GlicInstrumentMode::kHostAndContents));
   }
+};
+
+class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
+ public:
+  GlicApiTestWithOneTabAndContextualCueing() {
+    contextual_cueing_features_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGlic,
+          {
+              {"glic-default-hotkey", "Ctrl+G"},
+              // Shorten load timeouts.
+              {features::kGlicPreLoadingTimeMs.name, "20"},
+              {features::kGlicMinLoadingTimeMs.name, "40"},
+          }},
+         {contextual_cueing::kGlicZeroStateSuggestions, {}}},
+        /*disabled_features=*/
+        {
+            features::kGlicWarming,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList contextual_cueing_features_;
 };
 
 class GlicApiTestWithFastTimeout : public GlicApiTest {
@@ -580,6 +605,11 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testInitiallyNotResizable) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabState) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
+                       testGetZeroStateSuggestions) {
   ExecuteJsTest();
 }
 

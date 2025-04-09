@@ -18,7 +18,7 @@ import type {BrowserProxy} from '../browser_proxy.js';
 import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import type {FocusedTabData as FocusedTabDataMojo, GetTabContextOptionsMojoType as TabContextOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, ScrollToSelector as ScrollToSelectorMojo, TabContextMojoType as TabContextMojo, TabData as TabDataMojo, WebClientHandlerInterface, WebClientInterface} from '../glic.mojom-webui.js';
 import {SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode, WebClientReceiver, WebClientSizingMode} from '../glic.mojom-webui.js';
-import type {ActInFocusedTabParams, DraggableArea, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData} from '../glic_api/glic_api.js';
+import type {ActInFocusedTabParams, DraggableArea, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, WebPageData, ZeroStateSuggestions} from '../glic_api/glic_api.js';
 import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, ScrollToErrorReason} from '../glic_api/glic_api.js';
 import {ObservableValue} from '../observable.js';
 import type {ObservableValueReadOnly} from '../observable.js';
@@ -520,6 +520,23 @@ class HostMessageHandler implements HostMessageHandlerInterface {
   glicBrowserGetOsMicrophonePermissionStatus(): Promise<{enabled: boolean}> {
     return this.handler.getOsMicrophonePermissionStatus();
   }
+
+  async glicBrowserGetZeroStateSuggestionsForFocusedTab(request: {
+    isFirstRun?: boolean,
+  }): Promise<{suggestions: ZeroStateSuggestions}> {
+    const zeroStateResult =
+        await this.handler.getZeroStateSuggestionsForFocusedTab(
+            optionalFromClient(request.isFirstRun));
+
+    const zeroStateData = zeroStateResult.suggestions;
+    return {
+      suggestions: {
+        tabId: tabIdToClient(zeroStateData.tabId),
+        url: urlToClient(zeroStateData.tabUrl),
+        suggestions: zeroStateData.suggestions,
+      },
+    };
+  }
 }
 
 class OneShotTimer {
@@ -833,6 +850,13 @@ function optionalWindowIdFromClient(windowId: string|undefined): number|null {
 function optionalToClient<T>(value: T|null) {
   if (value === null) {
     return undefined;
+  }
+  return value;
+}
+
+function optionalFromClient<T>(value: T|undefined) {
+  if (value === undefined) {
+    return null;
   }
   return value;
 }
