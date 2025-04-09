@@ -4516,7 +4516,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.UPM.LoginDbDeprecationExport.Progress"
-    enum="LoginDbDeprecationExportResult" expires_after="2025-06-30">
+    enum="LoginDbDeprecationExportProgress" expires_after="2025-06-30">
   <owner>ioanap@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>

@@ -516,6 +516,16 @@ chromium-metrics-reviews@google.com.
              policy"/>
 </enum>
 
+<!-- LINT.IfChange(LoginDbDeprecationExportProgress) -->
+
+<enum name="LoginDbDeprecationExportProgress">
+  <int value="0" label="Scheduled"/>
+  <int value="1" label="Started"/>
+  <int value="2" label="Finished"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/password_manager/core/browser/export/login_db_deprecation_runner.h:LoginDbDeprecationExportProgress) -->
+
 <!-- LINT.IfChange(LoginDbDeprecationExportResult) -->
 
 <enum name="LoginDbDeprecationExportResult">
