@@ -400,13 +400,19 @@ public class IdentityDiscController
         String userName = profileData.getFullName();
         if (profileData.hasDisplayableEmailAddress()) {
             return mContext.getString(
-                    R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email,
+                    mIdentityError == SyncError.NO_ERROR
+                            ? R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email
+                            : R.string
+                                    .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
                     userName,
                     email);
         }
 
         return mContext.getString(
-                R.string.accessibility_toolbar_btn_identity_disc_with_name, userName);
+                mIdentityError == SyncError.NO_ERROR
+                        ? R.string.accessibility_toolbar_btn_identity_disc_with_name
+                        : R.string.accessibility_toolbar_btn_identity_disc_error_with_name,
+                userName);
     }
 
     private boolean isProfileInitialized() {
