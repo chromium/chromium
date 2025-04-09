@@ -31,6 +31,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/app_utils.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
 #include "chrome/updater/persisted_data.h"

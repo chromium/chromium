@@ -36,6 +36,7 @@ include_rules = [
   "+chrome/services/removable_storage_writer/public",
   "+chrome/services/util_win/public",
   "+chrome/updater/app/server/win/updater_legacy_idl.h",
+  "+chrome/updater/branded_constants.h",
   "+chrome/updater/constants.h",
   "+chrome/updater/updater_scope.h",
   "+chrome/updater/update_service.h",

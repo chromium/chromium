@@ -21,7 +21,7 @@
 #include "base/test/bind.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/updater/constants.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"

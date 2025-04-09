@@ -10,6 +10,7 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/enterprise_companion/global_constants.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 
 namespace updater {

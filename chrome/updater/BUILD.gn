@@ -562,7 +562,7 @@ if (is_win || is_mac || is_linux) {
 
   source_set("public_sources") {
     sources = [
-      "constants.cc",
+      "branded_constants.h",
       "constants.h",
       "enum_traits.h",
       "ipc/ipc_support.cc",
@@ -857,9 +857,9 @@ if (is_win || is_mac || is_linux) {
       "app/app_server_unittest.cc",
       "app/app_uninstall_unittest.cc",
       "app/app_utils_unittest.cc",
+      "branded_constants_unittest.cc",
       "certificate_tag_unittest.cc",
       "cleanup_task_unittest.cc",
-      "constants_unittest.cc",
       "device_management/dm_client_unittest.cc",
       "device_management/dm_message_unittest.cc",
       "device_management/dm_policy_builder_for_testing.cc",

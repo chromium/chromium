@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/updater/constants.h"
+#include "chrome/updater/branded_constants.h"
 
 #include <string>
 
@@ -12,7 +12,7 @@
 
 namespace updater {
 
-TEST(ConstantsTest, SetupMutex) {
+TEST(BrandedConstantsTest, SetupMutex) {
   EXPECT_TRUE(base::EndsWith(kSetupMutex, kUpdaterVersion,
                              base::CompareCase::INSENSITIVE_ASCII));
 }

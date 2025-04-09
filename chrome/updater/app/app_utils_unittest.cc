@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "chrome/enterprise_companion/global_constants.h"
-#include "chrome/updater/constants.h"
+#include "chrome/updater/branded_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace updater {

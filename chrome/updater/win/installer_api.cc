@@ -27,6 +27,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/enum_traits.h"
 #include "chrome/updater/updater_scope.h"

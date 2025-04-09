@@ -16,7 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "chrome/browser/updater/browser_updater_client_testutils.h"
-#include "chrome/updater/constants.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"

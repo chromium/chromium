@@ -16,7 +16,7 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "chrome/updater/constants.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/update_usage_stats_task.h"
 #include "chrome/updater/updater_branding.h"
