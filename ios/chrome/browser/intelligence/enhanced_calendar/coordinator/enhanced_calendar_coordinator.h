@@ -7,9 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-namespace ios::provider {
-enum class AddToCalendarIntegrationProvider;
-}  // namespace ios::provider
+@class EnhancedCalendarConfiguration;
 
 // The coordinator for the Enhanced Calendar feature's UI.
 @interface EnhancedCalendarCoordinator : ChromeCoordinator
@@ -17,13 +15,13 @@ enum class AddToCalendarIntegrationProvider;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// `integrationProvider` is the "add to calendar" integration provider to be
-// shown to the user.
+// `enhancedCalendarConfig` holds all the configuration needed for the Enhanced
+// Calendar feature.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                       integrationProvider:
-                           (ios::provider::AddToCalendarIntegrationProvider)
-                               integrationProvider NS_DESIGNATED_INITIALIZER;
+                    enhancedCalendarConfig:
+                        (EnhancedCalendarConfiguration*)enhancedCalendarConfig
+    NS_DESIGNATED_INITIALIZER;
 
 @end
 

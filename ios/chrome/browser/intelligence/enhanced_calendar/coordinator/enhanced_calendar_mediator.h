@@ -13,17 +13,15 @@ namespace web {
 class WebState;
 }  // namespace web
 
-namespace ios::provider {
-enum class AddToCalendarIntegrationProvider;
-}  // namespace ios::provider
+@class EnhancedCalendarConfiguration;
 
 // The mediator for the Enhanced Calendar feature's UI.
 @interface EnhancedCalendarMediator : NSObject <EnhancedCalendarMutator>
 
 - (instancetype)initWithWebState:(web::WebState*)webState
-             integrationProvider:
-                 (ios::provider::AddToCalendarIntegrationProvider)
-                     integrationProvider NS_DESIGNATED_INITIALIZER;
+          enhancedCalendarConfig:
+              (EnhancedCalendarConfiguration*)enhancedCalendarConfig
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

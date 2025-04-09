@@ -12,18 +12,19 @@
   // The web state that this mediator is associated with.
   raw_ptr<web::WebState> _webState;
 
-  // The integration provider for the "add to calendar" experience.
-  ios::provider::AddToCalendarIntegrationProvider _integrationProvider;
+  // The config object holding everything needed to complete an Enhanced
+  // Calendar model request, and which will hold the parsed response values to
+  // present the final "add to calendar" UI.
+  EnhancedCalendarConfiguration* _enhancedCalendarConfig;
 }
 
 - (instancetype)initWithWebState:(web::WebState*)webState
-             integrationProvider:
-                 (ios::provider::AddToCalendarIntegrationProvider)
-                     integrationProvider {
+          enhancedCalendarConfig:
+              (EnhancedCalendarConfiguration*)enhancedCalendarConfig {
   self = [super init];
   if (self) {
     _webState = webState;
-    _integrationProvider = integrationProvider;
+    _enhancedCalendarConfig = enhancedCalendarConfig;
   }
   return self;
 }

@@ -12,6 +12,7 @@ source_set("coordinator") {
 
   deps = [
     "//base",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/model:config",
     "//ios/chrome/browser/intelligence/enhanced_calendar/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

@@ -5,31 +5,33 @@
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_mediator.h"
+#import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/ui/enhanced_calendar_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/public/provider/chrome/browser/add_to_calendar/add_to_calendar_api.h"
 
 @implementation EnhancedCalendarCoordinator {
-  // The integration provider for the "add to calendar" experience.
-  ios::provider::AddToCalendarIntegrationProvider _integrationProvider;
+  // The config object holding everything needed to complete an Enhanced
+  // Calendar request and start the UI flow.
+  EnhancedCalendarConfiguration* _enhancedCalendarConfig;
 
   // The mediator for handling the Enhanced Calendar service and its model
   // request(s).
   EnhancedCalendarMediator* _mediator;
 
-  // The view controller presented as the Enhanced Calendar interstitial.
+  // The view controller which represents the Enhanced Calendar interstitial
+  // (bottom sheet).
   EnhancedCalendarViewController* _viewController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                       integrationProvider:
-                           (ios::provider::AddToCalendarIntegrationProvider)
-                               integrationProvider {
+                    enhancedCalendarConfig:
+                        (EnhancedCalendarConfiguration*)enhancedCalendarConfig {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _integrationProvider = integrationProvider;
+    _enhancedCalendarConfig = enhancedCalendarConfig;
   }
   return self;
 }
@@ -40,8 +42,9 @@
   _viewController = [[EnhancedCalendarViewController alloc] init];
 
   _mediator = [[EnhancedCalendarMediator alloc]
-         initWithWebState:self.browser->GetWebStateList()->GetActiveWebState()
-      integrationProvider:_integrationProvider];
+            initWithWebState:self.browser->GetWebStateList()
+                                 ->GetActiveWebState()
+      enhancedCalendarConfig:_enhancedCalendarConfig];
 
   _viewController.mutator = _mediator;
 
@@ -52,7 +55,8 @@
 
 - (void)stop {
   [_mediator disconnect];
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
+  [_viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                               completion:nil];
 
   _mediator = nil;
   _viewController = nil;
