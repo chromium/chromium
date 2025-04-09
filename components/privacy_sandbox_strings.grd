@@ -990,6 +990,16 @@
       <message name="IDS_SITE_SETTINGS_DELETE_RWS_STORAGE_DIALOG_TITLE" desc="Title for the dialog that prompts the user to confirm if they would like to delete all data for sites in the related website set." formatter_data="android_java">
         Delete all data?
       </message>
+
+      <!-- ACT - Incognito Tracking Protections Settings Page -->
+      <!-- TODO(crbug.com/408036586): Mark translateable after content is finalized -->
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_TITLE" desc="" translateable="false" formatter_data="android_java">
+        Incognito tracking protections
+      </message>
+
+      <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_ENTRYPOINT_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
+        Manage information sites can use to learn about you in Incognito
+      </message>
     </messages>
   </release>
 </grit>

@@ -40,6 +40,12 @@ found in the LICENSE file.
         android:fragment="org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment"
         app:isPreferenceVisible="false" />
     <Preference
+        android:key="incognito_tracking_protections"
+        android:title="@string/incognito_tracking_protections_page_title"
+        android:summary="@string/incognito_tracking_protections_page_entrypoint_description"
+        android:fragment="org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment"
+        app:isPreferenceVisible="false" />
+    <Preference
         android:key="privacy_sandbox"
         android:title="@string/ad_privacy_link_row_label"
         android:summary="@string/ad_privacy_link_row_sub_label"
