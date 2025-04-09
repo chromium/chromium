@@ -26384,6 +26384,22 @@
             ]
         }
     ],
+    "WebRTC-UseAbsCapTimeForG2gMetric": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20250408"
+                }
+            ]
+        }
+    ],
     "WebRTC-VP8ConferenceTemporalLayers": [
         {
             "platforms": [
@@ -26577,21 +26593,6 @@
                     "disable_features": [
                         "webrtc-hw-decoding"
                     ]
-                }
-            ]
-        }
-    ],
-    "WebRtcUseAbsCapTimeForG2gMetric": [
-        {
-            "platforms": [
-                "linux",
-                "windows",
-                "mac",
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled,_20250408"
                 }
             ]
         }
