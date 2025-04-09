@@ -4,15 +4,17 @@
 
 package org.chromium.chrome.browser.hub;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.hub.HubColorMixer.OverviewModeAlphaObserver;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 
@@ -22,11 +24,12 @@ import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
  * being constructed. Any dependencies already readily available from the {@link
  * LayoutManagerChrome} level are not included.
  */
+@NullMarked
 public class HubLayoutDependencyHolder {
-    private @NonNull final LazyOneshotSupplier<HubManager> mHubManagerSupplier;
-    private @NonNull final LazyOneshotSupplier<ViewGroup> mHubRootViewGroupSupplier;
-    private @NonNull final HubLayoutScrimController mScrimController;
-    private @NonNull final OverviewModeAlphaObserver mOnOverviewAlphaChange;
+    private final LazyOneshotSupplier<HubManager> mHubManagerSupplier;
+    private final LazyOneshotSupplier<ViewGroup> mHubRootViewGroupSupplier;
+    private final HubLayoutScrimController mScrimController;
+    private final OverviewModeAlphaObserver mOnOverviewAlphaChange;
 
     /**
      * @param hubManagerSupplier The supplier of {@link HubManager}.
@@ -41,12 +44,12 @@ public class HubLayoutDependencyHolder {
      *     animations.
      */
     public HubLayoutDependencyHolder(
-            @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
-            @NonNull LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
-            @NonNull ScrimManager scrimManager,
-            @NonNull Supplier<View> scrimAnchorViewSupplier,
-            @NonNull ObservableSupplier<Boolean> isIncognitoSupplier,
-            @NonNull OverviewModeAlphaObserver onOverviewAlphaChange) {
+            LazyOneshotSupplier<HubManager> hubManagerSupplier,
+            LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
+            ScrimManager scrimManager,
+            Supplier<View> scrimAnchorViewSupplier,
+            ObservableSupplier<Boolean> isIncognitoSupplier,
+            OverviewModeAlphaObserver onOverviewAlphaChange) {
         this(
                 hubManagerSupplier,
                 hubRootViewGroupSupplier,
@@ -63,10 +66,10 @@ public class HubLayoutDependencyHolder {
      */
     @VisibleForTesting
     HubLayoutDependencyHolder(
-            @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
-            @NonNull LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
-            @NonNull HubLayoutScrimController scrimController,
-            @NonNull OverviewModeAlphaObserver onOverviewAlphaChange) {
+            LazyOneshotSupplier<HubManager> hubManagerSupplier,
+            LazyOneshotSupplier<ViewGroup> hubRootViewGroupSupplier,
+            HubLayoutScrimController scrimController,
+            OverviewModeAlphaObserver onOverviewAlphaChange) {
         mHubManagerSupplier = hubManagerSupplier;
         mHubRootViewGroupSupplier = hubRootViewGroupSupplier;
         mScrimController = scrimController;
@@ -74,22 +77,22 @@ public class HubLayoutDependencyHolder {
     }
 
     /** Returns the {@link HubManager} creating it if necessary. */
-    public @NonNull HubManager getHubManager() {
-        return mHubManagerSupplier.get();
+    public HubManager getHubManager() {
+        return assumeNonNull(mHubManagerSupplier.get());
     }
 
     /** Returns the root view to attach the Hub to creating it if necessary. */
-    public @NonNull ViewGroup getHubRootView() {
-        return mHubRootViewGroupSupplier.get();
+    public ViewGroup getHubRootView() {
+        return assumeNonNull(mHubRootViewGroupSupplier.get());
     }
 
     /** Returns the {@link HubLayoutScrimController} used for the {@link HubLayout}. */
-    public @NonNull HubLayoutScrimController getScrimController() {
+    public HubLayoutScrimController getScrimController() {
         return mScrimController;
     }
 
     /** Returns the observer to notify when alpha changes during animations. */
-    public @NonNull OverviewModeAlphaObserver getOnOverviewAlphaChange() {
+    public OverviewModeAlphaObserver getOnOverviewAlphaChange() {
         return mOnOverviewAlphaChange;
     }
 }

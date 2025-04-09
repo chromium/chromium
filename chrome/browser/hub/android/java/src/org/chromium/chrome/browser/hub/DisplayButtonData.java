@@ -7,12 +7,15 @@ package org.chromium.chrome.browser.hub;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Combination of text, content description, and icon. Any combination of text and icon both may
  * ultimately be used for the actual button. Allows implementors to delay resolving the underlying
  * Android resources until bind time. This interface should be used directly when implementor is not
  * responsible for handling effect of the button.
  */
+@NullMarked
 public interface DisplayButtonData {
     /** Returns the text that should be shown for this button. */
     String resolveText(Context context);
