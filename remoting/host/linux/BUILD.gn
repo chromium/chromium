@@ -158,6 +158,8 @@ source_set("platform_impls") {
     "desktop_resizer_linux.cc",
     "desktop_resizer_x11.cc",
     "desktop_resizer_x11.h",
+    "ei_sender_session.cc",
+    "ei_sender_session.h",
     "input_injector_constants_linux.h",
     "input_injector_linux.cc",
     "input_injector_x11.cc",
