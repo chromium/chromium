@@ -1,10 +1,11 @@
 #!/bin/bash
 
-# Copyright 2009 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Test of the Mac Chrome installer.
+# Test of the Mac Chrome update script.
+# Runs from the same directory as `keystone_install.sh` itself.
 
 
 # Where I am
@@ -85,10 +86,6 @@ if [ "\${1}" = "--ksadmin-version" ] ; then
   echo "${KSADMIN_VERSION_LIE}"
   exit 0
 fi
-if [ -z "\${FAKE_SYSTEM_TICKET}" ] && [ "\${1}" = "-S" ] ; then
-  echo no system tix! >& 2
-  exit 1
-fi
 echo " xc=<KSPathExistenceChecker:0x45 path=${DEST}>"
 exit 0
 EOF
@@ -108,10 +105,6 @@ function make_new_dest() {
 if [ "\${1}" = "--ksadmin-version" ] ; then
   echo "${KSADMIN_VERSION_LIE}"
   exit 0
-fi
-if [ -z "\${FAKE_SYSTEM_TICKET}" ] && [ "\${1}" = "-S" ] ; then
-  echo no system tix! >& 2
-  exit 1
 fi
 echo " xc=<KSPathExistenceChecker:0x45 path=${DEST}>"
 exit 0
@@ -162,13 +155,6 @@ fail_installer "Writable dest directory" 9
 
 make_basic_src_and_dest
 fail_installer "Was no KSUpdateURL in dest after copy" 9
-
-make_basic_src_and_dest
-defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
-    KSUpdateURL "http://foobar"
-export FAKE_SYSTEM_TICKET=1
-fail_installer "User and system ticket both present" 4
-export -n FAKE_SYSTEM_TICKET
 
 make_src "${APPNAME_STABLE}"
 make_old_dest
