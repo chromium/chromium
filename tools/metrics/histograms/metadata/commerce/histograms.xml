@@ -41,6 +41,18 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
       summary="Tabs between 1 and 90 days since last usage."/>
 </variants>
 
+<histogram name="Commerce.BottomSheet.BrowsingTime" units="ms"
+    expires_after="2025-07-27">
+  <owner>qib@google.com</owner>
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the user browsing time in milliseconds when the commerce bottom
+    sheet is opened. Recorded when user taps to open the bottom sheet until the
+    bottom sheet is closed. Implemented for Android.
+  </summary>
+</histogram>
+
 <histogram name="Commerce.Carts.AddToCartButtonDetection" units="ms"
     expires_after="2024-07-28">
   <owner>yuezhanggg@chromium.org</owner>
@@ -201,6 +213,17 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     valid products. This most commonly means the product has a cluster ID
     associated with it. This is recorded each time a new/updated table is
     requested from the backend.
+  </summary>
+</histogram>
+
+<histogram name="Commerce.Discounts.BottomSheet.ClusterTypeOnCopy"
+    enum="DiscountClusterType" expires_after="2025-07-27">
+  <owner>qib@google.com</owner>
+  <owner>meiliang@chromium.org</owner>
+  <owner>chrome-shopping@google.com</owner>
+  <summary>
+    Records the discount type (page level vs product level) when the users
+    clicks copy button in the commerce bottom sheet. Implemented for Android.
   </summary>
 </histogram>
 

@@ -16,6 +16,7 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:callback_java",
+    "//base:metrics_java",
     "//base:supplier_java",
     "//chrome/browser/commerce/android:commerce_bottom_sheet_content_java",
     "//chrome/browser/commerce/android:java",
