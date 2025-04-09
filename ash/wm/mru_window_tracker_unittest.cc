@@ -204,7 +204,8 @@ TEST_P(MruWindowTrackerOrderTest, Basic) {
   EXPECT_EQ(w5.get(), window_list[3]);
   EXPECT_EQ(w6.get(), window_list[4]);
 
-  auto delegate = std::make_unique<views::WidgetDelegateView>();
+  auto delegate = std::make_unique<views::WidgetDelegateView>(
+      views::WidgetDelegateView::CreatePassKey());
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
   std::unique_ptr<views::Widget> modal =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,

@@ -57,7 +57,8 @@ class CandidateViewTest : public views::ViewsTestBase {
         CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
                      views::Widget::InitParams::TYPE_WINDOW));
 
-    init_params.delegate = new views::WidgetDelegateView();
+    init_params.delegate = new views::WidgetDelegateView(
+        views::WidgetDelegateView::CreatePassKey());
 
     container_ = init_params.delegate->GetContentsView();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(

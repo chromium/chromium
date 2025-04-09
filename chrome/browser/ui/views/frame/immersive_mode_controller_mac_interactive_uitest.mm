@@ -79,7 +79,8 @@ class ImmersiveModeControllerMacInteractiveTest : public InProcessBrowserTest {
     params.parent = browser_view->GetWidget()->GetNativeView();
     params.z_order = ui::ZOrderLevel::kNormal;
 
-    params.delegate = new views::WidgetDelegateView();
+    params.delegate = new views::WidgetDelegateView(
+        views::WidgetDelegateView::CreatePassKey());
 
     widget_ = std::make_unique<views::Widget>();
     widget_->Init(std::move(params));

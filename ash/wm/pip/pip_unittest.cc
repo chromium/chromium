@@ -53,7 +53,8 @@ class PipTest : public AshTestBase {
     std::unique_ptr<views::Widget> widget(new views::Widget);
     views::Widget::InitParams params(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-    params.delegate = new views::WidgetDelegateView();
+    params.delegate = new views::WidgetDelegateView(
+        views::WidgetDelegateView::CreatePassKey());
     params.context = context;
     widget->Init(std::move(params));
     return widget;

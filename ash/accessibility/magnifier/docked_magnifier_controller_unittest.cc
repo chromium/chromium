@@ -156,7 +156,8 @@ class DockedMagnifierTest : public NoSessionAshTestBase {
 
   std::unique_ptr<views::Widget> CreateLockSystemModalWindow(
       const gfx::Rect& bounds) {
-    auto* widget_delegate_view = new views::WidgetDelegateView();
+    auto* widget_delegate_view = new views::WidgetDelegateView(
+        views::WidgetDelegateView::CreatePassKey());
     widget_delegate_view->SetModalType(ui::mojom::ModalType::kSystem);
     return CreateTestWidget(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,

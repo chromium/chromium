@@ -96,7 +96,8 @@ aura::Window* TestChildModalParent::GetModalParent() {
 aura::Window* TestChildModalParent::ShowModalChild() {
   DCHECK(!modal_child_);
 
-  auto child = std::make_unique<views::WidgetDelegateView>();
+  auto child = std::make_unique<views::WidgetDelegateView>(
+      views::WidgetDelegateView::CreatePassKey());
   child->SetModalType(ui::mojom::ModalType::kChild);
   child->SetTitle(u"Examples: Child Modal Window");
   child->SetBackground(views::CreateSolidBackground(kChildColor));

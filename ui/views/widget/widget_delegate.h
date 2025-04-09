@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/pass_key.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
@@ -818,7 +819,12 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   METADATA_HEADER(WidgetDelegateView, View)
 
  public:
+  // Not named `PassKey` as `View::PassKey` already exists in this hierarchy.
+  using WdvPassKey = base::PassKey<WidgetDelegateView>;
+
   WidgetDelegateView();
+  // For use with std::make_unique<>().
+  explicit WidgetDelegateView(WdvPassKey) {}
   WidgetDelegateView(const WidgetDelegateView&) = delete;
   WidgetDelegateView& operator=(const WidgetDelegateView&) = delete;
   ~WidgetDelegateView() override;
@@ -827,6 +833,8 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   Widget* GetWidget() override;
   const Widget* GetWidget() const override;
   View* GetContentsView() override;
+
+  static WdvPassKey CreatePassKey() { return WdvPassKey(); }
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, WidgetDelegateView, View)

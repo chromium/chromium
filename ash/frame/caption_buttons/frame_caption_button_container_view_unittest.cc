@@ -62,7 +62,8 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     views::Widget::InitParams params(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    auto delegate = std::make_unique<views::WidgetDelegateView>();
+    auto delegate = std::make_unique<views::WidgetDelegateView>(
+        views::WidgetDelegateView::CreatePassKey());
     delegate->SetCanMaximize(maximize_allowed == MAXIMIZE_ALLOWED);
     delegate->SetCanMinimize(minimize_allowed == MINIMIZE_ALLOWED);
     delegate->SetCanResize(true);

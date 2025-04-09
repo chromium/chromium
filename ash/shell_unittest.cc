@@ -163,7 +163,8 @@ class ShellTest : public AshTestBase {
  public:
   static std::unique_ptr<views::WidgetDelegateView>
   CreateModalWidgetDelegate() {
-    auto delegate = std::make_unique<views::WidgetDelegateView>();
+    auto delegate = std::make_unique<views::WidgetDelegateView>(
+        views::WidgetDelegateView::CreatePassKey());
     delegate->SetCanResize(true);
     delegate->SetModalType(ui::mojom::ModalType::kSystem);
     delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
@@ -252,7 +253,8 @@ TEST_F(ShellTest, CreateWindowWithPreferredSize) {
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   // Don't specify bounds, parent or context.
   {
-    auto delegate = std::make_unique<views::WidgetDelegateView>();
+    auto delegate = std::make_unique<views::WidgetDelegateView>(
+        views::WidgetDelegateView::CreatePassKey());
     delegate->SetPreferredSize(gfx::Size(400, 300));
     params.delegate = delegate.release();
   }
