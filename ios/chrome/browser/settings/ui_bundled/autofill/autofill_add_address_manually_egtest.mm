@@ -215,13 +215,12 @@ void OpenAddressSettings() {
 // Tests the 'Save' button enabled state when manually adding an address to the
 // account.
 - (void)testButtonEnabledStateAtStartForAccountAddress {
-  // TODO(crbug.com/407506623): Fix EGTests on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
-  }
-
   // The user needs to be signed in for the address to be saved to the account.
   [self openAddAddressView:YES];
+
+  // Scroll down to show the 'Save' button.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Ensure the 'Save' button is initially disabled for an account address.
   [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
@@ -233,11 +232,6 @@ void OpenAddressSettings() {
 
 // Tests the 'Save' button enabled state when manually adding a local address.
 - (void)testButtonEnabledStateAtStartForLocalAddress {
-  // TODO(crbug.com/407506623): Fix EGTests on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
-  }
-
   [self openAddAddressView:NO];
 
   // Ensure the 'Save' button is initially enabled for a local address (user is
@@ -249,16 +243,15 @@ void OpenAddressSettings() {
 // Tests the 'Save' button's enabled state when manually adding an address to
 // the account, validating it against required field population.
 - (void)testButtonEnabledStateForAccountAddress {
-  // TODO(crbug.com/407506623): Fix EGTests on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
-  }
-
   // The user needs to be signed in for the address to be saved to the account.
   [self openAddAddressView:YES];
 
   // Fill the required fields.
   [self fillRequiredFields];
+
+  // Scroll down to show the 'Save' button.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Ensure the 'Save' button's status changes to enabled.
   [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
@@ -287,11 +280,6 @@ void OpenAddressSettings() {
 // Tests that the correct error message is displayed based on the completeness
 // of required address fields during manual address addition.
 - (void)testErrorMessageForAccountAddress {
-  // TODO(crbug.com/407506623): Fix EGTests on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
-  }
-
   // The user needs to be signed in for the address to be saved to the account.
   [self openAddAddressView:YES];
 

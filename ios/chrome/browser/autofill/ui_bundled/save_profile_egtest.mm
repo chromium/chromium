@@ -697,11 +697,6 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
 // TODO(crbug.com/407573862): Re-enable after the test is fixed for
 // ios-fieldtrial-rel.
 - (void)DISABLED_testSaveButtonEnabledStateDependingOnRequiredFields {
-  // TODO(crbug.com/407506623): Fix EGTests on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
-  }
-
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
@@ -723,6 +718,10 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   // Empty the street address field, which is required.
   [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(streetAddressLabel)]
       performAction:grey_replaceText(@"")];
+
+  // Scroll down to show the 'Save' button.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   // Ensure the 'Save' button is disabled.
   [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
