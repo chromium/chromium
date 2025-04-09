@@ -71,6 +71,12 @@ TEST_F(PrivacySandboxNoticeModelTest, SetAndGetFeature) {
   EXPECT_EQ(notice.GetFeature(), &kTestFeatureA);
 }
 
+TEST_F(PrivacySandboxNoticeModelTest, GetStorageName) {
+  Notice notice(kTestNoticeId);
+  notice.SetFeature(&kTestFeatureA);
+  EXPECT_EQ(notice.GetStorageName(), kTestFeatureA.name);
+}
+
 TEST_F(PrivacySandboxNoticeModelTest, SetAndGetTargetApis) {
   Notice notice(kTestNoticeId);
   EXPECT_THAT(notice.GetTargetApis(), IsEmpty());

@@ -124,7 +124,7 @@ void PrivacySandboxNoticeService::EventOccurred(
 
   Notice* notice = it->second.get();
 
-  GetNoticeStorage()->RecordEvent(GetPrefService(), notice->GetFeature()->name,
+  GetNoticeStorage()->RecordEvent(GetPrefService(), notice->GetStorageName(),
                                   event, base::Time::Now());
 
   notice->UpdateTargetApiResults(event);

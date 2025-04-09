@@ -58,7 +58,8 @@ class Notice {
   const std::vector<raw_ptr<NoticeApi>>& GetTargetApis();
   const std::vector<raw_ptr<NoticeApi>>& GetPreReqApis();
   NoticeId GetNoticeId();
-  const base::Feature* GetFeature();
+  const base::Feature* GetFeature() const;
+  const char* GetStorageName() const;
 
   // Gets the type of notice.
   virtual NoticeType GetNoticeType();

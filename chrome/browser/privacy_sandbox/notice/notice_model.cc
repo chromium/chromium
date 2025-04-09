@@ -92,8 +92,13 @@ NoticeId Notice::GetNoticeId() {
   return notice_id_;
 }
 
-const base::Feature* Notice::GetFeature() {
+const base::Feature* Notice::GetFeature() const {
   return feature_;
+}
+
+const char* Notice::GetStorageName() const {
+  CHECK(feature_);
+  return feature_->name;
 }
 
 bool Notice::WasFulfilled() {
