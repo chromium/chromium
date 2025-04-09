@@ -2054,8 +2054,6 @@ static_library("ui") {
       "views/extensions/dialogs/document_scanner_start_scan_confirmation_dialog.cc",
       "views/extensions/dialogs/print_job_confirmation_dialog.cc",
       "views/extensions/dialogs/request_file_system_dialog.cc",
-      "views/extensions/web_file_handlers/web_file_handlers_file_launch_dialog.cc",
-      "views/extensions/web_file_handlers/web_file_handlers_file_launch_dialog.h",
       "views/external_protocol_handler_ash.cc",
       "views/frame/browser_frame_ash.cc",
       "views/frame/browser_frame_ash.h",
