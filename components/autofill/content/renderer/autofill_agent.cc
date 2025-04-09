@@ -379,6 +379,15 @@ bool ShowPredictions(const WebDocument& document,
   return true;
 }
 
+bool IsCheckableElement(const WebFormControlElement& element) {
+  using enum blink::mojom::FormControlType;
+  // We intentionally use `FormControlType()` instead of
+  // `FormControlTypeForAutofill()` because the existing callers do not care if
+  // the field has ever been a password field before.
+  return element && (element.FormControlType() == kInputCheckbox ||  // nocheck
+                     element.FormControlType() == kInputRadio);      // nocheck
+}
+
 gfx::Rect GetCaretBounds(content::RenderFrame& frame) {
   if (auto* frame_widget = frame.GetWebFrame()->LocalRoot()->FrameWidget()) {
     gfx::Rect anchor;
@@ -1710,7 +1719,8 @@ void AutofillAgent::DidChangeFormRelatedElementDynamically(
     const bool is_autofillable_element =
         element.DynamicTo<WebFormElement>() ||
         (maybe_control_element &&
-         form_util::IsAutofillableElement(maybe_control_element));
+         form_util::IsAutofillableElement(maybe_control_element) &&
+         !IsCheckableElement(maybe_control_element));
     switch (form_related_change) {
       case blink::WebFormRelatedChangeType::kAdd:
       case blink::WebFormRelatedChangeType::kRemove:
