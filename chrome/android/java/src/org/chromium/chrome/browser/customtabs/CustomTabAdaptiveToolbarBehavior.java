@@ -87,10 +87,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
         }
     }
 
-    @Override
-    public int resultFilter(List<Integer> segmentationResults) {
-        // If a customized button is specified by dev (or the default 'share' is on), find the first
-        // result from |segmentationResults| that is not present in the customized ones.
+    private boolean isButtonDuplicated(@AdaptiveToolbarButtonVariant int button) {
         boolean hasCustomOpenInBrowser = false;
         boolean hasCustomShare = false;
         for (CustomButtonParams params : mToolbarCustomButtons) {
@@ -103,18 +100,27 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
                     break;
             }
         }
+        return (OPEN_IN_BROWSER == button && hasCustomOpenInBrowser)
+                || (SHARE == button && hasCustomShare);
+    }
 
+    @Override
+    public int resultFilter(List<Integer> segmentationResults) {
+        // If a customized button is specified by dev (or the default 'share' is on), find the first
+        // result from |segmentationResults| that is not present in the customized ones.
         // Try the next best one if the top one is not available.
         for (int i = 0; i < Math.min(segmentationResults.size(), 2); ++i) {
             int result = segmentationResults.get(i);
-            if (!mValidButtons.contains(result)) continue;
-            if ((OPEN_IN_BROWSER == result && hasCustomOpenInBrowser)
-                    || (SHARE == result && hasCustomShare)) {
-                continue;
-            }
-            return result;
+            if (mValidButtons.contains(result) && !isButtonDuplicated(result)) return result;
         }
         return AdaptiveToolbarButtonVariant.UNKNOWN;
+    }
+
+    @Override
+    public boolean canShowManualOverride(@AdaptiveToolbarButtonVariant int manualOverride) {
+        // Manual override should not be shown if the developer specified the same type
+        // in the custom action buttons.
+        return !isButtonDuplicated(manualOverride);
     }
 
     @Override
@@ -125,7 +131,7 @@ public class CustomTabAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior
     @Override
     public @AdaptiveToolbarButtonVariant int getSegmentationDefault() {
         // CCT MTB doesn't provide a default action. The button will be hidden if there is
-        // no action to display. The default is subject to change.
+        // no action to display.
         return AdaptiveToolbarButtonVariant.UNKNOWN;
     }
 }
