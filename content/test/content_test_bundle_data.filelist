@@ -2497,7 +2497,6 @@ data/accessibility/event/caret-move-expected-android.txt
 data/accessibility/event/caret-move-hidden-input-expected-android.txt
 data/accessibility/event/caret-move-hidden-input-expected-auralinux.txt
 data/accessibility/event/caret-move-hidden-input-expected-uia-win.txt
-data/accessibility/event/caret-move-hidden-input-expected-win.txt
 data/accessibility/event/caret-move-hidden-input.html
 data/accessibility/event/caret-move.html
 data/accessibility/event/carousel-with-tabs-expected-android.txt

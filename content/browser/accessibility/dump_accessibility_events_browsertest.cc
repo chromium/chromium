@@ -518,16 +518,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("checked-mixed-changed.html"));
 }
 
-// Flaky on Windows, disabled on Linux: https://crbug.com/1186887
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
-  DISABLED_AccessibilityEventsCaretMoveHiddenInput
-#else
-#define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
-  AccessibilityEventsCaretMoveHiddenInput
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
-                       MAYBE_AccessibilityEventsCaretMoveHiddenInput) {
+                       AccessibilityEventsCaretMoveHiddenInput) {
   RunEventTest(FILE_PATH_LITERAL("caret-move-hidden-input.html"));
 }
 
