@@ -37,6 +37,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -46,6 +47,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
@@ -56,6 +58,7 @@ import org.chromium.url.GURL;
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.CCT_PREDICTIVE_BACK_GESTURE)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
@@ -121,14 +124,16 @@ public class CustomTabActivityNavigationControllerTest {
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        mNavigationController
+                .getTabObserverForTesting()
+                .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
         verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
     }
 
     @Test
@@ -152,14 +157,16 @@ public class CustomTabActivityNavigationControllerTest {
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        mNavigationController
+                .getTabObserverForTesting()
+                .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
 
         mNavigationController.navigateOnBack();
         histogramWatcher.assertExpected();
         verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
     }
 
     @Test
@@ -242,5 +249,18 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
         verify(env.activity).startActivity(any(), any());
+    }
+
+    @Test
+    public void observerDefaultsToOS_WhenOnlyOneTabRemains() {
+        when(mTabController.onlyOneTabRemaining()).thenReturn(false);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
+        mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+
+        mNavigationController.navigateOnBack();
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
     }
 }

@@ -61,6 +61,7 @@ import org.chromium.url.Origin;
         manifest = Config.NONE,
         shadows = {CustomTabActivityUrlLoadingTest.ShadowOrigin.class})
 @Features.EnableFeatures({
+    ChromeFeatureList.CCT_PREDICTIVE_BACK_GESTURE,
     ChromeFeatureList.CCT_PREWARM_TAB,
     ChromeFeatureList.ANDROID_WEB_APP_LAUNCH_HANDLER
 })

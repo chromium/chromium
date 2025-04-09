@@ -84,12 +84,11 @@ public class CustomTabActivityNavigationController
     /** A handler of back presses. */
     public interface BackHandler {
         /**
-         * Called when back button is pressed, unless already handled by another handler.
-         * The implementation should do one of the following:
-         * 1) Synchronously accept and handle the event and return true;
-         * 2) Synchronously reject the event by returning false;
-         * 3) Accept the event by returning true, handle it asynchronously, and if the handling
-         * fails, trigger the default handling routine by running the defaultBackHandler.
+         * Called when back button is pressed, unless already handled by another handler. The
+         * implementation should do one of the following: 1) Synchronously accept and handle the
+         * event and return true; 2) Synchronously reject the event by returning false; 3) Accept
+         * the event by returning true, handle it asynchronously, and if the handling fails, trigger
+         * the default handling routine by running the defaultBackHandler.
          */
         boolean handleBackPressed(Runnable defaultBackHandler);
     }
@@ -135,6 +134,13 @@ public class CustomTabActivityNavigationController
                 }
 
                 private boolean shouldInterceptBackPress() {
+                    // If this is the first tab created or when all other tabs are closed, we want
+                    // the OS to handle the back event then notify the registered observer that the
+                    // back event has happened.
+                    if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREDICTIVE_BACK_GESTURE)
+                            && mTabController.onlyOneTabRemaining()) {
+                        return false;
+                    }
                     return mTabProvider.getTab() != null
                             && ChromeBrowserInitializer.getInstance().isFullBrowserInitialized();
                 }
@@ -396,10 +402,9 @@ public class CustomTabActivityNavigationController
     }
 
     /**
-     * Sets a criterion to choose a page to land to when close button is pressed.
-     * Only one such criterion can be set.
-     * If no page in the navigation history meets the criterion, or there is no criterion, then
-     * pressing close button will finish the Custom Tab activity.
+     * Sets a criterion to choose a page to land to when close button is pressed. Only one such
+     * criterion can be set. If no page in the navigation history meets the criterion, or there is
+     * no criterion, then pressing close button will finish the Custom Tab activity.
      */
     public void setLandingPageOnCloseCriterion(Predicate<String> criterion) {
         mCloseButtonNavigator.setLandingPageCriteria(criterion);
@@ -442,5 +447,9 @@ public class CustomTabActivityNavigationController
         String assertMsg = "URL used to open browser is null. " + tabInfo + intentDataProviderInfo;
         Log.e(TAG, assertMsg);
         assert false : assertMsg;
+    }
+
+    public CustomTabActivityTabProvider.Observer getTabObserverForTesting() {
+        return mTabObserver;
     }
 }
