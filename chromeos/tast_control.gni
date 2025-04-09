@@ -96,9 +96,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/408102591
   "network.ARCEAPWifiProvisioning.eap_wifi_tls",
 
-  # b/404564227, Failing on jacuzzi, blocking uprev.
-  "oobe.SmokeEndToEnd",
-
   # b/409064294
   "apps.SystemWebAppsInstallGuest",
   "peripherals.LaunchAppFromGuestSession.diagnostics",
