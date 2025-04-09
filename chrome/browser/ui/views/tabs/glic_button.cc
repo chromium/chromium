@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -21,6 +22,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event_constants.h"
@@ -30,6 +32,10 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
+#endif
 
 namespace glic {
 
@@ -94,6 +100,7 @@ void GlicButton::SetIcon(const gfx::VectorIcon& icon) {
 void GlicButton::SetIsShowingNudge(bool is_showing) {
   if (is_showing) {
     SetCloseButtonFocusBehavior(FocusBehavior::ALWAYS);
+    AnnounceNudgeShown();
   } else {
     SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
   }
@@ -190,6 +197,17 @@ std::unique_ptr<ui::SimpleMenuModel> GlicButton::CreateMenuModel() {
 void GlicButton::OnMenuClosed() {
   menu_anchor_higlight_.reset();
   menu_runner_.reset();
+}
+
+void GlicButton::AnnounceNudgeShown() {
+#if BUILDFLAG(ENABLE_GLIC)
+  auto announcement = l10n_util::GetStringFUTF16(
+      IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT,
+      GlicLauncherConfiguration::GetGlobalHotkey().GetShortcutText());
+  GetViewAccessibility().AnnounceAlert(announcement);
+#else
+  NOTIMPLEMENTED();
+#endif
 }
 
 BEGIN_METADATA(GlicButton)

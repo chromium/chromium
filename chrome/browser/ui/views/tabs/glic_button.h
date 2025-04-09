@@ -81,6 +81,10 @@ class GlicButton : public TabStripNudgeButton,
   // Callback when the context menu closes.
   void OnMenuClosed();
 
+  // Called every time the contextual cue is shown to make a screen reader
+  // announcement.
+  void AnnounceNudgeShown();
+
   PrefService* profile_prefs() {
     return tab_strip_controller_->GetProfile()->GetPrefs();
   }
