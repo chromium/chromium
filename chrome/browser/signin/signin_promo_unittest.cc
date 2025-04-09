@@ -13,6 +13,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/signin_promo_util.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -739,6 +740,83 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
   EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile.get()));
 }
 
+class SyncPromoIdentityPillManagerTest : public testing::Test {
+ public:
+  SyncPromoIdentityPillManagerTest()
+      : local_state_(TestingBrowserProcess::GetGlobal()) {
+    // Environment setup for adding an account with cookies to store the
+    // per-account prefs.
+    TestingProfile::Builder builder;
+    builder.AddTestingFactories(
+        IdentityTestEnvironmentProfileAdaptor::
+            GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+                {TestingProfile::TestingFactory{
+                    ChromeSigninClientFactory::GetInstance(),
+                    base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                        &url_loader_factory_)}}));
+    profile_ = builder.Build();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
+    identity_test_env_adaptor_->identity_test_env()->SetTestURLLoaderFactory(
+        &url_loader_factory_);
+  }
+
+  AccountInfo MakeAccountAvailable(std::string_view email) {
+    return identity_test_env_adaptor_->identity_test_env()
+        ->MakeAccountAvailable(
+            identity_test_env_adaptor_->identity_test_env()
+                ->CreateAccountAvailabilityOptionsBuilder()
+                .WithAccessPoint(signin_metrics::AccessPoint::kUnknown)
+                .WithCookie(true)
+                .Build(email));
+  }
+
+  Profile& profile() { return *profile_.get(); }
+
+ private:
+  ScopedTestingLocalState local_state_;
+  network::TestURLLoaderFactory url_loader_factory_;
+  content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
+};
+
+TEST_F(SyncPromoIdentityPillManagerTest, MaxShownCount) {
+  const AccountInfo account = MakeAccountAvailable("test@email.com");
+  const int max_shown_count = 10;
+  SyncPromoIdentityPillManager manager(max_shown_count, /*max_used_count=*/1);
+
+  for (int i = 0; i < max_shown_count; ++i) {
+    // The promo should be shown if the shown count is below the max.
+    EXPECT_TRUE(manager.ShouldShowPromo(profile()));
+    manager.RecordPromoShown(profile());
+  }
+
+  // The promo should not be shown if the shown count is at the max.
+  EXPECT_FALSE(manager.ShouldShowPromo(profile()));
+}
+
+TEST_F(SyncPromoIdentityPillManagerTest, MaxUsedCount) {
+  const AccountInfo account = MakeAccountAvailable("test@email.com");
+  const int max_used_count = 5;
+  SyncPromoIdentityPillManager manager(/*max_shown_count=*/10, max_used_count);
+
+  for (int i = 0; i < max_used_count; ++i) {
+    // The promo should be shown if the used count is below the max.
+    EXPECT_TRUE(manager.ShouldShowPromo(profile()));
+    manager.RecordPromoUsed(profile());
+  }
+
+  // The promo should not be shown if the used count is at the max.
+  EXPECT_FALSE(manager.ShouldShowPromo(profile()));
+}
+
+TEST_F(SyncPromoIdentityPillManagerTest, ShouldNotShowPromoIfNoAccount) {
+  SyncPromoIdentityPillManager manager(/*max_shown_count=*/10,
+                                       /*max_used_count=*/2);
+  EXPECT_FALSE(manager.ShouldShowPromo(profile()));
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin

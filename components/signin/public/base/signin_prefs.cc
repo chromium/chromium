@@ -82,6 +82,16 @@ constexpr char kExtensionsExplicitBrowserSigninEnabled[] =
 constexpr char kBookmarksExplicitBrowserSigninEnabled[] =
     "BookmarksExplicitBrowserSigninEnabled";
 
+// Number of times the sync promo was shown in the identity pill (avatar toolbar
+// button).
+constexpr std::string_view kSyncPromoIdentityPillShownCount =
+    "ChromeSigninSyncPromoIdentityPillShownCount";
+
+// Number of times the sync promo was used (clicked) in the identity pill
+// (avatar toolbar button).
+constexpr std::string_view kSyncPromoIdentityPillUsedCount =
+    "ChromeSigninSyncPromoIdentityPillUsedCount";
+
 }  // namespace
 
 SigninPrefs::SigninPrefs(PrefService& pref_service)
@@ -93,6 +103,8 @@ void SigninPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSigninAccountPrefs);
   registry->RegisterIntegerPref(prefs::kHistorySyncSuccessiveDeclineCount, 0);
   registry->RegisterInt64Pref(prefs::kHistorySyncLastDeclinedTimestamp, 0);
+  registry->RegisterIntegerPref(kSyncPromoIdentityPillShownCount, 0);
+  registry->RegisterIntegerPref(kSyncPromoIdentityPillUsedCount, 0);
 }
 
 bool SigninPrefs::HasAccountPrefs(const GaiaId& gaia_id) const {
@@ -332,6 +344,26 @@ bool SigninPrefs::GetBooleanPrefForAccount(const GaiaId& gaia_id,
 
   // Return the pref value if it exists, otherwise return the default value.
   return account_dict->FindBool(pref).value_or(false);
+}
+
+void SigninPrefs::IncrementSyncPromoIdentityPillShownCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kSyncPromoIdentityPillShownCount);
+}
+
+int SigninPrefs::GetSyncPromoIdentityPillShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kSyncPromoIdentityPillShownCount);
+}
+
+void SigninPrefs::IncrementSyncPromoIdentityPillUsedCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kSyncPromoIdentityPillUsedCount);
+}
+
+int SigninPrefs::GetSyncPromoIdentityPillUsedCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kSyncPromoIdentityPillUsedCount);
 }
 
 void SigninPrefs::SetTimePref(base::Time time,

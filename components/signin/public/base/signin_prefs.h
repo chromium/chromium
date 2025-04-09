@@ -116,6 +116,12 @@ class SigninPrefs {
   void SetBookmarksExplicitBrowserSignin(const GaiaId& gaia_id, bool enabled);
   bool GetBookmarksExplicitBrowserSignin(const GaiaId& gaia_id) const;
 
+  void IncrementSyncPromoIdentityPillShownCount(const GaiaId& gaia_id);
+  int GetSyncPromoIdentityPillShownCount(const GaiaId& gaia_id) const;
+
+  void IncrementSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id);
+  int GetSyncPromoIdentityPillUsedCount(const GaiaId& gaia_id) const;
+
   // Note: `callback` will be notified on every change in the main dictionary
   // and sub-dictionries (account dictionaries).
   static void ObserveSigninPrefsChanges(PrefChangeRegistrar& registrar,
