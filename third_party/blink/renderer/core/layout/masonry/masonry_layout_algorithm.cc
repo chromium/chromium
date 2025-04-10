@@ -316,8 +316,8 @@ ConstraintSpace MasonryLayoutAlgorithm::CreateConstraintSpaceForMeasure(
 
 LayoutUnit MasonryLayoutAlgorithm::CalculateTieThreshold(
     const ComputedStyle& style) const {
-  return style.MasonrySlack() ? LayoutUnit(style.MasonrySlack()->Pixels())
-                              : LayoutUnit();
+  return style.ItemTolerance() ? LayoutUnit(style.ItemTolerance()->Pixels())
+                               : LayoutUnit();
 }
 
 }  // namespace blink

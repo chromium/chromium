@@ -533,8 +533,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.MasonryDirection() == b.MasonryDirection();
     case CSSPropertyID::kMasonryFill:
       return a.MasonryFill() == b.MasonryFill();
-    case CSSPropertyID::kMasonrySlack:
-      return a.MasonrySlack() == b.MasonrySlack();
+    case CSSPropertyID::kItemTolerance:
+      return a.ItemTolerance() == b.ItemTolerance();
     case CSSPropertyID::kMasonryTemplateTracks:
       return a.MasonryTemplateTracks() == b.MasonryTemplateTracks();
     case CSSPropertyID::kMasonryTrackEnd:

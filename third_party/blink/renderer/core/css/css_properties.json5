@@ -4026,14 +4026,14 @@
     },
     {
       // TODO(crbug.com/343257585): We might need to alter the spec's grammar to accept
-      // normal | <length-percentage>. With normal, we use `1em` for slack size.
-      name: "masonry-slack",
+      // normal | <length-percentage>. With normal, we use `1em` for tolerance size.
+      name: "item-tolerance",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "external",
       default_value: "std::nullopt",
       type_name: "std::optional<Length>",
-      converter: "ConvertMasonrySlack",
+      converter: "ConvertItemTolerance",
       typedom_types: ["Length", "Percentage"],
       keywords: ["normal"],
       invalidate: ["layout", "paint"],

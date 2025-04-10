@@ -864,7 +864,7 @@ enum CSSSampleId {
     kTextWrapMode = 805,
     kTextWrapStyle = 806,
     kMasonryTrack = 807,
-    kMasonrySlack = 808,
+    kItemTolerance = 808,
     kCaretAnimation = 809,
     // kViewTransitionCaptureMode = 810,
     kInteractivity = 811,

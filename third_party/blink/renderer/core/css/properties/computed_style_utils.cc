@@ -2144,7 +2144,7 @@ CSSValue* ComputedStyleUtils::ValueForGridPosition(
   return list;
 }
 
-CSSValue* ComputedStyleUtils::ValueForMasonrySlack(
+CSSValue* ComputedStyleUtils::ValueForItemTolerance(
     const std::optional<Length>& slack_length,
     const ComputedStyle& style) {
   return slack_length ? ZoomAdjustedPixelValueForLength(*slack_length, style)

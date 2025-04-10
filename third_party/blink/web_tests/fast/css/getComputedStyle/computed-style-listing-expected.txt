@@ -230,6 +230,7 @@ interest-target-hide-delay: 0.5s
 interest-target-show-delay: 0.5s
 interpolate-size: numeric-only
 isolation: auto
+item-tolerance: normal
 justify-content: normal
 justify-items: normal
 justify-self: auto
@@ -265,7 +266,6 @@ mask-type: luminance
 masonry-auto-tracks: auto
 masonry-direction: column
 masonry-fill: normal
-masonry-slack: normal
 masonry-template-tracks: auto
 masonry-track-end: auto
 masonry-track-start: auto
