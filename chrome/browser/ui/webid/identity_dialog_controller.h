@@ -11,7 +11,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
+#include "chrome/browser/webid/proto/fedcm_clickthrough_rate_metadata.pb.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
@@ -33,7 +35,10 @@ class IdentityDialogController
     : public content::IdentityRequestDialogController,
       public AccountSelectionView::Delegate {
  public:
-  explicit IdentityDialogController(content::WebContents* rp_web_contents);
+  explicit IdentityDialogController(
+      content::WebContents* rp_web_contents,
+      segmentation_platform::SegmentationPlatformService* service = nullptr,
+      optimization_guide::OptimizationGuideDecider* decider = nullptr);
 
   IdentityDialogController(const IdentityDialogController&) = delete;
   IdentityDialogController& operator=(const IdentityDialogController&) = delete;
@@ -124,10 +129,6 @@ class IdentityDialogController
   void SetAccountSelectionViewForTesting(
       std::unique_ptr<AccountSelectionView> account_view);
 
-  // Allows setting a mock SegmentationPlatformService for testing purposes.
-  void SetSegmentationPlatformServiceForTesting(
-      segmentation_platform::SegmentationPlatformService* service);
-
   // Requests a UI volume recommendation from |segmentation_platform_service_|.
   void RequestUiVolumeRecommendation(
       segmentation_platform::ClassificationResultCallback callback);
@@ -152,6 +153,9 @@ class IdentityDialogController
   // Android, via TabFeatures on desktop.
   bool TrySetAccountView();
 
+  // Gets the clickthrough rate on the RP aggregated across all users.
+  webid::FedCmClickthroughRateMetadata GetFedCmClickthroughRateMetadata();
+
   std::unique_ptr<AccountSelectionView> account_view_{nullptr};
   AccountSelectionCallback on_account_selection_;
   DismissCallback on_dismiss_;
@@ -161,14 +165,19 @@ class IdentityDialogController
   raw_ptr<content::WebContents> rp_web_contents_{nullptr};
   blink::mojom::RpMode rp_mode_;
 
-  // Service which returns a recommendation for UI volume.
-  raw_ptr<segmentation_platform::SegmentationPlatformService>
-      segmentation_platform_service_;
-
   // Request ID associated with a |GetClassificationResult| call to
   // |segmentation_platform_service_|. This is nullopt when the
   // |GetClassificationResult| call has not returned a result yet.
   std::optional<segmentation_platform::TrainingRequestId> training_request_id_;
+
+  // Service which returns a recommendation for UI volume.
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      segmentation_platform_service_{nullptr};
+
+  // Optimization guide decider for information about URLs that have recently
+  // been navigated to. e.g. Aggregated FedCM clickthrough rate.
+  raw_ptr<optimization_guide::OptimizationGuideDecider>
+      optimization_guide_decider_{nullptr};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBID_IDENTITY_DIALOG_CONTROLLER_H_
