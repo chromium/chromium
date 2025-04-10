@@ -34,6 +34,7 @@ class ExternalProtocolNoHandlersTelSchemeDialog;
 class ForceInstalledDeprecatedAppsDialogView;
 class ForceInstalledPreinstalledDeprecatedAppDialogView;
 class HoverDetectionBubbleView;
+class ImmersiveModeControllerMacInteractiveTest;
 class JavaScriptTabModalDialogViewViews;
 class LoginHandlerViewsDialog;
 class MediaGalleriesDialogTest;
@@ -55,6 +56,8 @@ class TabModalConfirmDialogViews;
 class TestBaseWidgetDelegate;
 class UpdateRecommendedMessageBox;
 class WebDialogBrowserTest;
+FORWARD_DECLARE_TEST(AcceleratorCommandsFullscreenBrowserTest,
+                     ToggleFullscreen);
 FORWARD_DECLARE_TEST(TabStripScrollContainerTest, AnchoredWidgetHidesOnScroll);
 
 namespace arc {
@@ -66,16 +69,32 @@ namespace ash {
 class AccessibilityPanel;
 class ActiveSessionAuthControllerImpl;
 class AmbientWidgetDelegate;
+class AppListView;
+class AppsCollectionsDismissDialog;
+class AssistantWebContainerView;
 class AuthDialogContentsViewPixelTest;
 class AuthDialogContentsViewTest;
 class BootingAnimationController;
 class CaptureModeSessionFocusCycler;
+class ClientControlledStateTestWidgetDelegate;
+class ConnectionErrorDialogDelegateView;
 class DeferredUpdateDialog;
+class DeskButtonWidgetDelegateView;
 class DisclaimerView;
+class DockedMagnifierTest;
+class DropSenderView;
+class DropTargetView;
+class ExitWarningWidgetDelegateView;
+class FrameCaptionButtonContainerViewTest;
+class FrameSizeButtonTestWidgetDelegate;
 class GuestSessionConfirmationDialog;
+class HotseatWidgetDelegateView;
+class IdleAppNameNotificationDelegateView;
 class InSessionAuthDialog;
 class InSessionAuthDialogControllerImpl;
 class InformedRestoreController;
+class KioskExternalUpdateNotificationView;
+class LayoutWidgetDelegateView;
 class LocalAuthenticationWithPinControllerImpl;
 class LockDebugView;
 class LockDebugViewDataDispatcherTransformer;
@@ -84,23 +103,55 @@ class LoginShelfWidgetDelegate;
 class LoginTestBase;
 class LoginTestWidgetDelegate;
 class MahiPanelWidget;
+class MaximizeDelegateView;
+class NonClientFrameViewAshTestWidgetDelegate;
+class PipTest;
+class QuickInsertSubmenuView;
+class QuickInsertView;
+class ResizableWidgetDelegate;
+class RootWindowControllerTest;
 class ShelfNavigationWidgetDelegate;
 class ShelfWidgetDelegateView;
 class ShellTest;
 class SimpleWebViewDialog;
 class StatusAreaWidgetDelegate;
 class StuckWidgetDelegate;
+class SystemDialogDelegateView;
 class SystemUIComponentsStyleViewerView;
+class TestChildModalParent;
+class TestTextInputView;
+class TestWidgetBuilderDelegate;
+class TestWidgetDelegateAsh;
+class TestWindow;
 class VirtualTrackpadView;
+class WallpaperWidgetDelegate;
+class WideFrameView;
+class WidgetWithSystemUIComponentView;
+class WindowCycleView;
+FORWARD_DECLARE_TEST(ExtendedDesktopTest, SystemModal);
+FORWARD_DECLARE_TEST(MruWindowTrackerOrderTest, Basic);
+FORWARD_DECLARE_TEST(ShellTest, CreateWindowWithPreferredSize);
 
 namespace hud_display {
 class HUDDisplayView;
 }
+
+namespace sharesheet {
+class TestWidgetDelegate;
+}
+
+namespace shell {
+class ToplevelWindow;
+}
 }  // namespace ash
 
-namespace autofill::payments {
+namespace autofill {
+class PopupBaseView;
+
+namespace payments {
 class PaymentsWindowUserConsentDialogView;
 }
+}  // namespace autofill
 
 namespace constrained_window {
 class BrowserModalHelper;
@@ -131,6 +182,10 @@ namespace extensions {
 class WebFileHandlersPermissionHandler;
 }
 
+namespace eye_dropper {
+class EyeDropperView;
+}
+
 namespace gfx {
 class Rect;
 }
@@ -141,6 +196,10 @@ class GlicWidgetDelegate;
 
 namespace javascript_dialogs {
 class AppModalDialogViewViews;
+}
+
+namespace message_center {
+class MessagePopupView;
 }
 
 namespace native_app_window {
@@ -155,6 +214,10 @@ namespace remoting {
 class MessageBoxCore;
 }
 
+namespace ui::ime {
+class CandidateViewTest;
+}
+
 namespace views {
 class BubbleDialogDelegate;
 class BubbleDialogModelHost;
@@ -162,7 +225,9 @@ class ClientView;
 class DefaultWidgetDelegate;
 class DialogDelegate;
 class FocusTraversalTest;
+class MoveTestWidgetDelegate;
 class NonClientFrameView;
+class ShapedWidgetDelegate;
 class TableViewFocusTest;
 class View;
 class WebDialogView;
@@ -170,11 +235,17 @@ FORWARD_DECLARE_TEST(BubbleUmaLoggerTest, LogMetricFromDelegate);
 FORWARD_DECLARE_TEST(FocusManagerTest, AdvanceFocusStaysInWidget);
 FORWARD_DECLARE_TEST(NativeWidgetAuraTest, TestPropertiesWhenAddedToLayout);
 FORWARD_DECLARE_TEST(NativeWidgetAuraTest, TransientChildModalWindowVisibility);
+FORWARD_DECLARE_TEST(NativeViewHostAuraTest,
+                     FocusManagerUpdatedDuringDestruction);
 
 namespace borealis {
 class BorealisDisallowedDialog;
 class BorealisLaunchErrorDialog;
 }  // namespace borealis
+
+namespace examples {
+class ExamplesWindowContents;
+}
 
 namespace test {
 FORWARD_DECLARE_TEST(DesktopWidgetTest, LockPaintAsActiveAndCloseParent);
@@ -192,6 +263,12 @@ class TestAccountSelectionView;
 }  // namespace webid
 
 namespace views {
+
+namespace test {
+class GetNativeThemeFromDestructorView;
+class TestingWidgetDelegateView;
+FORWARD_DECLARE_TEST(WidgetOwnsNativeWidgetTest, WidgetDelegateView);
+}  // namespace test
 
 using TitleChangedCallback = base::RepeatingCallback<void()>;
 using AccessibleTitleChangedCallback = base::RepeatingCallback<void()>;
@@ -815,6 +892,12 @@ class VIEWS_EXPORT WidgetDelegate {
 // to call View's GetWidget() for the common case where a WidgetDelegate
 // implementation is-a View. Note that WidgetDelegateView is not owned by
 // view's hierarchy and is expected to be deleted on DeleteDelegate call.
+//
+// DEPRECATED: Using this class makes it more challenging to reason about object
+// ownership/lifetimes and promotes writing "fat" views that also contain
+// business logic. Instead, use DialogModel if possible; otherwise, use separate
+// subclasses of WidgetDelegate and View to handle those interfaces' respective
+// concerns.
 class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   METADATA_HEADER(WidgetDelegateView, View)
 
@@ -822,8 +905,8 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   // Not named `PassKey` as `View::PassKey` already exists in this hierarchy.
   using WdvPassKey = base::PassKey<WidgetDelegateView>;
 
-  WidgetDelegateView();
-  // For use with std::make_unique<>().
+  // For use with std::make_unique<>(). Callers still must be in the friend list
+  // below, just as with the private constructor.
   explicit WidgetDelegateView(WdvPassKey) {}
   WidgetDelegateView(const WidgetDelegateView&) = delete;
   WidgetDelegateView& operator=(const WidgetDelegateView&) = delete;
@@ -833,6 +916,73 @@ class VIEWS_EXPORT WidgetDelegateView : public WidgetDelegate, public View {
   Widget* GetWidget() override;
   const Widget* GetWidget() const override;
   View* GetContentsView() override;
+
+ private:
+  // DO NOT ADD TO THIS LIST!
+  // These existing cases are "grandfathered in", but there shouldn't be more.
+  // See comments atop class.
+  friend class ::ImmersiveModeControllerMacInteractiveTest;
+  friend class ::PresentationReceiverWindowView;
+  friend class ::ProfilePickerView;
+  friend class ::ScreenCaptureNotificationUIViews;
+  FRIEND_TEST_ALL_PREFIXES(::AcceleratorCommandsFullscreenBrowserTest,
+                           ToggleFullscreen);
+  friend class ::ash::AppListView;
+  friend class ::ash::AppsCollectionsDismissDialog;
+  friend class ::ash::AssistantWebContainerView;
+  friend class ::ash::ClientControlledStateTestWidgetDelegate;
+  friend class ::ash::ConnectionErrorDialogDelegateView;
+  friend class ::ash::DeskButtonWidgetDelegateView;
+  friend class ::ash::DockedMagnifierTest;
+  friend class ::ash::DropSenderView;
+  friend class ::ash::DropTargetView;
+  friend class ::ash::ExitWarningWidgetDelegateView;
+  friend class ::ash::FrameCaptionButtonContainerViewTest;
+  friend class ::ash::FrameSizeButtonTestWidgetDelegate;
+  friend class ::ash::HotseatWidgetDelegateView;
+  friend class ::ash::IdleAppNameNotificationDelegateView;
+  friend class ::ash::KioskExternalUpdateNotificationView;
+  friend class ::ash::LayoutWidgetDelegateView;
+  friend class ::ash::MaximizeDelegateView;
+  friend class ::ash::NonClientFrameViewAshTestWidgetDelegate;
+  friend class ::ash::PipTest;
+  friend class ::ash::QuickInsertSubmenuView;
+  friend class ::ash::QuickInsertView;
+  friend class ::ash::ResizableWidgetDelegate;
+  friend class ::ash::RootWindowControllerTest;
+  friend class ::ash::ShellTest;
+  friend class ::ash::SystemDialogDelegateView;
+  friend class ::ash::SystemUIComponentsStyleViewerView;
+  friend class ::ash::TestChildModalParent;
+  friend class ::ash::TestTextInputView;
+  friend class ::ash::TestWidgetBuilderDelegate;
+  friend class ::ash::TestWidgetDelegateAsh;
+  friend class ::ash::TestWindow;
+  friend class ::ash::WallpaperWidgetDelegate;
+  friend class ::ash::WideFrameView;
+  friend class ::ash::WidgetWithSystemUIComponentView;
+  friend class ::ash::WindowCycleView;
+  FRIEND_TEST_ALL_PREFIXES(::ash::ExtendedDesktopTest, SystemModal);
+  FRIEND_TEST_ALL_PREFIXES(::ash::MruWindowTrackerOrderTest, Basic);
+  FRIEND_TEST_ALL_PREFIXES(::ash::ShellTest, CreateWindowWithPreferredSize);
+  friend class ::ash::sharesheet::TestWidgetDelegate;
+  friend class ::ash::shell::ToplevelWindow;
+  friend class ::autofill::PopupBaseView;
+  friend class ::eye_dropper::EyeDropperView;
+  friend class ::message_center::MessagePopupView;
+  friend class ::native_app_window::NativeAppWindowViews;
+  friend class ::ui::ime::CandidateViewTest;
+  friend class MoveTestWidgetDelegate;
+  friend class ShapedWidgetDelegate;
+  FRIEND_TEST_ALL_PREFIXES(NativeViewHostAuraTest,
+                           FocusManagerUpdatedDuringDestruction);
+  friend class examples::ExamplesWindowContents;
+  friend class test::GetNativeThemeFromDestructorView;
+  friend class test::TestingWidgetDelegateView;
+  FRIEND_TEST_ALL_PREFIXES(test::WidgetOwnsNativeWidgetTest,
+                           WidgetDelegateView);
+
+  WidgetDelegateView();
 
   static WdvPassKey CreatePassKey() { return WdvPassKey(); }
 };
