@@ -708,6 +708,8 @@
       HandlerForProtocol(dispatcher, ApplicationCommands);
   headerViewController.browserCoordinatorHandler =
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  headerViewController.helpHandler =
+      HandlerForProtocol(dispatcher, HelpCommands);
 
   headerViewController.commandHandler = self;
   headerViewController.customizationDelegate = self;

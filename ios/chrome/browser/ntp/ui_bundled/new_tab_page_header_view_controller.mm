@@ -15,6 +15,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/bubble/public/in_product_help_type.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -349,6 +351,8 @@ const CGFloat kMarginMultiplier = 2;
   if (!IsSignInButtonNoAvatarEnabled()) {
     DCHECK([self.identityDiscButton imageForState:UIControlStateNormal]);
   }
+
+  [self maybeShowSwitchAccountsIPH];
 }
 
 - (void)setAllowFontScaleAnimation:(BOOL)allowFontScaleAnimation {
@@ -508,6 +512,9 @@ const CGFloat kMarginMultiplier = 2;
     [self updateIdentityDiscState];
   }
   [self.headerView setIdentityDiscView:self.identityDiscButton];
+
+  [self.layoutGuideCenter referenceView:self.identityDiscButton
+                              underName:kNTPIdentityDiscButtonGuide];
 
   _identityDiscWidthConstraint =
       [self.identityDiscButton.widthAnchor constraintEqualToConstant:0];
@@ -742,6 +749,18 @@ const CGFloat kMarginMultiplier = 2;
 - (void)updateLogoForOffset:(CGFloat)offset {
   self.logoVendor.view.alpha =
       std::max(1 - [self.headerView searchFieldProgressForOffset:offset], 0.0);
+}
+
+- (void)maybeShowSwitchAccountsIPH {
+  if (!_isSignedIn) {
+    return;
+  }
+
+  // Note: BubblePresenter will take care to only show the bubble if the page is
+  // scrolled to the top.
+  [self.helpHandler
+      presentInProductHelpWithType:
+          InProductHelpType::kSwitchAccountsWithNTPAccountParticleDisc];
 }
 
 #pragma mark - UIIndirectScribbleInteractionDelegate

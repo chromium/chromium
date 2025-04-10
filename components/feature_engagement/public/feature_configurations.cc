@@ -2507,6 +2507,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+
   if (kIPHAutofillHomeWorkProfileSuggestionFeature.name == feature->name) {
     // Allows an IPH for showing the home and work address suggestion. This will
     // only be shown once.
@@ -2520,6 +2521,27 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.used =
         EventConfig("home_work_address_create_suggestion_feature_used",
                     Comparator(EQUAL, 0), k10YearsInDays, k10YearsInDays);
+
+    return config;
+  }
+
+  if (kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature.name ==
+      feature->name) {
+    // A config that allows the NTP-identity-disc IPH to be shown to users. This
+    // will only triggered once.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+
+    constexpr char kSwitchAccountsWithAccountParticleTrigger[] =
+        "switch_accounts_with_account_particle_trigger";
+
+    // Show only once.
+    config.trigger =
+        EventConfig(kSwitchAccountsWithAccountParticleTrigger,
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
 
     return config;
   }

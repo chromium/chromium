@@ -688,6 +688,11 @@ BASE_FEATURE(kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature,
 BASE_FEATURE(kIPHiOSSettingsInOverflowMenuBubbleFeature,
              "IPH_iOSSettingsInOverflowMenuBubbleFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Note: This IPH will only be triggered if
+// `kSeparateProfilesForManagedAccounts` is enabled.
+BASE_FEATURE(kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature,
+             "IPH_iOSSwitchAccountsWithNTPAccountParticleDiscFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // Note: Feed swipe IPHs will only be triggered if `kFeedSwipeInProductHelp` is
 // enabled.
 BASE_FEATURE(kIPHiOSFeedSwipeStaticFeature,

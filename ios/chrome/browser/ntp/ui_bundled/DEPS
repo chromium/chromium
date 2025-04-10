@@ -1,5 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/toolbar/ui_bundled",
+  "+ios/chrome/browser/bubble/public",
   "+ios/chrome/browser/bubble/ui_bundled",
   "+ios/chrome/browser/context_menu/ui_bundled/link_preview",
   "+ios/chrome/browser/favicon/ui_bundled",

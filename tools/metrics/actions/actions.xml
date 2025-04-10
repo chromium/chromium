@@ -48418,6 +48418,8 @@ should be able to be added at any place in this file.
       label="For iOSSwipeBackForwardFeature feature"/>
   <suffix name="iOSSwipeToolbarToChangeTabFeature"
       label="For iOSSwipeToolbarToChangeTabFeature feature"/>
+  <suffix name="iOSSwitchAccountsWithNTPAccountParticleDiscFeature"
+      label="For switching accounts via the account particle disc."/>
   <suffix name="iOSTabGridSwipeRightForIncognito"
       label="For iOSTabGridSwipeRightForIncognito feature"/>
   <suffix name="KeyboardAccessoryAddressFilling"
