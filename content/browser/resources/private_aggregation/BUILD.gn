@@ -12,7 +12,7 @@ build_webui("build") {
     "private_aggregation_internals.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "private_aggregation_internals.ts",
     "table_model.ts",
   ]

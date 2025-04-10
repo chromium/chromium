@@ -9,7 +9,7 @@ assert(!is_android && !is_ios)
 build_webui("build") {
   grd_prefix = "cr_components_localized_link"
 
-  non_web_component_files = [
+  ts_files = [
     "localized_link.html.ts",
     "localized_link.ts",
   ]

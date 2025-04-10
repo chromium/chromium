@@ -18,7 +18,7 @@ build_webui("build") {
     "transaction_table.ts",
   ]
   html_to_wrapper_template = "native"
-  non_web_component_files = [
+  ts_files = [
     "indexeddb_internals.ts",
     "indexeddb_list.html.ts",
     "mojo_utils.ts",

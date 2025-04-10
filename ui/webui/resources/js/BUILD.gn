@@ -9,7 +9,7 @@ include_polymer = !is_android && !is_ios
 build_webui("build") {
   grd_prefix = "webui_js"
 
-  non_web_component_files = [
+  ts_files = [
     "action_link.ts",
     "assert.ts",
     "color_utils.ts",
@@ -43,7 +43,7 @@ build_webui("build") {
   ]
 
   if (is_ios) {
-    non_web_component_files += [
+    ts_files += [
       "ios/mojo_api.js",
       "ios/web_ui.js",
     ]
@@ -51,11 +51,11 @@ build_webui("build") {
 
   if (is_chromeos || is_ios) {
     # Used by ChromeOS UIs and ios inspect and omaha UIs
-    non_web_component_files += [ "util_deprecated.js" ]
+    ts_files += [ "util_deprecated.js" ]
   }
 
   if (include_polymer) {
-    non_web_component_files += [ "browser_command/browser_command_proxy.ts" ]
+    ts_files += [ "browser_command/browser_command_proxy.ts" ]
   }
 
   mojo_files_deps = [ "./metrics_reporter:mojo_bindings_ts__generator" ]

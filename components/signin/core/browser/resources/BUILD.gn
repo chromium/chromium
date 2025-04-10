@@ -12,7 +12,7 @@ build_webui("build") {
     "signin_index.html",
   ]
 
-  non_web_component_files = [ "signin_internals.ts" ]
+  ts_files = [ "signin_internals.ts" ]
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

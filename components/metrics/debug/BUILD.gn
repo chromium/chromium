@@ -14,7 +14,7 @@ build_webui("build") {
     "app.ts",
     "field_trials.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "log_utils.ts",
     "metrics_internals.ts",
@@ -27,7 +27,7 @@ build_webui("build") {
 
     web_component_files += [ "structured/app.ts" ]
 
-    non_web_component_files += [
+    ts_files += [
       "structured/structured_metrics_browser_proxy.ts",
       "structured/structured_utils.ts",
     ]

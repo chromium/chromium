@@ -12,7 +12,7 @@ build_webui("build") {
     "net_export.html",
   ]
 
-  non_web_component_files = [ "net_export.js" ]
+  ts_files = [ "net_export.js" ]
 
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
 

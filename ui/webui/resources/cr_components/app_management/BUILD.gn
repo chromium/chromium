@@ -69,7 +69,7 @@ mojom("mojo_bindings") {
 build_webui("build") {
   grd_prefix = "cr_components_app_management"
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "constants.ts",
     "permission_constants.ts",

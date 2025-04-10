@@ -12,7 +12,7 @@ build_webui("build") {
     "quota_internals.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "quota_internals.ts",
     "quota_internals_browser_proxy.ts",
   ]

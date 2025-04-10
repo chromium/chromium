@@ -11,7 +11,7 @@ build_webui("build") {
 
   web_component_files = [ "info_view.ts" ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_bridge.ts",
     "gpu_internals.ts",
     "vulkan_info.ts",

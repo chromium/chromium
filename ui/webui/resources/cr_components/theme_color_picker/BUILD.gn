@@ -30,7 +30,7 @@ build_webui("build") {
     "theme_hue_slider_dialog.css",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "check_mark_wrapper.html.ts",
     "check_mark_wrapper.ts",

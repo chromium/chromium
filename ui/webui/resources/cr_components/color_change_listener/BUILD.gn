@@ -17,7 +17,7 @@ mojom("mojom") {
 build_webui("build") {
   grd_prefix = "cr_components_color_change_listener"
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "colors_css_updater.ts",
   ]

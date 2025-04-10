@@ -12,7 +12,7 @@ build_webui("build") {
     "network_errors_listing.html",
   ]
 
-  non_web_component_files = [ "network_errors_listing.ts" ]
+  ts_files = [ "network_errors_listing.ts" ]
 
   webui_context_type = "trusted"
 

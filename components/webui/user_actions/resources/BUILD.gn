@@ -12,7 +12,7 @@ build_webui("build") {
     "user_actions.html",
   ]
 
-  non_web_component_files = [ "user_actions.ts" ]
+  ts_files = [ "user_actions.ts" ]
 
   if (!is_ios) {
     ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

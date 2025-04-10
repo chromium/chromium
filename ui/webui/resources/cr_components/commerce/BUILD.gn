@@ -8,7 +8,7 @@ import("//ui/webui/webui_features.gni")
 build_webui("build") {
   grd_prefix = "cr_components_commerce"
 
-  non_web_component_files = [
+  ts_files = [
     "price_tracking_browser_proxy.ts",
     "product_specifications_browser_proxy.ts",
     "shopping_service_browser_proxy.ts",

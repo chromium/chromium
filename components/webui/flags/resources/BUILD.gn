@@ -9,7 +9,7 @@ build_webui("build") {
 
   static_files = [ "flags.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "experiment.html.ts",
