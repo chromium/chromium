@@ -15,6 +15,7 @@
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/features/forms_classifications.pb.h"
@@ -35,6 +36,7 @@ class AutofillAiModelExecutorImpl : public AutofillAiModelExecutor {
   // AutofillAiModelExecutor:
   void GetPredictions(
       FormData form_data,
+      base::OnceCallback<void(const FormGlobalId&)> on_model_executed,
       std::optional<optimization_guide::proto::AnnotatedPageContent>
           annotated_page_content) override;
   base::WeakPtr<AutofillAiModelExecutor> GetWeakPtr() override;

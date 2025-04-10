@@ -24,6 +24,7 @@ class MockAutofillAiModelExecutor : public AutofillAiModelExecutor {
   MOCK_METHOD(void,
               GetPredictions,
               (FormData,
+               base::OnceCallback<void(const FormGlobalId&)>,
                std::optional<optimization_guide::proto::AnnotatedPageContent>),
               (override));
   base::WeakPtr<AutofillAiModelExecutor> GetWeakPtr() override;
