@@ -431,12 +431,48 @@ lens::LensOverlayUploadChunkRequest CreateUploadChunkRequest(
   return request;
 }
 
+// Returns the lens::Payload to be sent after uploading chunked data using the
+// repeated Content field instead of the deprecated payload fields.
+lens::Payload CreatePageContentPayloadWithUpdatedContentFieldsForChunks(
+    base::span<const lens::PageContent> page_content,
+    lens::MimeType primary_content_type,
+    GURL page_url,
+    std::optional<std::string> page_title,
+    int64_t total_stored_chunks) {
+  lens::Payload payload;
+  auto* content = payload.mutable_content();
+
+  if (!page_url.is_empty() &&
+      lens::features::SendPageUrlForContextualization()) {
+    content->set_webpage_url(page_url.spec());
+  }
+  if (page_title.has_value() && !page_title.value().empty() &&
+      lens::features::SendPageTitleForContextualization()) {
+    content->set_webpage_title(page_title.value());
+  }
+
+  auto* content_data = content->add_content_data();
+  content_data->set_content_type(MimeTypeToContentType(primary_content_type));
+  content_data->mutable_stored_chunk_options()->set_read_stored_chunks(true);
+  content_data->mutable_stored_chunk_options()->set_total_stored_chunks(
+      total_stored_chunks);
+  content_data->set_compression_type(lens::CompressionType::ZSTD);
+  return payload;
+}
+
 // Returns the lens::Payload to be sent after uploading chunked data.
 lens::Payload CreatePageContentPayloadForChunks(
     base::span<const lens::PageContent> page_content,
     lens::MimeType primary_content_type,
     GURL page_url,
+    std::optional<std::string> page_title,
     int64_t total_stored_chunks) {
+  if (lens::features::UseUpdatedContextFields()) {
+    return CreatePageContentPayloadWithUpdatedContentFieldsForChunks(
+        page_content, primary_content_type, page_url, page_title,
+        total_stored_chunks);
+  }
+
   lens::Payload payload;
   payload.set_content_type(ContentTypeToString(primary_content_type));
   if (!page_url.is_empty() &&
@@ -1438,7 +1474,7 @@ void LensOverlayQueryController::UploadChunkResponseHandler(
       FROM_HERE,
       base::BindOnce(&CreatePageContentPayloadForChunks,
                      underlying_page_contents_, primary_content_type_,
-                     page_url_, total_chunks),
+                     page_url_, page_title_, total_chunks),
       base::BindOnce(
           &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
           weak_ptr_factory_.GetWeakPtr(), request_id));
