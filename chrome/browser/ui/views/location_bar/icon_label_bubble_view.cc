@@ -236,6 +236,10 @@ views::ProposedLayout IconLabelBubbleView::CalculateProposedLayout(
           std::max(preferred_size.width(), size_bounds.width().value()));
     }
   }
+  if (size_bounds.height().is_bounded() &&
+      preferred_size.height() < size_bounds.height()) {
+    preferred_size.set_height(size_bounds.height().value());
+  }
   layout.host_size = preferred_size;
   const int height = preferred_size.height();
 

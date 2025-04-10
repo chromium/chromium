@@ -665,6 +665,23 @@ TEST_F(IconLabelBubbleViewTest, MinimumSize) {
   EXPECT_EQ(view()->GetPreferredSize(new_bounds), min_size);
 }
 
+TEST_F(IconLabelBubbleViewTest, PreferredHeight) {
+  view()->ResetSlideAnimation(true);
+  view()->SizeToPreferredSize();
+
+  // The mininimum and preferred heights should be equal.
+  const int preferred_height = view()->GetPreferredSize().height();
+  const int min_height = view()->GetPreferredSize({0, 0}).height();
+  EXPECT_EQ(preferred_height, min_height);
+
+  // Setting a larger height bound should make the view's height snap to that
+  // bound.
+  const int larger_height_bound = preferred_height + 5;
+  const int new_height =
+      view()->GetPreferredSize({0, larger_height_bound}).height();
+  EXPECT_EQ(larger_height_bound, new_height);
+}
+
 // Tests that the client-provided additional padding for labels is correctly
 // applied when the label is expanded.
 TEST_F(IconLabelBubbleViewTest, AdditionalPaddingForLabelAppliedWhenExpanded) {
