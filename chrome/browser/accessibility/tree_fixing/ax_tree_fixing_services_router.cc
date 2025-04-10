@@ -77,7 +77,8 @@ void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
 }
 
 void AXTreeFixingServicesRouter::AXTreeFixingWebContentsObserver::
-    OnHeadingsIdentified() {
+    OnHeadingsIdentified(const ui::AXTreeID& tree_id,
+                         const std::vector<ui::AXNodeID> headings) {
   // TODO: Apply headings to tree.
 }
 
@@ -201,7 +202,7 @@ void AXTreeFixingServicesRouter::IdentifyHeadings(
 
   if (!opt_guide_service_) {
     opt_guide_service_ =
-        std::make_unique<AXTreeFixingOptimizationGuideService>(profile_);
+        std::make_unique<AXTreeFixingOptimizationGuideService>(*this, profile_);
   }
 
   // Store the callback for later use, and make a request to Optimization Guide.
@@ -250,6 +251,27 @@ void AXTreeFixingServicesRouter::OnScreenshotCaptured(const SkBitmap& bitmap,
       ScreenshotCallback callback = std::move(it->second);
       pending_screenshot_callbacks_.erase(it);
       std::move(callback).Run(bitmap);
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
+void AXTreeFixingServicesRouter::OnHeadingsIdentified(
+    const ui::AXTreeID& tree_id,
+    const std::vector<ui::AXNodeID> headings,
+    int request_id) {
+  CHECK(!pending_opt_guide_callbacks_.empty());
+
+  // Find the callback associated with the returned request ID, and call it with
+  // the identified tree_id and headings for the upstream client to use. Remove
+  // the pending callback since we have fulfilled the contract.
+  for (auto it = pending_opt_guide_callbacks_.begin();
+       it != pending_opt_guide_callbacks_.end(); ++it) {
+    if (it->first == request_id) {
+      HeadingsIdentificationCallback callback = std::move(it->second);
+      pending_opt_guide_callbacks_.erase(it);
+      std::move(callback).Run(tree_id, headings);
       return;
     }
   }

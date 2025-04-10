@@ -50,7 +50,9 @@ struct AXTreeUpdate;
 
 namespace tree_fixing {
 
-using HeadingsIdentificationCallback = base::OnceCallback<void()>;
+using HeadingsIdentificationCallback =
+    base::OnceCallback<void(const ui::AXTreeID&,
+                            const std::vector<ui::AXNodeID>)>;
 using MainNodeIdentificationCallback =
     base::OnceCallback<void(const ui::AXTreeID&, ui::AXNodeID)>;
 using ScreenshotCallback = base::OnceCallback<void(const SkBitmap& bitmap)>;
@@ -60,6 +62,8 @@ using ScreenshotCallback = base::OnceCallback<void(const SkBitmap& bitmap)>;
 // Screen2x, Aratea, etc.
 class AXTreeFixingServicesRouter
     : public KeyedService,
+      public AXTreeFixingOptimizationGuideService::
+          HeadingsIdentificationDelegate,
       public AXTreeFixingScreenAIService::MainNodeIdentificationDelegate,
       public AXTreeFixingScreenshotter::ScreenshotDelegate
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -89,7 +93,8 @@ class AXTreeFixingServicesRouter
     void TryIdentifyMainNode();
     void OnMainNodeIdentified(const ui::AXTreeID& tree_id,
                               ui::AXNodeID node_id);
-    void OnHeadingsIdentified();
+    void OnHeadingsIdentified(const ui::AXTreeID& tree_id,
+                              const std::vector<ui::AXNodeID> headings);
 
     uint32_t retry_attempts_ = 0;
     raw_ptr<AXTreeFixingServicesRouter> router_;
@@ -133,6 +138,12 @@ class AXTreeFixingServicesRouter
 
   void MakeMainNodeRequestToScreenAI(const ui::AXTreeUpdate& ax_tree,
                                      MainNodeIdentificationCallback callback);
+
+  // AXTreeFixingOptimizationGuideService::HeadingsIdentificationDelegate
+  // overrides:
+  void OnHeadingsIdentified(const ui::AXTreeID& tree_id,
+                            const std::vector<ui::AXNodeID>,
+                            int request_id) override;
 
   // AXTreeFixingScreenshotter::ScreenshotDelegate overrides:
   void OnScreenshotCaptured(const SkBitmap& bitmap, int request_id) override;
