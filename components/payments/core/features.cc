@@ -57,5 +57,9 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
 #endif
 );
 
+BASE_FEATURE(kSecurePaymentConfirmationFallback,
+             "SecurePaymentConfirmationFallback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace payments

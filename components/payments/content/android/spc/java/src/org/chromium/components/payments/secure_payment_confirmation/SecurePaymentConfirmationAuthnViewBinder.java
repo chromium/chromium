@@ -84,6 +84,11 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
         } else if (SecurePaymentConfirmationAuthnProperties.NETWORK_ICON == propertyKey) {
             view.mNetworkIcon.setImageDrawable(
                     model.get(SecurePaymentConfirmationAuthnProperties.NETWORK_ICON));
+        } else if (SecurePaymentConfirmationAuthnProperties.TITLE == propertyKey) {
+            view.mTitle.setText(model.get(SecurePaymentConfirmationAuthnProperties.TITLE));
+        } else if (SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_LABEL == propertyKey) {
+            view.mContinueButton.setText(
+                    model.get(SecurePaymentConfirmationAuthnProperties.CONTINUE_BUTTON_LABEL));
         }
     }
 

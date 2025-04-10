@@ -22,6 +22,7 @@
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
+#include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
 #include "content/public/browser/web_contents.h"
@@ -350,6 +351,53 @@ TEST_F(SecurePaymentConfirmationAppTest, OnInstrumentDetailsError) {
   app.InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
   EXPECT_FALSE(on_instrument_details_ready_called_);
   EXPECT_TRUE(on_instrument_details_error_called_);
+}
+
+class SecurePaymentConfirmationAppFallbackTest
+    : public SecurePaymentConfirmationAppTest {
+ public:
+  SecurePaymentConfirmationAppFallbackTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kSecurePaymentConfirmationFallback);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that the SPC app can be created without credentials.
+TEST_F(SecurePaymentConfirmationAppFallbackTest, NoCredentials) {
+  SecurePaymentConfirmationApp app(
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(),
+      /*credential_id=*/std::vector<uint8_t>(),
+      /*passkey_browser_binder=*/nullptr,
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
+      MakeRequest(), /*authenticator=*/nullptr,
+      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
+      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+
+  EXPECT_FALSE(app.HasEnrolledInstrument());
+  EXPECT_EQ(app.GetId(), "spc");
+}
+
+// Test that the SPC app returns HasEnrolledInstrument true when the fallback
+// feature is enabled but there are credentials (i.e. no fallback).
+TEST_F(SecurePaymentConfirmationAppFallbackTest, WithCredentials) {
+  std::vector<uint8_t> credential_id(credential_id_bytes_.begin(),
+                                     credential_id_bytes_.end());
+  SecurePaymentConfirmationApp app(
+      web_contents_, "effective_rp.example", payment_instrument_label_,
+      /*payment_instrument_icon=*/std::make_unique<SkBitmap>(), credential_id,
+      /*passkey_browser_binder=*/nullptr,
+      url::Origin::Create(GURL("https://merchant.example")), spec_->AsWeakPtr(),
+      MakeRequest(),
+      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_),
+      /*network_label=*/u"", /*network_icon=*/std::make_unique<SkBitmap>(),
+      /*issuer_label=*/u"", /*issuer_icon=*/std::make_unique<SkBitmap>());
+
+  EXPECT_TRUE(app.HasEnrolledInstrument());
+  EXPECT_EQ(app.GetId(), base::Base64Encode(credential_id));
 }
 
 }  // namespace

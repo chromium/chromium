@@ -35,6 +35,8 @@ public abstract class PaymentFeatureList {
     public static final String WEB_PAYMENTS_EXPERIMENTAL_FEATURES =
             "WebPaymentsExperimentalFeatures";
     public static final String WEB_PAYMENTS_SINGLE_APP_UI_SKIP = "WebPaymentsSingleAppUiSkip";
+    public static final String SECURE_PAYMENT_CONFIRMATION_FALLBACK =
+            "SecurePaymentConfirmationFallback";
 
     /**
      * Returns whether the specified feature is enabled or not.

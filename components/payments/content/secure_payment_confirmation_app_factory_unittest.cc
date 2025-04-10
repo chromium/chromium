@@ -57,6 +57,8 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(base::Base64Decode(kChallengeBase64, &challenge_bytes_));
     ASSERT_TRUE(base::Base64Decode(kCredentialIdBase64, &credential_id_bytes_));
+    secure_payment_confirmation_app_factory_ =
+        std::make_unique<SecurePaymentConfirmationAppFactory>();
   }
 
   // Creates and returns a minimal SecurePaymentConfirmationRequest object with
@@ -86,7 +88,8 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
-  SecurePaymentConfirmationAppFactory secure_payment_confirmation_app_factory_;
+  std::unique_ptr<SecurePaymentConfirmationAppFactory>
+      secure_payment_confirmation_app_factory_;
   std::string challenge_bytes_;
   std::string credential_id_bytes_;
 };
@@ -102,7 +105,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _)).Times(0);
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
@@ -118,7 +121,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty ID inside
@@ -134,7 +137,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty challenge
@@ -150,7 +153,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
@@ -166,7 +169,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
@@ -182,7 +185,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid
@@ -199,7 +202,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid RP
@@ -228,7 +231,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
     // tested in a failure case we use SCOPED_TRACE.
     SCOPED_TRACE(rp_id);
     EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-    secure_payment_confirmation_app_factory_.Create(
+    secure_payment_confirmation_app_factory_->Create(
         mock_delegate->GetWeakPtr());
   }
 }
@@ -247,7 +250,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with a present but empty
@@ -263,7 +266,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with a non-HTTPS
@@ -280,7 +283,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
@@ -300,7 +303,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
@@ -319,7 +322,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid
@@ -338,7 +341,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
@@ -358,7 +361,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
       web_contents_, std::move(method_data));
 
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an empty
@@ -377,7 +380,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 // Test that parsing a SecurePaymentConfirmationRequest with an invalid
@@ -396,7 +399,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _));
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 class SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest
@@ -450,7 +453,7 @@ class SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest
     EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
         .WillOnce(ReturnRef(caller_origin));
 
-    secure_payment_confirmation_app_factory_.Create(
+    secure_payment_confirmation_app_factory_->Create(
         mock_delegate->GetWeakPtr());
   }
 
@@ -521,7 +524,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryUsingCredentialStoreAPIsTest,
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _)).Times(0);
   EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps()).Times(1);
 
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -559,7 +562,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
       method_data->secure_payment_confirmation->rp_id;
   GURL icon = method_data->secure_payment_confirmation->instrument->icon;
 
-  secure_payment_confirmation_app_factory_.SetBrowserBoundKeyStoreForTesting(
+  secure_payment_confirmation_app_factory_->SetBrowserBoundKeyStoreForTesting(
       MakeFakeBrowserBoundKeyStore());
 
   auto mock_authenticator =
@@ -588,7 +591,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
       .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
 
-  secure_payment_confirmation_app_factory_.Create(mock_delegate->GetWeakPtr());
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
   std::vector<gfx::Size> icon_sizes({{32, 32}});
   std::vector<SkBitmap> icon_bitmaps(1);
   icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
@@ -606,6 +609,68 @@ TEST_F(SecurePaymentConfirmationAppFactoryBrowserBoundKeysTest,
             passkey_browser_binder->GetBrowserBoundKeyStoreForTesting());
   EXPECT_EQ(mock_service.get(),
             passkey_browser_binder->GetWebDataServiceForTesting());
+}
+
+class SecurePaymentConfirmationAppFactoryFallbackTest
+    : public SecurePaymentConfirmationAppFactoryTest {
+ public:
+  SecurePaymentConfirmationAppFactoryFallbackTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kSecurePaymentConfirmationFallback);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that the SecurePaymentConfirmationApp can be created without credentials
+// for the fallback flow, with HasEnrolledInstrument false.
+TEST_F(SecurePaymentConfirmationAppFactoryFallbackTest,
+       Fallback_NoCredentials) {
+  auto method_data = mojom::PaymentMethodData::New();
+  method_data->supported_method = "secure-payment-confirmation";
+  method_data->secure_payment_confirmation =
+      CreateSecurePaymentConfirmationRequest();
+  GURL icon = method_data->secure_payment_confirmation->instrument->icon;
+
+  auto mock_authenticator =
+      std::make_unique<webauthn::MockInternalAuthenticator>(web_contents_);
+  EXPECT_CALL(*mock_authenticator,
+              IsUserVerifyingPlatformAuthenticatorAvailable(_))
+      .WillOnce(RunOnceCallback<0>(true));
+  EXPECT_CALL(*mock_authenticator, IsGetMatchingCredentialIdsSupported())
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_authenticator, GetMatchingCredentialIds(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(std::vector<std::vector<uint8_t>>()));
+
+  auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
+      web_contents_, std::move(method_data));
+
+  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
+      base::MakeRefCounted<MockPaymentManifestWebDataService>();
+  EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
+      .WillOnce(Return(ByMove(std::move(mock_authenticator))));
+  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
+      .WillRepeatedly(Return(mock_service));
+  url::Origin caller_origin = url::Origin::Create(GURL("https://site.example"));
+  EXPECT_CALL(*mock_delegate, GetFrameSecurityOrigin())
+      .WillOnce(ReturnRef(caller_origin));
+  std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))
+      .WillOnce(MoveArg<0>(&secure_payment_confirmation_app));
+  EXPECT_CALL(*mock_delegate, OnPaymentAppCreationError(_, _)).Times(0);
+  EXPECT_CALL(*mock_delegate, OnDoneCreatingPaymentApps()).Times(1);
+
+  secure_payment_confirmation_app_factory_->Create(mock_delegate->GetWeakPtr());
+  std::vector<gfx::Size> icon_sizes({{32, 32}});
+  std::vector<SkBitmap> icon_bitmaps(1);
+  icon_bitmaps[0].allocN32Pixels(/*width=*/32, /*height=*/32);
+  static_cast<content::TestWebContents*>(web_contents_.get())
+      ->TestDidDownloadImage(icon, /*http_status_code=*/200,
+                             std::move(icon_bitmaps), std::move(icon_sizes));
+
+  ASSERT_TRUE(secure_payment_confirmation_app);
+  EXPECT_FALSE(secure_payment_confirmation_app->HasEnrolledInstrument());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

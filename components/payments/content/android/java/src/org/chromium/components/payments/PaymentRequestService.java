@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.text.TextUtils;
 
-import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArrayMap;
 
 import org.chromium.base.Callback;
@@ -931,7 +930,8 @@ public class PaymentRequestService
         if (mSpec != null
                 && !mSpec.isDestroyed()
                 && mSpec.isSecurePaymentConfirmationRequested()
-                && !mBrowserPaymentRequest.hasAvailableApps()
+                && (!mBrowserPaymentRequest.hasAvailableApps()
+                        || shouldShowSecurePaymentConfirmationFallback())
                 // In most cases, we show the 'No Matching Payment Credential' dialog in order to
                 // preserve user privacy. An exception is failure to download the card art icon -
                 // because we download it in all cases, revealing a failure doesn't leak any
@@ -977,6 +977,17 @@ public class PaymentRequestService
         }
 
         return null;
+    }
+
+    private boolean shouldShowSecurePaymentConfirmationFallback() {
+        if (!PaymentFeatureList.isEnabledOrExperimentalFeaturesEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION_FALLBACK)) {
+            return false;
+        }
+        assert mSpec.isSecurePaymentConfirmationRequested();
+        assert mBrowserPaymentRequest != null;
+        assert mBrowserPaymentRequest.getSelectedPaymentApp() != null;
+        return !mBrowserPaymentRequest.getSelectedPaymentApp().hasEnrolledInstrument();
     }
 
     private void onShowFailed(String error) {
@@ -1926,7 +1937,6 @@ public class PaymentRequestService
         }
     }
 
-    @VisibleForTesting
     public static @Nullable BrowserPaymentRequest getBrowserPaymentRequestForTesting() {
         return sShowingPaymentRequest != null
                 ? sShowingPaymentRequest.mBrowserPaymentRequest
