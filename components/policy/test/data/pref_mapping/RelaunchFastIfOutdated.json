@@ -9,10 +9,10 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "RelaunchSupersededReleaseAge": 7
+          "RelaunchFastIfOutdated": 7
         },
         "prefs": {
-          "browser.relaunch_superseded_release_age": {
+          "browser.relaunch_fast_if_outdated": {
             "location": "local_state",
             "value": 7
           }

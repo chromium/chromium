@@ -245,8 +245,8 @@ class UpgradeDetector {
   bool GetNetworkTimeWithFallback(base::Time& network_time);
 
   // Returns true if `last_served_date_` is known and older than the number
-  // of days specified by the RelaunchSupersededReleaseAge policy.
-  bool IsSupersededRelease();
+  // of days specified by the RelaunchFastIfOutdated policy.
+  bool ShouldRelaunchFast();
 
   // Returns true if the last served date should be fetched on update, for
   // the RelaunchOutdatedInstall policy.

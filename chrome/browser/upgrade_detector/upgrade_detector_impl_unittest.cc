@@ -205,10 +205,10 @@ class UpgradeDetectorImplTest : public ::testing::Test {
                                               base::Value(std::move(dict)));
   }
 
-  // Sets the browser.relaunch_superseded_release_age preference in Local State.
-  void SetRelaunchSupersededReleaseAgePref(int days) {
+  // Sets the browser.relaunch_fast_if_outdated preference in Local State.
+  void SetRelaunchFastIfOutdatedPref(int days) {
     scoped_local_state_.Get()->SetManagedPref(
-        prefs::kRelaunchSupersededReleaseAge, base::Value(days));
+        prefs::kRelaunchFastIfOutdated, base::Value(days));
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -276,8 +276,8 @@ TEST_F(UpgradeDetectorImplTest, VariationsCriticalChanges) {
   detector.Shutdown();
 }
 
-TEST_F(UpgradeDetectorImplTest, SupersededRelease) {
-  SetRelaunchSupersededReleaseAgePref(7);
+TEST_F(UpgradeDetectorImplTest, RelaunchFastIfOutdated) {
+  SetRelaunchFastIfOutdatedPref(7);
 
   TestUpgradeDetectorImpl upgrade_detector(GetMockClock(), GetMockTickClock());
   ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);

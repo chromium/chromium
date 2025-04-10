@@ -51,7 +51,7 @@ void RegisterBrowserPrefs(PrefRegistrySimple* registry) {
           UpgradeDetector::GetDefaultHighAnnoyanceThreshold()
               .InMilliseconds()));
   registry->RegisterDictionaryPref(prefs::kRelaunchWindow);
-  registry->RegisterIntegerPref(prefs::kRelaunchSupersededReleaseAge, 0);
+  registry->RegisterIntegerPref(prefs::kRelaunchFastIfOutdated, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)

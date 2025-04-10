@@ -109,15 +109,15 @@ base::Time ComputeRelaunchWindowStartForDay(
   return window_start;
 }
 
-// Returns the value of the RelaunchSupersededReleaseAge policy, or a zero
-// TimeDelta if the policy is unset.
-base::TimeDelta GetRelaunchSupersededReleaseAge() {
+// Returns the value of the RelaunchFastIfOutdated policy, or a zero TimeDelta
+// if the policy is unset.
+base::TimeDelta GetRelaunchFastIfOutdated() {
   auto* local_state = g_browser_process->local_state();
   if (!local_state) {
     return base::TimeDelta();
   }
   return base::Days(
-      local_state->GetInteger(prefs::kRelaunchSupersededReleaseAge));
+      local_state->GetInteger(prefs::kRelaunchFastIfOutdated));
 }
 
 }  // namespace
@@ -135,7 +135,7 @@ void UpgradeDetector::Init() {
     pref_change_registrar_.Init(local_state);
     MonitorPrefChanges(prefs::kRelaunchNotificationPeriod);
     MonitorPrefChanges(prefs::kRelaunchWindow);
-    MonitorPrefChanges(prefs::kRelaunchSupersededReleaseAge);
+    MonitorPrefChanges(prefs::kRelaunchFastIfOutdated);
   }
 }
 
@@ -361,12 +361,12 @@ bool UpgradeDetector::GetNetworkTimeWithFallback(base::Time& current_time) {
 }
 
 // static
-bool UpgradeDetector::IsSupersededRelease() {
+bool UpgradeDetector::ShouldRelaunchFast() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!last_served_date_.has_value()) {
     return false;
   }
-  base::TimeDelta max_age = GetRelaunchSupersededReleaseAge();
+  base::TimeDelta max_age = GetRelaunchFastIfOutdated();
   if (max_age.is_zero()) {
     return false;
   }
@@ -378,7 +378,7 @@ bool UpgradeDetector::IsSupersededRelease() {
 bool UpgradeDetector::ShouldFetchLastServedDate() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return !fetched_last_served_date_ &&
-         !GetRelaunchSupersededReleaseAge().is_zero();
+         !GetRelaunchFastIfOutdated().is_zero();
 }
 
 void UpgradeDetector::FetchLastServedDate() {

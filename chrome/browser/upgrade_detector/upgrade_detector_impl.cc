@@ -160,9 +160,9 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
   base::TimeDelta notification_period = GetRelaunchNotificationPeriod();
   const std::optional<RelaunchWindow> relaunch_window =
       GetRelaunchWindowPolicyValue();
-  bool superseded = IsSupersededRelease();
+  bool fast_relaunch = ShouldRelaunchFast();
 
-  if (notification_period.is_zero() && !relaunch_window && !superseded) {
+  if (notification_period.is_zero() && !relaunch_window && !fast_relaunch) {
     // Use the default values when no override is set and we don't expect to
     // adjust the levels according to the relaunch time interval.
     stages_[kStagesIndexHigh] = kDefaultHighThreshold;
@@ -178,7 +178,7 @@ void UpgradeDetectorImpl::DoCalculateThresholds() {
     if (notification_period.is_zero()) {
       effective_notification_period = kDefaultHighThreshold;
     }
-    if (superseded) {
+    if (fast_relaunch) {
       effective_notification_period =
           std::min(effective_notification_period, base::Hours(2));
     }

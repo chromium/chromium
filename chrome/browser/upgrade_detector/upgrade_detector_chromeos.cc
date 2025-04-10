@@ -180,7 +180,7 @@ void UpgradeDetectorChromeos::CalculateDeadlines() {
   if (notification_period.is_zero()) {
     notification_period = kDefaultHighThreshold;
   }
-  if (IsSupersededRelease()) {
+  if (ShouldRelaunchFast()) {
     notification_period = std::min(notification_period, base::Hours(2));
   }
 

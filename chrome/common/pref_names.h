@@ -3163,9 +3163,9 @@ inline constexpr char kRelaunchWindow[] = "browser.relaunch_window";
 
 #if !BUILDFLAG(IS_ANDROID)
 // Pref name for the policy controlling the maximum age of a build before
-// forcing a quick relaunch.
-inline constexpr char kRelaunchSupersededReleaseAge[] =
-    "browser.relaunch_superseded_release_age";
+// forcing a fast relaunch.
+inline constexpr char kRelaunchFastIfOutdated[] =
+    "browser.relaunch_fast_if_outdated";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -1336,7 +1336,7 @@ policies:
   1335: GeminiSettings
   1336: GenAISmartGroupingSettings
   1337: GenAiChromeOsSmartActionsSettings
-  1338: RelaunchSupersededReleaseAge
+  1338: RelaunchFastIfOutdated
   1339: ClassManagementCaptionsEnabled
   1340: ClassManagementClassroomIntegrationEnabled
   1341: ClassManagementNetworkRestrictionEnabled
