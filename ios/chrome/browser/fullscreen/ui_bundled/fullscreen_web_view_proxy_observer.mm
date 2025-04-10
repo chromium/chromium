@@ -92,6 +92,9 @@
                          willDecelerate:(BOOL)decelerate {
   if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     self.model->SetScrollViewIsDragging(false);
+    if (!decelerate) {
+      self.model->SetScrollViewIsScrolling(false);
+    }
   }
 }
 
