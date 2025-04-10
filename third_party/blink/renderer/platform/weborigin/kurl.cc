@@ -72,7 +72,7 @@ const char* AsURLChar8Subtle(const String& spec) {
   // canonicalize URL strings, we know that everything before the fragment
   // identifier will actually be ASCII, which means this cast is safe as long as
   // you don't look at the fragment component.
-  return reinterpret_cast<const char*>(spec.Characters8());
+  return base::as_chars(spec.Span8()).data();
 }
 
 // Returns the characters for the given string, or a pointer to a static empty
@@ -672,7 +672,7 @@ void KURL::SetPort(uint16_t port) {
   DCHECK(port_string.Is8Bit());
 
   url::Replacements<char> replacements;
-  replacements.SetPort(reinterpret_cast<const char*>(port_string.Characters8()),
+  replacements.SetPort(base::as_chars(port_string.Span8()).data(),
                        url::Component(0, port_string.length()));
   ReplaceComponents(replacements);
 }

@@ -581,15 +581,11 @@ static void SwitchEncoding(xmlParserCtxtPtr ctxt, bool is_8bit) {
 }
 
 static void ParseChunk(xmlParserCtxtPtr ctxt, const String& chunk) {
-  bool is_8bit = chunk.Is8Bit();
   // Reset the encoding for each chunk to reflect if it is Latin-1 or UTF-16.
-  SwitchEncoding(ctxt, is_8bit);
-  if (is_8bit)
-    xmlParseChunk(ctxt, reinterpret_cast<const char*>(chunk.Characters8()),
-                  sizeof(LChar) * chunk.length(), 0);
-  else
-    xmlParseChunk(ctxt, reinterpret_cast<const char*>(chunk.Characters16()),
-                  sizeof(UChar) * chunk.length(), 0);
+  SwitchEncoding(ctxt, chunk.Is8Bit());
+  auto byte_span = base::as_chars(chunk.RawByteSpan());
+  xmlParseChunk(ctxt, byte_span.data(),
+                base::checked_cast<int>(byte_span.size()), 0);
 }
 
 static void FinishParsing(xmlParserCtxtPtr ctxt) {

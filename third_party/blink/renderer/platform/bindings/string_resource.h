@@ -277,7 +277,7 @@ class StringResource8 final : public StringResource8Base {
 
   size_t length() const override { return GetStringImpl()->length(); }
   const char* data() const override {
-    return reinterpret_cast<const char*>(GetStringImpl()->Characters8());
+    return base::as_chars(GetStringImpl()->Span8()).data();
   }
 };
 
@@ -300,7 +300,7 @@ class ParkableStringResource8 final : public StringResource8Base {
   size_t length() const override { return GetParkableString().length(); }
 
   const char* data() const override {
-    return reinterpret_cast<const char*>(GetParkableString().Characters8());
+    return GetParkableString().SpanChar().data();
   }
 };
 
