@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
+#include "base/test/run_until.h"
 #include "ui/events/test/event_generator.h"
 
 namespace ash {
@@ -320,12 +321,17 @@ TEST_F(LaserPointerControllerTest, MouseCursorState) {
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
   EXPECT_FALSE(cursor_manager->IsCursorLocked());
   EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+  event_generator->ReleaseTouch();
+  // Wait until laser pointer view created by touch goes away. Otherwise mouse
+  // event will be dropped.
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !controller_test_api_->HasLaserPointerView(); }));
 
   // Verify that moving the mouse cursor shows the cursor.
   event_generator->MoveMouseTo(gfx::Point(6, 6));
   EXPECT_FALSE(cursor_manager->IsCursorVisible());
   EXPECT_TRUE(cursor_manager->IsCursorLocked());
-  EXPECT_EQ(2, controller_test_api_->laser_points().GetNumberOfPoints());
+  EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
 
   // Verify that by disabling the mode, mouse cursor should be visible.
   controller_test_api_->SetEnabled(false);
