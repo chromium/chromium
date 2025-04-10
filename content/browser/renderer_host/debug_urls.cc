@@ -25,14 +25,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
-#include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-#include "content/browser/ppapi_plugin_process_host.h"  // nogncheck
-#include "ppapi/proxy/ppapi_messages.h"                 // nogncheck
-#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/debug/invalid_access_win.h"
