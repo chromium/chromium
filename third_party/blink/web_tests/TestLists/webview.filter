@@ -1,16 +1,13 @@
-# This file lists a limited set of web platform tests that are run with Chrome
-# Android where executing all of them is infeasible due to performance or
+# This file lists a limited set of web platform tests that are run with Android
+# WebView where executing all of them is infeasible due to performance or
 # resource constraints. The list will include all idlharness tests and minimal
-# set WPTs that are needed to identify regression for Chrome Android.
+# set WPTs that are needed to identify regression for Android WebView.
 #
 # Newly imported *idlharness* tests will be automatically added to this file
 # as part of third_party/blink/tools/blinkpy/w3c/test_importer.py
 #
 # Further documentation:
 # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
-
-# Running webdriver tests with Chrome Android
-external/wpt/webdriver/tests/
 
 external/wpt/virtual-keyboard/
 external/wpt/visual-viewport/

@@ -68,4 +68,4 @@ class WebviewPort(linux.LinuxPort):
 
     def path_to_smoke_tests_file(self):
         return self._filesystem.join(self.web_tests_dir(), 'TestLists',
-                                     'android.filter')
+                                     'webview.filter')
