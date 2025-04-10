@@ -2141,6 +2141,11 @@ struct EnhancedSafeBrowsingActivePromoData
 #pragma mark - SearchEngineObserverBridge
 
 - (void)searchEngineChanged {
+  // If the model hasn't been created yet, no need to update anything.
+  if (!self.tableViewModel) {
+    return;
+  }
+
   if (_managedSearchEngineItem) {
     _managedSearchEngineItem.statusText = [self managedSearchEngineDetailText];
     [self reconfigureCellsForItems:@[ _managedSearchEngineItem ]];
