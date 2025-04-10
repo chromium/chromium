@@ -50,6 +50,12 @@ class ScopedGObject {
     }
   }
 
+  T* release() {
+    T* obj = obj_;
+    obj_ = nullptr;
+    return obj;
+  }
+
   T* get() const { return obj_; }
 
   // Deliberately implicit to allow easier interaction with C APIs.

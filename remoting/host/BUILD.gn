@@ -606,6 +606,8 @@ static_library("common") {
   }
 
   if (is_linux) {
+    assert(use_glib)
+    deps += [ "//ui/base/glib" ]
     sources += [
       "continue_window_linux.cc",
       "disconnect_window_linux.cc",

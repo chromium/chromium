@@ -44,6 +44,9 @@
 
 #if defined(USE_GIO)
 #include <gio/gio.h>
+
+#include "ui/base/glib/gsettings.h"
+#include "ui/base/glib/scoped_gobject.h"
 #endif  // defined(USE_GIO)
 
 namespace net {
@@ -268,14 +271,14 @@ class SettingGetterImplGSettings
         ShutDown();
       } else {
         LOG(WARNING) << "~SettingGetterImplGSettings: leaking gsettings client";
-        client_.ExtractAsDangling();
+        client_.release();
       }
     }
     DCHECK(!client_);
   }
 
   // CheckVersion() must be called *before* Init()!
-  bool CheckVersion(base::Environment* env);
+  bool CheckVersion();
 
   bool Init(const scoped_refptr<base::SingleThreadTaskRunner>& glib_task_runner)
       override {
@@ -283,10 +286,8 @@ class SettingGetterImplGSettings
     DCHECK(!client_);
     DCHECK(!task_runner_.get());
 
-    if (!g_settings_schema_source_lookup(g_settings_schema_source_get_default(),
-                                         kProxyGSettingsSchema, TRUE) ||
-        !(client_ = g_settings_new(kProxyGSettingsSchema))) {
-      // It's not clear whether/when this can return NULL.
+    client_ = ui::GSettingsNew(kProxyGSettingsSchema);
+    if (!client_) {
       LOG(ERROR) << "Unable to create a gsettings client";
       return false;
     }
@@ -308,9 +309,7 @@ class SettingGetterImplGSettings
       g_object_unref(ftp_client_.ExtractAsDangling());
       g_object_unref(https_client_.ExtractAsDangling());
       g_object_unref(http_client_.ExtractAsDangling());
-      g_object_unref(client_.ExtractAsDangling());
-      // We only need to null client_ because it's the only one that we check.
-      client_ = nullptr;
+      client_.Reset();
       task_runner_ = nullptr;
     }
     debounce_timer_.reset();
@@ -475,7 +474,7 @@ class SettingGetterImplGSettings
     setting_getter->OnChangeNotification();
   }
 
-  raw_ptr<GSettings> client_ = nullptr;
+  ScopedGObject<GSettings> client_;
   raw_ptr<GSettings> http_client_ = nullptr;
   raw_ptr<GSettings> https_client_ = nullptr;
   raw_ptr<GSettings> ftp_client_ = nullptr;
@@ -489,23 +488,16 @@ class SettingGetterImplGSettings
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
-bool SettingGetterImplGSettings::CheckVersion(
-    base::Environment* env) {
+bool SettingGetterImplGSettings::CheckVersion() {
   // CheckVersion() must be called *before* Init()!
   DCHECK(!client_);
 
-  GSettings* client = nullptr;
-  if (g_settings_schema_source_lookup(g_settings_schema_source_get_default(),
-                                      kProxyGSettingsSchema, TRUE)) {
-    client = g_settings_new(kProxyGSettingsSchema);
-  }
-  if (!client) {
+  if (!ui::GSettingsNew(kProxyGSettingsSchema)) {
     VLOG(1) << "Cannot create gsettings client.";
     return false;
   }
-  g_object_unref(client);
 
-  VLOG(1) << "All gsettings tests OK. Will get proxy config from gsettings.";
+  VLOG(1) << "Will get proxy config from gsettings.";
   return true;
 }
 #endif  // defined(USE_GIO)
@@ -1253,15 +1245,16 @@ ProxyConfigServiceLinux::Delegate::Delegate(
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
     case base::nix::DESKTOP_ENVIRONMENT_UNITY:
 #if defined(USE_GIO)
-      {
+    {
       auto gs_getter = std::make_unique<SettingGetterImplGSettings>();
       // We have to load symbols and check the GNOME version in use to decide
       // if we should use the gsettings getter. See CheckVersion().
-      if (gs_getter->CheckVersion(env_var_getter_.get()))
+      if (gs_getter->CheckVersion()) {
         setting_getter_ = std::move(gs_getter);
       }
+    }
 #endif
-      break;
+    break;
     case base::nix::DESKTOP_ENVIRONMENT_KDE3:
     case base::nix::DESKTOP_ENVIRONMENT_KDE4:
     case base::nix::DESKTOP_ENVIRONMENT_KDE5:

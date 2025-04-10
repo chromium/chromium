@@ -2141,6 +2141,7 @@ test("content_browsertests") {
       sources +=
           [ "../browser/accessibility/accessibility_auralinux_browsertest.cc" ]
       configs += [ "//build/config/linux/atk" ]
+      deps += [ "//ui/base/glib" ]
     }
   }
 
