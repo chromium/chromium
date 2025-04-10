@@ -2552,12 +2552,6 @@ enum class ToolbarKind {
   [_enhancedCalendarCoordinator start];
 }
 
-// TODO(crbug.com/405195613): Cleanup function when commands migration is
-// complete.
-- (void)showEnhancedCalendarBottomSheetWithIntegrationProvider:
-    (ios::provider::AddToCalendarIntegrationProvider)integrationProvider {
-}
-
 - (void)hideEnhancedCalendarBottomSheet {
   [_enhancedCalendarCoordinator stop];
   _enhancedCalendarCoordinator = nil;

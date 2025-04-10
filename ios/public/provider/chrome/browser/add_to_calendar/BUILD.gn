@@ -4,8 +4,5 @@
 
 source_set("add_to_calendar_api") {
   sources = [ "add_to_calendar_api.h" ]
-  public_deps = [
-    "//base",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-  ]
+  public_deps = [ "//base" ]
 }

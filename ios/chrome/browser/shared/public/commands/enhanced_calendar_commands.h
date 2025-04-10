@@ -5,11 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_ENHANCED_CALENDAR_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_ENHANCED_CALENDAR_COMMANDS_H_
 
-// TODO(crbug.com/405195613): Cleanup when command migration is complete.
-namespace ios::provider {
-enum class AddToCalendarIntegrationProvider;
-}  // namespace ios::provider
-
 @class EnhancedCalendarConfiguration;
 
 // Commands to show/hide the Enhanced Calendar bottom sheet.
@@ -18,10 +13,6 @@ enum class AddToCalendarIntegrationProvider;
 // Shows the Enhanced Calendar bottom sheet for the current WebState.
 - (void)showEnhancedCalendarWithConfig:
     (EnhancedCalendarConfiguration*)enhancedCalendarConfig;
-
-// TODO(crbug.com/405195613): Cleanup when command migration is complete.
-- (void)showEnhancedCalendarBottomSheetWithIntegrationProvider:
-    (ios::provider::AddToCalendarIntegrationProvider)integrationProvider;
 
 // Hides the Enhanced Calendar bottom sheet. Will also cancel any in-flight
 // Enhanced Calendar model requests

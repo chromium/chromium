@@ -7,13 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// TODO(crbug.com/405195613): Cleanup imports when provider migration is
-// complete.
-#import <memory>
-
-#import "base/memory/weak_ptr.h"
-#import "components/optimization_guide/proto/features/enhanced_calendar.pb.h"
-
 namespace web {
 class WebState;
 }  // namespace web
