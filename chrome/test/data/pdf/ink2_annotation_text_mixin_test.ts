@@ -6,7 +6,7 @@ import {hexToColor, Ink2Manager, InkAnnotationTextMixin, TEXT_COLORS, TEXT_SIZES
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {setupTestMockPluginForInk} from './test_util.js';
+import {assertDeepEquals, setupTestMockPluginForInk} from './test_util.js';
 
 setupTestMockPluginForInk();
 const manager = Ink2Manager.getInstance();
@@ -45,8 +45,8 @@ chrome.test.runTests([
     // plugin).
     const initEvent = await initializationPromise;
     const expectedFonts = ['Roboto', 'Serif', 'Sans', 'Monospace'];
-    chrome.test.checkDeepEq(expectedFonts, testElement.fonts);
-    chrome.test.checkDeepEq(testElement.currentColor, initEvent.detail.color);
+    assertDeepEquals(expectedFonts, testElement.fonts);
+    assertDeepEquals(testElement.currentColor, initEvent.detail.color);
     chrome.test.assertEq(testElement.currentFont, initEvent.detail.font);
     chrome.test.assertEq(testElement.currentSize, initEvent.detail.size);
 
@@ -62,7 +62,7 @@ chrome.test.runTests([
     let whenChanged = eventToPromise('text-changed', manager);
     testElement.onCurrentColorChanged(colorEvent);
     let changedEvent = await whenChanged;
-    chrome.test.checkDeepEq(newColor, changedEvent.detail.color);
+    assertDeepEquals(newColor, changedEvent.detail.color);
 
     // Test firing a change event from a <select> with onFontSelected
     // registered as the listener calls the manager and results in an event.
@@ -92,7 +92,7 @@ chrome.test.runTests([
   function testOnTextChanged() {
     // Initial state
     const initialColor = hexToColor(TEXT_COLORS[0]!.color);
-    chrome.test.checkDeepEq(initialColor, testElement.currentColor);
+    assertDeepEquals(initialColor, testElement.currentColor);
     chrome.test.assertEq(12, testElement.currentSize);
     // First font returned by the current dummy code.
     chrome.test.assertEq('Roboto', testElement.currentFont);
@@ -110,7 +110,7 @@ chrome.test.runTests([
         [TextStyle.STRIKETHROUGH]: false,
       },
     });
-    chrome.test.checkDeepEq(newColor, testElement.currentColor);
+    assertDeepEquals(newColor, testElement.currentColor);
     chrome.test.assertEq(TEXT_SIZES[1]!, testElement.currentSize);
     chrome.test.assertEq('Serif', testElement.currentFont);
 

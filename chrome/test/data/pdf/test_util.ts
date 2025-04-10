@@ -611,4 +611,9 @@ export async function clickDropdownButton(
   dropdownButton.click();
   await microtasksFinished();
 }
+
+export function assertDeepEquals(
+    value1: object|any[]|undefined|null, value2: object|any[]|undefined|null) {
+  chrome.test.assertTrue(chrome.test.checkDeepEq(value1, value2));
+}
 // </if>

@@ -7,7 +7,7 @@ import {AnnotationBrushType, Ink2Manager, TextAlignment} from 'chrome-extension:
 import {assert} from 'chrome://resources/js/assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {assertAnnotationBrush, setGetAnnotationBrushReply, setupTestMockPluginForInk} from './test_util.js';
+import {assertAnnotationBrush, assertDeepEquals, setGetAnnotationBrushReply, setupTestMockPluginForInk} from './test_util.js';
 import type {MockPdfPluginElement} from './test_util.js';
 
 const mockPlugin = setupTestMockPluginForInk();
@@ -33,10 +33,8 @@ export function assertAnnotationText(
       expectedText.size, setAnnotationTextMessage.data.fontSize);
   chrome.test.assertEq(
       expectedText.alignment, setAnnotationTextMessage.data.alignment);
-  chrome.test.checkDeepEq(
-      expectedText.color, setAnnotationTextMessage.data.color);
-  chrome.test.checkDeepEq(
-      expectedText.styles, setAnnotationTextMessage.data.style);
+  assertDeepEquals(expectedText.color, setAnnotationTextMessage.data.color);
+  assertDeepEquals(expectedText.styles, setAnnotationTextMessage.data.style);
 
   mockPlugin.clearMessages();
 }
@@ -82,7 +80,7 @@ chrome.test.runTests([
       chrome.test.assertEq(index + 1, brushUpdates.length);
       chrome.test.assertEq(expected.type, brushUpdates[index]!.type);
       if (expected.color) {
-        chrome.test.checkDeepEq(expected.color, brushUpdates[index]!.color);
+        assertDeepEquals(expected.color, brushUpdates[index]!.color);
       }
       chrome.test.assertEq(expected.size, brushUpdates[index]!.size);
     }
@@ -176,9 +174,9 @@ chrome.test.runTests([
       chrome.test.assertEq(index + 1, textUpdates.length);
       chrome.test.assertEq(expected.font, textUpdates[index]!.font);
       chrome.test.assertEq(expected.size, textUpdates[index]!.size);
-      chrome.test.checkDeepEq(expected.color, textUpdates[index]!.color);
+      assertDeepEquals(expected.color, textUpdates[index]!.color);
       chrome.test.assertEq(expected.alignment, textUpdates[index]!.alignment);
-      chrome.test.checkDeepEq(expected.styles, textUpdates[index]!.styles);
+      assertDeepEquals(expected.styles, textUpdates[index]!.styles);
     }
 
     // Update font. Note the other `expectedText` values come from the defaults
