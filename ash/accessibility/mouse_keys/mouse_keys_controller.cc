@@ -242,28 +242,34 @@ void MouseKeysController::SendMouseEventToLocation(ui::EventType type,
 }
 
 void MouseKeysController::MoveMouse(const gfx::Vector2d& move_delta_dip) {
-  gfx::Point location = last_mouse_position_dips_ + move_delta_dip;
+  gfx::Point location_in_screen = last_mouse_position_dips_ + move_delta_dip;
 
-  // Update the cursor position; this will generate a synthetic mouse event that
-  // will pass through the standard event flow.
-  const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(location);
-  auto* host = ash::GetWindowTreeHostForDisplay(display.id());
+  const display::Display& target_display =
+      display::Screen::GetScreen()->GetDisplayNearestPoint(location_in_screen);
+  auto* host = ash::GetWindowTreeHostForDisplay(target_display.id());
   if (!host) {
     return;
   }
 
+  aura::Window* root_window = host->window();
+  DCHECK(root_window)
+      << "Root window not found while attempting mouse keys move.";
+
   // Show the cursor if needed.
-  auto* cursor_client = aura::client::GetCursorClient(host->window());
+  aura::client::CursorClient* cursor_client =
+      aura::client::GetCursorClient(root_window);
   if (cursor_client && !cursor_client->IsCursorVisible()) {
     cursor_client->ShowCursor();
   }
 
-  host->MoveCursorToLocationInDIP(location);
+  gfx::Point location_in_host = location_in_screen;
+  ::wm::ConvertPointFromScreen(root_window, &location_in_host);
+
+  host->MoveCursorToLocationInDIP(location_in_host);
   if (dragging_) {
-    SendMouseEventToLocation(ui::EventType::kMouseDragged, location);
+    SendMouseEventToLocation(ui::EventType::kMouseDragged, location_in_screen);
   }
-  last_mouse_position_dips_ = location;
+  last_mouse_position_dips_ = location_in_screen;
 }
 
 void MouseKeysController::CenterMouseIfUninitialized() {
