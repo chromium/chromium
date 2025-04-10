@@ -130,7 +130,8 @@ class CookieControlsBubbleCoordinatorTest : public TestWithBrowserView {
 
 TEST_F(CookieControlsBubbleCoordinatorTest, ShowBubbleTest) {
   EXPECT_EQ(coordinator_->GetBubble(), nullptr);
-  coordinator_->ShowBubble(web_contents(), controller());
+  coordinator_->ShowBubble(browser_view()->toolbar_button_provider(),
+                           web_contents(), controller());
   EXPECT_NE(coordinator_->GetBubble(), nullptr);
 
   views::test::WidgetDestroyedWaiter waiter(
@@ -567,7 +568,8 @@ class CookieControlsBubbleViewImplTest : public TestWithBrowserView {
         /*is_incognito_profile=*/false);
 
     coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
-    coordinator_->ShowBubble(web_contents, controller_.get());
+    coordinator_->ShowBubble(browser_view()->toolbar_button_provider(),
+                             web_contents, controller_.get());
   }
 
   void TearDown() override {

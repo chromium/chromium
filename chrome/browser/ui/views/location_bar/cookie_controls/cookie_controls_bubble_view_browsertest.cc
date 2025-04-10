@@ -8,6 +8,7 @@
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
@@ -95,12 +96,15 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   void ShowBubble() {
-    coordinator_->ShowBubble(active_web_contents(), controller_.get());
+    coordinator_->ShowBubble(
+        browser()->GetBrowserView().toolbar_button_provider(),
+        active_web_contents(), controller_.get());
   }
 
   void ShowIncognitoBubble() {
-    coordinator_->ShowBubble(active_web_contents(),
-                             incognito_controller_.get());
+    coordinator_->ShowBubble(
+        browser()->GetBrowserView().toolbar_button_provider(),
+        active_web_contents(), incognito_controller_.get());
   }
 
   void WaitForBubbleClose() {

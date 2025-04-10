@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
@@ -302,6 +303,7 @@ void CookieControlsIconView::ShowCookieControlsBubble() {
       feature_engagement::kIPHCookieControlsFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   bubble_coordinator_->ShowBubble(
+      browser_->GetBrowserView().toolbar_button_provider(),
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());
   CHECK(ShouldBeVisible());
   RecordOpenedAction(icon_visible_, protections_on_);

@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
@@ -61,7 +62,8 @@ class MockCookieControlsBubbleCoordinator
  public:
   MOCK_METHOD(void,
               ShowBubble,
-              (content::WebContents * web_contents,
+              (ToolbarButtonProvider * provider,
+               content::WebContents* web_contents,
                content_settings::CookieControlsController* controller),
               (override));
   MOCK_METHOD(CookieControlsBubbleViewImpl*, GetBubble, (), (const, override));
