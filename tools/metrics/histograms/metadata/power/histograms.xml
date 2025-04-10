@@ -912,7 +912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.ConnectedChargingPorts"
-    enum="PowerConnectedChargingPorts" expires_after="2025-04-10">
+    enum="PowerConnectedChargingPorts" expires_after="2026-04-10">
   <owner>bleung@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1017,7 +1017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1030,7 +1030,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.Other" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1043,7 +1043,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.WiFi.Disconnect" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1056,7 +1056,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.WiFi.Pattern" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1069,7 +1069,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.DarkResumeWakeDurationMs.WiFi.SSID" units="ms"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>mka@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -1682,7 +1682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerSupplyMaxPower" units="W"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>bleung@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
@@ -1697,7 +1697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.PowerSupplyMaxVoltage" units="V"
-    expires_after="2025-04-10">
+    expires_after="2026-04-10">
   <owner>bleung@chromium.org</owner>
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
