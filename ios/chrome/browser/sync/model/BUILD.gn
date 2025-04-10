@@ -170,10 +170,12 @@ source_set("sync_error_browser_agent") {
     "sync_error_browser_agent_profile_state_observer.mm",
   ]
   deps = [
+    ":model",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser",
@@ -213,20 +215,28 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "session_sync_service_factory_unittest.cc",
+    "sync_error_browser_agent_unittest.mm",
     "sync_service_factory_unittest.cc",
   ]
   deps = [
     ":model",
+    ":sync_error_browser_agent",
     "//base",
+    "//base/test:test_support",
     "//components/autofill/core/common/",
     "//components/browser_sync",
     "//components/commerce/core:feature_list",
     "//components/data_sharing/public",
+    "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/features:password_features",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync",
+    "//components/sync:test_support",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/passwords/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/webdata_services/model",
