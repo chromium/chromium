@@ -231,10 +231,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity, instanceId, preferNew, openAdjacently, addTrustedIntentExtras);
         beginReparenting(
-                tab,
-                intent,
-                mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(),
-                null);
+                tab, intent, /* startActivityOptions= */ null, /* finalizeCallback= */ null);
     }
 
     @VisibleForTesting
@@ -316,11 +313,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 || mMultiWindowModeStateDispatcher.isInMultiWindowMode()
                 || mMultiWindowModeStateDispatcher.isInMultiDisplayMode()) {
             intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
-            Bundle bundle = mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions();
-            mActivity.startActivity(intent, bundle);
-        } else {
-            mActivity.startActivity(intent);
         }
+        mActivity.startActivity(intent);
         Log.i(TAG_MULTI_INSTANCE, "Opening new window from action: " + umaAction);
         RecordUserAction.record(umaAction);
     }
@@ -879,12 +873,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                         /* preferNew= */ false,
                         openAdjacently,
                         /* addTrustedIntentExtras= */ true);
-        if (openAdjacently) {
-            mActivity.startActivity(
-                    intent, mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions());
-        } else {
-            mActivity.startActivity(intent);
-        }
+        mActivity.startActivity(intent);
     }
 
     /**

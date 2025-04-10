@@ -545,8 +545,8 @@ public class MultiInstanceManager
                 .begin(
                         mActivity,
                         intent,
-                        mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions(),
-                        null);
+                        /* startActivityOptions= */ null,
+                        /* finalizeCallback= */ null);
         RecordUserAction.record("MobileMenuMoveToOtherWindow");
     }
 
@@ -561,8 +561,7 @@ public class MultiInstanceManager
         intent.addFlags(Intent.FLAG_ACTIVITY_LAUNCH_ADJACENT);
 
         onMultiInstanceModeStarted();
-        mActivity.startActivity(
-                intent, mMultiWindowModeStateDispatcher.getOpenInOtherWindowActivityOptions());
+        mActivity.startActivity(intent);
         RecordUserAction.record(umaAction);
     }
 

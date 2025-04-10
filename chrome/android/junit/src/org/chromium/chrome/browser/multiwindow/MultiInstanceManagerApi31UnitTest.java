@@ -1415,13 +1415,13 @@ public class MultiInstanceManagerApi31UnitTest {
             // If |mTabbedActivityTask63| is alive, verify that its instance was restored in the
             // existing task by bringing it to the foreground.
             verify(mActivityManager).moveTaskToFront(taskId63, 0);
-            verify(mTabbedActivityTask62, never()).startActivity(any(), any());
+            verify(mTabbedActivityTask62, never()).startActivity(any());
             verify(appTask63, never()).finishAndRemoveTask();
         } else {
             // If |mTabbedActivityTask63| is not alive, verify that |mTabbedActivityTask62| starts a
             // new activity and finishes and removes the old task, and does not attempt to bring the
             // old task to the foreground.
-            verify(mTabbedActivityTask62).startActivity(any(), any());
+            verify(mTabbedActivityTask62).startActivity(any());
             verify(appTask63).finishAndRemoveTask();
             verify(mActivityManager, never()).moveTaskToFront(taskId63, 0);
         }

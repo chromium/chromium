@@ -88,8 +88,7 @@ public class ChromeAsyncTabLauncher implements AsyncTabLauncher {
             intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         }
         MultiInstanceManager.onMultiInstanceModeStarted();
-        activity.startActivity(
-                intent, MultiWindowUtils.getOpenInOtherWindowActivityOptions(activity));
+        activity.startActivity(intent);
     }
 
     /**

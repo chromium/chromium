@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.multiwindow;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
-import android.app.ActivityOptions;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -15,12 +14,10 @@ import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.provider.Browser;
 import android.text.TextUtils;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
-import android.view.Display;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -54,7 +51,6 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.ukm.UkmRecorder;
-import org.chromium.ui.display.DisplayAndroidManager;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -382,48 +378,6 @@ public class MultiWindowUtils implements ActivityStateListener {
             IntentUtils.addTrustedIntentExtras(intent);
         }
         return intent;
-    }
-
-    /**
-     * Generate the activity options used when handling "open in other window" or "move to other
-     * window" on a multi-instance capable device.
-     *
-     * This should be used in combination with
-     * {@link #setOpenInOtherWindowIntentExtras(Intent, Activity, Class)}.
-     *
-     * @param activity The activity firing the intent.
-     * @return The ActivityOptions needed to open the content in another display.
-     * @see Context#startActivity(Intent, Bundle)
-     */
-    public static Bundle getOpenInOtherWindowActivityOptions(Activity activity) {
-        if (!getInstance().isInMultiDisplayMode(activity)) return null;
-        int id = getDisplayIdForTargetableSecondaryDisplay(activity);
-        if (id == Display.INVALID_DISPLAY) {
-            throw new IllegalStateException(
-                    "Attempting to open window in other display, but one is not found");
-        }
-        ActivityOptions options = ActivityOptions.makeBasic();
-        options.setLaunchDisplayId(id);
-        return options.toBundle();
-    }
-
-    /**
-     * Find a display which can launch a chrome instance.
-     *
-     * @param activity The activity looking for a secondary display.
-     * @return The targetable secondary display. {@code Display.INVALID_DISPLAY} if not found.
-     */
-    public static int getDisplayIdForTargetableSecondaryDisplay(Activity activity) {
-        List<Integer> displays = ApiCompatibilityUtils.getTargetableDisplayIds(activity);
-        Display defaultDisplay = DisplayAndroidManager.getDefaultDisplayForContext(activity);
-        if (displays.size() != 0) {
-            for (int id : displays) {
-                if (id != defaultDisplay.getDisplayId()) {
-                    return id;
-                }
-            }
-        }
-        return Display.INVALID_DISPLAY;
     }
 
     /**

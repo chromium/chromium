@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -992,9 +991,13 @@ public class TabModelImpl extends TabModelJniBridge {
                         /* addTrustedIntentExtras= */ true);
 
         Activity activity = ContextUtils.activityFromContext(parentTab.getContext());
-        Bundle options = MultiWindowUtils.getOpenInOtherWindowActivityOptions(activity);
 
-        ReparentingTask.from(tab).begin(activity, intent, options, null);
+        ReparentingTask.from(tab)
+                .begin(
+                        activity,
+                        intent,
+                        /* startActivityOptions= */ null,
+                        /* finalizeCallback= */ null);
         return tab;
     }
 
