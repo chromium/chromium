@@ -46,7 +46,7 @@ class MediaRouterDebuggerImpl : public MediaRouterDebugger,
   // mojom::Debugger overrides:
   void ShouldFetchMirroringStats(
       ShouldFetchMirroringStatsCallback callback) override;
-  void OnMirroringStats(const base::Value json_stats) override;
+  void OnMirroringStats(base::Value json_stats) override;
   void BindReceiver(mojo::PendingReceiver<mojom::Debugger> receiver) override;
 
  protected:
@@ -54,7 +54,7 @@ class MediaRouterDebuggerImpl : public MediaRouterDebugger,
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDebuggerImplTest,
                            ShouldFetchMirroringStatsFeatureDisabled);
 
-  void NotifyGetMirroringStats(const base::Value::Dict& json_logs);
+  void NotifyGetMirroringStats(base::Value::Dict json_logs);
   void LogMirroringStats();
 
   base::ObserverList<MirroringStatsObserver> observers_;
