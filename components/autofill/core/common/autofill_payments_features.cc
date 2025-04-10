@@ -253,6 +253,16 @@ const base::FeatureParam<int> kAutofillVcnEnrollRequestTimeoutMilliseconds{
     "autofill_vcn_enroll_request_timeout_milliseconds",
     /*default_value=*/6500};
 
+// When enabled, updates the VCN strike database with different values of
+// kExpiryTimeDelta as part of of the VCN strike optimization experiment.
+// See go/vcn-strike-optimization-design.
+BASE_FEATURE(kAutofillVcnEnrollStrikeExpiryTime,
+             "AutofillVcnEnrollStrikeExpiryTime",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAutofillVcnEnrollStrikeExpiryTimeDays{
+    &kAutofillVcnEnrollStrikeExpiryTime, "autofill_vcn_strike_expiry_time_days",
+    /*default_value=*/180};
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, eWallet accounts are synced from the Google Payments servers
 // and displayed on the payment methods settings page.

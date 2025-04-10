@@ -1433,6 +1433,26 @@ const FeatureEntry::FeatureVariation kExplainGeminiEditMenuVariations[] = {
     {"After Search Gemini Edit Menu", kAfterSearchExplainGeminiEditMenu,
      std::size(kAfterSearchExplainGeminiEditMenu), nullptr}};
 
+// LINT.IfChange(AutofillVcnEnrollStrikeExpiryTime)
+const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_120Days[] =
+    {{"autofill_vcn_strike_expiry_time_days", "120"}};
+
+const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_60Days[] = {
+    {"autofill_vcn_strike_expiry_time_days", "60"}};
+
+const FeatureEntry::FeatureParam kAutofillVcnEnrollStrikeExpiryTime_30Days[] = {
+    {"autofill_vcn_strike_expiry_time_days", "30"}};
+
+const FeatureEntry::FeatureVariation
+    kAutofillVcnEnrollStrikeExpiryTimeOptions[] = {
+        {"120 days", kAutofillVcnEnrollStrikeExpiryTime_120Days,
+         std::size(kAutofillVcnEnrollStrikeExpiryTime_120Days), nullptr},
+        {"60 days", kAutofillVcnEnrollStrikeExpiryTime_60Days,
+         std::size(kAutofillVcnEnrollStrikeExpiryTime_60Days), nullptr},
+        {"30 days", kAutofillVcnEnrollStrikeExpiryTime_30Days,
+         std::size(kAutofillVcnEnrollStrikeExpiryTime_30Days), nullptr}};
+// LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillVcnEnrollStrikeExpiryTime)
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2655,6 +2675,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSChooseFromDriveSimulatedClickName,
      flag_descriptions::kIOSChooseFromDriveSimulatedClickDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSChooseFromDriveSimulatedClick)},
+    {"autofill-vcn-enroll-strike-expiry-time",
+     flag_descriptions::kAutofillVcnEnrollStrikeExpiryTimeName,
+     flag_descriptions::kAutofillVcnEnrollStrikeExpiryTimeDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::kAutofillVcnEnrollStrikeExpiryTime,
+         kAutofillVcnEnrollStrikeExpiryTimeOptions,
+         "AutofillVcnEnrollStrikeExpiryTime")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

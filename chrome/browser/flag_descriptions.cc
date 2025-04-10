@@ -822,6 +822,12 @@ const char kAutofillVcnEnrollRequestTimeoutDescription[] =
     "VCN enrollment request. Upon timeout, the client will terminate the VCN "
     "enrollment UI, but the request may still succeed server-side.";
 
+const char kAutofillVcnEnrollStrikeExpiryTimeName[] =
+    "Expiry duration for VCN enrollment strikes";
+const char kAutofillVcnEnrollStrikeExpiryTimeDescription[] =
+    "When enabled, changes the amount of time required for VCN enrollment "
+    "prompt strikes to expire.";
+
 const char kAutofillVirtualViewStructureAndroidName[] =
     "Enable the setting to provide a virtual view structure for Autofill";
 const char kAutofillVirtualViewStructureAndroidDescription[] =

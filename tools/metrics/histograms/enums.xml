@@ -10132,6 +10132,7 @@ from previous Chrome versions.
   <int value="-1603074997" label="LensRegionSearch:enabled"/>
   <int value="-1603026968"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:disabled"/>
+  <int value="-1601658823" label="AutofillVcnEnrollStrikeExpiryTime:enabled"/>
   <int value="-1601374850" label="DialMediaRouteProvider:disabled"/>
   <int value="-1600599500" label="IOSPromoBookmarkBubble:enabled"/>
   <int value="-1600382958" label="AdaptiveButtonInTopToolbarTranslate:enabled"/>
@@ -12206,6 +12207,7 @@ from previous Chrome versions.
   <int value="-797986633" label="NullTopRowFix:enabled"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>
   <int value="-797457946" label="EnableAIPromptAPIForWebPlatform:enabled"/>
+  <int value="-797385151" label="AutofillVcnEnrollStrikeExpiryTime:disabled"/>
   <int value="-797310986" label="CSSFragmentIdentifiers:disabled"/>
   <int value="-797152302" label="ScreenlockReauthPromoCard:enabled"/>
   <int value="-796999153" label="DbdRevampDesktop:disabled"/>

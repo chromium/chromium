@@ -485,6 +485,9 @@ extern const char kAutofillUploadCardRequestTimeoutDescription[];
 extern const char kAutofillVcnEnrollRequestTimeoutName[];
 extern const char kAutofillVcnEnrollRequestTimeoutDescription[];
 
+extern const char kAutofillVcnEnrollStrikeExpiryTimeName[];
+extern const char kAutofillVcnEnrollStrikeExpiryTimeDescription[];
+
 extern const char kAutofillVirtualViewStructureAndroidName[];
 extern const char kAutofillVirtualViewStructureAndroidDescription[];
 
