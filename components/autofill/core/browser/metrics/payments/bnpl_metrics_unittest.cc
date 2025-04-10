@@ -111,6 +111,36 @@ TEST_F(BnplMetricsTest,
       BnplSuggestionNotShownReason::kCheckoutAmountNotSupported, 1);
 }
 
+TEST_F(BnplMetricsTest, LogSelectBnplIssuerDialogResult_Cancelled) {
+  base::HistogramTester histogram_tester;
+  LogSelectBnplIssuerDialogResult(
+      SelectBnplIssuerDialogResult::kCancelButtonClicked);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SelectionDialogResult",
+      SelectBnplIssuerDialogResult::kCancelButtonClicked,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(BnplMetricsTest, LogSelectBnplIssuerDialogResult_IssuerSelected) {
+  base::HistogramTester histogram_tester;
+  LogSelectBnplIssuerDialogResult(
+      SelectBnplIssuerDialogResult::kIssuerSelected);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SelectionDialogResult",
+      SelectBnplIssuerDialogResult::kIssuerSelected,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(BnplMetricsTest, LogBnplIssuerSelection) {
+  base::HistogramTester histogram_tester;
+  std::string_view issuer_id = GetBnplIssuerId();
+
+  LogBnplIssuerSelection(issuer_id);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Bnpl.SelectionDialogIssuerSelected",
+      GetEnumForIssuerId(issuer_id), /*expected_bucket_count=*/1);
+}
+
 TEST_P(BnplMetricsTest, LogBnplPopupWindowShown) {
   base::HistogramTester histogram_tester;
   std::string_view issuer_id = GetBnplIssuerId();

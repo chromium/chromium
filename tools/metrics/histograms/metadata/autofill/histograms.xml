@@ -1632,6 +1632,26 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="Issuer" variants="Autofill.BnplIssuer"/>
 </histogram>
 
+<histogram name="Autofill.Bnpl.SelectionDialogIssuerSelected"
+    enum="SupportedBnplIssuer" expires_after="2025-07-01">
+  <owner>yishuil@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The count of BNPL issuer selection per issuer. Records when an issuer is
+    selected from the select BNPL issuer dialog.
+  </summary>
+</histogram>
+
+<histogram name="Autofill.Bnpl.SelectionDialogResult"
+    enum="SelectBnplIssuerDialogResult" expires_after="2025-07-01">
+  <owner>yishuil@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The result of the select BNPL issuer Dialog. Records when an action is taken
+    on the dialog.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Bnpl.SuggestionNotShownReason"
     enum="BnplSuggestionNotShownReason" expires_after="2025-07-01">
   <owner>wilsonlow@google.com</owner>

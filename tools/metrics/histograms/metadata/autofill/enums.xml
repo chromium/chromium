@@ -3835,6 +3835,15 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(/components/autofill/ios/browser/credit_card_save_metrics_ios.h:SaveCreditCardPromptResultIOS) -->
 
+<!-- LINT.IfChange(SelectBnplIssuerDialogResult) -->
+
+<enum name="SelectBnplIssuerDialogResult">
+  <int value="0" label="The cancel button was pressed"/>
+  <int value="1" label="An issuer was selected"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:SelectBnplIssuerDialogResult) -->
+
 <!-- LINT.IfChange(SuggestionType) -->
 
 <enum name="SuggestionType">
@@ -3918,6 +3927,16 @@ Called by update_autofill_enums.py.-->
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->
+
+<!-- LINT.IfChange(SupportedBnplIssuer) -->
+
+<enum name="SupportedBnplIssuer">
+  <int value="0" label="Affirm"/>
+  <int value="1" label="Afterpay"/>
+  <int value="2" label="Zip"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:SupportedBnplIssuer) -->
 
 <enum name="TouchToFill.CreditCard.Outcome">
   <int value="0"

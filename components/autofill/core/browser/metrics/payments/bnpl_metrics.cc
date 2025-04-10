@@ -11,6 +11,17 @@
 
 namespace autofill::autofill_metrics {
 
+SupportedBnplIssuer GetEnumForIssuerId(std::string_view issuer_id) {
+  if (issuer_id == kBnplAffirmIssuerId) {
+    return SupportedBnplIssuer::kAffirm;
+  } else if (issuer_id == kBnplZipIssuerId) {
+    return SupportedBnplIssuer::kZip;
+  } else if (issuer_id == kBnplAfterpayIssuerId) {
+    return SupportedBnplIssuer::kAfterpay;
+  }
+  NOTREACHED();
+}
+
 std::string GetHistogramSuffixFromIssuerId(std::string_view issuer_id) {
   if (issuer_id == kBnplAffirmIssuerId) {
     return "Affirm";
@@ -44,6 +55,15 @@ void LogBnplTosDialogResult(BnplTosDialogResult result,
       base::StrCat({"Autofill.Bnpl.TosDialogResult.",
                     GetHistogramSuffixFromIssuerId(issuer_id)});
   base::UmaHistogramEnumeration(histogram_name, result);
+}
+
+void LogSelectBnplIssuerDialogResult(SelectBnplIssuerDialogResult result) {
+  base::UmaHistogramEnumeration("Autofill.Bnpl.SelectionDialogResult", result);
+}
+
+void LogBnplIssuerSelection(std::string_view issuer_id) {
+  base::UmaHistogramEnumeration("Autofill.Bnpl.SelectionDialogIssuerSelected",
+                                GetEnumForIssuerId(issuer_id));
 }
 
 void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason) {

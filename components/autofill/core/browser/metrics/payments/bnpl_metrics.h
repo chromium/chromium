@@ -29,6 +29,20 @@ enum class BnplSuggestionNotShownReason {
   kMaxValue = kCheckoutAmountNotSupported,
 };
 
+// Enum for all supported BNPL issuers.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SupportedBnplIssuer)
+enum class SupportedBnplIssuer {
+  kAffirm = 0,
+  kAfterpay = 1,
+  kZip = 2,
+  kMaxValue = kZip,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SupportedBnplIssuer)
+
 // Enum to track the result of a corresponding BnplTosDialog that was shown.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -41,6 +55,21 @@ enum class BnplTosDialogResult {
   kMaxValue = kAcceptButtonClicked,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplTosDialogResult)
+
+// The dialog close reason of select BNPL issuer dialog.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SelectBnplIssuerDialogResult)
+enum class SelectBnplIssuerDialogResult {
+  kCancelButtonClicked = 0,
+  kIssuerSelected = 1,
+  kMaxValue = kIssuerSelected,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SelectBnplIssuerDialogResult)
+
+// Returns the enum for logging corresponding to the given issuer_id.
+SupportedBnplIssuer GetEnumForIssuerId(std::string_view issuer_id);
 
 // Returns the histogram suffix corresponding to the given issuer_id.
 std::string GetHistogramSuffixFromIssuerId(std::string_view issuer_id);
@@ -100,6 +129,12 @@ void LogBnplTosDialogShown(std::string_view issuer_id);
 // Logs that the BNPL ToS dialog closed reason.
 void LogBnplTosDialogResult(BnplTosDialogResult result,
                             std::string_view issuer_id);
+
+// Logs the select BNPL issuer dialog result.
+void LogSelectBnplIssuerDialogResult(SelectBnplIssuerDialogResult result);
+
+// Logs the selection of BNPL issuer from the select BNPL issuer dialog.
+void LogBnplIssuerSelection(std::string_view issuer_id);
 
 // Logs that the BNPL suggestion was not shown and the reason why.
 void LogBnplSuggestionNotShownReason(BnplSuggestionNotShownReason reason);
