@@ -239,8 +239,8 @@ TEST(FreedesktopSecretKeyProviderTest, BasicHappyPath) {
                    MatchArgs(DbusVoid()), _))
       .WillOnce(RespondWith(DbusVoid()));
 
-  FreedesktopSecretKeyProvider provider(/*use_for_encryption=*/true,
-                                        kProductName, mock_bus);
+  FreedesktopSecretKeyProvider provider(
+      "gnome-libsecret", /*use_for_encryption=*/true, kProductName, mock_bus);
   std::string tag;
   std::optional<Encryptor::Key> key;
   provider.GetKey(base::BindLambdaForTesting(
@@ -417,24 +417,6 @@ TEST(FreedesktopSecretKeyProviderTest,
                    FreedesktopSecretKeyProvider::kMethodSearchItems, _, _))
       .WillOnce(RespondWith(DbusArray<DbusObjectPath>()));
 
-  // Don't try to migrate from KWallet.
-  for (const auto& service_and_path :
-       FreedesktopSecretKeyProvider::kKWalletCandidates) {
-    auto mock_kwallet6_proxy =
-        base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
-            mock_bus.get(), service_and_path.kwallet_service,
-            dbus::ObjectPath(service_and_path.kwallet_path));
-    EXPECT_CALL(*mock_bus,
-                GetObjectProxy(service_and_path.kwallet_service,
-                               dbus::ObjectPath(service_and_path.kwallet_path)))
-        .WillRepeatedly(Return(mock_dbus_proxy.get()));
-    EXPECT_CALL(
-        *mock_dbus_proxy,
-        Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
-             MatchArgs(DbusString(service_and_path.kwallet_service)), _))
-        .WillOnce(RespondWith(DbusBoolean(false)));
-  }
-
   // CreateItem
   EXPECT_CALL(*mock_collection_proxy,
               Call(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
@@ -472,8 +454,8 @@ TEST(FreedesktopSecretKeyProviderTest,
                    MatchArgs(DbusVoid()), _))
       .WillOnce(RespondWith(DbusVoid()));
 
-  FreedesktopSecretKeyProvider provider(/*use_for_encryption=*/true,
-                                        kProductName, mock_bus);
+  FreedesktopSecretKeyProvider provider(
+      "gnome-libsecret", /*use_for_encryption=*/true, kProductName, mock_bus);
   std::string tag;
   std::optional<Encryptor::Key> key;
   provider.GetKey(base::BindLambdaForTesting(
@@ -487,7 +469,7 @@ TEST(FreedesktopSecretKeyProviderTest,
   EXPECT_TRUE(key.has_value());
 }
 
-TEST(FreedesktopSecretKeyProviderTest, MigrateFromKWallet) {
+TEST(FreedesktopSecretKeyProviderTest, KWallet) {
   auto mock_bus = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
 
   // Initialize object proxies
@@ -497,116 +479,20 @@ TEST(FreedesktopSecretKeyProviderTest, MigrateFromKWallet) {
                                         dbus::ObjectPath(DBUS_PATH_DBUS)))
       .WillRepeatedly(Return(mock_dbus_proxy.get()));
 
-  auto mock_service_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
-      mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
-      dbus::ObjectPath(FreedesktopSecretKeyProvider::kSecretServicePath));
-  EXPECT_CALL(
-      *mock_bus,
-      GetObjectProxy(
-          FreedesktopSecretKeyProvider::kSecretServiceName,
-          dbus::ObjectPath(FreedesktopSecretKeyProvider::kSecretServicePath)))
-      .WillRepeatedly(Return(mock_service_proxy.get()));
-
-  auto mock_collection_proxy =
-      base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
-          mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
-          dbus::ObjectPath(kCollectionPath));
-  EXPECT_CALL(*mock_bus,
-              GetObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
-                             dbus::ObjectPath(kCollectionPath)))
-      .WillRepeatedly(Return(mock_collection_proxy.get()));
-
-  auto mock_session_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
-      mock_bus.get(), FreedesktopSecretKeyProvider::kSecretServiceName,
-      dbus::ObjectPath(kSessionPath));
-  EXPECT_CALL(*mock_bus,
-              GetObjectProxy(FreedesktopSecretKeyProvider::kSecretServiceName,
-                             dbus::ObjectPath(kSessionPath)))
-      .WillRepeatedly(Return(mock_session_proxy.get()));
-
-  // NameHasOwner for Secret Service
-  EXPECT_CALL(*mock_dbus_proxy,
-              Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                   MatchArgs(DbusString(
-                       FreedesktopSecretKeyProvider::kSecretServiceName)),
-                   _))
-      .WillOnce(RespondWith(DbusBoolean(true)));
-
-  // ReadAlias("default")
-  EXPECT_CALL(
-      *mock_service_proxy,
-      Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
-           FreedesktopSecretKeyProvider::kMethodReadAlias,
-           MatchArgs(DbusString(FreedesktopSecretKeyProvider::kDefaultAlias)),
-           _))
-      .WillOnce(RespondWith(DbusObjectPath(dbus::ObjectPath(kCollectionPath))));
-
-  // Get(Label) on the default collection
-  EXPECT_CALL(
-      *mock_collection_proxy,
-      Call(FreedesktopSecretKeyProvider::kPropertiesInterface,
-           FreedesktopSecretKeyProvider::kMethodGet,
-           MatchArgs(MakeDbusParameters(
-               DbusString(
-                   FreedesktopSecretKeyProvider::kSecretCollectionInterface),
-               DbusString(FreedesktopSecretKeyProvider::kLabelProperty))),
-           _))
-      .WillOnce(RespondWith(MakeDbusVariant(
-          DbusString(FreedesktopSecretKeyProvider::kDefaultCollectionLabel))));
-
-  // Unlock the default collection (already unlocked)
-  EXPECT_CALL(*mock_service_proxy,
-              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
-                   FreedesktopSecretKeyProvider::kMethodUnlock,
-                   MatchArgs(MakeDbusArray(
-                       DbusObjectPath(dbus::ObjectPath(kCollectionPath)))),
-                   _))
-      .WillOnce(RespondWith(MakeDbusParameters(
-          MakeDbusArray(DbusObjectPath(dbus::ObjectPath(kCollectionPath))),
-          DbusObjectPath(dbus::ObjectPath("/")))));
-
-  // OpenSession
-  EXPECT_CALL(*mock_service_proxy,
-              Call(FreedesktopSecretKeyProvider::kSecretServiceInterface,
-                   FreedesktopSecretKeyProvider::kMethodOpenSession, _, _))
-      .WillOnce(RespondWith(
-          MakeDbusParameters(MakeDbusVariant(DbusString("")),
-                             DbusObjectPath(dbus::ObjectPath(kSessionPath)))));
-
-  // SearchItems returns empty
-  EXPECT_CALL(*mock_collection_proxy,
-              Call(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
-                   FreedesktopSecretKeyProvider::kMethodSearchItems, _, _))
-      .WillOnce(RespondWith(DbusArray<DbusObjectPath>()));
-
-  // KWallet 6 is not running
-  const auto& kwallet6 = FreedesktopSecretKeyProvider::kKWalletCandidates[0];
-  auto mock_kwallet6_proxy =
-      base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
-          mock_bus.get(), kwallet6.kwallet_service,
-          dbus::ObjectPath(kwallet6.kwallet_path));
-  EXPECT_CALL(*mock_bus,
-              GetObjectProxy(kwallet6.kwallet_service,
-                             dbus::ObjectPath(kwallet6.kwallet_path)))
-      .WillRepeatedly(Return(mock_kwallet6_proxy.get()));
-  EXPECT_CALL(*mock_dbus_proxy,
-              Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                   MatchArgs(DbusString(kwallet6.kwallet_service)), _))
-      .WillOnce(RespondWith(DbusBoolean(false)));
-
-  // Migrate from KWallet 5
-  const auto& kwallet5 = FreedesktopSecretKeyProvider::kKWalletCandidates[1];
   auto mock_kwallet5_proxy =
       base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
-          mock_bus.get(), kwallet5.kwallet_service,
-          dbus::ObjectPath(kwallet5.kwallet_path));
+          mock_bus.get(), FreedesktopSecretKeyProvider::kKWalletD5Service,
+          dbus::ObjectPath(FreedesktopSecretKeyProvider::kKWalletD5Path));
   EXPECT_CALL(*mock_bus,
-              GetObjectProxy(kwallet5.kwallet_service,
-                             dbus::ObjectPath(kwallet5.kwallet_path)))
+              GetObjectProxy(FreedesktopSecretKeyProvider::kKWalletD5Service,
+                             dbus::ObjectPath(
+                                 FreedesktopSecretKeyProvider::kKWalletD5Path)))
       .WillRepeatedly(Return(mock_kwallet5_proxy.get()));
   EXPECT_CALL(*mock_dbus_proxy,
               Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
-                   MatchArgs(DbusString(kwallet5.kwallet_service)), _))
+                   MatchArgs(DbusString(
+                       FreedesktopSecretKeyProvider::kKWalletD5Service)),
+                   _))
       .WillOnce(RespondWith(DbusBoolean(true)));
 
   // isEnabled -> true
@@ -655,22 +541,7 @@ TEST(FreedesktopSecretKeyProviderTest, MigrateFromKWallet) {
                    _))
       .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
 
-  // CreateItem for the migrated secret
-  EXPECT_CALL(*mock_collection_proxy,
-              Call(FreedesktopSecretKeyProvider::kSecretCollectionInterface,
-                   FreedesktopSecretKeyProvider::kMethodCreateItem, _, _))
-      .WillOnce(RespondWith(
-          MakeDbusParameters(DbusObjectPath(dbus::ObjectPath(kItemPath)),
-                             DbusObjectPath(dbus::ObjectPath("/")))));
-
-  // CloseSession
-  EXPECT_CALL(*mock_session_proxy,
-              Call(FreedesktopSecretKeyProvider::kSecretSessionInterface,
-                   FreedesktopSecretKeyProvider::kMethodClose,
-                   MatchArgs(DbusVoid()), _))
-      .WillOnce(RespondWith(DbusVoid()));
-
-  FreedesktopSecretKeyProvider provider(/*use_for_encryption=*/true,
+  FreedesktopSecretKeyProvider provider("kwallet5", /*use_for_encryption=*/true,
                                         kProductName, mock_bus);
   std::string tag;
   std::optional<Encryptor::Key> key;

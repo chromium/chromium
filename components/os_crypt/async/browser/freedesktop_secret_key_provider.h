@@ -46,7 +46,13 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
     kSearchItemsFailed = 8,
     kSessionFailure = 9,
     kUnlockFailed = 10,
-    kMaxValue = kUnlockFailed,
+    kDisabled = 11,
+    kKWalletNoService = 12,
+    kKWalletDisabled = 13,
+    kKWalletNoNetworkWallet = 14,
+    kKWalletOpenFailed = 15,
+    kKWalletNoSecret = 16,
+    kMaxValue = kKWalletNoSecret,
   };
 
   // Supplements InitStatus in case of errors.
@@ -64,7 +70,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
     kMaxValue = kPromptFailedSignalConnection,
   };
 
-  FreedesktopSecretKeyProvider(bool use_for_encryption,
+  FreedesktopSecretKeyProvider(const std::string& password_store,
+                               bool use_for_encryption,
                                const std::string& product_name,
                                scoped_refptr<dbus::Bus> bus);
   ~FreedesktopSecretKeyProvider() override;
@@ -78,8 +85,7 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest, BasicHappyPath);
   FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
                            CreateCollectionAndItemWithUnlockPrompt);
-  FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
-                           MigrateFromKWallet);
+  FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest, KWallet);
   friend class FreedesktopSecretKeyProviderCompatTest;
 
   template <typename T>
@@ -143,6 +149,13 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kDefaultCollectionLabel[] = "Default Keyring";
   static constexpr char kLabelProperty[] = "Label";
 
+  static constexpr char kKWalletDService[] = "org.kde.kwalletd";
+  static constexpr char kKWalletDPath[] = "/modules/kwalletd";
+  static constexpr char kKWalletD5Service[] = "org.kde.kwalletd5";
+  static constexpr char kKWalletD5Path[] = "/modules/kwalletd5";
+  static constexpr char kKWalletD6Service[] = "org.kde.kwalletd6";
+  static constexpr char kKWalletD6Path[] = "/modules/kwalletd6";
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static constexpr char kKWalletFolder[] = "Chrome Keys";
   static constexpr char kKeyName[] = "Chrome Safe Storage";
@@ -153,19 +166,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kAppName[] = "chromium";
 #endif
 
-  struct KwalletServiceAndPath {
-    const char* kwallet_service;
-    const char* kwallet_path;
-  };
-  static constexpr auto kKWalletCandidates =
-      std::to_array<KwalletServiceAndPath>({
-          {"org.kde.kwalletd6", "/modules/kwalletd6"},
-          {"org.kde.kwalletd5", "/modules/kwalletd5"},
-          {"org.kde.kwalletd", "/modules/kwalletd"},
-      });
-
+  void InitializeFreedesktopSecretService();
   void OnServiceStarted(std::optional<bool> service_started);
-
   void OnReadAliasDefault(
       base::expected<DbusObjectPath, ErrorDetail> collection_path);
   void OnGetCollectionLabelResponse(
@@ -180,9 +182,9 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
       base::expected<DbusArray<DbusObjectPath>, ErrorDetail> results);
   void OnGetSecret(base::expected<DbusSecret, ErrorDetail> secret_reply);
 
-  // KWallet migration
-  void TryKWalletMigration();
-  void OnNameHasOwnerForKWallet(std::optional<bool> has_owner);
+  // KWallet password storage
+  void InitializeKWallet(const char* kwallet_service, const char* kwallet_path);
+  void OnKWalletServiceStarted(std::optional<bool> has_owner);
   void OnKWalletIsEnabled(base::expected<DbusBoolean, ErrorDetail> is_enabled);
   void OnKWalletNetworkWallet(
       base::expected<DbusString, ErrorDetail> wallet_name);
@@ -206,10 +208,10 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   raw_ptr<dbus::ObjectProxy> session_proxy_ = nullptr;
   bool session_opened_ = false;
 
-  // For KWallet migration
+  // For KWallet password storage
   raw_ptr<dbus::ObjectProxy> kwallet_proxy_ = nullptr;
-  size_t kwallet_candidate_index_ = 0;
 
+  const std::string password_store_;
   const bool use_for_encryption_;
   const std::string product_name_;
   scoped_refptr<dbus::Bus> bus_;
