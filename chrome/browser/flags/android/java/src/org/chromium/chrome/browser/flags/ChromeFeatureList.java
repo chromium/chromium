@@ -175,6 +175,8 @@ public abstract class ChromeFeatureList {
             "AndroidDumpOnScrollWithoutResource";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_KEYBOARD_A11Y = "AndroidKeyboardA11y";
+    public static final String ANDROID_META_CLICK_HISTORY_NAVIGATION =
+            "AndroidMetaClickHistoryNavigation";
     public static final String ANDROID_NO_VISIBLE_HINT_FOR_DIFFERENT_TLD =
             "AndroidNoVisibleHintForDifferentTLD";
     public static final String ANDROID_OMNIBOX_FOCUSED_NEW_TAB_PAGE =

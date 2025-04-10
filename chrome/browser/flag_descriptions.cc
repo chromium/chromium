@@ -173,6 +173,15 @@ const char kAndroidKeyboardA11yDescription[] =
     "such as the tab strip, toolbar, and bookmarks bar.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidMetaClickHistoryNavigationName[] =
+    "Allows use of meta keys on forward/back history navigation arrows";
+const char kAndroidMetaClickHistoryNavigationDescription[] =
+    "Allows use of meta keys (ctrl+shift+click to open in new focused tab, "
+    "ctrl+click to open in new background tab, shift+click to open in new "
+    "window) on forward/back history navigation arrows";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
 const char kIgnoreDeviceFlexArcEnabledPolicyName[] =
     "Ignore VPN Apps Enabling on ChromeOS Flex";
