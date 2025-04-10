@@ -628,6 +628,35 @@ TEST_F(CookieSettingsTest, IsCookieAccessible_AlwaysAllowCookieNotAffected) {
       net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT));
 }
 
+TEST_F(CookieSettingsTest, ExplicitSettingNoopWhenCookiesAreAllowed) {
+  GURL top_level_url = GURL(kURL);
+  GURL url = GURL(kOtherURL);
+
+  CookieSettings settings;
+  net::CookieInclusionStatus status;
+  settings.set_block_third_party_cookies(false);
+
+  // Explicit setting.
+  settings.set_content_settings(
+      ContentSettingsType::COOKIES,
+      {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
+
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      MakeCanonicalSameSiteNoneCookie("name", kOtherURL);
+
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *cookie, GURL(kOtherURL), net::SiteForCookies(),
+      url::Origin::Create(GURL(kURL)), net::FirstPartySetMetadata(),
+      net::CookieSettingOverrides(), &status));
+
+  // When cookies are explicitly allowed, no exemption or warning reason should
+  // be attached.
+  EXPECT_EQ(status.exemption_reason(),
+            net::CookieInclusionStatus::ExemptionReason::kNone);
+
+  EXPECT_TRUE(status.warning_reasons().empty());
+}
+
 TEST_P(CookieSettingsTestP,
        GetCookieSettingOverridePreservesSessionOnlySetting) {
   CookieSettings settings;

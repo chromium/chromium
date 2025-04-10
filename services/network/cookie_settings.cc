@@ -430,18 +430,11 @@ void CookieSettings::AugmentInclusionStatus(
         setting_with_metadata.third_party_cookie_allow_mechanism());
     const bool has_exemption =
         allow_mechanism != ThirdPartyCookieAllowMechanism::kNone;
-    if (!could_be_affected_by_tpc_phaseout) {
-      // Recall: (A => B) == (!A || B)
-      // If there's no exemption, then this must not be a third-party request.
-      CHECK(has_exemption || !setting_with_metadata.is_third_party_request());
-      out_status.MaybeSetExemptionReason(GetExemptionReason(allow_mechanism));
-      return;
-    }
-
-    if (ShouldBlockThirdPartyCookies(top_frame_origin, overrides)) {
+    if (ShouldBlockThirdPartyCookies(top_frame_origin, overrides) &&
+        setting_with_metadata.is_third_party_request()) {
       CHECK(has_exemption);
       out_status.MaybeSetExemptionReason(GetExemptionReason(allow_mechanism));
-    } else {
+    } else if (could_be_affected_by_tpc_phaseout) {
       out_status.AddWarningReason(
           net::CookieInclusionStatus::WarningReason::WARN_THIRD_PARTY_PHASEOUT);
     }
