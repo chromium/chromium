@@ -9897,6 +9897,7 @@ from previous Chrome versions.
   <int value="-1688055622" label="webrtc-hw-decoding:disabled"/>
   <int value="-1687407363" label="KaleidoscopeModule:disabled"/>
   <int value="-1687406612" label="UseSkiaRenderer:disabled"/>
+  <int value="-1687114760" label="SettingsSingleActivity:disabled"/>
   <int value="-1686782572" label="ChromeHomeInactivitySheetExpansion:disabled"/>
   <int value="-1685173786" label="HandwritingLegacyRecognition:enabled"/>
   <int value="-1684773837" label="TabEngagementReportingAndroid:disabled"/>
@@ -16426,6 +16427,7 @@ from previous Chrome versions.
   <int value="836406476" label="EnableTouchableAppContextMenu:enabled"/>
   <int value="836602086" label="LensSearchSidePanelNewFeedback:disabled"/>
   <int value="837350465" label="SystemProxyForSystemServices:enabled"/>
+  <int value="838481357" label="SettingsSingleActivity:enabled"/>
   <int value="838887742" label="manual-enhanced-bookmarks"/>
   <int value="838944327" label="RoundedWindows:disabled"/>
   <int value="839230937" label="AutofillEnableCardNicknameUpstream:disabled"/>

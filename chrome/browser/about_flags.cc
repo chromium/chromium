@@ -7287,6 +7287,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSearchInCCTAlternateTapHandlingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSearchInCCTAlternateTapHandling)},
 
+    {"settings-single-activity", flag_descriptions::kSettingsSingleActivityName,
+     flag_descriptions::kSettingsSingleActivityDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSettingsSingleActivity)},
+
     {"enable-search-resumption-module",
      flag_descriptions::kSearchResumptionModuleAndroidName,
      flag_descriptions::kSearchResumptionModuleAndroidDescription, kOsAndroid,

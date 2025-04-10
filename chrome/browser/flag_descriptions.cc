@@ -929,6 +929,12 @@ const char kSearchInCCTAlternateTapHandlingName[] =
     "Search in Chrome Custom Tabs Alternate Tap Handling";
 const char kSearchInCCTAlternateTapHandlingDescription[] =
     "Search in Chrome Custom Tabs Alternate Tap Handling";
+
+const char kSettingsSingleActivityName[] =
+    "Use SingleActivity mode in Chrome settings";
+const char kSettingsSingleActivityDescription[] =
+    "On transition of the page, instead of stacking a new Activity as a task, "
+    "reuse the Activity and switch the contained fragment.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kSeparateWebAppShortcutBadgeIconName[] =
