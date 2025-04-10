@@ -5204,6 +5204,21 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Refill.ModifiedFieldsCount.{RefillTriggerReason}"
+    units="fields" expires_after="2025-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the number of fields that were modified by a single refill
+    operation. This metric is emitted at each triggered refill operation.
+  </summary>
+  <token key="RefillTriggerReason">
+    <variant name="ExpirationDateFormatted"/>
+    <variant name="FormChanged"/>
+    <variant name="SelectOptionsChanged"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.RefillTriggerReason" enum="RefillTriggerReason"
     expires_after="2025-12-12">
   <owner>jsobiech@google.com</owner>

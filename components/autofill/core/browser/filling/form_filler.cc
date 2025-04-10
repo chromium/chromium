@@ -593,13 +593,14 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
                                       field.global_id(), value);
 }
 
-void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
-                                   const FormData& form,
-                                   const FillingPayload& filling_payload,
-                                   FormStructure& form_structure,
-                                   AutofillField& autofill_trigger_field,
-                                   AutofillTriggerSource trigger_source,
-                                   bool is_refill) {
+void FormFiller::FillOrPreviewForm(
+    mojom::ActionPersistence action_persistence,
+    const FormData& form,
+    const FillingPayload& filling_payload,
+    FormStructure& form_structure,
+    AutofillField& autofill_trigger_field,
+    AutofillTriggerSource trigger_source,
+    std::optional<RefillTriggerReason> refill_trigger_reason) {
   FillingProduct filling_product =
       GetFillingProductFromFillingPayload(filling_payload);
 
@@ -608,7 +609,7 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
                  << ActionPersistenceToString(action_persistence) << Br{};
   LOG_AF(buffer) << "filling product: "
                  << FillingProductToString(filling_product) << Br{};
-  LOG_AF(buffer) << "is refill: " << is_refill << Br{};
+  LOG_AF(buffer) << "is refill: " << refill_trigger_reason.has_value() << Br{};
   LOG_AF(buffer) << form_structure << Br{};
   LOG_AF(buffer) << Tag{"table"};
 
@@ -632,7 +633,8 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
     return;
   }
 
-  if (action_persistence == mojom::ActionPersistence::kFill && !is_refill) {
+  if (action_persistence == mojom::ActionPersistence::kFill &&
+      !refill_trigger_reason) {
     form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
     if (FillingProductSupportsRefills(filling_product)) {
       SetRefillContext(form_structure.global_id(),
@@ -644,7 +646,8 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
   RefillContext* refill_context = GetRefillContext(form_structure.global_id());
   bool could_attempt_refill = FillingProductSupportsRefills(filling_product) &&
                               refill_context != nullptr &&
-                              !refill_context->attempted_refill && !is_refill;
+                              !refill_context->attempted_refill &&
+                              !refill_trigger_reason;
 
   std::vector<FormFieldData> result_fields = form.fields();
   CHECK_EQ(result_fields.size(), form_structure.field_count());
@@ -661,7 +664,7 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
           result_fields, form_structure, autofill_trigger_field,
           refill_context ? refill_context->type_groups_originally_filled
                          : std::optional<DenseSet<FieldTypeGroup>>(),
-          filling_product, is_refill);
+          filling_product, refill_trigger_reason.has_value());
 
   // This loop sets the values to fill in the `result_fields`. The
   // `result_fields` are sent to the renderer, whereas the very similar
@@ -701,7 +704,7 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
 
     bool allow_suggestion_swapping =
         AllowPaymentSwapping(autofill_trigger_field, autofill_field,
-                             is_refill) &&
+                             refill_trigger_reason.has_value()) &&
         form.fields()[i].is_autofilled();
 
     // Fill the data from `filling_payload` into `result_form`, which will be
@@ -795,9 +798,9 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
   // Save filling history to support undoing it later if needed.
   if (action_persistence == mojom::ActionPersistence::kFill &&
       ShouldRecordFillingHistory(filling_product)) {
-    form_autofill_history_.AddFormFillEntry(safe_filled_fields.old_values,
-                                            safe_filled_fields.cached,
-                                            filling_product, is_refill);
+    form_autofill_history_.AddFormFillEntry(
+        safe_filled_fields.old_values, safe_filled_fields.cached,
+        filling_product, refill_trigger_reason.has_value());
   }
 
   LOG_AF(buffer) << CTag{"table"};
@@ -817,7 +820,7 @@ void FormFiller::FillOrPreviewForm(mojom::ActionPersistence action_persistence,
       base::MakeFlatSet<FieldGlobalId>(result_fields, {},
                                        &FormFieldData::global_id),
       safe_filled_field_ids, skip_reasons, filling_payload, trigger_source,
-      is_refill);
+      refill_trigger_reason);
 }
 
 void FormFiller::MaybeTriggerRefill(
@@ -943,7 +946,7 @@ void FormFiller::TriggerRefill(const FormData& form,
         FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
                           &profile_or_credit_card, *form_structure,
                           *autofill_field, trigger_source,
-                          /*is_refill=*/true);
+                          refill_trigger_reason);
       },
       refill_context->profile_or_credit_card);
 }

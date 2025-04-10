@@ -4,17 +4,57 @@
 
 #include "components/autofill/core/browser/metrics/refill_metrics.h"
 
+#include "base/containers/to_vector.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/form_data_test_api.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::autofill_metrics {
 namespace {
 
+using ::testing::DoAll;
+using ::testing::Return;
+
+// Action `SaveArgElementsTo<k>(pointer)` saves the value pointed to by the
+// `k`th (0-based) argument of the mock function by moving it to `*pointer`.
+ACTION_TEMPLATE(SaveArgElementsTo,
+                HAS_1_TEMPLATE_PARAMS(int, k),
+                AND_1_VALUE_PARAMS(pointer)) {
+  auto span = testing::get<k>(args);
+  pointer->assign(span.begin(), span.end());
+}
+
+class MockAutofillDriver : public TestAutofillDriver {
+ public:
+  using TestAutofillDriver::TestAutofillDriver;
+  MockAutofillDriver(const MockAutofillDriver&) = delete;
+  MockAutofillDriver& operator=(const MockAutofillDriver&) = delete;
+
+  // Mock methods to enable testability.
+  MOCK_METHOD((base::flat_set<FieldGlobalId>),
+              ApplyFormAction,
+              (mojom::FormActionType action_type,
+               mojom::ActionPersistence action_persistence,
+               base::span<const FormFieldData> data,
+               const url::Origin& triggered_origin,
+               (const base::flat_map<FieldGlobalId, FieldType>&)),
+              (override));
+};
+
 class RefillMetricsTest : public AutofillMetricsBaseTest, public testing::Test {
  public:
-  void SetUp() override { SetUpHelper(); }
+  void SetUp() override {
+    SetUpHelper();
+
+    autofill_driver_ =
+        std::make_unique<MockAutofillDriver>(autofill_client_.get());
+    autofill_driver_->SetLocalFrameToken(test::MakeLocalFrameToken());
+    autofill_driver_->set_autofill_manager(
+        std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get()));
+  }
 
   void TearDown() override { TearDownHelper(); }
 
@@ -27,6 +67,38 @@ class RefillMetricsTest : public AutofillMetricsBaseTest, public testing::Test {
             *autofill_manager().GetAutofillField(
                 form.global_id(), form.fields().front().global_id()),
             AutofillTriggerSource::kPopup);
+  }
+
+  MockAutofillDriver* mock_driver() {
+    return static_cast<MockAutofillDriver*>(autofill_driver_.get());
+  }
+
+  // Lets `BrowserAutofillManager` fill `form` with `filling_payload` and
+  // returns `form` as it would be extracted from the renderer afterwards, i.e.,
+  // with the autofilled `FormFieldData::value`s.
+  FormData FillFormAndGetFilledVersion(FormData form,
+                                       FillingPayload filling_payload) {
+    std::vector<FormFieldData> filled_fields;
+    std::vector<FieldGlobalId> global_ids;
+    for (const FormFieldData& field : form.fields()) {
+      global_ids.push_back(field.global_id());
+    }
+    // After the call, `filled_fields` will only contain the fields that were
+    // autofilled in this call of FillOrPreviewForm (% fields not filled due
+    // to the iframe security policy).
+    EXPECT_CALL(*mock_driver(), ApplyFormAction)
+        .WillOnce(
+            DoAll(SaveArgElementsTo<2>(&filled_fields), Return(global_ids)));
+    FillForm(form, filling_payload);
+    // Copy the filled data into the form.
+    for (FormFieldData& field : test_api(form).fields()) {
+      if (auto it = std::ranges::find(filled_fields, field.global_id(),
+                                      &FormFieldData::global_id);
+          it != filled_fields.end()) {
+        field = *it;
+      }
+    }
+    return form;
   }
 };
 
@@ -99,6 +171,40 @@ TEST_F(RefillMetricsTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.RefillTriggerReason",
       RefillTriggerReason::kExpirationDateFormatted, 1);
+}
+
+// Test that we correctly log the number of modified fields during a refill.
+TEST_F(RefillMetricsTest, ModifiedFieldsCount) {
+  FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FIRST},
+                                    {.role = CREDIT_CARD_NUMBER}}});
+  autofill_manager().AddSeenForm(form,
+                                 {CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER});
+
+  CreditCard credit_card = test::GetCreditCard();
+  form = FillFormAndGetFilledVersion(form, &credit_card);
+
+  base::HistogramTester histogram_tester;
+  test_api(form).fields().emplace_back();
+
+  // Mock the router not blocking any field for filling.
+  EXPECT_CALL(*mock_driver(), ApplyFormAction)
+      .WillOnce([&](mojom::FormActionType action_type,
+                    mojom::ActionPersistence action_persistence,
+                    base::span<const FormFieldData> data,
+                    const url::Origin& triggered_origin,
+                    const base::flat_map<FieldGlobalId, FieldType>&) {
+        return base::ToVector(data, &FormFieldData::global_id);
+      });
+
+  autofill_manager().AddSeenForm(
+      form,
+      {CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NUMBER, CREDIT_CARD_NAME_LAST});
+
+  // Since the previously filled two fields should remain unchanged, we expect
+  // only the newly added field to be modified by the refill operation.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Refill.ModifiedFieldsCount.FormChanged", 1, 1);
 }
 
 }  // namespace

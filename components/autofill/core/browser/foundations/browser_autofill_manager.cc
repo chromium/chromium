@@ -106,6 +106,7 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
+#include "components/autofill/core/browser/metrics/refill_metrics.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_cache.h"
 #include "components/autofill/core/browser/ml_model/autofill_ai/autofill_ai_model_executor.h"
@@ -1687,7 +1688,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     }
     self.form_filler_->FillOrPreviewForm(
         action_persistence, form, &credit_card, CHECK_DEREF(form_structure),
-        CHECK_DEREF(autofill_field), trigger_source, /*is_refill=*/false);
+        CHECK_DEREF(autofill_field), trigger_source);
   };
 
   // Callback when the credit was feched asynchronously.
@@ -2360,7 +2361,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
         skip_reasons,
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
-    bool is_refill) {
+    std::optional<RefillTriggerReason> refill_trigger_reason) {
   NotifyObservers(&Observer::OnFillOrPreviewDataModelForm,
                   form_structure.global_id(), action_persistence,
                   safe_filled_fields, filling_payload);
@@ -2369,16 +2370,22 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
   }
   CHECK_EQ(action_persistence, mojom::ActionPersistence::kFill);
 
+  if (refill_trigger_reason) {
+    autofill_metrics::LogNumberOfFieldsModifiedByRefill(
+        *refill_trigger_reason, safe_filled_fields.size());
+  }
   AppendFillLogEvents(form, form_structure, trigger_autofill_field,
-                      safe_field_ids, skip_reasons, filling_payload, is_refill);
-  client().DidFillForm(trigger_source, is_refill);
+                      safe_field_ids, skip_reasons, filling_payload,
+                      refill_trigger_reason.has_value());
+  client().DidFillForm(trigger_source, refill_trigger_reason.has_value());
 
   std::visit(
       base::Overloaded{[&](const AutofillProfile* profile) {
                          LogAndRecordProfileFill(
                              form_structure, trigger_autofill_field,
                              safe_filled_fields, safe_filled_autofill_fields,
-                             *profile, trigger_source, is_refill);
+                             *profile, trigger_source,
+                             refill_trigger_reason.has_value());
                          MaybeShowPlusAddressEmailOverrideNotification(
                              safe_filled_autofill_fields, safe_filled_fields,
                              *profile, form_structure);
@@ -2388,7 +2395,7 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
                              form_structure, trigger_autofill_field,
                              safe_filled_fields, safe_filled_autofill_fields,
                              filled_field_ids, safe_field_ids, *credit_card,
-                             trigger_source, is_refill);
+                             trigger_source, refill_trigger_reason.has_value());
                        },
                        [&](const EntityInstance*) {
                          if (AutofillAiDelegate* delegate =

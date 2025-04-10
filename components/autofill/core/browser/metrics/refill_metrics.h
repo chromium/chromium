@@ -11,6 +11,10 @@ namespace autofill::autofill_metrics {
 
 void LogRefillTriggerReason(RefillTriggerReason refill_trigger_reason);
 
+void LogNumberOfFieldsModifiedByRefill(
+    RefillTriggerReason refill_trigger_reason,
+    size_t num_modified_fields);
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_REFILL_METRICS_H_
