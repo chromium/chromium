@@ -91,12 +91,7 @@ std::unique_ptr<TemplateURLData> FindPrepopulatedEngineInternal(
   // This could be more efficient. We load all URLs but keep only one.
   std::vector<std::unique_ptr<TemplateURLData>> prepopulated_engines =
       GetPrepopulatedEngines(prefs, regional_prepopulated_engines);
-  if (prepopulated_engines.empty()) {
-    // Not expected to be a real possibility, branch to be removed when this is
-    // verified.
-    NOTREACHED(base::NotFatalUntil::M132);
-    return nullptr;
-  }
+  CHECK(!prepopulated_engines.empty());
 
   for (auto& engine : prepopulated_engines) {
     if (engine->prepopulate_id == prepopulated_id) {

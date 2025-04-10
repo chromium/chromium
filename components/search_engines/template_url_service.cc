@@ -1158,7 +1158,7 @@ bool TemplateURLService::ResetPlayAPISearchEngine(
         search_engines::ChoiceMadeLocation::kChoiceScreen);
   }
 
-  CHECK(default_search_provider_, base::NotFatalUntil::M132);
+  CHECK(default_search_provider_);
   return true;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
