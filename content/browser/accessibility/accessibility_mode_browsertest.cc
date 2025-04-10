@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddExtendedPropertiesModeFlag) {
+IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddScreenReaderModeFlag) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(

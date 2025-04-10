@@ -61,6 +61,8 @@ type WidgetData = Data&{
   widgetId: number,
 };
 
+type EnabledStatus = 'off'|'on';
+
 interface InitData {
   browsers: BrowserData[];
   pages: PageData[];
@@ -69,14 +71,14 @@ interface InitData {
 
   supportedApiTypes: string[];
   apiType: string;
-  locked: boolean;
+  locked: EnabledStatus;
 
-  html: boolean;
-  native: boolean;
-  pdfPrinting: boolean;
-  extendedProperties: boolean;
-  text: boolean;
-  web: boolean;
+  html: EnabledStatus;
+  native: EnabledStatus;
+  pdfPrinting: EnabledStatus;
+  extendedProperties: EnabledStatus;
+  text: EnabledStatus;
+  web: EnabledStatus;
 }
 
 type RequestType = 'showOrRefreshTree';
@@ -296,9 +298,11 @@ function initialize() {
   addWebUiListener('startOrStopEvents', startOrStopEvents);
 }
 
-function bindCheckbox(name: string, value: boolean) {
+function bindCheckbox(name: string, value: EnabledStatus) {
   const checkbox = getRequiredElement<HTMLInputElement>(name);
-  checkbox.checked = value;
+  if (value === 'on') {
+    checkbox.checked = true;
+  }
   checkbox.addEventListener('change', function() {
     browserProxy.setGlobalFlag(name, checkbox.checked);
     document.location.reload();

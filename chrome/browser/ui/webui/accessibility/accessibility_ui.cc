@@ -109,6 +109,10 @@ static const char kShowOrRefreshTree[] = "showOrRefreshTree";
 static const char kText[] = "text";
 static const char kWeb[] = "web";
 
+// Possible global flag values
+static const char kOff[] = "off";
+static const char kOn[] = "on";
+
 using ui::AXPropertyFilter;
 
 namespace {
@@ -199,17 +203,17 @@ void HandleAccessibilityRequestCallback(
 
   // The "native" and "web" flags are disabled if
   // --disable-renderer-accessibility is set.
-  data.Set(kNative, native);
-  data.Set(kWeb, web);
+  data.Set(kNative, native ? kOn : kOff);
+  data.Set(kWeb, web ? kOn : kOff);
 
   // The "text", "extendedProperties" and "html" flags are only
   // meaningful if "web" is enabled.
-  data.Set(kText, text);
-  data.Set(kExtendedProperties, extendedProperties);
-  data.Set(kHTML, html);
+  data.Set(kText, text ? kOn : kOff);
+  data.Set(kExtendedProperties, extendedProperties ? kOn : kOff);
+  data.Set(kHTML, html ? kOn : kOff);
 
   // The "pdfPrinting" flag is independent of the others.
-  data.Set(kPDFPrinting, pdf_printing);
+  data.Set(kPDFPrinting, pdf_printing ? kOn : kOff);
 
   std::string pref_api_type =
       pref->GetString(prefs::kShownAccessibilityApiType);
@@ -237,7 +241,7 @@ void HandleAccessibilityRequestCallback(
 
   bool is_mode_locked = !content::BrowserAccessibilityState::GetInstance()
                              ->IsAXModeChangeAllowed();
-  data.Set(kLocked, is_mode_locked);
+  data.Set(kLocked, is_mode_locked ? kOn : kOff);
 
   base::Value::List page_list;
   std::unique_ptr<content::RenderWidgetHostIterator> widget_iter(
