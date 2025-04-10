@@ -454,13 +454,18 @@ lens::Payload CreatePageContentPayloadForChunks(
 // deprecated payload fields.
 lens::Payload CreatePageContentPayloadWithUpdatedContentFields(
     base::span<const lens::PageContent> page_contents,
-    GURL page_url) {
+    GURL page_url,
+    std::optional<std::string> page_title) {
   lens::Payload payload;
   auto* content = payload.mutable_content();
 
   if (!page_url.is_empty() &&
       lens::features::SendPageUrlForContextualization()) {
     content->set_webpage_url(page_url.spec());
+  }
+  if (page_title.has_value() && !page_title.value().empty() &&
+      lens::features::SendPageTitleForContextualization()) {
+    content->set_webpage_title(page_title.value());
   }
 
   for (const lens::PageContent& page_content : page_contents) {
@@ -491,10 +496,11 @@ lens::Payload CreatePageContentPayloadWithUpdatedContentFields(
 lens::Payload CreatePageContentPayload(
     base::span<const lens::PageContent> page_content,
     lens::MimeType primary_content_type,
-    GURL page_url) {
+    GURL page_url,
+    std::optional<std::string> page_title) {
   if (lens::features::UseUpdatedContextFields()) {
-    return CreatePageContentPayloadWithUpdatedContentFields(page_content,
-                                                            page_url);
+    return CreatePageContentPayloadWithUpdatedContentFields(
+        page_content, page_url, page_title);
   }
 
   CHECK_EQ(page_content.size(), 1u);
@@ -654,6 +660,7 @@ void LensOverlayQueryController::ResetPageContentData() {
   underlying_page_contents_ = base::span<const lens::PageContent>();
   primary_content_type_ = lens::MimeType::kUnknown;
   page_url_ = GURL();
+  page_title_ = std::nullopt;
   partial_content_ = base::span<const std::u16string>();
 }
 
@@ -661,11 +668,13 @@ void LensOverlayQueryController::SendUpdatedPageContent(
     std::optional<base::span<const lens::PageContent>> underlying_page_content,
     std::optional<lens::MimeType> primary_content_type,
     std::optional<GURL> new_page_url,
+    std::optional<std::string> new_page_title,
     const SkBitmap& screenshot) {
   if (underlying_page_content.has_value()) {
     underlying_page_contents_ = underlying_page_content.value();
     primary_content_type_ = primary_content_type.value();
     page_url_ = new_page_url.value();
+    page_title_ = new_page_title;
   }
   if (!screenshot.drawsNothing()) {
     original_screenshot_ = screenshot;
@@ -1343,7 +1352,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
     compression_task_tracker_->PostTaskAndReplyWithResult(
         compression_task_runner_.get(), FROM_HERE,
         base::BindOnce(&CreatePageContentPayload, underlying_page_contents_,
-                       primary_content_type_, page_url_),
+                       primary_content_type_, page_url_, page_title_),
         base::BindOnce(
             &LensOverlayQueryController::PrepareAndFetchPageContentRequestPart2,
             weak_ptr_factory_.GetWeakPtr(),
@@ -1569,6 +1578,10 @@ void LensOverlayQueryController::PrepareAndFetchPartialPageContentRequest() {
     if (!page_url_.is_empty() &&
         lens::features::SendPageUrlForContextualization()) {
       content->set_webpage_url(page_url_.spec());
+    }
+    if (page_title_.has_value() && !page_title_.value().empty() &&
+        lens::features::SendPageTitleForContextualization()) {
+      content->set_webpage_title(page_title_.value());
     }
   } else {
     payload.mutable_partial_pdf_document()->CopyFrom(partial_pdf_document);

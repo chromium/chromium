@@ -186,10 +186,12 @@ enum CompressionType {
 }
 
 // Generic content message for all types of content that can be sent to Lens.
-// Next ID: 4
+// Next ID: 5
 message Content {
   // Optional. Page url for the webpage.
   string webpage_url = 1;
+  // Optional. Page title of the webpage.
+  string webpage_title = 4;
   // Optional. Content items for the request.
   repeated ContentData content_data = 2;
   // The type of the request.

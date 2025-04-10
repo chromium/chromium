@@ -2064,9 +2064,9 @@ TEST_F(LensOverlayQueryControllerTest,
       base::TimeTicks::Now());
 
   // Immediately send a page content update request.
-  query_controller.SendUpdatedPageContent(kFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   ASSERT_TRUE(full_image_response_future.Wait());
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -2082,9 +2082,9 @@ TEST_F(LensOverlayQueryControllerTest,
             1);
 
   // Send a new page content update request.
-  query_controller.SendUpdatedPageContent(kNewFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kNewFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return query_controller.num_page_content_update_requests_sent() == 2;
@@ -2104,9 +2104,9 @@ TEST_F(LensOverlayQueryControllerTest,
 
   // Send an additional page content update request with a partial page content
   // request.
-  query_controller.SendUpdatedPageContent(kNewFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kNewFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
   query_controller.SendPartialPageContentRequest(kLongPartialContent);
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -2201,9 +2201,9 @@ TEST_F(LensOverlayQueryControllerTest,
       base::TimeTicks::Now());
 
   // Immediately send a page content update request.
-  query_controller.SendUpdatedPageContent(kFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   ASSERT_TRUE(full_image_response_future.Wait());
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -2238,9 +2238,9 @@ TEST_F(LensOverlayQueryControllerTest,
             3);
 
   // Send a new page content update request.
-  query_controller.SendUpdatedPageContent(kNewFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kNewFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return query_controller.num_page_content_update_requests_sent() == 2;
@@ -2277,7 +2277,7 @@ TEST_F(LensOverlayQueryControllerTest,
   full_image_response_future.Clear();
   SkBitmap bitmap2 = CreateNonEmptyBitmap(200, 100);
   query_controller.SendUpdatedPageContent(std::nullopt, std::nullopt,
-                                          std::nullopt, bitmap2);
+                                          std::nullopt, std::nullopt, bitmap2);
   ASSERT_TRUE(full_image_response_future.Wait());
 
   // Verify the request had a new image sequence id and sequence id.
@@ -2346,9 +2346,9 @@ TEST_F(LensOverlayQueryControllerTest,
       /*primary_content_type=*/lens::MimeType::kUnknown, 0,
       base::TimeTicks::Now());
   // Immediately send a page content update request.
-  query_controller.SendUpdatedPageContent(kFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   ASSERT_TRUE(full_image_response_future.Wait());
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -2367,7 +2367,7 @@ TEST_F(LensOverlayQueryControllerTest,
   full_image_response_future.Clear();
   SkBitmap bitmap2 = CreateNonEmptyBitmap(200, 100);
   query_controller.SendUpdatedPageContent(std::nullopt, std::nullopt,
-                                          std::nullopt, bitmap2);
+                                          std::nullopt, std::nullopt, bitmap2);
   ASSERT_TRUE(full_image_response_future.Wait());
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -2380,9 +2380,9 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(query_controller.sent_full_image_request_id().sequence_id(), 2);
 
   // Send an additional page content update request.
-  query_controller.SendUpdatedPageContent(kFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return query_controller.num_page_content_update_requests_sent() == 2;
@@ -2403,9 +2403,9 @@ TEST_F(LensOverlayQueryControllerTest,
   // Send screenshot and additional page content update request together.
   full_image_response_future.Clear();
   SkBitmap bitmap3 = CreateNonEmptyBitmap(300, 100);
-  query_controller.SendUpdatedPageContent(kFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), bitmap3);
+  query_controller.SendUpdatedPageContent(
+      kFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, bitmap3);
   ASSERT_TRUE(full_image_response_future.Wait());
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -2493,9 +2493,9 @@ TEST_F(LensOverlayQueryControllerTest,
       base::TimeTicks::Now());
 
   // Immediately send a page content update request.
-  query_controller.SendUpdatedPageContent(kFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   ASSERT_TRUE(full_image_response_future.Wait());
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -2521,7 +2521,7 @@ TEST_F(LensOverlayQueryControllerTest,
   full_image_response_future.Clear();
   SkBitmap bitmap2 = CreateNonEmptyBitmap(200, 100);
   query_controller.SendUpdatedPageContent(std::nullopt, std::nullopt,
-                                          std::nullopt, bitmap2);
+                                          std::nullopt, std::nullopt, bitmap2);
   ASSERT_TRUE(full_image_response_future.Wait());
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -2534,9 +2534,9 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_EQ(query_controller.sent_full_image_request_id().sequence_id(), 2);
 
   // Send an additional page content update request.
-  query_controller.SendUpdatedPageContent(kFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return query_controller.num_page_content_update_requests_sent() == 2;
@@ -2557,9 +2557,9 @@ TEST_F(LensOverlayQueryControllerTest,
   // Send screenshot and additional page content update request together.
   full_image_response_future.Clear();
   SkBitmap bitmap3 = CreateNonEmptyBitmap(300, 100);
-  query_controller.SendUpdatedPageContent(kFakeTextPageContents,
-                                          lens::MimeType::kPlainText,
-                                          GURL(kTestPageUrl), bitmap3);
+  query_controller.SendUpdatedPageContent(
+      kFakeTextPageContents, lens::MimeType::kPlainText, GURL(kTestPageUrl),
+      kTestPageTitle, bitmap3);
   ASSERT_TRUE(full_image_response_future.Wait());
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -2658,9 +2658,10 @@ TEST_F(LensOverlayQueryControllerTest,
   ASSERT_TRUE(page_content_request.payload().has_content());
   EXPECT_EQ(3, page_content_request.payload().content().content_data().size());
 
-  // Verify the payload has a URL.
+  // Verify the payload has a URL and title.
   const auto sent_content = page_content_request.payload().content();
   EXPECT_EQ(sent_content.webpage_url(), kTestPageUrl);
+  EXPECT_EQ(sent_content.webpage_title(), kTestPageTitle);
 
   // Verify the first is the first bytes with the correct content type
   EXPECT_EQ(sent_content.content_data(0).data().size(),
@@ -2741,9 +2742,9 @@ TEST_F(LensOverlayQueryControllerTest,
       sent_request.payload().partial_pdf_document().pages(1).text_segments(0));
 
   // Send a new page content request to incremement the sequence id.
-  query_controller.SendUpdatedPageContent(kFakePdfPageContents,
-                                          lens::MimeType::kPdf,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kFakePdfPageContents, lens::MimeType::kPdf, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   // Send a new request.
   const std::vector<std::u16string> kNewFakeSubstantialPartialContent(
@@ -2850,9 +2851,9 @@ TEST_F(LensOverlayQueryControllerTest,
             partial_pdf_document.pages(1).text_segments(0));
 
   // Send a new page content request to increment the sequence id.
-  query_controller.SendUpdatedPageContent(kFakePdfPageContents,
-                                          lens::MimeType::kPdf,
-                                          GURL(kTestPageUrl), SkBitmap());
+  query_controller.SendUpdatedPageContent(
+      kFakePdfPageContents, lens::MimeType::kPdf, GURL(kTestPageUrl),
+      kTestPageTitle, SkBitmap());
 
   // Send a new request.
   const std::vector<std::u16string> kNewFakeSubstantialPartialContent(

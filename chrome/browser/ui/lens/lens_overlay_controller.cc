@@ -2184,7 +2184,7 @@ void LensOverlayController::UpdatePageContextualizationPart2(
       // If the screenshot has changed but the bytes have not, send only the
       // screenshot.
       lens_overlay_query_controller_->SendUpdatedPageContent(
-          std::nullopt, std::nullopt, std::nullopt,
+          std::nullopt, std::nullopt, std::nullopt, std::nullopt,
           sending_bitmap ? bitmap : SkBitmap());
       return;
     }
@@ -2218,7 +2218,7 @@ void LensOverlayController::UpdatePageContextualizationPart2(
   is_first_upload_handler_event_ = true;
   lens_overlay_query_controller_->SendUpdatedPageContent(
       initialization_data_->page_contents_,
-      initialization_data_->primary_content_type_, GetPageURL(),
+      initialization_data_->primary_content_type_, GetPageURL(), GetPageTitle(),
       sending_bitmap ? bitmap : SkBitmap());
 
   RecordDocumentMetrics(page_count);
@@ -2494,7 +2494,8 @@ void LensOverlayController::InitializeOverlay(
       lens::features::IsLensOverlayEarlyStartQueryFlowOptimizationEnabled()) {
     lens_overlay_query_controller_->SendUpdatedPageContent(
         initialization_data_->page_contents_,
-        initialization_data_->primary_content_type_, GetPageURL(), SkBitmap());
+        initialization_data_->primary_content_type_, GetPageURL(),
+        GetPageTitle(), SkBitmap());
   }
 
   // Show the preselection overlay now that the overlay is initialized and ready

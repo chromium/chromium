@@ -144,6 +144,7 @@ class LensOverlayQueryController {
           underlying_page_contents,
       std::optional<lens::MimeType> primary_content_type,
       std::optional<GURL> new_page_url,
+      std::optional<std::string> new_page_title,
       const SkBitmap& screenshot);
 
   // Sends a request to the server with a portion of the page content.

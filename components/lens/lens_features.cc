@@ -290,6 +290,10 @@ constexpr base::FeatureParam<bool> kSendPageUrlForContextualization{
     &kLensOverlayContextualSearchbox, "send-page-url-for-contextualization",
     true};
 
+constexpr base::FeatureParam<bool> kSendPageTitleForContextualization{
+    &kLensOverlayContextualSearchbox, "send-page-title-for-contextualization",
+    true};
+
 constexpr base::FeatureParam<int> kLensOverlayPageContentRequestTimeoutMs{
     &kLensOverlayContextualSearchbox, "page-content-request-timeout-ms", 60000};
 
@@ -695,6 +699,10 @@ bool UseApcAsContext() {
 
 bool SendPageUrlForContextualization() {
   return kSendPageUrlForContextualization.Get();
+}
+
+bool SendPageTitleForContextualization() {
+  return kSendPageTitleForContextualization.Get();
 }
 
 int GetLensOverlayVerticalTextMargin() {

@@ -403,6 +403,10 @@ extern bool UseApcAsContext();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool SendPageUrlForContextualization();
 
+// Returns whether to include the page title in the page content upload request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool SendPageTitleForContextualization();
+
 // The timeout set for page content upload requests in milliseconds.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayPageContentRequestTimeoutMs();
