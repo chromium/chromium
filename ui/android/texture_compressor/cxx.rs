@@ -7,7 +7,7 @@ mod ffi {
     extern "Rust" {
         fn compress_etc1(
             src: &[u32],
-            dst: &mut [u64],
+            dst: &mut [u8],
             width: u32,
             height: u32,
             src_row_width: u32,

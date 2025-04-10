@@ -103,12 +103,6 @@ gfx::Size GetETCEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
 #if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
 // Check that `data` is sufficiently aligned for `T` and cast it to a Rust slice
 // of `T`.
-//
-// When `data` is a pointer from `malloc`, it is safe to pass any scalar type as
-// `T`: "Pointers returned by allocation functions such as malloc are guaranteed
-// to be suitably aligned for any object, which means they are aligned at least
-// as strictly as max_align_t." PartitionAlloc also follows this rule (see
-// partition_alloc::internal::kAlignment).
 template <typename T>
 rust::Slice<T> CastToAlignedSlice(void* data, size_t bytes) {
   CHECK(base::IsAligned(data, alignof(T)));
@@ -143,12 +137,15 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(SkBitmap raw_data,
 #if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
   constexpr int kBlockSize = 4;
   if (base::FeatureList::IsEnabled(kUseNewEtc1Encoder)) {
-    compress_etc1(
-        CastToAlignedSlice<const uint32_t>(raw_data.getPixels(),
-                                           raw_data.computeByteSize()),
-        CastToAlignedSlice<uint64_t>(etc1_pixel_ref->pixels(), encoded_bytes),
-        raw_data.width(), raw_data.height(), raw_data.rowBytesAsPixels(),
-        encoded_size.width() / kBlockSize);
+    // We assume the input slice is aligned to 4 bytes, which seems to hold in
+    // practice.
+    compress_etc1(CastToAlignedSlice<const uint32_t>(
+                      raw_data.getPixels(), raw_data.computeByteSize()),
+                  CastToAlignedSlice<unsigned char>(etc1_pixel_ref->pixels(),
+                                                    encoded_bytes),
+                  raw_data.width(), raw_data.height(),
+                  raw_data.rowBytesAsPixels(),
+                  encoded_size.width() / kBlockSize);
     return etc1_pixel_ref;
   }
 #endif

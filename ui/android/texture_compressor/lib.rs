@@ -13,6 +13,8 @@ pub mod selectors;
 use std::simd::prelude::*;
 use std::simd::Simd;
 
+use bytemuck::cast_slice;
+
 use crate::dither::dither;
 use crate::quant::{quantize_averages, QuantResult};
 use crate::selectors::search_table_and_selectors;
@@ -133,9 +135,16 @@ pub fn load_input_block(
 /// will be padded with unspecified values.
 /// `src_row_width` and `dst_row_width` specifies the stride, in units of pixels
 /// and blocks, respectively.
+///
+/// Note that `src` assumes aligned 32-bit buffer while `dst` does not. This is
+/// due to two reasons: 32-bit alignment is practical to get even on 32-bit
+/// platforms, whereas 64-bit alignment does not hold on 32-bit ARM.
+/// Additionally, we require extensive shuffling when loading inputs, but
+/// stores to the output straight in the order of pixels. Dealing with
+/// unaligned buffers in the latter case is significantly easier.
 pub fn compress_etc1(
     src: &[u32],
-    dst: &mut [u64],
+    dst: &mut [u8],
     width: u32,
     height: u32,
     src_row_width: u32,
@@ -143,6 +152,10 @@ pub fn compress_etc1(
 ) {
     let dst_height = height.div_ceil(4);
     let dst_width = width.div_ceil(4);
+    // Aligned staging buffer. Data is copied into the potentially unaligned
+    // destination buffer at the end of the each row.
+    let mut staging_row = vec![[Simd::splat(0); 4]; (dst_width as usize).div_ceil(SIMD_WIDTH)];
+    let copy_len = dst_width as usize * 8;
     // Note on vectorization scheme:
     //
     // We process one 4x4 block per SIMD lane, instead of the more common practice
@@ -158,16 +171,11 @@ pub fn compress_etc1(
             let QuantResult { lo: hdr0, hi: hdr1, scaled0: ep0, scaled1: ep1 } =
                 quantize_averages(&data);
             let best_fit = search_table_and_selectors(hdr0, hdr1, &data, [ep0, ep1]);
-            let regs = interleave_etc1(best_fit);
-
-            let slice = &mut dst[(dst_y * dst_row_width + dst_x0) as usize..];
-            for i in 0..4 {
-                for (j, word) in regs[i].as_array().iter().enumerate() {
-                    if let Some(out) = slice.get_mut(i * QUARTER_WIDTH + j) {
-                        *out = *word;
-                    }
-                }
-            }
+            let codewords = interleave_etc1(best_fit);
+            staging_row[dst_x0 as usize / SIMD_WIDTH] = codewords;
         }
+        let dst_row = &mut dst[(dst_y * dst_row_width * 8) as usize..];
+        let staging_row_bytes = cast_slice(&*staging_row);
+        dst_row[..copy_len].copy_from_slice(&staging_row_bytes[..copy_len]);
     }
 }
