@@ -9,7 +9,6 @@ import android.content.res.ColorStateList;
 import androidx.annotation.ColorInt;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.ui.modelutil.PropertyModel;
 
 class OptionalButtonMediator {

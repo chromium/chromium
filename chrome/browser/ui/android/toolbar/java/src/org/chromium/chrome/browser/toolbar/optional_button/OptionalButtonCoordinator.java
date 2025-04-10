@@ -16,8 +16,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.toolbar.ButtonData;
-import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -210,8 +208,8 @@ public class OptionalButtonCoordinator {
      * Updates the color filter of the background to match the current address bar background color.
      * This color is only used when showing a contextual action button (when {@link
      * #updateButton(ButtonData, boolean)} is called with a {@link
-     * org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec} where {@code isDynamicAction()} is
-     * true).
+     * org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec} where {@code
+     * isDynamicAction()} is true).
      */
     public void setBackgroundColorFilter(@ColorInt int backgroundColor) {
         mMediator.setBackgroundColorFilter(backgroundColor);

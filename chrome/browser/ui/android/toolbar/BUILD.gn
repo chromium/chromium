@@ -10,10 +10,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/toolbar/BaseButtonDataProvider.java",
-    "java/src/org/chromium/chrome/browser/toolbar/ButtonData.java",
-    "java/src/org/chromium/chrome/browser/toolbar/ButtonDataImpl.java",
-    "java/src/org/chromium/chrome/browser/toolbar/ButtonDataProvider.java",
     "java/src/org/chromium/chrome/browser/toolbar/ConstraintsChecker.java",
     "java/src/org/chromium/chrome/browser/toolbar/ControlContainer.java",
     "java/src/org/chromium/chrome/browser/toolbar/FormFieldFocusedSupplier.java",
@@ -78,6 +74,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonViewBinder.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuItemState.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuUiState.java",
+    "java/src/org/chromium/chrome/browser/toolbar/optional_button/BaseButtonDataProvider.java",
+    "java/src/org/chromium/chrome/browser/toolbar/optional_button/ButtonData.java",
+    "java/src/org/chromium/chrome/browser/toolbar/optional_button/ButtonDataImpl.java",
+    "java/src/org/chromium/chrome/browser/toolbar/optional_button/ButtonDataProvider.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonConstants.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonMediator.java",
@@ -341,7 +341,6 @@ android_resources("java_resources") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.toolbar"
   sources = [
-    "java/src/org/chromium/chrome/browser/toolbar/BaseButtonDataProviderTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ConstraintsCheckerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/FormFieldFocusedSupplierTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/LocationBarFocusScrimHandlerTest.java",
@@ -363,6 +362,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonMediatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButtonTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/optional_button/BaseButtonDataProviderTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonViewTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/reload_button/ReloadButtonMediatorTest.java",

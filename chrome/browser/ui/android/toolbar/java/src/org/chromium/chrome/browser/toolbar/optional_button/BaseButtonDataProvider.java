@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar;
+package org.chromium.chrome.browser.toolbar.optional_button;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
@@ -103,6 +103,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
     /**
      * Checks if the button should be shown for the current tab. Called every time {@code get()} is
      * invoked.
+     *
      * @param tab Current tab.
      * @return whether the button should be shown for the current tab.
      */

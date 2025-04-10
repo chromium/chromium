@@ -9,7 +9,7 @@ import android.content.res.ColorStateList;
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 
-import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.optional_button.ButtonData;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 
 import java.util.Objects;

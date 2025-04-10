@@ -19,8 +19,8 @@ import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController
 import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordinator.PriceInsightsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
