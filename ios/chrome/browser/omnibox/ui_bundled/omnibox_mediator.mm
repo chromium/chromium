@@ -178,6 +178,10 @@ using base::UserMetricsAction;
   [self.omniboxTextController cleanupAfterScribble];
 }
 
+- (void)onTextInputModeChange {
+  [self.omniboxTextController onTextInputModeChange];
+}
+
 #pragma mark Textfield delegate forwaring
 
 - (void)onDidBeginEditing {

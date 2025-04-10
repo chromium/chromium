@@ -66,6 +66,9 @@ class OmniboxViewIOS;
 /// Cleans up the omnibox after scribble.
 - (void)cleanupAfterScribble;
 
+/// Called when the text input mode changed.
+- (void)onTextInputModeChange;
+
 /// Called when the omnibox text field starts editing.
 - (void)onDidBeginEditing;
 

@@ -113,6 +113,11 @@
   [self.textField setAdditionalText:nil];
 }
 
+- (void)onTextInputModeChange {
+  // Update the popup to align suggestions with the text in the textField.
+  [self.omniboxAutocompleteController updatePopupSuggestions];
+}
+
 - (void)onDidBeginEditing {
   if (_omniboxViewIOS) {
     _omniboxViewIOS->OnDidBeginEditing();

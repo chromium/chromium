@@ -521,7 +521,7 @@ using base::UserMetricsAction;
   [self.textField updateTextDirection];
   self.semanticContentAttribute = [self.textField bestSemanticContentAttribute];
 
-  [self.textInputDelegate omniboxViewControllerTextInputModeDidChange:self];
+  [self.mutator onTextInputModeChange];
 }
 
 - (void)updateCachedClipboardState {

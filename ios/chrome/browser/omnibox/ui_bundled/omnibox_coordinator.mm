@@ -59,8 +59,7 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
-@interface OmniboxCoordinator () <OmniboxViewControllerTextInputDelegate,
-                                  OmniboxAssistiveKeyboardMediatorDelegate>
+@interface OmniboxCoordinator () <OmniboxAssistiveKeyboardMediatorDelegate>
 
 // View controller managed by this coordinator.
 @property(nonatomic, strong) OmniboxViewController* viewController;
@@ -135,7 +134,6 @@
       [[OmniboxViewController alloc] initWithIsLensOverlay:_isLensOverlay];
   self.viewController.defaultLeadingImage =
       GetOmniboxSuggestionIcon(OmniboxSuggestionIconType::kDefaultFavicon);
-  self.viewController.textInputDelegate = self;
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
   self.viewController.isSearchOnlyUI = self.isSearchOnlyUI;
@@ -391,13 +389,6 @@
 
 - (void)omniboxAssistiveKeyboardDidTapDebuggerButton {
   [self.popupCoordinator toggleOmniboxDebuggerView];
-}
-
-#pragma mark - OmniboxViewControllerTextInputDelegate
-
-- (void)omniboxViewControllerTextInputModeDidChange:
-    (OmniboxViewController*)omniboxViewController {
-  _editView->UpdatePopupAppearance();
 }
 
 #pragma mark - private

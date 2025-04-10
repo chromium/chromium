@@ -28,6 +28,9 @@
 /// Cleans up the omnibox after scribble.
 - (void)cleanupAfterScribble;
 
+/// Called when the text input mode changed.
+- (void)onTextInputModeChange;
+
 #pragma mark - Textfield delegate forwaring
 
 /// Called when the omnibox text field starts editing.
