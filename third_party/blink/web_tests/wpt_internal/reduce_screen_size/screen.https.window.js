@@ -27,6 +27,9 @@ test(t => {
   // assert_equals(popup.screenLeft, 100, "screenLeft");
   // assert_equals(popup.screenY, 200, "screenY");
   // assert_equals(popup.screenTop, 200, "screenY");
+  //
+  // TODO: There doesn't seem to be any way to pretend that `isExtended` should
+  // be true, which makes it hard to test in its unreduced state.
 }, "Verify default behavior.");
 
 test(t => {
@@ -41,4 +44,6 @@ test(t => {
   assert_equals(popup.screenLeft, 0, "screenLeft");
   assert_equals(popup.screenY, 0, "screenY");
   assert_equals(popup.screenTop, 0, "screenY");
+
+  assert_false(popup.screen.isExtended, "isExtended");
 }, "Verify reduced behavior.");

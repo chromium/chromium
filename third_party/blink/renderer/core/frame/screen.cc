@@ -196,8 +196,9 @@ ExecutionContext* Screen::GetExecutionContext() const {
 }
 
 bool Screen::isExtended() const {
-  if (!DomWindow())
+  if (!DomWindow() || ShouldReduceScreenSize(DomWindow())) {
     return false;
+  }
   auto* context = GetExecutionContext();
   if (!context->IsFeatureEnabled(
           network::mojom::PermissionsPolicyFeature::kWindowManagement)) {
