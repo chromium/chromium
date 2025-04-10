@@ -269,10 +269,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
 
   LayoutObjectChildList children_;
 
-  unsigned has_svg_text_descendants_ : 1;
-
-  unsigned may_be_non_contiguous_ifc_ : 1 = false;
-
   // FIXME: This is temporary as we move code that accesses block flow
   // member variables out of LayoutBlock and into LayoutBlockFlow.
   friend class LayoutBlockFlow;

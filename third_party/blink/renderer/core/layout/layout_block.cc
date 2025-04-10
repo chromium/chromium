@@ -76,13 +76,11 @@ namespace blink {
 
 struct SameSizeAsLayoutBlock : public LayoutBox {
   LayoutObjectChildList children;
-  uint32_t bitfields;
 };
 
 ASSERT_SIZE(LayoutBlock, SameSizeAsLayoutBlock);
 
-LayoutBlock::LayoutBlock(ContainerNode* node)
-    : LayoutBox(node), has_svg_text_descendants_(false) {
+LayoutBlock::LayoutBlock(ContainerNode* node) : LayoutBox(node) {
   // LayoutBlockFlow calls setChildrenInline(true).
   // By default, subclasses do not have inline children.
 }
@@ -99,9 +97,9 @@ bool LayoutBlock::IsLayoutNGObject() const {
 
 void LayoutBlock::RemoveFromGlobalMaps() {
   NOT_DESTROYED();
-  if (has_svg_text_descendants_) {
+  if (HasSVGTextDescendants()) {
     View()->SvgTextDescendantsMap().erase(this);
-    has_svg_text_descendants_ = false;
+    SetHasSVGTextDescendants(false);
   }
 }
 
@@ -147,7 +145,7 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
   // Computes old scaling factor before PaintLayer::UpdateTransform()
   // updates Layer()->Transform().
   double old_squared_scale = 1;
-  if (Layer() && diff.TransformChanged() && has_svg_text_descendants_) {
+  if (Layer() && diff.TransformChanged() && HasSVGTextDescendants()) {
     old_squared_scale =
         ComputeSquaredLocalFontSizeScalingFactor(Layer()->Transform());
   }
@@ -176,7 +174,7 @@ void LayoutBlock::StyleDidChange(StyleDifference diff,
 
   PropagateStyleToAnonymousChildren();
 
-  if (diff.TransformChanged() && has_svg_text_descendants_) {
+  if (diff.TransformChanged() && HasSVGTextDescendants()) {
     const double new_squared_scale = ComputeSquaredLocalFontSizeScalingFactor(
         Layer() ? Layer()->Transform() : nullptr);
     // Compare local scale before and after.
@@ -439,7 +437,7 @@ void LayoutBlock::AddSvgTextDescendant(LayoutBox& svg_text) {
         MakeGarbageCollected<TrackedLayoutBoxLinkedHashSet>();
   }
   result.stored_value->value->insert(&svg_text);
-  has_svg_text_descendants_ = true;
+  SetHasSVGTextDescendants(true);
 }
 
 void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
@@ -453,7 +451,7 @@ void LayoutBlock::RemoveSvgTextDescendant(LayoutBox& svg_text) {
   descendants->erase(&svg_text);
   if (descendants->empty()) {
     map.erase(this);
-    has_svg_text_descendants_ = false;
+    SetHasSVGTextDescendants(false);
   }
 }
 
