@@ -132,6 +132,8 @@ FillingProduct GetFillingProductFromFieldTypeGroup(
       return FillingProduct::kIban;
     case kAutofillAi:
       return FillingProduct::kAutofillAi;
+    case kLoyaltyCard:
+      return FillingProduct::kLoyaltyCard;
   }
   NOTREACHED();
 }

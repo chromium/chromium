@@ -1217,6 +1217,7 @@ FormGroup* AutofillProfile::MutableFormGroupForType(FieldType type) {
     case FieldTypeGroup::kStandaloneCvcField:
     case FieldTypeGroup::kUnfillable:
     case FieldTypeGroup::kAutofillAi:
+    case FieldTypeGroup::kLoyaltyCard:
       return nullptr;
   }
   NOTREACHED();
