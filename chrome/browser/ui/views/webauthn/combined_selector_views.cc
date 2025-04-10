@@ -18,6 +18,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -182,6 +183,31 @@ void CombinedSelectorRowView::RequestFocus() {
   if (radio_button_) {
     radio_button_->RequestFocus();
   }
+}
+
+bool CombinedSelectorRowView::OnMousePressed(const ui::MouseEvent& event) {
+  if (radio_button_ && event.IsOnlyLeftMouseButton()) {
+    const gfx::Point center = radio_button_->GetLocalBounds().CenterPoint();
+    ui::MouseEvent synthetic_press_event(
+        ui::EventType::kMousePressed, center, center, event.time_stamp(),
+        event.flags(), event.changed_button_flags());
+    radio_button_->OnMousePressed(synthetic_press_event);
+    radio_button_->RequestFocus();
+    return true;
+  }
+  return views::TableLayoutView::OnMousePressed(event);
+}
+
+void CombinedSelectorRowView::OnMouseReleased(const ui::MouseEvent& event) {
+  if (radio_button_ && event.IsOnlyLeftMouseButton()) {
+    const gfx::Point center = radio_button_->GetLocalBounds().CenterPoint();
+    ui::MouseEvent synthetic_release_event(
+        ui::EventType::kMouseReleased, center, center, event.time_stamp(),
+        event.flags(), event.changed_button_flags());
+    radio_button_->OnMouseReleased(synthetic_release_event);
+    return;
+  }
+  views::TableLayoutView::OnMouseReleased(event);  // Default handling.
 }
 
 BEGIN_METADATA(CombinedSelectorRowView)
