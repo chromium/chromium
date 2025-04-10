@@ -675,12 +675,12 @@ TEST_P(PdfInkModuleTest, HandleSetAnnotationModeMessage) {
   EXPECT_FALSE(ink_module().enabled());
   EXPECT_TRUE(ink_module().loaded_v2_shapes_.empty());
 
-  message.Set("enable", true);
+  message.Set("mode", "draw");
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_TRUE(ink_module().enabled());
   EXPECT_THAT(ink_module().loaded_v2_shapes_, kShapeMapMatcher);
 
-  message.Set("enable", false);
+  message.Set("mode", "none");
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
   EXPECT_THAT(ink_module().loaded_v2_shapes_, kShapeMapMatcher);
@@ -698,7 +698,7 @@ TEST_P(PdfInkModuleTest, MaybeSetCursorWhenTogglingAnnotationMode) {
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_TRUE(ink_module().enabled());
 
-  message.Set("enable", false);
+  message.Set("mode", "none");
   EXPECT_TRUE(ink_module().OnMessage(message));
   EXPECT_FALSE(ink_module().enabled());
 }

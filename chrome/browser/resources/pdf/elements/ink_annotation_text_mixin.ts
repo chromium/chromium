@@ -66,13 +66,16 @@ export const InkAnnotationTextMixin =
         accessor currentFont: string = '';
         accessor currentSize: number = TEXT_SIZES[0]!;
         accessor colors: ColorOption[] = TEXT_COLORS;
-        accessor fonts: string[] = [
-          'Roboto',
-          'Serif',
-          'Sans',
-          'Monospace',
-        ];
+        accessor fonts: string[] = [];
         accessor sizes: number[] = TEXT_SIZES;
+
+        override firstUpdated() {
+          Ink2Manager.getInstance().getTextAnnotationFonts().then(fonts => {
+            // Set the fonts and then update the text.
+            this.fonts = fonts;
+            this.onTextChanged(Ink2Manager.getInstance().getCurrentText());
+          });
+        }
 
         isSelectedFont(font: string): boolean {
           return font === this.currentFont;

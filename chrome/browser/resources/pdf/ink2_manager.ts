@@ -12,7 +12,7 @@ import {PluginController} from './controller.js';
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
   private text_: AnnotationText = {
-    font: 'Roboto',
+    font: '',
     size: 12,
     color: {r: 0, g: 0, b: 0},
     alignment: TextAlignment.LEFT,
@@ -23,8 +23,8 @@ export class Ink2Manager extends EventTarget {
       [TextStyle.STRIKETHROUGH]: false,
     },
   };
-
   private brushResolver_: PromiseResolver<void>|null = null;
+  private fontsResolver_: PromiseResolver<string[]>|null = null;
   private pluginController_: PluginController = PluginController.getInstance();
 
   isInitializationStarted(): boolean {
@@ -84,6 +84,19 @@ export class Ink2Manager extends EventTarget {
     const brushMessage = await this.pluginController_.getAnnotationBrush(type);
     this.setAnnotationBrush_(brushMessage.data);
     this.setAnnotationBrushInPlugin_();
+  }
+
+  getTextAnnotationFonts(): Promise<string[]> {
+    if (this.fontsResolver_ === null) {
+      this.fontsResolver_ = new PromiseResolver();
+      this.pluginController_.getTextAnnotFontNames().then(fontsMessage => {
+        assert(this.fontsResolver_);
+        this.fontsResolver_.resolve(fontsMessage.data);
+        assert(fontsMessage.data.length > 0);
+        this.setTextFont(fontsMessage.data[0]!);
+      });
+    }
+    return this.fontsResolver_.promise;
   }
 
   setTextFont(font: string) {
@@ -162,9 +175,13 @@ export class Ink2Manager extends EventTarget {
   }
 
   private setAnnotationTextInPlugin_(): void {
-    // TODO (crbug.com/402547554): Replace this with a real call to the plugin,
-    // once the backend has been built.
-    console.info('Send plugin text information ' + JSON.stringify(this.text_));
+    this.pluginController_.setTextAnnotationFont({
+      typeface: this.text_.font,
+      fontSize: this.text_.size,
+      alignment: this.text_.alignment,
+      style: this.text_.styles,
+      color: this.text_.color,
+    });
   }
 
   private fireTextChanged_() {
