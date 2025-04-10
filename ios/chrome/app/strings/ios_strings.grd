@@ -6073,6 +6073,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNIN_BUTTON_TEXT" desc="Button that the user can press if they want to sign-in.">
         Sign in
       </message>
+      <message name="IDS_IOS_SIGNIN_GROUP_COLLABORATION_TITLE" desc="Title displayed to the user when they attempt to access a shared group while being signed out.">
+        Collaborate in tab groups
+      </message>
       <message name="IDS_IOS_SIGNIN_PROMO_BOOKMARKS" desc="This string is on a promo intended to promote signing in to Chrome with the user's Google Account. It appears on the Bookmarks page when the user is not signed in. We want users to read this promo and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight. [Length: 90em]">
         Sign in to get your bookmarks on all your devices.
       </message>

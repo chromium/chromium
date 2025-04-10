@@ -1072,6 +1072,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE" desc="Notification title for the user's signed-in state [iOS only]">
       Signed in to Chrome
       </message>
+      <message name="IDS_IOS_SIGNIN_GROUP_COLLABORATION_SUBTITLE" desc="Subtitle displayed to the user when they attempt to access a shared group while being signed out.">
+        Sign in to Chrome to share and join tab groups, and work together on ideas
+      </message>
       <message name="IDS_IOS_SIGNIN_SHEET_LABEL_FOR_WEB_SIGNIN" desc="This string is on a sign-in page, after the user taps to sign in to a website with their Google Account. It offers to sign the user in to both the website and to Chrome with the account. It highlights the overarching user benefit of signing in to Chrome (access to data from other devices like bookmarks, passwords, history, settings, etc.). We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight. [iOS only]">
         Sign in to this site and Chrome to get your bookmarks and more on all your devices.
       </message>

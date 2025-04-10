@@ -30,6 +30,21 @@ constexpr CGFloat kTopMarginForManagedIcon = 16.;
 // Point size of enterprise icon in the bottom view.
 constexpr CGFloat kEnterpriseIconPointSize = 13;
 
+// The bottom margin of the header view.
+// Only relevant for certain `_contextStyle` values.
+constexpr CGFloat kHeaderBottomMargin = 32;
+
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+// The size of the logo image.
+// Only relevant for certain `_contextStyle` values.
+constexpr CGFloat kHeaderImageSize = 39.2;
+#endif
+
+// Header background for collaboration sign in.
+// Only relevant for certain `_contextStyle` values.
+NSString* const kCollaborationSigninHeaderBackground =
+    @"collaboration_signin_background";
+
 }  // namespace
 
 @interface FullscreenSigninScreenViewController ()
@@ -78,6 +93,8 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
   // Set banner.
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   self.bannerName = kChromeSigninBannerImage;
+  self.headerImage = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kMulticolorChromeballSymbol, kHeaderImageSize));
 #else
   self.bannerName = kChromiumSigninBannerImage;
 #endif
@@ -86,18 +103,10 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
   switch (self.signinStatus) {
     case SigninScreenConsumerSigninStatusAvailable: {
       switch (self.screenIntent) {
-        case SigninScreenConsumerScreenIntentSigninOnly:
-          // Use in the context of the upgrade promo dialog.
-          self.titleText =
-              l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE);
-          self.subtitleText =
-              self.syncEnabled
-                  ? l10n_util::GetNSString(
-                        IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE)
-                  : l10n_util::GetNSString(
-                        IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE_SYNC_DISABLED);
-
+        case SigninScreenConsumerScreenIntentSigninOnly: {
+          [self configureForSigninOnly];
           break;
+        }
         case SigninScreenConsumerScreenIntentWelcomeAndSignin:
         case SigninScreenConsumerScreenIntentWelcomeWithoutUMAAndSignin:
           // Use in the context of the FRE dialog.
@@ -191,25 +200,7 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
         l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE);
   }
 
-  // Set secondary button.
-  if (self.signinStatus == SigninScreenConsumerSigninStatusAvailable) {
-    if (FRESignInSecondaryActionLabelUpdate()) {
-      std::string signinValue = kFRESignInSecondaryActionLabelUpdateParam.Get();
-      if (signinValue ==
-          kFRESignInSecondaryActionLabelUpdateParamStaySignedOut) {
-        self.secondaryActionString =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT);
-      } else {
-        // Fallback action when no valid value is provided.
-        self.secondaryActionString =
-            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
-      }
-    } else {
-      // When the feature flag is disabled, default to the original string
-      self.secondaryActionString =
-          l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
-    }
-  }
+  [self configureSecondaryButton];
 
   // Call super after setting up the strings and others, as required per super
   // class.
@@ -243,6 +234,33 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
     _overlay.translatesAutoresizingMaskIntoConstraints = NO;
   }
   return _overlay;
+}
+
+#pragma mark - FullscreenSigninScreenConsumer
+
+- (void)setSelectedIdentityUserName:(NSString*)userName
+                              email:(NSString*)email
+                          givenName:(NSString*)givenName
+                             avatar:(UIImage*)avatar
+                            managed:(BOOL)managed {
+  DCHECK_NE(self.signinStatus, SigninScreenConsumerSigninStatusDisabled);
+  DCHECK(email);
+  DCHECK(avatar);
+  self.personalizedButtonPrompt = givenName ? givenName : email;
+  [self updateUIForIdentityAvailable:YES];
+  [self.identityControl setIdentityName:userName email:email managed:managed];
+  [self.identityControl setIdentityAvatar:avatar];
+}
+
+- (void)noIdentityAvailable {
+  DCHECK_NE(self.signinStatus, SigninScreenConsumerSigninStatusDisabled);
+  [self updateUIForIdentityAvailable:NO];
+}
+
+- (void)setUIEnabled:(BOOL)UIEnabled {
+  // For the disabled UI, show a spinner in the primary button.
+  self.primaryButtonSpinnerEnabled = !UIEnabled;
+  self.view.userInteractionEnabled = UIEnabled;
 }
 
 #pragma mark - Private
@@ -298,31 +316,71 @@ constexpr CGFloat kEnterpriseIconPointSize = 13;
   }
 }
 
-#pragma mark - FullscreenSigninScreenConsumer
-
-- (void)setSelectedIdentityUserName:(NSString*)userName
-                              email:(NSString*)email
-                          givenName:(NSString*)givenName
-                             avatar:(UIImage*)avatar
-                            managed:(BOOL)managed {
-  DCHECK_NE(self.signinStatus, SigninScreenConsumerSigninStatusDisabled);
-  DCHECK(email);
-  DCHECK(avatar);
-  self.personalizedButtonPrompt = givenName ? givenName : email;
-  [self updateUIForIdentityAvailable:YES];
-  [self.identityControl setIdentityName:userName email:email managed:managed];
-  [self.identityControl setIdentityAvatar:avatar];
+// Configures the view controller for the
+// `SigninScreenConsumerScreenIntentSigninOnly` screen intent.
+- (void)configureForSigninOnly {
+  switch (_contextStyle) {
+    case SigninContextStyle::kCollaborationShareTabGroup:
+      NOTREACHED() << "kCollaborationShareTabGroup style should be presented "
+                      "in a half sheet signin screen.";
+    case SigninContextStyle::kCollaborationJoinTabGroup: {
+      self.shouldHideBanner = YES;
+      self.headerBackgroundImage =
+          [UIImage imageNamed:kCollaborationSigninHeaderBackground];
+      self.headerImageBottomMargin = kHeaderBottomMargin;
+      self.headerImageType = PromoStyleImageType::kImage;
+      self.titleText =
+          l10n_util::GetNSString(IDS_IOS_SIGNIN_GROUP_COLLABORATION_TITLE);
+      self.subtitleText =
+          l10n_util::GetNSString(IDS_IOS_SIGNIN_GROUP_COLLABORATION_SUBTITLE);
+      break;
+    }
+    case SigninContextStyle::kDefault: {
+      // Use in the context of the upgrade promo dialog.
+      self.titleText =
+          l10n_util::GetNSString(IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_TITLE);
+      self.subtitleText =
+          self.syncEnabled
+              ? l10n_util::GetNSString(
+                    IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE)
+              : l10n_util::GetNSString(
+                    IDS_IOS_UNO_UPGRADE_PROMO_SIGNIN_SUBTITLE_SYNC_DISABLED);
+      break;
+    }
+  }
 }
 
-- (void)noIdentityAvailable {
-  DCHECK_NE(self.signinStatus, SigninScreenConsumerSigninStatusDisabled);
-  [self updateUIForIdentityAvailable:NO];
-}
-
-- (void)setUIEnabled:(BOOL)UIEnabled {
-  // For the disabled UI, show a spinner in the primary button.
-  self.primaryButtonSpinnerEnabled = !UIEnabled;
-  self.view.userInteractionEnabled = UIEnabled;
+// Configures the secondary button.
+- (void)configureSecondaryButton {
+  if (self.signinStatus != SigninScreenConsumerSigninStatusAvailable) {
+    return;
+  }
+  switch (_contextStyle) {
+    case SigninContextStyle::kCollaborationJoinTabGroup:
+    case SigninContextStyle::kCollaborationShareTabGroup:
+      self.secondaryActionString = l10n_util::GetNSString(
+          IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_CANCEL_BUTTON_TEXT);
+      break;
+    case SigninContextStyle::kDefault: {
+      if (FRESignInSecondaryActionLabelUpdate()) {
+        std::string signinValue =
+            kFRESignInSecondaryActionLabelUpdateParam.Get();
+        if (signinValue ==
+            kFRESignInSecondaryActionLabelUpdateParamStaySignedOut) {
+          self.secondaryActionString =
+              l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_STAY_SIGNED_OUT);
+        } else {
+          // Fallback action when no valid value is provided.
+          self.secondaryActionString =
+              l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+        }
+      } else {
+        // When the feature flag is disabled, default to the original string
+        self.secondaryActionString =
+            l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SIGNIN_DONT_SIGN_IN);
+      }
+    } break;
+  }
 }
 
 @end
