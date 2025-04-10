@@ -568,7 +568,7 @@ TEST_F(NativeWidgetMacTest, MiniaturizeExternally) {
     views::test::PropertyWaiter minimize_waiter(
         base::BindRepeating(&Widget::IsMinimized,
                             base::Unretained(widget.get())),
-        true);
+        true, base::Seconds(5));
     [ns_window performMiniaturize:nil];
     EXPECT_TRUE(minimize_waiter.Wait());
   }
@@ -672,7 +672,7 @@ TEST_F(NativeWidgetMacTest, MinimizeByNativeShow) {
   {
     views::test::PropertyWaiter visibility_waiter(
         base::BindRepeating(&Widget::IsVisible, base::Unretained(widget.get())),
-        true);
+        true, base::Seconds(5));
     widget->Show();
     EXPECT_TRUE(visibility_waiter.Wait());
   }
@@ -710,8 +710,13 @@ TEST_F(NativeWidgetMacTest, MiniaturizeFramelessWindow) {
   EXPECT_FALSE(widget->IsMinimized());
 
   // But this should work.
-  widget->Minimize();
-  base::RunLoop().RunUntilIdle();
+  {
+    views::test::PropertyWaiter minimize_waiter(
+        base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget)),
+        true, base::Seconds(5));
+    widget->Minimize();
+    EXPECT_TRUE(minimize_waiter.Wait());
+  }
 
   EXPECT_TRUE(widget->IsMinimized());
 
