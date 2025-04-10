@@ -12,8 +12,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProvider;
 import org.chromium.chrome.browser.password_manager.PasswordManagerResourceProviderFactory;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -28,6 +28,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * automatically saved and the username could not be captured from the password form. It allows user
  * to add the username for the saved password.
  */
+@NullMarked
 public class AddUsernameDialogController implements ModalDialogProperties.Controller {
     /** A delegate interface to receive the results of the dialog interaction. */
     interface Delegate {
@@ -57,7 +58,7 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
      * @param delegate The delegate to be called with the results of the interaction.
      */
     public AddUsernameDialogController(
-            Context context, ModalDialogManager modalDialogManager, @NonNull Delegate delegate) {
+            Context context, ModalDialogManager modalDialogManager, Delegate delegate) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mDelegate = delegate;
@@ -67,6 +68,7 @@ public class AddUsernameDialogController implements ModalDialogProperties.Contro
                                 .inflate(R.layout.add_username_dialog_content, null);
     }
 
+    @Initializer // This is always called right after Constructor.
     public void showAddUsernameDialog(String password) {
         mContentViewModel = createContentViewModel(password);
         PropertyModelChangeProcessor.create(

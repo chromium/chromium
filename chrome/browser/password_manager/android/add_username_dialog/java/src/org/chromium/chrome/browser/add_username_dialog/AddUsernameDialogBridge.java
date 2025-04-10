@@ -4,24 +4,27 @@
 
 package org.chromium.chrome.browser.add_username_dialog;
 
-import android.content.Context;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.NonNull;
+import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
+@NullMarked
 public class AddUsernameDialogBridge implements AddUsernameDialogController.Delegate {
     private long mNativeAddUsernameDialogBridge;
     private final WindowAndroid mWindowAndroid;
-    private AddUsernameDialogController mController;
+    private @Nullable AddUsernameDialogController mController;
 
     @CalledByNative
     public AddUsernameDialogBridge(
-            long nativeAddUsernameDialogBridge, @NonNull WindowAndroid windowAndroid) {
+            long nativeAddUsernameDialogBridge, WindowAndroid windowAndroid) {
         mNativeAddUsernameDialogBridge = nativeAddUsernameDialogBridge;
         mWindowAndroid = windowAndroid;
     }
@@ -33,7 +36,7 @@ public class AddUsernameDialogBridge implements AddUsernameDialogController.Dele
 
         mController =
                 new AddUsernameDialogController(
-                        context, mWindowAndroid.getModalDialogManager(), this);
+                        context, assumeNonNull(mWindowAndroid.getModalDialogManager()), this);
         mController.showAddUsernameDialog(password);
     }
 
