@@ -14,7 +14,7 @@ build_webui("build") {
     "read_anything.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "app_style_updater.ts",

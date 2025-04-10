@@ -17,7 +17,7 @@ build_webui("build") {
     "error_dialog.ts",
   ]
 
-  non_web_component_files = [ "browser_proxy.ts" ]
+  ts_files = [ "browser_proxy.ts" ]
 
   mojo_files = [
     "$root_gen_dir/chrome/browser/ash/borealis/borealis_types.mojom-webui.ts",

@@ -17,7 +17,7 @@ build_webui("build") {
     "passcode_input/passcode_input.ts",
   ]
 
-  non_web_component_files = [ "browser_proxy.ts" ]
+  ts_files = [ "browser_proxy.ts" ]
 
   mojo_files_deps = [
     "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_ts__generator",

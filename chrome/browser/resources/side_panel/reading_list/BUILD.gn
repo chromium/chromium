@@ -16,7 +16,7 @@ build_webui("build") {
     "reading_list.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "reading_list_api_proxy.ts",
     "reading_list_app.html.ts",
     "reading_list_app.ts",

@@ -33,7 +33,7 @@ build_webui("build") {
     "synced_device_manager.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_service.ts",
     "constants.ts",
     "externs.ts",

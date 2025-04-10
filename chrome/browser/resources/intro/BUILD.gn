@@ -17,7 +17,7 @@ build_webui("build") {
     "intro.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "default_browser/browser_proxy.ts",
   ]
@@ -32,7 +32,7 @@ build_webui("build") {
       static_files += [ "images/security.svg" ]
     }
 
-    non_web_component_files += [
+    ts_files += [
       "default_browser/app.html.ts",
       "default_browser/app.ts",
       "dice_app.html.ts",

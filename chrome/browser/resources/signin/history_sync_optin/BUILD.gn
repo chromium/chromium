@@ -11,7 +11,7 @@ build_webui("build") {
 
   static_files = [ "history_sync_optin.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "history_sync_optin.ts",
     "history_sync_optin_app.ts",
     "history_sync_optin_app.html.ts",

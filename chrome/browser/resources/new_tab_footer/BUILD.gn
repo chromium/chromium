@@ -11,7 +11,7 @@ build_webui("build") {
 
   static_files = [ "new_tab_footer.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.ts",
     "app.html.ts",
   ]

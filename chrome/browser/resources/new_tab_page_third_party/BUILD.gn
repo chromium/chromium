@@ -7,7 +7,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "new_tab_page_third_party"
   static_files = [ "new_tab_page_third_party.html" ]
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "new_tab_page_third_party.ts",
   ]

@@ -14,7 +14,7 @@ build_webui("build") {
 
   web_component_files = [ "searchbox_ghost_loader.ts" ]
 
-  non_web_component_files = [ "searchbox_ghost_loader_browser_proxy.ts" ]
+  ts_files = [ "searchbox_ghost_loader_browser_proxy.ts" ]
 
   css_files = [ "searchbox_shared_style.css" ]
 

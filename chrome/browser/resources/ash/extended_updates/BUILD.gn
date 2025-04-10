@@ -17,7 +17,7 @@ build_webui("build") {
     "components/android_apps_list.ts",
   ]
 
-  non_web_component_files = [ "extended_updates_browser_proxy.ts" ]
+  ts_files = [ "extended_updates_browser_proxy.ts" ]
 
   mojo_files_deps = [ "//chrome/browser/ui/webui/ash/extended_updates:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom-webui.ts" ]

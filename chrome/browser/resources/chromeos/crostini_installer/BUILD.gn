@@ -10,7 +10,7 @@ build_webui("build") {
   static_files = [ "index.html" ]
 
   web_component_files = [ "app.js" ]
-  non_web_component_files = [ "browser_proxy.js" ]
+  ts_files = [ "browser_proxy.js" ]
 
   mojo_files = [
     "${root_gen_dir}\chrome\browser\ash\crostini\crostini_types.mojom-webui.ts",

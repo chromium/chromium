@@ -92,7 +92,7 @@ build_webui("build") {
     "toolbar.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "focus_config.ts",
     "passkeys_browser_proxy.ts",
     "password_manager.ts",

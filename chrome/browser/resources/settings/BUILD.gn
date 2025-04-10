@@ -258,9 +258,9 @@ build_webui("build") {
 
   # -----------------web_component_files end ----------------------------------
 
-  # -----------------non_web_component_files start ----------------------------
+  # -----------------ts_files start ----------------------------
 
-  non_web_component_files = [
+  ts_files = [
     "a11y_page/a11y_browser_proxy.ts",
     "about_page/about_page_browser_proxy.ts",
     "ai_page/ai_learn_more_url_util.ts",
@@ -317,10 +317,9 @@ build_webui("build") {
   ]
 
   if (is_chromeos) {
-    non_web_component_files +=
-        [ "people_page/account_manager_browser_proxy.ts" ]
+    ts_files += [ "people_page/account_manager_browser_proxy.ts" ]
   } else {
-    non_web_component_files += [
+    ts_files += [
       "default_browser_page/default_browser_browser_proxy.ts",
       "languages_page/languages.ts",
       "languages_page/languages_browser_proxy.ts",
@@ -333,17 +332,17 @@ build_webui("build") {
   }
 
   if (is_win) {
-    non_web_component_files += [ "incompatible_applications_page/incompatible_applications_browser_proxy.ts" ]
+    ts_files += [ "incompatible_applications_page/incompatible_applications_browser_proxy.ts" ]
   }
   if (is_win || is_mac) {
-    non_web_component_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
+    ts_files += [ "autofill_page/passkeys_browser_proxy.ts" ]
   }
 
   if (enable_glic) {
-    non_web_component_files += [ "glic_page/glic_browser_proxy.ts" ]
+    ts_files += [ "glic_page/glic_browser_proxy.ts" ]
   }
 
-  # -----------------non_web_component_files end -------------------------------
+  # -----------------ts_files end -------------------------------
 
   icons_html_files = [
     "icons.html",

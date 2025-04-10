@@ -19,7 +19,7 @@ build_webui("build") {
     "welcome_page_app.ts",
   ]
 
-  non_web_component_files = [ "inline_login_browser_proxy.ts" ]
+  ts_files = [ "inline_login_browser_proxy.ts" ]
 
   ts_composite = true
   ts_definitions = [

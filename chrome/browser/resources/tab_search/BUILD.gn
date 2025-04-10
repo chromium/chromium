@@ -22,7 +22,7 @@ build_webui("build") {
 
   icons_html_files = [ "icons.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "auto_tab_groups/auto_tab_groups_failure.html.ts",

@@ -42,7 +42,7 @@ build_webui("build") {
     "$root_gen_dir/components/commerce/core/mojom/shopping_service.mojom-webui.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "buying_options_section.html.ts",

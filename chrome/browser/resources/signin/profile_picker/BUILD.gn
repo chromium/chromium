@@ -12,7 +12,7 @@ build_webui("build") {
 
   static_files = [ "profile_picker.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "drag_drop_reorder_tile_list_delegate.ts",
     "ensure_lazy_loaded.ts",
     "lazy_load.ts",

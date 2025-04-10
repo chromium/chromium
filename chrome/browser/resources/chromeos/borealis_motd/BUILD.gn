@@ -11,5 +11,5 @@ build_webui("build") {
     "index.html",
   ]
 
-  non_web_component_files = [ "index.ts" ]
+  ts_files = [ "index.ts" ]
 }

@@ -6,19 +6,19 @@ import("//ui/webui/webui_features.gni")
 import("./modules/modules.gni")
 
 # List of files that don't need to be passed to html_to_wrapper().
-all_non_web_component_files = [
-                                "background_manager.ts",
-                                "customize_dialog_types.ts",
-                                "i18n_setup.ts",
-                                "image_processor.ts",
-                                "lazy_load.ts",
-                                "metrics_utils.ts",
-                                "new_tab_page_proxy.ts",
-                                "new_tab_page.ts",
-                                "transparency.ts",
-                                "utils.ts",
-                                "window_proxy.ts",
-                              ] + modules_non_web_component_files
+all_ts_files = [
+                 "background_manager.ts",
+                 "customize_dialog_types.ts",
+                 "i18n_setup.ts",
+                 "image_processor.ts",
+                 "lazy_load.ts",
+                 "metrics_utils.ts",
+                 "new_tab_page_proxy.ts",
+                 "new_tab_page.ts",
+                 "transparency.ts",
+                 "utils.ts",
+                 "window_proxy.ts",
+               ] + modules_ts_files
 
 # Files holding a Polymer element definition and have an equivalent .html file.
 all_web_component_files = [

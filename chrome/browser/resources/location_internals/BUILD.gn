@@ -11,7 +11,7 @@ build_webui("build") {
     "location_internals.html",
   ]
 
-  non_web_component_files = [ "location_internals.ts" ]
+  ts_files = [ "location_internals.ts" ]
 
   web_component_files = [
     "diagnose_info_table.ts",

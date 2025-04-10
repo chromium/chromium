@@ -11,7 +11,7 @@ build_webui("build") {
 
   static_files = [ "signout_confirmation.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "extensions_section.html.ts",
     "extensions_section.ts",

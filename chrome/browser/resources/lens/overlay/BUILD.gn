@@ -60,7 +60,7 @@ build_webui("build_overlay") {
     "translate_button.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "color_utils.ts",
     "cubic_bezier.ts",

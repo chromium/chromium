@@ -7,7 +7,7 @@ import("//ui/webui/resources/tools/build_webui.gni")
 build_webui("build") {
   grd_prefix = "suggest_internals"
   static_files = [ "suggest_internals.html" ]
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "request.html.ts",

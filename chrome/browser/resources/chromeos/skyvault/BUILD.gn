@@ -9,7 +9,7 @@ build_webui("build") {
 
   static_files = [ "local_files.html" ]
   web_component_files = [ "local_files_migration_dialog.ts" ]
-  non_web_component_files = [
+  ts_files = [
     "local_files.ts",
     "local_files_browser_proxy.ts",
   ]

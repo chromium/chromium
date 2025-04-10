@@ -15,7 +15,7 @@ build_webui("build") {
 
   web_component_files = [ "lock_screen_reauth.ts" ]
 
-  non_web_component_files = [
+  ts_files = [
     "lock_screen_network.ts",
     "lock_screen_reauth_app.ts",
   ]

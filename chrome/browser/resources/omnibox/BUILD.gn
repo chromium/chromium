@@ -32,8 +32,8 @@ build_webui("build") {
 
   # Some of the files below even though they hold web component definitions,
   # they don't use dedicated HTML files for each web component and therefore for
-  # the purposes of build_webui() are passed as non_web_component_files.
-  non_web_component_files = [
+  # the purposes of build_webui() are passed as ts_files.
+  ts_files = [
     "ml/ml_browser_proxy.ts",
     "omnibox.ts",
     "omnibox_element.ts",

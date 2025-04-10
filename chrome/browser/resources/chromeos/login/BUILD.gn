@@ -189,7 +189,7 @@ build_webui("build") {
     "debug/quick_start_debugger.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "components/buttons/oobe_base_button.ts",
     "components/display_manager_types.ts",
     "components/keyboard_utils.ts",

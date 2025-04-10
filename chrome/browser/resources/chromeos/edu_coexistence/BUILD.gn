@@ -15,7 +15,7 @@ build_webui("build") {
     "edu_coexistence_template.ts",
     "edu_coexistence_ui.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "edu_coexistence_browser_proxy.ts",
     "edu_coexistence_controller.ts",
   ]

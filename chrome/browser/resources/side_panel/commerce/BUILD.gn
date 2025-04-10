@@ -19,7 +19,7 @@ build_webui("build") {
     "price_tracking_section.ts",
   ]
 
-  non_web_component_files = [ "price_insights_browser_proxy.ts" ]
+  ts_files = [ "price_insights_browser_proxy.ts" ]
 
   mojo_files_deps =
       [ "//components/commerce/core/mojom:mojo_bindings_ts__generator" ]

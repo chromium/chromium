@@ -19,7 +19,7 @@ build_webui("build") {
     "graph_tab.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "discards.ts",
     "graph.ts",
     "sorted_table_mixin_lit.ts",

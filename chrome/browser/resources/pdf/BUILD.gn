@@ -37,7 +37,7 @@ build_webui("build") {
     ]
   }
 
-  non_web_component_files = [
+  ts_files = [
     "before_unload_proxy.ts",
     "bookmark_type.ts",
     "browser_api.ts",
@@ -100,7 +100,7 @@ build_webui("build") {
   ]
 
   if (enable_ink) {
-    non_web_component_files += [
+    ts_files += [
       "annotation_tool.ts",
       "ink/ink_api.ts",
       "ink_controller.ts",
@@ -108,7 +108,7 @@ build_webui("build") {
   }
 
   if (enable_pdf_ink2) {
-    non_web_component_files += [
+    ts_files += [
       "elements/ink_annotation_brush_mixin.ts",
       "elements/ink_annotation_text_mixin.ts",
       "elements/ink_brush_selector.html.ts",

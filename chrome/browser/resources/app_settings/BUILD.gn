@@ -13,7 +13,7 @@ build_webui("build") {
 
   static_files = [ "web_app_settings.html" ]
 
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "app_content_dialog.html.ts",

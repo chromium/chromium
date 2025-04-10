@@ -43,7 +43,7 @@ build_webui("build") {
     "sign_in_page.ts",
     "welcome_page.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "cloud_upload_browser_proxy.ts",
     "cloud_upload_dialog.ts",
     "main.ts",
