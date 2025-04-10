@@ -38,39 +38,41 @@
 #endif
 
 @interface BrowserContainerCoordinator () <EditMenuAlertDelegate>
-// Whether the coordinator is started.
-@property(nonatomic, assign, getter=isStarted) BOOL started;
+
 // Redefine property as readwrite.
 @property(nonatomic, strong, readwrite)
     BrowserContainerViewController* viewController;
-// The mediator used to configure the BrowserContainerConsumer.
-@property(nonatomic, strong) BrowserContainerMediator* mediator;
-// The mediator used for the Link to Text feature.
-@property(nonatomic, strong) LinkToTextMediator* linkToTextMediator;
-// The mediator used for the Partial Translate feature.
-@property(nonatomic, strong) PartialTranslateMediator* partialTranslateMediator;
-// The mediator used for the Search With feature.
-@property(nonatomic, strong) SearchWithMediator* searchWithMediator;
 // The handler for the edit menu.
 @property(nonatomic, strong) BrowserEditMenuHandler* browserEditMenuHandler;
-// The overlay container coordinator for OverlayModality::kWebContentArea.
-@property(nonatomic, strong)
-    OverlayContainerCoordinator* webContentAreaOverlayContainerCoordinator;
-// The coodinator that manages ScreenTime.
-@property(nonatomic, strong) ChromeCoordinator* screenTimeCoordinator;
-// Coordinator used to present alerts to the user.
-@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+
 @end
 
-@implementation BrowserContainerCoordinator
+@implementation BrowserContainerCoordinator {
+  // Whether the coordinator is started.
+  BOOL _started;
+  // Coordinator used to present alerts to the user.
+  AlertCoordinator* _alertCoordinator;
+  // The mediator used for the Search With feature.
+  SearchWithMediator* _searchWithMediator;
+  // The coodinator that manages ScreenTime.
+  ChromeCoordinator* _screenTimeCoordinator;
+  // The overlay container coordinator for OverlayModality::kWebContentArea.
+  OverlayContainerCoordinator* _webContentAreaOverlayContainerCoordinator;
+  // The mediator used for the Partial Translate feature.
+  PartialTranslateMediator* _partialTranslateMediator;
+  // The mediator used to configure the BrowserContainerConsumer.
+  BrowserContainerMediator* _mediator;
+  // The mediator used for the Link to Text feature.
+  LinkToTextMediator* _linkToTextMediator;
+}
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (self.started) {
+  if (_started) {
     return;
   }
-  self.started = YES;
+  _started = YES;
   DCHECK(self.browser);
   DCHECK(!_viewController);
   Browser* browser = self.browser;
@@ -78,63 +80,62 @@
   ProfileIOS* profile = browser->GetProfile();
   BOOL incognito = profile->IsOffTheRecord();
   self.viewController = [[BrowserContainerViewController alloc] init];
-  self.webContentAreaOverlayContainerCoordinator =
+  _webContentAreaOverlayContainerCoordinator =
       [[OverlayContainerCoordinator alloc]
           initWithBaseViewController:self.viewController
                              browser:browser
                             modality:OverlayModality::kWebContentArea];
 
-  self.linkToTextMediator =
+  _linkToTextMediator =
       [[LinkToTextMediator alloc] initWithWebStateList:webStateList];
-  self.linkToTextMediator.alertDelegate = self;
-  self.linkToTextMediator.activityServiceHandler = HandlerForProtocol(
+  _linkToTextMediator.alertDelegate = self;
+  _linkToTextMediator.activityServiceHandler = HandlerForProtocol(
       browser->GetCommandDispatcher(), ActivityServiceCommands);
 
   self.browserEditMenuHandler = [[BrowserEditMenuHandler alloc] init];
   self.viewController.browserEditMenuHandler = self.browserEditMenuHandler;
-  self.browserEditMenuHandler.linkToTextDelegate = self.linkToTextMediator;
-  self.viewController.linkToTextDelegate = self.linkToTextMediator;
+  self.browserEditMenuHandler.linkToTextDelegate = _linkToTextMediator;
+  self.viewController.linkToTextDelegate = _linkToTextMediator;
 
   PrefService* prefService = profile->GetOriginalProfile()->GetPrefs();
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
 
-  self.partialTranslateMediator = [[PartialTranslateMediator alloc]
+  _partialTranslateMediator = [[PartialTranslateMediator alloc]
         initWithWebStateList:webStateList
       withBaseViewController:self.viewController
                  prefService:prefService
         fullscreenController:fullscreenController
                    incognito:incognito];
-  self.partialTranslateMediator.alertDelegate = self;
+  _partialTranslateMediator.alertDelegate = self;
   CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
   id<BrowserCoordinatorCommands> browserCommandsHandler =
       HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
-  self.partialTranslateMediator.browserHandler = browserCommandsHandler;
+  _partialTranslateMediator.browserHandler = browserCommandsHandler;
   self.browserEditMenuHandler.partialTranslateDelegate =
-      self.partialTranslateMediator;
+      _partialTranslateMediator;
 
   TemplateURLService* templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(profile);
-  self.searchWithMediator =
+  _searchWithMediator =
       [[SearchWithMediator alloc] initWithWebStateList:webStateList
                                     templateURLService:templateURLService
                                              incognito:incognito];
   id<ApplicationCommands> applicationCommandsHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
-  self.searchWithMediator.applicationCommandHandler =
-      applicationCommandsHandler;
-  self.browserEditMenuHandler.searchWithDelegate = self.searchWithMediator;
+  _searchWithMediator.applicationCommandHandler = applicationCommandsHandler;
+  self.browserEditMenuHandler.searchWithDelegate = _searchWithMediator;
 
-  [self.webContentAreaOverlayContainerCoordinator start];
+  [_webContentAreaOverlayContainerCoordinator start];
   self.viewController.webContentsOverlayContainerViewController =
-      self.webContentAreaOverlayContainerCoordinator.viewController;
+      _webContentAreaOverlayContainerCoordinator.viewController;
   OverlayPresenter* overlayPresenter =
       OverlayPresenter::FromBrowser(browser, OverlayModality::kWebContentArea);
-  self.mediator =
+  _mediator =
       [[BrowserContainerMediator alloc] initWithWebStateList:webStateList
                               webContentAreaOverlayPresenter:overlayPresenter];
 
-  self.mediator.consumer = self.viewController;
+  _mediator.consumer = self.viewController;
 
   [self setUpScreenTimeIfEnabled];
 
@@ -142,20 +143,20 @@
 }
 
 - (void)stop {
-  if (!self.started) {
+  if (!_started) {
     return;
   }
   [self dismissAlertCoordinator];
-  self.started = NO;
-  [self.webContentAreaOverlayContainerCoordinator stop];
-  [self.screenTimeCoordinator stop];
-  [self.partialTranslateMediator shutdown];
-  [self.searchWithMediator shutdown];
+  _started = NO;
+  [_webContentAreaOverlayContainerCoordinator stop];
+  [_screenTimeCoordinator stop];
+  [_partialTranslateMediator shutdown];
+  [_searchWithMediator shutdown];
   self.viewController = nil;
-  self.mediator = nil;
-  self.linkToTextMediator = nil;
-  self.partialTranslateMediator = nil;
-  self.searchWithMediator = nil;
+  _mediator = nil;
+  _linkToTextMediator = nil;
+  _partialTranslateMediator = nil;
+  _searchWithMediator = nil;
   [super stop];
 }
 
@@ -168,23 +169,23 @@
 - (void)showAlertWithTitle:(NSString*)title
                    message:(NSString*)message
                    actions:(NSArray<EditMenuAlertDelegateAction*>*)actions {
-  self.alertCoordinator =
+  _alertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:self.viewController
                                                    browser:self.browser
                                                      title:title
                                                    message:message];
   __weak BrowserContainerCoordinator* weakSelf = self;
   for (EditMenuAlertDelegateAction* action in actions) {
-    [self.alertCoordinator addItemWithTitle:action.title
-                                     action:^{
-                                       action.action();
-                                       [weakSelf dismissAlertCoordinator];
-                                     }
-                                      style:action.style
-                                  preferred:action.preferred
-                                    enabled:YES];
+    [_alertCoordinator addItemWithTitle:action.title
+                                 action:^{
+                                   action.action();
+                                   [weakSelf dismissAlertCoordinator];
+                                 }
+                                  style:action.style
+                              preferred:action.preferred
+                                enabled:YES];
   }
-  [self.alertCoordinator start];
+  [_alertCoordinator start];
 }
 
 #pragma mark - Private methods
@@ -203,14 +204,14 @@
   [screenTimeCoordinator start];
   self.viewController.screenTimeViewController =
       screenTimeCoordinator.viewController;
-  self.screenTimeCoordinator = screenTimeCoordinator;
+  _screenTimeCoordinator = screenTimeCoordinator;
 
 #endif
 }
 
 - (void)dismissAlertCoordinator {
-  [self.alertCoordinator stop];
-  self.alertCoordinator = nil;
+  [_alertCoordinator stop];
+  _alertCoordinator = nil;
 }
 
 @end
