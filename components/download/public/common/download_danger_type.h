@@ -14,6 +14,8 @@ namespace download {
 // Update enum names in
 // tools/metrics/histograms/metadata/download/enums.xml, and variants
 // in tools/metrics/histograms/metadata/download/histograms.xml on additions.
+// A Java counterpart will be generated for this enum.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.download
 enum DownloadDangerType {
   // The download is safe.
   DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS = 0,

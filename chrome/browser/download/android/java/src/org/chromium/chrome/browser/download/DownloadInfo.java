@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
@@ -50,6 +51,7 @@ public final class DownloadInfo {
     private final boolean mIsOfflinePage;
     private final int mState;
     private final long mLastAccessTime;
+    private final @DownloadDangerType int mDangerType;
     private final boolean mIsDangerous;
 
     // New variables to assist with the migration to OfflineItems.
@@ -87,6 +89,7 @@ public final class DownloadInfo {
         mIsOfflinePage = builder.mIsOfflinePage;
         mState = builder.mState;
         mLastAccessTime = builder.mLastAccessTime;
+        mDangerType = builder.mDangerType;
         mIsDangerous = builder.mIsDangerous;
 
         if (builder.mContentId != null) {
@@ -202,6 +205,10 @@ public final class DownloadInfo {
         return mLastAccessTime;
     }
 
+    public @DownloadDangerType int getDangerType() {
+        return mDangerType;
+    }
+
     public boolean getIsDangerous() {
         return mIsDangerous;
     }
@@ -299,6 +306,7 @@ public final class DownloadInfo {
                 .setBytesTotalSize(item.totalSizeBytes)
                 .setProgress(item.progress)
                 .setTimeRemainingInMillis(item.timeRemainingMs)
+                .setDangerType(item.dangerType)
                 .setIsDangerous(item.isDangerous)
                 .setIsParallelDownload(item.isAccelerated)
                 .setIcon(visuals == null ? null : visuals.icon)
@@ -333,6 +341,7 @@ public final class DownloadInfo {
         private boolean mIsOfflinePage;
         private int mState = DownloadState.IN_PROGRESS;
         private long mLastAccessTime;
+        private @DownloadDangerType int mDangerType;
         private boolean mIsDangerous;
         private ContentId mContentId;
         private boolean mIsOpenable = true;
@@ -459,6 +468,11 @@ public final class DownloadInfo {
             return this;
         }
 
+        public Builder setDangerType(@DownloadDangerType int dangerType) {
+            mDangerType = dangerType;
+            return this;
+        }
+
         public Builder setIsDangerous(boolean isDangerous) {
             mIsDangerous = isDangerous;
             return this;
@@ -532,6 +546,7 @@ public final class DownloadInfo {
                     .setIsGETRequest(downloadInfo.isGETRequest())
                     .setProgress(downloadInfo.getProgress())
                     .setTimeRemainingInMillis(downloadInfo.getTimeRemainingInMillis())
+                    .setDangerType(downloadInfo.getDangerType())
                     .setIsDangerous(downloadInfo.getIsDangerous())
                     .setIsResumable(downloadInfo.isResumable())
                     .setIsPaused(downloadInfo.isPaused())
@@ -569,6 +584,7 @@ public final class DownloadInfo {
             @JniType("GURL") GURL referrerUrl,
             long timeRemainingInMs,
             long lastAccessTime,
+            @DownloadDangerType int dangerType,
             boolean isDangerous,
             @FailState int failState,
             boolean isTransient) {
@@ -598,6 +614,7 @@ public final class DownloadInfo {
                 .setState(state)
                 .setTimeRemainingInMillis(timeRemainingInMs)
                 .setLastAccessTime(lastAccessTime)
+                .setDangerType(dangerType)
                 .setIsDangerous(isDangerous)
                 .setUrl(url)
                 .setFailState(failState)

@@ -10,6 +10,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.download.DownloadDangerType;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
@@ -43,9 +44,10 @@ public final class OfflineItemBridge {
     }
 
     /**
-     * Creates an {@link OfflineItem} from the passed in parameters.  See {@link OfflineItem} for a
-     * list of the members that will be populated.  If {@code list} isn't {@code null}, the newly
+     * Creates an {@link OfflineItem} from the passed in parameters. See {@link OfflineItem} for a
+     * list of the members that will be populated. If {@code list} isn't {@code null}, the newly
      * created {@link OfflineItem} will be added to it.
+     *
      * @param list An {@link ArrayList} to optionally add the newly created {@link OfflineItem} to.
      * @return The newly created {@link OfflineItem} based on the passed in parameters.
      */
@@ -85,6 +87,7 @@ public final class OfflineItemBridge {
             long progressMax,
             @OfflineItemProgressUnit int progressUnit,
             long timeRemainingMs,
+            @DownloadDangerType int dangerType,
             boolean isDangerous,
             boolean canRename,
             boolean ignoreVisuals,
@@ -123,6 +126,7 @@ public final class OfflineItemBridge {
                 new OfflineItem.Progress(
                         progressValue, progressMax == -1 ? null : progressMax, progressUnit);
         item.timeRemainingMs = timeRemainingMs;
+        item.dangerType = dangerType;
         item.isDangerous = isDangerous;
         item.canRename = canRename;
         item.ignoreVisuals = ignoreVisuals;

@@ -35,6 +35,7 @@ static_library("core") {
 
   public_deps = [
     "//base",
+    "//components/download/public/common:public",
     "//components/keyed_service/core",
     "//ui/gfx",
     "//url",
@@ -113,6 +114,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//components/download/public/common:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//url:gurl_java",
