@@ -11,6 +11,7 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
@@ -309,13 +310,16 @@ using signin_metrics::PromoAction;
     (id<SystemIdentity>)identity {
   // The new UIViewController is presented on top of the currently displayed
   // view controller.
+  // TODO(crbug.com/375605572) Sends an actual continuation.
   self.postSigninManagerCoordinator = [SigninCoordinator
       instantSigninCoordinatorWithBaseViewController:self.baseViewController
                                              browser:self.browser
                                             identity:identity
                                         contextStyle:self.contextStyle
                                          accessPoint:self.accessPoint
-                                         promoAction:self.promoAction];
+                                         promoAction:self.promoAction
+                                continuationProvider:
+                                    DoNothingContinuationProvider()];
 
   __weak AddAccountSigninCoordinator* weakSelf = self;
   self.postSigninManagerCoordinator.signinCompletion = ^(

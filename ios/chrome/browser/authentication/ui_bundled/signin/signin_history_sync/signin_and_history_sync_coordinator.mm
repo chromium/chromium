@@ -6,6 +6,7 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_coordinator.h"
@@ -216,6 +217,7 @@ enum class SignInHistorySyncStep {
       return coordinator;
     }
     case SignInHistorySyncStep::kInstantSignin: {
+      // TODO(crbug.com/375605572) Sends an actual continuation.
       SigninCoordinator<InterruptibleChromeCoordinator>* coordinator =
           [[InstantSigninCoordinator alloc]
               initWithBaseViewController:self.baseViewController
@@ -223,7 +225,8 @@ enum class SignInHistorySyncStep {
                                 identity:nil
                             contextStyle:self.contextStyle
                              accessPoint:self.accessPoint
-                             promoAction:_promoAction];
+                             promoAction:_promoAction
+                    continuationProvider:DoNothingContinuationProvider()];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {

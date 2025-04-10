@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -2169,7 +2170,10 @@ using UserFeedbackDataCallback =
                                                 identity:command.identity
                                             contextStyle:command.contextStyle
                                              accessPoint:command.accessPoint
-                                             promoAction:command.promoAction];
+                                             promoAction:command.promoAction
+                                    continuationProvider:
+                                        command
+                                            .changeProfileContinuationProvider];
       break;
     case AuthenticationOperation::kSheetSigninAndHistorySync: {
       self.signinCoordinator = [SigninCoordinator

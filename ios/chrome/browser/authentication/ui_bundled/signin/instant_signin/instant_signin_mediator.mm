@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
-#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -22,11 +21,16 @@ using signin_metrics::PromoAction;
 @implementation InstantSigninMediator {
   AuthenticationFlow* _authenticationFlow;
   AccessPoint _accessPoint;
+  ChangeProfileContinuationProvider _continuationProvider;
 }
 
-- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint {
+- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+               continuationProvider:(const ChangeProfileContinuationProvider&)
+                                        continuationProvider {
   self = [super init];
   if (self) {
+    CHECK(continuationProvider);
+    _continuationProvider = continuationProvider;
     _accessPoint = accessPoint;
   }
   return self;
@@ -62,8 +66,7 @@ using signin_metrics::PromoAction;
 
 - (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
   _authenticationFlow = nil;
-  // TODO(crbug.com/375605572) Sends an actual continuation.
-  return DoNothingContinuation();
+  return _continuationProvider.Run();
 }
 
 @end

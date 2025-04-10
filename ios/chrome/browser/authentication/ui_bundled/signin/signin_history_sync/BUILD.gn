@@ -11,6 +11,7 @@ source_set("signin_history_sync") {
   ]
   deps = [
     "//components/sync/service",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
