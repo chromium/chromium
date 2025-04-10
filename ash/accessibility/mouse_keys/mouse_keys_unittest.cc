@@ -46,31 +46,6 @@ const gfx::Point kDefaultPosition(100, 100);
 const double kMoveDeltaDIP = MouseKeysController::kBaseSpeedDIPPerSecond *
                              MouseKeysController::kUpdateFrequencyInSeconds;
 
-class TestTextInputView : public views::WidgetDelegateView {
- public:
-  TestTextInputView() : text_field_(new views::Textfield) {
-    text_field_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
-    std::string name = "Hello, world";
-    text_field_->GetViewAccessibility().SetName(base::UTF8ToUTF16(name));
-    AddChildViewRaw(text_field_.get());
-    SetLayoutManager(std::make_unique<views::FillLayout>());
-  }
-  TestTextInputView(const TestTextInputView&) = delete;
-  TestTextInputView& operator=(const TestTextInputView&) = delete;
-  ~TestTextInputView() override = default;
-
-  gfx::Size CalculatePreferredSize(
-      const views::SizeBounds& available_size) const override {
-    return gfx::Size(50, 50);
-  }
-
-  void FocusOnTextInput() { text_field_->RequestFocus(); }
-  std::u16string_view GetText() { return text_field_->GetText(); }
-
- private:
-  raw_ptr<views::Textfield> text_field_;  // owned by views hierarchy.
-};
-
 class EventRewriterWrapper : public ui::EventRewriter {
  public:
   EventRewriterWrapper() = default;
