@@ -74,6 +74,7 @@ cargo_crate("lib") {
     "//third_party/rust/serde/v1:lib",
   ]
   features = [
+    "default",
     "float_roundtrip",
     "std",
     "unbounded_depth",

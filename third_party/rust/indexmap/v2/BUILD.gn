@@ -58,7 +58,10 @@ cargo_crate("lib") {
     "//third_party/rust/equivalent/v1:lib",
     "//third_party/rust/hashbrown/v0_15:lib",
   ]
-  features = [ "std" ]
+  features = [
+    "default",
+    "std",
+  ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

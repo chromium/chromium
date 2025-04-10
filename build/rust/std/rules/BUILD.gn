@@ -538,6 +538,7 @@ cargo_crate("compiler_builtins") {
   features = [
     "compiler-builtins",
     "core",
+    "default",
     "rustc-dep-of-std",
   ]
   build_root = "//third_party/rust-toolchain/lib/rustlib/src/rust/library/vendor/compiler_builtins-0.1.152/build.rs"
@@ -3223,6 +3224,7 @@ cargo_crate("unicode_width") {
     "cjk",
     "compiler_builtins",
     "core",
+    "default",
     "rustc-dep-of-std",
     "std",
   ]

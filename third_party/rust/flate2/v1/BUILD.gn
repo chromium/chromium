@@ -57,6 +57,7 @@ cargo_crate("lib") {
   ]
   features = [
     "any_impl",
+    "default",
     "miniz_oxide",
     "rust_backend",
   ]

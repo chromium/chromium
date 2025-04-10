@@ -48,6 +48,7 @@ cargo_crate("lib") {
   ]
   features = [
     "alloc",
+    "default",
     "zerovec",
   ]
   rustflags = [

@@ -68,6 +68,7 @@ cargo_crate("lib") {
   build_deps = [ "//third_party/rust/cxxbridge_flags/v1:buildrs_support" ]
   features = [
     "alloc",
+    "default",
     "std",
   ]
   rustflags = [

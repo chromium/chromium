@@ -48,6 +48,7 @@ cargo_crate("lib") {
     "//third_party/rust/prost_derive/v0_13:lib",
   ]
   features = [
+    "default",
     "derive",
     "std",
   ]

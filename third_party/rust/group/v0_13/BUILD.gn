@@ -42,7 +42,10 @@ cargo_crate("lib") {
     "//third_party/rust/rand_core/v0_9:lib",
     "//third_party/rust/subtle/v2:lib",
   ]
-  features = [ "alloc" ]
+  features = [
+    "alloc",
+    "default",
+  ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

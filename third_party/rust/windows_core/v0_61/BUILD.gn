@@ -70,7 +70,10 @@ cargo_crate("lib") {
     "//third_party/rust/windows_result/v0_3:lib",
     "//third_party/rust/windows_strings/v0_4:lib",
   ]
-  features = [ "std" ]
+  features = [
+    "default",
+    "std",
+  ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]

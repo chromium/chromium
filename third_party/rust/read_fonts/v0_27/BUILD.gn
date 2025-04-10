@@ -181,6 +181,7 @@ cargo_crate("lib") {
     "//third_party/rust/font_types/v0_8:lib",
   ]
   features = [
+    "default",
     "experimental_traverse",
     "std",
   ]

@@ -116,6 +116,7 @@ cargo_crate("lib") {
   ]
   features = [
     "autohint_shaping",
+    "default",
     "std",
     "traversal",
   ]

@@ -274,6 +274,7 @@ cargo_crate("lib") {
     "Win32_System",
     "Win32_System_Console",
     "Win32_System_SystemInformation",
+    "default",
   ]
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
