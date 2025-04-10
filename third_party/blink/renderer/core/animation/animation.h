@@ -458,7 +458,7 @@ class CORE_EXPORT Animation : public EventTarget,
     return GetTriggerInternal();
   }
   AnimationTrigger* GetTriggerInternal() const { return trigger_; }
-  virtual void setTrigger(AnimationTrigger* trigger) { trigger_ = trigger; }
+  virtual void setTrigger(AnimationTrigger* trigger);
 
   struct AnimationTriggerData {
     AnimationTriggerState state = blink::AnimationTriggerState::kIdle;
