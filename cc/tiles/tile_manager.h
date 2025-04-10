@@ -325,8 +325,6 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   void MarkTilesOutOfMemory(
       std::unique_ptr<RasterTilePriorityQueue> queue) const;
 
-  viz::SharedImageFormat DetermineFormat(const Tile* tile) const;
-
   void DidFinishRunningTileTasksRequiredForActivation();
   void DidFinishRunningTileTasksRequiredForDraw();
   void DidFinishRunningAllTileTasks(base::TimeTicks start_time,
