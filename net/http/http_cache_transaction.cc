@@ -1458,6 +1458,7 @@ int HttpCache::Transaction::DoCreateEntryComplete(int result) {
         if (partial_) {
           partial_->RestoreHeaders(&mutable_request_->extra_headers);
         }
+        CHECK(!IsUsingURLFromNoVarySearchCache());
         TransitionToState(STATE_SEND_REQUEST);
         return OK;
       }
@@ -1596,6 +1597,7 @@ int HttpCache::Transaction::DoAddToEntryComplete(int result) {
 
     // The cache is busy, bypass it for this transaction.
     mode_ = NONE;
+    CHECK(!IsUsingURLFromNoVarySearchCache());
     TransitionToState(STATE_SEND_REQUEST);
     if (partial_) {
       partial_->RestoreHeaders(&mutable_request_->extra_headers);
@@ -3290,6 +3292,7 @@ bool HttpCache::Transaction::ValidatePartialResponse() {
     DCHECK(!reading_);
     if (partial_response || response_code == HTTP_OK) {
       DoomPartialEntry(true);
+      CHECK(!IsUsingURLFromNoVarySearchCache());
       mode_ = NONE;
     } else {
       if (response_code == HTTP_NOT_MODIFIED) {
@@ -3736,6 +3739,8 @@ int HttpCache::Transaction::DoRestartPartialRequest() {
   // WRITE + Doom + STATE_INIT_ENTRY == STATE_CREATE_ENTRY (without an attempt
   // to Doom the entry again).
   ResetPartialState(!range_requested_);
+
+  CHECK(!IsUsingURLFromNoVarySearchCache());
 
   // Change mode to WRITE after ResetPartialState as that may have changed the
   // mode to NONE.
