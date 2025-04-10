@@ -13,6 +13,7 @@ updates:
     labels:
       - 'dependencies'
       - 'submodules'
+      - 'update-expectations'
 
   - package-ecosystem: github-actions
     directory: /
