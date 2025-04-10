@@ -23,7 +23,16 @@ ts_library("build_extra_ts") {
   in_files = [
     "api_test.ts",
     "api_boot.ts",
+    "test_client/client.ts",
     "test_client/test_client.ts",
+    "test_client/page_element_types.ts",
+    "test_client/sections/audio_capture.ts",
+    "test_client/sections/get_page_context.ts",
+    "test_client/sections/scroll_to.ts",
+    "test_client/sections/sizing.ts",
+    "test_client/sections/permissions.ts",
+    "test_client/sections/file.ts",
+    "test_client/sections/action.ts",
   ]
   deps = [ "//chrome/browser/resources/glic:build_ts" ]
 
