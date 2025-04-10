@@ -3961,10 +3961,6 @@ TEST_F(OcclusionCullerTest, DontSplitOverlayTextureQuad) {
 }
 
 TEST_F(OcclusionCullerTest, SplitNonOverlayTextureQuad) {
-  if (!features::IsOcclusionCullingForTextureQuadsEnabled()) {
-    GTEST_SKIP();
-  }
-
   RendererSettings::OcclusionCullerSettings settings;
   settings.minimum_fragments_reduced = 0;
 
