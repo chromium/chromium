@@ -2386,7 +2386,7 @@ message InputTransferHandler {
   // LINT.IfChange(TransferInputToVizResult)
   enum TransferInputToVizResult {
     // We don't expect this to be present in traces.
-    UNKNWON = 0;
+    UNKNOWN = 0;
     SUCCESSFULLY_TRANSFERRED = 1;
     INPUT_TRANSFER_HANDLER_NOT_FOUND_IN_MAP = 2;
     NON_FINGER_TOOL_TYPE = 3;
