@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
+
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/omnibox_view.h"
@@ -11,7 +13,9 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
+#import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/common/NSString+Chromium.h"
+#import "net/base/apple/url_conversions.h"
 
 @implementation OmniboxTextController {
   /// Controller of the omnibox.
@@ -145,9 +149,45 @@
 }
 
 - (void)onCopy {
-  if (_omniboxViewIOS) {
-    _omniboxViewIOS->OnCopy();
+  NSString* selectedText = nil;
+  NSInteger startLocation = 0;
+  OmniboxTextFieldIOS* textField = self.textField;
+  if ([textField isPreEditing]) {
+    selectedText = textField.text;
+    startLocation = 0;
+  } else {
+    UITextRange* selectedRange = [textField selectedTextRange];
+    selectedText = [textField textInRange:selectedRange];
+    UITextPosition* start = [textField beginningOfDocument];
+    // The following call to `-offsetFromPosition:toPosition:` gives the offset
+    // in terms of the number of "visible characters."  The documentation does
+    // not specify whether this means glyphs or UTF16 chars.  This does not
+    // matter for the current implementation of AdjustTextForCopy(), but it may
+    // become an issue at some point.
+    startLocation = [textField offsetFromPosition:start
+                                       toPosition:[selectedRange start]];
   }
+  std::u16string text = selectedText.cr_UTF16String;
+
+  GURL URL;
+  bool writeURL = false;
+  // Model can be nullptr in tests.
+  if (_omniboxEditModel) {
+    _omniboxEditModel->AdjustTextForCopy(startLocation, &text, &URL, &writeURL);
+  }
+
+  // Create the pasteboard item manually because the pasteboard expects a single
+  // item with multiple representations.  This is expressed as a single
+  // NSDictionary with multiple keys, one for each representation.
+  NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:2];
+  [item setObject:[NSString cr_fromString16:text]
+           forKey:UTTypePlainText.identifier];
+
+  if (writeURL && URL.is_valid()) {
+    [item setObject:net::NSURLWithGURL(URL) forKey:UTTypeURL.identifier];
+  }
+
+  StoreItemInPasteboard(item);
 }
 
 - (void)willPaste {

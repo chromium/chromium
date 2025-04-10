@@ -102,8 +102,6 @@ class OmniboxViewIOS : public OmniboxView {
   // Called after the Omnibox text field changes. `processing_user_input` holds
   // whether the change was user-initiated or programmatic.
   void OnDidChange(bool processing_user_input);
-  // Called when the Omnibox text field should copy.
-  void OnCopy();
   // Clear the Omnibox text.
   void ClearText();
   // Called when the Omnibox text field should paste.

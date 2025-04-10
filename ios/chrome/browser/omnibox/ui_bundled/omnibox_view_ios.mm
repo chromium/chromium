@@ -427,47 +427,6 @@ void OmniboxViewIOS::OnClear() {
   [field_ exitPreEditState];
 }
 
-void OmniboxViewIOS::OnCopy() {
-  NSString* selectedText = nil;
-  NSInteger start_location = 0;
-  if ([field_ isPreEditing]) {
-    selectedText = field_.text;
-    start_location = 0;
-  } else {
-    UITextRange* selected_range = [field_ selectedTextRange];
-    selectedText = [field_ textInRange:selected_range];
-    UITextPosition* start = [field_ beginningOfDocument];
-    // The following call to `-offsetFromPosition:toPosition:` gives the offset
-    // in terms of the number of "visible characters."  The documentation does
-    // not specify whether this means glyphs or UTF16 chars.  This does not
-    // matter for the current implementation of AdjustTextForCopy(), but it may
-    // become an issue at some point.
-    start_location = [field_ offsetFromPosition:start
-                                     toPosition:[selected_range start]];
-  }
-  std::u16string text = base::SysNSStringToUTF16(selectedText);
-
-  GURL url;
-  bool write_url = false;
-  // Model can be nullptr in tests.
-  if (model()) {
-    model()->AdjustTextForCopy(start_location, &text, &url, &write_url);
-  }
-
-  // Create the pasteboard item manually because the pasteboard expects a single
-  // item with multiple representations.  This is expressed as a single
-  // NSDictionary with multiple keys, one for each representation.
-  NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:2];
-  [item setObject:base::SysUTF16ToNSString(text)
-           forKey:UTTypePlainText.identifier];
-
-  if (write_url && url.is_valid()) {
-    [item setObject:net::NSURLWithGURL(url) forKey:UTTypeURL.identifier];
-  }
-
-  StoreItemInPasteboard(item);
-}
-
 void OmniboxViewIOS::WillPaste() {
   if (model()) {
     model()->OnPaste();

@@ -81,6 +81,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/symbols:symbols_views",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common:string_conversions",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
