@@ -85,9 +85,7 @@ class CookieControlsIconViewUnitTest
 
     auto icon_view = std::make_unique<CookieControlsIconView>(
         browser(), delegate_, delegate_);
-    auto fake_coordinator =
-        std::make_unique<NiceMock<MockCookieControlsBubbleCoordinator>>();
-    icon_view->SetCoordinatorForTesting(std::move(fake_coordinator));
+    icon_view->SetCoordinatorForTesting(fake_coordinator_);
     view_ = browser_view()->GetLocationBarView()->AddChildView(
         std::move(icon_view));
 
@@ -138,6 +136,8 @@ class CookieControlsIconViewUnitTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+
+  NiceMock<MockCookieControlsBubbleCoordinator> fake_coordinator_;
 
   raw_ptr<LocationBarView> delegate_;
 };

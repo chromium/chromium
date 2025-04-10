@@ -79,7 +79,8 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
                 incognito_profile()),
             /*is_incognito_profile=*/true);
 
-    coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
+    coordinator_ =
+        browser()->GetFeatures().cookie_controls_bubble_coordinator();
   }
 
   void TearDownOnMainThread() override {
@@ -162,7 +163,7 @@ class CookieControlsBubbleViewBrowserTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  std::unique_ptr<CookieControlsBubbleCoordinator> coordinator_;
+  raw_ptr<CookieControlsBubbleCoordinator> coordinator_;
   std::unique_ptr<content_settings::CookieControlsController> controller_;
   std::unique_ptr<content_settings::CookieControlsController>
       incognito_controller_;

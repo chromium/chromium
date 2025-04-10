@@ -102,7 +102,7 @@ class CookieControlsBubbleViewPixelTest
         /*is_incognito_profile=*/false);
 
     cookie_controls_coordinator_ =
-        cookie_controls_icon_->GetCoordinatorForTesting();
+        &cookie_controls_icon_->GetCoordinatorForTesting();
     cookie_controls_coordinator_->SetDisplayNameForTesting(u"example.com");
   }
 

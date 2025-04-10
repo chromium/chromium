@@ -21,6 +21,7 @@ class Browser;
 class BrowserView;
 class BrowserWindowInterface;
 class ChromeLabsCoordinator;
+class CookieControlsBubbleCoordinator;
 class HistorySidePanelCoordinator;
 class MemorySaverOptInIPHController;
 class SidePanelCoordinator;
@@ -207,6 +208,10 @@ class BrowserWindowFeatures {
     return tab_search_toolbar_button_controller_.get();
   }
 
+  CookieControlsBubbleCoordinator* cookie_controls_bubble_coordinator() {
+    return cookie_controls_bubble_coordinator_.get();
+  }
+
  protected:
   BrowserWindowFeatures();
 
@@ -281,6 +286,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<TabSearchToolbarButtonController>
       tab_search_toolbar_button_controller_;
+
+  std::unique_ptr<CookieControlsBubbleCoordinator>
+      cookie_controls_bubble_coordinator_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_FEATURES_H_

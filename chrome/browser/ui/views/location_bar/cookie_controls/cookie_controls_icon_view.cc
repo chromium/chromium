@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -61,24 +63,25 @@ CookieControlsIconView::CookieControlsIconView(
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
                          "CookieControls"),
-      browser_(browser) {
+      browser_(browser),
+      bubble_coordinator_(CHECK_DEREF(
+          browser->GetFeatures().cookie_controls_bubble_coordinator())) {
   CHECK(browser_);
   SetUpForInOutAnimation(/*duration=*/base::Seconds(12));
   SetBackgroundVisibility(BackgroundVisibility::kWithLabel);
   SetProperty(views::kElementIdentifierKey, kCookieControlsIconElementId);
-  bubble_coordinator_ = std::make_unique<CookieControlsBubbleCoordinator>();
 }
 
 CookieControlsIconView::~CookieControlsIconView() = default;
 
-CookieControlsBubbleCoordinator*
+CookieControlsBubbleCoordinator&
 CookieControlsIconView::GetCoordinatorForTesting() const {
   return bubble_coordinator_.get();
 }
 
 void CookieControlsIconView::SetCoordinatorForTesting(
-    std::unique_ptr<CookieControlsBubbleCoordinator> coordinator) {
-  bubble_coordinator_ = std::move(coordinator);
+    CookieControlsBubbleCoordinator& coordinator) {
+  bubble_coordinator_ = coordinator;
 }
 
 void CookieControlsIconView::DisableUpdatesForTesting() {
