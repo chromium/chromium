@@ -1676,8 +1676,32 @@ void LensOverlayController::FetchViewportImageBoundingBoxes(
   auto* frame = chrome_render_frame.get();
 
   frame->RequestBoundsHintForAllImages(base::BindOnce(
-      &LensOverlayController::DidCaptureScreenshot, weak_factory_.GetWeakPtr(),
+      &LensOverlayController::GetPdfCurrentPage, weak_factory_.GetWeakPtr(),
       std::move(chrome_render_frame), ++screenshot_attempt_id_, bitmap));
+}
+
+void LensOverlayController::GetPdfCurrentPage(
+    mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+        chrome_render_frame,
+    int attempt_id,
+    const SkBitmap& bitmap,
+    const std::vector<gfx::Rect>& bounds) {
+#if BUILDFLAG(ENABLE_PDF)
+  if (lens::features::SendPdfCurrentPageEnabled()) {
+    pdf::PDFDocumentHelper* pdf_helper =
+        pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
+    if (pdf_helper) {
+      pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
+          &LensOverlayController::DidCaptureScreenshot,
+          weak_factory_.GetWeakPtr(), std::move(chrome_render_frame),
+          attempt_id, bitmap, bounds));
+      return;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  DidCaptureScreenshot(std::move(chrome_render_frame), attempt_id, bitmap,
+                       bounds, /*pdf_current_page=*/std::nullopt);
 }
 
 void LensOverlayController::DidCaptureScreenshot(
@@ -1685,7 +1709,8 @@ void LensOverlayController::DidCaptureScreenshot(
         chrome_render_frame,
     int attempt_id,
     const SkBitmap& bitmap,
-    const std::vector<gfx::Rect>& all_bounds) {
+    const std::vector<gfx::Rect>& all_bounds,
+    std::optional<uint32_t> pdf_current_page) {
   // While capturing a screenshot the overlay was cancelled. Do nothing.
   if (state_ == State::kOff || IsOverlayClosing()) {
     return;
@@ -1715,12 +1740,12 @@ void LensOverlayController::DidCaptureScreenshot(
         bitmap, GetPageURL(), GetPageTitle(),
         ConvertSignificantRegionBoxes(all_bounds),
         std::vector<lens::PageContent>(), lens::MimeType::kUnknown,
-        GetUiScaleFactor(), invocation_time_);
+        pdf_current_page, GetUiScaleFactor(), invocation_time_);
   }
 
   // The following two methods happen async to parallelize the two bottlenecks
   // in our invocation flow.
-  CreateInitializationData(bitmap, all_bounds);
+  CreateInitializationData(bitmap, all_bounds, pdf_current_page);
   ShowOverlay();
 
   state_ = State::kStartingWebUI;
@@ -1728,19 +1753,22 @@ void LensOverlayController::DidCaptureScreenshot(
 
 void LensOverlayController::CreateInitializationData(
     const SkBitmap& screenshot,
-    const std::vector<gfx::Rect>& all_bounds) {
+    const std::vector<gfx::Rect>& all_bounds,
+    std::optional<uint32_t> pdf_current_page) {
   // Create the new RGB bitmap async to prevent the main thread from blocking on
   // the encoding.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&CreateRgbBitmap, screenshot),
       base::BindOnce(&LensOverlayController::ContinueCreateInitializationData,
-                     weak_factory_.GetWeakPtr(), screenshot, all_bounds));
+                     weak_factory_.GetWeakPtr(), screenshot, all_bounds,
+                     pdf_current_page));
 }
 
 void LensOverlayController::ContinueCreateInitializationData(
     const SkBitmap& screenshot,
     const std::vector<gfx::Rect>& all_bounds,
+    std::optional<uint32_t> pdf_current_page,
     SkBitmap rgb_screenshot) {
   if (state_ != State::kStartingWebUI || rgb_screenshot.drawsNothing()) {
     // TODO(b/334185985): Handle case when screenshot RGB encoding fails.
@@ -1770,6 +1798,7 @@ void LensOverlayController::ContinueCreateInitializationData(
       GetPageTitle());
   initialization_data->significant_region_boxes_ =
       ConvertSignificantRegionBoxes(all_bounds);
+  initialization_data->last_retrieved_most_visible_page_ = pdf_current_page;
 
   GetPageContextualization(base::BindOnce(
       &LensOverlayController::StorePageContentAndContinueInitialization,
@@ -1849,20 +1878,6 @@ void LensOverlayController::OnPdfBytesReceived(
 
 void LensOverlayController::FetchVisiblePageIndexAndGetPartialPdfText(
     uint32_t page_count) {
-  pdf::PDFDocumentHelper* pdf_helper =
-      pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
-  if (!pdf_helper) {
-    return;
-  }
-
-  pdf_helper->GetMostVisiblePageIndex(
-      base::BindOnce(&LensOverlayController::GetPartialPdfText,
-                     weak_factory_.GetWeakPtr(), page_count));
-}
-
-void LensOverlayController::GetPartialPdfText(
-    uint32_t page_count,
-    std::optional<uint32_t> visible_page_index) {
   pdf::PDFDocumentHelper* pdf_helper =
       pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
   if (!pdf_helper ||
@@ -2136,6 +2151,31 @@ void LensOverlayController::UpdatePageContextualizationPart2(
     lens::MimeType primary_content_type,
     std::optional<uint32_t> page_count,
     const SkBitmap& bitmap) {
+#if BUILDFLAG(ENABLE_PDF)
+  if (lens::features::SendPdfCurrentPageEnabled()) {
+    pdf::PDFDocumentHelper* pdf_helper =
+        pdf::PDFDocumentHelper::MaybeGetForWebContents(tab_->GetContents());
+    if (pdf_helper) {
+      pdf_helper->GetMostVisiblePageIndex(base::BindOnce(
+          &LensOverlayController::UpdatePageContextualizationPart3,
+          weak_factory_.GetWeakPtr(), page_contents, primary_content_type,
+          page_count, bitmap));
+      return;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  UpdatePageContextualizationPart3(page_contents, primary_content_type,
+                                   page_count, bitmap,
+                                   /*most_visible_page=*/std::nullopt);
+}
+
+void LensOverlayController::UpdatePageContextualizationPart3(
+    std::vector<lens::PageContent> page_contents,
+    lens::MimeType primary_content_type,
+    std::optional<uint32_t> page_count,
+    const SkBitmap& bitmap,
+    std::optional<uint32_t> most_visible_page) {
   bool sending_bitmap = false;
   if (!bitmap.drawsNothing() &&
       (initialization_data_->updated_screenshot_.drawsNothing() ||
@@ -2144,6 +2184,7 @@ void LensOverlayController::UpdatePageContextualizationPart2(
     initialization_data_->updated_screenshot_ = bitmap;
     sending_bitmap = true;
   }
+  initialization_data_->last_retrieved_most_visible_page_ = most_visible_page;
 
   // TODO(crbug.com/399215935): Ideally, this check should ensure that any of
   // the content date has not changed. For now, we only check if the
@@ -2185,6 +2226,7 @@ void LensOverlayController::UpdatePageContextualizationPart2(
       // screenshot.
       lens_overlay_query_controller_->SendUpdatedPageContent(
           std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+          initialization_data_->last_retrieved_most_visible_page_,
           sending_bitmap ? bitmap : SkBitmap());
       return;
     }
@@ -2219,6 +2261,7 @@ void LensOverlayController::UpdatePageContextualizationPart2(
   lens_overlay_query_controller_->SendUpdatedPageContent(
       initialization_data_->page_contents_,
       initialization_data_->primary_content_type_, GetPageURL(), GetPageTitle(),
+      initialization_data_->last_retrieved_most_visible_page_,
       sending_bitmap ? bitmap : SkBitmap());
 
   RecordDocumentMetrics(page_count);
@@ -2495,7 +2538,8 @@ void LensOverlayController::InitializeOverlay(
     lens_overlay_query_controller_->SendUpdatedPageContent(
         initialization_data_->page_contents_,
         initialization_data_->primary_content_type_, GetPageURL(),
-        GetPageTitle(), SkBitmap());
+        GetPageTitle(), initialization_data_->last_retrieved_most_visible_page_,
+        SkBitmap());
   }
 
   // Show the preselection overlay now that the overlay is initialized and ready
@@ -2540,8 +2584,9 @@ void LensOverlayController::InitializeOverlay(
         initialization_data_->page_url_, initialization_data_->page_title_,
         std::move(initialization_data_->significant_region_boxes_),
         initialization_data_->page_contents_,
-        initialization_data_->primary_content_type_, GetUiScaleFactor(),
-        invocation_time_);
+        initialization_data_->primary_content_type_,
+        initialization_data_->last_retrieved_most_visible_page_,
+        GetUiScaleFactor(), invocation_time_);
   }
 
   // TODO(b/352622136): We should not start the lens request until the overlay

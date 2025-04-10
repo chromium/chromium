@@ -402,6 +402,9 @@ constexpr base::FeatureParam<bool> kAutoFocusSearchbox{
 constexpr base::FeatureParam<bool> kUpdateViewportEachQuery{
     &kLensOverlayContextualSearchbox, "update-viewport-each-query", false};
 
+constexpr base::FeatureParam<bool> kSendPdfCurrentPage{
+    &kLensOverlayContextualSearchbox, "send-pdf-current-page", true};
+
 constexpr base::FeatureParam<bool> kUseAltLoadingHintWeb{
     &kLensOverlayContextualSearchbox, "use-alt-loading-hint-web", false};
 constexpr base::FeatureParam<bool> kUseAltLoadingHintPdf{
@@ -970,6 +973,10 @@ bool PageContentUploadRequestIdFixEnabled() {
 
 bool UpdateViewportEachQueryEnabled() {
   return kUpdateViewportEachQuery.Get();
+}
+
+bool SendPdfCurrentPageEnabled() {
+  return kSendPdfCurrentPage.Get();
 }
 
 bool ShowContextualSearchboxZeroPrefixSuggest() {
