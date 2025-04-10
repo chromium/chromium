@@ -37,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
@@ -58,6 +59,7 @@ import org.chromium.chrome.test.util.TabStripUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.ArrayList;
@@ -92,6 +94,17 @@ public class TabStripGroupContextMenuTest {
     public void tearDown() {
         // Click anywhere to dismiss menu if has not already been dismissed.
         onView(isRoot()).perform(click());
+
+        // Dismiss any visible dialogs(crbug.com/394606261). Clicking anywhere to dismiss the popup
+        // menu may unintentionally trigger a menu item (e.g. "Ungroup"), which can show a dialog.
+        // Attempts to redirect the click to views e.g.(R.id.compositor_view_holder) didn't work, as
+        // no views outside the popup menu were accessible while it was showing. Dismissing the
+        // popup menu directly via StripLayoutHelper was also ineffective, so explicitly dismissing
+        // all dialogs.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModalDialogManager.dismissAllDialogs(DialogDismissalCause.UNKNOWN);
+                });
     }
 
     @Test
