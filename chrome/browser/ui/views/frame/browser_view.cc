@@ -1506,6 +1506,25 @@ void BrowserView::HideSplitView() {
   multi_contents_view_->CloseSplitView();
 }
 
+void BrowserView::UpdateActiveSplitView() {
+  CHECK(multi_contents_view_ && multi_contents_view_->IsInSplitView());
+  const int active_index = browser_->tab_strip_model()->active_index();
+
+  std::optional<split_tabs::SplitTabId> split_tab_id =
+      browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
+
+  CHECK(split_tab_id.has_value());
+  const split_tabs::SplitTabData* split_tab_data =
+      browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
+
+  std::vector<tabs::TabInterface*> split_tabs = split_tab_data->ListTabs();
+
+  const int first_split_tab_index =
+      browser_->tab_strip_model()->GetIndexOfTab(split_tabs[0]);
+  const int relative_active_position = active_index - first_split_tab_index;
+  multi_contents_view_->SetActiveIndex(relative_active_position);
+}
+
 void BrowserView::ActivateWebContents(content::WebContents* web_contents) {
   int tab_index =
       browser_->tab_strip_model()->GetIndexOfWebContents(web_contents);
@@ -1963,6 +1982,9 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
       loading_bar_->SetWebContents(nullptr);
     }
     active_contents_view->SetWebContents(nullptr);
+    if (multi_contents_view_) {
+      multi_contents_view_->GetInactiveContentsView()->SetWebContents(nullptr);
+    }
     devtools_web_view_->SetWebContents(nullptr);
   }
 
@@ -2018,7 +2040,22 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     if (loading_bar_) {
       loading_bar_->SetWebContents(new_contents);
     }
-    active_contents_view->SetWebContents(new_contents);
+
+    if (multi_contents_view_) {
+      const tabs::TabInterface* active_tab =
+          tabs::TabInterface::GetFromContents(new_contents);
+      if (active_tab->IsSplit()) {
+        ShowSplitView();
+      } else {
+        if (multi_contents_view_->IsInSplitView()) {
+          HideSplitView();
+        }
+        active_contents_view->SetWebContents(new_contents);
+      }
+    } else {
+      active_contents_view->SetWebContents(new_contents);
+    }
+
     SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(new_contents);
     if (sad_tab_helper) {
       sad_tab_helper->ReinstallInWebView();
@@ -2027,6 +2064,10 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     // The second layout update should be no-op. It will just set the
     // DevTools WebContents.
     UpdateDevToolsForContents(new_contents, true);
+  } else if (multi_contents_view_ != nullptr &&
+             multi_contents_view_->GetInactiveContentsView()
+                     ->GetWebContents() == new_contents) {
+    UpdateActiveSplitView();
   }
 
   if (will_restore_focus) {
@@ -2045,16 +2086,6 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // one subscriber per web contents.
   if (AppUsesBorderlessMode() && !old_contents) {
     SetWindowManagementPermissionSubscriptionForBorderlessMode(new_contents);
-  }
-
-  if (multi_contents_view_) {
-    const tabs::TabInterface* active_tab =
-        tabs::TabInterface::GetFromContents(new_contents);
-    if (active_tab->IsSplit()) {
-      ShowSplitView();
-    } else {
-      HideSplitView();
-    }
   }
 }
 

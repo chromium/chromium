@@ -478,6 +478,9 @@ class BrowserView : public BrowserWindow,
   // side-by-side display.
   void HideSplitView();
 
+  // Update the index of the active split based on the active tab's web contents
+  void UpdateActiveSplitView();
+
   // Activate the tab containing the given WebContents (if any).
   void ActivateWebContents(content::WebContents* web_contents);
 

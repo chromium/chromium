@@ -123,6 +123,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
 
   ViewWidths ClampToMinWidth(ViewWidths widths);
 
+  void UpdateContentsBorder();
+
   raw_ptr<BrowserView> browser_view_;
 
   // Holds ContentsContainerViews, when not in a split view the second

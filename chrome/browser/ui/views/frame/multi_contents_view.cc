@@ -85,6 +85,7 @@ void MultiContentsView::SetWebContentsAtIndex(
   if (index == 1 && !contents_container_views_[1]->GetVisible()) {
     contents_container_views_[1]->SetVisible(true);
     resize_area_->SetVisible(true);
+    UpdateContentsBorder();
   }
 }
 
@@ -102,6 +103,7 @@ void MultiContentsView::CloseSplitView() {
   contents_container_views_[1]->GetContentsView()->SetWebContents(nullptr);
   contents_container_views_[1]->SetVisible(false);
   resize_area_->SetVisible(false);
+  UpdateContentsBorder();
 }
 
 void MultiContentsView::SetActiveIndex(int index) {
@@ -113,9 +115,8 @@ void MultiContentsView::SetActiveIndex(int index) {
   active_index_ = index;
   GetActiveContentsView()->set_is_primary_web_contents_for_window(true);
   GetInactiveContentsView()->set_is_primary_web_contents_for_window(false);
-  // Schedule paint to be sure that the active/inactive outline is correctly
-  // painted after the active contents changes.
-  SchedulePaint();
+
+  UpdateContentsBorder();
 }
 
 bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
@@ -188,37 +189,8 @@ void MultiContentsView::Layout(PassKey) {
 }
 
 void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
-  if (!IsInSplitView()) {
-    if (contents_container_views_[0]->GetBorder()) {
-      contents_container_views_[0]->SetBorder(nullptr);
-    }
-    if (contents_container_views_[1]->GetBorder()) {
-      contents_container_views_[1]->SetBorder(nullptr);
-    }
-    return;
-  }
-
   // Paint the multi contents area background to match the toolbar.
   TopContainerBackground::PaintBackground(canvas, this, browser_view_);
-
-  // Draw active/inactive outlines around the contents areas.
-  const auto set_contents_border = [this](ContentsContainerView*
-                                              contents_container_view) {
-    const bool is_active =
-        contents_container_view->GetContentsView() == GetActiveContentsView();
-    const SkColor color =
-        is_active ? GetColorProvider()->GetColor(
-                        kColorMulitContentsViewActiveContentOutline)
-                  : GetColorProvider()->GetColor(
-                        kColorMulitContentsViewInactiveContentOutline);
-    contents_container_view->SetBorder(views::CreatePaddedBorder(
-        views::CreateRoundedRectBorder(kContentOutlineThickness,
-                                       kContentOutlineCornerRadius, color),
-        gfx::Insets(kSplitViewContentPadding)));
-  };
-  for (auto* contents_container_view : contents_container_views_) {
-    set_contents_border(contents_container_view);
-  }
 }
 
 MultiContentsView::ContentsContainerView::ContentsContainerView(
@@ -264,6 +236,36 @@ MultiContentsView::ViewWidths MultiContentsView::ClampToMinWidth(
     widths.start_width -= diff;
   }
   return widths;
+}
+
+void MultiContentsView::UpdateContentsBorder() {
+  if (!IsInSplitView()) {
+    for (auto* contents_container_view : contents_container_views_) {
+      if (contents_container_view->GetBorder()) {
+        contents_container_view->SetBorder(nullptr);
+      }
+    }
+    return;
+  }
+
+  // Draw active/inactive outlines around the contents areas.
+  const auto set_contents_border =
+      [this](ContentsContainerView* contents_container_view) {
+        const bool is_active = contents_container_view->GetContentsView() ==
+                               GetActiveContentsView();
+        const SkColor color =
+            is_active ? GetColorProvider()->GetColor(
+                            kColorMulitContentsViewActiveContentOutline)
+                      : GetColorProvider()->GetColor(
+                            kColorMulitContentsViewInactiveContentOutline);
+        contents_container_view->SetBorder(views::CreatePaddedBorder(
+            views::CreateRoundedRectBorder(kContentOutlineThickness,
+                                           kContentOutlineCornerRadius, color),
+            gfx::Insets(kSplitViewContentPadding)));
+      };
+  for (auto* contents_container_view : contents_container_views_) {
+    set_contents_border(contents_container_view);
+  }
 }
 
 BEGIN_METADATA(MultiContentsView)
