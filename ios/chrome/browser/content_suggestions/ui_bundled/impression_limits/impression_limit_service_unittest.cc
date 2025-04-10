@@ -25,6 +25,7 @@
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_factory.h"
+#include "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -107,6 +108,8 @@ class ImpressionLimitServiceTest : public PlatformTest {
         commerce::ShoppingServiceFactory::GetForProfile(profile_.get()));
 
     pref_service_.registry()->RegisterDictionaryPref(kImpressionsPref);
+    pref_service_.registry()->RegisterDictionaryPref(
+        shop_card_prefs::kShopCardPriceDropUrlImpressions);
     impression_limit_service_ =
         ImpressionLimitServiceFactory::GetForProfile(profile_.get());
   }

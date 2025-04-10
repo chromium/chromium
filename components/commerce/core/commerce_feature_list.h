@@ -177,11 +177,14 @@ constexpr base::FeatureParam<std::string> kCheckoutPatternMapping{
 
 inline constexpr base::FeatureParam<std::string> kShopCardVariation{
     &kShopCard, "ShopCardVariant", ""};
+inline constexpr base::FeatureParam<std::string> kShopCardPosition{
+    &kShopCard, "ShopCardPosition", ""};
 
 extern const char kShopCardArm1[];
 extern const char kShopCardArm2[];
 extern const char kShopCardArm3[];
 extern const char kShopCardArm4[];
+extern const char kShopCardFrontPosition[];
 
 // Feature params for product specifications.
 extern const char kProductSpecificationsSetValidForClusteringTimeParam[];

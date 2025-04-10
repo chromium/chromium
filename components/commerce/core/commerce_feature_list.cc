@@ -370,6 +370,7 @@ extern const char kShopCardArm1[] = "arm_1";
 extern const char kShopCardArm2[] = "arm_2";
 extern const char kShopCardArm3[] = "arm_3";
 extern const char kShopCardArm4[] = "arm_4";
+extern const char kShopCardFrontPosition[] = "shop_card_front";
 
 const char kProductSpecificationsSetValidForClusteringTimeParam[] =
     "set-valid-for-clustering-time";

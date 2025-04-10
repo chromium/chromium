@@ -435,6 +435,8 @@ using segmentation_platform::TipIdentifier;
                                     image_fetcher::ImageDataFetcher>(
                                     profile->GetSharedURLLoaderFactory())
                   faviconLoader:IOSChromeFaviconLoaderFactory::GetForProfile(
+                                    profile)
+         impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
                                     profile)];
     [moduleMediators addObject:_shopCardMediator];
     _shopCardMediator.shopCardActionDelegate = self;

@@ -9,6 +9,8 @@ class PrefRegistrySimple;
 
 namespace shop_card_prefs {
 
+extern const char kShopCardPriceDropUrlImpressions[];
+
 // Registers the prefs associated with the Tips module.
 void RegisterPrefs(PrefRegistrySimple* registry);
 
