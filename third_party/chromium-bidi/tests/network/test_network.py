@@ -146,9 +146,9 @@ async def test_network_global_subscription_enabled_in_new_context(
             }
         })
 
-    resp = await read_JSON_message(websocket)
+    event = await wait_for_event(websocket, "network.beforeRequestSent")
 
-    assert resp == AnyExtending({
+    assert event == AnyExtending({
         'type': 'event',
         "method": "network.beforeRequestSent",
         "params": {
