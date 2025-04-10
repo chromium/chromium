@@ -803,6 +803,20 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetMinimumWidgetSize) {
   ContinueJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testManualResizeChanged) {
+  window_controller().OnWidgetUserResizeStarted();
+
+  // Check that the web client is notified of the beginning of the user
+  // initiated resizing event.
+  ExecuteJsTest();
+
+  window_controller().OnWidgetUserResizeEnded();
+
+  // Check that the web client is notified of the ending of the user
+  // initiated resizing event.
+  ContinueJsTest();
+}
+
 class GlicApiTestSystemSettingsTest : public GlicApiTestWithOneTab {
  public:
   GlicApiTestSystemSettingsTest() {
