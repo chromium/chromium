@@ -58,8 +58,8 @@
         const headers = await preloadedRC.getRequestHeaders();
         // Make sure the page is preloaded.
         assert_equals(
-            headers.get("sec-purpose"),
-            preloadingType === "prefetch" ? "prefetch" : "prefetch;prerender");
+          headers.get("sec-purpose"),
+          preloadingType === "prefetch" ? "prefetch" : "prefetch;prerender");
         assert_equals(headers.get("sec-speculation-tags"), expectedTag);
     }, "Sec-Speculation-Tags [ruleset-based]: " + description);
   }
