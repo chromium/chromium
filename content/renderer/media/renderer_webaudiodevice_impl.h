@@ -94,6 +94,10 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   // status.
   media::OutputDeviceStatus MaybeCreateSinkAndGetStatus() override;
 
+  const media::AudioParameters& GetOriginalSinkParamsForTesting() const {
+    return original_sink_params_;
+  }
+
  protected:
   // Callback to get output device params (for tests).
   using OutputDeviceParamsCallback = base::OnceCallback<media::AudioParameters(
