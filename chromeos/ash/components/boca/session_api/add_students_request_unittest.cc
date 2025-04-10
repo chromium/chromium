@@ -110,9 +110,9 @@ TEST_F(AddStudentsRequestTest, AddMultipleStudentAndSucceed) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
-  GaiaId gaia_id("1");
-  std::string session_id = "session_id";
 
+  std::string session_id = "session_id";
+  GaiaId gaia_id("1");
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
@@ -122,10 +122,21 @@ TEST_F(AddStudentsRequestTest, AddMultipleStudentAndSucceed) {
                                            future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
-  std::vector<std::string> ids;
-  ids.push_back("2");
-  ids.push_back("3");
-  request->set_student_ids(std::move(ids));
+  std::vector<::boca::UserIdentity> students;
+  ::boca::UserIdentity student_1;
+  student_1.set_gaia_id("2");
+  student_1.set_email("cat@gmail.com");
+  student_1.set_full_name("cat");
+  student_1.set_photo_url("data:image/123");
+  students.push_back(student_1);
+
+  ::boca::UserIdentity student_2;
+  student_2.set_gaia_id("3");
+  student_2.set_email("dog@gmail.com");
+  student_2.set_full_name("dog");
+  student_2.set_photo_url("data:image/123");
+  students.push_back(student_2);
+  request->set_students(std::move(students));
   request->set_student_group_id("groupid");
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
@@ -138,7 +149,10 @@ TEST_F(AddStudentsRequestTest, AddMultipleStudentAndSucceed) {
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
       "{\"studentGroups\":[{\"studentGroupId\":\"groupid\",\"students\":[{"
-      "\"gaiaId\":\"2\"},{\"gaiaId\":\"3\"}]}]}";
+      "\"email\":\"cat@gmail.com\",\"fullName\":\"cat\",\"gaiaId\":\"2\","
+      "\"photoUrl\":\"data:image/"
+      "123\"},{\"email\":\"dog@gmail.com\",\"fullName\":\"dog\",\"gaiaId\":"
+      "\"3\",\"photoUrl\":\"data:image/123\"}]}]}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(true, result.value());

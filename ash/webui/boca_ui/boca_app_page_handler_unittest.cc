@@ -1800,13 +1800,27 @@ TEST_F(BocaAppPageHandlerTest, AddStudentsSucceedAlsoTriggerSessionReload) {
           // here instead of using SaveArg.
           Invoke([&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
-            ASSERT_EQ(2u, request->student_ids().size());
+            ASSERT_EQ(2u, request->students().size());
             ASSERT_EQ(group_id, request->student_group_id());
+            EXPECT_EQ("1", request->students()[0].gaia_id());
+            EXPECT_EQ("a", request->students()[0].full_name());
+            EXPECT_EQ("a@gmail.com", request->students()[0].email());
+            EXPECT_EQ("cdn://s1", request->students()[0].photo_url());
+
+            EXPECT_EQ("2", request->students()[1].gaia_id());
+            EXPECT_EQ("b", request->students()[1].full_name());
+            EXPECT_EQ("b@gmail.com", request->students()[1].email());
+            EXPECT_EQ("cdn://s2", request->students()[1].photo_url());
             request->callback().Run(true);
           })));
   EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
       .Times(1);
-  boca_app_handler()->AddStudents({"4", "5"}, future_1.GetCallback());
+  std::vector<mojom::IdentityPtr> students;
+  students.push_back(
+      mojom::Identity::New("1", "a", "a@gmail.com", GURL("cdn://s1")));
+  students.push_back(
+      mojom::Identity::New("2", "b", "b@gmail.com", GURL("cdn://s2")));
+  boca_app_handler()->AddStudents(std::move(students), future_1.GetCallback());
   ::testing::Mock::VerifyAndClearExpectations(session_client_impl());
   ::testing::Mock::VerifyAndClearExpectations(session_manager());
 
@@ -1837,13 +1851,13 @@ TEST_F(BocaAppPageHandlerTest, AddStudentsWithHTTPFailure) {
           // here instead of using SaveArg.
           Invoke([&](auto request) {
             ASSERT_EQ(kGaiaId, request->gaia_id());
-            ASSERT_EQ(2u, request->student_ids().size());
+            ASSERT_EQ(0u, request->students().size());
             request->callback().Run(
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
           })));
   EXPECT_CALL(*session_manager(), LoadCurrentSession(/*from_polling=*/false))
       .Times(0);
-  boca_app_handler()->AddStudents({"4", "5"}, future_1.GetCallback());
+  boca_app_handler()->AddStudents({}, future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get().has_value());
 }

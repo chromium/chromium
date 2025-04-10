@@ -454,7 +454,7 @@ void BocaAppHandler::RemoveStudent(const std::string& id,
   session_client_impl_->RemoveStudent(std::move(request));
 }
 
-void BocaAppHandler::AddStudents(const std::vector<std::string>& ids,
+void BocaAppHandler::AddStudents(const std::vector<mojom::IdentityPtr> students,
                                  AddStudentsCallback callback) {
   auto* session =
       BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
@@ -470,8 +470,16 @@ void BocaAppHandler::AddStudents(const std::vector<std::string>& ids,
           base::BindOnce(&BocaAppHandler::OnStudentsAdded,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                          session));
-
-  request->set_student_ids(std::move(ids));
+  std::vector<::boca::UserIdentity> students_list;
+  for (auto& item : students) {
+    ::boca::UserIdentity student;
+    student.set_gaia_id(item->id);
+    student.set_email(item->email);
+    student.set_full_name(item->name);
+    student.set_photo_url(item->photo_url.value_or(GURL()).spec());
+    students_list.push_back(student);
+  }
+  request->set_students(std::move(students_list));
   request->set_student_group_id(GetStudentGroupIdSafe(session));
   session_client_impl_->AddStudents(std::move(request));
 }

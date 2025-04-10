@@ -71,7 +71,7 @@ class BocaAppHandler : public mojom::PageHandler,
                              ExtendSessionDurationCallback callback) override;
   void RemoveStudent(const std::string& id,
                      RemoveStudentCallback callback) override;
-  void AddStudents(const std::vector<std::string>& ids,
+  void AddStudents(const std::vector<mojom::IdentityPtr> students,
                    AddStudentsCallback callback) override;
   void UpdateOnTaskConfig(mojom::OnTaskConfigPtr config,
                           UpdateOnTaskConfigCallback callback) override;

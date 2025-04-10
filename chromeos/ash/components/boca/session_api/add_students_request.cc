@@ -63,9 +63,12 @@ bool AddStudentsRequest::GetContentData(std::string* upload_content_type,
   base::Value::Dict student_group;
   student_group.Set(kStudentGroupId, student_group_id_);
   base::Value::List students;
-  for (auto id : student_ids_) {
+  for (auto& student : students_) {
     base::Value::Dict item;
-    item.Set(kGaiaId, id);
+    item.Set(kGaiaId, student.gaia_id());
+    item.Set(kEmail, student.email());
+    item.Set(kFullName, student.full_name());
+    item.Set(kPhotoUrl, student.photo_url());
     students.Append(std::move(item));
   }
   student_group.Set(kStudents, std::move(students));
