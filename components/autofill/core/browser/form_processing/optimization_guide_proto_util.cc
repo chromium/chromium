@@ -95,7 +95,6 @@ optimization_guide::proto::FormData ToFormDataProto(
     // Unconditionally assign html meta data to the field.
     field_proto->set_field_name(base::UTF16ToUTF8(field.name()));
     field_proto->set_field_label(base::UTF16ToUTF8(field.label()));
-    field_proto->set_is_visible(field.is_visible());
     field_proto->set_is_focusable(field.is_focusable());
     field_proto->set_placeholder(base::UTF16ToUTF8(field.placeholder()));
     field_proto->set_form_control_type(
