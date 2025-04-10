@@ -8,18 +8,7 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
-#import "ios/web/public/web_state.h"
-
-// This macro declares a static variable inside the class that inherits from
-// WebStateUserData. The address of this static variable is used as the key to
-// store/retrieve an instance of the class on/from a WebState.
-#define WEB_STATE_USER_DATA_KEY_DECL() \
-  [[maybe_unused]] static const int kUserDataKey = 0
-
-// This macro instantiates the static variable declared by the previous macro.
-// It must live in a .mm/.cc file to ensure that there is only one instantiation
-// of the static variable.
-#define WEB_STATE_USER_DATA_KEY_IMPL(Type) const int Type::kUserDataKey;
+#include "ios/web/public/web_state.h"
 
 namespace web {
 
@@ -34,12 +23,9 @@ namespace web {
 //  private:
 //   explicit FooTabHelper(web::WebState* web_state);
 //   friend class web::WebStateUserData<FooTabHelper>;
-//   WEB_STATE_USER_DATA_KEY_DECL();
 //   // ... more private stuff here ...
 // };
 //
-// --- in foo_tab_helper.cc ---
-// WEB_STATE_USER_DATA_KEY_IMPL(FooTabHelper)
 template <typename T>
 class WebStateUserData : public base::SupportsUserData::Data {
  public:

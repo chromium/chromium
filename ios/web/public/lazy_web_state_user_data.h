@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #include "ios/web/public/web_state.h"
-#include "ios/web/public/web_state_user_data.h"
 
 namespace web {
 
@@ -24,12 +23,9 @@ namespace web {
 //  private:
 //   explicit FooTabHelper(web::WebState* web_state);
 //   friend class web::LazyWebStateUserData<FooTabHelper>;
-//   WEB_STATE_USER_DATA_KEY_DECL();
 //   // ... more private stuff here ...
 // };
 //
-// --- in foo_tab_helper.cc ---
-// WEB_STATE_USER_DATA_KEY_IMPL(FooTabHelper)
 template <typename T>
 class LazyWebStateUserData : public base::SupportsUserData::Data {
  public:
