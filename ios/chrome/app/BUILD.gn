@@ -47,6 +47,12 @@ buildflag_header("fast_app_terminate_buildflags") {
   flags = [ "FAST_APP_TERMINATE_ENABLED=$fast_app_terminate_enabled" ]
 }
 
+buildflag_header("ios_force_build_chrome_framework_buildflags") {
+  header = "ios_force_build_chrome_framework_buildflags.h"
+  flags =
+      [ "IOS_FORCE_BUILD_CHROME_FRAMEWORK=$ios_force_build_chrome_framework" ]
+}
+
 source_set("app") {
   sources = [
     "app_startup_parameters.h",
@@ -621,6 +627,7 @@ source_set("main") {
 
   deps = [
     ":app_internal",
+    ":ios_force_build_chrome_framework_buildflags",
     "//base",
     "//build:blink_buildflags",
     "//components/component_updater",
