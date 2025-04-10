@@ -552,8 +552,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
 
     case Type::SEARCH_SUGGEST:
       return IsTrendSuggestion() ? omnibox::kTrendingUpChromeRefreshIcon
-             : subtypes.contains(
-                   omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH)
+             : (subtypes.contains(
+                    omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH) &&
+                OmniboxFieldTrial::IsStarterPackPageEnabled())
                  ? omnibox::kSearchSparkIcon
                  : vector_icons::kSearchChromeRefreshIcon;
 
