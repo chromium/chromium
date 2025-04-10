@@ -7,9 +7,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/managed_installation_mode.h"
-#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -20,19 +17,28 @@
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permission_set.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/managed_installation_mode.h"
+#include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
+#endif
+
 namespace extensions {
 namespace {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // A helper function to determine if an extension from web store with given
 // information should be blocked by enterprise policy. It checks extension's
 // installation mode, permission and manifest type.
 // Returns true if the extension |mode| is blocked, removed or allowed by
 // wildcard/update_url but blocked by |manifest type| or |required permissions|.
+// TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android.
 bool IsExtensionInstallBlockedByPolicy(
     ExtensionManagement* extension_management,
     ManagedInstallationMode mode,
@@ -72,6 +78,7 @@ bool IsExtensionInstallBlockedByPolicy(
 
   return false;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -90,6 +97,8 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     int manifest_version) {
   DCHECK(crx_file::id_util::IdIsValid(extension_id));
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android.
   const GURL update_url = extension_urls::GetWebstoreUpdateUrl();
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile);
@@ -104,6 +113,7 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
       mode == ManagedInstallationMode::kRecommended) {
     return kForceInstalled;
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile);
 
@@ -141,6 +151,7 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
     return kBlocklisted;
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // When manifest version is not allowed, the extension is blocked and can't be
   // requested.
   if (!extension_management->IsAllowedManifestVersion(
@@ -197,6 +208,7 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
 
     return kCanRequest;
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (registry->disabled_extensions().Contains(extension_id)) {
     bool is_corrupted = ExtensionPrefs::Get(profile)->HasDisableReason(

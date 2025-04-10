@@ -17,6 +17,7 @@
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -75,7 +76,8 @@ class SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature
       public testing::WithParamInterface<ExtensionsPermissionStatus> {
  public:
   SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_DESKTOP_ANDROID)
     if (AreExtensionsPermitted()) {
       feature_list_.InitAndEnableFeature(
           supervised_user::
@@ -100,7 +102,7 @@ TEST_P(SupervisedUserBrowserUtilsTestWithExtensionsPermissionsFeature,
        AreExtensionsPermissionsEnabledWithSupervisedUser) {
   profile()->AsTestingProfile()->SetIsSupervisedProfile(true);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EXPECT_EQ(supervised_user::AreExtensionsPermissionsEnabled(profile()),
             AreExtensionsPermitted());
 #else
