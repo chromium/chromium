@@ -2219,6 +2219,7 @@ chromium-metrics-reviews@google.com.
   <int value="1349" label="HappyEyeballsV3Enabled"/>
   <int value="1350" label="FaceGazeEnabled"/>
   <int value="1351" label="ProvisionalNotificationsAllowed"/>
+  <int value="1352" label="DeviceLoginScreenFaceGazeEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

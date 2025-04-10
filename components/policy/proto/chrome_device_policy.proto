@@ -810,6 +810,8 @@ message AccessibilitySettingsProto {
   //    PolicyOptions: login_screen_sticky_keys_enabled_options
   // 15) Accessibility shortcuts: login_screen_shortcuts_enabled
   //    PolicyOptions: login_screen_shortcuts_enabled_options
+  // 16) Face control: login_screen_face_gaze_enabled
+  //    PolicyOptions: login_screen_face_gaze_enabled_options
   //
   // For all the aforementioned accessibility policies:
   //  - If this policy is set to true, the accessibility feature will be enabled
@@ -874,6 +876,9 @@ message AccessibilitySettingsProto {
 
   optional bool login_screen_shortcuts_enabled = 34;
   optional PolicyOptions login_screen_shortcuts_enabled_options = 35;
+
+  optional bool login_screen_face_gaze_enabled = 36;
+  optional PolicyOptions login_screen_face_gaze_enabled_options = 37;
 }
 
 message OBSOLETE_SupervisedUsersSettingsProto {

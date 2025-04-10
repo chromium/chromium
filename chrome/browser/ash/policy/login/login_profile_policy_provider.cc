@@ -77,6 +77,7 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
      key::kUserContextAwareAccessSignalsAllowlist},
     {key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
      key::kTouchVirtualKeyboardEnabled},
+    {key::kDeviceLoginScreenFaceGazeEnabled, key::kFaceGazeEnabled},
 
     // The authentication URL blocklist and allowlist policies implement content
     // control for authentication flows, including in the login screen and lock
