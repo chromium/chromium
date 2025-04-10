@@ -766,6 +766,12 @@ static void AdaptBinaryOperation(const MatchFinder::MatchResult& result) {
                llvm::formatv("{0}.subspan({1})", rhs_array_type ? ")" : "",
                              initial_text.substr(1)),
                source_manager));
+
+  // It's possible we emitted a rewrite that creates a temporary but
+  // unnamed `base::span` (issue 408018846). This could end up being
+  // the only reference in the file, and so it has to carry the
+  // `#include` directive itself.
+  EmitReplacement(key, GetIncludeDirective(source_range, source_manager));
 }
 
 static void AdaptBinaryPlusEqOperation(const MatchFinder::MatchResult& result) {
