@@ -87,7 +87,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // generally best as it catches more ads, but if you're calling very
   // frequently then consider just the bottom of the stack for performance sake.
   // If `out_ad_script` is non-null and there is ad script in the stack, the
-  // bottom-most known ad script on the stack will be copied to the address.
+  // known ad script on the stack will be copied to the address.
   bool IsAdScriptInStack(
       StackType stack_type,
       std::optional<AdScriptIdentifier>* out_ad_script = nullptr);
@@ -102,7 +102,9 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
  protected:
   // Protected for testing.
-  virtual String ScriptAtTopOfStack();
+  // Note that this outputs the `out_top_script` even when it's not an ad.
+  virtual String ScriptAtTopOfStack(
+      std::optional<AdScriptIdentifier>* out_top_script);
   virtual ExecutionContext* GetCurrentExecutionContext();
 
  private:
@@ -119,7 +121,10 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
                          int script_id);
   void DidExecuteScript();
   bool IsKnownAdScript(ExecutionContext*, const String& url);
-  bool IsKnownAdScriptForCheckedContext(ExecutionContext&, const String& url);
+  bool IsKnownAdScriptForCheckedContext(
+      ExecutionContext&,
+      const String& url,
+      std::optional<AdScriptIdentifier>* out_ad_script);
   void AppendToKnownAdScripts(ExecutionContext&, const String& url);
 
   Member<LocalFrame> local_root_;

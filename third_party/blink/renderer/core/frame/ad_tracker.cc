@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -49,6 +50,20 @@ String GenerateFakeUrlFromScriptId(int script_id) {
   return String::Format("{ id %d }", script_id);
 }
 
+v8_inspector::V8DebuggerId GetDebuggerIdForContext(
+    const v8::Local<v8::Context>& v8_context) {
+  if (v8_context.IsEmpty()) {
+    return v8_inspector::V8DebuggerId();
+  }
+  int contextId = v8_inspector::V8ContextInfo::executionContextId(v8_context);
+  ThreadDebugger* thread_debugger =
+      ThreadDebugger::From(v8_context->GetIsolate());
+  DCHECK(thread_debugger);
+  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
+  DCHECK(inspector);
+  return inspector->uniqueDebuggerId(contextId);
+}
+
 }  // namespace
 
 // static
@@ -87,7 +102,8 @@ void AdTracker::Shutdown() {
   local_root_ = nullptr;
 }
 
-String AdTracker::ScriptAtTopOfStack() {
+String AdTracker::ScriptAtTopOfStack(
+    std::optional<AdScriptIdentifier>* out_top_script) {
   // CurrentStackTrace is 10x faster than CaptureStackTrace if all that you need
   // is the url of the script at the top of the stack. See crbug.com/1057211 for
   // more detail.
@@ -103,6 +119,13 @@ String AdTracker::ScriptAtTopOfStack() {
 
   v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, 0);
   v8::Local<v8::String> script_name = frame->GetScriptName();
+
+  if (out_top_script) {
+    *out_top_script = AdScriptIdentifier(
+        GetDebuggerIdForContext(isolate->GetCurrentContext()),
+        frame->GetScriptId());
+  }
+
   if (script_name.IsEmpty() || !script_name->Length())
     return GenerateFakeUrlFromScriptId(frame->GetScriptId());
 
@@ -117,20 +140,6 @@ ExecutionContext* AdTracker::GetCurrentExecutionContext() {
   }
   v8::Local<v8::Context> context = isolate->GetCurrentContext();
   return context.IsEmpty() ? nullptr : ToExecutionContext(context);
-}
-
-v8_inspector::V8DebuggerId GetDebuggerIdForContext(
-    const v8::Local<v8::Context>& v8_context) {
-  if (v8_context.IsEmpty()) {
-    return v8_inspector::V8DebuggerId();
-  }
-  int contextId = v8_inspector::V8ContextInfo::executionContextId(v8_context);
-  ThreadDebugger* thread_debugger =
-      ThreadDebugger::From(v8_context->GetIsolate());
-  DCHECK(thread_debugger);
-  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
-  DCHECK(inspector);
-  return inspector->uniqueDebuggerId(contextId);
 }
 
 void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
@@ -318,7 +327,8 @@ bool AdTracker::IsAdScriptInStack(
   // (e.g., when v8 is executed) but not the entire stack. For a small cost we
   // can also check the top of the stack (this is much cheaper than getting the
   // full stack from v8).
-  return IsKnownAdScriptForCheckedContext(*execution_context, String());
+  return IsKnownAdScriptForCheckedContext(*execution_context, String(),
+                                          out_ad_script);
 }
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
@@ -329,25 +339,43 @@ bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
   if (IsKnownAdExecutionContext(execution_context))
     return true;
 
-  return IsKnownAdScriptForCheckedContext(*execution_context, url);
+  // We don't care about the `out_ad_script` param here because that only gets
+  // filled when `url` is empty, but we have a url to pass in this case.
+  return IsKnownAdScriptForCheckedContext(*execution_context, url,
+                                          /*out_ad_script=*/nullptr);
 }
 
 bool AdTracker::IsKnownAdScriptForCheckedContext(
     ExecutionContext& execution_context,
-    const String& url) {
+    const String& url,
+    std::optional<AdScriptIdentifier>* out_ad_script) {
   DCHECK(!IsKnownAdExecutionContext(&execution_context));
   auto it = known_ad_scripts_.find(&execution_context);
-  if (it == known_ad_scripts_.end())
+  if (it == known_ad_scripts_.end()) {
     return false;
+  }
 
-  if (it->value.empty())
+  if (it->value.empty()) {
     return false;
+  }
 
+  std::optional<AdScriptIdentifier> top_of_stack_script;
   // Delay calling ScriptAtTopOfStack() as much as possible due to its cost.
-  String script_url = url.IsNull() ? ScriptAtTopOfStack() : url;
-  if (script_url.empty())
+  String script_url =
+      url.IsNull()
+          ? ScriptAtTopOfStack(out_ad_script ? &top_of_stack_script : nullptr)
+          : url;
+
+  if (script_url.empty()) {
     return false;
-  return it->value.Contains(script_url);
+  }
+
+  bool found = it->value.Contains(script_url);
+  if (found && out_ad_script) {
+    *out_ad_script = std::move(top_of_stack_script);
+  }
+
+  return found;
 }
 
 // This is a separate function for testing purposes.

@@ -127,11 +127,37 @@ class TestAdTracker : public AdTracker {
     run_loop.Run();
   }
 
+  std::optional<AdScriptIdentifier> last_out_ad_script() const {
+    return last_out_ad_script_;
+  }
+
  protected:
-  String ScriptAtTopOfStack() override {
-    if (sim_test_ && !script_at_top_)
-      return AdTracker::ScriptAtTopOfStack();
-    return script_at_top_;
+  // Override ScriptAtTopofStack for two purposes. The first is to allow us to
+  // mock out the returned script (via `SetScriptAtTopOfStack`). The second is
+  // to always pass an `out_ad_script` param to the call (when not mocked) and
+  // record it so that we can check that the result is right.
+  String ScriptAtTopOfStack(
+      std::optional<AdScriptIdentifier>* out_ad_script = nullptr) override {
+    if (script_at_top_) {
+      return script_at_top_;
+    }
+    if (!sim_test_) {
+      return "";
+    }
+
+    // We always want to ask for the identifier, for testing purposes.
+    std::optional<AdScriptIdentifier> ad_id;
+    String script = AdTracker::ScriptAtTopOfStack(&ad_id);
+    if (out_ad_script) {
+      *out_ad_script = ad_id;
+    }
+
+    // Remember the last id that had a value so we can later verify it.
+    if (ad_id.has_value()) {
+      last_out_ad_script_ = ad_id;
+    }
+
+    return script;
   }
 
   ExecutionContext* GetCurrentExecutionContext() override {
@@ -169,6 +195,7 @@ class TestAdTracker : public AdTracker {
   Member<ExecutionContext> execution_context_;
   String ad_suffix_;
   bool sim_test_ = false;
+  std::optional<AdScriptIdentifier> last_out_ad_script_;
 
   base::OnceClosure quit_closure_;
   String url_to_wait_for_;
@@ -1593,6 +1620,117 @@ TEST_F(AdTrackerSimTest, InlineAdScriptWithSourceURLAtTopOfStack_StillTagged) {
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
   EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
   EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_image_url));
+}
+
+// Tests that when the script at the top of the stack is an ad script,
+// `IsAdScriptInStack` correctly identifies it and returns the expected
+// `AdScriptIdentifier`.
+TEST_F(AdTrackerSimTest, AdScriptAtTopOfStack_RecordsAdScriptIdentifier) {
+  String vanilla_script_url = "https://example.com/script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Load an ad script and a vanilla script. The vanilla script calls a
+  // function on the ad script which creates an ad iframe. The ad script is at
+  // top of stack when it creates the frame and IsAdScriptInStack should return
+  // the script id, verify that they look right.
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    function createIframe() {
+      frame = document.createElement("iframe");
+      frame.src = "ad_document.html";
+      document.body.appendChild(frame);
+    }
+  )SCRIPT");
+
+  vanilla_script.Complete(R"SCRIPT(
+    createIframe();
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Verify frame was tagged as an ad.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+
+  // Verify that IsAdScriptInStack() returned the right script information.
+  EXPECT_TRUE(ad_tracker_->last_out_ad_script());
+  EXPECT_GT(ad_tracker_->last_out_ad_script()->id, 0);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document.Complete("<body></body>");
+}
+
+// Tests that when the script at the top of the *async* stack is an ad script,
+// `IsAdScriptInStack` correctly identifies it (via the bottommost async ad
+// script) and returns the expected `AdScriptIdentifier`.
+TEST_F(AdTrackerSimTest, AdScriptAtTopOfAsyncStack_RecordsAdScriptIdentifier) {
+  String vanilla_script_url = "https://example.com/script.js";
+  String ad_script_url = "https://example.com/script.js?ad=true";
+  String ad_document_url = "https://example.com/ad_document.html";
+
+  // Load an ad script and a vanilla script. The vanilla script calls a
+  // function on the ad script which asynchronously calls a function on the
+  // vanilla script to create an ad iframe. The ad script is at top of *async*
+  // stack when it creates the frame and IsAdScriptInStack should return
+  // the script id, verify that they look right.
+  SimSubresourceRequest vanilla_script(vanilla_script_url, "text/javascript");
+  SimSubresourceRequest ad_script(ad_script_url, "text/javascript");
+  SimRequest ad_document(ad_document_url, "text/html");
+
+  ad_tracker_->SetAdSuffix("ad=true");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="script.js?ad=true"></script>
+          <script src="script.js"></script></body>
+  )HTML");
+
+  ad_script.Complete(R"SCRIPT(
+    function createIframeAsync() {
+      setTimeout(() => {
+        createIframe();
+      });
+    }
+  )SCRIPT");
+
+  vanilla_script.Complete(R"SCRIPT(
+    function createIframe(url) {
+      frame = document.createElement("iframe");
+      frame.src = "ad_document.html";
+      document.body.appendChild(frame);
+    }
+
+    createIframeAsync();
+  )SCRIPT");
+  base::RunLoop().RunUntilIdle();
+
+  // Verify frame was tagged as an ad.
+  auto* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  EXPECT_TRUE(child_frame->IsFrameCreatedByAdScript());
+
+  // Verify that IsAdScriptInStack() returned the right script information.
+  EXPECT_TRUE(ad_tracker_->last_out_ad_script());
+  EXPECT_GT(ad_tracker_->last_out_ad_script()->id, 0);
+
+  EXPECT_TRUE(ad_tracker_->RequestWithUrlTaggedAsAd(ad_script_url));
+  EXPECT_FALSE(ad_tracker_->RequestWithUrlTaggedAsAd(vanilla_script_url));
+
+  // Clean up for SimTest expectations.
+  ad_document.Complete("<body></body>");
 }
 
 class AdTrackerDisabledSimTest : public SimTest,
