@@ -386,7 +386,7 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         short_name = "flash",
     ),
-    notifies = ["chromium-infra"],
+    notifies = ["chromium-android-device-flasher"],
     properties = {
         "flash_criteria": [
             # Used by ci/Android Release (Nexus 5X)
