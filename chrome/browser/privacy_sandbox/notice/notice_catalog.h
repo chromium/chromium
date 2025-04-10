@@ -38,6 +38,9 @@ class NoticeCatalog {
       std::vector<NoticeApi*>&& target_apis,
       std::vector<NoticeApi*>&& pre_req_apis = {});
 
+  // Populates the catalog with all the notices and their requirements.
+  void Populate();
+
  private:
   std::vector<std::unique_ptr<NoticeApi>> apis_;
   NoticeMap notices_;
