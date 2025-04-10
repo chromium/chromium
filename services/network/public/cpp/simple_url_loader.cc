@@ -7,6 +7,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -244,12 +246,12 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
       BodyAsStringCallback body_as_string_callback) override;
   void DownloadHeadersOnly(mojom::URLLoaderFactory* url_loader_factory,
                            HeadersOnlyCallback headers_only_callback) override;
-  void DownloadToFile(
+  void DownloadToFileInternal(
       mojom::URLLoaderFactory* url_loader_factory,
       DownloadToFileCompleteCallback download_to_file_complete_callback,
       const base::FilePath& file_path,
       int64_t max_body_size) override;
-  void DownloadToTempFile(
+  void DownloadToTempFileInternal(
       mojom::URLLoaderFactory* url_loader_factory,
       DownloadToFileCompleteCallback download_to_file_complete_callback,
       int64_t max_body_size) override;
@@ -275,15 +277,11 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   void AttachStringForUpload(std::string&& upload_data,
                              std::string_view upload_content_type) override;
   void AttachStringForUpload(std::string&& upload_data) override;
-  void AttachFileForUpload(
+  void AttachFileForUploadInternal(
       const base::FilePath& upload_file_path,
-      const std::string& upload_content_type,
-      uint64_t offset = 0,
-      uint64_t length = std::numeric_limits<uint64_t>::max()) override;
-  void AttachFileForUpload(
-      const base::FilePath& upload_file_path,
-      uint64_t offset = 0,
-      uint64_t length = std::numeric_limits<uint64_t>::max()) override;
+      std::optional<std::string_view> upload_content_type,
+      uint64_t offset,
+      uint64_t length) override;
   void SetRetryOptions(int max_retries, int retry_mode) override;
   void SetURLLoaderFactoryOptions(uint32_t options) override;
   void SetRequestID(int32_t request_id) override;
@@ -360,12 +358,6 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   void AttachStringForUploadInternal(
       std::string&& upload_data,
       base::optional_ref<std::string_view> upload_content_type);
-
-  void AttachFileForUpload(
-      const base::FilePath& upload_file_path,
-      const std::string* const upload_content_type,
-      uint64_t offset = 0,
-      uint64_t length = std::numeric_limits<uint64_t>::max());
 
   // Prepares internal state to start a request, and then calls StartRequest().
   // Only used for the initial request (Not retries).
@@ -1350,7 +1342,7 @@ void SimpleURLLoaderImpl::DownloadHeadersOnly(
   Start(url_loader_factory);
 }
 
-void SimpleURLLoaderImpl::DownloadToFile(
+void SimpleURLLoaderImpl::DownloadToFileInternal(
     mojom::URLLoaderFactory* url_loader_factory,
     DownloadToFileCompleteCallback download_to_file_complete_callback,
     const base::FilePath& file_path,
@@ -1363,7 +1355,7 @@ void SimpleURLLoaderImpl::DownloadToFile(
   Start(url_loader_factory);
 }
 
-void SimpleURLLoaderImpl::DownloadToTempFile(
+void SimpleURLLoaderImpl::DownloadToTempFileInternal(
     mojom::URLLoaderFactory* url_loader_factory,
     DownloadToFileCompleteCallback download_to_file_complete_callback,
     int64_t max_body_size) {
@@ -1514,9 +1506,9 @@ void SimpleURLLoaderImpl::AttachStringForUpload(std::string&& upload_data) {
   AttachStringForUploadInternal(std::move(upload_data), std::nullopt);
 }
 
-void SimpleURLLoaderImpl::AttachFileForUpload(
+void SimpleURLLoaderImpl::AttachFileForUploadInternal(
     const base::FilePath& upload_file_path,
-    const std::string* const upload_content_type,
+    std::optional<std::string_view> upload_content_type,
     uint64_t offset,
     uint64_t length) {
   DCHECK(!upload_file_path.empty());
@@ -1528,7 +1520,7 @@ void SimpleURLLoaderImpl::AttachFileForUpload(
 
   // Create an empty body to make DCHECKing that there's no upload body yet
   // simpler.
-  resource_request_->request_body = new ResourceRequestBody();
+  resource_request_->request_body = base::MakeRefCounted<ResourceRequestBody>();
   // TODO(mmenke): Open the file in the current process and append the file
   // handle instead of the file path.
   resource_request_->request_body->AppendFileRange(upload_file_path, offset,
@@ -1538,21 +1530,6 @@ void SimpleURLLoaderImpl::AttachFileForUpload(
     resource_request_->headers.SetHeader(net::HttpRequestHeaders::kContentType,
                                          *upload_content_type);
   }
-}
-
-void SimpleURLLoaderImpl::AttachFileForUpload(
-    const base::FilePath& upload_file_path,
-    const std::string& upload_content_type,
-    uint64_t offset,
-    uint64_t length) {
-  AttachFileForUpload(upload_file_path, &upload_content_type, offset, length);
-}
-
-void SimpleURLLoaderImpl::AttachFileForUpload(
-    const base::FilePath& upload_file_path,
-    uint64_t offset,
-    uint64_t length) {
-  AttachFileForUpload(upload_file_path, nullptr, offset, length);
 }
 
 void SimpleURLLoaderImpl::SetRetryOptions(int max_retries, int retry_mode) {

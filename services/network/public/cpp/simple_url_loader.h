@@ -220,18 +220,26 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // If the SimpleURLLoader is destroyed before it has invoked the callback, the
   // downloaded file will be deleted asynchronously and the callback will not be
   // invoked, regardless of other settings.
-  virtual void DownloadToFile(
+  void DownloadToFile(
       mojom::URLLoaderFactory* url_loader_factory,
       DownloadToFileCompleteCallback download_to_file_complete_callback,
       const base::FilePath& file_path,
-      int64_t max_body_size = std::numeric_limits<int64_t>::max()) = 0;
+      int64_t max_body_size = std::numeric_limits<int64_t>::max()) {
+    DownloadToFileInternal(url_loader_factory,
+                           std::move(download_to_file_complete_callback),
+                           file_path, max_body_size);
+  }
 
   // Same as DownloadToFile, but creates a temporary file instead of taking a
   // FilePath.
-  virtual void DownloadToTempFile(
+  void DownloadToTempFile(
       mojom::URLLoaderFactory* url_loader_factory,
       DownloadToFileCompleteCallback download_to_file_complete_callback,
-      int64_t max_body_size = std::numeric_limits<int64_t>::max()) = 0;
+      int64_t max_body_size = std::numeric_limits<int64_t>::max()) {
+    DownloadToTempFileInternal(url_loader_factory,
+                               std::move(download_to_file_complete_callback),
+                               max_body_size);
+  }
 
   // SimpleURLLoader will stream the response body to
   // SimpleURLLoaderStreamConsumer on the current thread. Destroying the
@@ -331,17 +339,20 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   //
   // |content_type| will overwrite any Content-Type header in the
   // ResourceRequest passed to Create().
-  virtual void AttachFileForUpload(
+  void AttachFileForUpload(
       const base::FilePath& upload_file_path,
-      const std::string& upload_content_type,
+      std::string_view upload_content_type,
       uint64_t offset = 0,
-      uint64_t length = std::numeric_limits<uint64_t>::max()) = 0;
-  virtual void AttachFileForUpload(const base::FilePath& upload_file_path,
-                                   uint64_t offset,
-                                   uint64_t length) = 0;
-  void AttachFileForUpload(const base::FilePath& upload_file_path) {
-    AttachFileForUpload(upload_file_path, 0,
-                        std::numeric_limits<uint64_t>::max());
+      uint64_t length = std::numeric_limits<uint64_t>::max()) {
+    AttachFileForUploadInternal(upload_file_path, upload_content_type, offset,
+                                length);
+  }
+  void AttachFileForUpload(
+      const base::FilePath& upload_file_path,
+      uint64_t offset = 0,
+      uint64_t length = std::numeric_limits<uint64_t>::max()) {
+    AttachFileForUploadInternal(
+        upload_file_path, /*upload_content_type*/ std::nullopt, offset, length);
   }
 
   // Sets the when to try and the max number of times to retry a request, if
@@ -426,6 +437,21 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
 
  protected:
   SimpleURLLoader();
+
+  virtual void AttachFileForUploadInternal(
+      const base::FilePath& upload_file_path,
+      std::optional<std::string_view> upload_content_type,
+      uint64_t offset,
+      uint64_t length) = 0;
+  virtual void DownloadToFileInternal(
+      mojom::URLLoaderFactory* url_loader_factory,
+      DownloadToFileCompleteCallback download_to_file_complete_callback,
+      const base::FilePath& file_path,
+      int64_t max_body_size) = 0;
+  virtual void DownloadToTempFileInternal(
+      mojom::URLLoaderFactory* url_loader_factory,
+      DownloadToFileCompleteCallback download_to_file_complete_callback,
+      int64_t max_body_size) = 0;
 };
 
 }  // namespace network
