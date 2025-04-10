@@ -1038,6 +1038,15 @@ class TabStripModel : public TabGroupController {
   void UpdateSelectionModelForMoves(const std::vector<int>& tab_indices,
                                     int destination_index);
 
+  // Sets the selected index by taking into account split tabs.
+  void SetSelectedIndex(ui::ListSelectionModel* selection, int index);
+
+  // Returns the range of indices between the anchor and a provided index, that
+  // takes into account split tabs. If the anchor or the tab at index is part of
+  // a split, the range will include that split. The start and end indices are
+  // inclusive.
+  std::pair<int, int> GetRangeFromAnchorTo(int index);
+
   // Generates the MoveNotifications for `MoveTabsToIndexImpl` and updates the
   // selection model and openers.
   std::vector<TabStripModel::MoveNotification> PrepareTabsToMoveToIndex(
