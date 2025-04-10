@@ -73,6 +73,9 @@ const CGFloat kPillVerticalPadding = 11;
 // Multiplier for applying margins on multiple sides
 const CGFloat kMarginMultiplier = 2;
 
+// The maximum point size of the font for the Identity Disc button.
+const CGFloat kIdentityDiscMaxFontSize = 24;
+
 }  // namespace
 
 @interface NewTabPageHeaderViewController () <
@@ -114,6 +117,8 @@ const CGFloat kMarginMultiplier = 2;
   BOOL _hasAccountError;
   // Constraint for the identity disc button width.
   NSLayoutConstraint* _identityDiscWidthConstraint;
+  // Constraint for the identity disc button height.
+  NSLayoutConstraint* _identityDiscHeightConstraint;
   // Trailing Anchor for the identity disc button.
   NSLayoutConstraint* _identityDiscTrailingConstraint;
 }
@@ -518,7 +523,8 @@ const CGFloat kMarginMultiplier = 2;
 
   _identityDiscWidthConstraint =
       [self.identityDiscButton.widthAnchor constraintEqualToConstant:0];
-
+  _identityDiscHeightConstraint =
+      [self.identityDiscButton.heightAnchor constraintEqualToConstant:0];
   _identityDiscTrailingConstraint = [self.identityDiscButton.trailingAnchor
       constraintEqualToAnchor:self.headerView.safeAreaLayoutGuide.trailingAnchor
                      constant:0];
@@ -563,50 +569,41 @@ const CGFloat kMarginMultiplier = 2;
   DCHECK(self.identityDiscImage);
   DCHECK(self.identityDiscAccessibilityLabel);
 
+  UIButton* button = self.identityDiscButton;
   if (!IsSignInButtonNoAvatarEnabled() || self.isSignedIn) {
-    [self.identityDiscButton setTitle:nil forState:UIControlStateNormal];
-    [self.identityDiscButton setTitleColor:nil forState:UIControlStateNormal];
-    [self.identityDiscButton setAttributedTitle:nil
-                                       forState:UIControlStateNormal];
-    [self.identityDiscButton setImage:self.identityDiscImage
-                             forState:UIControlStateNormal];
-    self.identityDiscButton.backgroundColor = nil;
-    self.identityDiscButton.imageView.layer.cornerRadius =
-        self.identityDiscImage.size.width / 2;
-    self.identityDiscButton.imageView.layer.masksToBounds = YES;
-    self.identityDiscButton.layer.cornerRadius =
-        self.identityDiscImage.size.width;
+    UIImage* image = self.identityDiscImage;
+    button.configuration = nil;
+    [button setImage:image forState:UIControlStateNormal];
+    button.backgroundColor = nil;
+    button.imageView.layer.cornerRadius = image.size.width / 2;
+    button.imageView.layer.masksToBounds = YES;
+    button.layer.cornerRadius = image.size.width;
   } else {
+    button.layer.cornerRadius = 0;
+    [button setImage:nil forState:UIControlStateNormal];
+    UIButtonConfiguration* config =
+        [UIButtonConfiguration plainButtonConfiguration];
+    config.background.backgroundColor =
+        [[UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+            colorWithAlphaComponent:0.8];
     NSDictionary* attributes = @{
-      NSFontAttributeName :
-          CreateDynamicFont(UIFontTextStyleCaption1, UIFontWeightSemibold),
+      NSFontAttributeName : PreferredFontForTextStyle(UIFontTextStyleCaption1,
+                                                      UIFontWeightSemibold,
+                                                      kIdentityDiscMaxFontSize),
       NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     };
-
-    NSAttributedString* attributedTitle = [[NSAttributedString alloc]
+    config.attributedTitle = [[NSAttributedString alloc]
         initWithString:l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT)
             attributes:attributes];
-    CGSize textSize = [attributedTitle size];
-    CGFloat buttonWidth = textSize.width + (kPillHorizontalPadding * 2);
-    CGFloat buttonHeight = textSize.height + (kPillVerticalPadding * 2);
-
-    [self.identityDiscButton setAttributedTitle:attributedTitle
-                                       forState:UIControlStateNormal];
-    self.identityDiscButton.backgroundColor =
-        [UIColor colorNamed:@"fake_omnibox_solid_background_color"];
-    [self.identityDiscButton setImage:nil forState:UIControlStateNormal];
-    self.identityDiscButton.layer.cornerRadius = buttonHeight * 0.5;
-
-    [self.identityDiscButton.widthAnchor constraintEqualToConstant:buttonWidth]
-        .active = YES;
-    [self.identityDiscButton.heightAnchor
-        constraintEqualToConstant:buttonHeight]
-        .active = YES;
+    config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+    config.contentInsets = NSDirectionalEdgeInsetsMake(
+        kPillVerticalPadding, kPillHorizontalPadding, kPillVerticalPadding,
+        kPillHorizontalPadding);
+    button.configuration = config;
   }
 
-  self.identityDiscButton.accessibilityLabel =
-      self.identityDiscAccessibilityLabel;
-  self.identityDiscButton.clipsToBounds = YES;
+  button.accessibilityLabel = self.identityDiscAccessibilityLabel;
+  button.clipsToBounds = YES;
 }
 
 - (void)openLens {
@@ -977,8 +974,10 @@ const CGFloat kMarginMultiplier = 2;
   }
 
   _identityDiscWidthConstraint.constant = dimension;
-  _identityDiscTrailingConstraint.constant = -identityAvatarPadding;
+  _identityDiscHeightConstraint.constant = dimension;
   _identityDiscWidthConstraint.active = !showSignInButtonWithoutAvatar;
+  _identityDiscHeightConstraint.active = !showSignInButtonWithoutAvatar;
+  _identityDiscTrailingConstraint.constant = -identityAvatarPadding;
 }
 
 - (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name

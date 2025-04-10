@@ -267,14 +267,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   // Sets the layout constraints for size of Identity Disc and toolbar.
   self.identityDiscView.translatesAutoresizingMaskIntoConstraints = NO;
-  CGFloat dimension =
-      ntp_home::kIdentityAvatarDimension + 2 * ntp_home::kHeaderIconMargin;
-  if (IsIdentityDiscAccountMenuEnabled()) {
-    // Add extra margin to show the error badge if any.
-    dimension += ntp_home::kHeaderIconMargin;
-  }
   [NSLayoutConstraint activateConstraints:@[
-    [self.identityDiscView.heightAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.centerYAnchor
         constraintEqualToAnchor:self.toolBarView.centerYAnchor],
   ]];
