@@ -27,8 +27,7 @@
 
 namespace cc {
 
-RasterBufferProvider::RasterBufferProvider(const viz::SharedImageFormat& format)
-    : tile_format_(format) {}
+RasterBufferProvider::RasterBufferProvider() = default;
 
 RasterBufferProvider::~RasterBufferProvider() = default;
 

@@ -4252,7 +4252,6 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   if (!compositor_context_provider) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
         layer_tree_frame_sink_->shared_image_interface(),
-        raster_caps_.tile_format,
         /*is_software=*/true);
   }
 
@@ -4266,8 +4265,8 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
 
     return std::make_unique<GpuRasterBufferProvider>(
         compositor_context_provider, worker_context_provider,
-        raster_caps_.tile_format, raster_caps_.tile_overlay_candidate,
-        settings_.max_gpu_raster_tile_size, pending_raster_queries_.get());
+        raster_caps_.tile_overlay_candidate, settings_.max_gpu_raster_tile_size,
+        pending_raster_queries_.get());
   }
 
   bool use_zero_copy = settings_.use_zero_copy;
@@ -4282,7 +4281,6 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   if (use_zero_copy) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
         compositor_context_provider->SharedImageInterface(),
-        raster_caps_.tile_format,
         /*is_software=*/false);
   }
 
@@ -4291,7 +4289,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   return std::make_unique<OneCopyRasterBufferProvider>(
       GetTaskRunner(), compositor_context_provider, worker_context_provider,
       max_copy_texture_chromium_size, settings_.use_partial_raster,
-      settings_.max_staging_buffer_usage_in_bytes, raster_caps_.tile_format,
+      settings_.max_staging_buffer_usage_in_bytes,
       raster_caps_.tile_overlay_candidate);
 }
 

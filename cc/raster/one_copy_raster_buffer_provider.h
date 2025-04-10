@@ -37,7 +37,6 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       int max_copy_texture_chromium_size,
       bool use_partial_raster,
       int max_staging_buffer_usage_in_bytes,
-      const viz::SharedImageFormat& format,
       bool is_overlay_candidate);
   OneCopyRasterBufferProvider(const OneCopyRasterBufferProvider&) = delete;
   ~OneCopyRasterBufferProvider() override;

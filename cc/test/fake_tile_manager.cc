@@ -28,8 +28,7 @@ SynchronousTaskGraphRunner* GetGlobalTaskGraphRunner() {
 }
 
 FakeRasterBufferProviderImpl* GetGlobalRasterBufferProvider() {
-  static auto* buffer_provider =
-      new FakeRasterBufferProviderImpl(viz::SinglePlaneFormat::kRGBA_8888);
+  static auto* buffer_provider = new FakeRasterBufferProviderImpl();
   return buffer_provider;
 }
 

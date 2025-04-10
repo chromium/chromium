@@ -11,9 +11,7 @@
 
 namespace cc {
 
-FakeRasterBufferProviderImpl::FakeRasterBufferProviderImpl(
-    const viz::SharedImageFormat& format)
-    : RasterBufferProvider(format) {}
+FakeRasterBufferProviderImpl::FakeRasterBufferProviderImpl() = default;
 
 FakeRasterBufferProviderImpl::~FakeRasterBufferProviderImpl() = default;
 
@@ -26,7 +24,7 @@ FakeRasterBufferProviderImpl::AcquireBufferForRaster(
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
   auto backing = std::make_unique<ResourcePool::Backing>(
-      resource.size(), GetFormat(), resource.color_space());
+      resource.size(), resource.format(), resource.color_space());
   backing->CreateSharedImageForTesting();
   resource.set_backing(std::move(backing));
   return nullptr;

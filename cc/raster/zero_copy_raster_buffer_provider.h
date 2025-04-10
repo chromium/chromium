@@ -67,7 +67,6 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
  public:
   ZeroCopyRasterBufferProvider(
       const scoped_refptr<gpu::SharedImageInterface>& shared_image_interface,
-      const viz::SharedImageFormat& format,
       bool is_software);
 
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;

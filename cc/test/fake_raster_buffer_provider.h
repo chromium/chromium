@@ -15,7 +15,7 @@ namespace cc {
 // Fake RasterBufferProvider that just no-ops all calls.
 class FakeRasterBufferProviderImpl : public RasterBufferProvider {
  public:
-  explicit FakeRasterBufferProviderImpl(const viz::SharedImageFormat& format);
+  FakeRasterBufferProviderImpl();
   ~FakeRasterBufferProviderImpl() override;
 
   // RasterBufferProvider methods.

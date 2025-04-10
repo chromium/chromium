@@ -1771,8 +1771,7 @@ TEST_F(TileManagerTilePriorityQueueTest, NoRasterTasksforSolidColorTiles) {
 // Backings via that SII.
 class TestSoftwareRasterBufferProvider : public FakeRasterBufferProviderImpl {
  public:
-  TestSoftwareRasterBufferProvider()
-      : FakeRasterBufferProviderImpl(viz::SinglePlaneFormat::kBGRA_8888) {
+  TestSoftwareRasterBufferProvider() {
     sii_ = base::MakeRefCounted<gpu::TestSharedImageInterface>();
   }
 
@@ -2345,10 +2344,8 @@ class VerifyResourceContentIdRasterBufferProvider
     : public FakeRasterBufferProviderImpl {
  public:
   explicit VerifyResourceContentIdRasterBufferProvider(
-      const viz::SharedImageFormat& format,
       uint64_t expected_content_id)
-      : FakeRasterBufferProviderImpl(format),
-        expected_content_id_(expected_content_id) {}
+      : expected_content_id_(expected_content_id) {}
   ~VerifyResourceContentIdRasterBufferProvider() override = default;
 
   // RasterBufferProvider methods.
@@ -2384,7 +2381,7 @@ void RunPartialRasterCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
       std::make_unique<FakeTileTaskManagerImpl>());
 
   VerifyResourceContentIdRasterBufferProvider raster_buffer_provider(
-      viz::SinglePlaneFormat::kBGRA_8888, kExpectedId);
+      kExpectedId);
   host_impl->tile_manager()->SetRasterBufferProviderForTesting(
       &raster_buffer_provider);
 
@@ -2461,7 +2458,7 @@ void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   // Create a VerifyResourceContentIdTileTaskManager to ensure that the
   // raster task we see is created with |kExpectedId|.
   VerifyResourceContentIdRasterBufferProvider raster_buffer_provider(
-      host_impl->GetTileFormat(), kExpectedId);
+      kExpectedId);
   host_impl->tile_manager()->SetRasterBufferProviderForTesting(
       &raster_buffer_provider);
 
@@ -2568,8 +2565,7 @@ TEST_F(TileManagerTest, PartialRasterSuccessfullyDisabled) {
 class InvalidResourceRasterBufferProvider
     : public FakeRasterBufferProviderImpl {
  public:
-  InvalidResourceRasterBufferProvider()
-      : FakeRasterBufferProviderImpl(viz::SinglePlaneFormat::kRGBA_8888) {}
+  InvalidResourceRasterBufferProvider() = default;
   std::unique_ptr<RasterBuffer> AcquireBufferForRaster(
       const ResourcePool::InUsePoolResource& resource,
       uint64_t resource_content_id,
@@ -2635,8 +2631,7 @@ TEST_F(InvalidResourceTileManagerTest, InvalidResource) {
 class MockReadyToDrawRasterBufferProviderImpl
     : public FakeRasterBufferProviderImpl {
  public:
-  MockReadyToDrawRasterBufferProviderImpl()
-      : FakeRasterBufferProviderImpl(viz::SinglePlaneFormat::kBGRA_8888) {}
+  MockReadyToDrawRasterBufferProviderImpl() = default;
   MOCK_METHOD1(IsResourceReadyToDraw,
                bool(const ResourcePool::InUsePoolResource& resource));
   MOCK_METHOD3(
@@ -3794,8 +3789,7 @@ class VerifyImageProviderRasterBuffer : public RasterBuffer {
 class VerifyImageProviderRasterBufferProvider
     : public FakeRasterBufferProviderImpl {
  public:
-  VerifyImageProviderRasterBufferProvider()
-      : FakeRasterBufferProviderImpl(viz::SinglePlaneFormat::kRGBA_8888) {}
+  VerifyImageProviderRasterBufferProvider() = default;
   ~VerifyImageProviderRasterBufferProvider() override {
     EXPECT_GT(buffer_count_, 0);
   }

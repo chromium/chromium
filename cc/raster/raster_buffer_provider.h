@@ -22,7 +22,7 @@ class RasterBuffer;
 
 class CC_EXPORT RasterBufferProvider {
  public:
-  explicit RasterBufferProvider(const viz::SharedImageFormat& format);
+  RasterBufferProvider();
   virtual ~RasterBufferProvider();
 
   // Utility function that will create a temporary bitmap and copy pixels to
@@ -51,9 +51,6 @@ class CC_EXPORT RasterBufferProvider {
       bool depends_on_at_raster_decodes,
       bool depends_on_hardware_accelerated_jpeg_candidates,
       bool depends_on_hardware_accelerated_webp_candidates) = 0;
-
-  // Returns the format to use for the tiles.
-  viz::SharedImageFormat GetFormat() const { return tile_format_; }
 
   // Determine if the RasterBufferProvider can handle partial raster into
   // the Resource provided in AcquireBufferForRaster.
@@ -93,7 +90,6 @@ class CC_EXPORT RasterBufferProvider {
 
  private:
   bool needs_flush_ = false;
-  const viz::SharedImageFormat tile_format_;
 };
 
 }  // namespace cc
