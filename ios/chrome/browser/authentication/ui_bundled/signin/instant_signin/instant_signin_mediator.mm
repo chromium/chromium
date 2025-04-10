@@ -60,4 +60,10 @@ using signin_metrics::PromoAction;
   [self.delegate instantSigninMediator:self didSigninWithResult:result];
 }
 
+- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+  _authenticationFlow = nil;
+  // TODO(crbug.com/375605572) Sends an actual continuation.
+  return DoNothingContinuation();
+}
+
 @end

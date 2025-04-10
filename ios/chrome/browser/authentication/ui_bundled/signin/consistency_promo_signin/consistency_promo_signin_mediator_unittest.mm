@@ -82,7 +82,7 @@ class ConsistencyPromoSigninMediatorTest
         GetApplicationContext()->GetSystemIdentityManager());
   }
 
-  void SetConsistencyPromoSigninMediator(
+  ConsistencyPromoSigninMediator* BuildConsistencyPromoSigninMediator(
       signin_metrics::AccessPoint access_point) {
     ChromeAccountManagerService* chrome_account_manager_service =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
@@ -100,6 +100,7 @@ class ConsistencyPromoSigninMediatorTest
                       userPrefService:GetPrefService()
                           accessPoint:access_point];
     mediator_.delegate = mediator_delegate_mock_;
+    return mediator_;
   }
 
   void SimulateCookieFetchSuccess(id<SystemIdentity> identity) {
@@ -215,7 +216,8 @@ class ConsistencyPromoSigninMediatorTest
 TEST_P(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
   base::HistogramTester histogram_tester;
 
-  SetConsistencyPromoSigninMediator(signin_metrics::AccessPoint::kWebSignin);
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
   [mediator_ disconnectWithResult:SigninCoordinatorResultCanceledByUser];
 
   histogram_tester.ExpectTotalCount(
@@ -234,7 +236,8 @@ TEST_P(ConsistencyPromoSigninMediatorTest, StartAndStopForCancel) {
 TEST_P(ConsistencyPromoSigninMediatorTest, StartAndStopForInterrupt) {
   base::HistogramTester histogram_tester;
 
-  SetConsistencyPromoSigninMediator(signin_metrics::AccessPoint::kWebSignin);
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
   [mediator_ disconnectWithResult:SigninCoordinatorResultInterrupted];
 
   histogram_tester.ExpectTotalCount(
@@ -260,7 +263,8 @@ TEST_P(ConsistencyPromoSigninMediatorTest,
       SigninCoordinatorResult::SigninCoordinatorResultSuccess);
   ExpectWebSigninTrackerCreationAndCaptureCallback();
 
-  SetConsistencyPromoSigninMediator(signin_metrics::AccessPoint::kWebSignin);
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
 
   OCMExpect([mediator_delegate_mock_
@@ -301,7 +305,9 @@ TEST_P(ConsistencyPromoSigninMediatorTest,
       SigninCoordinatorResult::SigninCoordinatorResultSuccess);
   ExpectWebSigninTrackerCreationAndCaptureCallback();
 
-  SetConsistencyPromoSigninMediator(signin_metrics::AccessPoint::kWebSignin);
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
+
   [mediator_ signinWithAuthenticationFlow:authentication_flow_mock_];
 
   OCMExpect([mediator_delegate_mock_
@@ -334,7 +340,8 @@ TEST_P(ConsistencyPromoSigninMediatorTest,
        SigninCoordinatorResultSuccessWithAddedIdentity) {
   base::HistogramTester histogram_tester;
 
-  SetConsistencyPromoSigninMediator(signin_metrics::AccessPoint::kWebSignin);
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
   [mediator_ systemIdentityAdded:kDefaultIdentity];
 
   ExpectAuthFlowStartAndSetResult(
@@ -375,7 +382,8 @@ TEST_P(ConsistencyPromoSigninMediatorTest,
 TEST_P(ConsistencyPromoSigninMediatorTest, CookiesError) {
   base::HistogramTester histogram_tester;
 
-  SetConsistencyPromoSigninMediator(signin_metrics::AccessPoint::kWebSignin);
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
 
   ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
@@ -428,7 +436,8 @@ TEST_P(ConsistencyPromoSigninMediatorTest, CookiesError) {
 TEST_P(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
   base::HistogramTester histogram_tester;
 
-  SetConsistencyPromoSigninMediator(signin_metrics::AccessPoint::kWebSignin);
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
 
   ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
@@ -480,7 +489,8 @@ TEST_P(ConsistencyPromoSigninMediatorTest, CookiesTimeout) {
 TEST_P(ConsistencyPromoSigninMediatorTest, AuthFlowError) {
   base::HistogramTester histogram_tester;
 
-  SetConsistencyPromoSigninMediator(signin_metrics::AccessPoint::kWebSignin);
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kWebSignin);
 
   ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::kWebSignin,
@@ -525,7 +535,8 @@ TEST_P(ConsistencyPromoSigninMediatorTest, SigninWithoutCookies) {
   base::HistogramTester histogram_tester;
   GetPrefService()->SetInteger(prefs::kSigninWebSignDismissalCount, 1);
 
-  SetConsistencyPromoSigninMediator(signin_metrics::AccessPoint::kSettings);
+  mediator_ = BuildConsistencyPromoSigninMediator(
+      signin_metrics::AccessPoint::kSettings);
 
   ExpectAuthFlowStartAndSetResult(
       kDefaultIdentity, signin_metrics::AccessPoint::kSettings,

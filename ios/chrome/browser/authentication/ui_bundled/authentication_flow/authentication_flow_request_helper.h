@@ -20,6 +20,13 @@
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result;
 
+// Returns a callback to be executed once the profile is changed.
+// Calling this method informs the delegate that the Authentication Flow must
+// not be interrupted while the delegate is stopped.
+// It must always be called before the profile switch occurred, as otherwise the
+// delegate will probably be nil.
+- (ChangeProfileContinuation)authenticationFlowWillChangeProfile;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_AUTHENTICATION_FLOW_AUTHENTICATION_FLOW_REQUEST_HELPER_H_

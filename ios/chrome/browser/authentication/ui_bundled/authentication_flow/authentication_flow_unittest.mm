@@ -127,6 +127,19 @@ class AuthenticationFlowTest : public PlatformTest,
           break;
       }
     };
+    continuation_provider_ = base::BindRepeating(
+        [](signin_ui::SigninCompletionCallback sign_in_completion) {
+          ChangeProfileContinuation continuation = base::BindOnce(
+              [](signin_ui::SigninCompletionCallback sign_in_completion,
+                 SceneState* sceneState, base::OnceClosure closure) {
+                sign_in_completion(
+                    SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+                std::move(closure).Run();
+              },
+              sign_in_completion);
+          return continuation;
+        },
+        sign_in_completion_);
   }
 
   void TearDown() override {
@@ -140,7 +153,8 @@ class AuthenticationFlowTest : public PlatformTest,
     // Each mock expect its methods to be called at most once.
     test_authentication_flow_request_helper_ =
         [[TestAuthenticationFlowRequest alloc]
-            initWithSigninCompletionCallback:sign_in_completion_];
+             initWithSigninCompletionCallback:sign_in_completion_
+            changeProfileContinuationProvider:continuation_provider_];
     authentication_flow_.requestHelper =
         test_authentication_flow_request_helper_;
   }
@@ -280,14 +294,13 @@ class AuthenticationFlowTest : public PlatformTest,
 
     if (hosted_domain.length) {
       if (AreSeparateProfilesForManagedAccountsEnabled()) {
-        auto fetchProfileSeparationPoliciesCallback = ^(NSInvocation*) {
-          [authentication_flow_
-              didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
-        };
         OCMStub([performer_mock_
                     fetchProfileSeparationPolicies:personal_profile_.get()
                                        forIdentity:identity])
-            .andDo(fetchProfileSeparationPoliciesCallback);
+            .andDo(^(NSInvocation*) {
+              [authentication_flow_
+                  didFetchProfileSeparationPolicies:policy::ALWAYS_SEPARATE];
+            });
       }
 
       BOOL migrationDisabled = AreSeparateProfilesForManagedAccountsEnabled();
@@ -306,17 +319,36 @@ class AuthenticationFlowTest : public PlatformTest,
           .andDo(showManagedConfirmationForHostedDomainCallback);
 
       if (AreSeparateProfilesForManagedAccountsEnabled()) {
+        __block ChangeProfileContinuation continuation;
         auto switchToProfileWithIdentityCallback = ^(NSInvocation*) {
+          base::OnceClosure completion = base::BindOnce(
+              [](Browser* final_browser,
+                 ChangeProfileContinuation continuation) {
+                CHECK(continuation);
+                // TODO
+                std::move(continuation)
+                    .Run(final_browser->GetSceneState(), base::DoNothing());
+              },
+              final_browser, std::move(continuation));
           [authentication_flow_
-              didSwitchToProfileWithNewProfileBrowser:final_browser];
+              didSwitchToProfileWithNewProfileBrowser:final_browser
+                                           completion:std::move(completion)];
         };
+        id requestHelperChecker =
+            [OCMArg checkWithBlock:^(
+                        id<AuthenticationFlowRequestHelper> request_helper) {
+              CHECK(request_helper);
+              continuation =
+                  [request_helper authenticationFlowWillChangeProfile];
+              return true;
+            }];
         OCMExpect(
             [performer_mock_
                 switchToProfileWithIdentity:identity
-                                 sceneState:personal_browser_->GetSceneState()])
+                                 sceneState:personal_browser_->GetSceneState()
+                              requestHelper:requestHelperChecker])
             .andDo(switchToProfileWithIdentityCallback);
       }
-
       auto registerUserPolicyCallback = ^(NSInvocation*) {
         [authentication_flow_in_profile_
             didRegisterForUserPolicyWithDMToken:kFakeDMToken

@@ -37,6 +37,8 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -275,6 +277,9 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   // with a regular window size (like iPad).
   UIView* _anchorView;
   CGRect _anchorRect;
+  // One of the method of the delegate, depending on whether a profile switch
+  // occurred.
+  SigninCompletionCallback _signInInProfileCompletion;
   AuthenticationFlowPerformer* _performer;
 
   // State machine tracking.
@@ -697,6 +702,12 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
         UnsyncedDataTypeHistogram::kUnsyncedDataOnAccountSwitching,
         _unsyncedDataTypes.value());
     _browserForAuthenticationFlowInProfile = _browser;
+    CHECK(!_signInInProfileCompletion);
+    id<AuthenticationFlowRequestHelper> requestHelper =
+        [self takeRequestHelper];
+    _signInInProfileCompletion = ^(SigninCoordinatorResult result) {
+      [requestHelper authenticationFlowDidSignInInSameProfileWithResult:result];
+    };
     [self continueFlow];
     return;
   }
@@ -705,7 +716,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
       _unsyncedDataTypes.value());
   SceneState* sceneState = _browser->GetSceneState();
   [_performer switchToProfileWithIdentity:_identityToSignIn
-                               sceneState:sceneState];
+                               sceneState:sceneState
+                            requestHelper:[self takeRequestHelper]];
 }
 
 // Hands the sign-in flow over to `AuthenticationFlowInProfile`. This step is
@@ -739,12 +751,9 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
           precedingHistorySync:_precedingHistorySync
              postSignInActions:_postSignInActions];
 
-  id<AuthenticationFlowRequestHelper> requestHelper = [self takeRequestHelper];
-  signin_ui::SigninCompletionCallback signInCompletion = ^(
-      SigninCoordinatorResult result) {
-    [requestHelper authenticationFlowDidSignInInSameProfileWithResult:result];
-  };
-  [authenticationFlowInProfile startSignInWithCompletion:signInCompletion];
+  [authenticationFlowInProfile
+      startSignInWithCompletion:_signInInProfileCompletion];
+  _signInInProfileCompletion = nil;
   [self continueFlow];
 }
 
@@ -897,14 +906,23 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   [self handleAuthenticationError:error];
 }
 
-- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser {
+- (void)didSwitchToProfileWithNewProfileBrowser:(Browser*)newProfileBrowser
+                                     completion:(base::OnceClosure)completion {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  CHECK(completion);
+  CHECK(newProfileBrowser);
   // With the profile switching `_browser` and `_presentingViewController` are
   // not valid anymore.
   _browser = nullptr;
   _presentingViewController = nil;
-
   _browserForAuthenticationFlowInProfile = newProfileBrowser;
+  CHECK(!_signInInProfileCompletion);
+  _signInInProfileCompletion = base::CallbackToBlock(base::BindOnce(
+      [](base::OnceClosure closure, SigninCoordinatorResult result) {
+        std::move(closure).Run();
+      },
+      std::move(completion)));
+
   [self continueFlow];
 }
 

@@ -7,6 +7,7 @@
 #import <objc/runtime.h>
 
 #import "base/test/metrics/histogram_tester.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

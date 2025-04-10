@@ -68,6 +68,7 @@ source_set("authentication_flow_in_profile") {
     "//ios/chrome/app:change_profile_commands",
     "//ios/chrome/app/application_delegate:app_state",
     "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync:capabilities_fetcher",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -91,6 +92,7 @@ source_set("authentication_flow_performer") {
     "authentication_flow_performer_delegate.h",
   ]
   deps = [
+    ":request_helper",
     "//base",
     "//components/prefs",
     "//components/signin/public/base",

@@ -16,15 +16,33 @@
   // Callback after a sign-in succeeded or failed in the same profile. It is set
   // until a callback is called.
   signin_ui::SigninCompletionCallback _signinCompletion;
+  // Callback after a sign-in in a different profile. It should not use any
+  // object owned, even indirectly, by a ChromeCoordinator as they all will
+  // stopped during the profile change.
+  ChangeProfileContinuationProvider _changeProfileContinuationProvider;
+  // Whether one of the callback was called`:` was called.
+  BOOL _callbackCalled;
+}
+
+- (instancetype)initWithSigninCompletionCallback:
+                    (signin_ui::SigninCompletionCallback)signinCompletion
+               changeProfileContinuationProvider:
+                   (ChangeProfileContinuationProvider)
+                       changeProfileContinuationProvider {
+  if ((self = [super init])) {
+    CHECK(signinCompletion);
+    _changeProfileContinuationProvider =
+        std::move(changeProfileContinuationProvider);
+    _signinCompletion = signinCompletion;
+  }
+  return self;
 }
 
 - (instancetype)initWithSigninCompletionCallback:
     (signin_ui::SigninCompletionCallback)signinCompletion {
-  if ((self = [super init])) {
-    CHECK(signinCompletion);
-    _signinCompletion = signinCompletion;
-  }
-  return self;
+  return
+      [self initWithSigninCompletionCallback:signinCompletion
+           changeProfileContinuationProvider:NotReachedContinuationProvider()];
 }
 
 #pragma mark - AuthenticationFlowRequestHelper
@@ -32,9 +50,18 @@
 - (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {
   CHECK(_signinCompletion);
+  CHECK(!_callbackCalled);
+  _callbackCalled = YES;
   signin_ui::SigninCompletionCallback signinCompletion = _signinCompletion;
   _signinCompletion = nil;
   signinCompletion(result);
+}
+
+- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+  CHECK(!_callbackCalled);
+  _callbackCalled = YES;
+  CHECK(_changeProfileContinuationProvider);
+  return _changeProfileContinuationProvider.Run();
 }
 
 @end

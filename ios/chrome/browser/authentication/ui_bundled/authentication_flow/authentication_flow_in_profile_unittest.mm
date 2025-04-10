@@ -9,6 +9,7 @@
 #import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -151,8 +152,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignIn) {
                                           withIdentity:identity1_
                                                browser:browser_.get()
                                            accessPoint:access_point]);
-  EXPECT_EQ(future.Take(),
-            SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  EXPECT_TRUE(future.Wait());
 }
 
 // Tests sign-in flow with a profile that is already signed-in with the right
@@ -178,8 +178,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWhileBeingSignedIn) {
   // Note: No call to `-[AuthenticationFlowPerformer
   // signInIdentity:atAccessPoint:currentProfile:]` since the profile is already
   // signed in with the right identity.
-  EXPECT_EQ(future.Take(),
-            SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  EXPECT_TRUE(future.Wait());
 }
 
 // Tests sign-in flow with a profile that is already signed-in with a different
@@ -224,8 +223,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignOutAndSignIn) {
                                                browser:browser_.get()
                                            accessPoint:access_point]);
   [GetAuthenticationFlowPerformerDelegate() didSignOutForAccountSwitch];
-  EXPECT_EQ(future.Take(),
-            SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  EXPECT_TRUE(future.Wait());
 }
 
 // Tests sign-in flow with an identity that is not available in the profile.
@@ -244,8 +242,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithUnknownIdentity) {
   [authentication_flow_in_profile_
       startSignInWithCompletion:base::CallbackToBlock(future.GetCallback())];
   // Expect to `authentication_flow_in_profile_` to fail.
-  EXPECT_EQ(future.Take(),
-            SigninCoordinatorResult::SigninCoordinatorResultInterrupted);
+  EXPECT_TRUE(future.Wait());
 }
 
 // Tests sign-in flow with a managed identity. The managed identity is assigned
@@ -290,8 +287,7 @@ TEST_P(AuthenticationFlowInProfileTest, TestSignInWithManagedIdentity) {
                                            accessPoint:access_point]);
   // Simulate the user policy fetch request.
   [GetAuthenticationFlowPerformerDelegate() didFetchUserPolicyWithSuccess:YES];
-  EXPECT_EQ(future.Take(),
-            SigninCoordinatorResult::SigninCoordinatorResultSuccess);
+  EXPECT_TRUE(future.Wait());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

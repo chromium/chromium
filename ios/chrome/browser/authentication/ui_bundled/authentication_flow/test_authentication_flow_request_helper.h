@@ -17,8 +17,15 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithSigninCompletionCallback:
-    (signin_ui::SigninCompletionCallback)signinCompletion
+                    (signin_ui::SigninCompletionCallback)signinCompletion
+               changeProfileContinuationProvider:
+                   (ChangeProfileContinuationProvider)
+                       changeProfileContinuationProvider
     NS_DESIGNATED_INITIALIZER;
+
+// Fail if this mock is used with a change of profile.
+- (instancetype)initWithSigninCompletionCallback:
+    (signin_ui::SigninCompletionCallback)signinCompletion;
 
 @end
 

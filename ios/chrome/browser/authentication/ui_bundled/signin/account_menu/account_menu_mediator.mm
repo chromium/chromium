@@ -437,6 +437,11 @@
   _identityToSignin = nil;
 }
 
+- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+  _authenticationFlow = nil;
+  return DoNothingContinuation();
+}
+
 #pragma mark - Private
 
 // Updates the identity list in `_identities`, and sends an notification to

@@ -308,6 +308,11 @@ enum class SigninScreenState {
   [self.delegate fullscreenSigninScreenMediatorDidFinishSignin:self];
 }
 
+- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+  // TODO(crbug.com/375605572) Sends an actual continuation.
+  return DoNothingContinuation();
+}
+
 #pragma mark - Private
 
 - (bool)selectedIdentityIsValid {

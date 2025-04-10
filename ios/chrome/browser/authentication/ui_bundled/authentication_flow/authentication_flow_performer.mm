@@ -32,6 +32,7 @@
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation/managed_profile_creation_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
@@ -79,16 +80,6 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 NSString* const kAuthenticationSnackbarCategory =
     @"AuthenticationSnackbarCategory";
 
-void AuthenticationFlowContinuation(OnProfileSwitchCompletion completion,
-                                    SceneState* scene_state,
-                                    base::OnceClosure closure) {
-  Browser* new_browser =
-      scene_state.browserProviderInterface.currentBrowserProvider.browser;
-
-  std::move(completion).Run(/*success=*/true, new_browser);
-  std::move(closure).Run();
-}
-
 // Handler for the signout action from a snackbar. Will `clear_selected_type`
 // if it is not std::nullopt.
 void HandleSignoutForSnackbar(
@@ -118,6 +109,18 @@ void HandleSignoutForSnackbar(
   signin::ProfileSignoutRequest(
       signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn)
       .Run(browser);
+}
+
+// The change profile continuation for the authentication flow.
+void AuthenticationFlowContinuationImpl(
+    id<AuthenticationFlowPerformerDelegate> delegate,
+    SceneState* scene_state,
+    base::OnceClosure closure) {
+  CHECK(delegate);
+  [delegate
+      didSwitchToProfileWithNewProfileBrowser:
+          scene_state.browserProviderInterface.currentBrowserProvider.browser
+                                   completion:std::move(closure)];
 }
 
 }  // namespace
@@ -256,8 +259,13 @@ void HandleSignoutForSnackbar(
 }
 
 - (void)switchToProfileWithIdentity:(id<SystemIdentity>)identity
-                         sceneState:(SceneState*)sceneState {
+                         sceneState:(SceneState*)sceneState
+                      requestHelper:
+                          (id<AuthenticationFlowRequestHelper>)requestHelper {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
+  CHECK(requestHelper);
+  ChangeProfileContinuation continuation =
+      [requestHelper authenticationFlowWillChangeProfile];
 
   std::optional<std::string> profileName =
       GetApplicationContext()
@@ -268,32 +276,30 @@ void HandleSignoutForSnackbar(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](__typeof(_delegate) delegate) {
+                         CHECK(delegate);
                          [delegate didFailToSwitchToProfile];
                        },
                        weakDelegate));
     return;
   }
 
-  [self switchToProfileWithName:*profileName sceneState:sceneState];
+  [self switchToProfileWithName:*profileName
+                     sceneState:sceneState
+      changeProfileContinuation:std::move(continuation)];
 }
 
 - (void)switchToProfileWithName:(const std::string&)profileName
-                     sceneState:(SceneState*)sceneState {
+                     sceneState:(SceneState*)sceneState
+      changeProfileContinuation:(ChangeProfileContinuation)continuation {
   CHECK(AreSeparateProfilesForManagedAccountsEnabled());
 
-  __weak __typeof(_delegate) weakDelegate = _delegate;
-  OnProfileSwitchCompletion completion = base::BindOnce(
-      [](__typeof(_delegate) delegate, bool success,
-         Browser* new_profile_browser) {
-        [delegate didSwitchToProfileWithNewProfileBrowser:new_profile_browser];
-      },
-      weakDelegate);
-
-  [_changeProfileHandler
-      changeProfile:profileName
-           forScene:sceneState
-       continuation:base::BindOnce(&AuthenticationFlowContinuation,
-                                   std::move(completion))];
+  ChangeProfileContinuation authenticationFlowContinuation =
+      [self authenticationFlowContinuation];
+  ChangeProfileContinuation fullContinuation = ChainChangeProfileContinuations(
+      std::move(authenticationFlowContinuation), std::move(continuation));
+  [_changeProfileHandler changeProfile:profileName
+                              forScene:sceneState
+                          continuation:std::move(fullContinuation)];
 }
 
 - (void)makePersonalProfileManagedWithIdentity:(id<SystemIdentity>)identity {
@@ -546,6 +552,11 @@ void HandleSignoutForSnackbar(
 }
 
 #pragma mark - Private
+
+// The change profile continuation for the authentication flow.
+- (ChangeProfileContinuation)authenticationFlowContinuation {
+  return base::BindOnce(&AuthenticationFlowContinuationImpl, _delegate);
+}
 
 // Called when `_leavingPrimaryAccountConfirmationDialogCoordinator` is done.
 - (void)leavingPrimaryAccountConfirmationDone:(BOOL)continueFlow {

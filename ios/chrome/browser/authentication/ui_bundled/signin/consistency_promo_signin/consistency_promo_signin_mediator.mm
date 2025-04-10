@@ -267,6 +267,13 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
       FROM_HERE, _cookieTimeoutClosure.callback(), kSigninTimeout);
 }
 
+- (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
+  _authenticationFlow.requestHelper = nil;
+  _authenticationFlow = nil;
+  // TODO(crbug.com/375605572) Sends an actual continuation.
+  return DoNothingContinuation();
+}
+
 #pragma mark - Private
 
 // Called by _webSigninTracker when the result of the web sign-in flow is known.
