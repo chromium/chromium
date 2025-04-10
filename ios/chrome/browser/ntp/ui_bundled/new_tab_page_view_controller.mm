@@ -68,12 +68,6 @@ CGFloat SpaceBetweenModules() {
 @property(nonatomic, strong)
     OverscrollActionsController* overscrollActionsController;
 
-// Whether or not the user has scrolled into the feed, transferring ownership of
-// the omnibox to allow it to stick to the top of the NTP.
-// With Web Channels enabled, also determines if the feed header is stuck to the
-// top.
-@property(nonatomic, assign, getter=isScrolledIntoFeed) BOOL scrolledIntoFeed;
-
 // Whether or not the fake omnibox is pinned to the top of the NTP. Redefined
 // to make readwrite.
 @property(nonatomic, assign) BOOL isFakeboxPinned;
@@ -1309,7 +1303,7 @@ CGFloat SpaceBetweenModules() {
 // includes the fake omnibox and if Web Channels is enabled, the feed header. If
 // `force` is YES, the sticky elements will always be set based on the scroll
 // position. If `force` is NO, the sticky elements will only based on
-// `isScrolledIntoFeed` to prevent pinning them multiple times.
+// `isFakeboxPinned` to prevent pinning them multiple times.
 - (void)handleStickyElementsForScrollPosition:(CGFloat)scrollPosition
                                         force:(BOOL)force {
   // Handles the sticky omnibox. Does not stick for iPads.
@@ -1838,13 +1832,6 @@ CGFloat SpaceBetweenModules() {
 
 #pragma mark - Setters
 
-// Sets whether or not the NTP is scrolled into the feed and notifies the
-// content suggestions layout to avoid it changing the omnibox frame when this
-// view controls its position.
-- (void)setIsScrolledIntoFeed:(BOOL)scrolledIntoFeed {
-  _scrolledIntoFeed = scrolledIntoFeed;
-}
-
 // Sets the y content offset of the NTP collection view.
 - (void)setContentOffset:(CGFloat)offset {
   UICollectionView* collectionView = self.collectionView;
@@ -1858,7 +1845,6 @@ CGFloat SpaceBetweenModules() {
     offset = MIN(maxOffset, offset);
   }
   collectionView.contentOffset = CGPointMake(0, offset);
-  self.scrolledIntoFeed = offset > [self offsetWhenScrolledIntoFeed];
   [self handleStickyElementsForScrollPosition:offset force:YES];
   [self updateScrollPositionToSave];
 }
