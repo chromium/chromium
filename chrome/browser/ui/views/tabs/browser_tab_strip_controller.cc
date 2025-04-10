@@ -846,6 +846,7 @@ void BrowserTabStripController::OnTabGroupChanged(
              i < static_cast<int>(tabs_in_group.end()); i++) {
           tabstrip_->AddTabToGroup(change.group, i);
         }
+        tabstrip_->OnGroupContentsChanged(change.group);
       }
       break;
     }
