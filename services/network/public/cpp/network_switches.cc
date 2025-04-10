@@ -36,6 +36,11 @@ const char kIgnoreCertificateErrorsSPKIList[] =
 // user data directory.
 const char kLogNetLog[] = "log-net-log";
 
+// Specifies the duration (in seconds) for network logging. When this flag is
+// provided with a positive integer value X, Chrome will automatically stop
+// collecting NetLog events after X seconds and flush the log to disk.
+const char kLogNetLogDuration[] = "net-log-duration";
+
 // Sets the granularity of events to capture in the network log. The mode can be
 // set to one of the following values:
 //   "Default"
