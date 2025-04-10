@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Example WebIDL schema which is invalid due to an event naming an interface
+// which isn't defined in the file. This should raise a SchemaCompilerError.
+interface TestWebIdl {
+  static attribute OnTestOneEvent onTestOne;
+  static attribute NonexistentEvent onTestTwo;
+};
+
+callback OnTestOneListener = undefined (DOMString argument);
+
+interface OnTestOneEvent {
+  static void addListener(OnTestOneListener listener);
+};
+
+partial interface Browser {
+  static attribute TestWebIdl testWebIdl;
+};

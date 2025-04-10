@@ -286,8 +286,8 @@ class WebIdlSchemaTest(unittest.TestCase):
         }, function_parameters[1])
 
   # Tests that API events are processed as expected.
-  # TODO(crbug.com/379052294): Add description and parameter testing when they
-  # are added to the processor.
+  # TODO(crbug.com/379052294): Add description testing when it is added to the
+  # processor.
   def testEvents(self):
     schema = self.idl_basics
 
@@ -296,10 +296,22 @@ class WebIdlSchemaTest(unittest.TestCase):
     # the object and raises a KeyError if it is not found.
     self.assertEqual('onTestOne', event_one.get('name'))
     self.assertEqual('function', event_one.get('type'))
+    self.assertEqual([{
+        'name': 'argument1',
+        'type': 'string'
+    }, {
+        'name': 'argument2',
+        'optional': True,
+        'type': 'number'
+    }], event_one['parameters'])
 
     event_two = getEvent(schema, 'onTestTwo')
     self.assertEqual('onTestTwo', event_two.get('name'))
     self.assertEqual('function', event_two.get('type'))
+    self.assertEqual([{
+        'name': 'customType',
+        '$ref': 'ExampleType'
+    }], event_two['parameters'])
 
   # Tests that Dictionaries defined on the top level of the IDL file are
   # processed into types on the resulting namespace.
@@ -413,6 +425,21 @@ class WebIdlSchemaTest(unittest.TestCase):
         expected_error_regex,
         web_idl_schema.Load,
         'test/web_idl/unsupported_type_class.idl',
+    )
+
+  # Tests that an event trying to say it uses an Interface that is not defined
+  # in the IDL file will throw an error. This is largely in place to help catch
+  # spelling mistakes in event names or forgetting to add the Interface
+  # definition.
+  def testMissingEventInterface(self):
+    expected_error_regex = (
+        r'.* Error processing node Attribute\(onTestTwo\): Could not find'
+        r' Interface definition for event\.')
+    self.assertRaisesRegex(
+        SchemaCompilerError,
+        expected_error_regex,
+        web_idl_schema.Load,
+        'test/web_idl/missing_event_interface.idl',
     )
 
   # Tests that if description parsing from file comments reaches the top of the

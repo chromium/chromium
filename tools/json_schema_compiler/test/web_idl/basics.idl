@@ -61,8 +61,16 @@ interface TestWebIdl {
   static attribute OnTestTwoEvent onTestTwo;
 };
 
-interface OnTestOneEvent {};
-interface OnTestTwoEvent {};
+callback OnTestOneListener = undefined (
+    DOMString argument1, optional double argument2);
+callback OnTestTwoListener = undefined (ExampleType customType);
+
+interface OnTestOneEvent {
+  static void addListener(OnTestOneListener listener);
+};
+interface OnTestTwoEvent {
+  static void addListener(OnTestTwoListener listener);
+};
 
 dictionary ExampleType {
   // Attribute comment attached to ExampleType.someString.
