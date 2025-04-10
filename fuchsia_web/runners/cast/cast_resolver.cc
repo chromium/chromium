@@ -54,7 +54,7 @@ uint64_t FetchAbiRevision() {
   std::optional<uint64_t> read_bytes =
       base::ReadFile(base::FilePath(kPkgAbiRevisionPath), abi_revision_le);
   CHECK_EQ(read_bytes.value(), sizeof(abi_revision_le));
-  return base::numerics::U64FromLittleEndian(abi_revision_le);
+  return base::U64FromLittleEndian(abi_revision_le);
 }
 
 }  // namespace
