@@ -142,18 +142,24 @@ class ConsistencyPromoSigninMediatorTest
     OCMExpect([authentication_flow_mock_ identity]).andReturn(identity);
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
+    auto startSignInCallback = ^(NSInvocation* invocation) {
+      if (success) {
+        auth_service->SignIn(identity, access_point);
+      }
+      // The mediator_ is the AuthenticationFlow’s delegate.
+      CHECK(authentication_flow_mock_delegate_);
+      [authentication_flow_mock_delegate_
+          authenticationFlowDidSignInInSameProfileWithResult:result];
+    };
     OCMExpect([authentication_flow_mock_
-        startSignInWithCompletion:[OCMArg
-                                      checkWithBlock:^BOOL(
-                                          signin_ui::SigninCompletionCallback
-                                              callback) {
-                                        if (success) {
-                                          auth_service->SignIn(identity,
-                                                               access_point);
-                                        }
-                                        callback(result);
-                                        return YES;
-                                      }]]);
+        setRequestHelper:[OCMArg
+                             checkWithBlock:^(
+                                 id<AuthenticationFlowRequestHelper> value) {
+                               authentication_flow_mock_delegate_ = value;
+                               return value == mediator_;
+                             }]]);
+    OCMExpect([authentication_flow_mock_ startSignIn])
+        .andDo(startSignInCallback);
   }
 
   void ExpectWebSigninTrackerCreationAndCaptureCallback() {
@@ -197,6 +203,7 @@ class ConsistencyPromoSigninMediatorTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  id<AuthenticationFlowRequestHelper> authentication_flow_mock_delegate_;
   // Needed for test profile.
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

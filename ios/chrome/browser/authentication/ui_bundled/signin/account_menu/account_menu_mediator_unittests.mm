@@ -458,9 +458,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   // and one part for the initial part of the run.
 
   // Testing the part before the callback.
-  // This variable will contain the callback that should be executed once
-  // sign-in ends.
-  __block signin_ui::SigninCompletionCallback signinCallback = nil;
   const CGRect target = CGRect();
   OCMExpect([consumer_mock_ switchingStarted]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
@@ -468,11 +465,14 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   OCMExpect([delegate_mock_ authenticationFlow:kSecondaryIdentity
                                     anchorRect:target])
       .andReturn(authentication_flow_mock_);
+  __block id<AuthenticationFlowRequestHelper>
+      authentication_flow_request_helper = nil;
   OCMExpect([authentication_flow_mock_
-      startSignInWithCompletion:[OCMArg checkWithBlock:^BOOL(id value) {
-        signinCallback = value;
-        return true;
+      setRequestHelper:[OCMArg checkWithBlock:^(id value) {
+        authentication_flow_request_helper = value;
+        return mediator_ == value;
       }]]);
+  OCMExpect([authentication_flow_mock_ startSignIn]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -480,7 +480,9 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignoutFailed) {
   OCMExpect([consumer_mock_ switchingStopped]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
   // Simulate AuthenticationFlow failure.
-  signinCallback(SigninCoordinatorResultCanceledByUser);
+  [authentication_flow_request_helper
+      authenticationFlowDidSignInInSameProfileWithResult:
+          SigninCoordinatorResultCanceledByUser];
 }
 
 // Tests the result of accountTappedWithGaiaID:targetRect:
@@ -501,29 +503,30 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedSignInFailed) {
   const CGRect target = CGRect();
   OCMExpect([consumer_mock_ switchingStarted]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:NO]);
-  // This variable will contain the callback that should be executed once
-  // sign-in ends.
-  __block signin_ui::SigninCompletionCallback signinCallback = nil;
-
   // Simulate a sign-out success.
   // This variable will contain the callback that should be executed once
   // sign-in ended.
   OCMExpect([delegate_mock_ authenticationFlow:kSecondaryIdentity
                                     anchorRect:target])
       .andReturn(authentication_flow_mock_);
+  __block id<AuthenticationFlowRequestHelper>
+      authentication_flow_request_helper = nil;
   OCMExpect([authentication_flow_mock_
-      startSignInWithCompletion:[OCMArg checkWithBlock:^BOOL(id value) {
-        signinCallback = value;
-        return true;
+      setRequestHelper:[OCMArg checkWithBlock:^(id value) {
+        authentication_flow_request_helper = value;
+        return mediator_ == value;
       }]]);
   // Simulate account switching.
+  OCMExpect([authentication_flow_mock_ startSignIn]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
 
   // Expect that the consumer unlocks the UI.
   OCMExpect([consumer_mock_ switchingStopped]);
   OCMExpect([consumer_mock_ setUserInteractionsEnabled:YES]);
-  signinCallback(SigninCoordinatorResultInterrupted);
+  [authentication_flow_request_helper
+      authenticationFlowDidSignInInSameProfileWithResult:
+          SigninCoordinatorResult::SigninCoordinatorResultInterrupted];
 
   // Checks the user is signed-back in.
   ASSERT_EQ(kPrimaryIdentity, authentication_service_->GetPrimaryIdentity(
@@ -543,9 +546,6 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   // callback in a callback, this tests has three parts.  One part by callback,
   // and one part for the initial part of the run.
 
-  // This variable will contain the callback that should be executed once
-  // sign-in ends.
-  __block signin_ui::SigninCompletionCallback signinCallback = nil;
   // Testing the part before the callback.
   const CGRect target = CGRect();
   OCMExpect([consumer_mock_ switchingStarted]);
@@ -554,11 +554,14 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
   OCMExpect([delegate_mock_ authenticationFlow:kSecondaryIdentity
                                     anchorRect:target])
       .andReturn(authentication_flow_mock_);
+  __block id<AuthenticationFlowRequestHelper>
+      authentication_flow_request_helper = nil;
   OCMExpect([authentication_flow_mock_
-      startSignInWithCompletion:[OCMArg checkWithBlock:^BOOL(id value) {
-        signinCallback = value;
-        return true;
+      setRequestHelper:[OCMArg checkWithBlock:^(id value) {
+        authentication_flow_request_helper = value;
+        return mediator_ == value;
       }]]);
+  OCMExpect([authentication_flow_mock_ startSignIn]);
   [mediator_ accountTappedWithGaiaID:kSecondaryIdentity.gaiaID
                           targetRect:target];
   VerifyMock();
@@ -567,7 +570,9 @@ TEST_P(AccountMenuMediatorTest, TestAccountTapedWithSuccessfulSwitch) {
                       withResult:SigninCoordinatorResultSuccess
                   signedIdentity:kSecondaryIdentity
                  userTappedClose:NO]);
-  signinCallback(SigninCoordinatorResultSuccess);
+  [authentication_flow_request_helper
+      authenticationFlowDidSignInInSameProfileWithResult:
+          SigninCoordinatorResultSuccess];
 }
 
 // Tests the result of didTapErrorButton when a passphrase is required.

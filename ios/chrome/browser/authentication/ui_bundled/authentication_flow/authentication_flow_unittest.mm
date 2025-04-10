@@ -8,6 +8,7 @@
 
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -24,9 +25,13 @@
 #import "components/sync/test/test_sync_service.h"
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_in_profile.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_constants.h"
@@ -128,6 +133,16 @@ class AuthenticationFlowTest : public PlatformTest,
     PlatformTest::TearDown();
     EXPECT_OCMOCK_VERIFY((id)view_controller_mock_);
     EXPECT_OCMOCK_VERIFY((id)performer_mock_);
+  }
+  // Reset the authentication_flow_’s request helper.
+  // Must be call before each `startSignIn`
+  void ResetAuthenticationFlowRequestHelper() {
+    // Each mock expect its methods to be called at most once.
+    test_authentication_flow_request_helper_ =
+        [[TestAuthenticationFlowRequest alloc]
+            initWithSigninCompletionCallback:sign_in_completion_];
+    authentication_flow_.requestHelper =
+        test_authentication_flow_request_helper_;
   }
 
   TestProfileIOS* CreateProfile(
@@ -343,7 +358,8 @@ class AuthenticationFlowTest : public PlatformTest,
                                                  browser:final_browser
                                              accessPoint:access_point]);
 
-    [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+    ResetAuthenticationFlowRequestHelper();
+    [authentication_flow_ startSignIn];
     // The completion block should not be called synchronously.
     EXPECT_EQ(signin::Tribool::kUnknown, signin_result_);
     CheckSignInCompletion(/*expected_signed_in=*/true);
@@ -381,10 +397,12 @@ class AuthenticationFlowTest : public PlatformTest,
   id<SystemIdentity> managed_identity1_ = nil;
   id<SystemIdentity> managed_identity2_ = nil;
   AuthenticationFlow* authentication_flow_ = nil;
+  TestAuthenticationFlowRequest* test_authentication_flow_request_helper_ = nil;
   AuthenticationFlowInProfile<AuthenticationFlowPerformerDelegate>*
       authentication_flow_in_profile_ = nil;
   AuthenticationFlowPerformer* performer_mock_ = nil;
   signin_ui::SigninCompletionCallback sign_in_completion_;
+  ChangeProfileContinuationProvider continuation_provider_;
   UIViewController* view_controller_mock_;
   // Used to verify histogram logging.
   base::HistogramTester histogram_tester_;
@@ -428,8 +446,8 @@ TEST_P(AuthenticationFlowTest, TestFailFetchManagedStatus) {
         [invocation getArgument:&completionBlock atIndex:3];
         completionBlock();
       });
-
-  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+  ResetAuthenticationFlowRequestHelper();
+  [authentication_flow_ startSignIn];
 
   CheckSignInCompletion(/*expected_signed_in=*/false);
   histogram_tester_.ExpectTotalCount("Signin.AccountType.SigninConsent", 0);
@@ -528,7 +546,8 @@ TEST_P(AuthenticationFlowTest, TestDontShowUnsyncedDataConfirmation) {
         run_loop_->Quit();
       });
 
-  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+  ResetAuthenticationFlowRequestHelper();
+  [authentication_flow_ startSignIn];
   run_loop_->Run();
 }
 
@@ -570,7 +589,8 @@ TEST_P(AuthenticationFlowTest, TestShowUnsyncedDataConfirmation) {
         run_loop_->Quit();
       });
 
-  [authentication_flow_ startSignInWithCompletion:sign_in_completion_];
+  ResetAuthenticationFlowRequestHelper();
+  [authentication_flow_ startSignIn];
   run_loop_->Run();
 }
 

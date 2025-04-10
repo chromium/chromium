@@ -15,7 +15,9 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_consumer.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_data_source.h"
@@ -33,7 +35,8 @@
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 
-@interface AccountMenuMediator () <IdentityManagerObserverBridgeDelegate,
+@interface AccountMenuMediator () <AuthenticationFlowRequestHelper,
+                                   IdentityManagerObserverBridgeDelegate,
                                    SyncObserverModelBridge>
 
 // Whether the account menu’s interaction is blocked.
@@ -273,25 +276,14 @@
     }
   }
   CHECK(_identityToSignin);
-
   [self.consumer switchingStarted];
   _blockUpdates = YES;
   self.userInteractionsBlocked = YES;
 
   _authenticationFlow = [self.delegate authenticationFlow:_identityToSignin
                                                anchorRect:targetRect];
-  __weak __typeof(self) weakSelf = self;
-  __block BOOL fromWeb = _fromWeb;
-  [_authenticationFlow
-      startSignInWithCompletion:^(SigninCoordinatorResult result) {
-        // Note: The pref should still get updated even if `weakSelf` is `nil`
-        // (which happens if the signin caused a profile switch).
-        if (fromWeb && result == SigninCoordinatorResultSuccess) {
-          GetApplicationContext()->GetLocalState()->SetBoolean(
-              prefs::kHasSwitchedAccountsViaWebFlow, true);
-        }
-        [weakSelf signinDidEndWithResult:result];
-      }];
+  _authenticationFlow.requestHelper = self;
+  [_authenticationFlow startSignIn];
 }
 
 - (void)didTapErrorButton {
@@ -405,9 +397,20 @@
   }
 }
 
-- (void)signinDidEndWithResult:(SigninCoordinatorResult)result {
-  CHECK(_authenticationFlow);
+#pragma mark - AuthenticationFlowRequestHelper
+
+- (void)authenticationFlowDidSignInInSameProfileWithResult:
+    (SigninCoordinatorResult)result {
+  if (_fromWeb && result == SigninCoordinatorResultSuccess) {
+    GetApplicationContext()->GetLocalState()->SetBoolean(
+        prefs::kHasSwitchedAccountsViaWebFlow, true);
+  }
+  if (!_syncService) {
+    // The mediator was disconnected. No need to update it.
+    return;
+  }
   CHECK(_identityToSignin, base::NotFatalUntil::M140);
+  CHECK(_primaryIdentityBeforeSignin, base::NotFatalUntil::M140);
   _authenticationFlow = nil;
   BOOL success =
       result == SigninCoordinatorResult::SigninCoordinatorResultSuccess;

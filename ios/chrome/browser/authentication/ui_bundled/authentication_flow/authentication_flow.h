@@ -10,9 +10,11 @@
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_performer_delegate.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 
+@protocol AuthenticationFlowRequestHelper;
 @class AuthenticationFlowPerformer;
 class Browser;
 @class UIViewController;
@@ -23,6 +25,10 @@ class Browser;
 // A new instance of `AuthenticationFlow` should be used each time an identity
 // needs to be signed in.
 @interface AuthenticationFlow : NSObject <AuthenticationFlowPerformerDelegate>
+
+// The object providing the code to execute after the sign-in.
+// It must be set before start. It is unset after being used once.
+@property(nonatomic, strong) id<AuthenticationFlowRequestHelper> requestHelper;
 
 // Designated initializer.
 // * `browser` is the current browser where the authentication flow is being
@@ -50,8 +56,7 @@ class Browser;
 // sync.
 // It is safe to destroy this authentication flow when `completion` is called.
 // `completion` must not be nil.
-- (void)startSignInWithCompletion:
-    (signin_ui::SigninCompletionCallback)completion;
+- (void)startSignIn;
 
 // * Interrupts the current sign-in operation (if any).
 // * Dismiss any UI presented accordingly to `action`.

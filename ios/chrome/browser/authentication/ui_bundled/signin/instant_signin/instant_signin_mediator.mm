@@ -6,13 +6,18 @@
 
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
+
+@interface InstantSigninMediator () <AuthenticationFlowRequestHelper>
+@end
 
 @implementation InstantSigninMediator {
   AuthenticationFlow* _authenticationFlow;
@@ -34,11 +39,8 @@ using signin_metrics::PromoAction;
   CHECK(!_authenticationFlow);
   _authenticationFlow = authenticationFlow;
   signin_metrics::RecordSigninUserActionForAccessPoint(_accessPoint);
-  __weak __typeof(self) weakSelf = self;
-  [_authenticationFlow
-      startSignInWithCompletion:^(SigninCoordinatorResult result) {
-        [weakSelf signInFlowCompletedForSignInOnlyWithResult:result];
-      }];
+  _authenticationFlow.requestHelper = self;
+  [_authenticationFlow startSignIn];
 }
 
 - (void)disconnect {
@@ -50,12 +52,10 @@ using signin_metrics::PromoAction;
   [_authenticationFlow interrupt];
 }
 
-#pragma mark - Private
+#pragma mark - AuthenticationFlowRequestHelper
 
-// Called when the sign-in flow is over.
-- (void)signInFlowCompletedForSignInOnlyWithResult:
+- (void)authenticationFlowDidSignInInSameProfileWithResult:
     (SigninCoordinatorResult)result {
-  CHECK(_authenticationFlow);
   _authenticationFlow = nil;
   [self.delegate instantSigninMediator:self didSigninWithResult:result];
 }
