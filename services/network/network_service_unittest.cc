@@ -1266,8 +1266,7 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/,
 class NetworkServiceTestWithService : public testing::Test {
  public:
   NetworkServiceTestWithService()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO,
-                          base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   NetworkServiceTestWithService(const NetworkServiceTestWithService&) = delete;
   NetworkServiceTestWithService& operator=(
@@ -1378,7 +1377,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLog) {
   network_service_->StartNetLog(
       std::move(log_file), net::FileNetLogObserver::kNoLimit,
       net::NetLogCaptureMode::kDefault,
-      base::Value::Dict().Set("amiatest", "iamatest"), std::nullopt);
+      base::Value::Dict().Set("amiatest", "iamatest"));
   CreateNetworkContext();
   LoadURL(test_server()->GetURL("/echo"));
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -1412,7 +1411,7 @@ TEST_F(NetworkServiceTestWithService, StartsNetLogBounded) {
                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   network_service_->StartNetLog(std::move(log_file), kMaxSizeBytes,
                                 net::NetLogCaptureMode::kEverything,
-                                base::Value::Dict(), std::nullopt);
+                                base::Value::Dict());
   CreateNetworkContext();
 
   // Through trial and error it was found that this looping navigation results
@@ -1445,35 +1444,6 @@ TEST_F(NetworkServiceTestWithService, StartsNetLogBounded) {
   const int64_t kMaxSizeLower = kMaxSizeBytes * 0.9;
   EXPECT_GT(file_info.size, kMaxSizeLower);
   EXPECT_LT(file_info.size, kMaxSizeUpper);
-}
-
-TEST_F(NetworkServiceTestWithService, StartsNetLogWithDuration) {
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath log_dir = temp_dir.GetPath();
-  base::FilePath log_path = log_dir.Append(FILE_PATH_LITERAL("test_log.json"));
-  base::TimeDelta log_duration = base::Seconds(20);
-
-  base::File log_file(log_path,
-                      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  network_service_->StartNetLog(
-      std::move(log_file), net::FileNetLogObserver::kNoLimit,
-      net::NetLogCaptureMode::kDefault,
-      base::Value::Dict().Set("amiatest", "iamatest"), log_duration);
-  CreateNetworkContext();
-  LoadURL(test_server()->GetURL("/echo"));
-  EXPECT_EQ(net::OK, client()->completion_status().error_code);
-  task_environment_.FastForwardBy(log_duration);
-
-  base::Value::Dict log_dict = base::test::ParseJsonDictFromFile(log_path);
-  ASSERT_EQ(*log_dict.FindStringByDottedPath("constants.amiatest"), "iamatest");
-
-  // The log should have a "polledData" list.
-  ASSERT_TRUE(log_dict.FindList("polledData"));
-
-  // Tear down the network context we created above.
-  Shutdown();
-  task_environment_.RunUntilIdle();
 }
 
 // Verifies that raw headers are only reported if requested.
