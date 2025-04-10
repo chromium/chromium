@@ -216,14 +216,9 @@ class PermissionControllerImplTest : public ::testing::Test {
       RenderProcessHost* render_process_host,
       const url::Origin& worker_origin) {
     return permission_controller()->GetPermissionStatusForWorker(
-        permission, render_process_host, worker_origin);
-  }
-
-  PermissionStatus GetPermissionStatusForCurrentDocument(
-      PermissionType permission,
-      RenderFrameHost* render_frame_host) {
-    return permission_controller()->GetPermissionStatusForCurrentDocument(
-        permission, render_frame_host);
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(permission),
+        render_process_host, worker_origin);
   }
 
   BrowserContext* browser_context() { return &browser_context_; }
@@ -634,9 +629,13 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
 
   ASSERT_TRUE(parent);
 
+  const auto geolocation_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          PermissionType::GEOLOCATION);
+
   EXPECT_EQ(PermissionStatus::ASK,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, parent));
+                geolocation_permission_descriptor, parent));
 
   content::RenderFrameHost* child_without_policy =
       AddChildRFH(parent, GURL(kOrigin2));
@@ -646,7 +645,7 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
   // permission-gated functionality.
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, child_without_policy));
+                geolocation_permission_descriptor, child_without_policy));
 
   content::RenderFrameHost* child_with_policy =
       AddChildRFH(parent, GURL(kOrigin2),
@@ -657,7 +656,7 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
   // permission as well.
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, child_without_policy));
+                geolocation_permission_descriptor, child_without_policy));
 
   permission_manager()->SetPermissionStatus(GURL(kOrigin1),
                                             PermissionStatus::GRANTED);
@@ -665,19 +664,19 @@ TEST_F(PermissionControllerImplWithDelegateTest, PermissionPolicyTest) {
   // The top-level frame has granted permission.
   EXPECT_EQ(PermissionStatus::GRANTED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, parent));
+                geolocation_permission_descriptor, parent));
 
   // A cross-origin iframe with a permission policy has full access to a
   // permission-gated functionality as long as the top-level frame has
   // permission.
   EXPECT_EQ(PermissionStatus::GRANTED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, child_with_policy));
+                geolocation_permission_descriptor, child_with_policy));
 
   // The frame without a permission policy still has no access.
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_controller->GetPermissionStatusForCurrentDocument(
-                PermissionType::GEOLOCATION, child_without_policy));
+                geolocation_permission_descriptor, child_without_policy));
 }
 #endif
 

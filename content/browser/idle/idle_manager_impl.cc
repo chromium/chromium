@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
@@ -98,7 +99,10 @@ bool IdleManagerImpl::HasPermission() {
   DCHECK(permission_controller);
   PermissionStatus status =
       permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::IDLE_DETECTION, render_frame_host_);
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::IDLE_DETECTION),
+          render_frame_host_);
   return status == PermissionStatus::GRANTED;
 }
 

@@ -176,8 +176,10 @@ bool HasPrintingPermission(content::RenderFrameHost& rfh) {
   return rfh.GetBrowserContext()
              ->GetPermissionController()
              ->GetPermissionStatusForCurrentDocument(
-                 blink::PermissionType::WEB_PRINTING, &rfh) ==
-         blink::mojom::PermissionStatus::GRANTED;
+                 content::PermissionDescriptorUtil::
+                     CreatePermissionDescriptorForPermissionType(
+                         blink::PermissionType::WEB_PRINTING),
+                 &rfh) == blink::mojom::PermissionStatus::GRANTED;
 }
 
 void InvokeFetchAttributesCallback(

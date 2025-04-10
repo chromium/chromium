@@ -34,6 +34,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -647,7 +648,9 @@ void FullscreenController::EnterFullscreenModeInternal(
           requesting_frame->GetBrowserContext()
                   ->GetPermissionController()
                   ->GetPermissionStatusForCurrentDocument(
-                      blink::PermissionType::WINDOW_MANAGEMENT,
+                      content::PermissionDescriptorUtil::
+                          CreatePermissionDescriptorForPermissionType(
+                              blink::PermissionType::WINDOW_MANAGEMENT),
                       requesting_frame) !=
               blink::mojom::PermissionStatus::GRANTED) {
         display_id = display::kInvalidDisplayId;

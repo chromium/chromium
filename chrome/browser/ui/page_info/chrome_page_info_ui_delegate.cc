@@ -33,6 +33,7 @@
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
@@ -306,7 +307,9 @@ content::PermissionResult ChromePageInfoUiDelegate::GetPermissionResult(
   return GetProfile()
       ->GetPermissionController()
       ->GetPermissionResultForOriginWithoutContext(
-          permission, url::Origin::Create(site_url_));
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(permission),
+          url::Origin::Create(site_url_));
 }
 
 std::optional<content::PermissionResult>

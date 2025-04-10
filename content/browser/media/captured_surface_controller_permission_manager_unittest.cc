@@ -33,7 +33,7 @@ class CscMockPermissionController : public MockPermissionController {
   ~CscMockPermissionController() override = default;
 
   PermissionStatus GetPermissionStatusForCurrentDocument(
-      blink::PermissionType permission,
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
       RenderFrameHost* render_frame_host) override {
     return permission_status_;
   }

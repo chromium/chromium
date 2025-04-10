@@ -19,6 +19,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -213,6 +214,9 @@ void BlinkNotificationServiceImpl::CloseNonPersistentNotification(
 blink::mojom::PermissionStatus
 BlinkNotificationServiceImpl::CheckPermissionStatus() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const auto permission_descriptor = content::PermissionDescriptorUtil::
+      CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
 
   // TODO(crbug.com/40637582): It is odd that a service instance can be created
   // for cross-origin subframes, yet the instance is completely oblivious of
@@ -224,16 +228,15 @@ BlinkNotificationServiceImpl::CheckPermissionStatus() {
       return blink::mojom::PermissionStatus::DENIED;
     }
     return browser_context_->GetPermissionController()
-        ->GetPermissionStatusForCurrentDocument(
-            blink::PermissionType::NOTIFICATIONS, rfh);
+        ->GetPermissionStatusForCurrentDocument(permission_descriptor, rfh);
   } else {
     RenderProcessHost* rph = RenderProcessHost::FromID(render_process_host_id_);
     if (!rph) {
       return blink::mojom::PermissionStatus::DENIED;
     }
     return browser_context_->GetPermissionController()
-        ->GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS,
-                                       rph, storage_key_.origin());
+        ->GetPermissionStatusForWorker(permission_descriptor, rph,
+                                       storage_key_.origin());
   }
 }
 

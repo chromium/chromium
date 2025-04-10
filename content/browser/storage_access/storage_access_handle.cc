@@ -13,6 +13,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/worker_host/shared_worker_connector_impl.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -67,8 +68,10 @@ bool StorageAccessHandle::DoesDocumentHaveStorageAccess(RenderFrameHost* host) {
              ->GetBrowserContext()
              ->GetPermissionController()
              ->GetPermissionStatusForCurrentDocument(
-                 blink::PermissionType::STORAGE_ACCESS_GRANT, host) ==
-         blink::mojom::PermissionStatus::GRANTED;
+                 content::PermissionDescriptorUtil::
+                     CreatePermissionDescriptorForPermissionType(
+                         blink::PermissionType::STORAGE_ACCESS_GRANT),
+                 host) == blink::mojom::PermissionStatus::GRANTED;
 }
 
 void StorageAccessHandle::BindIndexedDB(

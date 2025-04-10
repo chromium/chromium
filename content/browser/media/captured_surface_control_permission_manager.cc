@@ -74,7 +74,10 @@ void CheckPermissionOnUIThread(
   }
 
   switch (permission_controller->GetPermissionStatusForCurrentDocument(
-      blink::PermissionType::CAPTURED_SURFACE_CONTROL, capturer_rfhi)) {
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              blink::PermissionType::CAPTURED_SURFACE_CONTROL),
+      capturer_rfhi)) {
     case PermissionStatus::GRANTED:
       std::move(callback).Run(PermissionResult::kGranted);
       return;

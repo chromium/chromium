@@ -15,6 +15,7 @@
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/web_test/browser/web_test_browser_context.h"
 #include "content/web_test/browser/web_test_content_browser_client.h"
@@ -85,7 +86,9 @@ void WebTestPushMessagingService::SubscribeFromWorker(
           ->browser_context()
           ->GetPermissionController()
           ->GetPermissionStatusForWorker(
-              blink::PermissionType::NOTIFICATIONS,
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::NOTIFICATIONS),
               content::RenderProcessHost::FromID(render_process_id),
               url::Origin::Create(requesting_origin));
 

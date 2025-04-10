@@ -255,7 +255,10 @@ void WebInstallServiceImpl::RequestWebInstallPermission(
   // Check if the permission status is already set.
   content::PermissionResult permission_status =
       permission_controller->GetPermissionResultForCurrentDocument(
-          blink::PermissionType::WEB_APP_INSTALLATION, &render_frame_host());
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::WEB_APP_INSTALLATION),
+          &render_frame_host());
   switch (permission_status.status) {
     case PermissionStatus::GRANTED:
       std::move(callback).Run(

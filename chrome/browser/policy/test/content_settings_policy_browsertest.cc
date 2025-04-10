@@ -25,6 +25,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -394,12 +395,14 @@ class SensorsPolicyTest : public PolicyTest {
                         blink::mojom::PermissionStatus status) {
     content::PermissionController* permission_controller =
         browser()->profile()->GetPermissionController();
-    EXPECT_EQ(
-        permission_controller
-            ->GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::SENSORS, url::Origin::Create(GURL(url)))
-            .status,
-        status);
+    EXPECT_EQ(permission_controller
+                  ->GetPermissionResultForOriginWithoutContext(
+                      content::PermissionDescriptorUtil::
+                          CreatePermissionDescriptorForPermissionType(
+                              blink::PermissionType::SENSORS),
+                      url::Origin::Create(GURL(url)))
+                  .status,
+              status);
   }
 
   void AllowUrl(const char* url) {

@@ -96,8 +96,8 @@ class PermissionServiceImpl : public blink::mojom::PermissionService {
 
   blink::mojom::PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission);
-  blink::mojom::PermissionStatus GetPermissionStatusFromType(
-      blink::PermissionType type);
+  blink::mojom::PermissionStatus GetPermissionStatusForCurrentContext(
+      const blink::mojom::PermissionDescriptorPtr& permission);
   blink::mojom::PermissionStatus GetCombinedPermissionAndDeviceStatus(
       const blink::mojom::PermissionDescriptorPtr& permission);
   void ResetPermissionStatus(blink::PermissionType type);

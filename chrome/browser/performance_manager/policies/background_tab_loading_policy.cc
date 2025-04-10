@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -108,6 +109,9 @@ void ScheduleLoadForRestoredTabs(
     DCHECK_EQ(content->GetPrimaryMainFrame()->GetLastCommittedURL(), GURL());
     DCHECK_NE(content->GetLastCommittedURL(), GURL());
 
+    auto permission_descriptor = content::PermissionDescriptorUtil::
+        CreatePermissionDescriptorForPermissionType(
+            blink::PermissionType::NOTIFICATIONS);
     // Without kBackgroundTabLoadingRestoreMainFrameState, use the incorrect
     // lookup method to get bug-for-bug compatibility with TabLoader.
     // TODO(crbug.com/40121561): Remove this after comparing the performance.
@@ -115,12 +119,11 @@ void ScheduleLoadForRestoredTabs(
         features::kBackgroundTabLoadingRestoreMainFrameState.Get()
             ? permission_controller
                   ->GetPermissionResultForOriginWithoutContext(
-                      blink::PermissionType::NOTIFICATIONS,
+                      permission_descriptor,
                       url::Origin::Create(content->GetLastCommittedURL()))
                   .status
             : permission_controller->GetPermissionStatusForCurrentDocument(
-                  blink::PermissionType::NOTIFICATIONS,
-                  content->GetPrimaryMainFrame());
+                  permission_descriptor, content->GetPrimaryMainFrame());
 
     page_node_data_vector.emplace_back(
         PerformanceManager::GetPrimaryPageNodeForWebContents(content),

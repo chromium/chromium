@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/common/content_client.h"
@@ -367,7 +368,9 @@ void PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked(
   std::erase_if(origins, [controller](const GURL& origin) {
     auto permission = controller
                           ->GetPermissionResultForOriginWithoutContext(
-                              blink::PermissionType::NOTIFICATIONS,
+                              content::PermissionDescriptorUtil::
+                                  CreatePermissionDescriptorForPermissionType(
+                                      blink::PermissionType::NOTIFICATIONS),
                               url::Origin::Create(origin))
                           .status;
     return permission == blink::mojom::PermissionStatus::GRANTED;

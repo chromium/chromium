@@ -1551,8 +1551,9 @@ bool FrameImpl::CheckMediaAccessPermission(
   DCHECK(permission_controller);
 
   return permission_controller->GetPermissionStatusForCurrentDocument(
-             permission, render_frame_host) ==
-         blink::mojom::PermissionStatus::GRANTED;
+             content::PermissionDescriptorUtil::
+                 CreatePermissionDescriptorForPermissionType(permission),
+             render_frame_host) == blink::mojom::PermissionStatus::GRANTED;
 }
 
 std::unique_ptr<content::AudioStreamBrokerFactory>

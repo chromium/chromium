@@ -153,7 +153,8 @@ class MediaStreamDevicesControllerTest : public testing::Test {
     auto* mock_permission_controller = static_cast<MockPermissionController*>(
         browser_context_.GetPermissionController());
     ON_CALL(*mock_permission_controller, GetPermissionResultForCurrentDocument)
-        .WillByDefault([](blink::PermissionType permission,
+        .WillByDefault([](const blink::mojom::PermissionDescriptorPtr&
+                              permission_descriptor,
                           content::RenderFrameHost* render_frame_host) {
           return content::PermissionResult{
               content::PermissionStatus::GRANTED,

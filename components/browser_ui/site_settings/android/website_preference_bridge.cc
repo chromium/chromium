@@ -47,7 +47,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller.h"
-#include "content/public/browser/permission_result.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/cookies/cookie_util.h"
 #include "net/extras/shared_dictionary/shared_dictionary_usage_info.h"
@@ -238,8 +238,10 @@ ContentSetting GetPermissionSettingForOrigin(
         browser_context->GetPermissionController();
     content::PermissionResult result =
         permission_controller->GetPermissionResultForOriginWithoutContext(
-            permissions::PermissionUtil::ContentSettingsTypeToPermissionType(
-                content_type),
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(
+                    permissions::PermissionUtil::
+                        ContentSettingsTypeToPermissionType(content_type)),
             url::Origin::Create(requesting_origin),
             url::Origin::Create(embedding_origin));
     return permissions::PermissionUtil::PermissionStatusToContentSetting(

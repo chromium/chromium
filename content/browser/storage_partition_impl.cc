@@ -2243,7 +2243,10 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
   DCHECK(permission_controller);
 
   auto status = permission_controller->GetPermissionStatusForCurrentDocument(
-      blink::PermissionType::LOCAL_NETWORK_ACCESS, rfh);
+      content::PermissionDescriptorUtil::
+          CreatePermissionDescriptorForPermissionType(
+              blink::PermissionType::LOCAL_NETWORK_ACCESS),
+      rfh);
   if (status == blink::mojom::PermissionStatus::GRANTED) {
     std::move(callback).Run(true);
     return;
@@ -2556,7 +2559,10 @@ void StoragePartitionImpl::OnCanSendReportingReports(
   for (auto& origin : origins) {
     bool allowed = permission_controller
                        ->GetPermissionResultForOriginWithoutContext(
-                           blink::PermissionType::BACKGROUND_SYNC, origin)
+                           content::PermissionDescriptorUtil::
+                               CreatePermissionDescriptorForPermissionType(
+                                   blink::PermissionType::BACKGROUND_SYNC),
+                           origin)
                        .status == blink::mojom::PermissionStatus::GRANTED;
     if (allowed) {
       origins_out.push_back(origin);
@@ -2575,7 +2581,10 @@ void StoragePartitionImpl::OnCanSendDomainReliabilityUpload(
   std::move(callback).Run(
       permission_controller
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::BACKGROUND_SYNC, origin)
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::BACKGROUND_SYNC),
+              origin)
           .status == blink::mojom::PermissionStatus::GRANTED);
 }
 
