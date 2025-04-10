@@ -967,6 +967,12 @@ Note the device must have a valid DM token for the downloaded CBCM policies to
 be effective.
 
 ### Enterprise Policies
+Some updater behavior can be controlled by enterprise policies. Policies are
+only respected on devices that are "domain-joined", enrolled in Chrome
+Enterprise Core, or (on macOS) managed by MDM. A device is "domain-joined" if
+it is on Windows and enrolled in an Active Directory domain or Azure Active
+Directory domain, or it is on macOS and joined to a domain via MCX.
+
 Enterprise policies can prevent the installation of applications:
 
 * A per-application setting may specify whether an application is installable.
