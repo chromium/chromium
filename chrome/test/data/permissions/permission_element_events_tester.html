@@ -7,6 +7,14 @@
       <permission id="camera" type="camera"></permission>
     </div>
   </div>
+  <permission
+    id="microphone"
+    type="microphone"
+    ondismiss="console.log(this.id + '-dismiss');"
+    onresolve="console.log(this.id + '-resolve');"
+    onpromptdismiss="console.log(this.id + '-promptdismiss');"
+    onpromptaction="console.log(this.id + '-promptaction');">
+  </permission>
   <script>
     function logEventToConsole(prefix, event) {
       console.log(prefix + event.target.id + '-' + event.type);

@@ -635,6 +635,31 @@ class MiscellaneousElementBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
+                       EventContentAttributes) {
+  NavigateToURL("/permissions/permission_element_events_tester.html");
+  const char* id = "microphone";
+  {
+    permissions::PermissionRequestManager::FromWebContents(web_contents())
+        ->set_auto_response_for_test(
+            permissions::PermissionRequestManager::AutoResponseType::DISMISS);
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), id);
+    observer.Wait();
+    WaitForDismissEvent(id);
+  }
+
+  {
+    permissions::PermissionRequestManager::FromWebContents(web_contents())
+        ->set_auto_response_for_test(permissions::PermissionRequestManager::
+                                         AutoResponseType::ACCEPT_ALL);
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), id);
+    observer.Wait();
+    WaitForResolveEvent(id);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
                        EventsBubbleAndAreCancelable) {
   NavigateToURL("/permissions/permission_element_events_tester.html");
   const char* id = "camera";
