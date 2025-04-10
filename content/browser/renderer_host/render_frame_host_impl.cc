@@ -1598,7 +1598,9 @@ class DiscardedRFHProcessHelper : public base::SupportsUserData::Data,
 // with this function.
 void RecordNavigationTraceEventsAndMetrics(
     const NavigationRequest::Timeline& timeline,
-    const GURL& url) {
+    const GURL& url,
+    bool is_primary_main_frame,
+    bool is_same_document_navigation) {
   DCHECK(!timeline.start.is_null());
 
   // Record these trace events in a global "Navigations" track, so that it can
@@ -1676,8 +1678,8 @@ void RecordNavigationTraceEventsAndMetrics(
   // and potentially less useful, so just return early after logging a top-level
   // event for the navigation above.
   //
-  // TODO(alexmos): Record a better renderer-side start time for synchronous
-  // renderer commits and create an additional tracing slice for the
+  // TODO(crbug.com/409589669): Record a better renderer-side start time for
+  // synchronous renderer commits and create an additional tracing slice for the
   // renderer-side work involved in synchronous navigations.
   if (timeline.commit_ipc_sent.is_null()) {
     return;
@@ -1794,8 +1796,17 @@ void RecordNavigationTraceEventsAndMetrics(
   // Record the remaining duration of the navigation, moving the start time
   // forward by the amount that was ignored.
   log_trace_event_and_uma("TotalExcludingBeforeUnload", track2, duration_start,
-                          timeline.finish,
-                          /*histogram_name=*/"TotalExcludingBeforeUnload");
+                          timeline.finish);
+
+  // Also record a separate metric for main-frame, cross-document cases for
+  // better comparison with guardrail metrics.
+  bool is_main_frame_cross_doc =
+      is_primary_main_frame && !is_same_document_navigation;
+  if (is_main_frame_cross_doc && (timeline.finish >= duration_start)) {
+    base::UmaHistogramTimes(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
+        timeline.finish - duration_start);
+  }
 
   // Most navigation metrics currently ignore everything before the adjusted
   // common_params start time, which is after any beforeunload handling (either
@@ -1811,6 +1822,12 @@ void RecordNavigationTraceEventsAndMetrics(
     log_trace_event_and_uma("IncorrectlyIgnored", track2, duration_start,
                             timeline.common_params_start,
                             /*histogram_name=*/"IgnoredIncorrectly");
+    if (is_main_frame_cross_doc &&
+        (timeline.common_params_start >= duration_start)) {
+      base::UmaHistogramTimes(
+          "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration",
+          timeline.common_params_start - duration_start);
+    }
     // Also record what percentage was incorrectly ignored.
     base::TimeDelta ignored_incorrectly =
         timeline.common_params_start - duration_start;
@@ -1823,6 +1840,11 @@ void RecordNavigationTraceEventsAndMetrics(
       base::UmaHistogramPercentage(
           "Navigation.Timeline.IgnoredIncorrectly.Percentage",
           ignored_percentage);
+      if (is_main_frame_cross_doc) {
+        base::UmaHistogramPercentage(
+            "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage",
+            ignored_percentage);
+      }
     }
   }
 }
@@ -15510,8 +15532,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
 
   // Record navigation trace events and annotate them with the committed URL,
   // rather than the initial URL.
-  RecordNavigationTraceEventsAndMetrics(navigation_timeline,
-                                        GetLastCommittedURL());
+  RecordNavigationTraceEventsAndMetrics(
+      navigation_timeline, GetLastCommittedURL(), IsInPrimaryMainFrame(),
+      is_same_document_navigation);
 
   return true;
 }

@@ -762,6 +762,24 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     histogram_tester.ExpectUniqueSample(
         "Navigation.StartAdjustment.MainFrameOnly",
         NavigationStartAdjustmentType::kNone, 1);
+
+    // Check for timeline metrics, which should include main frame only
+    // versions.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
+        1);
+    // This navigation has no start adjustment or delayed start time, so there
+    // are no IgnoredIncorrectly metrics reported.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Duration", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Percentage", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage", 0);
   }
   // Disable the hang monitor, otherwise there will be a race between the
   // beforeunload dialog and the beforeunload hang timer.
@@ -811,6 +829,27 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
         "Navigation.StartAdjustment.BeforeUnloadDialog", 1);
     histogram_tester.ExpectTotalCount(
         "Navigation.StartAdjustment.BeforeUnloadDialog.Percentage", 1);
+
+    // Check for timeline metrics, which should include main frame only
+    // versions.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
+        1);
+    // The beforeunload dialog will cause an adjustment that includes both
+    // IgnoredCorrectly and IgnoredIncorrectly durations. (Only the latter
+    // metric has a main frame only version).
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredCorrectly.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Percentage", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage", 1);
   }
 
   // The reload should have cleared the user gesture bit, so upon leaving again
@@ -846,6 +885,31 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                                       0);
     histogram_tester.ExpectTotalCount(
         "Navigation.StartAdjustment.MainFrameOnly", 0);
+
+    // Check for timeline metrics, which should not include main frame only
+    // versions, since those are limited to cross-document navigations.
+    // TODO(crbug.com/409589669): This should be 1, once same-document
+    // navigations generate these trace events and metrics.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
+        0);
+    // This navigation has no start adjustment but it does ignore initial work
+    // in the renderer process, so there are (non-main frame) IgnoredIncorrectly
+    // metrics.
+    // TODO(crbug.com/409589669): This should be 1, once same-document
+    // navigations generate these trace events and metrics.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Duration", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration", 0);
+    // TODO(crbug.com/409589669): This should be 1, once same-document
+    // navigations generate these trace events and metrics.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Percentage", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage", 0);
   }
 
   // Create an out-of-process iframe.
@@ -868,6 +932,25 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
     // This does not contribute to MainFrameOnly counts.
     histogram_tester.ExpectTotalCount(
         "Navigation.StartAdjustment.MainFrameOnly", 0);
+
+    // Check for timeline metrics, which should not include main frame only
+    // versions.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
+        0);
+    // This navigation has no start adjustment but it does ignore initial work
+    // in the renderer process, so there are (non-main frame) IgnoredIncorrectly
+    // metrics.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Percentage", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage", 0);
   }
   ASSERT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0u);
@@ -905,6 +988,24 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
         "Navigation.StartAdjustment.LegacyPostTask", 1);
     histogram_tester.ExpectTotalCount(
         "Navigation.StartAdjustment.LegacyPostTask.Percentage", 1);
+
+    // Check for timeline metrics, which should not include main frame only
+    // versions.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration",
+        0);
+    // The beforeunload dialog will cause an adjustment that includes some
+    // (non-main-frame) IgnoredIncorrectly durations.
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Duration", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrectly.Percentage", 1);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.Timeline.IgnoredIncorrecttly.MainFrameOnly.Percentage", 0);
   }
   EXPECT_NE(root->current_frame_host()->GetProcess(),
             child->current_frame_host()->GetProcess());

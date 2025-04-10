@@ -2486,6 +2486,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration"
+    units="ms" expires_after="2026-03-25">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    Reports how much time navigation guardrail metrics like FCP are incorrectly
+    excluding from the navigation duration, due to collecting start times after
+    beforeunload phase 1 finishes and possibly adjusting them to after
+    beforeunload phase 2 finishes. This excluded time represents actual time the
+    user is waiting that is not accounted for in current metrics.
+
+    This metric is recorded each time a cross-document navigation finishes in a
+    primary main frame, i.e. finishes processing the DidCommitNavigation
+    message. See also Navigation.Timeline.IgnoredIncorrectly.Duration for all
+    navigations, including subframes and same-document cases.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Percentage"
+    units="%" expires_after="2026-03-25">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Records the percentage of navigation time that was incorrectly ignored due
+    to setting the start time later than it should be. See also
+    Navigation.Timeline.IgnoredIncorrectly.MainFrameOnly.Duration.
+
+    This metric is recorded each time a cross-document navigation finishes in a
+    primary main frame, i.e. finishes processing the DidCommitNavigation
+    message. See also Navigation.Timeline.IgnoredIncorrectly.Percentage for all
+    navigations, including subframes and same-document cases.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Timeline.IgnoredIncorrectly.Percentage" units="%"
     expires_after="2026-03-25">
   <owner>creis@chromium.org</owner>
@@ -2498,6 +2533,24 @@ chromium-metrics-reviews@google.com.
     Recorded at the point when a navigation finishes committing, i.e. finishes
     processing the DidCommitNavigation message. A corresponding event is also
     emitted for tracing.
+  </summary>
+</histogram>
+
+<histogram
+    name="Navigation.Timeline.TotalExcludingBeforeUnload.MainFrameOnly.Duration"
+    units="ms" expires_after="2026-03-25">
+  <owner>creis@chromium.org</owner>
+  <owner>alexmos@chromium.org</owner>
+  <summary>
+    Measures the duration between when the navigation starts to when the browser
+    process finishes processing the DidCommitNavigation IPC, at which point the
+    navigation is committed. Excludes the time spent running any beforeunload
+    handlers/dialogs.
+
+    This metric is recorded each time a cross-document navigation finishes in a
+    primary main frame, i.e. finishes processing the DidCommitNavigation
+    message. See also Navigation.Timeline.TotalExcludingBeforeUnload.Duration
+    for all navigations, including subframes and same-document cases.
   </summary>
 </histogram>
 
