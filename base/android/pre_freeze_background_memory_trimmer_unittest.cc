@@ -67,7 +67,7 @@ std::optional<const debug::MappedMemoryRegion> GetMappedMemoryRegion(
   }
 
   for (const auto& region : regions) {
-    if (region.start == addr) {
+    if (region.start <= addr && addr < region.end) {
       return region;
     }
   }
