@@ -155,6 +155,8 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
           (cache ? BrowsingDataRemover::DATA_TYPE_CACHE : 0);
       data_type_mask &=
           ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX_INTERNAL;
+      data_type_mask &=
+          ~BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
 
       BrowsingDataFilterBuilderImpl filter_builder(
           BrowsingDataFilterBuilder::Mode::kDelete);

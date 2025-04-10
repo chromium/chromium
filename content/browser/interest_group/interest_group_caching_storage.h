@@ -228,6 +228,16 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // Records a view or a click event. Aggregate time bucketed view and click
   // information is provided to bidder's browsing signals in generateBid().
   void RecordViewClick(network::AdAuctionEventRecord event_record);
+
+  // Invokes `callback` with whether the database has a record of click/view
+  // events for given combination of provider & eligible origins.
+  //
+  // nullopt is passed in in case of an error.
+  void CheckViewClickInfoInDbForTesting(
+      url::Origin provider_origin,
+      url::Origin eligible_origin,
+      base::OnceCallback<void(std::optional<bool>)> callback);
+
   // Records a K-anonymity update for an interest group. If
   // `replace_existing_values` is true, this update will store the new
   // `update_time` and `positive_hashed_values`, replacing the interest
@@ -295,6 +305,7 @@ class CONTENT_EXPORT InterestGroupCachingStorage {
   // Clear out storage for the matching owning storage key.
   void DeleteInterestGroupData(
       StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+      bool user_initiated_deletion,
       base::OnceClosure callback);
   // Clear out all interest group storage including k-anonymity store.
   void DeleteAllInterestGroupData(base::OnceClosure callback);

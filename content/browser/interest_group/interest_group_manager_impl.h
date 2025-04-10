@@ -288,6 +288,15 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // information is provided to bidder's browsing signals in generateBid().
   void RecordViewClick(network::AdAuctionEventRecord event_record);
 
+  // Invokes `callback` with whether the database has a record of view/click
+  // events for given combination of provider & eligible origins.
+  //
+  // nullopt will be passed in case of some sort of database error.
+  void CheckViewClickInfoInDbForTesting(
+      url::Origin provider_origin,
+      url::Origin eligible_origin,
+      base::OnceCallback<void(std::optional<bool>)> callback);
+
   // Reports the ad keys to the k-anonymity service. Should be called when
   // FLEDGE selects an ad.
   void RegisterAdKeysAsJoined(base::flat_set<std::string> hashed_keys);
@@ -343,6 +352,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // empty then apply to all storage keys.
   void DeleteInterestGroupData(
       StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+      bool user_initiated_deletion,
       base::OnceClosure completion_callback);
 
   // Completely delete all interest group data, including k-anonymity data that

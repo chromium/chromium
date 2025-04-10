@@ -2956,8 +2956,12 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
                 CreateTaskCompletionClosure(TracingDataType::kCookies))));
   }
 
-  // It is not expected to only delete internal interest group data.
+  // It is not expected to only delete internal interest group data, or to
+  // request interest group removal to be extra-thorough w/o asking for
+  // interest group removal.
   DCHECK(!(remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL) ||
+         remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS);
+  DCHECK(!(remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR) ||
          remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS);
   if (remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS) {
     if (interest_group_manager) {
@@ -2972,6 +2976,7 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
       } else {
         interest_group_manager->DeleteInterestGroupData(
             generic_filter,
+            remove_mask_ & REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR,
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                 CreateTaskCompletionClosure(TracingDataType::kInterestGroups)));
       }

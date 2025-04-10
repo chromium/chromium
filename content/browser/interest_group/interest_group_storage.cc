@@ -5690,14 +5690,78 @@ DoGetInterestGroupNamesForJoiningOrigin(sql::Database& db,
   return result;
 }
 
+bool DoDeleteViewClickCounts(sql::Database& db) {
+  sql::Statement remove_view_clicks(db.GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM view_and_click_events"));
+  if (!remove_view_clicks.is_valid()) {
+    return false;
+  }
+
+  remove_view_clicks.Reset(true);
+  return remove_view_clicks.Run();
+}
+
+bool DoDeleteViewClickCountsForProvider(
+    sql::Database& db,
+    const StoragePartition::StorageKeyMatcherFunction& storage_key_matcher) {
+  std::vector<url::Origin> providers_to_delete;
+
+  sql::Statement load(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "SELECT DISTINCT provider_origin FROM view_and_click_events"));
+  if (!load.is_valid()) {
+    return false;
+  }
+  load.Reset(true);
+  while (load.Step()) {
+    url::Origin origin = DeserializeOrigin(load.ColumnStringView(0));
+    if (storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(origin))) {
+      providers_to_delete.push_back(std::move(origin));
+    }
+  }
+
+  sql::Statement del(db.GetCachedStatement(
+      SQL_FROM_HERE,
+      "DELETE FROM view_and_click_events WHERE provider_origin=?"));
+  if (!del.is_valid()) {
+    return false;
+  }
+  for (const url::Origin& origin : providers_to_delete) {
+    del.Reset(true);
+    del.BindString(0, origin.Serialize());
+    if (!del.Run()) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool DoDeleteInterestGroupData(
     sql::Database& db,
-    StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    bool user_initiated_deletion) {
   const base::Time distant_past = base::Time::Min();
   sql::Transaction transaction(&db);
 
   if (!transaction.Begin()) {
     return false;
+  }
+
+  // For view & click events, we generally delete everything even when the user
+  // asked for a subset of sites, since we do not know what top-level site the
+  // events are associated with, so we have to be conservative to make sure to
+  // match everything that may be expected. Doing this for Clear-Site-Data,
+  // however, would let sites hostilely delete clickiness data of others,
+  // so if `user_initiated_deletion` is false, only things provided by that
+  // origin are deleted.
+  if (user_initiated_deletion || storage_key_matcher.is_null()) {
+    if (!DoDeleteViewClickCounts(db)) {
+      return false;
+    }
+  } else {
+    if (!DoDeleteViewClickCountsForProvider(db, storage_key_matcher)) {
+      return false;
+    }
   }
 
   std::vector<url::Origin> affected_origins;
@@ -7245,13 +7309,15 @@ void InterestGroupStorage::RemoveInterestGroupsMatchingOwnerAndJoiner(
 }
 
 void InterestGroupStorage::DeleteInterestGroupData(
-    StoragePartition::StorageKeyMatcherFunction storage_key_matcher) {
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    bool user_initiated_deletion) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
     return;
   }
 
-  if (!DoDeleteInterestGroupData(*db_, storage_key_matcher)) {
+  if (!DoDeleteInterestGroupData(*db_, std::move(storage_key_matcher),
+                                 user_initiated_deletion)) {
     DLOG(ERROR) << "Could not delete interest group data: "
                 << db_->GetErrorMessage();
   }
@@ -7460,18 +7526,27 @@ InterestGroupStorage::ComputeCompactClickinessForTesting(
   return ComputeCompactClickiness(now, raw);
 }
 
-bool InterestGroupStorage::
-    CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
-        const url::Origin& provider_origin,
-        const url::Origin& eligible_origin) {
+std::optional<bool>
+InterestGroupStorage::CheckViewClickCountsForProviderAndEligibleInDbForTesting(
+    const url::Origin& provider_origin,
+    const url::Origin& eligible_origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!EnsureDBInitialized()) {
-    return false;
+    return std::nullopt;
   }
 
   auto status = DoGetViewClickCountsForProviderAndEligible(
       *db_, provider_origin, eligible_origin);
-  return !status.has_value() && status.error() == MissingReason::kNotInDb;
+  if (status.has_value()) {
+    return true;
+  }
+  switch (status.error()) {
+    case MissingReason::kNotInDb:
+      return false;
+    case MissingReason::kDbError:
+    case MissingReason::kDecodeError:
+      return std::nullopt;
+  }
 }
 
 void InterestGroupStorage::DatabaseErrorCallback(int extended_error,

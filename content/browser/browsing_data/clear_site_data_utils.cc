@@ -135,6 +135,10 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       remove_mask |= BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
       // Internal data should not be removed by site-initiated deletions.
       remove_mask &= ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX_INTERNAL;
+      // Some deletions should also be more narrow for Clear-Site-Data, to avoid
+      // sites from hostilely interfering with each other where a user-initiated
+      // deletion would be conservative.
+      remove_mask &= ~BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
     }
 
     if (clear_site_data_types_.Has(ClearSiteDataType::kCache)) {

@@ -377,7 +377,7 @@ TEST_F(InterestGroupCachingStorageTest, DBUpdatesShouldModifyCache) {
       base::BindLambdaForTesting([&owner](const blink::StorageKey& candidate) {
         return candidate == blink::StorageKey::CreateFirstParty(owner);
       }),
-      base::BindLambdaForTesting([]() {}));
+      /*user_initiated_deletion=*/true, base::BindLambdaForTesting([]() {}));
   task_environment().FastForwardBy(base::Minutes(1));
   loaded_igs = GetInterestGroupsForOwner(caching_storage.get(),
                                          ig_different_owner.owner);

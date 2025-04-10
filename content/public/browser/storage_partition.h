@@ -226,6 +226,10 @@ class CONTENT_EXPORT StoragePartition {
     // https://github.com/WICG/dbsc/blob/main/README.md
     REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS = 1 << 19,
 
+    // Things in interest groups that should only be removed as part of
+    // user-initiated clearing.
+    REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR = 1 << 20,
+
     REMOVE_DATA_MASK_ALL = 0xFFFFFFFF,
 
     // Corresponds to storage::kStorageTypeTemporary, which is equivalent to

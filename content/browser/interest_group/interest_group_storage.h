@@ -195,7 +195,8 @@ class CONTENT_EXPORT InterestGroupStorage {
 
   // Clear out storage for the matching owning storage key.
   void DeleteInterestGroupData(
-      StoragePartition::StorageKeyMatcherFunction storage_key_matcher);
+      StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+      bool user_initiated_deletion);
   // Clear out all interest group storage including k-anonymity store.
   void DeleteAllInterestGroupData();
   // Update the interest group priority.
@@ -304,12 +305,11 @@ class CONTENT_EXPORT InterestGroupStorage {
       base::Time now,
       const InterestGroupStorage::ClickinessCompactionRawEvents& raw);
 
-  // Returns true if there is no entry for given
+  // Returns whether there is no entry for given
   // (provider_origin, eligible_origin) in database view/click table.
   //
-  // Returns false if the entry exists, or if there is some sort of an error
-  // with the database.
-  bool CheckViewClickCountsForProviderAndEligibleNotInDbForTesting(
+  // Returns nullopt in case of an error.
+  std::optional<bool> CheckViewClickCountsForProviderAndEligibleInDbForTesting(
       const url::Origin& provider_origin,
       const url::Origin& eligible_origin);
 

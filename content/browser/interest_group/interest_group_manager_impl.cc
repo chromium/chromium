@@ -549,6 +549,15 @@ void InterestGroupManagerImpl::RecordViewClick(
   caching_storage_.RecordViewClick(std::move(event_record));
 }
 
+void InterestGroupManagerImpl::CheckViewClickInfoInDbForTesting(
+    url::Origin provider_origin,
+    url::Origin eligible_origin,
+    base::OnceCallback<void(std::optional<bool>)> callback) {
+  caching_storage_.CheckViewClickInfoInDbForTesting(std::move(provider_origin),
+                                                    std::move(eligible_origin),
+                                                    std::move(callback));
+}
+
 void InterestGroupManagerImpl::RegisterAdKeysAsJoined(
     base::flat_set<std::string> hashed_keys) {
   k_anonymity_manager_->RegisterAdKeysAsJoined(std::move(hashed_keys));
@@ -598,8 +607,10 @@ void InterestGroupManagerImpl::UpdateCachedOriginsIfEnabled(
 
 void InterestGroupManagerImpl::DeleteInterestGroupData(
     StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    bool user_initiated_deletion,
     base::OnceClosure completion_callback) {
-  caching_storage_.DeleteInterestGroupData(storage_key_matcher,
+  caching_storage_.DeleteInterestGroupData(std::move(storage_key_matcher),
+                                           user_initiated_deletion,
                                            std::move(completion_callback));
 }
 
