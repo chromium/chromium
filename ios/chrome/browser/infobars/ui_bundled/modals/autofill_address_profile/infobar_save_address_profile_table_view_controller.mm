@@ -45,10 +45,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeUpdateModalDescription,
   ItemTypeUpdateModalTitle,
   ItemTypeUpdateNameNew,
+  ItemTypeUpdateAlternativeNameNew,
   ItemTypeUpdateAddressNew,
   ItemTypeUpdateEmailNew,
   ItemTypeUpdatePhoneNew,
   ItemTypeUpdateNameOld,
+  ItemTypeUpdateAlternativeNameOld,
   ItemTypeUpdateAddressOld,
   ItemTypeUpdateEmailOld,
   ItemTypeUpdatePhoneOld,
@@ -468,6 +470,8 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
   switch (itemType) {
     case ItemTypeUpdateNameNew:
     case ItemTypeUpdateNameOld:
+    case ItemTypeUpdateAlternativeNameNew:
+    case ItemTypeUpdateAlternativeNameOld:
       return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
     case ItemTypeSaveAddress:
     case ItemTypeUpdateAddressNew:
@@ -503,6 +507,9 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       return old ? ItemTypeUpdatePhoneOld : ItemTypeUpdatePhoneNew;
     case autofill::NAME_FULL:
       return old ? ItemTypeUpdateNameOld : ItemTypeUpdateNameNew;
+    case autofill::ALTERNATIVE_FULL_NAME:
+      return old ? ItemTypeUpdateAlternativeNameOld
+                 : ItemTypeUpdateAlternativeNameNew;
     default:
       break;
   }
