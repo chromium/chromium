@@ -4539,19 +4539,39 @@ public class StripLayoutHelper
         }
     }
 
-    // TODO(crbug.com/409384790): Include group title for dropping between collapsed group.
     public int getTabIndexForTabDrop(float x) {
-        float halfTabWidth = mCachedTabWidthSupplier.get() / 2;
-        for (int i = 0; i < mStripTabs.length; i++) {
-            final StripLayoutTab stripTab = mStripTabs[i];
+        for (int i = 0; i < mStripViews.length; i++) {
+            final StripLayoutView stripView = mStripViews[i];
+            final float leftEdge;
+            final float rightEdge;
+            boolean rtl = LocalizationUtils.isLayoutRtl();
+            if (stripView instanceof StripLayoutTab tab) {
+                if (tab.isCollapsed()) continue;
+                final float halfTabWidth = mCachedTabWidthSupplier.get() / 2;
+                leftEdge = tab.getTouchTargetLeft();
+                rightEdge = tab.getTouchTargetRight();
 
-            if (LocalizationUtils.isLayoutRtl()) {
-                if (x > stripTab.getTouchTargetRight() - halfTabWidth) return i;
+                boolean hasReachedThreshold =
+                        rtl ? x > rightEdge - halfTabWidth : x < leftEdge + halfTabWidth;
+                if (hasReachedThreshold) {
+                    return StripLayoutUtils.findIndexForTab(mStripTabs, tab.getTabId());
+                }
             } else {
-                if (x < stripTab.getTouchTargetLeft() + halfTabWidth) return i;
+                final StripLayoutGroupTitle groupTitle = (StripLayoutGroupTitle) stripView;
+                final float halfGroupTitleWidth = groupTitle.getWidth() / 2;
+                leftEdge = groupTitle.getDrawX();
+                rightEdge = leftEdge + groupTitle.getWidth();
+
+                boolean hasReachedThreshold =
+                        rtl
+                                ? x > rightEdge - halfGroupTitleWidth
+                                : x < leftEdge + halfGroupTitleWidth;
+                if (hasReachedThreshold) {
+                    return StripLayoutUtils.findIndexForTab(
+                            mStripTabs, ((StripLayoutTab) mStripViews[i + 1]).getTabId());
+                }
             }
         }
-
         return mStripTabs.length;
     }
 

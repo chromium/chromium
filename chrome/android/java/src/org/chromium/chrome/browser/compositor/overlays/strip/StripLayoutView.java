@@ -60,7 +60,7 @@ public abstract class StripLayoutView implements VirtualView {
                 }
             };
 
-    /** A property for animations to use for changing the trailingMargin of the tab. */
+    /** A property for animations to use for changing the trailingMargin of the view. */
     public static final FloatProperty<StripLayoutView> TRAILING_MARGIN =
             new FloatProperty<>("trailingMargin") {
                 @Override
