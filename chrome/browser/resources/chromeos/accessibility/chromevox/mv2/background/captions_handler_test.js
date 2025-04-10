@@ -8,9 +8,9 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for CaptionsHandler.
  */
-ChromeVoxCaptionsHandlerTest = class extends ChromeVoxE2ETest {};
+ChromeVoxMV2CaptionsHandlerTest = class extends ChromeVoxE2ETest {};
 
-AX_TEST_F('ChromeVoxCaptionsHandlerTest', 'Open', function() {
+AX_TEST_F('ChromeVoxMV2CaptionsHandlerTest', 'Open', function() {
   let liveCaptionEnabledCount = 0;
   chrome.accessibilityPrivate.enableLiveCaption = () =>
       liveCaptionEnabledCount++;
@@ -29,7 +29,7 @@ AX_TEST_F('ChromeVoxCaptionsHandlerTest', 'Open', function() {
   assertEquals(0, liveCaptionEnabledCount);
 });
 
-AX_TEST_F('ChromeVoxCaptionsHandlerTest', 'RangeObserver', async function() {
+AX_TEST_F('ChromeVoxMV2CaptionsHandlerTest', 'RangeObserver', async function() {
   const root =
       await this.runWithLoadedTree('<button>Hello</button><p>World</p>');
   const button = root.find({role: 'button'});
@@ -47,7 +47,7 @@ AX_TEST_F('ChromeVoxCaptionsHandlerTest', 'RangeObserver', async function() {
 
 
 AX_TEST_F(
-    'ChromeVoxCaptionsHandlerTest', 'HandleOnlyFirstAttributeChangedEvent',
+    'ChromeVoxMV2CaptionsHandlerTest', 'HandleOnlyFirstAttributeChangedEvent',
     async function() {
       const desktop =
           await new Promise(resolve => this.runWithLoadedDesktop(resolve));

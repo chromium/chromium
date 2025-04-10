@@ -13,7 +13,7 @@ GEN_INCLUDE([
  * out classes not under test but it runs under a full extension test
  * environment to get things like extension api literals.
  */
-ChromeVoxIntentHandlerTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2IntentHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -24,7 +24,7 @@ ChromeVoxIntentHandlerTest = class extends ChromeVoxE2ETest {
   }
 };
 
-AX_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByCharacter', function() {
+AX_TEST_F('ChromeVoxMV2IntentHandlerTest', 'MoveByCharacter', function() {
   let calls = [];
   const fakeLine = class {
     constructor(startOffset) {
@@ -76,7 +76,7 @@ AX_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByCharacter', function() {
   assertArraysEquals(['go'], calls[3]);
 });
 
-AX_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
+AX_TEST_F('ChromeVoxMV2IntentHandlerTest', 'MoveByWord', function() {
   let calls = [];
   const fakeLine = new (class {
     createWordRange(...args) {
@@ -117,7 +117,7 @@ AX_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByWord', function() {
   assertEquals(0, calls.length);
 });
 
-AX_TEST_F('ChromeVoxIntentHandlerTest', 'MoveByLine', function() {
+AX_TEST_F('ChromeVoxMV2IntentHandlerTest', 'MoveByLine', function() {
   const fakeLine = new (class {
     constructor() {
       this.speakLineCount = 0;

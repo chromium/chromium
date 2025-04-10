@@ -19,7 +19,7 @@ const PanelBridge = {
 };
 
 /** Test fixture for PanelNodeMenuBackground. */
-ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2PanelNodeMenuBackgroundTest = class extends ChromeVoxE2ETest {
   assertMenuItemIndicatesNoNodesFound(item) {
     assertNotNullNorUndefined(item);
     assertEquals('None', item.title);
@@ -146,7 +146,8 @@ ChromeVoxPanelNodeMenuBackgroundTest = class extends ChromeVoxE2ETest {
 // TODO(anastasi): These tests were never run when initially written. Fix them
 // so they exercise the intended code.
 AX_TEST_F(
-    'ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_EmptyDocument', async function() {
+    'ChromeVoxMV2PanelNodeMenuBackgroundTest', 'DISABLED_EmptyDocument',
+    async function() {
       await this.runWithLoadedTree('');
       this.createAllNodeMenuBackgrounds();
 
@@ -157,29 +158,32 @@ AX_TEST_F(
       this.assertMenusHaveNoNodesFoundExcept(null);
     });
 
-AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Headings', async function() {
-  await this.runWithLoadedTree(this.headingsDoc);
-  this.createAllNodeMenuBackgrounds();
+AX_TEST_F(
+    'ChromeVoxMV2PanelNodeMenuBackgroundTest', 'DISABLED_Headings',
+    async function() {
+      await this.runWithLoadedTree(this.headingsDoc);
+      this.createAllNodeMenuBackgrounds();
 
-  // Check that there are the correct number of calls (one for each menu,
-  // plus two extra for the additional headings found, plus six for the
-  // additional system elements).
-  assertEquals(
-      ALL_PANEL_MENU_NODE_DATA.length + 2 + 6, PanelBridge.calls.length);
+      // Check that there are the correct number of calls (one for each menu,
+      // plus two extra for the additional headings found, plus six for the
+      // additional system elements).
+      assertEquals(
+          ALL_PANEL_MENU_NODE_DATA.length + 2 + 6, PanelBridge.calls.length);
 
-  // Expect that the three items are added to the headings menu
-  const headingItems = PanelBridge.calls.filter(this.isHeading);
-  assertEquals(3, headingItems.length);
+      // Expect that the three items are added to the headings menu
+      const headingItems = PanelBridge.calls.filter(this.isHeading);
+      assertEquals(3, headingItems.length);
 
-  this.assertItemMatches('Heading 1', headingItems.shift());
-  this.assertItemMatches('Heading 2', headingItems.shift());
-  this.assertItemMatches('Heading 3', headingItems.shift());
+      this.assertItemMatches('Heading 1', headingItems.shift());
+      this.assertItemMatches('Heading 2', headingItems.shift());
+      this.assertItemMatches('Heading 3', headingItems.shift());
 
-  this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.HEADING);
-});
+      this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.HEADING);
+    });
 
 AX_TEST_F(
-    'ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Landmarks', async function() {
+    'ChromeVoxMV2PanelNodeMenuBackgroundTest', 'DISABLED_Landmarks',
+    async function() {
       await this.runWithLoadedTree(this.landmarksDoc);
       this.createAllNodeMenuBackgrounds();
 
@@ -204,28 +208,32 @@ AX_TEST_F(
       this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.LANDMARK);
     });
 
-AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Links', async function() {
-  await this.runWithLoadedTree(this.linksDoc);
-  this.createAllNodeMenuBackgrounds();
+AX_TEST_F(
+    'ChromeVoxMV2PanelNodeMenuBackgroundTest', 'DISABLED_Links',
+    async function() {
+      await this.runWithLoadedTree(this.linksDoc);
+      this.createAllNodeMenuBackgrounds();
 
-  // Check that there are the correct number of calls (one for each menu, plus
-  // three extra for the additional links found).
-  assertEquals(ALL_PANEL_MENU_NODE_DATA.length + 3, PanelBridge.calls.length);
+      // Check that there are the correct number of calls (one for each menu,
+      // plus three extra for the additional links found).
+      assertEquals(
+          ALL_PANEL_MENU_NODE_DATA.length + 3, PanelBridge.calls.length);
 
-  // Verify that four items were added to the links menu.
-  const linkItems = PanelBridge.calls.filter(this.isLink);
-  assertEquals(4, linkItems.length);
+      // Verify that four items were added to the links menu.
+      const linkItems = PanelBridge.calls.filter(this.isLink);
+      assertEquals(4, linkItems.length);
 
-  this.assertItemMatches('Link 1', linkItems.shift());
-  this.assertItemMatches('Link 2', linkItems.shift());
-  this.assertItemMatches('Link 3', linkItems.shift());
-  this.assertItemMatches('Link 4', linkItems.shift());
+      this.assertItemMatches('Link 1', linkItems.shift());
+      this.assertItemMatches('Link 2', linkItems.shift());
+      this.assertItemMatches('Link 3', linkItems.shift());
+      this.assertItemMatches('Link 4', linkItems.shift());
 
-  this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.LINK);
-});
+      this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.LINK);
+    });
 
 AX_TEST_F(
-    'ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_FormControls', async function() {
+    'ChromeVoxMV2PanelNodeMenuBackgroundTest', 'DISABLED_FormControls',
+    async function() {
       await this.runWithLoadedTree(this.formControlsDoc);
       this.createAllNodeMenuBackgrounds('panel_menu_form_controls');
 
@@ -249,26 +257,30 @@ AX_TEST_F(
       this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.FORM_CONTROL);
     });
 
-AX_TEST_F('ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_Tables', async function() {
-  await this.runWithLoadedTree(this.tablesDoc);
-  this.createAllNodeMenuBackgrounds();
+AX_TEST_F(
+    'ChromeVoxMV2PanelNodeMenuBackgroundTest', 'DISABLED_Tables',
+    async function() {
+      await this.runWithLoadedTree(this.tablesDoc);
+      this.createAllNodeMenuBackgrounds();
 
-  // Check that there are the correct number of calls (one for each menu,
-  // plus one extra for the additional links found).
-  assertEquals(ALL_PANEL_MENU_NODE_DATA.length + 1, PanelBridge.calls.length);
+      // Check that there are the correct number of calls (one for each menu,
+      // plus one extra for the additional links found).
+      assertEquals(
+          ALL_PANEL_MENU_NODE_DATA.length + 1, PanelBridge.calls.length);
 
-  // Verify that two items were added to the tables menu.
-  const tableItems = PanelBridge.calls.filter(this.isTable);
-  assertEquals(2, tableItems.length);
+      // Verify that two items were added to the tables menu.
+      const tableItems = PanelBridge.calls.filter(this.isTable);
+      assertEquals(2, tableItems.length);
 
-  this.assertItemMatches('grid', tableItems.unshift());
-  this.assertItemMatches('table', tableItems.unshift());
+      this.assertItemMatches('grid', tableItems.unshift());
+      this.assertItemMatches('table', tableItems.unshift());
 
-  this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.TABLE);
-});
+      this.assertMenusHaveNoNodesFoundExcept(PanelNodeMenuId.TABLE);
+    });
 
 AX_TEST_F(
-    'ChromeVoxPanelNodeMenuBackgroundTest', 'DISABLED_MixedData', async function() {
+    'ChromeVoxMV2PanelNodeMenuBackgroundTest', 'DISABLED_MixedData',
+    async function() {
       await this.runWithLoadedTree(this.mixedDoc);
       this.createAllNodeMenuBackgrounds();
 

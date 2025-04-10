@@ -7,7 +7,8 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture.
  */
-ChromeVoxExpandingBrailleTranslatorUnitTest = class extends ChromeVoxE2ETest {};
+ChromeVoxMV2ExpandingBrailleTranslatorUnitTest =
+    class extends ChromeVoxE2ETest {};
 
 /**
  * An implementation of {@link LibLouis.Translator} whose translation
@@ -63,7 +64,7 @@ function assertArrayBufferMatches(expected, actual) {
 }
 
 AX_TEST_F(
-    'ChromeVoxExpandingBrailleTranslatorUnitTest', 'TranslationError',
+    'ChromeVoxMV2ExpandingBrailleTranslatorUnitTest', 'TranslationError',
     function() {
       const text = new Spannable('error ok', new ValueSpan());
       text.setSpan(new ValueSelectionSpan(), 0, 0);
@@ -245,7 +246,7 @@ function createText(text, opt_selectionStart, opt_selectionEnd, opt_style) {
 const TEXT = 'Hello, world!';
 
 AX_TEST_F(
-    'ChromeVoxExpandingBrailleTranslatorUnitTest', 'successfulTranslations',
+    'ChromeVoxMV2ExpandingBrailleTranslatorUnitTest', 'successfulTranslations',
     function() {
       /**
        * Dictionary of test strings, keyed on a descriptive name for the
@@ -316,7 +317,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxExpandingBrailleTranslatorUnitTest', 'StyleTranslations',
+    'ChromeVoxMV2ExpandingBrailleTranslatorUnitTest', 'StyleTranslations',
     function() {
       const formTypeMap = {};
       formTypeMap[LibLouis.FormType.BOLD] = 'b';

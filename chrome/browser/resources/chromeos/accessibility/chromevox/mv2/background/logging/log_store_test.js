@@ -8,9 +8,9 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for automation_util.js.
  */
-ChromeVoxLogStoreTest = class extends ChromeVoxE2ETest {};
+ChromeVoxMV2LogStoreTest = class extends ChromeVoxE2ETest {};
 
-AX_TEST_F('ChromeVoxLogStoreTest', 'ShortLogs', function() {
+AX_TEST_F('ChromeVoxMV2LogStoreTest', 'ShortLogs', function() {
   const logStore = new LogStore();
   for (let i = 0; i < 100; i++) {
     logStore.writeTextLog('test' + i, 'speech');
@@ -23,7 +23,7 @@ AX_TEST_F('ChromeVoxLogStoreTest', 'ShortLogs', function() {
   }
 });
 
-AX_TEST_F('ChromeVoxLogStoreTest', 'LongLogs', function() {
+AX_TEST_F('ChromeVoxMV2LogStoreTest', 'LongLogs', function() {
   const logStore = new LogStore();
   for (let i = 0; i < LOG_LIMIT + 500; i++) {
     logStore.writeTextLog('test' + i, 'speech');

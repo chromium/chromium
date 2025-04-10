@@ -10,7 +10,7 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
  * This is an E2E test because there's no easy way to load a data file in
  * a webui-style test.
  */
-ChromeVoxBrailleTranslatorManagerTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2BrailleTranslatorManagerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -69,7 +69,7 @@ function callOnce(callback) {
   };
 }
 
-TEST_F('ChromeVoxBrailleTranslatorManagerTest', 'testInitial', function() {
+TEST_F('ChromeVoxMV2BrailleTranslatorManagerTest', 'testInitial', function() {
   assertEquals(null, this.manager.getExpandingTranslator());
   assertEquals(null, this.manager.getDefaultTranslator());
   assertEquals(null, this.manager.getUncontractedTranslator());
@@ -81,7 +81,7 @@ TEST_F('ChromeVoxBrailleTranslatorManagerTest', 'testInitial', function() {
 });
 
 TEST_F(
-    'ChromeVoxBrailleTranslatorManagerTest', 'testRefreshWithoutChange',
+    'ChromeVoxMV2BrailleTranslatorManagerTest', 'testRefreshWithoutChange',
     function() {
       this.addChangeListener(function() {
         assertNotEquals(null, this.manager.getExpandingTranslator());
@@ -94,7 +94,7 @@ TEST_F(
     });
 
 TEST_F(
-    'ChromeVoxBrailleTranslatorManagerTest', 'testRefreshWithChange',
+    'ChromeVoxMV2BrailleTranslatorManagerTest', 'testRefreshWithChange',
     function() {
       this.addChangeListener(function() {
         assertNotEquals(null, this.manager.getExpandingTranslator());

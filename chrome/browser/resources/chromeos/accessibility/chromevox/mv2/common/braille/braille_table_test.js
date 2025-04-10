@@ -10,13 +10,13 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
  * This is an E2E test because there's no easy way to load a data file in
  * a webui-style test.
  */
-ChromeVoxBrailleTableTest = class extends ChromeVoxE2ETest {};
+ChromeVoxMV2BrailleTableTest = class extends ChromeVoxE2ETest {};
 
 /**
  * Tests that {@code getAll} can fetch and parse the tables file.
  * NOTE: This will need to be adjusted when more tables are added.
  */
-TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
+TEST_F('ChromeVoxMV2BrailleTableTest', 'testGetAllAndValidate', function() {
   BrailleTable.getAll(this.newCallback(function(tables) {
     assertEquals(184, tables.length);
     assertNotNullNorUndefined(
@@ -67,7 +67,7 @@ TEST_F('ChromeVoxBrailleTableTest', 'testGetAllAndValidate', function() {
 });
 
 /** Tests getDisplayName for some specific representative cases. */
-TEST_F('ChromeVoxBrailleTableTest', 'testGetDisplayName', function() {
+TEST_F('ChromeVoxMV2BrailleTableTest', 'testGetDisplayName', function() {
   BrailleTable.getAll(this.newCallback(function(tables) {
     let table = BrailleTable.forId(tables, 'bg');
     assertEquals('Bulgarian, Grade 1', BrailleTable.getDisplayName(table));
@@ -87,7 +87,7 @@ TEST_F('ChromeVoxBrailleTableTest', 'testGetDisplayName', function() {
 /**
  * Tests the getUncontracted function.
  */
-TEST_F('ChromeVoxBrailleTableTest', 'testGetUncontracted', function() {
+TEST_F('ChromeVoxMV2BrailleTableTest', 'testGetUncontracted', function() {
   BrailleTable.getAll(this.newCallback(function(tables) {
     function expectUncontracted(uncontractedId, idToCheck) {
       const checkedTable = BrailleTable.forId(tables, idToCheck);

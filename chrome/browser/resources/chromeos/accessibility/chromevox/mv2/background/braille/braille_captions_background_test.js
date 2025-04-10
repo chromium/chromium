@@ -6,7 +6,7 @@
 GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
 /** Test fixture. */
-ChromeVoxBrailleCaptionsBackgroundTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2BrailleCaptionsBackgroundTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -29,7 +29,7 @@ ChromeVoxBrailleCaptionsBackgroundTest = class extends ChromeVoxE2ETest {
 };
 
 AX_TEST_F(
-    'ChromeVoxBrailleCaptionsBackgroundTest', 'EnableAndDisable',
+    'ChromeVoxMV2BrailleCaptionsBackgroundTest', 'EnableAndDisable',
     async function() {
       // Default should be disabled.
       assertFalse(BrailleCaptionsBackground.isEnabled());
@@ -42,7 +42,8 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBrailleCaptionsBackgroundTest', 'SetContent', async function() {
+    'ChromeVoxMV2BrailleCaptionsBackgroundTest', 'SetContent',
+    async function() {
       // Override PanelCommand.send() to capture the braille displayed.
       globalThis.setContentOutput = null;
       // Use a function() rather than an arrow lambda to allow access to |this|.
@@ -85,7 +86,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBrailleCaptionsBackgroundTest', 'SetImageContent',
+    'ChromeVoxMV2BrailleCaptionsBackgroundTest', 'SetImageContent',
     async function() {
       // Override PanelCommand.send() to capture the braille displayed.
       globalThis.setImageContentOutput = null;
@@ -107,7 +108,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBrailleCaptionsBackgroundTest', 'SetActive', async function() {
+    'ChromeVoxMV2BrailleCaptionsBackgroundTest', 'SetActive', async function() {
       const checkMethodCallsForValue = (value, changed) => {
         this.addCallbackPostMethod(
             ChromeVoxPrefs.instance, 'setPref', (key, val) => {
@@ -166,7 +167,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBrailleCaptionsBackgroundTest', 'GetVirtualDisplayState',
+    'ChromeVoxMV2BrailleCaptionsBackgroundTest', 'GetVirtualDisplayState',
     async function() {
       // Expect a default result when the display is disabled.
       assertFalse(BrailleCaptionsBackground.isEnabled());

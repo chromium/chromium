@@ -8,7 +8,7 @@ GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for SettingsManager.
  */
-ChromeVoxSettingsManagerTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2SettingsManagerTest = class extends ChromeVoxE2ETest {
   async getStoragePrefs(prefNames) {
     const prefs = {};
     for (const prefName of prefNames) {
@@ -55,7 +55,7 @@ ChromeVoxSettingsManagerTest = class extends ChromeVoxE2ETest {
 // that prefs are set to their default values, and verifies that there are still
 // no storage prefs. This mimics the state of a fresh user profile.
 AX_TEST_F(
-    'ChromeVoxSettingsManagerTest',
+    'ChromeVoxMV2SettingsManagerTest',
     'DefaultSettingsPrefsSetAfterNoStoragePrefsSet', async function() {
       const defaultPrefs = {
         announceDownloadNotifications: true,
@@ -100,7 +100,7 @@ AX_TEST_F(
 // SettingsManager, verifies prefs migrated to settings prefs, and verifies that
 // storage prefs are removed.
 AX_TEST_F(
-    'ChromeVoxSettingsManagerTest',
+    'ChromeVoxMV2SettingsManagerTest',
     'PrefsMigratedToSettingsAndDefaultsSetAfterSomeStoragePrefsSet',
     async function() {
       const changedPrefs = {
@@ -151,7 +151,7 @@ AX_TEST_F(
 // SettingsManager, verifies prefs migrated to settings prefs, and verifies that
 // storage prefs are removed.
 AX_TEST_F(
-    'ChromeVoxSettingsManagerTest',
+    'ChromeVoxMV2SettingsManagerTest',
     'AllPrefsMigratedToSettingsAfterStoragePrefsSet', async function() {
       const prefs = {
         announceDownloadNotifications: false,
@@ -196,7 +196,7 @@ AX_TEST_F(
 // SettingsManager, verifies prefs migrated to settings prefs, and verifies that
 // storage prefs are removed.
 AX_TEST_F(
-    'ChromeVoxSettingsManagerTest',
+    'ChromeVoxMV2SettingsManagerTest',
     'AllDeveloperPrefsMigratedToSettingsAfterStoragePrefsSet',
     async function() {
       const loggingPrefs = {

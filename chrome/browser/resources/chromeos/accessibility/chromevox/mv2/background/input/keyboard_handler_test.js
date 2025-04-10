@@ -8,7 +8,7 @@ GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 /**
  * Test fixture for ChromeVox KeyboardHandler.
  */
-ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2BackgroundKeyboardHandlerTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -32,7 +32,7 @@ ChromeVoxBackgroundKeyboardHandlerTest = class extends ChromeVoxE2ETest {
 
 
 AX_TEST_F(
-    'ChromeVoxBackgroundKeyboardHandlerTest', 'SearchGetsPassedThrough',
+    'ChromeVoxMV2BackgroundKeyboardHandlerTest', 'SearchGetsPassedThrough',
     async function() {
       await this.runWithLoadedTree('<p>test</p>');
       // A Search keydown gets eaten.
@@ -54,7 +54,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBackgroundKeyboardHandlerTest', 'PassThroughMode',
+    'ChromeVoxMV2BackgroundKeyboardHandlerTest', 'PassThroughMode',
     async function() {
       await this.runWithLoadedTree('<p>test</p>');
       assertFalse(BackgroundKeyboardHandler.passThroughModeEnabled_);
@@ -162,7 +162,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBackgroundKeyboardHandlerTest', 'PassThroughModeOff',
+    'ChromeVoxMV2BackgroundKeyboardHandlerTest', 'PassThroughModeOff',
     async function() {
       await this.runWithLoadedTree('<p>test</p>');
       function assertNoPassThrough() {
@@ -210,7 +210,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBackgroundKeyboardHandlerTest', 'UnexpectedKeyDownUpPairs',
+    'ChromeVoxMV2BackgroundKeyboardHandlerTest', 'UnexpectedKeyDownUpPairs',
     async function() {
       await this.runWithLoadedTree('<p>test</p>');
       // Send a few key downs.
@@ -242,7 +242,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxBackgroundKeyboardHandlerTest',
+    'ChromeVoxMV2BackgroundKeyboardHandlerTest',
     'UnexpectedKeyDownUpPairsPassThrough', async function() {
       await this.runWithLoadedTree('<p>test</p>');
       // Force pass through mode.

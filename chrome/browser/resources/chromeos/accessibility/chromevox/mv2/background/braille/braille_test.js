@@ -4,9 +4,9 @@
 
 GEN_INCLUDE(['../../testing/chromevox_e2e_test_base.js']);
 
-ChromeVoxBrailleTest = class extends ChromeVoxE2ETest {};
+ChromeVoxMV2BrailleTest = class extends ChromeVoxE2ETest {};
 
-AX_TEST_F('ChromeVoxBrailleTest', 'BrailleLog', async function() {
+AX_TEST_F('ChromeVoxMV2BrailleTest', 'BrailleLog', async function() {
   this.addCallbackPostMethod(
       LogStore.instance, 'writeTextLog', this.newCallback((text, type) => {
         assertEquals('Braille "test"', text);

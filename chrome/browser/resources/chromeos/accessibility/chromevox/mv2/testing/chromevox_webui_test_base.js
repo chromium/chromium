@@ -12,7 +12,7 @@ GEN_INCLUDE([
 /**
  * Base test fixture for ChromeVox webui tests. Run in a Blink renderer.
  */
-ChromeVoxWebUITestBase = class extends AccessibilityTestBase {
+ChromeVoxMV2WebUITestBase = class extends AccessibilityTestBase {
   constructor() {
     super();
     if (this.isAsync) {
@@ -76,7 +76,7 @@ ChromeVoxWebUITestBase = class extends AccessibilityTestBase {
 // its first pass where it uses this file to generate C++ code.
 
 /** @override */
-ChromeVoxWebUITestBase.prototype.isAsync = false;
+ChromeVoxMV2WebUITestBase.prototype.isAsync = false;
 
 /** @override */
-ChromeVoxWebUITestBase.prototype.browsePreload = DUMMY_URL;
+ChromeVoxMV2WebUITestBase.prototype.browsePreload = DUMMY_URL;

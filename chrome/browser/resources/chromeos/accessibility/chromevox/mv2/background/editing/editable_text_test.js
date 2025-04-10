@@ -99,7 +99,7 @@ TestBraille.assertContent = function(text, opt_start, opt_end) {
 };
 
 /** Test fixture. */
-ChromeVoxEditableTextUnitTest = class extends ChromeVoxE2ETest {
+ChromeVoxMV2EditableTextUnitTest = class extends ChromeVoxE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
@@ -111,7 +111,7 @@ ChromeVoxEditableTextUnitTest = class extends ChromeVoxE2ETest {
   }
 };
 
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'CursorNavigation', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'CursorNavigation', function() {
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
 
@@ -139,7 +139,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'CursorNavigation', function() {
 });
 
 /** Test typing words. */
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'TypingWords', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'TypingWords', function() {
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
   AutomationEditableText.prototype.changed.call(
@@ -225,7 +225,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'TypingWords', function() {
 });
 
 /** Test selection. */
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Selection', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'Selection', function() {
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('Hello, world.', 0, 0, false, tts);
   AutomationEditableText.prototype.changed.call(
@@ -276,7 +276,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Selection', function() {
  * address bar, and it's being autocompleted. Sometimes it's autocompleted
  * as they type, sometimes there's a short delay.
  */
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Autocomplete', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'Autocomplete', function() {
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
 
@@ -338,7 +338,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'Autocomplete', function() {
 /**
  * Test a few common scenarios where text is replaced.
  */
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingText', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'ReplacingText', function() {
   // Initial value is Alabama.
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('Alabama', 0, 0, false, tts);
@@ -385,7 +385,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingText', function() {
 /**
  * Test feedback when text changes in a long sentence.
  */
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingLongText', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'ReplacingLongText', function() {
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase(
       'I love deadlines. I like the whooshing sound they make as they fly by.',
@@ -403,7 +403,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingLongText', function() {
 });
 
 /** Tests character echo. */
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'CharacterEcho', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'CharacterEcho', function() {
   LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
@@ -441,7 +441,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'CharacterEcho', function() {
 
 /** Tests character echo in auto complete text fields. */
 AX_TEST_F(
-    'ChromeVoxEditableTextUnitTest', 'CharEchoInAutoComplete', function() {
+    'ChromeVoxMV2EditableTextUnitTest', 'CharEchoInAutoComplete', function() {
       var tts = new TestTts();
       var url = 'chromevox.com';
       var obj = new ChromeVoxEditableTextBase(url, 1, 13, false, tts);
@@ -479,7 +479,7 @@ AX_TEST_F(
 
 
 /** Tests word echo. */
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'WordEcho', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'WordEcho', function() {
   LocalStorage.set('typingEcho', TypingEchoState.WORD);
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
@@ -514,7 +514,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'WordEcho', function() {
 
 
 /** Tests no echo. */
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'NoEcho', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'NoEcho', function() {
   LocalStorage.set('typingEcho', TypingEchoState.NONE);
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
@@ -548,7 +548,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'NoEcho', function() {
 });
 
 /** Tests normalization of TextChangeEvent's */
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'TextChangeEvent', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'TextChangeEvent', function() {
   var event1 = new TextChangeEvent('foo', 0, 1, true);
   var event2 = new TextChangeEvent('foo', 1, 0, true);
   var event3 = new TextChangeEvent('foo', 1, 1, true);
@@ -564,7 +564,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'TextChangeEvent', function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxEditableTextUnitTest', 'TypingNonBreakingSpaces', function() {
+    'ChromeVoxMV2EditableTextUnitTest', 'TypingNonBreakingSpaces', function() {
       var tts = new TestTts();
       var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
 
@@ -579,19 +579,21 @@ AX_TEST_F(
       assertEqualStringArrays(['h', 'i', 'hi ', 't'], tts.getStrings());
     });
 
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'DoesNotSpeakDeleted', function() {
-  var tts = new TestTts();
-  var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
-  obj.multiline = true;
+AX_TEST_F(
+    'ChromeVoxMV2EditableTextUnitTest', 'DoesNotSpeakDeleted', function() {
+      var tts = new TestTts();
+      var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
+      obj.multiline = true;
 
-  AutomationEditableText.prototype.changed.call(
-      obj, new TextChangeEvent('wor', 0, 0));
+      AutomationEditableText.prototype.changed.call(
+          obj, new TextChangeEvent('wor', 0, 0));
 
-  // This was once ['text_deleted'], but that is undesirable and mostly noise.
-  assertEqualStringArrays([], tts.getStrings());
-});
+      // This was once ['text_deleted'], but that is undesirable and mostly
+      // noise.
+      assertEqualStringArrays([], tts.getStrings());
+    });
 
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'IMETypingEcho', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'IMETypingEcho', function() {
   LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
@@ -624,7 +626,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'IMETypingEcho', function() {
       tts.getStrings());
 });
 
-AX_TEST_F('ChromeVoxEditableTextUnitTest', 'IMETypingEchoLong', function() {
+AX_TEST_F('ChromeVoxMV2EditableTextUnitTest', 'IMETypingEchoLong', function() {
   LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
   var tts = new TestTts();
   var obj = new ChromeVoxEditableTextBase('', 0, 0, false, tts);
@@ -640,7 +642,7 @@ AX_TEST_F('ChromeVoxEditableTextUnitTest', 'IMETypingEchoLong', function() {
 });
 
 AX_TEST_F(
-    'ChromeVoxEditableTextUnitTest', 'IMETypingEchoWithSuffix', function() {
+    'ChromeVoxMV2EditableTextUnitTest', 'IMETypingEchoWithSuffix', function() {
       LocalStorage.set('typingEcho', TypingEchoState.CHARACTER);
       var tts = new TestTts();
       var obj = new ChromeVoxEditableTextBase('世界', 0, 0, false, tts);
@@ -672,7 +674,7 @@ AX_TEST_F(
     });
 
 AX_TEST_F(
-    'ChromeVoxEditableTextUnitTest', 'StartCandidateSelection', function() {
+    'ChromeVoxMV2EditableTextUnitTest', 'StartCandidateSelection', function() {
       var tts = new TestTts();
       var obj =
           new ChromeVoxEditableTextBase('「こんにちは世界」', 6, 6, false, tts);
