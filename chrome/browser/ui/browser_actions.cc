@@ -320,7 +320,6 @@ void BrowserActions::InitializeBrowserActions() {
               kPerformanceSpeedometerIcon, ui::kColorIcon,
               ui::SimpleMenuModel::kDefaultIconSize))
           .SetEnabled(true)
-          .SetProperty(views::kElementIdentifierKey, kMemorySaverChipElementId)
           .Build());
 
   root_action_item_->AddChild(
@@ -340,7 +339,6 @@ void BrowserActions::InitializeBrowserActions() {
           .SetText(l10n_util::GetStringUTF16(IDS_ZOOM_NORMAL))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_ZOOM))
           .SetImage(ui::ImageModel::FromVectorIcon(kZoomInIcon))
-          .SetProperty(views::kElementIdentifierKey, kActionItemZoomElementId)
           .Build());
 
   //------- Chrome Menu Actions --------//

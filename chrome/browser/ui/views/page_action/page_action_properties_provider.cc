@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "ui/actions/action_id.h"
 
@@ -39,6 +40,7 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
                   .histogram_name = "MemorySaver",
                   .is_ephemeral = true,
                   .type = PageActionIconType::kMemorySaver,
+                  .element_identifier = kMemorySaverChipElementId,
               },
           },
           {
@@ -55,6 +57,7 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
                   .histogram_name = "Zoom",
                   .is_ephemeral = true,
                   .type = PageActionIconType::kZoom,
+                  .element_identifier = kActionItemZoomElementId,
               },
           },
           {

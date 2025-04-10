@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/test_event.h"
@@ -37,7 +38,9 @@
 #include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/background.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/view_class_properties.h"
 
 namespace page_actions {
 namespace {
@@ -102,7 +105,8 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
         PageActionViewParams{
             .icon_size = kDefaultIconSize,
             .icon_label_bubble_delegate = &icon_label_view_delegate_,
-        });
+        },
+        ui::ElementIdentifier());
 
     pinned_actions_model_ =
         std::make_unique<PinnedToolbarActionsModel>(&profile_);
@@ -164,7 +168,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
             action_item_.get(),
             PageActionViewParams{
                 .icon_size = view_icon_size_,
-                .icon_label_bubble_delegate = &icon_label_view_delegate_}));
+                .icon_label_bubble_delegate = &icon_label_view_delegate_},
+            ui::ElementIdentifier()));
 
     page_action_view_->GetSlideAnimationForTesting().SetSlideDuration(
         base::Seconds(0));
@@ -191,6 +196,9 @@ class PageActionViewTest : public ChromeViewsTestBase {
   actions::ActionItem* action_item() { return action_item_.get(); }
   int view_icon_size() const { return view_icon_size_; }
 
+ protected:
+  testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
+
  private:
   std::unique_ptr<actions::ActionItem> action_item_;
 
@@ -198,8 +206,6 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
   // Owned by widget_.
   raw_ptr<PageActionView> page_action_view_;
-
-  testing::NiceMock<MockIconLabelViewDelegate> icon_label_view_delegate_;
 
   // Must exist in order to create PageActionView during the test.
   views::LayoutProvider layout_provider_;
@@ -214,6 +220,21 @@ class PageActionViewTest : public ChromeViewsTestBase {
 
   const int view_icon_size_ = kDefaultIconSize;
 };
+
+TEST_F(PageActionViewTest, ViewHasCorrectElementIdentifier) {
+  const ui::ElementIdentifier kCustomIdentifier =
+      ui::ElementIdentifier::FromName("PageActionViewTestIdentifier");
+
+  auto view_with_id = std::make_unique<PageActionView>(
+      action_item(),
+      PageActionViewParams{
+          .icon_size = view_icon_size(),
+          .icon_label_bubble_delegate = &icon_label_view_delegate_},
+      kCustomIdentifier);
+
+  EXPECT_EQ(view_with_id->GetProperty(views::kElementIdentifierKey),
+            kCustomIdentifier);
+}
 
 // Tests that calling Show/Hide on an inactive controller will not affect the
 // view.

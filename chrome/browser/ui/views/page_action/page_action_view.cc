@@ -25,7 +25,8 @@
 namespace page_actions {
 
 PageActionView::PageActionView(actions::ActionItem* action_item,
-                               const PageActionViewParams& params)
+                               const PageActionViewParams& params,
+                               ui::ElementIdentifier element_identifier)
     : IconLabelBubbleView(gfx::FontList(), params.icon_label_bubble_delegate),
       action_item_(action_item->GetAsWeakPtr()),
       icon_size_(params.icon_size),
@@ -33,8 +34,7 @@ PageActionView::PageActionView(actions::ActionItem* action_item,
   CHECK(action_item_->GetActionId().has_value());
   SetUpForAnimation(base::Milliseconds(600));
 
-  SetProperty(views::kElementIdentifierKey,
-              action_item_->GetProperty(views::kElementIdentifierKey));
+  SetProperty(views::kElementIdentifierKey, element_identifier);
 
   if (params.font_list) {
     SetFontList(*params.font_list);

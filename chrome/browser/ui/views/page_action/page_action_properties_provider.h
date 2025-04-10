@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "ui/actions/action_id.h"
+#include "ui/base/interaction/element_identifier.h"
 
 namespace page_actions {
 
@@ -15,9 +16,16 @@ namespace page_actions {
 // mainly configured using the ActionItem. But the ActionItem is global.
 // Therefore, for some properties, they should be scoped to page actions only.
 struct PageActionProperties {
+  // Indicates the metric name used for the page action during reporting. This
+  // is mandatory.
   const char* histogram_name = nullptr;
+  // Indicates whether the page action is always visible or will be
+  // conditionally visible for some time. This is optional.
   bool is_ephemeral = false;
+  // Indicates the page action type and it' mandatory.
   PageActionIconType type;
+  // This indicates the page action view element identifier. This is optional.
+  ui::ElementIdentifier element_identifier;
 };
 
 using PageActionPropertiesMap =
