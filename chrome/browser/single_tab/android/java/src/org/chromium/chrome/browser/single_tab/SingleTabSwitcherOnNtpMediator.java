@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.single_tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.CLICK_LISTENER;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.FAVICON;
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.IS_VISIBLE;
@@ -14,17 +15,16 @@ import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.TIT
 import static org.chromium.chrome.browser.single_tab.SingleTabViewProperties.URL;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.Size;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
@@ -45,6 +45,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
 /** Mediator of the single tab switcher in the new tab page on tablet. */
+@NullMarked
 public class SingleTabSwitcherOnNtpMediator {
     private static final String HISTOGRAM_SEE_MORE_LINK_CLICKED =
             "MagicStack.Clank.SingleTab.SeeMoreLinkClicked";
@@ -55,16 +56,15 @@ public class SingleTabSwitcherOnNtpMediator {
     private final int mMarginForPhoneAndNarrowWindowOnTablet;
 
     // It is only non-null for NTP on tablets.
-    private @Nullable final UiConfig mUiConfig;
+    private final @Nullable UiConfig mUiConfig;
     private final boolean mIsTablet;
-    private Resources mResources;
-    private Tab mMostRecentTab;
-    private boolean mInitialized;
 
-    private Callback<Integer> mSingleTabCardClickedCallback;
-    private Runnable mSeeMoreLinkClickedCallback;
-    private ThumbnailProvider mThumbnailProvider;
-    private Size mThumbnailSize;
+    private boolean mInitialized;
+    private @Nullable Tab mMostRecentTab;
+    private @Nullable Callback<Integer> mSingleTabCardClickedCallback;
+    private @Nullable Runnable mSeeMoreLinkClickedCallback;
+    private @Nullable ThumbnailProvider mThumbnailProvider;
+    private @Nullable Size mThumbnailSize;
     private @Nullable DisplayStyleObserver mDisplayStyleObserver;
     private @Nullable ModuleDelegate mModuleDelegate;
 
@@ -74,15 +74,14 @@ public class SingleTabSwitcherOnNtpMediator {
             TabModelSelector tabModelSelector,
             TabListFaviconProvider tabListFaviconProvider,
             Tab mostRecentTab,
-            Callback<Integer> singleTabCardClickedCallback,
+            @Nullable Callback<Integer> singleTabCardClickedCallback,
             @Nullable Runnable seeMoreLinkClickedCallback,
-            @NonNull TabContentManager tabContentManager,
+            TabContentManager tabContentManager,
             @Nullable UiConfig uiConfig,
             boolean isTablet,
             @Nullable ModuleDelegate moduleDelegate) {
         mContext = context;
         mPropertyModel = propertyModel;
-        mResources = mContext.getResources();
         mTabListFaviconProvider = tabListFaviconProvider;
         mMostRecentTab = mostRecentTab;
         mSingleTabCardClickedCallback = singleTabCardClickedCallback;
@@ -92,8 +91,9 @@ public class SingleTabSwitcherOnNtpMediator {
         mModuleDelegate = moduleDelegate;
 
         mMarginForPhoneAndNarrowWindowOnTablet =
-                mResources.getDimensionPixelSize(
-                        R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
+                mContext.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
 
         mThumbnailProvider = getThumbnailProvider(tabContentManager);
         if (mThumbnailProvider != null) {
@@ -104,7 +104,8 @@ public class SingleTabSwitcherOnNtpMediator {
                 CLICK_LISTENER,
                 v -> {
                     if (mSingleTabCardClickedCallback != null) {
-                        mSingleTabCardClickedCallback.onResult(mMostRecentTab.getId());
+                        mSingleTabCardClickedCallback.onResult(
+                                assumeNonNull(mMostRecentTab).getId());
                         mSingleTabCardClickedCallback = null;
                     }
                 });
@@ -126,10 +127,11 @@ public class SingleTabSwitcherOnNtpMediator {
         }
 
         mTabListFaviconProvider.initWithNative(
-                tabModelSelector.getModel(/* incognito= */ false).getProfile());
+                assumeNonNull(tabModelSelector.getModel(/* incognito= */ false).getProfile()));
     }
 
-    private static ThumbnailProvider getThumbnailProvider(TabContentManager tabContentManager) {
+    private static @Nullable ThumbnailProvider getThumbnailProvider(
+            TabContentManager tabContentManager) {
         if (tabContentManager == null) return null;
 
         return new TabContentManagerThumbnailProvider(tabContentManager);
@@ -150,7 +152,7 @@ public class SingleTabSwitcherOnNtpMediator {
         updateMargins(newDisplayStyle);
     }
 
-    void updateMargins(DisplayStyle newDisplayStyle) {
+    void updateMargins(@Nullable DisplayStyle newDisplayStyle) {
         int lateralMargin = getDefaultLateralMargin();
         if (newDisplayStyle != null && newDisplayStyle.horizontal < HorizontalDisplayStyle.WIDE) {
             lateralMargin = mMarginForPhoneAndNarrowWindowOnTablet;
@@ -183,9 +185,7 @@ public class SingleTabSwitcherOnNtpMediator {
             mModuleDelegate.onDataReady(getModuleType(), mPropertyModel);
         }
 
-        if (mResources != null) {
-            updateMargins(mUiConfig != null ? mUiConfig.getCurrentDisplayStyle() : null);
-        }
+        updateMargins(mUiConfig != null ? mUiConfig.getCurrentDisplayStyle() : null);
     }
 
     boolean isVisible() {
@@ -194,10 +194,11 @@ public class SingleTabSwitcherOnNtpMediator {
 
     /**
      * Update the most recent tab to track in the single tab card.
+     *
      * @param tabToTrack The tab to track as the most recent tab.
      * @return Whether has a Tab to track. Returns false if the Tab to track is set as null.
      */
-    boolean setTab(Tab tabToTrack) {
+    boolean setTab(@Nullable Tab tabToTrack) {
         if (tabToTrack != null && UrlUtilities.isNtpUrl(tabToTrack.getUrl())) {
             tabToTrack = null;
         }
@@ -217,10 +218,6 @@ public class SingleTabSwitcherOnNtpMediator {
     }
 
     void destroy() {
-        if (mResources != null) {
-            mResources = null;
-        }
-
         if (mPropertyModel != null) {
             mPropertyModel.set(CLICK_LISTENER, null);
             if (mMostRecentTab != null) {
@@ -228,7 +225,7 @@ public class SingleTabSwitcherOnNtpMediator {
             }
         }
         if (mUiConfig != null) {
-            mUiConfig.removeObserver(mDisplayStyleObserver);
+            mUiConfig.removeObserver(assumeNonNull(mDisplayStyleObserver));
             mDisplayStyleObserver = null;
         }
     }
@@ -237,14 +234,16 @@ public class SingleTabSwitcherOnNtpMediator {
     private void updateFavicon() {
         assert mTabListFaviconProvider.isInitialized();
         mTabListFaviconProvider.getFaviconDrawableForTabAsync(
-                mMostRecentTab,
+                assumeNonNull(mMostRecentTab),
                 (Drawable favicon) -> {
                     mPropertyModel.set(FAVICON, favicon);
                 });
     }
 
     private void mayUpdateTabThumbnail() {
-        if (mThumbnailProvider == null) return;
+        if (mThumbnailProvider == null || mThumbnailSize == null || mMostRecentTab == null) {
+            return;
+        }
 
         mThumbnailProvider.getTabThumbnailWithCallback(
                 mMostRecentTab.getId(),
@@ -258,6 +257,7 @@ public class SingleTabSwitcherOnNtpMediator {
     /** Update the title of the single tab switcher. */
     @VisibleForTesting
     void updateTitle() {
+        assumeNonNull(mMostRecentTab);
         if (mMostRecentTab.isLoading() && TextUtils.isEmpty(mMostRecentTab.getTitle())) {
             TabObserver tabObserver =
                     new EmptyTabObserver() {

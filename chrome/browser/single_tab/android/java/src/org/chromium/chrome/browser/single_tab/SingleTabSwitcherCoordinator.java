@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.single_tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.magic_stack.ModuleProvider;
@@ -29,29 +31,31 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator of the single tab tab switcher. */
+@NullMarked
 public class SingleTabSwitcherCoordinator implements ModuleProvider {
 
     private final SingleTabSwitcherOnNtpMediator mMediatorOnNtp;
     private final TabListFaviconProvider mTabListFaviconProvider;
-    private TabObserver mLastActiveTabObserver;
-    private Tab mLastActiveTab;
 
     /** Null if created by {@link org.chromium.chrome.browser.magic_stack.ModuleProviderBuilder} */
-    @Nullable private final ViewGroup mContainer;
+    private final @Nullable ViewGroup mContainer;
 
-    @Nullable private final Runnable mSnapshotParentViewRunnable;
-    @Nullable private final ModuleDelegate mModuleDelegate;
+    private final @Nullable Runnable mSnapshotParentViewRunnable;
+    private final @Nullable ModuleDelegate mModuleDelegate;
+
+    private @Nullable TabObserver mLastActiveTabObserver;
+    private @Nullable Tab mLastActiveTab;
 
     public SingleTabSwitcherCoordinator(
-            @NonNull Activity activity,
-            @NonNull ViewGroup container,
-            @NonNull TabModelSelector tabModelSelector,
+            Activity activity,
+            @Nullable ViewGroup container,
+            TabModelSelector tabModelSelector,
             boolean isTablet,
             Tab mostRecentTab,
             @Nullable Callback<Integer> singleTabCardClickedCallback,
             @Nullable Runnable seeMoreLinkClickedCallback,
             @Nullable Runnable snapshotParentViewRunnable,
-            @Nullable TabContentManager tabContentManager,
+            TabContentManager tabContentManager,
             @Nullable UiConfig uiConfig,
             @Nullable ModuleDelegate moduleDelegate) {
         mLastActiveTab = mostRecentTab;
@@ -61,11 +65,12 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
         mModuleDelegate = moduleDelegate;
 
         if (moduleDelegate == null) {
+            assert container != null;
             SingleTabView singleTabView =
                     (SingleTabView)
                             LayoutInflater.from(activity)
                                     .inflate(getModuleLayoutId(), container, false);
-            mContainer.addView(singleTabView);
+            container.addView(singleTabView);
             PropertyModelChangeProcessor.create(
                     propertyModel, singleTabView, SingleTabViewBinder::bind);
         }
@@ -105,7 +110,8 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
                         if (closing) {
                             updateTrackingTab(null);
                             setVisibility(false);
-                            mLastActiveTab.removeObserver(mLastActiveTabObserver);
+                            assumeNonNull(mLastActiveTab);
+                            mLastActiveTab.removeObserver(assumeNonNull(mLastActiveTabObserver));
                             mLastActiveTab = null;
                             mLastActiveTabObserver = null;
                             if (mSnapshotParentViewRunnable != null) {
@@ -151,7 +157,7 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
      * @param shouldUpdateTab Whether to update the tracking Tab of the single Tab module.
      * @param mostRecentTab The most recent Tab to track.
      */
-    private void show(boolean shouldUpdateTab, Tab mostRecentTab) {
+    private void show(boolean shouldUpdateTab, @Nullable Tab mostRecentTab) {
         boolean hasTabToTrack = true;
         if (shouldUpdateTab) {
             hasTabToTrack = updateTrackingTab(mostRecentTab);
@@ -165,7 +171,7 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
      * @param tabToTrack The tab to track as the most recent tab.
      * @return Whether has a Tab to track. Returns false if the Tab to track is set as null.
      */
-    public boolean updateTrackingTab(Tab tabToTrack) {
+    public boolean updateTrackingTab(@Nullable Tab tabToTrack) {
         boolean hasTabToTrack = mMediatorOnNtp.setTab(tabToTrack);
         if (hasTabToTrack && mLastActiveTab == null) {
             mLastActiveTab = tabToTrack;
@@ -181,7 +187,7 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
 
     public void destroy() {
         if (mLastActiveTab != null) {
-            mLastActiveTab.removeObserver(mLastActiveTabObserver);
+            mLastActiveTab.removeObserver(assumeNonNull(mLastActiveTabObserver));
             mLastActiveTab = null;
             mLastActiveTabObserver = null;
         }
@@ -195,7 +201,7 @@ public class SingleTabSwitcherCoordinator implements ModuleProvider {
 
     @Override
     public void showModule() {
-        show(false, null);
+        show(false, /* mostRecentTab= */ null);
     }
 
     @Override

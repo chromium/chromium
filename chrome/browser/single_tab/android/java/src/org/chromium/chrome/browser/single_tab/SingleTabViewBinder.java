@@ -17,10 +17,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 // The view binder of the single tab view.
+@NullMarked
 public class SingleTabViewBinder {
     public static void bind(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
         if (propertyKey == CLICK_LISTENER) {
