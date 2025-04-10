@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">פיתוח נדל"ן</translation>
 <translation id="1824402189105105503">גליל שמיני</translation>
 <translation id="1826516787628120939">מתבצעת בדיקה</translation>
+<translation id="1832730227369924598">סנכרון שולחן העבודה הווירטואלי</translation>
 <translation id="1834452765064623979">בניין ותחזוקה</translation>
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
 <translation id="1839331950812095887">סיכום בכמה מילים של הדברים שרצית לומר</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">ישנה</translation>
 <translation id="2413528052993050574">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. ייתכן שאישור האבטחה שלו בוטל. הסיבה לכך עשויה להיות הגדרה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="2414886740292270097">כהה</translation>
+<translation id="2418292431699242678">‏האדמין מאפשר לסנכרן את הפריטים הבאים בין הסשנים הקודמים והנוכחי בכל מכשיר ChromeOS:</translation>
 <translation id="2429716554270894715">Fabric (Waterproof)</translation>
 <translation id="2436186046335138073">האם לאפשר ל-<ph name="HANDLER_HOSTNAME" /> לפתוח את כל קישורי <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">אומנויות טקסטיל ואריגים</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">המחיר במעקב</translation>
 <translation id="3037605927509011580">אוי, לא!</translation>
 <translation id="3039406992698062762">נסיעות משפחתיות</translation>
+<translation id="3040636468789770340">‏קובצי Cookie (מצב כניסה באתרים שביקרת בהם לאחרונה)</translation>
 <translation id="3041176923638368519">לעיון בתנאי ההטבה של הכרטיס</translation>
 <translation id="3041612393474885105">פרטי אישור</translation>
 <translation id="3045769629416806687">ספורט אקסטרים</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">הקבצים המקומיים שלך יימחקו בעוד <ph name="MINUTES" /> דקות</translation>
 <translation id="3872834068356954457">מדע</translation>
 <translation id="3875783148670536197">איך עושים זאת?</translation>
+<translation id="387681220560687945">חלונות (סידור וארגון של חלונות וכרטיסיות)</translation>
 <translation id="3879748587602334249">מנהל ההורדות</translation>
 <translation id="3880456882942693779">אומנויות ובידור</translation>
 <translation id="3880589673277376494">אינטרנט וטלקום</translation>
@@ -4753,6 +4757,7 @@ Del</translation>
 <translation id="950736567201356821">3 ניקובים בחלק העליון</translation>
 <translation id="950926967802086924">‏מפתח גישה • מנהל הסיסמאות של Google</translation>
 <translation id="955429569736351433">‏יש הרשאה לשימוש ב-VR</translation>
+<translation id="955627189349169688">‏אפשר לבטל את ההסכמה למדיניות הזו ב<ph name="BEGIN_LINK" />הגדרות הסנכרון של Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">צהוב 2</translation>
 <translation id="961663415146723894">כריכה בקצה התחתון</translation>
 <translation id="961856697154696964">מחיקת נתוני הגלישה</translation>

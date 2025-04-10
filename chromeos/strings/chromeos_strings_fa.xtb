@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">صدای <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">درباره</translation>
 <translation id="1118572504348554005">برای عیب‌یابی اشکالات و دیگر مشکلاتی که به ما گزارش می‌کنید، ممکن است بازخورد ارسال‌شده ازطریق این فرم را با شریکانمان هم‌رسانی کنیم. از وارد کردن اطلاعات حساس مثل گذرواژه خودداری کنید.</translation>
+<translation id="1118596190635569417">انتقال این منو به‌سمت راست</translation>
 <translation id="1119403468619527527">تعداد کلمه‌ها برای ساده کردن خیلی کم است</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
 <translation id="1124772482545689468">کاربر</translation>
@@ -387,6 +388,7 @@
 <translation id="2584559707064218956">برای راه‌اندازی، به «تنظیمات» بروید</translation>
 <translation id="2586146417912237930">آبی و نیلی</translation>
 <translation id="2589921777872778654">منو ویرایش و حذف</translation>
+<translation id="2590424100019931043">از این کلاس حذف شده‌اید</translation>
 <translation id="2597774443162333062">‏فایل‌ها برای اشکال‌زدایی به Google ارسال خواهد شد</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{اسکن کامل شد. یک صفحه اسکن شد}one{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}other{اسکن کامل شد. {NUMBER_OF_PAGES} صفحه اسکن شد}}</translation>
 <translation id="261322795497077164">شناسایی گوینده</translation>
@@ -572,6 +574,7 @@
 <translation id="3604713164406837697">تغییر کاغذدیواری</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3606583719724308068">‏تأخیر بالا در وب‌سایت‌های HTTPS</translation>
+<translation id="3614639364827854748">انتقال این منو به‌سمت چپ</translation>
 <translation id="361575905210396100">از بازخوردتان سپاس‌گزاریم</translation>
 <translation id="3621072146987826699">فیل</translation>
 <translation id="3628462041319107639">درحال بارگیری مدل ترانویسی…</translation>
@@ -1695,11 +1698,13 @@
 <translation id="8655295600908251630">کانال</translation>
 <translation id="8655828773034788261">نشانی وب هم‌رسانی:</translation>
 <translation id="8660881923941176839">پوند</translation>
+<translation id="8669187096858652220">برای نمایش برگه‌ها، کلیک کنید</translation>
 <translation id="8670574982334489519">راست</translation>
 <translation id="8675354002693747642">کلید ازپیش هم‌رسانی‌شده</translation>
 <translation id="8677859815076891398">‏آلبومی وجود ندارد. آلبومی در <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ایجاد کنید.</translation>
 <translation id="8682949824227998083">رامِن</translation>
 <translation id="8689520252402395106">‏برای ادامه فرایند به‌روزرسانی، کابل USB دستگاه <ph name="DEVICE_NAME" /> را دوباره وصل کنید</translation>
+<translation id="8699053192961439771">برای پنهان کردن خودکار برگه‌ها، کلیک کنید</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> برای مدیریت این ویژگی، از کلیدهای جهت‌نما روبه راست یا روبه چپ استفاده کنید.</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>

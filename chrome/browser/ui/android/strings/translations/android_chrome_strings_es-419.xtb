@@ -259,6 +259,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="22091350895006575">Agregar nombre de usuario</translation>
 <translation id="221494669172414749">Si abres Chrome sin un bloqueo de perfil, se quitarán del automóvil las contraseñas y las formas de pago guardadas. El uso de un bloqueo de perfil mantiene estos datos seguros.</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230288123399603508">El grupo de pestañas <ph name="TAB_GROUP_TITLE" /> tiene actividad nueva</translation>
 <translation id="2230777942707397948">Ventana vacía</translation>
 <translation id="223356358902285214">Actividad web y de aplicaciones</translation>
 <translation id="2234827758954819389">Guía de privacidad</translation>
@@ -893,6 +894,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5114895953710637392">La hoja de filtros de apps está cerrada.</translation>
 <translation id="5115811374190515607">a <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos y otras apps</translation>
+<translation id="5118713593561876160">Intereses</translation>
 <translation id="5122378528687922675">Si necesitas ayuda, pídele a tu madre o padre (<ph name="PARENT_NAME_1" /> o <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Pestaña de incógnito</translation>
 <translation id="5139940364318403933">Aprender a usar Google Drive</translation>

@@ -492,6 +492,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1822995137827688764">Działalność deweloperska</translation>
 <translation id="1824402189105105503">Rolka 8</translation>
 <translation id="1826516787628120939">Sprawdzam</translation>
+<translation id="1832730227369924598">Synchronizacja biurka</translation>
 <translation id="1834452765064623979">Usługi budowlane i konserwacyjne</translation>
 <translation id="1838374766361614909">Wyczyść wyszukiwanie</translation>
 <translation id="1839331950812095887">kilka słów podsumowujących Twoją opinię</translation>
@@ -829,6 +830,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2413155254802890957">Stary</translation>
 <translation id="2413528052993050574">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa mógł zostać odwołany. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="2414886740292270097">Ciemny</translation>
+<translation id="2418292431699242678">Administrator włączył synchronizację tych danych między sesjami poprzednią i bieżącą na dowolnym urządzeniu z ChromeOS:</translation>
 <translation id="2429716554270894715">Tkanina (wodoodporna)</translation>
 <translation id="2436186046335138073">Zezwolić usłudze <ph name="HANDLER_HOSTNAME" /> na otwieranie wszystkich linków <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Sztuka włókiennicza i tekstylna</translation>
@@ -1160,6 +1162,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="3037177537145227281">Monitoruję cenę</translation>
 <translation id="3037605927509011580">Kurza twarz!</translation>
 <translation id="3039406992698062762">Podróże z dziećmi</translation>
+<translation id="3040636468789770340">Pliki cookie (stan zalogowania na ostatnio odwiedzanych stronach)</translation>
 <translation id="3041176923638368519">Zobacz warunki korzystania z karty</translation>
 <translation id="3041612393474885105">Informacje o certyfikacie</translation>
 <translation id="3045769629416806687">Sporty ekstremalne</translation>
@@ -1670,6 +1673,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3869939189466884821">Za <ph name="MINUTES" /> minut Twoje pliki lokalne zostaną usunięte</translation>
 <translation id="3872834068356954457">Nauka</translation>
 <translation id="3875783148670536197">Pokaż jak</translation>
+<translation id="387681220560687945">Okna (układ i uporządkowanie okien i kart)</translation>
 <translation id="3879748587602334249">Menedżer pobierania</translation>
 <translation id="3880456882942693779">Sztuka i rozrywka</translation>
 <translation id="3880589673277376494">Internet i telekomunikacja</translation>
@@ -4747,6 +4751,7 @@ Dodatkowe informacje:
 <translation id="950736567201356821">Trzy otwory u góry</translation>
 <translation id="950926967802086924">Klucz dostępu • Menedżer haseł Google</translation>
 <translation id="955429569736351433">Przyznano dostęp do rzeczywistości wirtualnej</translation>
+<translation id="955627189349169688">Możesz zrezygnować z tej zasady w <ph name="BEGIN_LINK" />ustawieniach Synchronizacji Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Żółty 2</translation>
 <translation id="961663415146723894">Wiązanie na dole</translation>
 <translation id="961856697154696964">Usuń dane przeglądania</translation>

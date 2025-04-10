@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> ಆಡಿಯೋ</translation>
 <translation id="1116694919640316211">ಕುರಿತು</translation>
 <translation id="1118572504348554005">ನೀವು ನಮಗೆ ವರದಿ ಮಾಡುವ ದೋಷಗಳು ಮತ್ತು ಇತರ ಸಮಸ್ಯೆಗಳನ್ನು ಟ್ರಬಲ್‌ಶೂಟ್ ಮಾಡಲು ನಮ್ಮ ಪಾಲುದಾರರೊಂದಿಗೆ ಈ ಫಾರ್ಮ್ ಮೂಲಕ ಸಲ್ಲಿಸಿದ ಪ್ರತಿಕ್ರಿಯೆಯನ್ನು ನಾವು ಹಂಚಿಕೊಳ್ಳಬಹುದು. ಪಾಸ್‌ವರ್ಡ್‌ಗಳಂತಹ ಸೂಕ್ಷ್ಮವಾದ ಮಾಹಿತಿಯನ್ನು ಸೇರಿಸಬೇಡಿ.</translation>
+<translation id="1118596190635569417">ಈ ಮೆನುವನ್ನು ಬಲಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1119403468619527527">ಸರಳಗೊಳಿಸಲು ತೀರಾ ಕಡಿಮೆ ಪದಗಳಿವೆ</translation>
 <translation id="1119447706177454957">ಆಂತರಿಕ ದೋಷ</translation>
 <translation id="1124772482545689468">ಬಳಕೆದಾರ</translation>
@@ -573,6 +574,7 @@
 <translation id="3604713164406837697">ವಾಲ್‌ಪೇಪರ್ ಬದಲಿಸಿ</translation>
 <translation id="360565022852130722">ದುರ್ಬಲ ಪ್ರೋಟೋಕಾಲ್ WEP 802.1x‌ ಮೂಲಕ ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ರಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="3606583719724308068">HTTPS ವೆಬ್‌ಸೈಟ್‌ಗಳ ವಿಳಂಬದ ಸಮಯವು ದೀರ್ಘವಾಗಿದೆ</translation>
+<translation id="3614639364827854748">ಈ ಮೆನುವನ್ನು ಎಡಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="361575905210396100">ನಿಮ್ಮ ಪ್ರತಿಕ್ರಿಯೆಗೆ ಧನ್ಯವಾದಗಳು</translation>
 <translation id="3621072146987826699">ಆನೆಗಳು</translation>
 <translation id="3628462041319107639">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಶನ್ ಮಾಡಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
@@ -1696,11 +1698,13 @@
 <translation id="8655295600908251630">ಚಾನಲ್</translation>
 <translation id="8655828773034788261">URL ಹಂಚಿಕೊಳ್ಳಿ:</translation>
 <translation id="8660881923941176839">ಪೌಂಡ್‌ಗಳು</translation>
+<translation id="8669187096858652220">ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೋರಿಸಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="8670574982334489519">ಬಲ</translation>
 <translation id="8675354002693747642">ಪೂರ್ವ-ಹಂಚಿಕೆಯ ಕೀಲಿ</translation>
 <translation id="8677859815076891398">ಯಾವುದೇ ಆಲ್ಬಮ್‌ಗಳಿಲ್ಲ. <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> ನಲ್ಲಿ ಆಲ್ಬಮ್ ಅನ್ನು ರಚಿಸಿ.</translation>
 <translation id="8682949824227998083">ರಾಮೆನ್</translation>
 <translation id="8689520252402395106">ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಮುಂದುವರಿಸಲು <ph name="DEVICE_NAME" /> USB ಕೇಬಲ್ ಅನ್ನು ಮರುಸೇರಿಸಿ</translation>
+<translation id="8699053192961439771">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ವಯಂಮರೆಮಾಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ಈ ಫೀಚರ್ ಅನ್ನು ನಿರ್ವಹಿಸಲು ಎಡ ಅಥವಾ ಬಲ ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="871560550817059752">ವಿಫಲವಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>

@@ -91,8 +91,10 @@
 <translation id="1367951781824006909">Файлыг сонгоно уу</translation>
 <translation id="1371650399987522809">Google AI-аар дэмжигдсэн дэлгэцийн зургийн санал хүсэлт</translation>
 <translation id="1374385338586507108">Тодорхойлох</translation>
+<translation id="1376064675713230088">тираннозавр</translation>
 <translation id="1383876407941801731">Хайлт</translation>
 <translation id="1387854245479784695">Энэ нь бүх цөмийн хуримтлал юм</translation>
+<translation id="1388919980490622894">өнгийг нарийвчлан тохируулсан</translation>
 <translation id="1393206549145430405">цайз</translation>
 <translation id="1394661041439318933">Төхөөрөмжийн гэрийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
 <translation id="1397738625398125236">Гэйтвэйд пин илгээх боломжтой</translation>
@@ -125,6 +127,7 @@
 <translation id="1499900233129743732"><ph name="MANAGER" /> энэ хэрэглэгчийг удирддаг бөгөөд алсаас тохиргоог удирдаж, хэрэглэгчийн үйл ажиллагааг хянаж болзошгүй.</translation>
 <translation id="150962533380566081">PUK буруу байна.</translation>
 <translation id="1510238584712386396">Launcher</translation>
+<translation id="1512872158112631650">сүрлэг сүүдэр</translation>
 <translation id="1514446283880973949">Илүү итгэлтэйгээр бичиж, контентыг хураангуйлж, тодорхойлолт авч мөн илүү ихийг хийгээрэй</translation>
 <translation id="1515129336378114413">хөтчийн үндсэн нүүр</translation>
 <translation id="1526389707933164996">Дэлгэц амраагчийн анимаци</translation>
@@ -228,6 +231,7 @@
 <translation id="1854156910036166007">залхуу баавгайнууд</translation>
 <translation id="1856388568474281774">Доош сум</translation>
 <translation id="1858620243986915808">Дэлгэцийн агшин хавсаргах</translation>
+<translation id="1860654594958086756">3D рэндэр</translation>
 <translation id="1871413952174074704">APN нь <ph name="CHAR_LIMIT" />-с олон тэмдэгттэй байх боломжгүй</translation>
 <translation id="1871569928317311284">Бараан загварыг унтраах</translation>
 <translation id="1874612839560830905">MTU</translation>
@@ -244,6 +248,7 @@
 <translation id="1914144885717544695">Баасан гарагт</translation>
 <translation id="1915960750806557358">Санал хүсэлтээ хуваалцах эсвэл асуудлаа тайлбарлана уу. Ямар нэг хувийн, эмзэг, нууцлалтай зүйл оруулахгүй байхаа мартуузай.</translation>
 <translation id="1923388006036088459">Өргөлтийн өнгөнүүд</translation>
+<translation id="1926611810597212636">ганц эвэрт</translation>
 <translation id="1945403655450283000">Дуу хураагуур</translation>
 <translation id="1947737735496445907">Хэвлэсэн</translation>
 <translation id="1951012854035635156">Туслах</translation>
@@ -313,6 +318,7 @@
 <translation id="2230624078793142213">Илүү ихийг үүсгэх</translation>
 <translation id="2236746079896696523">Гарын арын гэрлийг асаах/унтраах</translation>
 <translation id="2240366984605217732">Бүдүүвчийг сэлгэх</translation>
+<translation id="224421911978987610">long exposure</translation>
 <translation id="2244834438220057800">ногоон</translation>
 <translation id="225692081236532131">Идэвхжүүлэх статус</translation>
 <translation id="2267285889943769271">Дэлгэцийн агшин нэмэх</translation>
@@ -381,6 +387,7 @@
 <translation id="2584559707064218956">Тохируулахын тулд Тохиргоо руу очно уу</translation>
 <translation id="2586146417912237930">цэнхэр, хөх нил ягаан</translation>
 <translation id="2589921777872778654">Цэсийг засах, устгах</translation>
+<translation id="2590424100019931043">Таныг энэ ангиас хассан</translation>
 <translation id="2597774443162333062">Файлыг дебаг хийхээр Google-д илгээж байна</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Скан хийж дууссан. 1 хуудсыг скан хийсэн}other{Скан хийж дууссан. {NUMBER_OF_PAGES} хуудсыг скан хийсэн}}</translation>
 <translation id="261322795497077164">Яригчийн хувийн мэдээлэл</translation>
@@ -459,6 +466,7 @@
 <translation id="3084958266922136097">Дэлгэц амраагчийг идэвхгүй болгох</translation>
 <translation id="3091839911843451378">Амжилтгүй болсон - Зогссон</translation>
 <translation id="3102119246920354026">Кэш</translation>
+<translation id="3103783611481501187">сюрреалист</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">усан сангууд</translation>
 <translation id="3122883569442693641">Дэлгэрэнгүй мэдээлэл</translation>
@@ -487,6 +495,7 @@
 <translation id="3226405216343213872">Сканнерыг хайж байна</translation>
 <translation id="3226657629376379887">Бүдүүвчийн үйлдлийн цэс</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-д хуваана уу</translation>
+<translation id="3242622575335502454">дижитал урлаг</translation>
 <translation id="3246869037381808805">1 хоногоос дээш хугацаагаар хадгалсан хэвлэлийн ажлуудыг хасах болно</translation>
 <translation id="3248791727258378769">Ямар ч сийрүүлэг үүсгэхгүй</translation>
 <translation id="324961752321393509">Танай администратор энэ аппыг хаахыг зөвшөөрдөггүй</translation>
@@ -523,6 +532,7 @@
 <translation id="3428551088151258685">гадаа</translation>
 <translation id="3428971106895559033">пастел</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3434988468785284438">тусгал</translation>
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3435896845095436175">Идэвхжүүл</translation>
 <translation id="345256797477978759">Дэлгэцийн <ph name="DIRECTION" /> талын том хэсэгт цонхыг суурилуулах</translation>
@@ -623,6 +633,7 @@
 <translation id="3889914174935857450">Огноог шинэчлэх</translation>
 <translation id="3897092660631435901">Цэс</translation>
 <translation id="3902271751020176019">Сийрүүлгийн хэл</translation>
+<translation id="390890062090528082">оддоор дүүрэн тэнгэр</translation>
 <translation id="391412459402535266">Төхөөрөмжийг турших боломжгүй байна. Туршихын тулд зөөврийн компьютерын горим руу сэлгэнэ үү</translation>
 <translation id="3916998944874125962">дэлгэцийн зураг авах</translation>
 <translation id="3923184630988645767">Дата ашиглалт</translation>
@@ -712,6 +723,7 @@
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           Үүсгэгч ХОУ хүмүүсийн талаар буруу мэдээлэл үүсгэх зэрэг алдаа гаргаж болох тул хариултыг нь дахин шалгана уу. <ph name="BEGIN_LINK_CREATE_YOUR_OWN_WALLPAPER" />Нэмэлт мэдээлэл авах<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /></translation>
+<translation id="4253971074682120908">цагаан зай</translation>
 <translation id="4258281355379922695">HTTP-н хоцролт</translation>
 <translation id="4266143281602681663">ноосон утас</translation>
 <translation id="4269815121975886860">Эхлэх сонголт</translation>
@@ -809,7 +821,9 @@
 <translation id="4691278870498629773">Зогссон - Цаасны тэвш алга</translation>
 <translation id="469379815867856270">Дохионы хүч</translation>
 <translation id="4697260493945012995">Удирдлагын төрлөө сонгоно уу</translation>
+<translation id="4712940987669302829">bokeh эффект</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
+<translation id="4734982181169850310">пастел өнгө</translation>
 <translation id="473775607612524610">Шинэчлэх</translation>
 <translation id="4744944742468440486">Таны сонголттой холбоотой мэдээлэл</translation>
 <translation id="4750394297954878236">Санал зөвлөмж</translation>
@@ -859,10 +873,12 @@
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> секундэд <ph name="RATE" /> цэнэглэсэн.</translation>
 <translation id="4930320165497208503">Холболт тохируулах эсвэл шинэчлэхийн тулд <ph name="BEGIN_LINK" />Тохиргоо<ph name="END_LINK" /> руу очно уу.</translation>
 <translation id="4932733599132424254">Огноо</translation>
+<translation id="493637535592633700">биолюминесцент</translation>
 <translation id="494102685638938793"><ph name="LINK_TEXT" />, шинэ табд нээгдэнэ</translation>
 <translation id="4946927805998996217">Хураангуйг үүсгэж байна</translation>
 <translation id="4950314376641394653"><ph name="DEVICE_NAME" /> жижиг программыг <ph name="VERSION" /> хувилбар луу шинэчилсэн байна</translation>
 <translation id="4950893758552030541">модон хонгил</translation>
+<translation id="4964806321337443935">4000</translation>
 <translation id="4965661459364092269">Аюулгүй байдлын шинэчлэлтийг дуусгасан</translation>
 <translation id="4965703485264574128">Ойролцоо дүн гаргахын тулд <ph name="CATEGORY_TEXT" />-н утгыг <ph name="CONVERSION_RATE" />-р үржүүлнэ үү</translation>
 <translation id="4969079779290789265">Хуваах</translation>
@@ -875,6 +891,7 @@
 <translation id="4987769320337599931">Галт хана</translation>
 <translation id="4988526792673242964">Хуудас</translation>
 <translation id="4989542687859782284">Боломжгүй</translation>
+<translation id="4999267570108760491">вектор урлагийн хэв маяг</translation>
 <translation id="4999333166442584738">Тайланг нуух</translation>
 <translation id="500920857929044050">Туршилтыг зогсоох</translation>
 <translation id="5017508259293544172">LEAP</translation>
@@ -943,6 +960,7 @@
 <translation id="5300172019534884676">камерын хандалтыг асаах/унтраах</translation>
 <translation id="5300814202279832142">Цонхыг дэлгэц рүү зөөх</translation>
 <translation id="5302048478445481009">Хэл</translation>
+<translation id="5303459213631364445">гэрэлтэх</translation>
 <translation id="5303837385540978511"><ph name="PRODUCT_NAME" />-н онцгой дэлгэцийн зураг</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="530883153651464140"><ph name="DEVICE_NAME" />-г <ph name="VERSION" /> хувилбар луу шинэчлэх</translation>
@@ -1046,6 +1064,7 @@
 <translation id="5859969039821714932">Товчлол боломжгүй байна. <ph name="KEY" />-гүйгээр шинэ товчлолыг дарна уу.</translation>
 <translation id="5860033963881614850">Идэвхгүй байна</translation>
 <translation id="5860491529813859533">Асаах</translation>
+<translation id="586463370326011345">аянга</translation>
 <translation id="5875913454160982848">Сийрүүлгийн загварыг татах</translation>
 <translation id="5876385649737594562">Сонголт сонгохын тулд асаана уу</translation>
 <translation id="5877503382465267833"><ph name="RECORDING_NAME" />-г түр зогсоох</translation>
@@ -1180,6 +1199,7 @@
 <translation id="6417265370957905582">Google туслах</translation>
 <translation id="6419454453018688975">Системийн байршлын хандалтыг асаах</translation>
 <translation id="6423239382391657905">VPN-г нээх</translation>
+<translation id="642713342828771202">нар жаргах</translation>
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Сул (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Бүртгэлийн тохиргоо хэсэгт очих</translation>
@@ -1289,6 +1309,7 @@
 <translation id="6926069762081461162">Бичлэгийн нэр</translation>
 <translation id="6930242544192836755">Үргэлжлэх хугацаа</translation>
 <translation id="6930597342185648547">Арын дэвсгэрийн тухай</translation>
+<translation id="6931666215260956151">галактик</translation>
 <translation id="6939766318048400022">Кафе</translation>
 <translation id="6942253772720771875">Санал хүсэлтээ хуваалцах эсвэл асуудлаа тайлбарлана уу</translation>
 <translation id="6943893908656559156">Алсын таниулбар (заавал биш)</translation>
@@ -1424,6 +1445,7 @@
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7487067081878637334">Технологи</translation>
 <translation id="7490813197707563893">MAC хаяг</translation>
+<translation id="7494145938791663804">үзэсгэлэнтэй</translation>
 <translation id="7497215489070763236">Серверийн CA сертификат</translation>
 <translation id="7500205272584643581">Дуу хураагуурт чанга яригчдыг илрүүлж, шошголохыг зөвшөөрөх үү?</translation>
 <translation id="7501957181231305652">эсвэл</translation>
@@ -1479,6 +1501,7 @@
 <translation id="7760571082554155847">Нүүр хуудасны тохиргоо</translation>
 <translation id="7762130827864645708">Таны нууц үгийг амжилттай өөрчиллөө. Одооноос шинэ нууц үгийг ашиглана уу.</translation>
 <translation id="7763470514545477072">Домэйн дагаврын тохирол</translation>
+<translation id="7764171263909999400">гэрлийн туяа</translation>
 <translation id="7769672763586021400">Загварын ID</translation>
 <translation id="7774759755755950354">Буцах</translation>
 <translation id="7778717409420828014">Таны санал хүсэлт бидэнд Chromebook-н хэрэглээг сайжруулахад тусалдаг бөгөөд үүнийг манай баг шалгана. Олон тооны мэдээлэл ирдэг тул бид хариу илгээх боломжгүй.</translation>
@@ -1650,10 +1673,12 @@
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="8503836310948963452">Цөөн хэдэн минут хүлээнэ үү...</translation>
 <translation id="8505011850330200833">Gemini-н загвар нь сийрүүлгийг боловсруулах болон хураангуй үүсгэх 2ГБ-ын хадгалах санг шаарддаг</translation>
+<translation id="8506394543220680287">цасанд хучигдсан</translation>
 <translation id="8508640263392900755">APN-н дэлгэрэнгүй</translation>
 <translation id="8522687886059337719">Та одоо шинэ <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />дэлгэцийн зургууд<ph name="END_LINK_WALLPAPER_SUBPAGE" /> болон <ph name="BEGIN_LINK_SCREENSAVER_SUBPAGE" />дэлгэц амраагчид<ph name="END_LINK_SCREENSAVER_SUBPAGE" /> хандах эрхтэй</translation>
 <translation id="8528615187455571738">Crosvm</translation>
 <translation id="852896705346853285">цайны газар</translation>
+<translation id="8531692079895415839">манантай</translation>
 <translation id="8538236298648811558">Google AI-аар дэмжигдсэн</translation>
 <translation id="8550364285433943656">Гарын товчнуудаар тоглохын тулд тоглоомын үйлдлүүдэд удирдлага тохируулна уу</translation>
 <translation id="8557447961879934694">WPA2</translation>
@@ -1748,10 +1773,12 @@
 <translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Скан хийх}=1{{NUMBER_OF_PAGES} хуудас скан хийх}other{{NUMBER_OF_PAGES} хуудас скан хийх}}</translation>
 <translation id="89945434909472341">тосгон</translation>
 <translation id="8997710128084572139">Төхөөрөмжийн батарей <ph name="BATTERY_PERCENTAGE" />% байна.</translation>
+<translation id="8998002498898621320">бодит мэт зураг</translation>
 <translation id="8998289560386111590">Таны төхөөрөмжид боломжгүй</translation>
 <translation id="9000871120886759611">Сонгосон хэлээрээ мэдээлэлд хандах боломжтой эсэхийг нягтлахын тулд шинэчилнэ үү. Зөвхөн сонгосон хэлийг ашигладаг эсэхийг шалгана уу.</translation>
 <translation id="9003499805101629690">пицца</translation>
 <translation id="9003704114456258138">Давтамж</translation>
+<translation id="9017411601860840405">неон гэрэл</translation>
 <translation id="901834265349196618">и-мэйл</translation>
 <translation id="9022897536196898720">цэцэгс</translation>
 <translation id="9024331582947483881">бүтэн дэлгэц</translation>

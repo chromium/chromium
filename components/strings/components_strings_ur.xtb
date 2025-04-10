@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">پراپرٹی ڈیولپمنٹ</translation>
 <translation id="1824402189105105503">آٹھواں رول</translation>
 <translation id="1826516787628120939">چیک کیا جا رہا ہے</translation>
+<translation id="1832730227369924598">ڈیسک مطابقت پذیری</translation>
 <translation id="1834452765064623979">تعمیر اور دیکھ بھال</translation>
 <translation id="1838374766361614909">تلاش صاف کریں</translation>
 <translation id="1839331950812095887">چند الفاظ جو آپ کے خیالات کا خلاصہ کرتے ہیں</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">پرانا</translation>
 <translation id="2413528052993050574">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ ممکن ہے کہ اس کا سیکیورٹی سرٹیفکیٹ کالعدم قرار دے دیا گیا ہو۔ یہ غلط کنفیگریشن یا آپ کے کنکشن کو قطع کرنے والے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="2414886740292270097">گہری</translation>
+<translation id="2418292431699242678">‏آپ کا منتظم کسی بھی ChromeOS آلہ پر آپ کے گزشتہ اور موجودہ سیشنز کے درمیان مطابقت پذیر ہونے کے لیے درج ذیل کو اہل بناتا ہے:</translation>
 <translation id="2429716554270894715">فیبرک (واٹر پروف)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> کو سبھی <ph name="PROTOCOL" /> لنکس کھولنے کی اجازت دیں؟</translation>
 <translation id="2436976580469434549">فائبر اور ٹیکسٹائل آرٹ</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">قیمت ٹریک کی جا رہی ہے</translation>
 <translation id="3037605927509011580">ارے، رکیں!</translation>
 <translation id="3039406992698062762">فیملی کے ساتھ سفر</translation>
+<translation id="3040636468789770340">کوکیز (آپ کی حال ہی میں ملاحظہ کردہ ویب سائٹس پر سائن ان کردہ حالت)</translation>
 <translation id="3041176923638368519">کارڈ کے فوائد کی شرائط دیکھیں</translation>
 <translation id="3041612393474885105">سرٹیفکیٹ کی معلومات</translation>
 <translation id="3045769629416806687">خطرناک کھیل</translation>
@@ -1671,6 +1674,7 @@
 <translation id="3869939189466884821">آپ کی مقامی فائلز <ph name="MINUTES" /> منٹ میں حذف ہو جائیں گی</translation>
 <translation id="3872834068356954457">سائنس</translation>
 <translation id="3875783148670536197">مجھے طریقہ دکھائیں</translation>
+<translation id="387681220560687945">ونڈوز (ونڈوز اور ٹیبز کی ترتیب اور تنظیم)</translation>
 <translation id="3879748587602334249">ڈاؤن لوڈ مینیجر</translation>
 <translation id="3880456882942693779">آرٹس اور تفریح</translation>
 <translation id="3880589673277376494">انٹرنیٹ اور ٹیلی کام</translation>
@@ -4749,6 +4753,7 @@
 <translation id="950736567201356821">اوپر تین بار سوراخ</translation>
 <translation id="950926967802086924">‏پاس کی • Google پاس ورڈ مینیجر</translation>
 <translation id="955429569736351433">‏‫VR کی اجازت دی گئی</translation>
+<translation id="955627189349169688">‏آپ <ph name="BEGIN_LINK" />Chrome Sync کی ترتیبات<ph name="END_LINK" /> میں اس پالیسی سے آپٹ آؤٹ کر سکتے ہیں۔</translation>
 <translation id="95721182352849470">پیلا 2</translation>
 <translation id="961663415146723894">نیچے باندھیں</translation>
 <translation id="961856697154696964">براؤزنگ ڈیٹا حذف کریں</translation>

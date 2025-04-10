@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">Дэвелаперская дзейнасць</translation>
 <translation id="1824402189105105503">Восьмы рулон</translation>
 <translation id="1826516787628120939">Ідзе праверка</translation>
+<translation id="1832730227369924598">Сінхранізацыя працоўнага стала</translation>
 <translation id="1834452765064623979">Будаўніцтва і абслугоўванне</translation>
 <translation id="1838374766361614909">Ачысціць поле пошуку</translation>
 <translation id="1839331950812095887">Некалькі слоў, якія падсумуюць вашы думкі.</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">Старая форма</translation>
 <translation id="2413528052993050574">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; магчыма, яго сертыфікат бяспекі адкліканы. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="2414886740292270097">Цёмная</translation>
+<translation id="2418292431699242678">Ваш адміністратар уключыў сінхранізацыю наступных даных паміж папярэднім і бягучым сеансамі на любой прыладзе з ChromeOS:</translation>
 <translation id="2429716554270894715">Воданепранікальная тканіна</translation>
 <translation id="2436186046335138073">Дазволіць <ph name="HANDLER_HOSTNAME" /> адкрываць усе спасылкі тыпу "<ph name="PROTOCOL" />"?</translation>
 <translation id="2436976580469434549">Валаконнае і тэкстыльнае мастацтва</translation>
@@ -1161,6 +1163,7 @@
 <translation id="3037177537145227281">Цана адсочваецца</translation>
 <translation id="3037605927509011580">Якая неспадзяванка!</translation>
 <translation id="3039406992698062762">Сямейныя падарожжы</translation>
+<translation id="3040636468789770340">Файлы cookie (стан уваходу на вэб-сайтах, якія вы нядаўна наведалі)</translation>
 <translation id="3041176923638368519">Паглядзець умовы выкарыстання пераваг карткі</translation>
 <translation id="3041612393474885105">Інфармацыя аб сертыфікаце</translation>
 <translation id="3045769629416806687">Экстрэмальныя віды спорту</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">Лакальныя файлы будуць выдалены праз <ph name="MINUTES" /> хв</translation>
 <translation id="3872834068356954457">Навука</translation>
 <translation id="3875783148670536197">Паказаць</translation>
+<translation id="387681220560687945">Вокны (размяшчэнне і арганізацыя вокнаў і ўкладак)</translation>
 <translation id="3879748587602334249">Менеджар спамповак</translation>
 <translation id="3880456882942693779">Мастацтва і забавы</translation>
 <translation id="3880589673277376494">Інтэрнэт і тэлекамунікацыі</translation>
@@ -4747,6 +4751,7 @@
 <translation id="950736567201356821">Тры дзіркі зверху</translation>
 <translation id="950926967802086924">Ключ доступу • Менеджар пароляў Google</translation>
 <translation id="955429569736351433">Доступ да VR дазволены</translation>
+<translation id="955627189349169688">Вы можаце адключыць гэта правіла ў <ph name="BEGIN_LINK" />наладах Сінхранізацыі Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Жоўты 2</translation>
 <translation id="961663415146723894">Пераплёт знізу</translation>
 <translation id="961856697154696964">Выдаліць даныя пра работу ў браўзеры</translation>

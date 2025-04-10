@@ -263,6 +263,7 @@
 <translation id="1174073918202301297">Η συντόμευση προστέθηκε</translation>
 <translation id="1174366174291287894">Η σύνδεσή σας είναι πάντα ασφαλής εκτός αν το Chrome σας ειδοποιήσει ότι δεν είναι</translation>
 <translation id="1175131936083782305">Ο διαχειριστής σας έχει απενεργοποιήσει αυτήν τη λειτουργία.</translation>
+<translation id="1175277108283187866">Επισκεφτείτε έναν ιστότοπο ή ξεκινήστε μια αναζήτηση στη γραμμή διευθύνσεων</translation>
 <translation id="1175364870820465910">&amp;Εκτύπωση...</translation>
 <translation id="1175572348579024023">Κύλιση</translation>
 <translation id="1175914831232945926">Ψηφία</translation>
@@ -2764,6 +2765,7 @@
 <translation id="2878889940310164513">Προσθήκη κινητού…</translation>
 <translation id="288042212351694283">Πρόσβαση στις συσκευές με Universal 2nd Factor</translation>
 <translation id="2881076733170862447">Όταν κάνετε κλικ στην επέκταση</translation>
+<translation id="2882530630263790933">Ήχος και βίντεο</translation>
 <translation id="2882943222317434580">Θα γίνει άμεσα επανεκκίνηση και επαναφορά του <ph name="IDS_SHORT_PRODUCT_NAME" />.</translation>
 <translation id="2884070497102362193">Δοκιμάστε την μπαταρία, τη CPU, τη μνήμη, τη συνδεσιμότητα και άλλα</translation>
 <translation id="2885129935310217435">Υπάρχει ένα κουμπί με το ίδιο όνομα. Επιλέξτε άλλο.</translation>
@@ -6344,6 +6346,7 @@
 <translation id="5436492226391861498">Αναμονή για διοχέτευση διακομιστή μεσολάβησης...</translation>
 <translation id="5436510242972373446">Αναζήτηση <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Το πλάτος του παραθύρου στα <ph name="WINDOW_SIDE" /> ανέρχεται στο <ph name="WINDOW_SIZE_PERCENT" />, το πλάτος του πλαισίου στα <ph name="PANE_SIDE" /> ανέρχεται στο <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">Εύρεση και επεκτάσεις</translation>
 <translation id="5440425659852470030">Κλείσιμο πλαϊνού πλαισίου</translation>
 <translation id="544083962418256601">Δημιουργία συντομεύσεων…</translation>
 <translation id="5441133529460183413">Η εφαρμογή ιστού εγκαταστάθηκε από το πρόγραμμα περιήγησης Chrome</translation>
@@ -7456,6 +7459,7 @@
 <translation id="6248988683584659830">Αναζήτηση ρυθμίσεων</translation>
 <translation id="6249200942125593849">Διαχείριση προσβασιμότητας</translation>
 <translation id="6250186368828697007">Οι λεπτομέρειες αποκρύπτονται όσο μοιράζεστε την οθόνη σας.</translation>
+<translation id="6250887692313997958">Επιλογή μιας καρτέλας για προσθήκη στην προβολή διαχωρισμού οθόνης</translation>
 <translation id="6251870443722440887">Χειρισμοί GDI</translation>
 <translation id="6251924700383757765">Πολιτική απορρήτου</translation>
 <translation id="625369703868467034">Υγεία δικτύου</translation>
@@ -11527,6 +11531,7 @@
 <translation id="9113240369465613386">Μόνο μονές σελίδες</translation>
 <translation id="9113469270512809735">Εναλλαγή στοιχείων που έκλεισαν πρόσφατα</translation>
 <translation id="9113529408970052045">Η λειτουργία "Βοήθησέ με να γράψω" μπορεί να ανοίγει αυτόματα, όταν ένα πλαίσιο κειμένου σε έναν ιστότοπο μπορεί να συμπληρωθεί με περιεχόμενο σύντομης μορφής</translation>
+<translation id="9114210796909453187">Ολοκλήρωση προβολής διαχωρισμού οθόνης</translation>
 <translation id="9114663181201435112">Εύκολη σύνδεση</translation>
 <translation id="9115675100829699941">&amp;Σελιδοδείκτες</translation>
 <translation id="9116366756388192417">Επιλέξτε ένα θέμα</translation>

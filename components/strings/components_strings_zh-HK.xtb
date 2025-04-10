@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">地產發展</translation>
 <translation id="1824402189105105503">第八卷</translation>
 <translation id="1826516787628120939">檢查中</translation>
+<translation id="1832730227369924598">桌面同步</translation>
 <translation id="1834452765064623979">建築和維修</translation>
 <translation id="1838374766361614909">清除搜尋</translation>
 <translation id="1839331950812095887">用幾個字詞歸納想法</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">舊地址</translation>
 <translation id="2413528052993050574">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證已被撤銷。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="2414886740292270097">灰暗</translation>
+<translation id="2418292431699242678">管理員允許以下資料在任何 ChromeOS 裝置之前和當前的工作階段之間同步：</translation>
 <translation id="2429716554270894715">布料 (防水)</translation>
 <translation id="2436186046335138073">要允許 <ph name="HANDLER_HOSTNAME" /> 開啟所有 <ph name="PROTOCOL" /> 連結嗎？</translation>
 <translation id="2436976580469434549">纖維和紡織藝術</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">正在追蹤價格</translation>
 <translation id="3037605927509011580">糟糕！</translation>
 <translation id="3039406992698062762">家庭旅遊</translation>
+<translation id="3040636468789770340">Cookie (最近曾瀏覽網站上的登入狀態)</translation>
 <translation id="3041176923638368519">查看信用卡禮遇條款</translation>
 <translation id="3041612393474885105">憑證資料</translation>
 <translation id="3045769629416806687">極限運動</translation>
@@ -1669,6 +1672,7 @@
 <translation id="3869939189466884821">本機檔案將於 <ph name="MINUTES" /> 分鐘後刪除</translation>
 <translation id="3872834068356954457">科學</translation>
 <translation id="3875783148670536197">顯示方法</translation>
+<translation id="387681220560687945">視窗 (視窗和分頁的排列和組織方式)</translation>
 <translation id="3879748587602334249">下載管理員</translation>
 <translation id="3880456882942693779">藝術及娛樂</translation>
 <translation id="3880589673277376494">互聯網及電訊公司</translation>
@@ -4746,6 +4750,7 @@
 <translation id="950736567201356821">三孔 (頂端)</translation>
 <translation id="950926967802086924">密鑰 • Google 密碼管理工具</translation>
 <translation id="955429569736351433">批准用 VR</translation>
+<translation id="955627189349169688">你可於 <ph name="BEGIN_LINK" />Chrome 同步設定<ph name="END_LINK" />中選擇停用此政策。</translation>
 <translation id="95721182352849470">黃色 2</translation>
 <translation id="961663415146723894">釘裝 (底部)</translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>

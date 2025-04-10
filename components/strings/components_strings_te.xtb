@@ -487,6 +487,7 @@
 <translation id="1822995137827688764">ఆస్తి అభివృద్ధి</translation>
 <translation id="1824402189105105503">ఎయిత్ రోల్</translation>
 <translation id="1826516787628120939">చెక్ చేస్తోంది</translation>
+<translation id="1832730227369924598">డెస్క్ సింక్</translation>
 <translation id="1834452765064623979">నిర్మాణం &amp; నిర్వహణ</translation>
 <translation id="1838374766361614909">శోధనను తీసివేయండి</translation>
 <translation id="1839331950812095887">మీ ఆలోచనలకు ఒక వాక్య రూపం తీసుకువచ్చే కొన్ని పదాలు</translation>
@@ -824,6 +825,7 @@
 <translation id="2413155254802890957">పాతది</translation>
 <translation id="2413528052993050574">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం ఉపసంహరించబడి ఉండవచ్చు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="2414886740292270097">ముదురు</translation>
+<translation id="2418292431699242678">మీ అడ్మినిస్ట్రేటర్ ఏదైనా Chrome OS పరికరంలో మీ మునుపటి, ప్రస్తుత సెషన్‌ల మధ్య కింది వాటిని సింక్ చేయడాన్ని ఎనేబుల్ చేస్తారు:</translation>
 <translation id="2429716554270894715">ఫ్యాబ్రిక్ (వాటర్‌ప్రూఫ్)</translation>
 <translation id="2436186046335138073">అన్ని <ph name="PROTOCOL" /> లింక్‌లను తెరవడానికి <ph name="HANDLER_HOSTNAME" />ను అనుమతించాలా?</translation>
 <translation id="2436976580469434549">ఫైబర్ &amp; టెక్స్‌టైల్ ఆర్ట్స్</translation>
@@ -1155,6 +1157,7 @@
 <translation id="3037177537145227281">ధరను ట్రాక్ చేయడం</translation>
 <translation id="3037605927509011580">ఆవ్, స్నాప్!</translation>
 <translation id="3039406992698062762">ఫ్యామిలీ ట్రావెల్</translation>
+<translation id="3040636468789770340">కుక్కీలు (మీరు ఇటీవల తెరిచిన వెబ్‌సైట్‌లలో సైన్ ఇన్ చేసిన స్టేట్)</translation>
 <translation id="3041176923638368519">కార్డ్ ప్రయోజన నియమాలను చూడండి</translation>
 <translation id="3041612393474885105">సర్టిఫికెట్ సమాచారం</translation>
 <translation id="3045769629416806687">ప్రమాదకర క్రీడలు</translation>
@@ -1665,6 +1668,7 @@
 <translation id="3869939189466884821">మీ లోకల్ ఫైల్స్ <ph name="MINUTES" /> నిమిషాల్లో తొలగించబడతాయి</translation>
 <translation id="3872834068356954457">సైన్స్</translation>
 <translation id="3875783148670536197">ఎలా చేయాలో నాకు చూపించు</translation>
+<translation id="387681220560687945">Windows (విండోలు, ట్యాబ్‌ల అమరిక, ఆర్గనైజేషన్)</translation>
 <translation id="3879748587602334249">డౌన్‌లోడ్ మేనేజ‌ర్‌</translation>
 <translation id="3880456882942693779">కళలు &amp; వినోదం</translation>
 <translation id="3880589673277376494">ఇంటర్నెట్ &amp; టెలికామ్</translation>
@@ -4743,6 +4747,7 @@
 <translation id="950736567201356821">ఎగువ భాగంలో మూడు రంధ్రాలు</translation>
 <translation id="950926967802086924">పాస్-కీ • Google Password Manager</translation>
 <translation id="955429569736351433">VRకు అనుమతి ఉంది</translation>
+<translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome సింక్ సెట్టింగ్‌ల<ph name="END_LINK" />లో మీరు ఈ పాలసీకి సమ్మతిని నిలిపివేయవచ్చు.</translation>
 <translation id="95721182352849470">పసుపు రంగు 2</translation>
 <translation id="961663415146723894">దిగువ భాగంలో బైండ్</translation>
 <translation id="961856697154696964">బ్రౌజింగ్ డేటాను తొలగించండి</translation>

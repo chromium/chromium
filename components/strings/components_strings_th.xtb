@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">การพัฒนาอสังหาริมทรัพย์</translation>
 <translation id="1824402189105105503">ม้วนกระดาษ 8</translation>
 <translation id="1826516787628120939">กำลังตรวจสอบ</translation>
+<translation id="1832730227369924598">การซิงค์เดสก์</translation>
 <translation id="1834452765064623979">การก่อสร้างและบำรุงรักษา</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
 <translation id="1839331950812095887">สรุปความคิดของคุณในไม่กี่คำ</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">เก่า</translation>
 <translation id="2413528052993050574">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะอาจมีการเพิกถอนใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="2414886740292270097">มืด</translation>
+<translation id="2418292431699242678">ผู้ดูแลระบบของคุณเปิดใช้การซิงค์ต่อไปนี้ระหว่างเซสชันก่อนหน้าและปัจจุบันในอุปกรณ์ ChromeOS ของคุณ</translation>
 <translation id="2429716554270894715">ผ้า (กันน้ำ)</translation>
 <translation id="2436186046335138073">อนุญาตให้ <ph name="HANDLER_HOSTNAME" /> เปิดลิงก์ <ph name="PROTOCOL" /> ทั้งหมดไหม</translation>
 <translation id="2436976580469434549">ศิลปะเส้นใยและสิ่งทอ</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">กำลังติดตามราคา</translation>
 <translation id="3037605927509011580">แย่จัง!</translation>
 <translation id="3039406992698062762">การท่องเที่ยวแบบครอบครัว</translation>
+<translation id="3040636468789770340">คุกกี้ (สถานะที่ลงชื่อเข้าใช้บนเว็บไซต์ที่คุณเข้าชมล่าสุด)</translation>
 <translation id="3041176923638368519">ดูข้อกำหนดสิทธิประโยชน์ของบัตร</translation>
 <translation id="3041612393474885105">ข้อมูลในใบรับรอง</translation>
 <translation id="3045769629416806687">กีฬาผาดโผน</translation>
@@ -1669,6 +1672,7 @@
 <translation id="3869939189466884821">ระบบจะลบไฟล์ในเครื่องของคุณใน <ph name="MINUTES" /> นาที</translation>
 <translation id="3872834068356954457">วิทยาศาสตร์</translation>
 <translation id="3875783148670536197">แสดงวิธีการ</translation>
+<translation id="387681220560687945">หน้าต่าง (การจัดเรียงและการจัดระเบียบหน้าต่างและแท็บ)</translation>
 <translation id="3879748587602334249">Download Manager</translation>
 <translation id="3880456882942693779">ศิลปะและความบันเทิง</translation>
 <translation id="3880589673277376494">อินเทอร์เน็ตและโทรคมนาคม</translation>
@@ -4747,6 +4751,7 @@
 <translation id="950736567201356821">เจาะรูด้านบน 3 รู</translation>
 <translation id="950926967802086924">พาสคีย์ • เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="955429569736351433">อนุญาต VR</translation>
+<translation id="955627189349169688">คุณเลือกไม่รับนโยบายนี้ได้ใน<ph name="BEGIN_LINK" />การตั้งค่าการซิงค์ของ Chrome<ph name="END_LINK" /></translation>
 <translation id="95721182352849470">เหลือง 2</translation>
 <translation id="961663415146723894">เย็บเล่มด้านล่าง</translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>

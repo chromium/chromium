@@ -492,6 +492,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1822995137827688764">Grundstückerschließung</translation>
 <translation id="1824402189105105503">Achte Rolle</translation>
 <translation id="1826516787628120939">Überprüfung läuft</translation>
+<translation id="1832730227369924598">Desktop-Synchronisierung</translation>
 <translation id="1834452765064623979">Baugewerbe und Hausverwaltung</translation>
 <translation id="1838374766361614909">Suche löschen</translation>
 <translation id="1839331950812095887">einige Worte, die deine Gedanken zusammenfassen</translation>
@@ -829,6 +830,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2413155254802890957">Alt</translation>
 <translation id="2413528052993050574">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wurde möglicherweise widerrufen. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="2414886740292270097">Dunkel</translation>
+<translation id="2418292431699242678">Dein Administrator ermöglicht die Synchronisierung der folgenden Elemente zwischen deinen vorherigen und aktuellen Sitzungen auf einem beliebigen ChromeOS-Gerät:</translation>
 <translation id="2429716554270894715">Stoff (wasserdicht)</translation>
 <translation id="2436186046335138073">Öffnen aller <ph name="PROTOCOL" />-Links durch <ph name="HANDLER_HOSTNAME" /> zulassen?</translation>
 <translation id="2436976580469434549">Faser- und Textilkunst</translation>
@@ -1160,6 +1162,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3037177537145227281">Preis wird beobachtet</translation>
 <translation id="3037605927509011580">Oh nein!</translation>
 <translation id="3039406992698062762">Familienreisen</translation>
+<translation id="3040636468789770340">Cookies (angemeldeter Status auf zuletzt besuchten Websites)</translation>
 <translation id="3041176923638368519">Nutzungsbedingungen für Kartenvorteile ansehen</translation>
 <translation id="3041612393474885105">Zertifikatinformationen</translation>
 <translation id="3045769629416806687">Extremsportarten</translation>
@@ -1668,6 +1671,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3869939189466884821">Deine lokalen Dateien werden in <ph name="MINUTES" /> Minuten gelöscht</translation>
 <translation id="3872834068356954457">Wissenschaft</translation>
 <translation id="3875783148670536197">Zeigen</translation>
+<translation id="387681220560687945">Fenster (Anordnung und Organisation von Fenstern und Tabs)</translation>
 <translation id="3879748587602334249">Download-Manager</translation>
 <translation id="3880456882942693779">Kunst und Unterhaltung</translation>
 <translation id="3880589673277376494">Internet und Telekommunikation</translation>
@@ -1908,7 +1912,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4271311252511481365">{NUM_REVIEWS,plural, =0{0 Rezensionen ansehen. Die durchschnittliche Bewertung beträgt <ph name="STARS" /> Sterne.}=1{1 Rezension ansehen. Die durchschnittliche Bewertung beträgt <ph name="STARS" /> Sterne.}other{Alle # Rezensionen ansehen. Die durchschnittliche Bewertung beträgt <ph name="STARS" /> Sterne.}}</translation>
 <translation id="4271652479722040953">Wenn Erweiterungen zu Chrome hinzugefügt werden, werden relevante Daten zu diesen Erweiterungen zur Analyse an Dritte gesendet und können für deinen Administrator sichtbar sei. Die Daten umfassen Informationen zu den Erweiterungen wie Name, Installationszeit, Installationsquelle sowie Aktivitäten, die mit diesen Erweiterungen verknüpft sind (z. B. das Wechseln von Tabs, das Kontaktieren von Websites oder der Zugriff auf Cookies). Diese Daten werden für Erweiterungen erhoben, die aus dem Chrome Web Store und von Quellen außerhalb des Stores stammen.</translation>
 <translation id="4275830172053184480">Gerät neu starten</translation>
-<translation id="4276974990916607331">Nein danke</translation>
+<translation id="4276974990916607331">Nein, danke</translation>
 <translation id="4277028893293644418">Passwort zurücksetzen</translation>
 <translation id="4277529130885813215">Anderes Gerät verwenden</translation>
 <translation id="4277937682389409325">Lokale Adresse</translation>
@@ -3735,7 +3739,7 @@ Weitere Details:
 <translation id="7469935732330206581">Dieses Formular ist nicht sicher</translation>
 <translation id="7470854469646445678">Gib den Grund für das Kopieren an (erforderlich)</translation>
 <translation id="7471007961486718967">Gib den Grund für die Übertragung an (erforderlich)</translation>
-<translation id="7473891865547856676">Nein danke</translation>
+<translation id="7473891865547856676">Nein, danke</translation>
 <translation id="7481312909269577407">Vorwärts</translation>
 <translation id="7481603210197454575">Umschlag Italienisch</translation>
 <translation id="7483482939016730822">Schul- und Unterrichtsbedarf</translation>
@@ -4747,6 +4751,7 @@ Weitere Details:
 <translation id="950736567201356821">Dreifache Lochung oben</translation>
 <translation id="950926967802086924">Passkey • Google Passwortmanager</translation>
 <translation id="955429569736351433">VR-Berechtigung gewährt</translation>
+<translation id="955627189349169688">Du kannst diese Richtlinie in den <ph name="BEGIN_LINK" />Einstellungen für die Chrome-Synchronisierung<ph name="END_LINK" /> deaktivieren.</translation>
 <translation id="95721182352849470">Gelb 2</translation>
 <translation id="961663415146723894">Bindung unten</translation>
 <translation id="961856697154696964">Browserdaten löschen</translation>

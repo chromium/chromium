@@ -259,6 +259,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="22091350895006575">Колдонуучунун атын кошуу</translation>
 <translation id="221494669172414749">Chrome профиль кулпусу жок ачылса, сакталган сырсөздөрүңүз жана төлөм ыкмаларыңыз унаадан өчүрүлөт. Профиль кулпусун колдонуу менен бул маалымат коопсуз сакталат.</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> катары улантуу</translation>
+<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> өтмөктөр тобунда жаңы аракеттер бар</translation>
 <translation id="2230777942707397948">Бош терезе</translation>
 <translation id="223356358902285214">Колдонмолор жана Интернеттеги аракеттер таржымалы</translation>
 <translation id="2234827758954819389">Купуялык жетектемеси</translation>
@@ -893,6 +894,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5114895953710637392">Колдонмолорду чыпкалоо барагы жабылды.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Билдирүүлөрдөгү шилтемелерди, документтерди жана башка колдонмолорду Chrome'до ача аласыз.</translation>
+<translation id="5118713593561876160">Кызыккан нерселер</translation>
 <translation id="5122378528687922675">Жардам керек болсо, ата-энеңе кайрыл (<ph name="PARENT_NAME_1" /> же <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Жашыруун өтмөк</translation>
 <translation id="5139940364318403933">Google Drive'ты колдонгонду үйрөнүп алыңыз</translation>

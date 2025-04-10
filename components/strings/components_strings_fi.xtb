@@ -492,6 +492,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1822995137827688764">Kiinteistörakennus</translation>
 <translation id="1824402189105105503">Kahdeksas rulla</translation>
 <translation id="1826516787628120939">Tarkistetaan</translation>
+<translation id="1832730227369924598">Työpöydän synkronointi</translation>
 <translation id="1834452765064623979">Rakennustyöt ja huolto</translation>
 <translation id="1838374766361614909">Tyhjennä haku</translation>
 <translation id="1839331950812095887">muutama sana, jotka tiivistävät ajatuksesi</translation>
@@ -829,6 +830,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2413155254802890957">Vanha</translation>
 <translation id="2413528052993050574">Palvelin ei voinut todistaa olevansa <ph name="DOMAIN" />; sen suojausvarmenne ei välttämättä ole voimassa. Tämä voi johtua määritysvirheestä tai verkkoyhteytesi siepanneesta hyökkääjästä.</translation>
 <translation id="2414886740292270097">Tumma</translation>
+<translation id="2418292431699242678">Järjestelmänvalvojasi sallii seuraavan synkronoinnin ChromeOS-laitteella aiemman ja nykyisen istunnon välillä:</translation>
 <translation id="2429716554270894715">Kangas (vedenpitävä)</translation>
 <translation id="2436186046335138073">Haluatko tahon <ph name="HANDLER_HOSTNAME" /> avaavan kaikki <ph name="PROTOCOL" />-linkit?</translation>
 <translation id="2436976580469434549">Kuitu‑ ja tekstiilitaide</translation>
@@ -1160,6 +1162,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3037177537145227281">Hintaa seurataan</translation>
 <translation id="3037605927509011580">Harmin paikka!</translation>
 <translation id="3039406992698062762">Perhematkat</translation>
+<translation id="3040636468789770340">Evästeet (kirjautumistila äskettäin avatuilla verkkosivustoilla)</translation>
 <translation id="3041176923638368519">Katso kortin etujen ehdot</translation>
 <translation id="3041612393474885105">Varmenteen tiedot</translation>
 <translation id="3045769629416806687">Extreme-urheilulajit</translation>
@@ -1671,6 +1674,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3869939189466884821">Paikalliset tiedostosi poistetaan <ph name="MINUTES" /> minuutin kuluttua</translation>
 <translation id="3872834068356954457">Tiede</translation>
 <translation id="3875783148670536197">Näytä miten</translation>
+<translation id="387681220560687945">Ikkunat (ikkunoiden ja välilehtien sijoittelu ja järjestys)</translation>
 <translation id="3879748587602334249">Latausten hallinta</translation>
 <translation id="3880456882942693779">Taide ja viihde</translation>
 <translation id="3880589673277376494">Internet ja tietoliikenne</translation>
@@ -4750,6 +4754,7 @@ Lisätietoja:
 <translation id="950736567201356821">Kolme reikää yläreunassa</translation>
 <translation id="950926967802086924">Avainkoodi • Google Salasanat</translation>
 <translation id="955429569736351433">VR sallittu</translation>
+<translation id="955627189349169688">Voit poistaa tämän käytännön käytöstä <ph name="BEGIN_LINK" />Chromen synkronointiasetuksista<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Keltainen 2</translation>
 <translation id="961663415146723894">Alareuna sidottu</translation>
 <translation id="961856697154696964">Poista selausdata</translation>

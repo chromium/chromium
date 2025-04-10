@@ -249,6 +249,7 @@
 <translation id="1915960750806557358">Ge feedback eller beskriv problemet. Inkludera inget som är personligt, känsligt eller konfidentiellt.</translation>
 <translation id="1923388006036088459">Accentfärger</translation>
 <translation id="1926611810597212636">enhörning</translation>
+<translation id="1944321879609775960">Starta om <ph name="DEVICE_TYPE" /> om du vill skapa en sammanfattning</translation>
 <translation id="1945403655450283000">Ljudinspelare</translation>
 <translation id="1947737735496445907">Utskrivet</translation>
 <translation id="1951012854035635156">Assistent</translation>
@@ -346,6 +347,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Skicka feedbackrapport</translation>
 <translation id="2407209115954268704">Status för SIM-lås</translation>
+<translation id="240798792848608143">Starta om <ph name="DEVICE_TYPE" /> om du vill få transkriptioner på <ph name="LANGUAGE_NAME" /></translation>
 <translation id="241419523391571119">Öppna locket igen för att testa</translation>
 <translation id="2414660853550118611">Om bakgrunden</translation>
 <translation id="2414886740292270097">Mörk</translation>
@@ -481,6 +483,7 @@
 <translation id="3156846309055100599">Skannar sidan <ph name="PAGE_NUMBER" /> …</translation>
 <translation id="315738237743207937">Infångstportal har upptäckts</translation>
 <translation id="3160172848211257835">Skicka <ph name="BEGIN_LINK1" />system- och appinformation<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />statistik<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Starta om <ph name="DEVICE_TYPE" /> om du vill skapa en sammanfattning och en titel</translation>
 <translation id="3170673040743561620">Sätt dokumentet i skannern</translation>
 <translation id="3174321110679064523">Morgon till kväll-bakgrund</translation>
 <translation id="3178532070248519384">avantgarde</translation>
@@ -751,6 +754,7 @@
 <translation id="4378373042927530923">Har inte körts</translation>
 <translation id="4378551569595875038">Ansluter ...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Starta om <ph name="DEVICE_TYPE" /> om du vill skapa titlar för inspelningen</translation>
 <translation id="4394049700291259645">Inaktivera</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> startas om</translation>
 <translation id="4395835743215824109">anpassa tangentbord</translation>
@@ -779,6 +783,7 @@
 <translation id="4486524074141928967">Du loggas ut kl. <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Kortkommandot är inte tillgängligt. Tryck på ett nytt kortkommando med en specialtangent (Ctrl, Alt, Skift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Gränssnittsfärg</translation>
+<translation id="4501302804999678844">Starta om <ph name="DEVICE_TYPE" /> om du vill skapa en transkription</translation>
 <translation id="4503223151711056411">Vänsterpiltangenten</translation>
 <translation id="4503441351962730761">modern konst</translation>
 <translation id="4507392511610824664">öka ljusstyrkan</translation>
@@ -831,6 +836,7 @@
 <translation id="4771607256327216405">öka ljusstyrkan på tangentbordet</translation>
 <translation id="4771923071974529837">i morgon</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
+<translation id="4777310452073659583">Starta om <ph name="DEVICE_TYPE" /> om du vill få en transkription</translation>
 <translation id="4778082030331381943">ametist</translation>
 <translation id="4782311465517282004">Få definitioner, översättningar eller enhetskonverteringar när du högerklickar eller trycker länge på text</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>

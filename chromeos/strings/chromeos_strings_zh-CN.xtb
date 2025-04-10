@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> 音频</translation>
 <translation id="1116694919640316211">关于</translation>
 <translation id="1118572504348554005">我们可能会与合作伙伴分享通过本表单提交的反馈，以便排查您向我们报告的错误和其他问题。请勿包含密码等敏感信息。</translation>
+<translation id="1118596190635569417">将此菜单移至右侧</translation>
 <translation id="1119403468619527527">字词过少，无法简化</translation>
 <translation id="1119447706177454957">内部错误</translation>
 <translation id="1124772482545689468">用户</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">分享您的反馈或描述您的问题。请勿包含任何个人、敏感或机密信息。</translation>
 <translation id="1923388006036088459">强调色</translation>
 <translation id="1926611810597212636">独角兽</translation>
+<translation id="1944321879609775960">如需创建摘要，请重启 <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">录音机</translation>
 <translation id="1947737735496445907">已打印</translation>
 <translation id="1951012854035635156">智能助理</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">发送反馈报告</translation>
 <translation id="2407209115954268704">SIM 卡锁定状态</translation>
+<translation id="240798792848608143">如需获取<ph name="LANGUAGE_NAME" />转写内容，请重启 <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">重新打开设备的盖子即可进行测试</translation>
 <translation id="2414660853550118611">壁纸简介</translation>
 <translation id="2414886740292270097">深色调</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">正在扫描第 <ph name="PAGE_NUMBER" /> 页…</translation>
 <translation id="315738237743207937">检测到强制门户</translation>
 <translation id="3160172848211257835">发送<ph name="BEGIN_LINK1" />系统和应用信息<ph name="END_LINK1" />以及<ph name="BEGIN_LINK2" />指标<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">如需创建摘要和标题，请重启 <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">将您的文件放置在扫描仪上</translation>
 <translation id="3174321110679064523">“黎明到黄昏”壁纸</translation>
 <translation id="3178532070248519384">前卫艺术</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">更换壁纸</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
 <translation id="3606583719724308068">HTTPS 网站的延迟时间较长</translation>
+<translation id="3614639364827854748">将此菜单移至左侧</translation>
 <translation id="361575905210396100">感谢您的反馈</translation>
 <translation id="3621072146987826699">大象</translation>
 <translation id="3628462041319107639">正在下载转写模型…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">未运行</translation>
 <translation id="4378551569595875038">正在连接…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">如需为录制内容创建标题，请重启 <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重启<ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">键盘自定义</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967">您将于<ph name="TIME" /> 退出账号</translation>
 <translation id="4500722292849917410">此快捷键不可用。按新的快捷键时，请使用辅助键（ctrl、alt、shift 或<ph name="META_KEY" />键）。</translation>
 <translation id="4500966230243561393">界面颜色</translation>
+<translation id="4501302804999678844">如需创建转写内容，请重启 <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">向左</translation>
 <translation id="4503441351962730761">现代艺术</translation>
 <translation id="4507392511610824664">调高亮度</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">提高键盘亮度</translation>
 <translation id="4771923071974529837">明天</translation>
 <translation id="4773299976671772492">已停止</translation>
+<translation id="4777310452073659583">如需获取转写内容，请重启 <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">紫水晶</translation>
 <translation id="4782311465517282004">在您右键点击或轻触并按住文字时获取定义、翻译或单位换算结果</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 张照片</translation>
@@ -1696,11 +1704,13 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享网址：</translation>
 <translation id="8660881923941176839">磅</translation>
+<translation id="8669187096858652220">点击即可显示标签页</translation>
 <translation id="8670574982334489519">右侧</translation>
 <translation id="8675354002693747642">预共享密钥</translation>
 <translation id="8677859815076891398">无任何相册。请在 <ph name="LINK_BEGIN" />Google 相册<ph name="LINK_END" />中创建一个相册。</translation>
 <translation id="8682949824227998083">日本拉面</translation>
 <translation id="8689520252402395106">请重新插入<ph name="DEVICE_NAME" /> USB 线，以继续更新流程</translation>
+<translation id="8699053192961439771">点击即可自动隐藏标签页</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />使用向左键或向右键即可管理此功能。</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="871560550817059752">失败 - 墨水已用完</translation>

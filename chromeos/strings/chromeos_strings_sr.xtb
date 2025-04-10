@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> звук</translation>
 <translation id="1116694919640316211">Основни подаци</translation>
 <translation id="1118572504348554005">Са партнерима можемо да делимо повратне информације послате преко овог обрасца ради отклањања грешака и других проблема које нам пријавите. Немојте да уносите осетљиве информације попут лозинки.</translation>
+<translation id="1118596190635569417">Померите овај мени удесно</translation>
 <translation id="1119403468619527527">Премало речи за поједностављивање</translation>
 <translation id="1119447706177454957">Интерна грешка</translation>
 <translation id="1124772482545689468">Корисник</translation>
@@ -573,6 +574,7 @@
 <translation id="3604713164406837697">Промените позадину</translation>
 <translation id="360565022852130722">WiFi мрежа је обезбеђена слабим протоколом WEP 802.1x</translation>
 <translation id="3606583719724308068">Велико кашњење до HTTPS веб-сајтова</translation>
+<translation id="3614639364827854748">Померите овај мени улево</translation>
 <translation id="361575905210396100">Хвала вам на повратним информацијама</translation>
 <translation id="3621072146987826699">слонови</translation>
 <translation id="3628462041319107639">Преузима се модел транскрипције…</translation>
@@ -1696,11 +1698,13 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Дели URL:</translation>
 <translation id="8660881923941176839">фунте</translation>
+<translation id="8669187096858652220">Кликните да бисте приказали картице</translation>
 <translation id="8670574982334489519">десна</translation>
 <translation id="8675354002693747642">Тајни кључ</translation>
 <translation id="8677859815076891398">Нема албума. Направите албум у <ph name="LINK_BEGIN" />Google сликама<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">рамен</translation>
 <translation id="8689520252402395106">Поново прикључите USB кабл уређаја<ph name="DEVICE_NAME" /> да бисте наставили процес ажурирања</translation>
+<translation id="8699053192961439771">Кликните да бисте аутоматски сакрили картице</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Користите тастер са стрелицом налево или надесно да бисте управљали овом функцијом.</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="871560550817059752">Није успело – нема више мастила</translation>

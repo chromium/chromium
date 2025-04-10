@@ -493,6 +493,7 @@
 <translation id="1822995137827688764">ဆောက်လုပ်ရေးစီမံချက်</translation>
 <translation id="1824402189105105503">ရှစ်ခုမြောက်အလိပ်</translation>
 <translation id="1826516787628120939">စစ်ကြည့်နေ</translation>
+<translation id="1832730227369924598">မျက်နှာပြင် စင့်ခ်လုပ်ခြင်း</translation>
 <translation id="1834452765064623979">ဆောက်လုပ်ရေး၊ ပြုပြင်ထိန်းသိမ်းရေး</translation>
 <translation id="1838374766361614909">ရှာဖွေမှုကို ရှင်းပါ</translation>
 <translation id="1839331950812095887">သင့်အတွေးများကို အနှစ်ချုပ်ပေးနိုင်သည့် စကားလုံးအချို့</translation>
@@ -830,6 +831,7 @@
 <translation id="2413155254802890957">အဟောင်း</translation>
 <translation id="2413528052993050574">ဒီဆာဗာက <ph name="DOMAIN" /> ဖြစ်တာကို သက်သေထူ မပြနိုင်ခဲ့ပါ၊ ၎င်း၏ လုံခြုံရေး လက်မှတ်ကို ရုပ်သိမ်းခဲ့တာ ဖြစ်နိုင်သည်။ ဖွဲ့စည်းစီစဉ်မှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
+<translation id="2418292431699242678">သင်၏ စီမံခန့်ခွဲသူက ChromeOS စက်ပစ္စည်းတစ်ခုခုတွင် သင့်ယခင်နှင့် လက်ရှိစက်ရှင်များအကြား စင့်ခ်လုပ်ရန် အောက်ပါကို ဖွင့်လိုက်သည်-</translation>
 <translation id="2429716554270894715">အထည် (ရေလုံ)</translation>
 <translation id="2436186046335138073">လင့် <ph name="PROTOCOL" /> အားလုံးကို <ph name="HANDLER_HOSTNAME" />အား ဖွင့်ခွင့် ပြုမလား?</translation>
 <translation id="2436976580469434549">ချည်မျှင်၊ အဝတ်အထည် အနုပညာ</translation>
@@ -1165,6 +1167,7 @@
 <translation id="3037177537145227281">ဈေးနှုန်း စောင့်ကြည့်နေသည်</translation>
 <translation id="3037605927509011580">အော၊ လက်ဖျောက်!</translation>
 <translation id="3039406992698062762">မိသားစုခရီးသွားခြင်း</translation>
+<translation id="3040636468789770340">ကွတ်ကီးများ (လတ်တလော ဝင်ကြည့်ထားသော ဝဘ်ဆိုက်များတွင် လက်မှတ်ထိုးဝင်ထားသည့် အခြေအနေ)</translation>
 <translation id="3041176923638368519">ကတ်အကျိုးခံစားခွင့်ဆိုင်ရာ စည်းမျဉ်းများကို ကြည့်ရန်</translation>
 <translation id="3041612393474885105">အသိမှတ်ပြု လက်မှတ် အချက်အလက်</translation>
 <translation id="3045769629416806687">ပြင်းထန်သော အားကစား</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">စက်တွင်းဖိုင်များကို <ph name="MINUTES" /> မိနစ်အတွင်း ဖျက်ပါမည်</translation>
 <translation id="3872834068356954457">သိပွံ</translation>
 <translation id="3875783148670536197">လုပ်နည်း ပြရန်</translation>
+<translation id="387681220560687945">ဝင်းဒိုးများ (ဝင်းဒိုးနှင့် တဘ်များ၏ အစီအစဉ်နှင့် ၎င်းတို့ကို စီစဉ်မှု)</translation>
 <translation id="3879748587602334249">ဒေါင်းလုဒ်မန်နေဂျာ</translation>
 <translation id="3880456882942693779">အနုပညာ၊ ဖျော်ဖြေရေး</translation>
 <translation id="3880589673277376494">အင်တာနက်၊ တယ်လီကွန်</translation>
@@ -4749,6 +4753,7 @@
 <translation id="950736567201356821">ထိပ်တွင် သုံးချက်ဖောက်ရန်</translation>
 <translation id="950926967802086924">လျှို့ဝှက်ကီး • Google Password Manager</translation>
 <translation id="955429569736351433">VR ကို ခွင့်ပြုထားသည်</translation>
+<translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome စင့်ခ် ဆက်တင်များ<ph name="END_LINK" /> တွင် ဤမူဝါဒမှ ထွက်နိုင်သည်။</translation>
 <translation id="95721182352849470">အဝါ ၂</translation>
 <translation id="961663415146723894">အောက်ခြေတွင် တွဲချုပ်ရန်</translation>
 <translation id="961856697154696964">ဖွင့်ကြည့်ထားသည့်မှတ်တမ်းဒေတာ ဖျက်ရန်</translation>

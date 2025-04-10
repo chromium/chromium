@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> zvuk</translation>
 <translation id="1116694919640316211">Osnovni podaci</translation>
 <translation id="1118572504348554005">Sa partnerima možemo da delimo povratne informacije poslate preko ovog obrasca radi otklanjanja grešaka i drugih problema koje nam prijavite. Nemojte da unosite osetljive informacije poput lozinki.</translation>
+<translation id="1118596190635569417">Pomerite ovaj meni udesno</translation>
 <translation id="1119403468619527527">Premalo reči za pojednostavljivanje</translation>
 <translation id="1119447706177454957">Interna greška</translation>
 <translation id="1124772482545689468">Korisnik</translation>
@@ -573,6 +574,7 @@
 <translation id="3604713164406837697">Promenite pozadinu</translation>
 <translation id="360565022852130722">WiFi mreža je obezbeđena slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Veliko kašnjenje do HTTPS veb-sajtova</translation>
+<translation id="3614639364827854748">Pomerite ovaj meni ulevo</translation>
 <translation id="361575905210396100">Hvala vam na povratnim informacijama</translation>
 <translation id="3621072146987826699">slonovi</translation>
 <translation id="3628462041319107639">Preuzima se model transkripcije…</translation>
@@ -1696,11 +1698,13 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Deli URL:</translation>
 <translation id="8660881923941176839">funte</translation>
+<translation id="8669187096858652220">Kliknite da biste prikazali kartice</translation>
 <translation id="8670574982334489519">desna</translation>
 <translation id="8675354002693747642">Tajni ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Napravite album u <ph name="LINK_BEGIN" />Google slikama<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Ponovo priključite USB kabl uređaja<ph name="DEVICE_NAME" /> da biste nastavili proces ažuriranja</translation>
+<translation id="8699053192961439771">Kliknite da biste automatski sakrili kartice</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Koristite taster sa strelicom nalevo ili nadesno da biste upravljali ovom funkcijom.</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="871560550817059752">Nije uspelo – nema više mastila</translation>

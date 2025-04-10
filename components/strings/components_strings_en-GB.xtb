@@ -492,6 +492,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1822995137827688764">Property Development</translation>
 <translation id="1824402189105105503">Eighth roll</translation>
 <translation id="1826516787628120939">Checking</translation>
+<translation id="1832730227369924598">Desk sync</translation>
 <translation id="1834452765064623979">Construction and maintenance</translation>
 <translation id="1838374766361614909">Clear search</translation>
 <translation id="1839331950812095887">a few words that sum up your thoughts</translation>
@@ -829,6 +830,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2413155254802890957">Old</translation>
 <translation id="2413528052993050574">This server could not prove that it is <ph name="DOMAIN" />; its security certificate might be revoked. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="2414886740292270097">Dark</translation>
+<translation id="2418292431699242678">Your administrator enables the following to be synced between your previous and current sessions on any ChromeOS device:</translation>
 <translation id="2429716554270894715">Fabric (waterproof)</translation>
 <translation id="2436186046335138073">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links?</translation>
 <translation id="2436976580469434549">Fibre and textile arts</translation>
@@ -1160,6 +1162,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3037177537145227281">Tracking price</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3039406992698062762">Family travel</translation>
+<translation id="3040636468789770340">Cookies (signed-in state on your recently visited websites)</translation>
 <translation id="3041176923638368519">See card benefit terms</translation>
 <translation id="3041612393474885105">Certificate Information</translation>
 <translation id="3045769629416806687">Extreme sports</translation>
@@ -1670,6 +1673,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3869939189466884821">Your local files will be deleted in <ph name="MINUTES" /> minutes</translation>
 <translation id="3872834068356954457">Science</translation>
 <translation id="3875783148670536197">Show me how</translation>
+<translation id="387681220560687945">Windows (arrangement and organisation of windows and tabs)</translation>
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3880456882942693779">Arts and entertainment</translation>
 <translation id="3880589673277376494">Internet and telecom</translation>
@@ -4748,6 +4752,7 @@ Additional details:
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="950926967802086924">Passkey • Google Password Manager</translation>
 <translation id="955429569736351433">VR allowed</translation>
+<translation id="955627189349169688">You can opt out of this policy in <ph name="BEGIN_LINK" />Chrome Sync settings<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Yellow 2</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="961856697154696964">Delete browsing data</translation>

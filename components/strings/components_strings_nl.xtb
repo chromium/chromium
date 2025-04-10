@@ -492,6 +492,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1822995137827688764">Projectontwikkeling</translation>
 <translation id="1824402189105105503">8e rol</translation>
 <translation id="1826516787628120939">Controleren</translation>
+<translation id="1832730227369924598">Bureausynchronisatie</translation>
 <translation id="1834452765064623979">Bouw en onderhoud</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
 <translation id="1839331950812095887">een paar woorden die je gedachten samenvatten</translation>
@@ -829,6 +830,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is mogelijk ingetrokken. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2414886740292270097">Donker</translation>
+<translation id="2418292431699242678">Je beheerder heeft het volgende aangezet om te synchroniseren tussen je vorige en huidige sessies op een ChromeOS-apparaat:</translation>
 <translation id="2429716554270894715">Stof (waterdicht)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> toestaan alle links voor <ph name="PROTOCOL" /> te openen?</translation>
 <translation id="2436976580469434549">Textielkunst</translation>
@@ -1160,6 +1162,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="3037177537145227281">Prijs wordt gevolgd</translation>
 <translation id="3037605927509011580">Asjemenou!</translation>
 <translation id="3039406992698062762">Gezinsreizen</translation>
+<translation id="3040636468789770340">Cookies (ingelogde status op je recent bezochte websites)</translation>
 <translation id="3041176923638368519">Voorwaarden voor kaartvoordelen bekijken</translation>
 <translation id="3041612393474885105">Certificaatgegevens</translation>
 <translation id="3045769629416806687">Extreme sporten</translation>
@@ -1665,6 +1668,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3869939189466884821">Je lokale bestanden worden over <ph name="MINUTES" /> minuten verwijderd</translation>
 <translation id="3872834068356954457">Wetenschap</translation>
 <translation id="3875783148670536197">Laten zien</translation>
+<translation id="387681220560687945">Vensters (indeling en organisatie van vensters en tabbladen)</translation>
 <translation id="3879748587602334249">Downloadbeheer</translation>
 <translation id="3880456882942693779">Kunst en entertainment</translation>
 <translation id="3880589673277376494">Internet en telecom</translation>
@@ -4740,6 +4744,7 @@ Aanvullende informatie:
 <translation id="950736567201356821">Drie perforaties boven</translation>
 <translation id="950926967802086924">Toegangssleutel • Google Wachtwoordmanager</translation>
 <translation id="955429569736351433">VR toegestaan</translation>
+<translation id="955627189349169688">Je kunt je afmelden voor dit beleid in de <ph name="BEGIN_LINK" />instellingen voor Chrome-synchronisatie<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Geel 2</translation>
 <translation id="961663415146723894">Onder inbinden</translation>
 <translation id="961856697154696964">Browsegegevens verwijderen</translation>

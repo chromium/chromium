@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> オーディオ</translation>
 <translation id="1116694919640316211">概要</translation>
 <translation id="1118572504348554005">Google は、バグやその他ご報告いただいた問題を解決するため、このフォームからお送りいただいたフィードバックをパートナーと共有する場合があります。パスワードなどの機密情報は含めないでください。</translation>
+<translation id="1118596190635569417">このメニューを右に移動</translation>
 <translation id="1119403468619527527">単語が少なすぎるため簡略化できません</translation>
 <translation id="1119447706177454957">内部エラー</translation>
 <translation id="1124772482545689468">ユーザー</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">フィードバックまたは問題の内容を記入します。個人情報や機密情報は含めないようにしてください。</translation>
 <translation id="1923388006036088459">アクセント カラー</translation>
 <translation id="1926611810597212636">ユニコーン</translation>
+<translation id="1944321879609775960">要約を作成するには、<ph name="DEVICE_TYPE" /> を再起動してください</translation>
 <translation id="1945403655450283000">レコーダー</translation>
 <translation id="1947737735496445907">印刷完了</translation>
 <translation id="1951012854035635156">アシスタント</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">フィードバック レポートを送信</translation>
 <translation id="2407209115954268704">SIM ロック ステータス</translation>
+<translation id="240798792848608143"><ph name="LANGUAGE_NAME" /> で文字起こしを取得するには、<ph name="DEVICE_TYPE" /> を再起動してください</translation>
 <translation id="241419523391571119">テストするにはディスプレイをもう一度開きます</translation>
 <translation id="2414660853550118611">壁紙について</translation>
 <translation id="2414886740292270097">ダーク</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています...</translation>
 <translation id="315738237743207937">キャプティブ ポータルが検出されました</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />システムとアプリの情報<ph name="END_LINK1" />と<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" />を送信する</translation>
+<translation id="3161556797767210144">要約とタイトルを作成するには、<ph name="DEVICE_TYPE" /> を再起動してください</translation>
 <translation id="3170673040743561620">スキャナにドキュメントを置いてください</translation>
 <translation id="3174321110679064523">「夜明けから夜更けまで」の壁紙</translation>
 <translation id="3178532070248519384">アバンギャルド</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">壁紙の変更</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3606583719724308068">HTTPS ウェブサイトのレイテンシが高くなっています</translation>
+<translation id="3614639364827854748">このメニューを左に移動</translation>
 <translation id="361575905210396100">ありがとうございました</translation>
 <translation id="3621072146987826699">ゾウ</translation>
 <translation id="3628462041319107639">音声文字変換モデルをダウンロードしています…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">未実行</translation>
 <translation id="4378551569595875038">接続中...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">録音のタイトルを作成するには、<ph name="DEVICE_TYPE" /> を再起動してください</translation>
 <translation id="4394049700291259645">無効にする</translation>
 <translation id="439429847087949098">「<ph name="DEVICE_NAME" />」を再起動しています</translation>
 <translation id="4395835743215824109">キーボードのカスタマイズ</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967"><ph name="TIME" /> にログアウトします</translation>
 <translation id="4500722292849917410">このショートカットは使用できません。修飾キー（Ctrl、Alt、Shift、または <ph name="META_KEY" />）を使用して新しいショートカットを押してください。</translation>
 <translation id="4500966230243561393">インターフェースの色</translation>
+<translation id="4501302804999678844">文字起こしを作成するには、<ph name="DEVICE_TYPE" /> を再起動してください</translation>
 <translation id="4503223151711056411">左矢印</translation>
 <translation id="4503441351962730761">モダンアート</translation>
 <translation id="4507392511610824664">明るさを上げる</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">キーボードを明るく</translation>
 <translation id="4771923071974529837">明日</translation>
 <translation id="4773299976671772492">停止しました</translation>
+<translation id="4777310452073659583">文字起こしを取得するには、<ph name="DEVICE_TYPE" /> を再起動してください</translation>
 <translation id="4778082030331381943">アメジスト</translation>
 <translation id="4782311465517282004">テキストを右クリックまたは長押しすると、定義、翻訳、単位変換を確認できます</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 枚の写真</translation>
@@ -1696,11 +1704,13 @@
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8655828773034788261">URL を共有:</translation>
 <translation id="8660881923941176839">ポンド</translation>
+<translation id="8669187096858652220">クリックしてタブを表示</translation>
 <translation id="8670574982334489519">右</translation>
 <translation id="8675354002693747642">事前共有キー</translation>
 <translation id="8677859815076891398">アルバムはありません。<ph name="LINK_BEGIN" />Google フォト<ph name="LINK_END" />でアルバムを作成してください。</translation>
 <translation id="8682949824227998083">ラーメン</translation>
 <translation id="8689520252402395106">更新プロセスを続行するには、<ph name="DEVICE_NAME" /> の USB ケーブルをもう一度差し込んでください</translation>
+<translation id="8699053192961439771">クリックするとタブが自動的に非表示になります</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 左右矢印キーでこの機能を管理できます。</translation>
 <translation id="8712637175834984815">理解した</translation>
 <translation id="871560550817059752">失敗 - インクがありません</translation>

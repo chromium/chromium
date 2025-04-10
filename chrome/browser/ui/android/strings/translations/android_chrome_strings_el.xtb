@@ -259,6 +259,7 @@
 <translation id="22091350895006575">Προσθήκη ονόματος χρήστη</translation>
 <translation id="221494669172414749">Εάν ανοίξετε το Chrome χωρίς κλείδωμα προφίλ, θα καταργηθούν οι αποθηκευμένοι κωδικοί πρόσβασης και οι τρόποι πληρωμής από το αυτοκίνητο. Η χρήση ενός κλειδώματος προφίλ διατηρεί αυτά τα δεδομένα ασφαλή.</translation>
 <translation id="2227444325776770048">Συνέχεια ως <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230288123399603508">Η ομάδα καρτελών <ph name="TAB_GROUP_TITLE" /> έχει νέα δραστηριότητα</translation>
 <translation id="2230777942707397948">Κενό παράθυρο</translation>
 <translation id="223356358902285214">Δραστηριότητα ιστού και εφαρμογών</translation>
 <translation id="2234827758954819389">Οδηγός απορρήτου</translation>
@@ -893,6 +894,7 @@
 <translation id="5114895953710637392">Το φύλλο φίλτρου εφαρμογών είναι κλειστό.</translation>
 <translation id="5115811374190515607">σε <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Μπορείτε να χρησιμοποιείτε το Chrome κάθε φορά που πατάτε συνδέσμους σε μηνύματα, έγγραφα και άλλες εφαρμογές</translation>
+<translation id="5118713593561876160">Ενδιαφέροντα</translation>
 <translation id="5122378528687922675">Εάν χρειάζεσαι βοήθεια, ρώτησε τον γονέα σου (<ph name="PARENT_NAME_1" /> ή <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="5139940364318403933">Μάθετε πώς να χρησιμοποιείτε το Google Drive</translation>
@@ -1099,6 +1101,7 @@
 <translation id="6087286598828478206">Αποκλεισμός και αποχώρηση από την ομάδα;</translation>
 <translation id="60923314841986378">Απομένουν <ph name="HOURS" /> ώρες</translation>
 <translation id="6095578583683628124">Εάν το Google είναι και η προεπιλεγμένη μηχανή αναζήτησης, θα βλέπετε καλύτερες προτάσεις που είναι σχετικές με τα συμφραζόμενα</translation>
+<translation id="6104768972315313991">Δημιουργήθηκε κωδικός QR</translation>
 <translation id="610630277578876674">Ανοίξτε γρήγορα συνδέσμους σε μηνύματα και άλλα</translation>
 <translation id="6108923351542677676">Ρύθμιση σε εξέλιξη…</translation>
 <translation id="6112702117600201073">Ανανέωση σελίδας</translation>

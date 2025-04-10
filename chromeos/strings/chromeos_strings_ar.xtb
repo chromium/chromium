@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">صوت <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">لمحة</translation>
 <translation id="1118572504348554005">قد نشارك مع شركائنا الملاحظات التي يتم إرسالها من خلال هذا النموذج، وذلك لتحديد وحلّ المشاكل والأخطاء التي يتم الإبلاغ عنها، لذا يُرجى عدم إدراج معلومات حساسة، مثل كلمات المرور.</translation>
+<translation id="1118596190635569417">نقل هذه القائمة إلى اليمين</translation>
 <translation id="1119403468619527527">عدد الكلمات قليل جدًا ولا يكفي لتبسيط النص</translation>
 <translation id="1119447706177454957">خطأ داخلي</translation>
 <translation id="1124772482545689468">المستخدم</translation>
@@ -573,6 +574,7 @@
 <translation id="3604713164406837697">تغيير الخلفية</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
 <translation id="3606583719724308068">‏وقت الاستجابة طويل في المواقع الإلكترونية التي تستخدم بروتوكول HTTPS</translation>
+<translation id="3614639364827854748">نقل هذه القائمة إلى اليسار</translation>
 <translation id="361575905210396100">شكرًا على ملاحظاتك</translation>
 <translation id="3621072146987826699">أفيال</translation>
 <translation id="3628462041319107639">جارٍ تنزيل نموذج تحويل الصوت إلى نص…</translation>
@@ -1696,11 +1698,13 @@
 <translation id="8655295600908251630">القناة</translation>
 <translation id="8655828773034788261">‏مشاركة عنوان URL:</translation>
 <translation id="8660881923941176839">رطل</translation>
+<translation id="8669187096858652220">يمكن النقر لعرض علامات التبويب</translation>
 <translation id="8670574982334489519">اليمين</translation>
 <translation id="8675354002693747642">مفتاح المشاركة المسبقة</translation>
 <translation id="8677859815076891398">‏لا تتوفّر أيّ ألبومات. يمكنك إنشاء ألبوم في <ph name="LINK_BEGIN" />صور Google<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">رامين</translation>
 <translation id="8689520252402395106">‏عليك إعادة توصيل كابل USB الخاص بجهاز "<ph name="DEVICE_NAME" />" لمواصلة عملية التحديث</translation>
+<translation id="8699053192961439771">يمكن النقر لإخفاء علامات التبويب تلقائيًا</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> يمكنك استخدام أزرار السهم المتجه لليمين أو السهم المتجه لليسار لإدارة هذه الميزة.</translation>
 <translation id="8712637175834984815">حسنًا</translation>
 <translation id="871560550817059752">تعذَّرت الطباعة - نفد الحبر</translation>

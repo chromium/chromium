@@ -492,6 +492,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1822995137827688764">Desenvolvemento de propiedades</translation>
 <translation id="1824402189105105503">Oitavo rolo</translation>
 <translation id="1826516787628120939">Comprobando</translation>
+<translation id="1832730227369924598">Sincronización de escritorio</translation>
 <translation id="1834452765064623979">Construción e mantemento</translation>
 <translation id="1838374766361614909">Borrar busca</translation>
 <translation id="1839331950812095887">unhas poucas palabras que resuman o que pensas</translation>
@@ -829,6 +830,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque quizais se revogase o certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="2414886740292270097">Escuro</translation>
+<translation id="2418292431699242678">Quen che administra a conta activou a sincronización dos seguintes datos entre as túas sesións anteriores e a actuais en todos os dispositivos ChromeOS:</translation>
 <translation id="2429716554270894715">Tecido (impermeable)</translation>
 <translation id="2436186046335138073">Queres que se use <ph name="HANDLER_HOSTNAME" /> para abrir todas as ligazóns de <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Arte e artesanía téxtil</translation>
@@ -1160,6 +1162,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3037177537145227281">Estase facendo un seguimento do prezo</translation>
 <translation id="3037605927509011580">Vaia!</translation>
 <translation id="3039406992698062762">Viaxes en familia</translation>
+<translation id="3040636468789770340">Cookies (estado de sesión iniciada nos sitios web visitados recentemente)</translation>
 <translation id="3041176923638368519">Consultar as condicións das vantaxes da tarxeta</translation>
 <translation id="3041612393474885105">Información do certificado</translation>
 <translation id="3045769629416806687">Deportes de risco</translation>
@@ -1670,6 +1673,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3869939189466884821">O teus ficheiros locais eliminaranse dentro de <ph name="MINUTES" /> minutos</translation>
 <translation id="3872834068356954457">Ciencia</translation>
 <translation id="3875783148670536197">Ver como facelo</translation>
+<translation id="387681220560687945">Ventás (disposición e organización das ventás e pestanas)</translation>
 <translation id="3879748587602334249">Xestor de descargas</translation>
 <translation id="3880456882942693779">Arte e entretemento</translation>
 <translation id="3880589673277376494">Internet e telecomunicacións</translation>
@@ -4747,6 +4751,7 @@ Detalles adicionais:
 <translation id="950736567201356821">Tres perforacións na parte superior</translation>
 <translation id="950926967802086924">Clave de acceso • Xestor de contrasinais de Google</translation>
 <translation id="955429569736351433">RV permitida</translation>
+<translation id="955627189349169688">Podes desactivar esta política na <ph name="BEGIN_LINK" />configuración de Sincronización de Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Amarelo 2</translation>
 <translation id="961663415146723894">Encadernación na parte inferior</translation>
 <translation id="961856697154696964">Eliminar datos navegación</translation>

@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">ପ୍ରପର୍ଟି ଡେଭେଲପମେଣ୍ଟ</translation>
 <translation id="1824402189105105503">ଅଷ୍ଟମ ରୋଲ୍</translation>
 <translation id="1826516787628120939">ଯାଞ୍ଚ ହେଉଛି</translation>
+<translation id="1832730227369924598">ଡେସ୍କ ସିଙ୍କ</translation>
 <translation id="1834452765064623979">ନିର୍ମାଣକାର୍ଯ୍ୟ ଏବଂ ରକ୍ଷଣାବେକ୍ଷଣ</translation>
 <translation id="1838374766361614909">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="1839331950812095887">ଆପଣଙ୍କ ଚିନ୍ତାଧାରକୁ ସଂକ୍ଷପରେ ପ୍ରକାଶ କରୁଥିବା କିଛି ଶବ୍ଦ</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">ପୁରୁଣା</translation>
 <translation id="2413528052993050574">ଏହି ସର୍ଭର୍ ଏହା ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ ପ୍ରତ୍ୟାହାର କରାଯାଇଥାଇପାରେ। ଏହା ଏକ ଭୁଲ୍ କନଫିଗ୍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
 <translation id="2414886740292270097">ଗାଢ଼</translation>
+<translation id="2418292431699242678">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟର ଯେ କୌଣସି ChromeOS ଡିଭାଇସରେ ଆପଣଙ୍କର ପୂର୍ବ ଏବଂ ବର୍ତ୍ତମାନର ଅବଧିଗୁଡ଼ିକ ମଧ୍ୟରେ ସିଙ୍କ ହେବା ପାଇଁ ନିମ୍ନୋକ୍ତଗୁଡ଼ିକୁ ସକ୍ଷମ କରନ୍ତି:</translation>
 <translation id="2429716554270894715">ଫେବ୍ରିକ (ୱାଟରପ୍ରୁଫ)</translation>
 <translation id="2436186046335138073">ସମସ୍ତ <ph name="PROTOCOL" /> ଲିଙ୍କ୍ ଖୋଲିବା ପାଇଁ <ph name="HANDLER_HOSTNAME" />କୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="2436976580469434549">ଫାଇବର ଏବଂ ଟେକ୍ସଟାଇଲ ଆର୍ଟ୍ସ</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">ମୂଲ୍ୟ ଟ୍ରାକ କରାଯାଉଛି</translation>
 <translation id="3037605927509011580">ଇସ!</translation>
 <translation id="3039406992698062762">ପାରିବାରିକ ଟ୍ରାଭେଲ</translation>
+<translation id="3040636468789770340">କୁକୀ (ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିଥିବା ୱେବସାଇଟରେ ସାଇନ-ଇନ କରାଯାଇଥିବା ସ୍ଥିତି)</translation>
 <translation id="3041176923638368519">କାର୍ଡର ଲାଭ ସର୍ତ୍ତାବଳୀ ଦେଖନ୍ତୁ</translation>
 <translation id="3041612393474885105">ସାର୍ଟିଫିକେଟ୍ ସୂଚନା</translation>
 <translation id="3045769629416806687">ଏକ୍ସଟ୍ରିମ ସ୍ପୋର୍ଟ୍ସ</translation>
@@ -1667,6 +1670,7 @@
 <translation id="3869939189466884821">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ଫାଇଲଗୁଡ଼ିକ <ph name="MINUTES" /> ମିନିଟରେ ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="3872834068356954457">ବିଜ୍ଞାନ</translation>
 <translation id="3875783148670536197">କିପରି କରାଯାଏ ତାହା ମୋତେ ଦେଖାନ୍ତୁ</translation>
+<translation id="387681220560687945">Windows (ୱିଣ୍ଡୋ ଏବଂ ଟାବର ବ୍ୟବସ୍ଥା ଏବଂ ସଂଗଠନ)</translation>
 <translation id="3879748587602334249">ଡାଉନ୍‌ଲୋଡ୍ ପରିଚାଳକ</translation>
 <translation id="3880456882942693779">କଳା ଓ ମନୋରଞ୍ଜନ</translation>
 <translation id="3880589673277376494">ଇଣ୍ଟରନେଟ ଓ ଟେଲିକମ</translation>
@@ -4742,6 +4746,7 @@
 <translation id="950736567201356821">ଉପର ପଟରେ ତିନୋଟି ପଞ୍ଚ୍</translation>
 <translation id="950926967802086924">ପାସକୀ • Google Password Manager</translation>
 <translation id="955429569736351433">VRକୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
+<translation id="955627189349169688">ଆପଣ <ph name="BEGIN_LINK" />Chrome ସିଙ୍କ ସେଟିଂସ<ph name="END_LINK" />ରେ ଏହି ନୀତିରୁ ଅପ୍ଟ ଆଉଟ କରିପାରିବେ।</translation>
 <translation id="95721182352849470">ହଳଦିଆ 2</translation>
 <translation id="961663415146723894">ତଳ ପଟରେ ବାଇଣ୍ଡ</translation>
 <translation id="961856697154696964">ବ୍ରାଉଜିଂ ଡାଟାକୁ ଡିଲିଟ କର</translation>

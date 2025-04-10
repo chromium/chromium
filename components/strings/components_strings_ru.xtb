@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">Строительство недвижимости</translation>
 <translation id="1824402189105105503">Восьмой рулон</translation>
 <translation id="1826516787628120939">Проверка</translation>
+<translation id="1832730227369924598">Синхронизация рабочего стола</translation>
 <translation id="1834452765064623979">Строительство и ремонт</translation>
 <translation id="1838374766361614909">Удалить условия поиска</translation>
 <translation id="1839331950812095887">краткое изложение ваших мыслей</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">Старый</translation>
 <translation id="2413528052993050574">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Его сертификат безопасности может быть отозван. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="2414886740292270097">Тёмная</translation>
+<translation id="2418292431699242678">Ваш администратор включил синхронизацию следующих параметров между предыдущим и текущим сеансами на любых устройствах с ChromeOS:</translation>
 <translation id="2429716554270894715">Ткань (водонепроницаемая)</translation>
 <translation id="2436186046335138073">Использовать <ph name="HANDLER_HOSTNAME" /> для обработки ссылок типа "<ph name="PROTOCOL" />"?</translation>
 <translation id="2436976580469434549">Арт-квилтинг и текстильное искусство</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">Вы отслеживаете цену на этот товар</translation>
 <translation id="3037605927509011580">Опаньки...</translation>
 <translation id="3039406992698062762">Семейные поездки</translation>
+<translation id="3040636468789770340">Файлы cookie (позволяют не выходить из аккаунта на сайтах, которые вы недавно посещали)</translation>
 <translation id="3041176923638368519">Посмотреть условия использования преимуществ карты</translation>
 <translation id="3041612393474885105">Данные сертификата</translation>
 <translation id="3045769629416806687">Экстремальные виды спорта</translation>
@@ -1669,6 +1672,7 @@
 <translation id="3869939189466884821">Ваши локальные файлы будут удалены через <ph name="MINUTES" /> мин.</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Показать</translation>
+<translation id="387681220560687945">Окна (порядок расположения окон и вкладок)</translation>
 <translation id="3879748587602334249">Менеджер скачивания</translation>
 <translation id="3880456882942693779">Искусство и развлечения</translation>
 <translation id="3880589673277376494">Интернет и телекоммуникации</translation>
@@ -4747,6 +4751,7 @@
 <translation id="950736567201356821">Три отверстия сверху</translation>
 <translation id="950926967802086924">Ключ доступа • Google Менеджер паролей</translation>
 <translation id="955429569736351433">Дано разрешение на использование VR</translation>
+<translation id="955627189349169688">Вы можете отключить эту функцию в <ph name="BEGIN_LINK" />настройках синхронизации Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Желтый 2</translation>
 <translation id="961663415146723894">Скрепление снизу</translation>
 <translation id="961856697154696964">Удалить данные браузера</translation>

@@ -492,6 +492,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1822995137827688764">Īpašumu attīstība</translation>
 <translation id="1824402189105105503">Astotais rullis</translation>
 <translation id="1826516787628120939">Pārbaude</translation>
+<translation id="1832730227369924598">Darbvietas sinhronizācija</translation>
 <translation id="1834452765064623979">Būvniecība un apsaimniekošana</translation>
 <translation id="1838374766361614909">Notīrīt meklēšanas vaicājumu</translation>
 <translation id="1839331950812095887">jūsu domas dažos vārdos</translation>
@@ -829,6 +830,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2413155254802890957">Vecā</translation>
 <translation id="2413528052993050574">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts, iespējams, ir atsaukts. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="2414886740292270097">Tumšs</translation>
+<translation id="2418292431699242678">Jūsu administrators ļauj sinhronizēt tālāk norādītos datus starp jūsu iepriekšējām un pašreizējām sesijām jebkurā ChromeOS ierīcē.</translation>
 <translation id="2429716554270894715">Audums (ūdensdrošs)</translation>
 <translation id="2436186046335138073">Vai atļaut <ph name="HANDLER_HOSTNAME" /> atvērt visas <ph name="PROTOCOL" /> saites?</translation>
 <translation id="2436976580469434549">Šķiedras un tekstila māksla</translation>
@@ -1160,6 +1162,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3037177537145227281">Notiek cenas izsekošana</translation>
 <translation id="3037605927509011580">Cilnes avārija.</translation>
 <translation id="3039406992698062762">Ceļojumi ģimenēm</translation>
+<translation id="3040636468789770340">Sīkfaili (pierakstīšanās statuss jūsu nesen apmeklētajās vietnēs)</translation>
 <translation id="3041176923638368519">Skatīt kartes priekšrocību noteikumus</translation>
 <translation id="3041612393474885105">Sertifikāta informācija</translation>
 <translation id="3045769629416806687">Ekstrēmie sporta veidi</translation>
@@ -1669,6 +1672,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3869939189466884821">Jūsu lokālie faili tiks dzēsti pēc <ph name="MINUTES" /> minūtēm</translation>
 <translation id="3872834068356954457">Zinātne</translation>
 <translation id="3875783148670536197">Parādīt, kā</translation>
+<translation id="387681220560687945">Logi (logu un ciļņu izkārtojums un secība)</translation>
 <translation id="3879748587602334249">Lejupielāžu pārvaldnieks</translation>
 <translation id="3880456882942693779">Māksla un izklaide</translation>
 <translation id="3880589673277376494">Internets un telekomunikācijas</translation>
@@ -4746,6 +4750,7 @@ Papildu informācija:
 <translation id="950736567201356821">Trīs caurumi augšdaļā</translation>
 <translation id="950926967802086924">Piekļuves atslēga • Google paroļu pārvaldnieks</translation>
 <translation id="955429569736351433">Atļauts izmantot VR</translation>
+<translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome sinhronizācijas iestatījumos<ph name="END_LINK" /> varat atteikties no šīs politikas.</translation>
 <translation id="95721182352849470">Dzeltena 2</translation>
 <translation id="961663415146723894">Iesējums apakšdaļā</translation>
 <translation id="961856697154696964">Dzēst pārlūkošanas datus</translation>

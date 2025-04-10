@@ -492,6 +492,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1822995137827688764">Pag-develop ng Ari-arian</translation>
 <translation id="1824402189105105503">Ikawalong Rolyo</translation>
 <translation id="1826516787628120939">Sinusuri</translation>
+<translation id="1832730227369924598">Pag-sync sa desk</translation>
 <translation id="1834452765064623979">Konstruksyon at Pagmementina</translation>
 <translation id="1838374766361614909">I-clear ang paghahanap</translation>
 <translation id="1839331950812095887">ilang salitang nagbubuod ng iyong mga iniisip</translation>
@@ -829,6 +830,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2413155254802890957">Luma</translation>
 <translation id="2413528052993050574">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; maaaring binawi ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="2414886740292270097">Madilim</translation>
+<translation id="2418292431699242678">Ine-enable ng iyong administrator ang pag-sync ng sumusunod sa mga nakaraan at kasalukuyang session sa anumang ChromeOS device:</translation>
 <translation id="2429716554270894715">Tela (Waterproof)</translation>
 <translation id="2436186046335138073">Papayagan ang <ph name="HANDLER_HOSTNAME" /> na buksan ang lahat ng link ng <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Fiber at Textile Arts</translation>
@@ -1160,6 +1162,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3037177537145227281">Sinusubaybayan ang presyo</translation>
 <translation id="3037605927509011580">Ay, Naku!</translation>
 <translation id="3039406992698062762">Biyaheng Pampamilya</translation>
+<translation id="3040636468789770340">Cookies (status na naka-sign in sa iyong mga kamakailang binisitang website)</translation>
 <translation id="3041176923638368519">Tingnan ang mga tuntunin sa benepisyo sa card</translation>
 <translation id="3041612393474885105">Impormasyon sa Certificate</translation>
 <translation id="3045769629416806687">Mga Extreme Sport</translation>
@@ -1670,6 +1673,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3869939189466884821">Made-delete ang iyong mga lokal na file sa loob ng <ph name="MINUTES" /> (na) minuto</translation>
 <translation id="3872834068356954457">Agham</translation>
 <translation id="3875783148670536197">Ipakita sa Akin Kung Paano</translation>
+<translation id="387681220560687945">Mga window (pagkakaayos at pagkakasunod-sunod ng mga window at tab)</translation>
 <translation id="3879748587602334249">Download manager</translation>
 <translation id="3880456882942693779">Sining at Entertainment</translation>
 <translation id="3880589673277376494">Internet at Telecom</translation>
@@ -4748,6 +4752,7 @@ Mga karagdagang detalye:
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="950926967802086924">Passkey • Google Password Manager</translation>
 <translation id="955429569736351433">Pinapayagan ang VR</translation>
+<translation id="955627189349169688">Puwede kang mag-opt out sa patakarang ito sa <ph name="BEGIN_LINK" />mga setting ng Chrome Sync<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Dilaw 2</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="961856697154696964">I-delete ang browsing data</translation>

@@ -493,6 +493,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1822995137827688764">Pengembangan Properti</translation>
 <translation id="1824402189105105503">Rol Kedelapan</translation>
 <translation id="1826516787628120939">Memeriksa</translation>
+<translation id="1832730227369924598">Sinkronisasi desktop virtual</translation>
 <translation id="1834452765064623979">Konstruksi &amp; Pemeliharaan</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
 <translation id="1839331950812095887">beberapa kata yang merangkum pendapat Anda</translation>
@@ -830,6 +831,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2413155254802890957">Lama</translation>
 <translation id="2413528052993050574">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya mungkin dicabut. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="2414886740292270097">Gelap</translation>
+<translation id="2418292431699242678">Administrator Anda mengaktifkan fitur berikut untuk disinkronkan antara sesi sebelumnya dan saat ini di perangkat ChromeOS mana pun:</translation>
 <translation id="2429716554270894715">Kain (Tahan Air)</translation>
 <translation id="2436186046335138073">Izinkan <ph name="HANDLER_HOSTNAME" /> membuka semua link <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Seni Serat &amp; Tekstil</translation>
@@ -1161,6 +1163,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3037177537145227281">Memantau harga</translation>
 <translation id="3037605927509011580">Yah!</translation>
 <translation id="3039406992698062762">Wisata Keluarga</translation>
+<translation id="3040636468789770340">Cookie (status login di situs yang baru-baru ini Anda buka)</translation>
 <translation id="3041176923638368519">Lihat persyaratan manfaat kartu</translation>
 <translation id="3041612393474885105">Informasi Sertifikat</translation>
 <translation id="3045769629416806687">Olahraga Ekstrem</translation>
@@ -1670,6 +1673,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3869939189466884821">File lokal Anda akan dihapus dalam <ph name="MINUTES" /> menit</translation>
 <translation id="3872834068356954457">Sains</translation>
 <translation id="3875783148670536197">Lihat Caranya</translation>
+<translation id="387681220560687945">Jendela (pengaturan dan penyusunan jendela dan tab)</translation>
 <translation id="3879748587602334249">Pengelola download</translation>
 <translation id="3880456882942693779">Seni &amp; Hiburan</translation>
 <translation id="3880589673277376494">Internet &amp; Telekomunikasi</translation>
@@ -4744,6 +4748,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="950736567201356821">Tiga lubang di atas</translation>
 <translation id="950926967802086924">Kunci sandi • Pengelola Sandi Google</translation>
 <translation id="955429569736351433">VR diizinkan</translation>
+<translation id="955627189349169688">Anda dapat memilih untuk menonaktifkan kebijakan ini di <ph name="BEGIN_LINK" />setelan Sinkronisasi Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Kuning 2</translation>
 <translation id="961663415146723894">Jilid bawah</translation>
 <translation id="961856697154696964">Hapus data penjelajahan</translation>

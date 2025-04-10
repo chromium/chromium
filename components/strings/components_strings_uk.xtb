@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">Забудова території</translation>
 <translation id="1824402189105105503">Восьмий рулон</translation>
 <translation id="1826516787628120939">Перевірка</translation>
+<translation id="1832730227369924598">Синхронізація робочого стола</translation>
 <translation id="1834452765064623979">Будівництво й обслуговування</translation>
 <translation id="1838374766361614909">Очистити поле пошуку</translation>
 <translation id="1839331950812095887">кілька слів, які описують ваші думки</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">Старі дані</translation>
 <translation id="2413528052993050574">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Можливо, його сертифікат безпеки відкликано. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="2414886740292270097">Темна</translation>
+<translation id="2418292431699242678">Адміністратор може налаштувати синхронізацію наведених нижче даних між попередніми й поточними сеансами на будь-якому пристрої з ChromeOS.</translation>
 <translation id="2429716554270894715">Тканина (водонепроникна)</translation>
 <translation id="2436186046335138073">Дозволити обробнику <ph name="HANDLER_HOSTNAME" /> відкривати всі посилання протоколу <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Текстильне мистецтво</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037605927509011580">От халепа!</translation>
 <translation id="3039406992698062762">Сімейні подорожі</translation>
+<translation id="3040636468789770340">Файли cookie (вхід на нещодавно відвіданих вебсайтах)</translation>
 <translation id="3041176923638368519">Переглянути умови використання переваг картки</translation>
 <translation id="3041612393474885105">Інформація про сертифікат</translation>
 <translation id="3045769629416806687">Екстремальні види спорту</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">Локальні файли буде видалено через <ph name="MINUTES" /> хв</translation>
 <translation id="3872834068356954457">Наука</translation>
 <translation id="3875783148670536197">Докладніше</translation>
+<translation id="387681220560687945">Вікна (розташування й упорядкування вікон і вкладок)</translation>
 <translation id="3879748587602334249">Менеджер завантажень</translation>
 <translation id="3880456882942693779">Мистецтво й розваги</translation>
 <translation id="3880589673277376494">Інтернет і телекомунікації</translation>
@@ -4749,6 +4753,7 @@
 <translation id="950736567201356821">Пробити три отвори вгорі</translation>
 <translation id="950926967802086924">Ключ доступу • Google Менеджер паролів</translation>
 <translation id="955429569736351433">Надано доступ до віртуальної реальності</translation>
+<translation id="955627189349169688">Ви можете відмовитися від цього правила в <ph name="BEGIN_LINK" />налаштуваннях синхронізації Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Жовтий 2</translation>
 <translation id="961663415146723894">Зшити внизу</translation>
 <translation id="961856697154696964">Видалити дані вебперегляду</translation>

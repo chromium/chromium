@@ -259,6 +259,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="22091350895006575">Add username</translation>
 <translation id="221494669172414749">Opening Chrome without a profile lock will remove your saved passwords and payment methods from the car. Using a profile lock keeps this data secure.</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> tab group has new activity</translation>
 <translation id="2230777942707397948">Empty window</translation>
 <translation id="223356358902285214">Web &amp; App Activity</translation>
 <translation id="2234827758954819389">Privacy guide</translation>
@@ -893,6 +894,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5114895953710637392">App filter sheet is closed.</translation>
 <translation id="5115811374190515607">to <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">You can use Chrome any time that you tap links in messages, documents and other apps</translation>
+<translation id="5118713593561876160">Interests</translation>
 <translation id="5122378528687922675">If you need help, ask your parent (<ph name="PARENT_NAME_1" /> or <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Incognito tab</translation>
 <translation id="5139940364318403933">Learn how to use Google Drive</translation>

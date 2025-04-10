@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">প্রপার্টি ডেভেলপমেন্ট</translation>
 <translation id="1824402189105105503">Eighth Roll</translation>
 <translation id="1826516787628120939">চেক করা হচ্ছে</translation>
+<translation id="1832730227369924598">ডেস্ক সিঙ্ক</translation>
 <translation id="1834452765064623979">নির্মাণ ও রক্ষণাবেক্ষণ</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
 <translation id="1839331950812095887">আপনার ধারণার সংক্ষিপ্তসার করতে পারে এমন কিছু শব্দ</translation>
@@ -830,6 +831,7 @@
 <translation id="2413155254802890957">পুরনো</translation>
 <translation id="2413528052993050574">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট প্রত্যাহার করা হতে পারে। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="2414886740292270097">অন্ধকার</translation>
+<translation id="2418292431699242678">আপনার অ্যাডমিনিস্ট্রেটর যেকোনও ChromeOS ডিভাইস থেকে আপনার আগের এবং বর্তমান সেশনের মধ্যে নিচে উল্লেখ করা ডেটা সিঙ্ক করার সুবিধা চালু করে:</translation>
 <translation id="2429716554270894715">ফ্যাব্রিক (ওয়াটারপ্রুফ)</translation>
 <translation id="2436186046335138073">সমস্ত <ph name="PROTOCOL" /> লিঙ্কগুলিকে খুলতে <ph name="HANDLER_HOSTNAME" />কে সক্ষম করবেন?</translation>
 <translation id="2436976580469434549">ফাইবার ও টেক্সটাইল আর্ট</translation>
@@ -1161,6 +1163,7 @@
 <translation id="3037177537145227281">দাম ট্র্যাক করা হচ্ছে</translation>
 <translation id="3037605927509011580">ইস!</translation>
 <translation id="3039406992698062762">পারিবারিক ভ্রমণ</translation>
+<translation id="3040636468789770340">কুকি (আপনার সম্প্রতি ভিজিট করা ওয়েবসাইটে সাইন-ইন রয়েছে)</translation>
 <translation id="3041176923638368519">কার্ড সংক্রান্ত সুবিধার শর্তাবলী দেখুন</translation>
 <translation id="3041612393474885105">সার্টিফিকেট তথ্য</translation>
 <translation id="3045769629416806687">চরম উত্তেজনাপূর্ণ খেলাধুলা</translation>
@@ -1671,6 +1674,7 @@
 <translation id="3869939189466884821">আপনার স্থানীয় ফাইল <ph name="MINUTES" /> মিনিটের মধ্যে মুছে যাবে</translation>
 <translation id="3872834068356954457">বিজ্ঞান</translation>
 <translation id="3875783148670536197">কীভাবে করতে হবে তা দেখান</translation>
+<translation id="387681220560687945">উইন্ডো (উইন্ডো ও ট্যাবকে সাজানো)</translation>
 <translation id="3879748587602334249">ডাউনলোড ম্যানেজার</translation>
 <translation id="3880456882942693779">কলা এবং বিনোদন</translation>
 <translation id="3880589673277376494">ইন্টারনেট ও টেলিকম</translation>
@@ -4748,6 +4752,7 @@
 <translation id="950736567201356821">উপরে তিনটি পাঞ্চ</translation>
 <translation id="950926967802086924">পাসকী • Google Password Manager</translation>
 <translation id="955429569736351433">ভিআর (VR) ব্যবহার করার অনুমতি রয়েছে</translation>
+<translation id="955627189349169688">আপনি <ph name="BEGIN_LINK" />Chrome সিঙ্ক সেটিংস<ph name="END_LINK" />-এ গিয়ে এই নীতি থেকে বেরিয়ে আসতে পারবেন।</translation>
 <translation id="95721182352849470">হলুদ ২</translation>
 <translation id="961663415146723894">নিচে বাঁধাই করুন</translation>
 <translation id="961856697154696964">ব্রাউজ করা ডেটা মুছে দিন</translation>

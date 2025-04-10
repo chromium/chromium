@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">Үй құрылысы</translation>
 <translation id="1824402189105105503">Сегізінші орам</translation>
 <translation id="1826516787628120939">Тексеру</translation>
+<translation id="1832730227369924598">Жұмыс үстелін синхрондау</translation>
 <translation id="1834452765064623979">Құрылыс және жөндеу жұмыстары</translation>
 <translation id="1838374766361614909">Іздеуді тазарту</translation>
 <translation id="1839331950812095887">ойыңызды қорытындылайтын бір-екі сөз</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">Ескі</translation>
 <translation id="2413528052993050574">Бұл сервер өзінің <ph name="DOMAIN" /> екенін дәлелдей алмады; оның қауіпсіздік сертификаты қайтарып алынған болуы мүмкін. Бұл дұрыс конфигурацияланбағаннан немесе зиянды бағдарламаның байланысқа кедергі келтіргенінен болуы мүмкін.</translation>
 <translation id="2414886740292270097">Күңгірт</translation>
+<translation id="2418292431699242678">Әкімші келесі деректерді кез келген ChromeOS құрылғысындағы алдыңғы және ағымдағы сеанстар арасында синхрондауды қосады:</translation>
 <translation id="2429716554270894715">Мата (су өткізбейтін)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> хостына <ph name="PROTOCOL" /> сілтемелерін ашуға рұқсат бересіз бе?</translation>
 <translation id="2436976580469434549">Мата және тоқыма өнері</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">Баға бақылануда</translation>
 <translation id="3037605927509011580">Қап!</translation>
 <translation id="3039406992698062762">Отбасылық саяхат</translation>
+<translation id="3040636468789770340">Cookie файлдары (соңғы кірген веб-сайттардағы аккаунтқа кірген күй)</translation>
 <translation id="3041176923638368519">Карта бонусының шарттарын көру</translation>
 <translation id="3041612393474885105">Сертификат ақпараты</translation>
 <translation id="3045769629416806687">Экстремалдық спорт</translation>
@@ -1669,6 +1672,7 @@
 <translation id="3869939189466884821">Жергілікті файлдар <ph name="MINUTES" /> минуттан кейін жойылады</translation>
 <translation id="3872834068356954457">Ғылым</translation>
 <translation id="3875783148670536197">Орындалуын көру</translation>
+<translation id="387681220560687945">Терезелер (терезелер мен қойындылардың орналасуы және реттелуі)</translation>
 <translation id="3879748587602334249">Жүктеп алу менеджері</translation>
 <translation id="3880456882942693779">Өнер және ойын-сауық</translation>
 <translation id="3880589673277376494">Интернет және телекоммуникация</translation>
@@ -4745,6 +4749,7 @@
 <translation id="950736567201356821">Жоғарғы жағын үш рет тесу</translation>
 <translation id="950926967802086924">Кіру кілті • Google Password Manager</translation>
 <translation id="955429569736351433">VR-ға рұқсат берілген.</translation>
+<translation id="955627189349169688">Бұл саясаттан бас тарту үшін <ph name="BEGIN_LINK" />Chrome Sync параметрлеріне<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="95721182352849470">Сары 2</translation>
 <translation id="961663415146723894">Төменгі жағын байлау</translation>
 <translation id="961856697154696964">Браузер деректерін жою</translation>
