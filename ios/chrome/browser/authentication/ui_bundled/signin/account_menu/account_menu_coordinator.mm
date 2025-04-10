@@ -229,7 +229,7 @@
 }
 
 - (void)didTapManageAccounts {
-  CHECK(!_manageAccountsCoordinator, base::NotFatalUntil::M133);
+  CHECK(!_manageAccountsCoordinator);
   _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseViewController:_navigationController
                          browser:self.browser
@@ -411,7 +411,7 @@
 
 - (void)manageAccountsCoordinatorWantsToBeStopped:
     (ManageAccountsCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _manageAccountsCoordinator, base::NotFatalUntil::M133);
+  CHECK_EQ(coordinator, _manageAccountsCoordinator);
   [self stopManageAccountsCoordinator];
 }
 
