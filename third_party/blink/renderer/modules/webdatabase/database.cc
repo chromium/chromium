@@ -244,13 +244,7 @@ Database::Database(DatabaseContext* database_context,
       database_authorizer_(kInfoTableName),
       transaction_in_progress_(false),
       is_transaction_queue_enabled_(true),
-      did_try_to_count_transaction_(false),
-      feature_handle_for_scheduler_(
-          database_context->GetExecutionContext()
-              ->GetScheduler()
-              ->RegisterFeature(
-                  SchedulingPolicy::Feature::kWebDatabase,
-                  {SchedulingPolicy::DisableBackForwardCache()})) {
+      did_try_to_count_transaction_(false) {
   DCHECK(IsMainThread());
   context_thread_security_origin_ =
       database_context_->GetSecurityOrigin()->IsolatedCopy();

@@ -1930,8 +1930,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
           OutstandingNetworkRequestXHR;
     case WebSchedulerTrackedFeature::kPrinting:
       return Page::BackForwardCacheNotRestoredReasonEnum::Printing;
-    case WebSchedulerTrackedFeature::kWebDatabase:
-      return Page::BackForwardCacheNotRestoredReasonEnum::WebDatabase;
     case WebSchedulerTrackedFeature::kPictureInPicture:
       return Page::BackForwardCacheNotRestoredReasonEnum::PictureInPicture;
     case WebSchedulerTrackedFeature::kSpeechRecognizer:
@@ -2169,7 +2167,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kSharedWorker:
     case WebSchedulerTrackedFeature::kWebHID:
     case WebSchedulerTrackedFeature::kWebShare:
-    case WebSchedulerTrackedFeature::kWebDatabase:
     case WebSchedulerTrackedFeature::kPaymentManager:
     case WebSchedulerTrackedFeature::kKeyboardLock:
     case WebSchedulerTrackedFeature::kWebOTPService:

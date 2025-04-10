@@ -203,7 +203,6 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kUnloadHandler,
           WebSchedulerTrackedFeature::kWebAuthentication,
           WebSchedulerTrackedFeature::kWebBluetooth,
-          WebSchedulerTrackedFeature::kWebDatabase,
           WebSchedulerTrackedFeature::kWebHID,
           WebSchedulerTrackedFeature::kWebLocks,
           WebSchedulerTrackedFeature::kWebOTPService,
