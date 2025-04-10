@@ -161,24 +161,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.JourneyLoggerHasRecorded" enum="Boolean"
-    expires_after="2023-09-03">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Whether a journey logger has recorded an events bit field or not.
-  </summary>
-</histogram>
-
-<histogram name="PaymentRequest.JourneyLoggerHasRecordedMultipleTimes"
-    enum="Boolean" expires_after="2022-11-22">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    When a journey logger attempts to record multiple events bit fields.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.NumberOfSuggestionsShown" units="units"
     expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>

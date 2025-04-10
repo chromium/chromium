@@ -291,7 +291,6 @@ class JourneyLogger {
   bool WasPaymentRequestTriggered();
 
   SectionStats sections_[NUMBER_OF_SECTIONS];
-  bool has_recorded_ = false;
 
   // Accumulates the many events that have happened during the Payment Request.
   int events2_;
