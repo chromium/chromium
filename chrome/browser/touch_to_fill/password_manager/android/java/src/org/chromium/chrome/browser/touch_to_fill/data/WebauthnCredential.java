@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.touch_to_fill.data;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This class holds the data used to represent a selectable Web Authentication credential in the
  * Touch To Fill sheet.
  */
+@NullMarked
 public class WebauthnCredential {
     private final String mRpId;
     private final byte[] mCredentialId;
