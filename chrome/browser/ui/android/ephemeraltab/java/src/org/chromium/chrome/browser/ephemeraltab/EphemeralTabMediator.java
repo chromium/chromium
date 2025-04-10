@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ephemeraltab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.ViewGroup;
@@ -13,6 +15,9 @@ import androidx.annotation.DrawableRes;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
@@ -29,6 +34,7 @@ import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
 /** Mediator class for preview tab, responsible for communicating with other objects. */
+@NullMarked
 public class EphemeralTabMediator {
     /** The delay (four video frames) after which the hide progress will be hidden. */
     private static final long HIDE_PROGRESS_BAR_DELAY_MS = (1000 / 60) * 4;
@@ -38,11 +44,11 @@ public class EphemeralTabMediator {
     private final ObserverList<EphemeralTabObserver> mObservers;
     private final int mTopControlsHeightDp;
 
-    private WebContents mWebContents;
-    private EphemeralTabSheetContent mSheetContent;
-    private WebContentsObserver mWebContentsObserver;
-    private WebContentsDelegateAndroid mWebContentsDelegate;
-    private Profile mProfile;
+    private @Nullable WebContents mWebContents;
+    private @Nullable EphemeralTabSheetContent mSheetContent;
+    private @Nullable WebContentsObserver mWebContentsObserver;
+    private @Nullable WebContentsDelegateAndroid mWebContentsDelegate;
+    private @Nullable Profile mProfile;
 
     /** Constructor. */
     public EphemeralTabMediator(
@@ -117,14 +123,18 @@ public class EphemeralTabMediator {
     /** Loads a new URL into the tab and makes it visible. */
     void requestShowContent(GURL url, String title) {
         loadUrl(url);
+        assumeNonNull(mSheetContent);
         mSheetContent.updateTitle(title);
         mBottomSheetController.requestShowContent(mSheetContent, true);
     }
 
     private void loadUrl(GURL url) {
-        mWebContents.getNavigationController().loadUrl(new LoadUrlParams(url.getSpec()));
+        assumeNonNull(mWebContents);
+        assumeNonNull(mWebContents.getNavigationController())
+                .loadUrl(new LoadUrlParams(url.getSpec()));
     }
 
+    @EnsuresNonNull("mWebContentsObserver")
     private void createWebContentsObserver() {
         assert mWebContentsObserver == null;
         mWebContentsObserver =
@@ -132,7 +142,7 @@ public class EphemeralTabMediator {
                     /** Whether the currently loaded page is an error (interstitial) page. */
                     private boolean mIsOnErrorPage;
 
-                    private GURL mCurrentUrl;
+                    private @Nullable GURL mCurrentUrl;
 
                     @Override
                     public void loadProgressChanged(float progress) {
@@ -149,6 +159,7 @@ public class EphemeralTabMediator {
                             // previous page. If there is no previous page, i.e. previous page is
                             // NTP, the preview tab will be closed.
                             if (mIsOnErrorPage && UrlUtilities.isNtpUrl(url)) {
+                                assumeNonNull(mSheetContent);
                                 mBottomSheetController.hideContent(
                                         mSheetContent, /* animate= */ true);
                                 mCurrentUrl = null;
@@ -158,6 +169,7 @@ public class EphemeralTabMediator {
                             onNavigationStarted(url);
 
                             mCurrentUrl = url;
+                            assumeNonNull(mProfile);
                             mFaviconLoader.loadFavicon(
                                     url, (drawable) -> onFaviconAvailable(drawable), mProfile);
                         }
@@ -165,15 +177,19 @@ public class EphemeralTabMediator {
 
                     @Override
                     public void titleWasSet(String title) {
+                        assumeNonNull(mSheetContent);
                         mSheetContent.updateTitle(title);
                         onTitleSet(mSheetContent, title);
                     }
 
                     @Override
                     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
+                        assumeNonNull(mSheetContent);
+
                         if (navigation.hasCommitted()) {
                             mIsOnErrorPage = navigation.isErrorPage();
-                            mSheetContent.updateURL(getWebContents().getVisibleUrl());
+                            mSheetContent.updateURL(
+                                    assumeNonNull(getWebContents()).getVisibleUrl());
                         } else if (navigation.isDownload()) {
                             // Not viewable contents such as download. Show a toast and close the
                             // tab.
@@ -192,6 +208,7 @@ public class EphemeralTabMediator {
         if (mSheetContent != null) mSheetContent.startFaviconAnimation(drawable);
     }
 
+    @EnsuresNonNull("mWebContentsDelegate")
     private void createWebContentsDelegate() {
         assert mWebContentsDelegate == null;
         mWebContentsDelegate =
@@ -202,7 +219,7 @@ public class EphemeralTabMediator {
                         int securityLevel =
                                 SecurityStateModel.getSecurityLevelForWebContents(mWebContents);
                         mSheetContent.setSecurityIcon(getSecurityIconResource(securityLevel));
-                        mSheetContent.updateURL(mWebContents.getVisibleUrl());
+                        mSheetContent.updateURL(assumeNonNull(mWebContents).getVisibleUrl());
                     }
 
                     @Override
