@@ -319,6 +319,11 @@ class TestKeyboardDelegate : public WaylandKeyboard::Delegate {
 class WaylandInputMethodContextTestBase : public WaylandTest {
  public:
   void SetUp() override {
+    // TODO(crbug.com/355271570) Most of these tests expect a v1 wrapper, so
+    // disable text-input-v3 here. To be cleaned up as part of future
+    // refactoring.
+    disabled_features_.push_back(features::kWaylandTextInputV3);
+
     WaylandTest::SetUp();
 
     surface_id_ = window_->root_surface()->get_surface_id();
@@ -1868,6 +1873,11 @@ class WaylandInputMethodContextNoKeyboardTest
     : public WaylandInputMethodContextTest {
  public:
   void SetUp() override {
+    // TODO(crbug.com/355271570) Most of these tests expect a v1 wrapper, so
+    // disable text-input-v3 here. To be cleaned up as part of future
+    // refactoring.
+    disabled_features_.push_back(features::kWaylandTextInputV3);
+
     // Call the skip base implementation to avoid setting up the keyboard.
     WaylandTest::SetUp();
 
