@@ -269,6 +269,39 @@ TEST_F(BnplFormEventsMetricsTest, SuggestionAccepted) {
       /*expected_count=*/1);
 }
 
+TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithAffirm) {
+  base::HistogramTester histogram_tester;
+
+  LogFormFilledWithBnplVcn(kBnplAffirmIssuerId);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/BnplFormEvent::kFormFilledWithAffirmOnce,
+      /*expected_count=*/1);
+}
+
+TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithZip) {
+  base::HistogramTester histogram_tester;
+
+  LogFormFilledWithBnplVcn(kBnplZipIssuerId);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/BnplFormEvent::kFormFilledWithZipOnce,
+      /*expected_count=*/1);
+}
+
+TEST_F(BnplFormEventsMetricsTest, FormFilledOnceWithAfterpay) {
+  base::HistogramTester histogram_tester;
+
+  LogFormFilledWithBnplVcn(kBnplAfterpayIssuerId);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/BnplFormEvent::kFormFilledWithAfterpayOnce,
+      /*expected_count=*/1);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

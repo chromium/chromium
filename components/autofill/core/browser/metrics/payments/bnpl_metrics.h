@@ -62,7 +62,16 @@ enum class BnplFormEvent {
   // A BNPL suggestion was accepted on the current page.
   kBnplSuggestionAcceptedOnce = 2,
 
-  kMaxValue = kBnplSuggestionAcceptedOnce,
+  // A form was filled with an Affirm VCN.
+  kFormFilledWithAffirmOnce = 3,
+
+  // A form was filled with a Zip VCN.
+  kFormFilledWithZipOnce = 4,
+
+  // A form was filled with an Afterpay VCN.
+  kFormFilledWithAfterpayOnce = 5,
+
+  kMaxValue = kFormFilledWithAfterpayOnce,
 };
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplFormEvent)
@@ -96,6 +105,9 @@ void LogBnplPopupWindowResult(std::string_view issuer_id,
 // Logs BNPL form events. Please refer to `BnplFormEvent` for the possible
 // enumerations that can be logged.
 void LogBnplFormEvent(BnplFormEvent event);
+
+// Logs that a form was filled with the BNPL issuer VCN.
+void LogFormFilledWithBnplVcn(std::string_view issuer_id);
 
 }  // namespace autofill::autofill_metrics
 

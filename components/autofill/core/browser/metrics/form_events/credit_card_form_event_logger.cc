@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/metrics/payments/card_unmask_flow_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_standalone_cvc_suggestion_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -347,6 +348,8 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
   CreditCard::RecordType record_type = credit_card.record_type();
   signin_state_for_metrics_ = signin_state_for_metrics;
 
+  filled_credit_card_ = credit_card;
+
   client().GetFormInteractionsUkmLogger().LogDidFillSuggestion(
       driver().GetPageUkmSourceId(), form, field, record_type);
 
@@ -382,7 +385,11 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
       }
       break;
     case CreditCard::RecordType::kVirtualCard:
-      Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, form);
+      // BNPL VCN metrics are handled separately to prevent them from
+      // influencing other VCN metrics, as these represent distinct user flows.
+      if (!credit_card.is_bnpl_card()) {
+        Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, form);
+      }
       break;
     case CreditCard::RecordType::kFullServerCard:
       // Full server cards are a temporary cached state that do not exist as
@@ -485,7 +492,17 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
         }
         break;
       case CreditCard::RecordType::kVirtualCard:
-        Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, form);
+        // BNPL VCN metrics are handled separately to prevent them from
+        // influencing other VCN metrics, as these represent distinct user
+        // flows.
+        if (credit_card.is_bnpl_card()) {
+          if (!has_logged_form_filled_with_bnpl_vcn_) {
+            LogFormFilledWithBnplVcn(credit_card.issuer_id());
+            has_logged_form_filled_with_bnpl_vcn_ = true;
+          }
+        } else {
+          Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE, form);
+        }
         break;
       case CreditCard::RecordType::kFullServerCard:
         // Full server cards are a temporary cached state that do not exist as
@@ -569,6 +586,11 @@ void CreditCardFormEventLogger::OnDidAcceptBnplSuggestion() {
     LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAcceptedOnce);
     has_logged_bnpl_suggestion_accepted_ = true;
   }
+}
+
+std::optional<CreditCard>
+CreditCardFormEventLogger::GetFilledCreditCardForTesting() {
+  return filled_credit_card_;
 }
 
 void CreditCardFormEventLogger::RecordPollSuggestions() {

@@ -133,6 +133,8 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // Logging when a BNPL suggestion was accepted.
   void OnDidAcceptBnplSuggestion();
 
+  std::optional<CreditCard> GetFilledCreditCardForTesting();
+
  protected:
   // FormEventLoggerBase pure-virtual overrides.
   void RecordPollSuggestions() override;
@@ -220,6 +222,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the metrics for a BNPL suggestion being accepted were already
   // logged and should not log again.
   bool has_logged_bnpl_suggestion_accepted_ = false;
+  // If true, the metrics for a form filled with a BNPL issuer VCN were already
+  // logged and should not log again.
+  bool has_logged_form_filled_with_bnpl_vcn_ = false;
 
   CardMetadataLoggingContext metadata_logging_context_;
 
@@ -231,6 +236,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
 
   // Weak references.
   raw_ptr<PersonalDataManager> personal_data_manager_;
+
+  // Present only if a form was filled with a card.
+  std::optional<CreditCard> filled_credit_card_;
 };
 
 }  // namespace autofill_metrics

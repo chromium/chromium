@@ -70,4 +70,16 @@ void LogBnplFormEvent(BnplFormEvent event) {
   base::UmaHistogramEnumeration("Autofill.FormEvents.CreditCard.Bnpl", event);
 }
 
+void LogFormFilledWithBnplVcn(std::string_view issuer_id) {
+  if (issuer_id == kBnplAffirmIssuerId) {
+    LogBnplFormEvent(BnplFormEvent::kFormFilledWithAffirmOnce);
+  } else if (issuer_id == kBnplZipIssuerId) {
+    LogBnplFormEvent(BnplFormEvent::kFormFilledWithZipOnce);
+  } else if (issuer_id == kBnplAfterpayIssuerId) {
+    LogBnplFormEvent(BnplFormEvent::kFormFilledWithAfterpayOnce);
+  } else {
+    NOTREACHED();
+  }
+}
+
 }  // namespace autofill::autofill_metrics
