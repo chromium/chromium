@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
+#include "third_party/blink/renderer/modules/webaudio/testing/mock_web_audio_device.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -39,29 +40,6 @@ using ::testing::StrictMock;
 namespace blink {
 
 namespace {
-
-class MockWebAudioDevice : public WebAudioDevice {
- public:
-  explicit MockWebAudioDevice(double sample_rate, int frames_per_buffer)
-      : sample_rate_(sample_rate), frames_per_buffer_(frames_per_buffer) {}
-  ~MockWebAudioDevice() override = default;
-
-  void Start() override {}
-  void Stop() override {}
-  void Pause() override {}
-  void Resume() override {}
-  double SampleRate() override { return sample_rate_; }
-  int FramesPerBuffer() override { return frames_per_buffer_; }
-  int MaxChannelCount() override { return 2; }
-  void SetDetectSilence(bool detect_silence) override {}
-  media::OutputDeviceStatus MaybeCreateSinkAndGetStatus() override {
-    return media::OUTPUT_DEVICE_STATUS_OK;
-  }
-
- private:
-  double sample_rate_;
-  int frames_per_buffer_;
-};
 
 class AudioContextTestPlatform : public TestingPlatformSupport {
  public:

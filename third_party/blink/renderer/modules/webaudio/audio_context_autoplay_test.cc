@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/webaudio/audio_context.h"
-
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
@@ -11,7 +9,6 @@
 #include "media/base/output_device_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_audio_device.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -24,6 +21,8 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_context.h"
+#include "third_party/blink/renderer/modules/webaudio/testing/mock_web_audio_device.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -36,31 +35,6 @@ namespace {
 const char* const kAutoplayMetric = "WebAudio.Autoplay";
 const char* const kAutoplayCrossOriginMetric = "WebAudio.Autoplay.CrossOrigin";
 
-class MockWebAudioDeviceForAutoplayTest : public WebAudioDevice {
- public:
-  explicit MockWebAudioDeviceForAutoplayTest(double sample_rate,
-                                             int frames_per_buffer)
-      : sample_rate_(sample_rate), frames_per_buffer_(frames_per_buffer) {}
-  ~MockWebAudioDeviceForAutoplayTest() override = default;
-
-  void Start() override {}
-  void Stop() override {}
-  void Pause() override {}
-  void Resume() override {}
-  double SampleRate() override { return sample_rate_; }
-  int FramesPerBuffer() override { return frames_per_buffer_; }
-  int MaxChannelCount() override { return 2; }
-  void SetDetectSilence(bool detect_silence) override {}
-  media::OutputDeviceStatus MaybeCreateSinkAndGetStatus() override {
-    // In this test, we assume the sink creation always succeeds.
-    return media::OUTPUT_DEVICE_STATUS_OK;
-  }
-
- private:
-  double sample_rate_;
-  int frames_per_buffer_;
-};
-
 class AudioContextAutoplayTestPlatform : public TestingPlatformSupport {
  public:
   std::unique_ptr<WebAudioDevice> CreateAudioDevice(
@@ -69,8 +43,8 @@ class AudioContextAutoplayTestPlatform : public TestingPlatformSupport {
       const WebAudioLatencyHint& latency_hint,
       std::optional<float> context_sample_rate,
       media::AudioRendererSink::RenderCallback*) override {
-    return std::make_unique<MockWebAudioDeviceForAutoplayTest>(
-        AudioHardwareSampleRate(), AudioHardwareBufferSize());
+    return std::make_unique<MockWebAudioDevice>(AudioHardwareSampleRate(),
+                                                AudioHardwareBufferSize());
   }
 
   double AudioHardwareSampleRate() override { return 44100; }
