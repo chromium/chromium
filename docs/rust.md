@@ -230,6 +230,30 @@ them.
 
 See `rust-ffi.md` for information on C++/Rust FFI.
 
+# Unstable features
+
+Unstable features are **unsupported** by default in Chromium. Any use of an
+unstable language or library feature should be agreed upon by the Rust toolchain
+team before enabling it.
+
+Since Chromium imports the Rust toolchain at its HEAD and builds it in a
+nightly-like configuration, it is technically possible to depend on unstable
+features. However, unstable features often change in a backwards incompatible
+way without a warning. If such incompatible changes are introduced, importing a
+new version of toolchain now requires the owner to fix forward, instead of being
+an automated process. This makes toolchain upgrades prohibitively difficult.
+
+When an exception is required, consider:
+
+-   Whether the unstable feature brings significant value that is unattainable
+    in stable alternatives
+-   The risk of breaking changes to the feature
+-   Ways to fallback in case a backward-incompatible toolchain change is
+    introduced
+
+A list of exceptions is maintained in
+[`../tools/rust/unstable_rust_feature_usage.md`](../tools/rust/unstable_rust_feature_usage.md).
+
 # Logging
 
 Use the [log](https://docs.rs/log) crate's macros in place of base `LOG`
