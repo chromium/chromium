@@ -161,6 +161,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       selectedTextContextMenuY: Number,
       selectedRegionContextMenuX: Number,
       selectedRegionContextMenuY: Number,
+      selectedRegionContextMenuHorizontalStyle: String,
+      selectedRegionContextMenuVerticalStyle: String,
       canvasHeight: Number,
       canvasWidth: Number,
       isPointerInside: {
@@ -252,6 +254,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // proper dimensions.
   declare private canvasHeight: number;
   declare private canvasWidth: number;
+  declare private selectedRegionContextMenuHorizontalStyle: string;
+  declare private selectedRegionContextMenuVerticalStyle: string;
   // The current content rectangle of the selection elements DIV. This is the
   // bounds of the screenshot and the part the user interacts with. This should
   // be used instead of call getBoundingClientRect().
@@ -396,6 +400,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         document, 'update-selected-region-context-menu',
         (e: CustomEvent<SelectedRegionContextMenuData>) => {
           this.updateSelectedRegionContextMenu(e.detail);
+          this.positionSelectedRegionContextMenu();
         });
     this.eventTracker_.add(
         document, 'show-selected-region-context-menu',
@@ -405,6 +410,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
               (!this.suppressCopyAndSaveAsImage &&
                (this.enableCopyAsImage || this.enableSaveAsImage)) ||
               this.showDetectedTextContextMenuOptions);
+          this.positionSelectedRegionContextMenu();
 
           // If simplified selection is enabled, send an event to the post
           // selection renderer to darken the scrim if text is found within the
@@ -924,6 +930,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         this.canvasHeight = containerHeight;
       }
 
+      this.positionSelectedRegionContextMenu();
+
       this.isResized = !doesScreenshotFillContainer;
       if (this.isResized) {
         this.isInitialSize = false;
@@ -1001,6 +1009,56 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     const yMovement =
         Math.abs(this.currentGesture.clientY - this.currentGesture.startY);
     return xMovement > DRAG_THRESHOLD || yMovement > DRAG_THRESHOLD;
+  }
+
+  // Repositions the context menu to keep it inside the viewport.
+  private positionSelectedRegionContextMenu() {
+    if (!this.selectedRegionContextMenuBox) {
+      return;
+    }
+
+    const left = this.selectedRegionContextMenuBox.box.x -
+        this.selectedRegionContextMenuBox.box.width / 2;
+    const top = this.selectedRegionContextMenuBox.box.y -
+        this.selectedRegionContextMenuBox.box.height / 2;
+    const bottom = this.selectedRegionContextMenuBox.box.y +
+        this.selectedRegionContextMenuBox.box.height / 2;
+
+    // First try to left-align to region.
+    this.selectedRegionContextMenuHorizontalStyle =
+        `left: ${toPercent(left)}; `;
+    if (this.$.selectedRegionContextMenu.offsetLeft +
+            this.$.selectedRegionContextMenu.offsetWidth >
+        this.canvasWidth) {
+      // If menu overflows right, right-align to region.
+      this.selectedRegionContextMenuHorizontalStyle = `right: 0; `;
+      if (this.$.selectedRegionContextMenu.offsetLeft < 0) {
+        // If menu overflows left, allow constraining on both sides.
+        this.selectedRegionContextMenuHorizontalStyle = ` `;
+      }
+    }
+
+    // First try to position below region.
+    this.selectedRegionContextMenuVerticalStyle =
+        `top: calc(${toPercent(bottom)} + 12px)`;
+    if (this.$.selectionOverlay.offsetTop +
+            this.$.selectedRegionContextMenu.offsetTop +
+            this.$.selectedRegionContextMenu.offsetHeight >
+        window.innerHeight) {
+      // If menu overflows bottom, position above region.
+      this.selectedRegionContextMenuVerticalStyle =
+          `bottom: calc(${toPercent(1 - top)} + 12px);`;
+      if (this.$.selectionOverlay.offsetTop +
+              this.$.selectedRegionContextMenu.offsetTop <
+          0) {
+        // If menu overflows top, position at top of viewport, overlapping the
+        // region.
+        this.selectedRegionContextMenuVerticalStyle =
+            `bottom: calc(${toPercent(1 - top)} + 12px + ${
+                this.$.selectionOverlay.offsetTop +
+                this.$.selectedRegionContextMenu.offsetTop}px);`;
+      }
+    }
   }
 
   private getContextMenuStyle(contextMenuX: number, contextMenuY: number):

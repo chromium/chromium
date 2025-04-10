@@ -401,8 +401,8 @@
       </div>
     </div>
     <div id="selectedRegionContextMenu" class="context-menu" role="menu"
-        style$="[[getContextMenuStyle(selectedRegionContextMenuX,
-                                      selectedRegionContextMenuY)]]"
+        style$="[[selectedRegionContextMenuHorizontalStyle]]
+                [[selectedRegionContextMenuVerticalStyle]]"
         on-pointerenter="handlePointerEnterContextMenu"
         on-pointerleave="handlePointerLeaveContextMenu">
       <div id="copyDetectedTextContextMenuItem"
