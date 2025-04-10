@@ -11,6 +11,7 @@ import android.webkit.JavascriptInterface;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -349,6 +350,7 @@ public class PopupWindowTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisabledTest(message = "crbug.com/409705637")
     public void testPopupWindowTextHandle() throws Throwable {
         final String popupPath = "/popup.html";
         final String parentPageHtml =
