@@ -1037,7 +1037,6 @@
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_TITLE" desc="" translateable="false" formatter_data="android_java">
         Incognito tracking protections
       </message>
-
       <message name="IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_ENTRYPOINT_DESCRIPTION" desc="" translateable="false" formatter_data="android_java">
         Manage information sites can use to learn about you in Incognito
       </message>

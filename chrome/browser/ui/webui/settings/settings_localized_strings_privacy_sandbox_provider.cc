@@ -285,7 +285,10 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"adTopicsPageToggleSubLabel",
        IDS_SETTINGS_AD_TOPICS_PAGE_TOGGLE_SUB_LABEL},
       {"adTopicsPageActiveTopicsDescription",
-       IDS_SETTINGS_AD_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION}};
+       IDS_SETTINGS_AD_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION},
+      // Incognito tracking protections
+      {"incognitoTrackingProtectionsPageTitle",
+       IDS_INCOGNITO_TRACKING_PROTECTIONS_PAGE_TITLE}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddString("adPrivacyLearnMoreURL",

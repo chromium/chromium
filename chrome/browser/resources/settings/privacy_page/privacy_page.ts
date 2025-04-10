@@ -357,6 +357,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
       },
 
+      showActSettingsPage_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('showActSettingsPage'),
+      },
+
       isNotificationAllowed_: Boolean,
       isLocationAllowed_: Boolean,
       notificationPermissionsReviewHeader_: String,
@@ -417,6 +422,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private enableKeyboardLockPrompt_: boolean;
   declare private enableRelatedWebsiteSetsV2Ui_: boolean;
   declare private allSitesPageTitle_: string;
+  declare private showActSettingsPage_: boolean;
 
   override ready() {
     super.ready();

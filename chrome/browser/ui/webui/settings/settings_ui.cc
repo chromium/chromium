@@ -522,12 +522,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(privacy_sandbox::kAlwaysBlock3pcsIncognito));
 
   // ACT UX
-  html_source->AddBoolean(
-      "isIpProtectionUxEnabled",
-      base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx));
-  html_source->AddBoolean("isFingerprintingProtectionUxEnabled",
-                          base::FeatureList::IsEnabled(
-                              privacy_sandbox::kFingerprintingProtectionUx));
+  bool ipp_ux = base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx);
+  bool fpp_ux = base::FeatureList::IsEnabled(
+      privacy_sandbox::kFingerprintingProtectionUx);
+  html_source->AddBoolean("isIpProtectionUxEnabled", ipp_ux);
+  html_source->AddBoolean("isFingerprintingProtectionUxEnabled", fpp_ux);
+  html_source->AddBoolean("showActSettingsPage", ipp_ux || fpp_ux);
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
