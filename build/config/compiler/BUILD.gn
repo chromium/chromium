@@ -1704,8 +1704,9 @@ config("compiler_arm") {
 
 config("libcxx_module") {
   if (use_libcxx_modules) {
-    modulemap = rebase_path("//third_party/libc++/src/include/module.modulemap",
-                            root_build_dir)
+    modulemap = rebase_path(
+            "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
+            root_build_dir)
     cflags_cc = [
       "-fmodules",
       "-fmodule-map-file=" + modulemap,

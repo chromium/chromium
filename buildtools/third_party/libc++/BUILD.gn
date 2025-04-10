@@ -6,6 +6,7 @@ import("//build/config/c++/c++.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
+import("//buildtools/third_party/libc++/libcxx_headers.gni")
 
 # Used by libc++ and libc++abi.
 # See //build/config/c++:runtime_library for the config used by users of libc++.
@@ -124,14 +125,34 @@ configs_to_remove = [
   "//build/config/coverage:default_coverage",
 ]
 
+if (use_explicit_libcxx_modules) {
+  # We need to have libc++ headers and __assertion_handler in the same directory
+  # for clang modules build.
+  copy("copy_libcxx_headers") {
+    sources = libcxx_headers
+    outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
+  }
+
+  copy("copy_assertion_handler") {
+    sources = [ "__assertion_handler" ]
+    outputs =
+        [ "${root_gen_dir}/third_party/libc++/src/include/__assertion_handler" ]
+  }
+}
+
 template("libcxx_modules") {
   # This is a template to build libc++'s module file.
   source_set(target_name) {
     use_libcxx_modules = false
-    if (use_explicit_libcxx_modules) {
-      sources = [ "//third_party/libc++/src/include/module.modulemap" ]
-    }
     deps = []
+    if (use_explicit_libcxx_modules) {
+      sources =
+          [ "${root_gen_dir}/third_party/libc++/src/include/module.modulemap" ]
+      deps += [
+        ":copy_assertion_handler",
+        ":copy_libcxx_headers",
+      ]
+    }
 
     configs -= configs_to_remove
     configs += configs_to_add
