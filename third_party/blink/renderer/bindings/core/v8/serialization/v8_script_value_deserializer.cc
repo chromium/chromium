@@ -280,12 +280,12 @@ bool V8ScriptValueDeserializer::ReadUnguessableToken(
 
 bool V8ScriptValueDeserializer::ReadUTF8String(String* string) {
   uint32_t utf8_length = 0;
-  const void* utf8_data = nullptr;
-  if (!ReadUint32(&utf8_length) || !ReadRawBytes(utf8_length, &utf8_data))
+  base::span<const uint8_t> utf8_data;
+  if (!ReadUint32(&utf8_length) ||
+      !ReadRawBytesToSpan(utf8_length, &utf8_data)) {
     return false;
-  // SAFETY: ReadRawBytes() guarantees `utf8_data` and `utf8_length` are safe.
-  *string = String::FromUTF8(UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<const LChar*>(utf8_data), utf8_length)));
+  }
+  *string = String::FromUTF8(utf8_data);
 
   // Decoding must have failed; this encoding does not distinguish between null
   // and empty strings.
