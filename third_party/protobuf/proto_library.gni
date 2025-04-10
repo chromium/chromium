@@ -399,8 +399,8 @@ template("proto_library") {
     ]
 
     # TODO(crbug.com/409484308): Enable in fuzzer builds too.
-    if (treat_warnings_as_errors && !use_libfuzzer) {
-        args += [ "--fatal_warnings" ]
+    if (treat_warnings_as_errors && !fuzzing_engine_supports_custom_main) {
+      args += [ "--fatal_warnings" ]
     }
 
     if (generate_cc) {
@@ -743,7 +743,7 @@ template("protoc_convert") {
            ]
 
     if (treat_warnings_as_errors) {
-        args += [ "--fatal_warnings" ]
+      args += [ "--fatal_warnings" ]
     }
 
     args += invoker.args
