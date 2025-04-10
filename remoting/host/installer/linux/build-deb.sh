@@ -125,8 +125,9 @@ if [[ "$OPTION" = "enable_chromoting_crashpad" ]]; then
   echo "enable_chromoting_crashpad=true. remove remoting_crash_uploader"
   rm -f "${OUTPUT_PATH}/remoting_crash_uploader"
 else
-  echo "enable_chromoting_crashpad=false. remove remoting_crashpad_handler"
+  echo "enable_chromoting_crashpad=false. remove crashpad tools"
   rm -f "${OUTPUT_PATH}/remoting_crashpad_handler"
+  rm -f "${OUTPUT_PATH}/remoting_crashpad_db"
 fi
 
 echo "Building version $version_full $revision_text"
