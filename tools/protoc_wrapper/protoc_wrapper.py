@@ -119,6 +119,8 @@ def main(argv):
       help="Do not include imported files into generated descriptor.",
       action="store_true",
       default=False)
+  parser.add_argument('--fatal_warnings', action='store_true')
+
   parser.add_argument("protos", nargs="+",
                       help="Input protobuf definition file(s).")
 
@@ -130,6 +132,9 @@ def main(argv):
   protos = options.protos
   headers = []
   VerifyProtoNames(protos)
+
+  if options.fatal_warnings:
+    protoc_cmd += ["--fatal_warnings"]
 
   if options.py_out_dir:
     protoc_cmd += ["--python_out", options.py_out_dir]

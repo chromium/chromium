@@ -139,6 +139,7 @@
 #    ]
 #  }
 
+import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/kythe.gni")
@@ -396,6 +397,11 @@ template("proto_library") {
       "--proto-in-dir",
       rebase_path(proto_in_dir, root_build_dir),
     ]
+
+    # TODO(crbug.com/409484308): Enable in fuzzer builds too.
+    if (treat_warnings_as_errors && !use_libfuzzer) {
+        args += [ "--fatal_warnings" ]
+    }
 
     if (generate_cc) {
       args += [
@@ -734,6 +740,12 @@ template("protoc_convert") {
              "{{source}}",
              "--outfile",
              rebase_path(invoker.output_pattern, root_build_dir),
-           ] + invoker.args
+           ]
+
+    if (treat_warnings_as_errors) {
+        args += [ "--fatal_warnings" ]
+    }
+
+    args += invoker.args
   }
 }
