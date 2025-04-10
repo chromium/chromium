@@ -693,29 +693,27 @@ void BaseRenderingContext2D::putImageData(ImageData* data,
 
   // WritePixels (called by PutByteArray) requires that the source and
   // destination pixel formats have the same bytes per pixel.
-  if (GetCanvasRenderingContextHost()) {
-    SkColorType dest_color_type =
-        viz::ToClosestSkColorType(GetSharedImageFormat());
-    if (SkColorTypeBytesPerPixel(dest_color_type) !=
-        SkColorTypeBytesPerPixel(data_pixmap.colorType())) {
-      SkImageInfo converted_info =
-          data_pixmap.info().makeColorType(dest_color_type);
-      SkBitmap converted_bitmap;
-      if (!converted_bitmap.tryAllocPixels(converted_info)) {
-        exception_state.ThrowRangeError("Out of memory in putImageData");
-        return;
-      }
-      if (!converted_bitmap.writePixels(data_pixmap, 0, 0)) {
-        NOTREACHED() << "Failed to convert ImageData with writePixels.";
-      }
-
-      PutByteArray(converted_bitmap.pixmap(), source_rect, dest_offset);
-      if (GetPaintCanvas()) {
-        WillDraw(gfx::RectToSkIRect(dest_rect),
-                 CanvasPerformanceMonitor::DrawType::kImageData);
-      }
+  SkColorType dest_color_type =
+      viz::ToClosestSkColorType(GetSharedImageFormat());
+  if (SkColorTypeBytesPerPixel(dest_color_type) !=
+      SkColorTypeBytesPerPixel(data_pixmap.colorType())) {
+    SkImageInfo converted_info =
+        data_pixmap.info().makeColorType(dest_color_type);
+    SkBitmap converted_bitmap;
+    if (!converted_bitmap.tryAllocPixels(converted_info)) {
+      exception_state.ThrowRangeError("Out of memory in putImageData");
       return;
     }
+    if (!converted_bitmap.writePixels(data_pixmap, 0, 0)) {
+      NOTREACHED() << "Failed to convert ImageData with writePixels.";
+    }
+
+    PutByteArray(converted_bitmap.pixmap(), source_rect, dest_offset);
+    if (GetPaintCanvas()) {
+      WillDraw(gfx::RectToSkIRect(dest_rect),
+               CanvasPerformanceMonitor::DrawType::kImageData);
+    }
+    return;
   }
 
   PutByteArray(data_pixmap, source_rect, dest_offset);
