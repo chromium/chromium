@@ -275,5 +275,34 @@ TEST_F(PrivacySandboxNoticeCatalogPopulateTest, PrerequisiteApisAreValid) {
   }
 }
 
+class PrivacySandboxNoticeCatalogPopulateAllNoticesTest
+    : public PrivacySandboxNoticeCatalogPopulateTest,
+      public testing::WithParamInterface<int> {};
+
+TEST_P(PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
+       AllNoticeEnumsExistsInTheNoticeMap) {
+  PrivacySandboxNotice notice_enum_to_find =
+      static_cast<PrivacySandboxNotice>(GetParam());
+
+  bool found = false;
+  for (const auto& [notice_id, notice_ptr] : catalog_.GetNoticeMap()) {
+    if (notice_id.first != notice_enum_to_find) {
+      continue;
+    }
+    found = true;
+    EXPECT_NE(notice_ptr, nullptr);
+    break;
+  }
+
+  EXPECT_TRUE(found) << "Notice enum value " << notice_enum_to_find
+                     << " was not found in the NoticeCatalog map.";
+}
+
+INSTANTIATE_TEST_SUITE_P(
+  PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
+    PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
+    testing::Range(static_cast<int>(PrivacySandboxNotice::kMinValue),
+                   static_cast<int>(PrivacySandboxNotice::kMaxValue) + 1));
+
 }  // namespace
 }  // namespace privacy_sandbox
