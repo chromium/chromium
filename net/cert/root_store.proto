@@ -37,6 +37,16 @@ message ConstraintSet {
   // subtrees defined by `permitted_dns_names`. The constraints are interpereted
   // as described in RFC 5280 section 4.2.1.10.
   repeated string permitted_dns_names = 5;
+
+  // When set to true, Chrome will enforce certificate expiry for this
+  // TrustAnchor using the notBefore and notAfter from the corresponding
+  // certificate.
+  optional bool enforce_anchor_expiry = 6;
+
+  // When set to true, Chrome will enforce X.509 constraints for this
+  // TrustAnchor using the constraints expressed in the corresponding
+  // certificate.
+  optional bool enforce_anchor_constraints = 7;
 }
 
 message TrustAnchor {
@@ -60,6 +70,13 @@ message TrustAnchor {
 
   // If true, indicates that this certificate is trusted to issue QWACs.
   optional bool eutl = 6;
+
+  // A unique identifier for a trust anchor, expressed as dotted-decimal text.
+  // Specified in
+  // https://www.ietf.org/archive/id/draft-ietf-tls-trust-anchor-ids-00.html,
+  // Trust Anchor IDs are represented as relative OID suffixes of the Private
+  // Enterprise Number (PEN) OID prefix of "1.3.6.1.4.1.".
+  optional string trust_anchor_id = 7;
 }
 
 // Message storing a complete Chrome Root Store.
