@@ -1,0 +1,1280 @@
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: BUILD
+Only in third_party/private-join-and-compute/src/: BUILD.gn
+Only in third_party/private-join-and-compute/src/: chromium_patch.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: client.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: client_impl.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: client_impl.h
+Only in third_party/private-join-and-compute/src/: CONTRIBUTING.md
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/big_num.cc third_party/private-join-and-compute/src/crypto/big_num.cc
+16c16
+< #include "private_join_and_compute/crypto/big_num.h"
+---
+> #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+23,29c23,28
+< #include "absl/log/check.h"
+< #include "absl/status/status.h"
+< #include "absl/status/statusor.h"
+< #include "absl/strings/str_cat.h"
+< #include "absl/strings/string_view.h"
+< #include "private_join_and_compute/crypto/context.h"
+< #include "private_join_and_compute/crypto/openssl.inc"
+---
+> #include "third_party/abseil-cpp/absl/strings/str_cat.h"
+> #include "third_party/abseil-cpp/absl/strings/string_view.h"
+> #include "third_party/private-join-and-compute/src/chromium_patch.h"
+> #include "third_party/private-join-and-compute/src/crypto/context.h"
+> #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+109c108
+< absl::StatusOr<uint64_t> BigNum::ToIntValue() const {
+---
+> StatusOr<uint64_t> BigNum::ToIntValue() const {
+112c111
+<     return absl::InvalidArgumentError("BigNum has more than 64 bits.");
+---
+>     return InvalidArgumentError("BigNum has more than 64 bits.");
+252c251
+< absl::StatusOr<BigNum> BigNum::ModInverse(const BigNum& m) const {
+---
+> StatusOr<BigNum> BigNum::ModInverse(const BigNum& m) const {
+255c254
+<     return absl::InvalidArgumentError(
+---
+>     return InvalidArgumentError(
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/big_num.h third_party/private-join-and-compute/src/crypto/big_num.h
+16,17c16,17
+< #ifndef PRIVATE_JOIN_AND_COMPUTE_CRYPTO_BIG_NUM_H_
+< #define PRIVATE_JOIN_AND_COMPUTE_CRYPTO_BIG_NUM_H_
+---
+> #ifndef CRYPTO_BIG_NUM_H_
+> #define CRYPTO_BIG_NUM_H_
+25,28c25,29
+< #include "absl/base/attributes.h"
+< #include "absl/status/statusor.h"
+< #include "absl/strings/string_view.h"
+< #include "private_join_and_compute/crypto/openssl.inc"
+---
+> #include "third_party/abseil-cpp/absl/base/attributes.h"
+> #include "third_party/abseil-cpp/absl/strings/string_view.h"
+> #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+> #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+37c38
+< class ABSL_MUST_USE_RESULT BigNum {
+---
+> class PRIVATE_COMPUTE_EXPORT BigNum {
+67c68
+<   absl::StatusOr<uint64_t> ToIntValue() const;
+---
+>   StatusOr<uint64_t> ToIntValue() const;
+158c159
+<   absl::StatusOr<BigNum> ModInverse(const BigNum& m) const;
+---
+>   StatusOr<BigNum> ModInverse(const BigNum& m) const;
+261c262
+< #endif  // PRIVATE_JOIN_AND_COMPUTE_CRYPTO_BIG_NUM_H_
+---
+> #endif  // CRYPTO_BIG_NUM_H_
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: BUILD
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: camenisch_shoup.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: camenisch_shoup.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: camenisch_shoup_test.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: commutative_elgamal.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: commutative_elgamal.h
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/context.cc third_party/private-join-and-compute/src/crypto/context.cc
+16c16
+< #include "private_join_and_compute/crypto/context.h"
+---
+> #include "third_party/private-join-and-compute/src/crypto/context.h"
+22,24c22,24
+< #include "absl/strings/str_cat.h"
+< #include "absl/strings/string_view.h"
+< #include "private_join_and_compute/crypto/openssl_init.h"
+---
+> #include "third_party/abseil-cpp/absl/strings/str_cat.h"
+> #include "third_party/abseil-cpp/absl/strings/string_view.h"
+> #include "third_party/private-join-and-compute/src/chromium_patch.h"
+41d40
+<   OpenSSLInit();
+95c94,95
+< BigNum Context::RandomOracle(absl::string_view x, const BigNum& max_value,
+---
+> BigNum Context::RandomOracle(absl::string_view x,
+>                              const BigNum& max_value,
+143c143,144
+< BigNum Context::PRF(absl::string_view key, absl::string_view data,
+---
+> BigNum Context::PRF(absl::string_view key,
+>                     absl::string_view data,
+145c146
+<   CHECK_GE(key.size() * 8, 80);
+---
+>   CHECK_GE(key.size() * 8, std::size_t(80));
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/context.h third_party/private-join-and-compute/src/crypto/context.h
+16,17c16,17
+< #ifndef PRIVATE_JOIN_AND_COMPUTE_CRYPTO_CONTEXT_H_
+< #define PRIVATE_JOIN_AND_COMPUTE_CRYPTO_CONTEXT_H_
+---
+> #ifndef CRYPTO_CONTEXT_H_
+> #define CRYPTO_CONTEXT_H_
+24,27c24,28
+< #include "absl/log/check.h"
+< #include "absl/strings/string_view.h"
+< #include "private_join_and_compute/crypto/big_num.h"
+< #include "private_join_and_compute/crypto/openssl.inc"
+---
+> #include "third_party/abseil-cpp/absl/strings/string_view.h"
+> #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+> #include "third_party/private-join-and-compute/src/chromium_patch.h"
+> #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+> #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+44c45
+< class Context {
+---
+> class PRIVATE_COMPUTE_EXPORT Context {
+131c132,133
+<   BigNum PRF(absl::string_view key, absl::string_view data,
+---
+>   BigNum PRF(absl::string_view key,
+>              absl::string_view data,
+182c184,185
+<   virtual BigNum RandomOracle(absl::string_view x, const BigNum& max_value,
+---
+>   virtual BigNum RandomOracle(absl::string_view x,
+>                               const BigNum& max_value,
+188c191
+< #endif  // PRIVATE_JOIN_AND_COMPUTE_CRYPTO_CONTEXT_H_
+---
+> #endif  // CRYPTO_CONTEXT_H_
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: dodis_yampolskiy_prf
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/ec_commutative_cipher.cc third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.cc
+16c16
+< #include "private_join_and_compute/crypto/ec_commutative_cipher.h"
+---
+> #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
+22,27c22,26
+< #include "absl/status/status.h"
+< #include "absl/status/statusor.h"
+< #include "absl/strings/string_view.h"
+< #include "private_join_and_compute/crypto/big_num.h"
+< #include "private_join_and_compute/crypto/ec_group.h"
+< #include "private_join_and_compute/crypto/elgamal.h"
+---
+> #include "third_party/abseil-cpp/absl/strings/string_view.h"
+> #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+> #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
+> #include "third_party/private-join-and-compute/src/crypto/elgamal.h"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+38c37,38
+< BigNum InvertPrivateScalar(const BigNum& scalar, const ECGroup& ec_group,
+---
+> BigNum InvertPrivateScalar(const BigNum& scalar,
+>                            const ECGroup& ec_group,
+47c47,48
+<                                          ECGroup group, BigNum private_key,
+---
+>                                          ECGroup group,
+>                                          BigNum private_key,
+65c66
+< absl::StatusOr<std::unique_ptr<ECCommutativeCipher>>
+---
+> StatusOr<std::unique_ptr<ECCommutativeCipher>>
+68c69
+<   absl::StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());
+---
+>   StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());
+73c74
+<     return absl::InvalidArgumentError("Invalid hash type.");
+---
+>     return InvalidArgumentError("Invalid hash type.");
+81,82c82,84
+< absl::StatusOr<std::unique_ptr<ECCommutativeCipher>>
+< ECCommutativeCipher::CreateFromKey(int curve_id, absl::string_view key_bytes,
+---
+> StatusOr<std::unique_ptr<ECCommutativeCipher>>
+> ECCommutativeCipher::CreateFromKey(int curve_id,
+>                                    absl::string_view key_bytes,
+85c87
+<   absl::StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());
+---
+>   StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());
+90c92
+<     return absl::InvalidArgumentError("Invalid hash type.");
+---
+>     return InvalidArgumentError("Invalid hash type.");
+102c104
+< absl::StatusOr<std::unique_ptr<ECCommutativeCipher>>
+---
+> StatusOr<std::unique_ptr<ECCommutativeCipher>>
+108c110
+<   absl::StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());
+---
+>   StatusOr<ECGroup> group = ECGroup::Create(curve_id, context.get());
+113c115
+<     return absl::InvalidArgumentError("Seed is too short.");
+---
+>     return InvalidArgumentError("Seed is too short.");
+116c118
+<     return absl::InvalidArgumentError("Invalid hash type.");
+---
+>     return InvalidArgumentError("Invalid hash type.");
+124c126
+< absl::StatusOr<std::string> ECCommutativeCipher::Encrypt(
+---
+> StatusOr<std::string> ECCommutativeCipher::Encrypt(
+126c128
+<   absl::StatusOr<ECPoint> hashed_point = HashToTheCurveInternal(plaintext);
+---
+>   StatusOr<ECPoint> hashed_point = HashToTheCurveInternal(plaintext);
+130c132
+<   absl::StatusOr<ECPoint> encrypted_point = Encrypt(*hashed_point);
+---
+>   StatusOr<ECPoint> encrypted_point = Encrypt(*hashed_point);
+137c139
+< absl::StatusOr<std::string> ECCommutativeCipher::ReEncrypt(
+---
+> StatusOr<std::string> ECCommutativeCipher::ReEncrypt(
+139c141
+<   absl::StatusOr<ECPoint> point = group_.CreateECPoint(ciphertext);
+---
+>   StatusOr<ECPoint> point = group_.CreateECPoint(ciphertext);
+143c145
+<   absl::StatusOr<ECPoint> reencrypted_point = Encrypt(*point);
+---
+>   StatusOr<ECPoint> reencrypted_point = Encrypt(*point);
+150c152
+< absl::StatusOr<ECPoint> ECCommutativeCipher::Encrypt(const ECPoint& point) {
+---
+> StatusOr<ECPoint> ECCommutativeCipher::Encrypt(const ECPoint& point) {
+154c156
+< absl::StatusOr<std::pair<std::string, std::string>>
+---
+> StatusOr<std::pair<std::string, std::string>>
+157c159
+<   absl::StatusOr<ECPoint> u = group_.CreateECPoint(elgamal_ciphertext.first);
+---
+>   StatusOr<ECPoint> u = group_.CreateECPoint(elgamal_ciphertext.first);
+161c163
+<   absl::StatusOr<ECPoint> e = group_.CreateECPoint(elgamal_ciphertext.second);
+---
+>   StatusOr<ECPoint> e = group_.CreateECPoint(elgamal_ciphertext.second);
+168c170
+<   absl::StatusOr<elgamal::Ciphertext> reencrypted_ciphertext =
+---
+>   StatusOr<elgamal::Ciphertext> reencrypted_ciphertext =
+174c176
+<   absl::StatusOr<std::string> serialized_u =
+---
+>   StatusOr<std::string> serialized_u =
+179c181
+<   absl::StatusOr<std::string> serialized_e =
+---
+>   StatusOr<std::string> serialized_e =
+188c190
+< absl::StatusOr<std::string> ECCommutativeCipher::Decrypt(
+---
+> StatusOr<std::string> ECCommutativeCipher::Decrypt(
+190c192
+<   absl::StatusOr<ECPoint> point = group_.CreateECPoint(ciphertext);
+---
+>   StatusOr<ECPoint> point = group_.CreateECPoint(ciphertext);
+194c196
+<   absl::StatusOr<ECPoint> decrypted_point = point->Mul(private_key_inverse_);
+---
+>   StatusOr<ECPoint> decrypted_point = point->Mul(private_key_inverse_);
+201c203
+< absl::StatusOr<ECPoint> ECCommutativeCipher::HashToTheCurveInternal(
+---
+> StatusOr<ECPoint> ECCommutativeCipher::HashToTheCurveInternal(
+203c205
+<   absl::StatusOr<ECPoint> point;
+---
+>   StatusOr<ECPoint> point;
+214c216
+<     return absl::InvalidArgumentError("Invalid hash type.");
+---
+>     return InvalidArgumentError("Invalid hash type.");
+219c221
+< absl::StatusOr<std::string> ECCommutativeCipher::HashToTheCurve(
+---
+> StatusOr<std::string> ECCommutativeCipher::HashToTheCurve(
+221c223
+<   absl::StatusOr<ECPoint> point = HashToTheCurveInternal(plaintext);
+---
+>   StatusOr<ECPoint> point = HashToTheCurveInternal(plaintext);
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/ec_commutative_cipher.h third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h
+16,17c16,17
+< #ifndef PRIVATE_JOIN_AND_COMPUTE_EC_COMMUTATIVE_CIPHER_H_
+< #define PRIVATE_JOIN_AND_COMPUTE_EC_COMMUTATIVE_CIPHER_H_
+---
+> #ifndef EC_COMMUTATIVE_CIPHER_H_
+> #define EC_COMMUTATIVE_CIPHER_H_
+23,28c23,29
+< #include "absl/status/statusor.h"
+< #include "absl/strings/string_view.h"
+< #include "private_join_and_compute/crypto/big_num.h"
+< #include "private_join_and_compute/crypto/context.h"
+< #include "private_join_and_compute/crypto/ec_group.h"
+< #include "private_join_and_compute/crypto/ec_point.h"
+---
+> #include "third_party/abseil-cpp/absl/strings/string_view.h"
+> #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+> #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+> #include "third_party/private-join-and-compute/src/crypto/context.h"
+> #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
+> #include "third_party/private-join-and-compute/src/crypto/ec_point.h"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+74c75
+< //    absl::StatusOr<string> double_encrypted_string =
+---
+> //    ::private_join_and_compute::StatusOr<string> double_encrypted_string =
+80c81
+< //    absl::StatusOr<string> decrypted_string =
+---
+> //    ::private_join_and_compute::StatusOr<string> decrypted_string =
+85c86,87
+< //    absl::StatusOr<std::pair<string, string>> double_encrypted_string =
+---
+> //    ::private_join_and_compute::StatusOr<std::pair<string, string>>
+> //    double_encrypted_string =
+88c90
+< class ECCommutativeCipher {
+---
+> class PRIVATE_COMPUTE_EXPORT ECCommutativeCipher {
+114,115c116,117
+<   static absl::StatusOr<std::unique_ptr<ECCommutativeCipher>> CreateWithNewKey(
+<       int curve_id, HashType hash_type);
+---
+>   static ::private_join_and_compute::StatusOr<std::unique_ptr<ECCommutativeCipher>>
+>   CreateWithNewKey(int curve_id, HashType hash_type);
+125,126c127,129
+<   static absl::StatusOr<std::unique_ptr<ECCommutativeCipher>> CreateFromKey(
+<       int curve_id, absl::string_view key_bytes, HashType hash_type);
+---
+>   static ::private_join_and_compute::StatusOr<
+>       std::unique_ptr<ECCommutativeCipher>>
+>   CreateFromKey(int curve_id, absl::string_view key_bytes, HashType hash_type);
+133,135c136,141
+<   static absl::StatusOr<std::unique_ptr<ECCommutativeCipher>>
+<   CreateWithKeyFromSeed(int curve_id, absl::string_view seed_bytes,
+<                         absl::string_view tag_bytes, HashType hash_type);
+---
+>   static ::private_join_and_compute::StatusOr<
+>       std::unique_ptr<ECCommutativeCipher>>
+>   CreateWithKeyFromSeed(int curve_id,
+>                         absl::string_view seed_bytes,
+>                         absl::string_view tag_bytes,
+>                         HashType hash_type);
+148c154,155
+<   absl::StatusOr<std::string> Encrypt(absl::string_view plaintext);
+---
+>   ::private_join_and_compute::StatusOr<std::string> Encrypt(
+>       absl::string_view plaintext);
+161c168,169
+<   absl::StatusOr<std::string> ReEncrypt(absl::string_view ciphertext);
+---
+>   ::private_join_and_compute::StatusOr<std::string> ReEncrypt(
+>       absl::string_view ciphertext);
+171c179
+<   absl::StatusOr<std::pair<std::string, std::string>>
+---
+>   ::private_join_and_compute::StatusOr<std::pair<std::string, std::string>>
+190c198,199
+<   absl::StatusOr<std::string> Decrypt(absl::string_view ciphertext);
+---
+>   ::private_join_and_compute::StatusOr<std::string> Decrypt(
+>       absl::string_view ciphertext);
+202c211,212
+<   absl::StatusOr<std::string> HashToTheCurve(absl::string_view plaintext);
+---
+>   ::private_join_and_compute::StatusOr<std::string> HashToTheCurve(
+>       absl::string_view plaintext);
+214c224
+<   absl::StatusOr<ECPoint> Encrypt(const ECPoint& point);
+---
+>   ::private_join_and_compute::StatusOr<ECPoint> Encrypt(const ECPoint& point);
+217c227,228
+<   absl::StatusOr<ECPoint> HashToTheCurveInternal(absl::string_view plaintext);
+---
+>   ::private_join_and_compute::StatusOr<ECPoint> HashToTheCurveInternal(
+>       absl::string_view plaintext);
+238c249
+< #endif  // PRIVATE_JOIN_AND_COMPUTE_EC_COMMUTATIVE_CIPHER_H_
+---
+> #endif  // EC_COMMUTATIVE_CIPHER_H_
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/ec_group.cc third_party/private-join-and-compute/src/crypto/ec_group.cc
+16c16
+< #include "private_join_and_compute/crypto/ec_group.h"
+---
+> #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
+17a18
+> #include <algorithm>
+23,30c24,30
+< #include "absl/status/status.h"
+< #include "absl/status/statusor.h"
+< #include "absl/strings/str_cat.h"
+< #include "absl/strings/string_view.h"
+< #include "private_join_and_compute/crypto/big_num.h"
+< #include "private_join_and_compute/crypto/context.h"
+< #include "private_join_and_compute/crypto/ec_point.h"
+< #include "private_join_and_compute/crypto/openssl.inc"
+---
+> #include "third_party/abseil-cpp/absl/strings/str_cat.h"
+> #include "third_party/abseil-cpp/absl/strings/string_view.h"
+> #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+> #include "third_party/private-join-and-compute/src/crypto/context.h"
+> #include "third_party/private-join-and-compute/src/crypto/ec_point.h"
+> #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+38c38
+< absl::StatusOr<ECGroup::ECGroupPtr> CreateGroup(int curve_id) {
+---
+> StatusOr<ECGroup::ECGroupPtr> CreateGroup(int curve_id) {
+42c42
+<     return absl::InvalidArgumentError(
+---
+>     return InvalidArgumentError(
+51c51
+< absl::StatusOr<BigNum> CreateOrder(const EC_GROUP* group, Context* context) {
+---
+> StatusOr<BigNum> CreateOrder(const EC_GROUP* group, Context* context) {
+54c54
+<     return absl::InternalError(
+---
+>     return InternalError(
+60c60
+<     return absl::InternalError(absl::StrCat(
+---
+>     return InternalError(absl::StrCat(
+67c67
+< absl::StatusOr<BigNum> CreateCofactor(const EC_GROUP* group, Context* context) {
+---
+> StatusOr<BigNum> CreateCofactor(const EC_GROUP* group, Context* context) {
+70c70
+<     return absl::InternalError(
+---
+>     return InternalError(
+76c76
+<     return absl::InternalError(
+---
+>     return InternalError(
+85,86c85,86
+< absl::StatusOr<ECGroup::CurveParams> CreateCurveParams(const EC_GROUP* group,
+<                                                        Context* context) {
+---
+> StatusOr<ECGroup::CurveParams> CreateCurveParams(const EC_GROUP* group,
+>                                                  Context* context) {
+91c91
+<     return absl::InternalError(
+---
+>     return InternalError(
+100c100
+<     return absl::InternalError(
+---
+>     return InternalError(
+106c106
+<     return absl::InternalError(absl::StrCat(
+---
+>     return InternalError(absl::StrCat(
+132,133c132,133
+< absl::StatusOr<ECGroup> ECGroup::Create(int curve_id, Context* context) {
+<   absl::StatusOr<ECGroupPtr> g = CreateGroup(curve_id);
+---
+> StatusOr<ECGroup> ECGroup::Create(int curve_id, Context* context) {
+>   StatusOr<ECGroupPtr> g = CreateGroup(curve_id);
+137c137
+<   absl::StatusOr<BigNum> order = CreateOrder(g->get(), context);
+---
+>   StatusOr<BigNum> order = CreateOrder(g->get(), context);
+141c141
+<   absl::StatusOr<BigNum> cofactor = CreateCofactor(g->get(), context);
+---
+>   StatusOr<BigNum> cofactor = CreateCofactor(g->get(), context);
+145c145
+<   absl::StatusOr<CurveParams> params = CreateCurveParams(g->get(), context);
+---
+>   StatusOr<CurveParams> params = CreateCurveParams(g->get(), context);
+159c159
+< absl::Status ECGroup::CheckPrivateKey(const BigNum& priv_key) const {
+---
+> Status ECGroup::CheckPrivateKey(const BigNum& priv_key) const {
+161c161
+<     return absl::InvalidArgumentError(
+---
+>     return InvalidArgumentError(
+167c167
+< absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveInternal(
+---
+> StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveInternal(
+178c178
+<   return absl::InternalError("Could not hash x to the curve.");
+---
+>   return InternalError("Could not hash x to the curve.");
+181c181
+< absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha256(
+---
+> StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha256(
+185c185
+<     absl::StatusOr<ECPoint> point = GetPointByHashingToCurveInternal(x);
+---
+>     StatusOr<ECPoint> point = GetPointByHashingToCurveInternal(x);
+193c193
+< absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha384(
+---
+> StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha384(
+197c197
+<     absl::StatusOr<ECPoint> point = GetPointByHashingToCurveInternal(x);
+---
+>     StatusOr<ECPoint> point = GetPointByHashingToCurveInternal(x);
+205c205
+< absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha512(
+---
+> StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSha512(
+209c209
+<     absl::StatusOr<ECPoint> point = GetPointByHashingToCurveInternal(x);
+---
+>     StatusOr<ECPoint> point = GetPointByHashingToCurveInternal(x);
+217,219c217,220
+< absl::StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSswuRo(
+<     absl::string_view m, absl::string_view dst) const {
+<   absl::StatusOr<ECPoint> out = GetPointAtInfinity();
+---
+> StatusOr<ECPoint> ECGroup::GetPointByHashingToCurveSswuRo(
+>     absl::string_view m,
+>     absl::string_view dst) const {
+>   StatusOr<ECPoint> out = GetPointAtInfinity();
+229c230
+<       return absl::InternalError(OpenSSLErrorString());
+---
+>       return InternalError(OpenSSLErrorString());
+236c237
+<       return absl::InternalError(OpenSSLErrorString());
+---
+>       return InternalError(OpenSSLErrorString());
+239,240c240
+<     return absl::InvalidArgumentError(
+<         "Curve does not support HashToCurveSswuRo.");
+---
+>     return InvalidArgumentError("Curve does not support HashToCurveSswuRo.");
+245,246c245,246
+< absl::StatusOr<ECPoint> ECGroup::GetPointByPaddingX(
+<     const BigNum& m, size_t padding_bit_count) const {
+---
+> StatusOr<ECPoint> ECGroup::GetPointByPaddingX(const BigNum& m,
+>                                               size_t padding_bit_count) const {
+251c251
+<     return absl::InvalidArgumentError(
+---
+>     return InvalidArgumentError(
+255c255
+<     absl::StatusOr<ECPoint> point =
+---
+>     StatusOr<ECPoint> point =
+264,265c264,266
+< absl::StatusOr<BigNum> ECGroup::RecoverXFromPaddedPoint(
+<     const ECPoint& point, size_t padding_bit_count) const {
+---
+> StatusOr<BigNum> ECGroup::RecoverXFromPaddedPoint(
+>     const ECPoint& point,
+>     size_t padding_bit_count) const {
+268c269
+<     return absl::InvalidArgumentError(
+---
+>     return InvalidArgumentError(
+302c303
+< absl::StatusOr<ECPoint> ECGroup::GetFixedGenerator() const {
+---
+> StatusOr<ECPoint> ECGroup::GetFixedGenerator() const {
+306c307
+<     return absl::InternalError(OpenSSLErrorString());
+---
+>     return InternalError(OpenSSLErrorString());
+312,313c313,314
+< absl::StatusOr<ECPoint> ECGroup::GetRandomGenerator() const {
+<   absl::StatusOr<ECPoint> generator = GetFixedGenerator();
+---
+> StatusOr<ECPoint> ECGroup::GetRandomGenerator() const {
+>   StatusOr<ECPoint> generator = GetFixedGenerator();
+320,321c321,322
+< absl::StatusOr<ECPoint> ECGroup::CreateECPoint(const BigNum& x,
+<                                                const BigNum& y) const {
+---
+> StatusOr<ECPoint> ECGroup::CreateECPoint(const BigNum& x,
+>                                          const BigNum& y) const {
+324c325
+<     return absl::InvalidArgumentError(
+---
+>     return InvalidArgumentError(
+330c331
+< absl::StatusOr<ECPoint> ECGroup::CreateECPoint(absl::string_view bytes) const {
+---
+> StatusOr<ECPoint> ECGroup::CreateECPoint(absl::string_view bytes) const {
+333,334c334
+<     return absl::InternalError(
+<         "ECGroup::CreateECPoint: Failed to create point.");
+---
+>     return InternalError("ECGroup::CreateECPoint: Failed to create point.");
+340c340
+<     return absl::InvalidArgumentError(
+---
+>     return InvalidArgumentError(
+347c347
+<     return absl::InvalidArgumentError(
+---
+>     return InvalidArgumentError(
+353c353
+< absl::StatusOr<ECPoint> ECGroup::GetPointAtInfinity() const {
+---
+> StatusOr<ECPoint> ECGroup::GetPointAtInfinity() const {
+356c356
+<     return absl::InternalError(
+---
+>     return InternalError(
+361c361
+<     return absl::InternalError(
+---
+>     return InternalError(
+Only in third_party/private-join-and-compute/src/crypto: ec_group.cc.bak
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/ec_group.h third_party/private-join-and-compute/src/crypto/ec_group.h
+16,17c16,17
+< #ifndef PRIVATE_JOIN_AND_COMPUTE_CRYPTO_EC_GROUP_H_
+< #define PRIVATE_JOIN_AND_COMPUTE_CRYPTO_EC_GROUP_H_
+---
+> #ifndef CRYPTO_EC_GROUP_H_
+> #define CRYPTO_EC_GROUP_H_
+20a21
+> #include <string>
+22,27c23,28
+< #include "absl/status/status.h"
+< #include "absl/status/statusor.h"
+< #include "absl/strings/string_view.h"
+< #include "private_join_and_compute/crypto/big_num.h"
+< #include "private_join_and_compute/crypto/context.h"
+< #include "private_join_and_compute/crypto/openssl.inc"
+---
+> #include "third_party/abseil-cpp/absl/strings/string_view.h"
+> #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+> #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+> #include "third_party/private-join-and-compute/src/crypto/context.h"
+> #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+34c35
+< class ECGroup {
+---
+> class PRIVATE_COMPUTE_EXPORT ECGroup {
+49c50
+<   static absl::StatusOr<ECGroup> Create(int curve_id, Context* context);
+---
+>   static StatusOr<ECGroup> Create(int curve_id, Context* context);
+56,58c57,58
+<   // Returns absl::Status::OK if the key is valid, otherwise returns
+<   // INVALID_ARGUMENT.
+<   absl::Status CheckPrivateKey(const BigNum& priv_key) const;
+---
+>   // Returns Status::OK if the key is valid, otherwise returns INVALID_ARGUMENT.
+>   Status CheckPrivateKey(const BigNum& priv_key) const;
+68,75c68,72
+<   absl::StatusOr<ECPoint> GetPointByHashingToCurveSha256(
+<       absl::string_view m) const;
+<   absl::StatusOr<ECPoint> GetPointByHashingToCurveSha384(
+<       absl::string_view m) const;
+<   absl::StatusOr<ECPoint> GetPointByHashingToCurveSha512(
+<       absl::string_view m) const;
+<   absl::StatusOr<ECPoint> GetPointByHashingToCurveSswuRo(
+<       absl::string_view m, absl::string_view dst) const;
+---
+>   StatusOr<ECPoint> GetPointByHashingToCurveSha256(absl::string_view m) const;
+>   StatusOr<ECPoint> GetPointByHashingToCurveSha384(absl::string_view m) const;
+>   StatusOr<ECPoint> GetPointByHashingToCurveSha512(absl::string_view m) const;
+>   StatusOr<ECPoint> GetPointByHashingToCurveSswuRo(absl::string_view m,
+>                                                    absl::string_view dst) const;
+80,81c77,78
+<   absl::StatusOr<ECPoint> GetPointByPaddingX(const BigNum& m,
+<                                              size_t padding_bit_count) const;
+---
+>   StatusOr<ECPoint> GetPointByPaddingX(const BigNum& m,
+>                                        size_t padding_bit_count) const;
+85,86c82,83
+<   absl::StatusOr<BigNum> RecoverXFromPaddedPoint(
+<       const ECPoint& point, size_t padding_bit_count) const;
+---
+>   StatusOr<BigNum> RecoverXFromPaddedPoint(const ECPoint& point,
+>                                            size_t padding_bit_count) const;
+94c91
+<   absl::StatusOr<ECPoint> GetFixedGenerator() const;
+---
+>   StatusOr<ECPoint> GetFixedGenerator() const;
+98c95
+<   absl::StatusOr<ECPoint> GetRandomGenerator() const;
+---
+>   StatusOr<ECPoint> GetRandomGenerator() const;
+104c101
+<   absl::StatusOr<ECPoint> CreateECPoint(absl::string_view bytes) const;
+---
+>   StatusOr<ECPoint> CreateECPoint(absl::string_view bytes) const;
+109c106
+<   absl::StatusOr<ECPoint> CreateECPoint(const BigNum& x, const BigNum& y) const;
+---
+>   StatusOr<ECPoint> CreateECPoint(const BigNum& x, const BigNum& y) const;
+129c126
+<   absl::StatusOr<ECPoint> GetPointAtInfinity() const;
+---
+>   StatusOr<ECPoint> GetPointAtInfinity() const;
+160,161c157
+<   absl::StatusOr<ECPoint> GetPointByHashingToCurveInternal(
+<       const BigNum& x) const;
+---
+>   StatusOr<ECPoint> GetPointByHashingToCurveInternal(const BigNum& x) const;
+166c162
+< #endif  // PRIVATE_JOIN_AND_COMPUTE_CRYPTO_EC_GROUP_H_
+---
+> #endif  // CRYPTO_EC_GROUP_H_
+Only in third_party/private-join-and-compute/src/crypto: ec_group.h.bak
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: ec_key.proto
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/ec_point.cc third_party/private-join-and-compute/src/crypto/ec_point.cc
+16c16
+< #include "private_join_and_compute/crypto/ec_point.h"
+---
+> #include "third_party/private-join-and-compute/src/crypto/ec_point.h"
+22,27c22,27
+< #include "absl/status/status.h"
+< #include "absl/status/statusor.h"
+< #include "absl/strings/str_cat.h"
+< #include "private_join_and_compute/crypto/big_num.h"
+< #include "private_join_and_compute/crypto/context.h"
+< #include "private_join_and_compute/crypto/openssl.inc"
+---
+> #include "third_party/abseil-cpp/absl/strings/str_cat.h"
+> #include "third_party/private-join-and-compute/src/chromium_patch.h"
+> #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+> #include "third_party/private-join-and-compute/src/crypto/context.h"
+> #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+49c49
+< absl::StatusOr<std::string> ECPoint::ToBytesCompressed() const {
+---
+> StatusOr<std::string> ECPoint::ToBytesCompressed() const {
+55c55
+<     return absl::InternalError(
+---
+>     return InternalError(
+61c61
+< absl::StatusOr<std::string> ECPoint::ToBytesUnCompressed() const {
+---
+> StatusOr<std::string> ECPoint::ToBytesUnCompressed() const {
+68c68
+<     return absl::InternalError(
+---
+>     return InternalError(
+74c74
+< absl::StatusOr<std::pair<BigNum::BignumPtr, BigNum::BignumPtr>>
+---
+> StatusOr<std::pair<BigNum::BignumPtr, BigNum::BignumPtr>>
+79c79
+<     return absl::InternalError(
+---
+>     return InternalError(
+85c85
+<     return absl::InternalError(absl::StrCat(
+---
+>     return InternalError(absl::StrCat(
+91c91
+< absl::StatusOr<ECPoint> ECPoint::Mul(const BigNum& scalar) const {
+---
+> StatusOr<ECPoint> ECPoint::Mul(const BigNum& scalar) const {
+95c95
+<     return absl::InternalError(
+---
+>     return InternalError(
+101c101
+< absl::StatusOr<ECPoint> ECPoint::Add(const ECPoint& point) const {
+---
+> StatusOr<ECPoint> ECPoint::Add(const ECPoint& point) const {
+105c105
+<     return absl::InternalError(
+---
+>     return InternalError(
+111c111
+< absl::StatusOr<ECPoint> ECPoint::Clone() const {
+---
+> StatusOr<ECPoint> ECPoint::Clone() const {
+114c114
+<     return absl::InternalError(
+---
+>     return InternalError(
+120c120
+< absl::StatusOr<ECPoint> ECPoint::Inverse() const {
+---
+> StatusOr<ECPoint> ECPoint::Inverse() const {
+122c122
+<   absl::StatusOr<ECPoint> inv = ECPoint(group_, bn_ctx_);
+---
+>   StatusOr<ECPoint> inv = ECPoint(group_, bn_ctx_);
+127c127
+<     return absl::InternalError(
+---
+>     return InternalError(
+132c132
+<     return absl::InternalError(
+---
+>     return InternalError(
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/ec_point.h third_party/private-join-and-compute/src/crypto/ec_point.h
+16,17c16,17
+< #ifndef PRIVATE_JOIN_AND_COMPUTE_CRYPTO_EC_POINT_H_
+< #define PRIVATE_JOIN_AND_COMPUTE_CRYPTO_EC_POINT_H_
+---
+> #ifndef CRYPTO_EC_POINT_H_
+> #define CRYPTO_EC_POINT_H_
+23,25c23,26
+< #include "absl/status/statusor.h"
+< #include "private_join_and_compute/crypto/big_num.h"
+< #include "private_join_and_compute/crypto/openssl.inc"
+---
+> #include "third_party/private-join-and-compute/base/private_join_and_compute_export.h"
+> #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+> #include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+29d29
+< class BigNum;
+33c33
+< class ECPoint {
+---
+> class PRIVATE_COMPUTE_EXPORT ECPoint {
+52c52
+<   absl::StatusOr<std::string> ToBytesCompressed() const;
+---
+>   StatusOr<std::string> ToBytesCompressed() const;
+56c56
+<   absl::StatusOr<std::string> ToBytesUnCompressed() const;
+---
+>   StatusOr<std::string> ToBytesUnCompressed() const;
+60c60
+<   absl::StatusOr<ECPoint> Mul(const BigNum& scalar) const;
+---
+>   StatusOr<ECPoint> Mul(const BigNum& scalar) const;
+64c64
+<   absl::StatusOr<ECPoint> Add(const ECPoint& point) const;
+---
+>   StatusOr<ECPoint> Add(const ECPoint& point) const;
+67c67
+<   absl::StatusOr<std::pair<BigNum::BignumPtr, BigNum::BignumPtr>>
+---
+>   StatusOr<std::pair<BigNum::BignumPtr, BigNum::BignumPtr>>
+72c72
+<   absl::StatusOr<ECPoint> Inverse() const;
+---
+>   StatusOr<ECPoint> Inverse() const;
+82c82
+<   absl::StatusOr<ECPoint> Clone() const;
+---
+>   StatusOr<ECPoint> Clone() const;
+111c111
+< #endif  // PRIVATE_JOIN_AND_COMPUTE_CRYPTO_EC_POINT_H_
+---
+> #endif  // CRYPTO_EC_POINT_H_
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: ec_point_util.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: ec_point_util.h
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/elgamal.cc third_party/private-join-and-compute/src/crypto/elgamal.cc
+16c16
+< #include "private_join_and_compute/crypto/elgamal.h"
+---
+> #include "third_party/private-join-and-compute/src/crypto/elgamal.h"
+23,29c23,27
+< #include "absl/log/check.h"
+< #include "absl/memory/memory.h"
+< #include "absl/status/status.h"
+< #include "absl/status/statusor.h"
+< #include "private_join_and_compute/crypto/big_num.h"
+< #include "private_join_and_compute/crypto/ec_group.h"
+< #include "private_join_and_compute/crypto/ec_point.h"
+---
+> #include "third_party/abseil-cpp/absl/memory/memory.h"
+> #include "third_party/private-join-and-compute/src/crypto/big_num.h"
+> #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
+> #include "third_party/private-join-and-compute/src/crypto/ec_point.h"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+35,36c33
+< absl::StatusOr<
+<     std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
+---
+> StatusOr<std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
+38c35
+<   absl::StatusOr<ECPoint> g = ec_group.GetFixedGenerator();
+---
+>   StatusOr<ECPoint> g = ec_group.GetFixedGenerator();
+43c40
+<   absl::StatusOr<ECPoint> y = g->Mul(x);
+---
+>   StatusOr<ECPoint> y = g->Mul(x);
+55c52
+< absl::StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
+---
+> StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
+58c55
+<     return absl::InvalidArgumentError(
+---
+>     return InvalidArgumentError(
+61c58
+<   absl::StatusOr<ECPoint> g = (*shares.begin())->g.Clone();
+---
+>   StatusOr<ECPoint> g = (*shares.begin())->g.Clone();
+65c62
+<   absl::StatusOr<ECPoint> y = (*shares.begin())->y.Clone();
+---
+>   StatusOr<ECPoint> y = (*shares.begin())->y.Clone();
+81,84c78,80
+< absl::StatusOr<elgamal::Ciphertext> Mul(
+<     const elgamal::Ciphertext& ciphertext1,
+<     const elgamal::Ciphertext& ciphertext2) {
+<   absl::StatusOr<ECPoint> u = ciphertext1.u.Add(ciphertext2.u);
+---
+> StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
+>                                   const elgamal::Ciphertext& ciphertext2) {
+>   StatusOr<ECPoint> u = ciphertext1.u.Add(ciphertext2.u);
+88c84
+<   absl::StatusOr<ECPoint> e = ciphertext1.e.Add(ciphertext2.e);
+---
+>   StatusOr<ECPoint> e = ciphertext1.e.Add(ciphertext2.e);
+95,97c91,93
+< absl::StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
+<                                         const BigNum& scalar) {
+<   absl::StatusOr<ECPoint> u = ciphertext.u.Mul(scalar);
+---
+> StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
+>                                   const BigNum& scalar) {
+>   StatusOr<ECPoint> u = ciphertext.u.Mul(scalar);
+101c97
+<   absl::StatusOr<ECPoint> e = ciphertext.e.Mul(scalar);
+---
+>   StatusOr<ECPoint> e = ciphertext.e.Mul(scalar);
+108,109c104,105
+< absl::StatusOr<Ciphertext> GetZero(const ECGroup* group) {
+<   absl::StatusOr<ECPoint> u = group->GetPointAtInfinity();
+---
+> StatusOr<Ciphertext> GetZero(const ECGroup* group) {
+>   StatusOr<ECPoint> u = group->GetPointAtInfinity();
+113c109
+<   absl::StatusOr<ECPoint> e = group->GetPointAtInfinity();
+---
+>   StatusOr<ECPoint> e = group->GetPointAtInfinity();
+120,121c116,117
+< absl::StatusOr<Ciphertext> CloneCiphertext(const Ciphertext& ciphertext) {
+<   absl::StatusOr<ECPoint> clone_u = ciphertext.u.Clone();
+---
+> StatusOr<Ciphertext> CloneCiphertext(const Ciphertext& ciphertext) {
+>   StatusOr<ECPoint> clone_u = ciphertext.u.Clone();
+125c121
+<   absl::StatusOr<ECPoint> clone_e = ciphertext.e.Clone();
+---
+>   StatusOr<ECPoint> clone_e = ciphertext.e.Clone();
+148c144
+< absl::StatusOr<elgamal::Ciphertext> ElGamalEncrypter::Encrypt(
+---
+> StatusOr<elgamal::Ciphertext> ElGamalEncrypter::Encrypt(
+152c148
+<   absl::StatusOr<ECPoint> u = public_key_->g.Mul(r);
+---
+>   StatusOr<ECPoint> u = public_key_->g.Mul(r);
+156c152
+<   absl::StatusOr<ECPoint> y_to_r = public_key_->y.Mul(r);
+---
+>   StatusOr<ECPoint> y_to_r = public_key_->y.Mul(r);
+160c156
+<   absl::StatusOr<ECPoint> e = message.Add(*y_to_r);
+---
+>   StatusOr<ECPoint> e = message.Add(*y_to_r);
+167c163
+< absl::StatusOr<elgamal::Ciphertext> ElGamalEncrypter::ReRandomize(
+---
+> StatusOr<elgamal::Ciphertext> ElGamalEncrypter::ReRandomize(
+171c167
+<   absl::StatusOr<ECPoint> g_to_r = public_key_->g.Mul(r);
+---
+>   StatusOr<ECPoint> g_to_r = public_key_->g.Mul(r);
+175c171
+<   absl::StatusOr<ECPoint> u = elgamal_ciphertext.u.Add(*g_to_r);
+---
+>   StatusOr<ECPoint> u = elgamal_ciphertext.u.Add(*g_to_r);
+179c175
+<   absl::StatusOr<ECPoint> y_to_r = public_key_->y.Mul(r);
+---
+>   StatusOr<ECPoint> y_to_r = public_key_->y.Mul(r);
+183c179
+<   absl::StatusOr<ECPoint> e = elgamal_ciphertext.e.Add(*y_to_r);
+---
+>   StatusOr<ECPoint> e = elgamal_ciphertext.e.Add(*y_to_r);
+198c194
+< absl::StatusOr<ECPoint> ElGamalDecrypter::Decrypt(
+---
+> StatusOr<ECPoint> ElGamalDecrypter::Decrypt(
+200c196
+<   absl::StatusOr<ECPoint> u_to_x = ciphertext.u.Mul(private_key_->x);
+---
+>   StatusOr<ECPoint> u_to_x = ciphertext.u.Mul(private_key_->x);
+204c200
+<   absl::StatusOr<ECPoint> u_to_x_inverse = u_to_x->Inverse();
+---
+>   StatusOr<ECPoint> u_to_x_inverse = u_to_x->Inverse();
+208c204
+<   absl::StatusOr<ECPoint> message = ciphertext.e.Add(*u_to_x_inverse);
+---
+>   StatusOr<ECPoint> message = ciphertext.e.Add(*u_to_x_inverse);
+215c211
+< absl::StatusOr<elgamal::Ciphertext> ElGamalDecrypter::PartialDecrypt(
+---
+> StatusOr<elgamal::Ciphertext> ElGamalDecrypter::PartialDecrypt(
+217c213
+<   absl::StatusOr<ECPoint> clone_u = ciphertext.u.Clone();
+---
+>   StatusOr<ECPoint> clone_u = ciphertext.u.Clone();
+221c217
+<   absl::StatusOr<ECPoint> dec_e = ElGamalDecrypter::Decrypt(ciphertext);
+---
+>   StatusOr<ECPoint> dec_e = ElGamalDecrypter::Decrypt(ciphertext);
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto/elgamal.h third_party/private-join-and-compute/src/crypto/elgamal.h
+36,37c36,37
+< #ifndef PRIVATE_JOIN_AND_COMPUTE_CRYPTO_ELGAMAL_H_
+< #define PRIVATE_JOIN_AND_COMPUTE_CRYPTO_ELGAMAL_H_
+---
+> #ifndef CRYPTO_ELGAMAL_H_
+> #define CRYPTO_ELGAMAL_H_
+43,45c43,45
+< #include "absl/status/statusor.h"
+< #include "private_join_and_compute/crypto/ec_group.h"
+< #include "private_join_and_compute/crypto/ec_point.h"
+---
+> #include "third_party/private-join-and-compute/src/crypto/ec_group.h"
+> #include "third_party/private-join-and-compute/src/crypto/ec_point.h"
+> #include "third_party/private-join-and-compute/src/util/status.inc"
+72,73c72
+< absl::StatusOr<
+<     std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
+---
+> StatusOr<std::pair<std::unique_ptr<PublicKey>, std::unique_ptr<PrivateKey>>>
+77c76
+< absl::StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
+---
+> StatusOr<std::unique_ptr<PublicKey>> GeneratePublicKeyFromShares(
+82,83c81,82
+< absl::StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
+<                                         const elgamal::Ciphertext& ciphertext2);
+---
+> StatusOr<elgamal::Ciphertext> Mul(const elgamal::Ciphertext& ciphertext1,
+>                                   const elgamal::Ciphertext& ciphertext2);
+87,88c86,87
+< absl::StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
+<                                         const BigNum& scalar);
+---
+> StatusOr<elgamal::Ciphertext> Exp(const elgamal::Ciphertext& ciphertext,
+>                                   const BigNum& scalar);
+92c91
+< absl::StatusOr<Ciphertext> GetZero(const ECGroup* group);
+---
+> StatusOr<Ciphertext> GetZero(const ECGroup* group);
+96c95
+< absl::StatusOr<Ciphertext> CloneCiphertext(const Ciphertext& ciphertext);
+---
+> StatusOr<Ciphertext> CloneCiphertext(const Ciphertext& ciphertext);
+105c104
+< class ElGamalEncrypter {
+---
+> class PRIVATE_COMPUTE_EXPORT ElGamalEncrypter {
+119c118
+<   absl::StatusOr<elgamal::Ciphertext> Encrypt(const ECPoint& message) const;
+---
+>   StatusOr<elgamal::Ciphertext> Encrypt(const ECPoint& message) const;
+123c122
+<   absl::StatusOr<elgamal::Ciphertext> ReRandomize(
+---
+>   StatusOr<elgamal::Ciphertext> ReRandomize(
+135c134
+< class ElGamalDecrypter {
+---
+> class PRIVATE_COMPUTE_EXPORT ElGamalDecrypter {
+149c148
+<   absl::StatusOr<ECPoint> Decrypt(const elgamal::Ciphertext& ciphertext) const;
+---
+>   StatusOr<ECPoint> Decrypt(const elgamal::Ciphertext& ciphertext) const;
+154c153
+<   absl::StatusOr<elgamal::Ciphertext> PartialDecrypt(
+---
+>   StatusOr<elgamal::Ciphertext> PartialDecrypt(
+168c167
+< #endif  // PRIVATE_JOIN_AND_COMPUTE_CRYPTO_ELGAMAL_H_
+---
+> #endif  // CRYPTO_ELGAMAL_H_
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: elgamal.proto
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: fixed_base_exp.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: fixed_base_exp.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: mont_mul.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: mont_mul.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: openssl_init.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: openssl_init.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: paillier.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: paillier.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: paillier.proto
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: pedersen_over_zn.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: pedersen_over_zn.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: pedersen_over_zn_test.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: proto
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: shanks_discrete_log.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: shanks_discrete_log.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: simultaneous_fixed_bases_exp.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: simultaneous_fixed_bases_exp.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: simultaneous_fixed_bases_exp_test.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: two_modulus_crt.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/crypto: two_modulus_crt.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: data_util.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: data_util.h
+Only in third_party/private-join-and-compute/src/: DEPS
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: generate_dummy_data.cc
+Only in third_party/private-join-and-compute/src/: LICENSE
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: match.proto
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: message_sink.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: private_intersection_sum.proto
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: private_join_and_compute.proto
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: private_join_and_compute_rpc_impl.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: private_join_and_compute_rpc_impl.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: protocol_client.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: protocol_server.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: py
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: server.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: server_impl.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/: server_impl.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: BUILD
+Only in third_party/private-join-and-compute/src/util: canonical_errors.cc
+Only in third_party/private-join-and-compute/src/util: canonical_errors.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: ec_key_util.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: ec_key_util.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: ec_key_util_test.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: elgamal_key_util.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: elgamal_key_util.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: elgamal_key_util_test.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: elgamal_proto_util.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: elgamal_proto_util.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: elgamal_proto_util_test.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: file.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: file.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: file_posix.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: file_test.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: file_test.proto
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: process_record_file_parameters.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: process_record_file_util.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: process_record_file_util_test.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: proto_util.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: proto_util_test.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: recordio.cc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: recordio.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: recordio_test.cc
+Only in third_party/private-join-and-compute/src/util: status.h
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/util/status.inc third_party/private-join-and-compute/src/util/status.inc
+2c2
+<  * Copyright 2019 Google LLC.
+---
+>  * Copyright 2019 Google Inc.
+16,36c16,19
+< #include "absl/status/status.h"    // IWYU pragma: export
+< #include "absl/status/statusor.h"  // IWYU pragma: export
+< 
+< #include "private_join_and_compute/util/status_macros.h"
+< 
+< namespace private_join_and_compute {
+< // Aliases StatusCode to be compatible with our code.
+< using StatusCode = ::absl::StatusCode;
+< // Aliases Status, StatusOr and canonical errors. This alias exists for
+< // historical reasons (when this library had a fork of absl::Status).
+< using Status = absl::Status;
+< template <typename T>
+< using StatusOr = absl::StatusOr<T>;
+< using absl::InternalError;
+< using absl::InvalidArgumentError;
+< using absl::IsInternal;
+< using absl::IsInvalidArgument;
+< using absl::OkStatus;
+< }  // namespace private_join_and_compute
+< 
+< 
+---
+> #include "third_party/private-join-and-compute/src/util/canonical_errors.h"
+> #include "third_party/private-join-and-compute/src/util/status.h"
+> #include "third_party/private-join-and-compute/src/util/statusor.h"
+> #include "third_party/private-join-and-compute/src/util/status_macros.h"
+diff '--color=auto' -r /tmp/private-join-and-compute.b413785/private_join_and_compute/util/status_macros.h third_party/private-join-and-compute/src/util/status_macros.h
+2c2
+<  * Copyright 2019 Google LLC.
+---
+>  * Copyright 2019 Google Inc.
+16,17c16,17
+< #ifndef PRIVATE_JOIN_AND_COMPUTE_UTIL_STATUS_MACROS_H_
+< #define PRIVATE_JOIN_AND_COMPUTE_UTIL_STATUS_MACROS_H_
+---
+> #ifndef UTIL_STATUS_MACROS_H_
+> #define UTIL_STATUS_MACROS_H_
+19,21c19,21
+< #include "absl/base/port.h"
+< #include "absl/status/status.h"
+< #include "absl/status/statusor.h"
+---
+> #include "third_party/private-join-and-compute/src/chromium_patch.h"
+> #include "third_party/private-join-and-compute/src/util/status.h"
+> #include "third_party/private-join-and-compute/src/util/statusor.h"
+27,31c27,29
+< #ifndef ASSIGN_OR_RETURN
+< #define ASSIGN_OR_RETURN(lhs, rexpr)                                       \
+<   PRIVATE_JOIN_AND_COMPUTE_ASSIGN_OR_RETURN_IMPL_(                         \
+<       PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_(status_or_value, \
+<                                                           __LINE__),       \
+---
+> #define ASSIGN_OR_RETURN(lhs, rexpr)                                          \
+>   PRIVACY_BLINDERS_ASSIGN_OR_RETURN_IMPL_(                                    \
+>       PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_(status_or_value, __LINE__), \
+35,59c33,38
+< #define PRIVATE_JOIN_AND_COMPUTE_ASSIGN_OR_RETURN_IMPL_(statusor, lhs, rexpr) \
+<   auto statusor = (rexpr);                                                    \
+<   if (ABSL_PREDICT_FALSE(!statusor.ok())) {                                   \
+<     return std::move(statusor).status();                                      \
+<   }                                                                           \
+<   lhs = *std::move(statusor)
+< #endif  // ASSIGN_OR_RETURN
+< 
+< // Helper macro that checks if the given expression evaluates to a
+< // Status with Status OK. If not,  returns the error status. Example:
+< //   RETURN_IF_ERROR(expression);
+< #ifndef RETURN_IF_ERROR
+< #define RETURN_IF_ERROR(expr)                                           \
+<   PRIVATE_JOIN_AND_COMPUTE_RETURN_IF_ERROR_IMPL_(                       \
+<       PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_(status_value, \
+<                                                           __LINE__),    \
+<       expr)
+< 
+< // Internal helper.
+< #define PRIVATE_JOIN_AND_COMPUTE_RETURN_IF_ERROR_IMPL_(status, expr) \
+<   auto status = (expr);                                              \
+<   if (ABSL_PREDICT_FALSE(!status.ok())) {                            \
+<     return status;                                                   \
+<   }
+< #endif  // RETURN_IF_ERROR
+---
+> #define PRIVACY_BLINDERS_ASSIGN_OR_RETURN_IMPL_(statusor, lhs, rexpr) \
+>   auto statusor = (rexpr);                                            \
+>   if (!statusor.ok()) [[unlikely]] {                                  \
+>     return std::move(statusor).status();                              \
+>   }                                                                   \
+>   lhs = std::move(statusor).value()
+62,64c41,43
+< #define PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
+< #define PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_(x, y) \
+<   PRIVATE_JOIN_AND_COMPUTE_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y)
+---
+> #define PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y
+> #define PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_(x, y) \
+>   PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y)
+66c45
+< #endif  // PRIVATE_JOIN_AND_COMPUTE_UTIL_STATUS_MACROS_H_
+---
+> #endif  // UTIL_STATUS_MACROS_H_
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: status_matchers.h
+Only in third_party/private-join-and-compute/src/util: statusor.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: status_testing.h
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: status_testing.inc
+Only in /tmp/private-join-and-compute.b413785/private_join_and_compute/util: test.proto
