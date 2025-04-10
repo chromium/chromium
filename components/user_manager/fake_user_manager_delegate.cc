@@ -20,7 +20,7 @@ const std::string& FakeUserManagerDelegate::GetApplicationLocale() {
 }
 
 void FakeUserManagerDelegate::OverrideDirHome(const User& primary_user) {
-  NOTIMPLEMENTED();
+  // Do nothing.
 }
 
 std::optional<UserType> FakeUserManagerDelegate::GetDeviceLocalAccountUserType(

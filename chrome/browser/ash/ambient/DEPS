@@ -20,7 +20,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "managed_screensaver_browsertest.cc": [
+  "ambient_client_impl_unittest\.cc": [
+    "+chrome/browser/ash/settings/scoped_testing_cros_settings.h",
+  ],
+
+  "managed_screensaver_browsertest\.cc": [
     "+chrome/browser/ash/login",
     "+chrome/browser/ash/login/lock",
     "+chrome/browser/ash/login/test",

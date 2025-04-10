@@ -45,6 +45,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//ash/public/cpp:test_support",
     "//base",
+    "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//components/user_manager",
