@@ -1902,7 +1902,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sync.SyncErrorInfobarDisplayed" enum="SyncErrorInfobarTypes"
+<histogram name="Sync.SyncErrorInfobarDisplayed2" enum="SyncErrorInfobarTypes"
     expires_after="2025-08-10">
   <owner>jlebel@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>

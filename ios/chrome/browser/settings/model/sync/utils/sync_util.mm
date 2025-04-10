@@ -312,15 +312,19 @@ bool DisplaySyncErrors(ProfileIOS* profile,
     return false;
   }
 
-  // Logs when an infobar is shown to user. See crbug.com/265352.
-  base::UmaHistogramEnumeration("Sync.SyncErrorInfobarDisplayed",
-                                *infobarSyncError);
-
   DCHECK(web_state);
   infobars::InfoBarManager* infoBarManager =
       InfoBarManagerImpl::FromWebState(web_state);
   DCHECK(infoBarManager);
-  return SyncErrorInfoBarDelegate::Create(infoBarManager, profile, presenter);
+  bool infobar_displayed =
+      SyncErrorInfoBarDelegate::Create(infoBarManager, profile, presenter);
+  if (infobar_displayed) {
+    // Logs when an infobar is shown to user. See crbug.com/265352.
+    base::UmaHistogramEnumeration("Sync.SyncErrorInfobarDisplayed2",
+                                  *infobarSyncError);
+  }
+
+  return infobar_displayed;
 }
 
 void LogSyncErrorInfobarDismissed(
