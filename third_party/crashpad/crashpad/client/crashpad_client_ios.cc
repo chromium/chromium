@@ -18,11 +18,9 @@
 #include <unistd.h>
 
 #include <atomic>
-#include <ios>
 #include <iterator>
 
 #include "base/apple/mach_logging.h"
-#include "base/apple/scoped_mach_port.h"
 #include "base/logging.h"
 #include "client/ios_handler/exception_processor.h"
 #include "client/ios_handler/in_process_handler.h"
@@ -189,8 +187,8 @@ class CrashHandler : public Thread,
     in_process_handler_.StartProcessingPendingReports(upload_behavior);
   }
 
-  void SetMachExceptionCallbackForTesting(void (*callback)()) {
-    in_process_handler_.SetMachExceptionCallbackForTesting(callback);
+  void SetExceptionCallbackForTesting(void (*callback)()) {
+    in_process_handler_.SetExceptionCallbackForTesting(callback);
   }
 
   uint64_t GetThreadIdForTesting() { return Thread::GetThreadIdForTesting(); }
@@ -513,10 +511,10 @@ void CrashpadClient::ResetForTesting() {
   crash_handler->ResetForTesting();
 }
 
-void CrashpadClient::SetMachExceptionCallbackForTesting(void (*callback)()) {
+void CrashpadClient::SetExceptionCallbackForTesting(void (*callback)()) {
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
-  crash_handler->SetMachExceptionCallbackForTesting(callback);
+  crash_handler->SetExceptionCallbackForTesting(callback);
 }
 
 uint64_t CrashpadClient::GetThreadIdForTesting() {

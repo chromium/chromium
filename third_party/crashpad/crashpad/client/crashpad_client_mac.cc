@@ -64,13 +64,13 @@ std::string FormatArgumentInt(const std::string& name, int value) {
 // reasons, an EXC_CRASH exception will be sent. See 10.9.5
 // xnu-2422.115.4/bsd/kern/kern_exit.c proc_prepareexit().
 //
-// EXC_RESOURCE and EXC_GUARD do not become signals or EXC_CRASH exceptions. The
-// host-level exception handler in the kernel does not receive these exception
-// types, and even if it did, it would not map them to signals. Instead, the
-// first Mach service loaded by the root (process ID 1) launchd with a boolean
-// “ExceptionServer” property in its job dictionary (regardless of its value) or
-// with any subdictionary property will become the host-level exception handler
-// for EXC_CRASH, EXC_RESOURCE, and EXC_GUARD. See 10.9.5
+// EXC_RESOURCE and EXC_GUARD (pre-macOS 13) do not become signals or EXC_CRASH
+// exceptions. The host-level exception handler in the kernel does not receive
+// these exception types, and even if it did, it would not map them to signals.
+// Instead, the first Mach service loaded by the root (process ID 1) launchd
+// with a boolean “ExceptionServer” property in its job dictionary (regardless
+// of its value) or with any subdictionary property will become the host-level
+// exception handler for EXC_CRASH, EXC_RESOURCE, and EXC_GUARD. See 10.9.5
 // launchd-842.92.1/src/core.c job_setup_exception_port(). Normally, this job is
 // com.apple.ReportCrash.Root, the systemwide Apple Crash Reporter. Since it is
 // impossible to receive EXC_RESOURCE and EXC_GUARD exceptions through the
@@ -83,8 +83,15 @@ std::string FormatArgumentInt(const std::string& name, int value) {
 // so AND them with ExcMaskValid(). EXC_MASK_CRASH is always supported.
 bool SetCrashExceptionPorts(exception_handler_t exception_handler) {
   ExceptionPorts exception_ports(ExceptionPorts::kTargetTypeTask, TASK_NULL);
+
+  exception_mask_t mask = EXC_MASK_CRASH | EXC_MASK_RESOURCE;
+  if (MacOSVersionNumber() < 13'00'00) {
+    // EXC_GUARD is delivered as an EXC_CRASH macOS 13 and later.
+    mask |= EXC_MASK_GUARD;
+  }
+
   return exception_ports.SetExceptionPort(
-      (EXC_MASK_CRASH | EXC_MASK_RESOURCE | EXC_MASK_GUARD) & ExcMaskValid(),
+      mask & ExcMaskValid(),
       exception_handler,
       EXCEPTION_STATE_IDENTITY | MACH_EXCEPTION_CODES,
       MACHINE_THREAD_STATE);

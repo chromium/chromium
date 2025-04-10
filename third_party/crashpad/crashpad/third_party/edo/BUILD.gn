@@ -12,6 +12,10 @@ if (crashpad_is_in_chromium) {
 } else {
   config("config") {
     include_dirs = [ "../../third_party/edo/edo" ]
+    cflags = [ "-Wno-newline-eof" ]
+    if (xcode_version_int >= 1630) {
+      cflags += [ "-Wno-cast-function-type-mismatch" ]
+    }
   }
 
   source_set("edo") {

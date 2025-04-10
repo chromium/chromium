@@ -110,35 +110,35 @@ TEST_F(InProcessHandlerTest, TestPendingFileLimit) {
 
   // Only process other app files.
   CreateFiles(0, 20);
-  handler().ProcessIntermediateDumps({}, {});
+  handler().ProcessIntermediateDumps({}, nullptr);
   VerifyRemainingFileCount(0, 0);
   ClearFiles();
 
   // Only process our app files.
   CreateFiles(20, 20);
-  handler().ProcessIntermediateDumps({}, {});
+  handler().ProcessIntermediateDumps({}, nullptr);
   VerifyRemainingFileCount(0, 20);
   ClearFiles();
 
   // Process all of our files and 10   remaining.
   CreateFiles(10, 30);
-  handler().ProcessIntermediateDumps({}, {});
+  handler().ProcessIntermediateDumps({}, nullptr);
   VerifyRemainingFileCount(0, 20);
   ClearFiles();
 
   // Process 20 our files, leaving 10 remaining, and all other files remaining.
   CreateFiles(30, 10);
-  handler().ProcessIntermediateDumps({}, {});
+  handler().ProcessIntermediateDumps({}, nullptr);
   VerifyRemainingFileCount(10, 10);
   ClearFiles();
 
   CreateFiles(0, 0);
-  handler().ProcessIntermediateDumps({}, {});
+  handler().ProcessIntermediateDumps({}, nullptr);
   VerifyRemainingFileCount(0, 0);
   ClearFiles();
 
   CreateFiles(10, 0);
-  handler().ProcessIntermediateDumps({}, {});
+  handler().ProcessIntermediateDumps({}, nullptr);
   VerifyRemainingFileCount(0, 0);
   ClearFiles();
 }

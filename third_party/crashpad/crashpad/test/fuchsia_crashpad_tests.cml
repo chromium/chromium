@@ -4,6 +4,8 @@
 {
     include: [
         "//src/sys/test_runners/elf/ambient_exec.shard.cml",
+        "inspect/offer.shard.cml",
+        "syslog/client.shard.cml",
     ],
     program: {
         binary: "bin/crashpad_tests",
@@ -35,10 +37,6 @@
             from: "#netstack",
         },
         {
-            protocol: [ "fuchsia.logger.LogSink" ],
-            from: "parent/diagnostics",
-        },
-        {
             protocol: [ "fuchsia.process.Launcher" ],
         },
         {
@@ -51,15 +49,6 @@
             protocol: "fuchsia.net.name.Lookup",
             from: "#dns_resolver",
             to: "#crashpad_test",
-        },
-        {
-            dictionary: "diagnostics",
-            from: "parent",
-            to: [
-                "#dns_resolver",
-                "#netstack",
-                "#crashpad_test",
-            ]
         },
         {
             protocol: "fuchsia.net.routes.State",

@@ -15,10 +15,11 @@
 #ifndef CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 #define CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 
+#include <mach/mach.h>
+
 #include <vector>
 
 #include "snapshot/memory_snapshot.h"
-#include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 
 namespace crashpad {

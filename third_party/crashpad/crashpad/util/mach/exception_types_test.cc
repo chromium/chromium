@@ -124,7 +124,6 @@ TEST(ExceptionTypes, ExcCrashCouldContainException) {
   EXPECT_TRUE(ExcCrashCouldContainException(EXC_RPC_ALERT));
   EXPECT_FALSE(ExcCrashCouldContainException(EXC_CRASH));
   EXPECT_FALSE(ExcCrashCouldContainException(EXC_RESOURCE));
-  EXPECT_FALSE(ExcCrashCouldContainException(EXC_GUARD));
   EXPECT_FALSE(ExcCrashCouldContainException(EXC_CORPSE_NOTIFY));
   EXPECT_FALSE(ExcCrashCouldContainException(kMachExceptionSimulated));
 }

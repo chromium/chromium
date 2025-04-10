@@ -42,6 +42,7 @@
 #include <exception>
 #include <type_traits>
 #include <typeinfo>
+#include <vector>
 
 #include "base/format_macros.h"
 #include "base/logging.h"
@@ -51,7 +52,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 #include "client/annotation.h"
-#include "client/simulate_crash_ios.h"
 
 namespace crashpad {
 

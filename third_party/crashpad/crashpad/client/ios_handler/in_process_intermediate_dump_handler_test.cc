@@ -105,7 +105,14 @@ class InProcessIntermediateDumpHandlerTest : public testing::Test {
   // macOS 14.0 is 23A344, macOS 13.6.5 is 22G621, so if the first two
   // characters in the kern.osversion are > 22, this build will reproduce the
   // simulator bug in crbug.com/328282286
-  bool IsMacOSVersion143OrGreaterAndiOS16OrLess() {
+  // This now reproduces on macOS 15.4 24E248 as well for iOS17 simulators.
+  bool HasMacOSBrokeDYLDTaskInfo() {
+    if (__builtin_available(iOS 18, *)) {
+      return false;
+    }
+    if (std::stoi(system_data_.Build().substr(0, 2)) >= 24) {
+      return true;
+    }
     if (__builtin_available(iOS 17, *)) {
       return false;
     }
@@ -149,9 +156,10 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestSystem) {
 
 TEST_F(InProcessIntermediateDumpHandlerTest, TestAnnotations) {
 #if TARGET_OS_SIMULATOR
-  // This test will fail on older (<iOS17 simulators) when running on macOS 14.3
-  // or newer due to a bug in Simulator. crbug.com/328282286
-  if (IsMacOSVersion143OrGreaterAndiOS16OrLess()) {
+  // This test will fail on <iOS17 simulators when running on macOS >=14.3 or
+  // <iOS18 simulators when running on macOS >=15.4 due to a bug in Simulator.
+  // crbug.com/328282286
+  if (HasMacOSBrokeDYLDTaskInfo()) {
     // For TearDown.
     ASSERT_TRUE(LoggingRemoveFile(path()));
     return;
@@ -244,9 +252,10 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestAnnotations) {
 
 TEST_F(InProcessIntermediateDumpHandlerTest, TestExtraMemoryRanges) {
 #if TARGET_OS_SIMULATOR
-  // This test will fail on older (<iOS17 simulators) when running on macOS 14.3
-  // or newer due to a bug in Simulator. crbug.com/328282286
-  if (IsMacOSVersion143OrGreaterAndiOS16OrLess()) {
+  // This test will fail on <iOS17 simulators when running on macOS >=14.3 or
+  // <iOS18 simulators when running on macOS >=15.4 due to a bug in Simulator.
+  // crbug.com/328282286
+  if (HasMacOSBrokeDYLDTaskInfo()) {
     // For TearDown.
     ASSERT_TRUE(LoggingRemoveFile(path()));
     return;
@@ -296,9 +305,10 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestExtraMemoryRanges) {
 TEST_F(InProcessIntermediateDumpHandlerTest,
        TestIntermediateDumpExtraMemoryRanges) {
 #if TARGET_OS_SIMULATOR
-  // This test will fail on older (<iOS17 simulators) when running on macOS 14.3
-  // or newer due to a bug in Simulator. crbug.com/328282286
-  if (IsMacOSVersion143OrGreaterAndiOS16OrLess()) {
+  // This test will fail on <iOS17 simulators when running on macOS >=14.3 or
+  // <iOS18 simulators when running on macOS >=15.4 due to a bug in Simulator.
+  // crbug.com/328282286
+  if (HasMacOSBrokeDYLDTaskInfo()) {
     // For TearDown.
     ASSERT_TRUE(LoggingRemoveFile(path()));
     return;
