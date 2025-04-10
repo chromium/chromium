@@ -189,9 +189,8 @@ bool XRFrameTransport::FrameSubmit(
     // passed over IPC.
     vr_presentation_provider->SubmitFrameWithTextureHandle(
         vr_frame_id,
-        mojo::PlatformHandle(std::move(gpu_memory_buffer_handle)
-                                 .dxgi_handle()
-                                 .TakeBufferHandle()),
+        mojo::PlatformHandle(
+            gpu_memory_buffer_handle.dxgi_handle().TakeBufferHandle()),
         sync_token);
 #else
     NOTIMPLEMENTED();

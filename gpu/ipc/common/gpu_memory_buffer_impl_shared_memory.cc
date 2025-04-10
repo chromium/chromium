@@ -90,12 +90,13 @@ GpuMemoryBufferImplSharedMemory::CreateGpuMemoryBuffer(
   if (!shared_memory_region.IsValid())
     return gfx::GpuMemoryBufferHandle();
 
-  gfx::GpuMemoryBufferHandle handle(std::move(shared_memory_region));
+  gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::SHARED_MEMORY_BUFFER;
   handle.id = id;
   handle.offset = 0;
   handle.stride = static_cast<uint32_t>(
       gfx::RowSizeForBufferFormat(size.width(), format, 0));
+  handle.set_region(std::move(shared_memory_region));
   return handle;
 }
 
@@ -148,12 +149,10 @@ GpuMemoryBufferImplSharedMemory::CreateFromHandle(
     return nullptr;
   }
 
-  const gfx::GpuMemoryBufferId id = handle.id;
-  const uint32_t offset = handle.offset;
-  const uint32_t stride = handle.stride;
   return base::WrapUnique(new GpuMemoryBufferImplSharedMemory(
-      id, size, format, usage, std::move(callback), std::move(handle).region(),
-      base::WritableSharedMemoryMapping(), offset, stride));
+      handle.id, size, format, usage, std::move(callback),
+      std::move(handle.region()), base::WritableSharedMemoryMapping(),
+      handle.offset, handle.stride));
 }
 
 // static
@@ -277,10 +276,12 @@ gfx::GpuMemoryBufferType GpuMemoryBufferImplSharedMemory::GetType() const {
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferImplSharedMemory::CloneHandle()
     const {
-  gfx::GpuMemoryBufferHandle handle(shared_memory_region_.Duplicate());
+  gfx::GpuMemoryBufferHandle handle;
+  handle.type = gfx::SHARED_MEMORY_BUFFER;
   handle.id = id_;
   handle.offset = offset_;
   handle.stride = stride_;
+  handle.set_region(shared_memory_region_.Duplicate());
   return handle;
 }
 
