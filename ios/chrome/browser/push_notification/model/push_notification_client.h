@@ -108,16 +108,13 @@ class PushNotificationClient {
   // or per-Profile.
   const PushNotificationClientScope client_scope_;
 
-  // Returns an arbitrary profile amongst the currently loaded profile. This
-  // means that this API is not safe when there are multiple profiles. Instead
-  // the push notification system should be re-designed to not depend on this
-  // method (either create specific manager per-profile, or include in the
-  // notification an identifier for the profile, e.g. gaia id).
+  // Returns an arbitrary Browser with an active Scene (i.e. a Scene at the
+  // level SceneActivationLevelForegroundActive) if any. This will return a
+  // valid Browser if there is one, but when multiple profiles are loaded it
+  // will be arbitrary. The push notification system should be re-designed
+  // to not depend on this method (either create specific manager per-profile,
+  // or include in the notification an identifier, e.g. gaia id).
   // TODO(crbug.com/41497027): This API should be redesigned.
-  ProfileIOS* GetAnyProfile();
-
-  // Returns the first active browser found with scene level
-  // SceneActivationLevelForegroundActive.
   Browser* GetSceneLevelForegroundActiveBrowser();
 
   // Similar to `GetSceneLevelForegroundActiveBrowser()`, but specifically

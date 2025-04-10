@@ -80,13 +80,15 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
 }
 
 Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
-  ProfileIOS* profile = GetAnyProfile();
-
-  if (!profile) {
-    return nullptr;
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    if (Browser* browser =
+            GetSceneLevelForegroundActiveBrowserForProfile(profile)) {
+      return browser;
+    }
   }
 
-  return GetSceneLevelForegroundActiveBrowserForProfile(profile);
+  return nullptr;
 }
 
 Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowserForProfile(
@@ -219,15 +221,4 @@ UNNotificationRequest* PushNotificationClient::CreateRequest(
                                                   repeats:NO]];
   }
   NOTREACHED();
-}
-
-ProfileIOS* PushNotificationClient::GetAnyProfile() {
-  std::vector<ProfileIOS*> loaded_profiles =
-      GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
-
-  if (loaded_profiles.empty()) {
-    return nullptr;
-  }
-
-  return loaded_profiles.back();
 }
