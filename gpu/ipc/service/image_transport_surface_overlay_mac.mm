@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <sstream>
+#include <utility>
 #include <variant>
 
 #include "base/command_line.h"
@@ -148,9 +149,14 @@ ImageTransportSurfaceOverlayMacEGL::~ImageTransportSurfaceOverlayMacEGL() {
   ca_layer_tree_coordinator_.reset();
 
 #if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
-  BELayerHierarchy* layer_hierarchy = std::move(layer_hierarchy_);
+  // Capture and retain the BELayerHierarchy in a local __block var before
+  // dropping the member var ref. Do this before dispatch_async() to avoid a
+  // dealloc race between the block and the member var releasing the last ref.
+  __block BELayerHierarchy* layer_hierarchy =
+      std::exchange(layer_hierarchy_, nil);
   dispatch_async(dispatch_get_main_queue(), ^{
     [layer_hierarchy invalidate];
+    layer_hierarchy = nil;
   });
 #endif
 }
