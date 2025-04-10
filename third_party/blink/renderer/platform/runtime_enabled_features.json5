@@ -4215,6 +4215,10 @@
       status: "experimental",
     },
     {
+      name: "SkipLineBreakItemWhenIsCollapsed",
+      status: "stable",
+    },
+    {
       // If enabled, HTMLPreloadScanner will be skipped.
       name: "SkipPreloadScanning",
       origin_trial_feature_name: "SkipPreloadScanning",
