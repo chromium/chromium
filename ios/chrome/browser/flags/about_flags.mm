@@ -2651,7 +2651,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncTrustedVaultInfobarImprovementsDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(syncer::kSyncTrustedVaultInfobarImprovements)},
-
+    {"ios-choose-from-drive-simulated-click",
+     flag_descriptions::kIOSChooseFromDriveSimulatedClickName,
+     flag_descriptions::kIOSChooseFromDriveSimulatedClickDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kIOSChooseFromDriveSimulatedClick)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

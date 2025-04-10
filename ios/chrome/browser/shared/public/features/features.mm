@@ -439,6 +439,10 @@ BASE_FEATURE(kIOSChooseFromDrive,
              "IOSChooseFromDrive",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSChooseFromDriveSimulatedClick,
+             "IOSChooseFromDriveSimulatedClick",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIOSDownloadNoUIUpdateInBackground,
              "IOSDownloadNoUIUpdateInBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -372,6 +372,9 @@ extern const char kIOSQuickDeleteDescription[];
 extern const char kIOSChooseFromDriveName[];
 extern const char kIOSChooseFromDriveDescription[];
 
+extern const char kIOSChooseFromDriveSimulatedClickName[];
+extern const char kIOSChooseFromDriveSimulatedClickDescription[];
+
 extern const char kIOSManageAccountStorageName[];
 extern const char kIOSManageAccountStorageDescription[];
 

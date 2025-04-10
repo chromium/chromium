@@ -11974,6 +11974,21 @@
             ]
         }
     ],
+    "IOSChooseFromDriveSimulatedClick": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSChooseFromDriveSimulatedClick"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSChromnientDenseText": [
         {
             "platforms": [

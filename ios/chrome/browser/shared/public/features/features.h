@@ -476,6 +476,8 @@ int SafetyCheckNotificationsImpressionLimit();
 
 // Feature flag enabling Choose from Drive.
 BASE_DECLARE_FEATURE(kIOSChooseFromDrive);
+// Feature flag enabling support for simulated clicks in Choose from Drive.
+BASE_DECLARE_FEATURE(kIOSChooseFromDriveSimulatedClick);
 
 // Feature flag enabling a fix for the Download manager mediator.
 BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
