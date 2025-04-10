@@ -107,12 +107,6 @@ std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
 
 namespace content {
 
-namespace {
-// The minimum amount of characters that must be typed into a text field before
-// AT will communicate invalid content to the user.
-constexpr int kMinimumCharacterCountForInvalid = 7;
-}  // namespace
-
 using UniqueIdMap = std::unordered_map<int32_t, BrowserAccessibilityAndroid*>;
 // Map from each AXPlatformNode's unique id to its instance.
 base::LazyInstance<UniqueIdMap>::Leaky g_unique_id_map =
@@ -262,15 +256,8 @@ bool BrowserAccessibilityAndroid::IsCollectionItem() const {
 }
 
 bool BrowserAccessibilityAndroid::IsContentInvalid() const {
-  if (HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
-      GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse) {
-    // We will not report content as invalid until a certain number of
-    // characters have been typed to prevent verbose announcements to the user.
-    return (GetSubstringTextContentUTF16(kMinimumCharacterCountForInvalid)
-                .length() > kMinimumCharacterCountForInvalid);
-  }
-
-  return false;
+  return HasIntAttribute(ax::mojom::IntAttribute::kInvalidState) &&
+         GetData().GetInvalidState() != ax::mojom::InvalidState::kFalse;
 }
 
 bool BrowserAccessibilityAndroid::IsDisabledDescendant() const {
@@ -2354,14 +2341,12 @@ std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
   for (int error_message_id :
        GetIntListAttribute(ax::mojom::IntListAttribute::kErrormessageIds)) {
     BrowserAccessibility* node = manager()->GetFromID(error_message_id);
-    if (!node) {
+    if (!node || !node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
       continue;
     }
 
     const auto& name =
-        node->HasStringAttribute(ax::mojom::StringAttribute::kName)
-            ? node->GetString16Attribute(ax::mojom::StringAttribute::kName)
-            : node->GetTextContentUTF16();
+        node->GetString16Attribute(ax::mojom::StringAttribute::kName);
     if (name.empty()) {
       continue;
     }

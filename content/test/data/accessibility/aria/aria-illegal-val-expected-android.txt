@@ -7,7 +7,7 @@ android.webkit.WebView focusable focused
 ++android.view.View disabled interesting supplemental_description='Disabled illegal'
 ++android.view.View role_description='tree item' clickable collection_item expanded interesting content_description='Expanded illegal' expanded_state=3
 ++android.widget.Button role_description='button' clickable interesting content_description='Haspopup illegal'
-++android.view.View interesting supplemental_description='Invalid illegal'
+++android.view.View content_invalid interesting supplemental_description='Invalid illegal'
 ++android.view.View role_description='log' interesting supplemental_description='Live illegal'
 ++android.app.Dialog role_description='dialog' interesting supplemental_description='Modal illegal'
 ++android.widget.EditText clickable editable_text multiline interesting supplemental_description='Multiline illegal'

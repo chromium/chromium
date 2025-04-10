@@ -7,7 +7,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View supplementalDescription:"Disabled illegal" disabled actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++View contentDescription:"Expanded illegal" clickable expandedState:3 CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, COLLAPSE] bundle:[chromeRole="treeItem", roleDescription="tree item"]
 ++Button contentDescription:"Haspopup illegal" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", roleDescription="button"]
-++View supplementalDescription:"Invalid illegal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
+++View error:"Invalid entry" supplementalDescription:"Invalid illegal" contentInvalid actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group"]
 ++View supplementalDescription:"Live illegal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="log", roleDescription="log"]
 ++Dialog paneTitle:"Modal illegal" supplementalDescription:"Modal illegal" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="dialog", roleDescription="dialog"]
 ++EditText supplementalDescription:"Multiline illegal" clickable editable multiLine textSelectionStart:0 textSelectionEnd:0 actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField"]
