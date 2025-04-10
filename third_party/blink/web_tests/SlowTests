@@ -1453,3 +1453,5 @@ crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-sideways-lr.
 crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-sideways-rl.html [ Slow ]
 crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-vertical-lr.html [ Slow ]
 crbug.com/332938942 [ Mac ] editing/selection/mouse/mouse-selection-vertical-rl.html [ Slow ]
+
+crbug.com/407795725 http/tests/inspector-protocol/tracing/frame-postmessage.js [ Slow ]
