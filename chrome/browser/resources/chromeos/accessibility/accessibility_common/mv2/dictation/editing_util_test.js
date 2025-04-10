@@ -5,9 +5,9 @@
 GEN_INCLUDE(['dictation_test_base.js']);
 
 /** Test fixture for editing_util.js. */
-DictationEditingUtilTest = class extends DictationE2ETestBase {};
+DictationMV2EditingUtilTest = class extends DictationE2ETestBase {};
 
-AX_TEST_F('DictationEditingUtilTest', 'GetReplacePhraseData', function() {
+AX_TEST_F('DictationMV2EditingUtilTest', 'GetReplacePhraseData', function() {
   let value;
   let caretIndex;
   let deletePhrase;
@@ -133,7 +133,7 @@ AX_TEST_F('DictationEditingUtilTest', 'GetReplacePhraseData', function() {
   assertEquals(deletePhrase.length, result.deleteLength);
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'GetInsertBeforeIndex', function() {
+AX_TEST_F('DictationMV2EditingUtilTest', 'GetInsertBeforeIndex', function() {
   let value;
   let caretIndex;
   let beforePhrase;
@@ -163,7 +163,7 @@ AX_TEST_F('DictationEditingUtilTest', 'GetInsertBeforeIndex', function() {
   assertEquals(-1, result);
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'SelectBetween', function() {
+AX_TEST_F('DictationMV2EditingUtilTest', 'SelectBetween', function() {
   let value;
   let caretIndex;
   let startPhrase;
@@ -244,7 +244,7 @@ AX_TEST_F('DictationEditingUtilTest', 'SelectBetween', function() {
   assertEquals(9, selection.end);
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'NavNextSent', function() {
+AX_TEST_F('DictationMV2EditingUtilTest', 'NavNextSent', function() {
   let value;
   let caretIndex;
   const f = () => EditingUtil.navNextSent(value, caretIndex);
@@ -278,7 +278,7 @@ AX_TEST_F('DictationEditingUtilTest', 'NavNextSent', function() {
   assertEquals(0, f());
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'NavPrevSent', function() {
+AX_TEST_F('DictationMV2EditingUtilTest', 'NavPrevSent', function() {
   let value;
   let caretIndex;
   const f = () => EditingUtil.navPrevSent(value, caretIndex);
@@ -312,7 +312,7 @@ AX_TEST_F('DictationEditingUtilTest', 'NavPrevSent', function() {
   assertEquals(0, f());
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'SmartSpacing', function() {
+AX_TEST_F('DictationMV2EditingUtilTest', 'SmartSpacing', function() {
   let value;
   let caretIndex;
   let commitText;
@@ -390,7 +390,7 @@ AX_TEST_F('DictationEditingUtilTest', 'SmartSpacing', function() {
   assertEquals('Hello', f());
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'SmartCapitalization', function() {
+AX_TEST_F('DictationMV2EditingUtilTest', 'SmartCapitalization', function() {
   let value;
   let caretIndex;
   let commitText;
@@ -444,7 +444,7 @@ AX_TEST_F('DictationEditingUtilTest', 'SmartCapitalization', function() {
   assertEquals('Hello', f());
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'NavNextSentJa', function() {
+AX_TEST_F('DictationMV2EditingUtilTest', 'NavNextSentJa', function() {
   let value;
   let caretIndex;
   const f = () => EditingUtil.navNextSent(value, caretIndex);
@@ -466,7 +466,7 @@ AX_TEST_F('DictationEditingUtilTest', 'NavNextSentJa', function() {
   assertEquals(value.length, f());
 });
 
-AX_TEST_F('DictationEditingUtilTest', 'NavPrevSentJa', function() {
+AX_TEST_F('DictationMV2EditingUtilTest', 'NavPrevSentJa', function() {
   let value;
   let caretIndex;
   const f = () => EditingUtil.navPrevSent(value, caretIndex);

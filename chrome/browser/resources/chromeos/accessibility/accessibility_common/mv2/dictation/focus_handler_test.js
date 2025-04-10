@@ -4,7 +4,7 @@
 
 GEN_INCLUDE(['dictation_test_base.js']);
 
-DictationFocusHandlerTest = class extends DictationE2ETestBase {
+DictationMV2FocusHandlerTest = class extends DictationE2ETestBase {
   /** @return {!FocusHandler} */
   getFocusHandler() {
     return accessibilityCommon.dictation_.focusHandler_;
@@ -79,7 +79,7 @@ DictationFocusHandlerTest = class extends DictationE2ETestBase {
 };
 
 // This test ensures that FocusHandler activates when Dictation is toggled on.
-AX_TEST_F('DictationFocusHandlerTest', 'Activate', async function() {
+AX_TEST_F('DictationMV2FocusHandlerTest', 'Activate', async function() {
   const root = await this.runWithLoadedTree(this.simpleSite());
   const input = root.find({role: chrome.automation.RoleType.TEXT_FIELD});
   assertTrue(Boolean(input));
@@ -94,7 +94,7 @@ AX_TEST_F('DictationFocusHandlerTest', 'Activate', async function() {
 
 // This test ensures that FocusHandler deactivates automatically after a
 // period of inactivity.
-AX_TEST_F('DictationFocusHandlerTest', 'Deactivate', async function() {
+AX_TEST_F('DictationMV2FocusHandlerTest', 'Deactivate', async function() {
   // Shorten timeout for testing.
   FocusHandler.DEACTIVATE_TIMEOUT_MS_ = 1000;
   await this.activateFocusHandler();
@@ -102,7 +102,7 @@ AX_TEST_F('DictationFocusHandlerTest', 'Deactivate', async function() {
 });
 
 // This test ensures that FocusHandler tracks focus once it's been activated.
-AX_TEST_F('DictationFocusHandlerTest', 'OnFocusChanged', async function() {
+AX_TEST_F('DictationMV2FocusHandlerTest', 'OnFocusChanged', async function() {
   await this.activateFocusHandler();
   const root = await this.runWithLoadedTree(this.simpleSite());
   const input = root.find({role: chrome.automation.RoleType.TEXT_FIELD});
@@ -115,7 +115,7 @@ AX_TEST_F('DictationFocusHandlerTest', 'OnFocusChanged', async function() {
 // This test ensures that the timeout to deactivate FocusHandler is reset
 // whenever Dictation toggles on.
 AX_TEST_F(
-    'DictationFocusHandlerTest', 'ResetDeactivateTimeout', async function() {
+    'DictationMV2FocusHandlerTest', 'ResetDeactivateTimeout', async function() {
       this.mockSetTimeoutMethod();
       this.toggleDictationOn();
       await this.waitForFocusHandlerActive(true);

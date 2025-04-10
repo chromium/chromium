@@ -4,9 +4,9 @@
 
 GEN_INCLUDE(['dictation_test_base.js']);
 
-DictationLocaleInfoTest = class extends DictationE2ETestBase {};
+DictationMV2LocaleInfoTest = class extends DictationE2ETestBase {};
 
-AX_TEST_F('DictationLocaleInfoTest', 'AllowSmartCapAndSpacing', function() {
+AX_TEST_F('DictationMV2LocaleInfoTest', 'AllowSmartCapAndSpacing', function() {
   // Restrict behavior to English + FIGS (French, Italian, German, Spanish).
   LocaleInfo.locale = 'en-US';
   assertTrue(LocaleInfo.allowSmartCapAndSpacing());
@@ -23,7 +23,7 @@ AX_TEST_F('DictationLocaleInfoTest', 'AllowSmartCapAndSpacing', function() {
   assertFalse(LocaleInfo.allowSmartCapAndSpacing());
 });
 
-AX_TEST_F('DictationLocaleInfoTest', 'AllowSmartEditing', function() {
+AX_TEST_F('DictationMV2LocaleInfoTest', 'AllowSmartEditing', function() {
   // Restrict behavior to left-to-right locales.
   LocaleInfo.locale = 'en-US';
   assertTrue(LocaleInfo.allowSmartEditing());
@@ -34,14 +34,14 @@ AX_TEST_F('DictationLocaleInfoTest', 'AllowSmartEditing', function() {
   assertFalse(LocaleInfo.allowSmartEditing());
 });
 
-AX_TEST_F('DictationLocaleInfoTest', 'IsRTLLocale', function() {
+AX_TEST_F('DictationMV2LocaleInfoTest', 'IsRTLLocale', function() {
   LocaleInfo.locale = 'ja-JP';
   assertFalse(LocaleInfo.isRTLLocale());
   LocaleInfo.locale = 'ar-LB';
   assertTrue(LocaleInfo.isRTLLocale());
 });
 
-AX_TEST_F('DictationLocaleInfoTest', 'GetUILanguage', function() {
+AX_TEST_F('DictationMV2LocaleInfoTest', 'GetUILanguage', function() {
   LocaleInfo.locale = 'iw-il';
   assertEquals('he', LocaleInfo.getUILanguage());
   LocaleInfo.locale = 'iw-IL';
@@ -54,7 +54,7 @@ AX_TEST_F('DictationLocaleInfoTest', 'GetUILanguage', function() {
   assertEquals(undefined, LocaleInfo.getUILanguage());
 });
 
-AX_TEST_F('DictationLocaleInfoTest', 'AreCommandsSupported', function() {
+AX_TEST_F('DictationMV2LocaleInfoTest', 'AreCommandsSupported', function() {
   let systemLocale;
   chrome.i18n.getUILanguage = () => {
     return systemLocale;

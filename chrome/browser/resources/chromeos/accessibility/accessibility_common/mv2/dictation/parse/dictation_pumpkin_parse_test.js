@@ -9,7 +9,7 @@ GEN_INCLUDE(['../dictation_test_base.js']);
  * live Pumpkin DLC, but instead use a local tar archive that mirrors the DLC.
  * It's important that we keep the live DLC and the local tar archive in sync.
  */
-DictationPumpkinParseTest = class extends DictationE2ETestBase {
+DictationMV2PumpkinParseTest = class extends DictationE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await this.mockAccessibilityPrivate.initializePumpkinData();
@@ -63,7 +63,7 @@ DictationPumpkinParseTest = class extends DictationE2ETestBase {
 // macro. The text to macro mapping can be found in
 // google3/chrome/chromeos/accessibility/dictation/grammars/\
 // dictation_en_us.patterns
-AX_TEST_F('DictationPumpkinParseTest', 'Parse', async function() {
+AX_TEST_F('DictationMV2PumpkinParseTest', 'Parse', async function() {
   await this.waitForPumpkinParseStrategy_();
 
   /** @type {!Array<!ParseTestCase>} */
@@ -117,7 +117,8 @@ AX_TEST_F('DictationPumpkinParseTest', 'Parse', async function() {
 // Tests that we can use the SandboxedPumpkinTagger to parse text and yield
 // a RepeatableKeyPressMacro with a `repeat_` value greater than one.
 AX_TEST_F(
-    'DictationPumpkinParseTest', 'RepeatableKeyPressMacro', async function() {
+    'DictationMV2PumpkinParseTest', 'RepeatableKeyPressMacro',
+    async function() {
       await this.waitForPumpkinParseStrategy_();
 
       /** @type {!Array<!ParseTestCase>} */
@@ -151,7 +152,7 @@ AX_TEST_F(
     });
 
 // Tests that smart macro properties are correctly parsed and set.
-AX_TEST_F('DictationPumpkinParseTest', 'SmartMacros', async function() {
+AX_TEST_F('DictationMV2PumpkinParseTest', 'SmartMacros', async function() {
   await this.waitForPumpkinParseStrategy_();
 
   let macro =
@@ -178,7 +179,7 @@ AX_TEST_F('DictationPumpkinParseTest', 'SmartMacros', async function() {
   assertEquals('goodbye', macro.endPhrase_);
 });
 
-AX_TEST_F('DictationPumpkinParseTest', 'ChangeLocale', async function() {
+AX_TEST_F('DictationMV2PumpkinParseTest', 'ChangeLocale', async function() {
   await this.waitForPumpkinParseStrategy_();
   this.alwaysEnableCommands();
   const testCases = [
@@ -217,19 +218,21 @@ AX_TEST_F('DictationPumpkinParseTest', 'ChangeLocale', async function() {
   }
 });
 
-AX_TEST_F('DictationPumpkinParseTest', 'UnsupportedLocale', async function() {
-  await this.waitForPumpkinParseStrategy_();
-  this.alwaysEnableCommands();
-  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'ja');
-  // Don't pass in a locale below because 'ja' is an unsupported locale (and
-  // thus Pumpkin will never initialize in that locale).
-  await this.waitForPumpkinParseStrategy_();
-  await this.runPumpkinParseTestCase(
-      new ParseTestCase('copy selected text', {}));
-  // Would produce an UNDO_TEXT_EDIT macro if Japanese was supported.
-  await this.runPumpkinParseTestCase(new ParseTestCase('もとどおりにする', {}));
-  await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
-  await this.waitForPumpkinParseStrategy_('en-US');
-  await this.runPumpkinParseTestCase(
-      new ParseTestCase('copy selected text', {name: 'COPY_SELECTED_TEXT'}));
-});
+AX_TEST_F(
+    'DictationMV2PumpkinParseTest', 'UnsupportedLocale', async function() {
+      await this.waitForPumpkinParseStrategy_();
+      this.alwaysEnableCommands();
+      await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'ja');
+      // Don't pass in a locale below because 'ja' is an unsupported locale (and
+      // thus Pumpkin will never initialize in that locale).
+      await this.waitForPumpkinParseStrategy_();
+      await this.runPumpkinParseTestCase(
+          new ParseTestCase('copy selected text', {}));
+      // Would produce an UNDO_TEXT_EDIT macro if Japanese was supported.
+      await this.runPumpkinParseTestCase(
+          new ParseTestCase('もとどおりにする', {}));
+      await this.setPref(Dictation.DICTATION_LOCALE_PREF, 'en-US');
+      await this.waitForPumpkinParseStrategy_('en-US');
+      await this.runPumpkinParseTestCase(new ParseTestCase(
+          'copy selected text', {name: 'COPY_SELECTED_TEXT'}));
+    });
