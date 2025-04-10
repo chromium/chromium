@@ -1759,9 +1759,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.AudioRecordingMode.{TabletOrClamshellMode}"
-    enum="AudioRecordingMode" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="AudioRecordingMode" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded at the end of a capture mode session in {TabletOrClamshellMode} to
@@ -1771,9 +1771,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshellMode}"
-    enum="CaptureModeBarButtonType" expires_after="2025-07-06">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="CaptureModeBarButtonType" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a button from the bar widget displayed in Capture mode is
@@ -1784,9 +1784,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.CameraDisconnectionsDuringRecordings.{TabletOrClamshellMode}"
-    units="camera disconnections" expires_after="2025-07-03">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="camera disconnections" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of camera disconnections in {TabletOrClamshellMode}
@@ -1796,9 +1796,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.CameraReconnectDuration.{TabletOrClamshellMode}"
-    units="seconds" expires_after="2025-11-11">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="seconds" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records how many seconds it takes a camera that got disconnected to get
@@ -1808,9 +1808,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.CaptureConfiguration.{TabletOrClamshellMode}"
-    enum="CaptureModeConfiguration" expires_after="2025-09-07">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="CaptureModeConfiguration" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a user performs a screen capture in
@@ -1821,9 +1821,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.CaptureRegionAdjusted.{TabletOrClamshellMode}"
-    units="adjustments" expires_after="2025-02-23">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="adjustments" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a user is in a region capture session in
@@ -1831,13 +1831,15 @@ chromium-metrics-reviews@google.com.
     source. The recorded count indicates the number of times the user adjusts
     the region. This counts each time they move the region or resize it. It is
     reset whenever a user creates a new region or the count is recorded.
+    Warning: this histogram was expired from 2025-02-23 to 2025-04-08; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ConsecutiveScreenshots"
-    units="consecutive screenshots" expires_after="2026-01-31">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="consecutive screenshots" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of consecutive screenshots the user takes within 5s of
@@ -1847,9 +1849,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.DemoToolsEnabledOnRecordingStart.{TabletOrClamshellMode}"
-    enum="BooleanEnabled" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="BooleanEnabled" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a capture mode video recording starts with demo tools
@@ -1859,9 +1861,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.EndRecordingReason.{TabletOrClamshellMode}"
-    enum="EndRecordingReason" expires_after="2025-08-25">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="EndRecordingReason" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever capture mode screen recording is ended in
@@ -1871,9 +1873,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshellMode}"
-    enum="CaptureModeEntryType" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="CaptureModeEntryType" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever Capture mode is entered from {TabletOrClamshellMode}. The
@@ -1883,9 +1885,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.GameDashboard.SaveLocation.{TabletOrClamshellMode}"
-    enum="CaptureModeSaveToLocation" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="CaptureModeSaveToLocation" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever the screen capture is saved in {TabletOrClamshellMode}
@@ -1896,9 +1898,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.GameDashboard.ScreenRecordingFileSize.{TabletOrClamshellMode}"
-    units="KB" expires_after="2025-05-15">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="KB" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the size of the successfully recorded WebM file by the Game Dahboard
@@ -1909,9 +1911,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.GIFRecordingFileSize.{TabletOrClamshellMode}"
-    units="KB" expires_after="2025-06-22">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="KB" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the size of the successfully recorded GIF file by capture mode in
@@ -1922,9 +1924,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.GIFRecordingLength.{TabletOrClamshellMode}"
-    units="seconds" expires_after="2026-01-31">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="seconds" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the time of a successful GIF recording in capture mode in
@@ -1935,9 +1937,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.GIFRecordingRegionToScreenRatio.{TabletOrClamshellMode}"
-    units="% of fullscreen area" expires_after="2026-01-31">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="% of fullscreen area" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the percent ratio between the area of the user selected region for
@@ -1948,9 +1950,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.MultimodalSearchRequest.{TabletOrClamshellMode}"
-    enum="Boolean" expires_after="2025-08-17">
+    enum="Boolean" expires_after="2025-10-08">
   <owner>hewer@chromium.org</owner>
-  <owner>sophiewen@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded each time a multimodal search request is made in the search results
     panel in {TabletOrClamshellMode}.
@@ -1958,9 +1960,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.NumberOfConnectedCameras"
-    units="connected cameras" expires_after="2026-01-31">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="connected cameras" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of connected cameras to the device whenever it changes.
@@ -1969,9 +1971,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.Projector.CaptureRegionAdjusted.{TabletOrClamshellMode}"
-    units="adjustments" expires_after="2026-01-31">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="adjustments" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a user is in a region capture session in
@@ -1984,8 +1986,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.QuickAction"
-    enum="CaptureQuickAction" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
+    enum="CaptureQuickAction" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Track all quick actions on screenshot notification. Including: Edit in
@@ -1995,9 +1998,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.RecordingCameraPositionOnStart.{TabletOrClamshellMode}"
-    enum="CameraPreviewSnapPosition" expires_after="2025-06-21">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="CameraPreviewSnapPosition" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the camera preview position when the recording is started in
@@ -2007,9 +2010,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.RecordingCameraSizeOnStart.{TabletOrClamshellMode}"
-    enum="CaptureModeCameraSize" expires_after="2026-01-31">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="CaptureModeCameraSize" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the camera size when the recording is started in
@@ -2019,9 +2022,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.RecordingStartsWithCamera.{TabletOrClamshellMode}"
-    enum="BooleanEnabled" expires_after="2025-04-13">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="BooleanEnabled" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a capture mode video recording starts with camera or not in
@@ -2031,9 +2034,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.SaveLocation.{TabletOrClamshellMode}"
-    enum="CaptureModeSaveToLocation" expires_after="2025-04-13">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="CaptureModeSaveToLocation" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever screen capture is saved in {TabletOrClamshellMode}. The
@@ -2043,9 +2046,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.ScreenRecordingFileSize.{TabletOrClamshellMode}"
-    units="KB" expires_after="2026-01-31">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="KB" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the size of the successfully recorded WebM file by capture mode in
@@ -2056,9 +2059,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.ScreenRecordingLength.{TabletOrClamshellMode}"
-    units="seconds" expires_after="2026-01-31">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="seconds" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the time of a successful video recording in capture mode in
@@ -2068,9 +2071,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerDay" units="int"
-    expires_after="2025-09-14">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of screenshots that have been taken via the
@@ -2081,9 +2084,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerWeek" units="int"
-    expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the number of screenshots that have been taken via the
@@ -2096,9 +2099,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.SearchButtonPressed.{TabletOrClamshellMode}"
-    enum="Boolean" expires_after="2025-09-14">
+    enum="Boolean" expires_after="2025-10-08">
   <owner>hewer@chromium.org</owner>
-  <owner>sophiewen@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded each time the Search button is pressed in a default capture session
     in {TabletOrClamshellMode}.
@@ -2107,9 +2110,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.SearchButtonShown.{TabletOrClamshellMode}"
-    enum="Boolean" expires_after="2025-09-07">
+    enum="Boolean" expires_after="2025-10-08">
   <owner>hewer@chromium.org</owner>
-  <owner>sophiewen@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded each time the Search button is shown to a user in a default capture
     session in {TabletOrClamshellMode}.
@@ -2118,9 +2121,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.SearchResultClicked.{TabletOrClamshellMode}"
-    enum="Boolean" expires_after="2025-09-14">
+    enum="Boolean" expires_after="2025-10-08">
   <owner>hewer@chromium.org</owner>
-  <owner>sophiewen@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded each time a search result URL was clicked in the search results
     panel in {TabletOrClamshellMode}.
@@ -2129,9 +2132,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.SearchResultsPanelEntryPoint.{TabletOrClamshellMode}"
-    enum="SearchResultsPanelEntryType" expires_after="2025-09-07">
+    enum="SearchResultsPanelEntryType" expires_after="2025-10-08">
   <owner>hewer@chromium.org</owner>
-  <owner>sophiewen@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever the search results panel is created during a capture
     session, either due to selecting a region (without an existing panel) in a
@@ -2144,7 +2147,7 @@ chromium-metrics-reviews@google.com.
     name="Ash.CaptureModeController.SearchResultsPanelShown.{TabletOrClamshellMode}"
     enum="Boolean" expires_after="2025-09-07">
   <owner>hewer@chromium.org</owner>
-  <owner>sophiewen@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded each time the search results panel was shown, including panel
     creation, region adjustment, and region reselection, in
@@ -2153,9 +2156,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.SwitchesFromInitialCaptureMode"
-    enum="Boolean" expires_after="2025-11-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="Boolean" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emits true if a user has switched capture modes (fullscreen, region, window)
@@ -2165,9 +2168,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.SwitchToDefaultReason.{TabletOrClamshellMode}"
-    enum="CaptureModeSwitchToDefaultReason" expires_after="2025-10-30">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="CaptureModeSwitchToDefaultReason" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever the capture folder is switched to default downloads folder
@@ -2178,9 +2181,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.{Client}.AudioRecordingMode.{TabletOrClamshellMode}"
-    enum="AudioRecordingMode" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="AudioRecordingMode" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded at the end of a {Client}-initiated capture mode session in
@@ -2193,9 +2196,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.{Client}.CaptureConfiguration.{TabletOrClamshellMode}"
-    enum="CaptureModeConfiguration" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="CaptureModeConfiguration" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a {Client}-initiated a screen capture is performed in
@@ -2208,9 +2211,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.{Client}.DemoToolsEnabledOnRecordingStart.{TabletOrClamshellMode}"
-    enum="BooleanEnabled" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="BooleanEnabled" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a {Client}-initiated recording starts with demo tools
@@ -2221,9 +2224,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.{Client}.RecordingStartsWithCamera.{TabletOrClamshellMode}"
-    enum="BooleanEnabled" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    enum="BooleanEnabled" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a {Client}-initiated recording starts with camera on or not
@@ -2234,9 +2237,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.CaptureModeController.{Client}.ScreenRecordingLength.{TabletOrClamshellMode}"
-    units="seconds" expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
-  <owner>gzadina@google.com</owner>
+    units="seconds" expires_after="2025-10-08">
+  <owner>minch@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the time of a successful video recording in capture mode entered
@@ -2349,8 +2352,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.AnimationLatency.DeskActivation" units="ms"
-    expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>dandersson@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2361,8 +2364,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.AnimationLatency.DeskRemoval" units="ms"
-    expires_after="2025-04-13">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>dandersson@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2373,8 +2376,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.AnimationSmoothness.DeskActivation" units="%"
-    expires_after="2025-11-25">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>dandersson@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <owner>cros-sw-perf@google.com</owner>
   <summary>
@@ -2546,8 +2549,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.DeskLifetime_{DeskIndex}" units="hr"
-    expires_after="2025-06-22">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -2569,8 +2572,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.DesksCount3" units="units"
-    expires_after="2025-09-14">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>dandersson@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when there's a change in the virtual desks count whether due to desk
@@ -2580,8 +2583,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.DesksSwitch" enum="DesksSwitchSource"
-    expires_after="2025-08-24">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>dandersson@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the active desk is changed to specify the source of this
@@ -2621,8 +2624,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NewDesk2" enum="DesksCreationRemovalSource"
-    expires_after="2025-08-31">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>dandersson@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when a virtual desk is created to specify the source of this action,
@@ -2901,8 +2904,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.WeeklyActiveDesks" units="active desks"
-    expires_after="2025-07-13">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>dandersson@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -3590,8 +3593,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Float.MultitaskMenuActionType.{TabletOrClamshellMode}"
-    enum="MultitaskMenuActionType" expires_after="2025-09-14">
-  <owner>sophiewen@chromium.org</owner>
+    enum="MultitaskMenuActionType" expires_after="2025-10-08">
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Recorded whatever action is taken on the {TabletOrClamshellMode} multitask
@@ -3600,8 +3603,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Float.MultitaskMenuEntryType.{TabletOrClamshellMode}"
-    enum="MultitaskMenuEntryType" expires_after="2025-08-10">
-  <owner>sophiewen@chromium.org</owner>
+    enum="MultitaskMenuEntryType" expires_after="2025-10-08">
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
   <summary>
     Recorded whenever the multitask menu is opened from {TabletOrClamshellMode}.
@@ -5421,54 +5424,59 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NightLight.AutoNightLightNotificationShown"
-    enum="BooleanShown" expires_after="2022-01-30">
-  <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
-  <summary>Emitted when the Auto Night Light notification is shown.</summary>
+    enum="BooleanShown" expires_after="2025-10-08">
+  <owner>cambickel@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
+  <summary>
+    Emitted when the Auto Night Light notification is shown. Warning: this
+    histogram was expired from 2022-01-30 to 2025-04-08; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Ash.NightLight.AutoNightLightNotificationState"
-    enum="AshAutoNightLightNotificationState" expires_after="2023-07-02">
-  <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+    enum="AshAutoNightLightNotificationState" expires_after="2025-10-08">
+  <owner>cambickel@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Emitted when the user interacts with the Auto Night Light notification to
     report the state of the notification as a result of this interaction.
+    Warning: this histogram was expired from 2023-07-02 to 2025-04-08; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.NightLight.ScheduleType" enum="AshNightLightScheduleType"
-    expires_after="2024-05-19">
-  <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>cambickel@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The selected Night Light schedule type. Emitted when the user changes the
-    Night Light schedule type from the Display System Settings.
+    Night Light schedule type from the Display System Settings. Warning: this
+    histogram was expired from 2024-05-19 to 2025-04-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.NightLight.ScheduleType.Initial"
-    enum="AshNightLightScheduleType" expires_after="2025-08-31">
-  <owner>dpad@google.com</owner>
+    enum="AshNightLightScheduleType" expires_after="2025-10-08">
   <owner>cambickel@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>The selected Night Light schedule type. Emitted on login.</summary>
 </histogram>
 
 <histogram name="Ash.NightLight.Temperature"
-    enum="AshNightLightTemperatureRanges" expires_after="2022-02-01">
-  <owner>afakhry@chromium.org</owner>
-  <owner>tclaiborne@chromium.org</owner>
+    enum="AshNightLightTemperatureRanges" expires_after="2025-10-08">
+  <owner>cambickel@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     The ranges in which the selected values of the Night Light color temperature
     reside. Emitted when the user drags the Night Light color temperature slider
-    to change its value from the Display System Settings.
+    to change its value from the Display System Settings. Warning: this
+    histogram was expired from 2022-02-01 to 2025-04-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.NightLight.Temperature.Initial" units="%"
-    expires_after="2025-08-31">
-  <owner>dpad@google.com</owner>
+    expires_after="2025-10-08">
   <owner>cambickel@google.com</owner>
   <owner>cros-device-enablement@google.com</owner>
   <summary>
@@ -6835,7 +6843,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Ash.Pine.OnboardingDialog.TurnRestoreOn" enum="Boolean"
     expires_after="2025-08-10">
   <owner>hewer@chromium.org</owner>
-  <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     The action taken by the user when the onboarding dialog is shown and the
@@ -8327,36 +8334,38 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Snap.CloseTwoWindowsDuration" units="seconds"
-    expires_after="2025-01-26">
-  <owner>sophiewen@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+    expires_after="2025-10-08">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The elapsed time between a first snapped window getting closed and a second
     snapped window getting closed. Starts recording when a snapped window is
     closed. Ends recording when a snapped window on the opposite side is closed,
     or if a snapped window on the opposite side is unsnapped, records the
-    maximum value of 50 hours (18000 seconds).
+    maximum value of 50 hours (18000 seconds). Warning: this histogram was
+    expired from 2025-01-26 to 2025-04-08; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.Snap.MinimizeTwoWindowsDuration" units="seconds"
-    expires_after="2025-01-26">
-  <owner>sophiewen@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+    expires_after="2025-10-08">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The elapsed time between a first snapped window getting minimized and a
     second snapped window getting minimized. Starts recording when a window
     changes state from snapped to minimized. Ends recording when a second window
     changes state from snapped to minimized, or if the first window is no longer
     snapped on the same side, records the maximum value of 50 hours (18000
-    seconds).
+    seconds). Warning: this histogram was expired from 2025-01-26 to 2025-04-08;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Ash.Snap.SnapTwoWindowsDuration" units="seconds"
-    expires_after="2025-03-30">
-  <owner>sophiewen@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+    expires_after="2025-10-08">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     The elapsed time between a first window getting snapped and a second window
     getting snapped on the other side. Starts recording when one window gets
@@ -8367,10 +8376,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SnapGroups.SnapGroupActualDuration" units="seconds"
-    expires_after="2025-09-14">
-  <owner>sophiewen@chromium.org</owner>
+    expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the duration of a Snap Group where the two snapped windows remain
     unchanged throughout its existence.
@@ -8378,18 +8386,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SnapGroups.SnapGroupExitPoint" enum="SnapGroupExitPoint"
-    expires_after="2025-09-14">
-  <owner>sophiewen@chromium.org</owner>
+    expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>Records the exit point of a Snap Group.</summary>
 </histogram>
 
 <histogram name="Ash.SnapGroups.SnapGroupPersistenceDuration" units="seconds"
-    expires_after="2025-09-14">
-  <owner>sophiewen@chromium.org</owner>
+    expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the duration of a Snap Group where one of the windows remains in the
     Snap Group even after the other window is replaced using 'Snap to Replace'.
@@ -8397,10 +8403,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SnapGroups.SnapGroupsCount" units="int"
-    expires_after="2025-09-14">
-  <owner>sophiewen@chromium.org</owner>
+    expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when there's a change in the number of snap groups, i.e. a group is
     added or removed. Specifies the number of available snap groups.
@@ -8408,10 +8413,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SnapWindowSuggestions.{SnapSource}" enum="Boolean"
-    expires_after="2025-04-13">
-  <owner>sophiewen@chromium.org</owner>
+    expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded at the time a window is snapped via a snap action source that can
     start faster split view. Emits true if faster split view is enabled, false
@@ -8433,9 +8437,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.DeviceOrientation.{DeviceUIMode}"
-    enum="DeviceOrientation" expires_after="2025-09-07">
+    enum="DeviceOrientation" expires_after="2025-10-08">
   <owner>zxdan@chromium.org</owner>
-  <owner>afakhry@chromium.org</owner>
   <owner>fanafan@google.com</owner>
   <summary>
     Emitted at entry to split view mode and each time the orientation or the
@@ -8500,9 +8503,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitView.SwapWindowCount" units="count"
-    expires_after="2025-08-19">
+    expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted at the end of split view mode to report the number of swap window
@@ -8555,9 +8557,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitViewOverviewSession.SelectedWindowIndex" units="int"
-    expires_after="2025-07-06">
-  <owner>sophiewen@chromium.org</owner>
+    expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the index of the selected window in partial overview. Starts
     indexing at 0.
@@ -8566,10 +8568,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit.{TabletOrClamshellMode}"
-    enum="Boolean" expires_after="2025-07-06">
-  <owner>sophiewen@chromium.org</owner>
+    enum="Boolean" expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded at the exit point of the split view overview session in
     {TabletOrClamshellMode}. Emits true if the window layout setup is complete,
@@ -8578,9 +8579,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitViewOverviewSession.WindowListSize" units="int"
-    expires_after="2025-05-04">
-  <owner>sophiewen@chromium.org</owner>
+    expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the total number of windows in partial overview when a window is
     selected.
@@ -8589,10 +8590,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.SplitViewOverviewSession.{SnapSource}.ExitPoint.{TabletOrClamshellMode}"
-    enum="SplitViewOverviewSessionExitPoint" expires_after="2025-05-04">
-  <owner>sophiewen@chromium.org</owner>
+    enum="SplitViewOverviewSessionExitPoint" expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>cros-snap-groups@google.com</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded at the exit point of the split view overview session in
     {TabletOrClamshellMode}. The recorded enum indicates the reason that
@@ -8602,7 +8602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitViewResize.AnimationSmoothness.DividerAnimation"
-    units="%" expires_after="2025-09-05">
+    units="%" expires_after="2025-10-08">
   <owner>dandersson@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -8614,9 +8614,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.SplitViewResize.PresentationTime.MaxLatency{SplitViewResizeModes}"
-    units="ms" expires_after="2025-08-19">
+    units="ms" expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Maximum latency of the presentation time while resizing one or two split
@@ -8626,9 +8625,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SplitViewResize.PresentationTime{SplitViewResizeModes}"
-    units="ms" expires_after="2025-08-19">
+    units="ms" expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
-  <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Presentation time while resizing one or two split view windows.
@@ -9468,8 +9466,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.PartialSplitDuration" units="minutes"
-    expires_after="2025-04-13">
-  <owner>sophiewen@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
   <summary>
     The amount of time a user keeps a partial split window open and visible.
@@ -9482,9 +9480,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.Snap.DeviceOrientation" enum="DeviceOrientation"
-    expires_after="2025-08-12">
-  <owner>sophiewen@chromium.org</owner>
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the user snaps the window to record whether window snap is used
@@ -9493,8 +9490,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.DesksSwitchDistance" units="units"
-    expires_after="2025-08-12">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
+  <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the user ends window cycling via Alt-Tab, if and only if user
@@ -9518,7 +9515,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.WindowCycleController.InitialMode" enum="AltTabMode"
     expires_after="2025-10-30">
-  <owner>afakhry@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -9539,9 +9535,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.ModeSwitchSource"
-    enum="AltTabModeSwitchSource" expires_after="2025-06-08">
-  <owner>afakhry@chromium.org</owner>
+    enum="AltTabModeSwitchSource" expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the user switches the Alt-Tab mode, if and only if user had 2
     or more desks and Bento is not disabled, to report whether the user switches
@@ -9583,9 +9579,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.WindowCycleController.SwitchMode" enum="AltTabMode"
-    expires_after="2025-06-22">
-  <owner>afakhry@chromium.org</owner>
+    expires_after="2025-10-08">
   <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
   <summary>
     Emitted when the user switches the Alt-Tab mode from a click or keyboard, if
     and only if user had 2 or more desks and Bento is not disabled, to report
