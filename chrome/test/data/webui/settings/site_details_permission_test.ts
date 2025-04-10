@@ -596,6 +596,77 @@ suite('SiteDetailsPermission', function() {
             testElement.$.permission.querySelector<HTMLElement>(
                                         '#allow')!.hidden);
       });
+
+  test('Chooser exceptions are shown for smart card readers', async function() {
+    const origin =
+        'isolated-app://anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai/';
+    const otherOrigin =
+        'isolated-app://ajnpiorf3kprxsslcme5f2rkwfoxx24orkkudpf6roqxssxnjx7y4aacai/';
+
+    const prefsSmartCard = createSiteSettingsPrefs(
+        /*defaultsList=*/[], /*exceptionsList=*/[], /*chooserExceptionsList=*/[
+          createContentSettingTypeToValuePair(
+              ContentSettingsTypes.SMART_CARD_READERS,
+              [
+                createRawChooserException(
+                    ChooserType.SMART_CARD_READERS_DEVICES,
+                    [createRawSiteException(origin)],
+                    {displayName: 'Reader 1'}),
+                createRawChooserException(
+                    ChooserType.SMART_CARD_READERS_DEVICES,
+                    [createRawSiteException(
+                        origin, {source: SiteSettingSource.POLICY})],
+                    {displayName: 'All readers'}),
+                createRawChooserException(
+                    ChooserType.SMART_CARD_READERS_DEVICES,
+                    [createRawSiteException(otherOrigin)],
+                    {displayName: 'Reader 2'}),
+              ]),
+        ]);
+    browserProxy.setPrefs(prefsSmartCard);
+
+    testElement.category = ContentSettingsTypes.SMART_CARD_READERS;
+    testElement.chooserType = ChooserType.SMART_CARD_READERS_DEVICES;
+    testElement.label = 'Smart card readers';
+    testElement.site = createRawSiteException(origin, {
+      origin: origin,
+      embeddingOrigin: origin,
+      setting: ContentSetting.ASK,
+      source: SiteSettingSource.PREFERENCE,
+    });
+
+    const chooserType =
+        await browserProxy.whenCalled('getChooserExceptionList');
+    assertEquals(ChooserType.SMART_CARD_READERS_DEVICES, chooserType);
+
+    // Flush the container to ensure that the container is populated.
+    flush();
+
+    // Ensure that only the chooser exceptions with the same origin are
+    // rendered.
+    const deviceEntries = testElement.shadowRoot!.querySelectorAll(
+        'site-details-permission-device-entry');
+
+    assertEquals(2, deviceEntries.length);
+
+    // The first device entry is a user granted exception.
+    const firstDeviceDisplayName =
+        deviceEntries[0]!.shadowRoot!.querySelector('.url-directionality');
+    assertTrue(!!firstDeviceDisplayName);
+    assertEquals('Reader 1', firstDeviceDisplayName.textContent!.trim());
+    assertFalse(!!deviceEntries[0]!.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
+    assertFalse(deviceEntries[0]!.$.resetSite.hidden);
+
+    // The second device entry is a policy granted exception.
+    const secondDeviceDisplayName =
+        deviceEntries[1]!.shadowRoot!.querySelector('.url-directionality');
+    assertTrue(!!secondDeviceDisplayName);
+    assertEquals('All readers', secondDeviceDisplayName.textContent!.trim());
+    assertTrue(!!deviceEntries[1]!.shadowRoot!.querySelector(
+        'cr-policy-pref-indicator'));
+    assertTrue(deviceEntries[1]!.$.resetSite.hidden);
+  });
   // </if>
 
   test('Chooser exceptions getChooserExceptionList API used', async function() {

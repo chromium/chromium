@@ -31,6 +31,9 @@ class RenderFrameHost;
 namespace settings {
 class SmartCardReaderPermissionsSiteSettingsHandlerTest;
 }  // namespace settings
+namespace site_settings {
+class SiteSettingsHelperChooserExceptionTest;
+}  // namespace site_settings
 
 class SmartCardPermissionContext
     : public permissions::ObjectPermissionContextBase,
@@ -98,6 +101,7 @@ class SmartCardPermissionContext
   friend class settings::SmartCardReaderPermissionsSiteSettingsHandlerTest;
   friend class PageInfoBubbleViewInteractiveUiTest;
   friend class ChromeOsSmartCardDelegateBrowserTest;
+  friend class site_settings::SiteSettingsHelperChooserExceptionTest;
 
   class OneTimeObserver;
   class PowerSuspendObserver;

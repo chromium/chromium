@@ -232,6 +232,10 @@ export function getContentSettingsTypeFromChooserType(chooserType: ChooserType):
       return ContentSettingsTypes.USB_DEVICES;
     case ChooserType.BLUETOOTH_DEVICES:
       return ContentSettingsTypes.BLUETOOTH_DEVICES;
+    // <if expr="is_chromeos">
+    case ChooserType.SMART_CARD_READERS_DEVICES:
+      return ContentSettingsTypes.SMART_CARD_READERS;
+    // </if>
     default:
       return null;
   }

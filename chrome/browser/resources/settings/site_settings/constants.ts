@@ -96,6 +96,9 @@ export enum ChooserType {
   HID_DEVICES = 'hid-devices-data',
   BLUETOOTH_DEVICES = 'bluetooth-devices-data',
   PRIVATE_NETWORK_DEVICES = 'private-network-devices-data',
+  // <if expr="is_chromeos">
+  SMART_CARD_READERS_DEVICES = 'smart-card-readers-data',
+  // </if>
 }
 
 /**

@@ -55,6 +55,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/webui/webui_allowlist.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -67,6 +68,11 @@
 #include "extensions/test/test_extension_dir.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace site_settings {
 
@@ -1193,18 +1199,39 @@ constexpr char kUsbPolicySetting[] = R"(
       }
     ])";
 
+void ExpectDisplayNameEq(const base::Value& actual_exception_object,
+                         const std::string& display_name) {
+  const std::string* actual_display_name =
+      actual_exception_object.GetDict().FindString(kDisplayName);
+  ASSERT_TRUE(actual_display_name);
+  EXPECT_EQ(*actual_display_name, display_name);
+}
+
+}  // namespace
+
 class SiteSettingsHelperChooserExceptionTest : public testing::Test {
  protected:
   const GURL kGoogleUrl{"https://google.com"};
   const GURL kChromiumUrl{"https://chromium.org"};
   const GURL kAndroidUrl{"https://android.com"};
   const GURL kTestUrl{"https://test.com"};
+#if BUILDFLAG(IS_CHROMEOS)
+  const GURL kIWAUrl1{
+      "isolated-app://"
+      "anayaszofsyqapbofoli7ljxoxkp32qkothweire2o6t7xy6taz6oaacai/"};
+  const GURL kIWAUrl2{
+      "isolated-app://"
+      "ajnpiorf3kprxsslcme5f2rkwfoxx24orkkudpf6roqxssxnjx7y4aacai/"};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   Profile* profile() { return &profile_; }
 
   void SetUp() override {
     TestingBrowserProcess::GetGlobal()->CreateGlobalFeaturesForTesting();
     SetUpUsbChooserContext();
+#if BUILDFLAG(IS_CHROMEOS)
+    SetUpSmartCardPermissionContext();
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   // Sets up the UsbChooserContext with two devices and permissions for these
@@ -1247,22 +1274,80 @@ class SiteSettingsHelperChooserExceptionTest : public testing::Test {
                                std::move(*policy_value));
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void SetUpSmartCardPermissionContext() {
+    auto& permission_context =
+        SmartCardPermissionContextFactory::GetForProfile(*profile());
+
+    const auto kIWA1Origin = url::Origin::Create(kIWAUrl1);
+    const auto kIWA2Origin = url::Origin::Create(kIWAUrl2);
+
+    permission_context.GrantPersistentReaderPermission(kIWA1Origin, "Reader 1");
+    permission_context.GrantPersistentReaderPermission(kIWA1Origin, "Reader 2");
+    permission_context.GrantPersistentReaderPermission(kIWA2Origin, "Reader 1");
+    permission_context.FlushScheduledSaveSettingsCalls();
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   device::FakeUsbDeviceManager device_manager_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
+#if BUILDFLAG(IS_CHROMEOS)
+  base::test::ScopedFeatureList feature_list_{blink::features::kSmartCard};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
-void ExpectDisplayNameEq(const base::Value& actual_exception_object,
-                         const std::string& display_name) {
-  const std::string* actual_display_name =
-      actual_exception_object.GetDict().FindString(kDisplayName);
-  ASSERT_TRUE(actual_display_name);
-  EXPECT_EQ(*actual_display_name, display_name);
-}
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(SiteSettingsHelperChooserExceptionTest,
+       GetSmartCardExceptionListFromProfile) {
+  const std::string kSmartCardChooserGroupName(
+      ContentSettingsTypeToGroupName(ContentSettingsType::SMART_CARD_DATA));
+  const ChooserTypeNameEntry* chooser_type =
+      ChooserTypeFromGroupName(kSmartCardChooserGroupName);
 
-}  // namespace
+  base::Value::List exceptions_list =
+      GetChooserExceptionListFromProfile(profile(), *chooser_type);
+  ASSERT_EQ(exceptions_list.size(), 2u);
+
+  {
+    const auto& exception = exceptions_list[0];
+    ExpectDisplayNameEq(exception,
+                        /*display_name=*/"Reader 1");
+
+    const auto& sites_list = *exception.GetDict().FindList(kSites);
+    ASSERT_EQ(sites_list.size(), 2u);
+    ExpectValidSiteExceptionObject(
+        sites_list[0],
+        /*display_name=*/kIWAUrl2.DeprecatedGetOriginAsURL().spec(),
+        /*origin=*/kIWAUrl2,
+        /*source=*/SiteSettingSource::kPreference,
+        /*incognito=*/false);
+    ExpectValidSiteExceptionObject(
+        sites_list[1],
+        /*display_name=*/kIWAUrl1.DeprecatedGetOriginAsURL().spec(),
+        /*origin=*/kIWAUrl1,
+        /*source=*/SiteSettingSource::kPreference,
+        /*incognito=*/false);
+  }
+
+  {
+    const auto& exception = exceptions_list[1];
+    ExpectDisplayNameEq(exception,
+                        /*display_name=*/"Reader 2");
+
+    const auto& sites_list = *exception.GetDict().FindList(kSites);
+    ASSERT_EQ(sites_list.size(), 1u);
+    ExpectValidSiteExceptionObject(
+        sites_list[0],
+        /*display_name=*/kIWAUrl1.DeprecatedGetOriginAsURL().spec(),
+        /*origin=*/kIWAUrl1,
+        /*source=*/SiteSettingSource::kPreference,
+        /*incognito=*/false);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(SiteSettingsHelperChooserExceptionTest,
        GetChooserExceptionListFromProfile) {
