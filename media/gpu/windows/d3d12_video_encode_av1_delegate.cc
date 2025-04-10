@@ -255,10 +255,9 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
           const std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>&
               profile) { return profile.first == config.output_profile; });
   if (supported_profiles.end() == supported_profile) {
-    return {
-        EncoderStatus::Codes::kEncoderUnsupportedProfile,
-        base::StringPrintf("D3D12VideoEncoder got not supportted profile: %s",
-                           GetProfileName(config.output_profile))};
+    return {EncoderStatus::Codes::kEncoderUnsupportedProfile,
+            base::StringPrintf("D3D12VideoEncoder got unsupportted profile: %s",
+                               GetProfileName(config.output_profile))};
   }
   D3D12_VIDEO_ENCODER_AV1_PROFILE profile =
       kVideoCodecProfileToD3D12Profile.at(config.output_profile);
