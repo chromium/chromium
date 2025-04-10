@@ -7,11 +7,16 @@ source_set("impression_limits") {
   ]
   deps = [
     "//base:base",
+    "//components/bookmarks/browser:browser",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core/subscriptions:subscriptions",
     "//components/history/core/browser:browser",
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
     "//components/prefs:prefs",
+    "//ios/chrome/browser/bookmarks/model:model",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/history/model:model",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
@@ -25,11 +30,16 @@ source_set("unit_tests") {
   sources = [ "impression_limit_service_unittest.cc" ]
   deps = [
     "//base/test:test_support",
+    "//components/bookmarks/test:test",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/commerce/core/subscriptions:test_support",
     "//components/history/core/browser:browser",
     "//components/keyed_service/core:core",
     "//components/pref_registry:pref_registry",
     "//components/prefs:test_support",
+    "//ios/chrome/browser/bookmarks/model:model",
+    "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits",
     "//ios/chrome/browser/history/model:model",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

@@ -11,7 +11,9 @@
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/price_tracking_utils.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -33,11 +35,18 @@ GURL GetUrlKey(GURL url) {
 
 ImpressionLimitService::ImpressionLimitService(
     PrefService* pref_service,
-    history::HistoryService* history_service)
-    : history_service_(history_service), pref_service_(pref_service) {
+    history::HistoryService* history_service,
+    bookmarks::BookmarkModel* bookmark_model,
+    commerce::ShoppingService* shopping_service)
+    : pref_service_(pref_service),
+      history_service_(history_service),
+      bookmark_model_(bookmark_model),
+      shopping_service_(shopping_service) {
   DCHECK(history_service_);
   if (base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits)) {
     history_service_observation_.Observe(history_service_.get());
+    subscriptions_observation_.Observe(shopping_service_);
+    bookmark_model_observation_.Observe(bookmark_model);
     for (const auto& pref_name : GetAllowListedPrefs()) {
       RemoveEntriesOlderThan30Days(pref_name);
     }
@@ -71,15 +80,51 @@ void ImpressionLimitService::OnHistoryDeletions(
     for (const history::URLRow& row : deletion_info.deleted_rows()) {
       urls_to_remove.insert(GetUrlKey(row.url()).spec());
     }
-    for (const auto& pref_name : GetAllowListedPrefs()) {
-      base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
-
-      for (const auto& url : urls_to_remove) {
-        impressions.Remove(url);
-      }
-      pref_service_->SetDict(pref_name, std::move(impressions));
-    }
+    RemoveEntriesForURls(urls_to_remove);
   }
+}
+
+void ImpressionLimitService::BookmarkModelChanged() {}
+
+void ImpressionLimitService::BookmarkNodeRemoved(
+    const bookmarks::BookmarkNode* parent,
+    size_t old_index,
+    const bookmarks::BookmarkNode* node,
+    const std::set<GURL>& no_longer_bookmarked,
+    const base::Location& location) {
+  std::set<std::string> urls_to_remove;
+  for (const GURL& url : no_longer_bookmarked) {
+    urls_to_remove.insert(GetUrlKey(url).spec());
+  }
+  RemoveEntriesForURls(urls_to_remove);
+}
+
+void ImpressionLimitService::OnSubscribe(
+    const commerce::CommerceSubscription& subscription,
+    bool succeeded) {}
+
+void ImpressionLimitService::OnUnsubscribe(
+    const commerce::CommerceSubscription& subscription,
+    bool succeeded) {
+  if (!succeeded) {
+    return;
+  }
+  if (subscription.id_type != commerce::IdentifierType::kProductClusterId) {
+    return;
+  }
+
+  uint64_t cluster_id;
+  if (!base::StringToUint64(subscription.id, &cluster_id)) {
+    return;
+  }
+  std::set<std::string> urls_to_remove;
+
+  // Note not associating bookmarks w/ cluster id.
+  for (auto* node :
+       commerce::GetBookmarksWithClusterId(bookmark_model_, cluster_id)) {
+    urls_to_remove.insert(GetUrlKey(node->url()).spec());
+  }
+  RemoveEntriesForURls(urls_to_remove);
 }
 
 void ImpressionLimitService::LogImpressionForURL(
@@ -155,6 +200,18 @@ void ImpressionLimitService::RemoveEntriesBeforeTime(
     impressions.Remove(url);
   }
   pref_service_->SetDict(pref_name, std::move(impressions));
+}
+
+void ImpressionLimitService::RemoveEntriesForURls(
+    std::set<std::string> urls_to_remove) {
+  for (const auto& pref_name : GetAllowListedPrefs()) {
+    base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
+
+    for (const auto& url : urls_to_remove) {
+      impressions.Remove(url);
+    }
+    pref_service_->SetDict(pref_name, std::move(impressions));
+  }
 }
 
 const std::set<std::string_view> ImpressionLimitService::GetAllowListedPrefs() {
