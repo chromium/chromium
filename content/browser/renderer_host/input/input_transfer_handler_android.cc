@@ -55,6 +55,23 @@ InputTransferHandlerAndroid::InputTransferHandlerAndroid()
 
 InputTransferHandlerAndroid::~InputTransferHandlerAndroid() = default;
 
+void InputTransferHandlerAndroid::EmitTransferResultHistogramAndTraceEvent(
+    TransferInputToVizResult result) {
+  base::UmaHistogramEnumeration(kTransferInputToVizResultHistogram, result);
+  TRACE_EVENT_INSTANT(
+      "input", "InputTransferHandlerAndroid", [&](perfetto::EventContext ctx) {
+        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+        auto* transfer_handler = event->set_input_transfer_handler();
+        int result_int = static_cast<int>(result);
+        // Increment by 1 to convert from histogram to proto enum. The perfetto
+        // TransferInputToVizResult proto enum values are incremented by 1 to
+        // leave 0 value for unknown/unset field.
+        transfer_handler->set_transfer_result(
+            static_cast<perfetto::protos::pbzero::InputTransferHandler::
+                            TransferInputToVizResult>(result_int + 1));
+      });
+}
+
 bool InputTransferHandlerAndroid::OnTouchEvent(
     const ui::MotionEventAndroid& event) {
   if (handler_state_ == HandlerState::kDroppingCurrentSequence) {
@@ -72,8 +89,8 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
   }
 
   if (event.GetToolType() != ui::MotionEvent::ToolType::FINGER) {
-    base::UmaHistogramEnumeration(kTransferInputToVizResultHistogram,
-                                  TransferInputToVizResult::kNonFingerToolType);
+    EmitTransferResultHistogramAndTraceEvent(
+        TransferInputToVizResult::kNonFingerToolType);
     return false;
   }
 
@@ -88,8 +105,7 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
     // TODO(crbug.com/406485568): Investigate this negative delta and
     // potentially file an Android platform bug.
     TRACE_EVENT_INSTANT("input", "DownTimeAfterEventTime");
-    base::UmaHistogramEnumeration(
-        kTransferInputToVizResultHistogram,
+    EmitTransferResultHistogramAndTraceEvent(
         TransferInputToVizResult::kDownTimeAfterEventTime);
     if (active_touch_sequence_on_viz) {
       OnStartDroppingSequence(
@@ -103,8 +119,7 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
 
   const bool is_transferred_back_sequence = delta > 0;
   if (is_transferred_back_sequence) {
-    base::UmaHistogramEnumeration(
-        kTransferInputToVizResultHistogram,
+    EmitTransferResultHistogramAndTraceEvent(
         TransferInputToVizResult::kSequenceTransferredBackFromViz);
     // We don't want to retransfer this sequence which was transferred back from
     // Viz.
@@ -114,8 +129,7 @@ bool InputTransferHandlerAndroid::OnTouchEvent(
   auto transfer_result = static_cast<TransferInputToVizResult>(
       jni_delegate_->MaybeTransferInputToViz(client_->GetRootSurfaceHandle()));
 
-  base::UmaHistogramEnumeration(kTransferInputToVizResultHistogram,
-                                transfer_result);
+  EmitTransferResultHistogramAndTraceEvent(transfer_result);
 
   if (transfer_result == TransferInputToVizResult::kSuccessfullyTransferred) {
     OnTouchTransferredSuccessfully(event, /*browser_would_have_handled=*/false);

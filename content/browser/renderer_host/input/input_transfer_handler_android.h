@@ -96,6 +96,9 @@ class CONTENT_EXPORT InputTransferHandlerAndroid {
   void OnTouchTransferredSuccessfully(const ui::MotionEventAndroid& event,
                                       bool browser_would_have_handled);
 
+  void EmitTransferResultHistogramAndTraceEvent(
+      TransferInputToVizResult result);
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   //

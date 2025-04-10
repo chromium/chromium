@@ -2380,9 +2380,34 @@ message AndroidChoreographerFrameCallbackData {
   optional int64 preferred_frame_timeline_index = 3;
 }
 
+message InputTransferHandler {
+  // The values in this enum are incremented by one compared to histograms enum
+  // to follow proto guidelines to leave 0 for unknown or unset values.
+  // LINT.IfChange(TransferInputToVizResult)
+  enum TransferInputToVizResult {
+    // We don't expect this to be present in traces.
+    UNKNWON = 0;
+    SUCCESSFULLY_TRANSFERRED = 1;
+    INPUT_TRANSFER_HANDLER_NOT_FOUND_IN_MAP = 2;
+    NON_FINGER_TOOL_TYPE = 3;
+    VIZ_INITIALIZATION_NOT_COMPLETE = 4;
+    SELECTION_HANDLES_ACTIVE = 5;
+    CAN_TRIGGER_BACK_GESTURE = 6;
+    IME_IS_ACTIVE = 7;
+    REQUESTED_BY_EMBEDDER = 8;
+    SYSTEM_SERVER_DID_NOT_TRANSFER = 9;
+    BROWSER_TOKEN_CHANGED = 10;
+    MULTIPLE_BROWSER_WINDOWS_OPEN = 11;
+    DOWN_TIME_AFTER_EVENT_TIME = 12;
+    SEQUENCE_TRANSFERRED_BACK_FROM_VIZ = 13;
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/android/enums.xml:TransferInputToVizResult)
+  optional TransferInputToVizResult transfer_result = 1;
+};
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1075
+  // Next ID: 1077
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2541,5 +2566,7 @@ message ChromeTrackEvent {
     optional UrlInfo url_info = 1073;
 
     optional BeginFrameId begin_frame_id = 1074;
+
+    optional InputTransferHandler input_transfer_handler = 1076;
   }
 }
