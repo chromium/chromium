@@ -81,8 +81,10 @@ void PushNotificationClientManager::HandleNotificationInteraction(
                                                     .notification.request
                                                     .content.userInfo];
   if (clientId.has_value()) {
-    clients_[clientId.value()]->HandleNotificationInteraction(
-        notification_response);
+    auto it = clients_.find(clientId.value());
+    if (it != clients_.end()) {
+      it->second->HandleNotificationInteraction(notification_response);
+    }
   } else {
     // Safety until all clients have incorporated the appropriate ids into their
     // payload.
@@ -102,8 +104,10 @@ PushNotificationClientManager::HandleNotificationReception(
       mapToPushNotificationClientIdFromUserInfo:user_info];
   std::optional<UIBackgroundFetchResult> client_result;
   if (clientId.has_value()) {
-    client_result =
-        clients_[clientId.value()]->HandleNotificationReception(user_info);
+    auto it = clients_.find(clientId.value());
+    if (it != clients_.end()) {
+      client_result = it->second->HandleNotificationReception(user_info);
+    }
   } else {
     for (auto& client : clients_) {
       client_result = client.second->HandleNotificationReception(user_info);
