@@ -796,7 +796,8 @@ void SyncServiceImpl::SetSyncFeatureRequested() {
   // If the Sync engine was already initialized (probably running in transport
   // mode), just reconfigure.
   if (engine_ && engine_->IsInitialized()) {
-    ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
+    ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+                             /*bypass_setup_in_progress_check=*/false);
   } else {
     // Otherwise try to start up. Note that there might still be other disable
     // reasons remaining, in which case this will effectively do nothing.
@@ -1037,14 +1038,6 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   // available upon future profile startups.
   CacheTrustedVaultDebugInfoToPrefsFromEngine();
 
-  if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
-    // Tentatively use a generic reason, but it may be later overridden
-    // to CONFIGURE_REASON_NEW_CLIENT. The overriding code is needed
-    // anyway in case CanConfigureDataTypes() above returned false due
-    // sync setup being in progress.
-    ConfigureDataTypeManager(CONFIGURE_REASON_EXISTING_CLIENT_RESTART);
-  }
-
   // Check for a cookie jar mismatch.
   if (identity_manager_) {
     signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info =
@@ -1055,8 +1048,12 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
     }
   }
 
-  DVLOG(2) << "Notify on engine initialized";
-  NotifyObservers();
+  // Tentatively use a generic reason, but it may be later overridden
+  // to CONFIGURE_REASON_NEW_CLIENT. The overriding code is needed
+  // anyway in case sync setup is in progress and configuration cannot
+  // be started right away.
+  ConfigureDataTypeManager(CONFIGURE_REASON_EXISTING_CLIENT_RESTART,
+                           /*bypass_setup_in_progress_check=*/false);
 }
 
 void SyncServiceImpl::OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) {
@@ -1274,7 +1271,8 @@ void SyncServiceImpl::SyncAuthAccountStateChanged() {
       TryStart();
       NotifyObservers();
     } else {
-      ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
+      ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+                               /*bypass_setup_in_progress_check=*/false);
     }
   }
 }
@@ -1362,17 +1360,8 @@ void SyncServiceImpl::MaybeRecordTrustedVaultHistograms() {
 
 void SyncServiceImpl::ReconfigureDataTypesDueToCrypto() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
-    ConfigureDataTypeManager(CONFIGURE_REASON_CRYPTO);
-  }
-
-  // Notify observers that the passphrase status may have changed, regardless of
-  // whether we triggered configuration or not. This is needed for the
-  // IsSetupInProgress() case where the UI needs to be updated to reflect that
-  // the passphrase was accepted (https://crbug.com/870256).
-  DVLOG(2) << "Notify observers on ReconfigureDataTypesDueToCrypto";
-  NotifyObservers();
+  ConfigureDataTypeManager(CONFIGURE_REASON_CRYPTO,
+                           /*bypass_setup_in_progress_check=*/false);
 }
 
 void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
@@ -1474,12 +1463,6 @@ bool SyncServiceImpl::RequiresClientUpgrade() const {
   return last_actionable_error_.action == UPGRADE_CLIENT;
 }
 
-bool SyncServiceImpl::CanConfigureDataTypes(
-    bool bypass_setup_in_progress_check) const {
-  return engine_ && engine_->IsInitialized() &&
-         (bypass_setup_in_progress_check || !IsSetupInProgress());
-}
-
 std::unique_ptr<SyncSetupInProgressHandle>
 SyncServiceImpl::GetSetupInProgressHandle() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1528,7 +1511,8 @@ void SyncServiceImpl::OnSelectedTypesPrefChange() {
     data_type_manager_->ResetDataTypeErrors();
   }
 
-  ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
+  ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+                           /*bypass_setup_in_progress_check=*/false);
 }
 
 SyncClient* SyncServiceImpl::GetSyncClientForTest() {
@@ -1626,9 +1610,22 @@ DataTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync() const {
   return data_type_manager_->GetTypesWithPendingDownloadForInitialSync();
 }
 
-void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
-  DCHECK(engine_);
-  DCHECK(engine_->IsInitialized());
+void SyncServiceImpl::ConfigureDataTypeManager(
+    ConfigureReason reason,
+    bool bypass_setup_in_progress_check) {
+  // Don't configure datatypes if the setup UI is still on the screen - this
+  // is to help multi-screen setting UIs (like iOS) where they don't want to
+  // start syncing data until the user is done configuring encryption options,
+  // etc. ReconfigureDatatypeManager() will get called again once the last
+  // SyncSetupInProgressHandle is released.
+  if (!engine_ || !engine_->IsInitialized() ||
+      (!bypass_setup_in_progress_check && IsSetupInProgress())) {
+    // In any case, notify the observers. Whatever triggered the reconfigure
+    // (attempt) might be interesting to them.
+    NotifyObservers();
+    return;
+  }
+
   DCHECK(!engine_->GetCacheGuid().empty());
   DVLOG(1) << "Started DataTypeManager configuration, reason: "
            << static_cast<int>(reason);
@@ -1650,7 +1647,8 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
     migrator_ = std::make_unique<BackendMigrator>(
         debug_identifier_, data_type_manager_.get(),
         base::BindRepeating(&SyncServiceImpl::ConfigureDataTypeManager,
-                            base::Unretained(this), CONFIGURE_REASON_MIGRATION),
+                            base::Unretained(this), CONFIGURE_REASON_MIGRATION,
+                            /*bypass_setup_in_progress_check=*/true),
         base::BindRepeating(&SyncServiceImpl::StartSyncingWithServer,
                             base::Unretained(this)));
 
@@ -1725,6 +1723,8 @@ void SyncServiceImpl::ConfigureDataTypeManager(ConfigureReason reason) {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
+
+  NotifyObservers();
 }
 
 bool SyncServiceImpl::UseTransportOnlyMode() const {
@@ -1836,12 +1836,8 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
 #if !BUILDFLAG(IS_CHROMEOS)
 void SyncServiceImpl::OnFirstSetupCompletePrefChange(
     bool is_initial_sync_feature_setup_complete) {
-  if (engine_ && engine_->IsInitialized()) {
-    ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
-    // IsSyncFeatureEnabled() likely changed, it might be time to record
-    // histograms.
-    MaybeRecordTrustedVaultHistograms();
-  }
+  ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+                           /*bypass_setup_in_progress_check=*/false);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -2140,37 +2136,6 @@ void SyncServiceImpl::StopAndClear(ResetEngineReason reset_engine_reason) {
   NotifyObservers();
 }
 
-void SyncServiceImpl::ReconfigureDatatypeManager(
-    bool bypass_setup_in_progress_check) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (engine_ && engine_->IsInitialized()) {
-    DCHECK(engine_);
-    // Don't configure datatypes if the setup UI is still on the screen - this
-    // is to help multi-screen setting UIs (like iOS) where they don't want to
-    // start syncing data until the user is done configuring encryption options,
-    // etc. ReconfigureDatatypeManager() will get called again once the last
-    // SyncSetupInProgressHandle is released.
-    if (CanConfigureDataTypes(bypass_setup_in_progress_check)) {
-      ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION);
-    } else {
-      DVLOG(0) << "ConfigureDataTypeManager not invoked because datatypes "
-               << "cannot be configured now";
-    }
-  } else if (HasDisableReason(DISABLE_REASON_UNRECOVERABLE_ERROR)) {
-    // There is nothing more to configure.
-    DVLOG(1) << "ConfigureDataTypeManager not invoked because of an "
-             << "Unrecoverable error.";
-  } else {
-    DVLOG(0) << "ConfigureDataTypeManager not invoked because engine is not "
-             << "initialized";
-  }
-
-  // In any case, notify the observers. Whatever triggered the reconfigure
-  // (attempt) might be interesting to them.
-  DVLOG(2) << "Notify observers on ReconfigureDatatypeManager";
-  NotifyObservers();
-}
-
 bool SyncServiceImpl::IsRetryingAccessTokenFetchForTest() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_IS_TEST();
@@ -2288,15 +2253,11 @@ void SyncServiceImpl::OnSetupInProgressHandleDestroyed() {
 
   --outstanding_setup_in_progress_handles_;
 
-  if (engine_ && engine_->IsInitialized()) {
-    // The user closed a setup UI, and will expect their changes to actually
-    // take effect now. So we reconfigure here even if another setup UI happens
-    // to be open right now.
-    ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/true);
-  }
-
-  DVLOG(2) << "Notify observers OnSetupInProgressHandleDestroyed";
-  NotifyObservers();
+  // The user closed a setup UI, and will expect their changes to actually
+  // take effect now. So we reconfigure here even if another setup UI happens
+  // to be open right now.
+  ConfigureDataTypeManager(CONFIGURE_REASON_RECONFIGURATION,
+                           /*bypass_setup_in_progress_check=*/true);
 }
 
 void SyncServiceImpl::GetTypesWithUnsyncedData(

@@ -307,15 +307,13 @@ class SyncServiceImpl : public SyncService,
 
   bool IsEngineAllowedToRun() const;
 
-  // Reconfigures the data type manager with the latest enabled types.
+  // Configures the data type manager with the latest enabled types.
   // Note: Does not initialize the engine if it is not already initialized.
   // If a Sync setup is currently in progress (i.e. a settings UI is open), then
   // the reconfiguration will only happen if `bypass_setup_in_progress_check` is
   // set to true.
-  void ReconfigureDatatypeManager(bool bypass_setup_in_progress_check);
-
-  // Helper to install and configure a data type manager.
-  void ConfigureDataTypeManager(ConfigureReason reason);
+  void ConfigureDataTypeManager(ConfigureReason reason,
+                                bool bypass_setup_in_progress_check);
 
   bool UseTransportOnlyMode() const;
 
@@ -362,9 +360,6 @@ class SyncServiceImpl : public SyncService,
   void RecordHistoryOptInStateOnSigninHistograms(
       signin_metrics::AccessPoint access_point,
       signin::ConsentLevel consent_level);
-
-  // True if setup has been completed at least once and is not in progress.
-  bool CanConfigureDataTypes(bool bypass_setup_in_progress_check) const;
 
   // Called when a SetupInProgressHandle issued by this instance is destroyed.
   void OnSetupInProgressHandleDestroyed();
