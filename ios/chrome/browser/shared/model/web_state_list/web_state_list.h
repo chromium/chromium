@@ -513,7 +513,7 @@ class WebStateList {
   // undesirable state. For instance, this function returns true when detaching
   // the last tab of a shared group, as it avoids accidental group deletion by
   // inserting a web state.
-  bool ShouldInsertWebState(DetachParams params, const TabGroup* group);
+  bool ShouldInsertWebState(const TabGroup* group);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

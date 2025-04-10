@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/share_kit/model/fake_share_kit_flow_view_controller.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_delete_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_join_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_leave_configuration.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
@@ -195,7 +196,14 @@ NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
 
 UIViewController* TestShareKitService::FacePile(
     ShareKitFacePileConfiguration* config) {
-  return [[UIViewController alloc] init];
+  UIViewController* view_controller = [[UIViewController alloc] init];
+  if (config.collabID.length) {
+    [view_controller.view setBackgroundColor:UIColor.blueColor];
+  } else {
+    [view_controller.view setBackgroundColor:UIColor.redColor];
+  }
+
+  return view_controller;
 }
 
 void TestShareKitService::ReadGroups(ShareKitReadGroupsConfiguration* config) {

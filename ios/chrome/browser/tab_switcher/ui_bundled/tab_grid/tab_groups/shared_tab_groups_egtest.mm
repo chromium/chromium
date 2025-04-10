@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/collaboration/public/features.h"
 #import "components/data_sharing/public/features.h"
 #import "components/data_sharing/public/group_data.h"
@@ -80,6 +81,7 @@ NSString* const kSharedGroupTitle = @"shared group";
 // Put the number at the beginning to avoid issues with sentence case, as the
 // keyboard default can differ iPhone vs iPad, simulator vs device.
 NSString* const kGroup1Name = @"1group";
+NSString* const kGroup2Name = @"2group";
 
 // Constant for timeout while waiting for asynchronous sync operations.
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
@@ -89,20 +91,36 @@ id<GREYMatcher> FacePileButton() {
   return grey_accessibilityID(kTabGroupFacePileButtonIdentifier);
 }
 
+// Long press on the given matcher.
+void LongPressOn(id<GREYMatcher> matcher) {
+  // Ensure the element is visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:matcher];
+  [ChromeEarlGreyUI waitForAppToIdle];
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_longPress()
+                                                         error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Long press failed.");
+}
+
 // Long presses a tab group cell.
 void LongPressTabGroupCellAtIndex(unsigned int index) {
   // Make sure the cell has appeared. Otherwise, long pressing can be flaky.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(index)];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(index)]
-      performAction:grey_longPress()];
+  LongPressOn(TabGridGroupCellAtIndex(index));
 }
 
 // Shares the group at `index`.
 void ShareGroupAtIndex(unsigned int index) {
   // Share the first group.
   LongPressTabGroupCellAtIndex(index);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ShareGroupButton()];
   [[EarlGrey selectElementWithMatcher:ShareGroupButton()]
       performAction:grey_tap()];
 
@@ -818,6 +836,48 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   // Check that kSharedTabTitle tab cell is not in the group anymore.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kSharedTabTitle)]
       assertWithMatcher:grey_nil()];
+}
+
+// Ensures new tab is added when moving the last tab of a shared group.
+- (void)testMoveLastTabInSharedGroup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+
+  // Create 2 groups, one shared and one local.
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+  AddSharedGroup(/*owner=*/NO);
+  CreateTabGroupAtIndex(0, kGroup2Name, /*first_group=*/false);
+
+  // Open the shared group and move the only tab in it to the other group.
+  OpenTabGroupAtIndex(1);
+  LongPressOn(TabWithTitle(kSharedTabTitle));
+  id<GREYMatcher> moveContextMenuButton = ContextMenuItemWithAccessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_MOVETABTOGROUP));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:moveContextMenuButton];
+  [[EarlGrey selectElementWithMatcher:moveContextMenuButton]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabel(
+                                          kGroup2Name)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabWithTitle(kSharedTabTitle)];
+
+  // Verify that the shared tab group view is still displayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupViewTitle(kSharedGroupTitle)]
+      assertWithMatcher:grey_notNil()];
+  // Wait until the page has finished loading.
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  // Make it active so we get the correct URL.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  // Verify that the new tab URL is chrome://newtab/.
+  const GURL expectedURL(kChromeUINewTabURL);
+  const GURL currentURL = [ChromeEarlGrey webStateVisibleURL];
+  GREYAssertEqual(expectedURL, currentURL, @"Page navigated unexpectedly to %s",
+                  currentURL.spec().c_str());
 }
 
 // Ensures that adding a tab from another account reflects correctly in a shared
