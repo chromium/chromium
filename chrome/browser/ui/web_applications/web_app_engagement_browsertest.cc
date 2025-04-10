@@ -580,7 +580,14 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, RecordedForNonApps) {
 // On Chrome OS, PWAs are launched via the app service rather than via command
 // line flags.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineWindowByUrl) {
+// TODO(crbug.com/409686053): Flaky on windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CommandLineWindowByUrl DISABLED_CommandLineWindowByUrl
+#else
+#define MAYBE_CommandLineWindowByUrl CommandLineWindowByUrl
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
+                       MAYBE_CommandLineWindowByUrl) {
   base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
