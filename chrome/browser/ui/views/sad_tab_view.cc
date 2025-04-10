@@ -493,7 +493,7 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   // This view gets inserted as a child of a WebView, but we don't want the
   // WebView to delete us if the WebView gets deleted before the SadTabHelper
   // does.
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   SetBackground(views::CreateSolidBackground(ui::kColorDialogBackground));
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();

@@ -3017,19 +3017,17 @@ class BannedTypeCheckTest(unittest.TestCase):
             MockFile('third_party/blink/problematic/file.cc',
                      ['GetInterfaceProvider()']),
             MockFile('some/cpp/ok/file.cc', ['using std::string;']),
-            MockFile('some/cpp/problematic/file2.cc',
-                     ['set_owned_by_client()']),
             MockFile('some/cpp/nocheck/file.cc',
                      ['using namespace std;  // nocheck']),
             MockFile('some/cpp/comment/file.cc',
                      ['  // A comment about `using namespace std;`']),
-            MockFile('some/cpp/problematic/file3.cc', [
+            MockFile('some/cpp/problematic/file2.cc', [
                 'params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET'
             ]),
-            MockFile('some/cpp/problematic/file4.cc', [
+            MockFile('some/cpp/problematic/file3.cc', [
                 'params.ownership = Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET'
             ]),
-            MockFile('some/cpp/problematic/file5.cc', [
+            MockFile('some/cpp/problematic/file4.cc', [
                 'Browser* browser = chrome::FindBrowserWithTab(web_contents)'
             ]),
             MockFile('allowed_ranges_usage.cc', ['std::ranges::begin(vec)']),
@@ -3051,7 +3049,6 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertTrue('some/cpp/problematic/file2.cc' in results[0].message)
         self.assertTrue('some/cpp/problematic/file3.cc' in results[0].message)
         self.assertTrue('some/cpp/problematic/file4.cc' in results[0].message)
-        self.assertTrue('some/cpp/problematic/file5.cc' in results[0].message)
         self.assertFalse('some/cpp/nocheck/file.cc' in results[0].message)
         self.assertFalse('some/cpp/nocheck/file.cc' in results[1].message)
         self.assertFalse('some/cpp/comment/file.cc' in results[0].message)

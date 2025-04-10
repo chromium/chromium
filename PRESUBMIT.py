@@ -1711,15 +1711,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
-        'set_owned_by_client',
-        ('set_owned_by_client is deprecated.',
-         'views::View already owns the child views by default. This introduces ',
-         'a competing ownership model which makes the code difficult to reason ',
-         'about. See http://crbug.com/1044687 for more details.'),
-        False,
-        (),
-    ),
-    BanRule(
         'RemoveAllChildViewsWithoutDeleting',
         ('RemoveAllChildViewsWithoutDeleting is deprecated.',
          'This method is deemed dangerous as, unless raw pointers are re-added,',

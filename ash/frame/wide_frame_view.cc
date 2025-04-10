@@ -130,7 +130,7 @@ WideFrameView::WideFrameView(views::Widget* target)
   window->SetProperty(kHideInOverviewKey, true);
   window->SetProperty(kForceVisibleInMiniViewKey, true);
   window->SetEventTargeter(std::make_unique<WideFrameTargeter>(header_view()));
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
   WindowState::Get(window)->set_allow_set_bounds_direct(true);
 
   paint_as_active_subscription_ =

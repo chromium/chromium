@@ -430,7 +430,7 @@ ShellSurfaceBase::ShellSurfaceBase(Surface* surface,
   surface->AddSurfaceObserver(this);
   SetRootSurface(surface);
   host_window()->Show();
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   SetCanMinimize(can_minimize_);
   SetCanMaximize(ash::desks_util::IsDeskContainerId(container_));

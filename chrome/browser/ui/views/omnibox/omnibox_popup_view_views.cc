@@ -207,7 +207,7 @@ OmniboxPopupViewViews::OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
   }
 
   // The contents is owned by the LocationBarView.
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));

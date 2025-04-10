@@ -204,7 +204,7 @@ EyeDropperView::EyeDropperView(gfx::NativeView parent,
   SetModalType(ui::mojom::ModalType::kWindow);
   // TODO(pbos): Remove this, perhaps by separating the contents view from the
   // EyeDropper/WidgetDelegate.
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
   SetPreferredSize(GetSize());
 #if BUILDFLAG(IS_LINUX)
   // Use TYPE_MENU for Linux to ensure that the eye dropper view is displayed

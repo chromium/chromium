@@ -5387,7 +5387,7 @@ bool BrowserView::MaybeShowBookmarkBar(WebContents* contents) {
   if (!bookmark_bar_view_.get()) {
     bookmark_bar_view_ =
         std::make_unique<BookmarkBarView>(browser_.get(), this);
-    bookmark_bar_view_->set_owned_by_client();
+    bookmark_bar_view_->set_owned_by_client(OwnedByClientPassKey());
     bookmark_bar_view_->SetBookmarkBarState(
         browser_->bookmark_bar_state(), BookmarkBar::DONT_ANIMATE_STATE_CHANGE);
     GetBrowserViewLayout()->set_bookmark_bar(bookmark_bar_view_.get());
