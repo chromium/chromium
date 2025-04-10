@@ -1967,8 +1967,8 @@ if (enable_java_templates) {
         rebase_path(outputs[0], root_build_dir),
         "--chromium-output-dir",
         rebase_path(root_build_dir, root_build_dir),
-        "--direct-classpath-jars=@FileArg($_rebased_build_config:javac:classpath)",
-        "--full-classpath-jars=@FileArg($_rebased_build_config:deps_info:javac_full_classpath)",
+        "--direct-classpath-jars=@FileArg($_rebased_build_config:javac:interface_classpath)",
+        "--full-classpath-jars=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
         "--full-classpath-gn-targets=@FileArg($_rebased_build_config:deps_info:javac_full_classpath_targets)",
       ]
       if (auto_add_missing_java_deps) {
@@ -4203,8 +4203,7 @@ if (enable_java_templates) {
         _validate_target_name = "${target_name}__validate"
         check_for_missing_direct_deps(_validate_target_name) {
           forward_variables_from(invoker, [ "missing_classes_allowlist" ])
-          deps = _unprocessed_jar_deps + _javac_classpath_deps +
-                 [ ":$_build_config_target_name" ]
+          deps = _unprocessed_jar_deps + _header_classpath_deps
           data_deps = _java_validate_deps
           if (defined(_compile_java_errorprone_target)) {
             data_deps += [ ":$_compile_java_errorprone_target" ]
