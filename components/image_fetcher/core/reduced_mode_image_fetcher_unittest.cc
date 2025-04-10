@@ -139,7 +139,7 @@ class ReducedModeImageFetcherTest : public testing::Test {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   FakeDB<CachedImageMetadataProto>* db() { return db_; }
 
-  MOCK_METHOD2(OnImageLoaded, void(bool, std::string));
+  MOCK_METHOD(void, OnImageLoaded, (bool, std::string), ());
 
  protected:
   GURL kImageUrl{"http://gstatic.img.com/foo.jpg"};
