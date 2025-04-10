@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/field_types.h"
+#import "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
@@ -452,22 +453,18 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
 
 // Returns the symbol corresponding to the `type` for the update modal view.
 - (UIImage*)symbolForUpdateModelFromAutofillType:(autofill::FieldType)type {
-  switch (type) {
-    case autofill::NAME_FULL:
-    case autofill::ALTERNATIVE_FULL_NAME:
+  switch (GetAddressUIComponentIconTypeForFieldType(type)) {
+    case autofill::AddressUIComponentIconType::kNoIcon:
+      return nil;
+    case autofill::AddressUIComponentIconType::kName:
       return DefaultSymbolTemplateWithPointSize(kPersonFillSymbol, kSymbolSize);
-    case autofill::ADDRESS_HOME_STREET_ADDRESS:
-    case autofill::ADDRESS_HOME_ADDRESS:
+    case autofill::AddressUIComponentIconType::kAddress:
       return CustomSymbolTemplateWithPointSize(kLocationSymbol, kSymbolSize);
-    case autofill::EMAIL_ADDRESS:
+    case autofill::AddressUIComponentIconType::kEmail:
       return DefaultSymbolTemplateWithPointSize(kMailFillSymbol, kSymbolSize);
-    case autofill::PHONE_HOME_WHOLE_NUMBER:
+    case autofill::AddressUIComponentIconType::kPhone:
       return DefaultSymbolTemplateWithPointSize(kPhoneFillSymbol, kSymbolSize);
-    default:
-      break;
   }
-
-  NOTREACHED();
 }
 
 // Returns YES if the old section is shown in the update modal.
