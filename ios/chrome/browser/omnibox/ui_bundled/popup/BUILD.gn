@@ -2,28 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/apple/swift_source_set.gni")
-
-swift_source_set("popup_swift") {
-  bridge_header = "popup_swift_bridge.h"
-  sources = [ "shared/omnibox_pedal.swift" ]
-
-  deps = [
-    ":popup_ui_protocols",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/app/theme",
-    "//ios/chrome/browser/net/model:crurl",
-    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
-    "//ios/chrome/common/ui/colors:swift",
-    "//ui/base",
-  ]
-
-  frameworks = [
-    "Foundation.framework",
-    "SwiftUI.framework",
-  ]
-}
-
 source_set("popup") {
   sources = [
     "omnibox_popup_coordinator.h",
@@ -39,7 +17,6 @@ source_set("popup") {
   ]
   deps = [
     ":popup_icon",
-    ":popup_swift",
     ":popup_ui",
     ":popup_ui_protocols",
     "//base",
@@ -66,6 +43,7 @@ source_set("popup") {
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/omnibox/model:omnibox_pedal_swift",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
@@ -181,7 +159,6 @@ source_set("unit_tests") {
   deps = [
     ":popup",
     ":popup_icon",
-    ":popup_swift",
     ":popup_ui",
     ":popup_ui_protocols",
     "//base",
@@ -194,6 +171,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser",
     "//components/search_engines",
     "//components/search_engines:test_support",
+    "//ios/chrome/browser/omnibox/model:omnibox_pedal_swift",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/test:test_support",

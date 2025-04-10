@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/swift_source_set.gni")
+
 # Build target allowed while moving files from ui_bundled to other folders.
 # Model dependencies should be moved to the model folder.
 # TODO(crbug.com/394567614): Remove this target once model files have been moved.
@@ -51,6 +53,7 @@ source_set("model") {
     "suggest_action.mm",
   ]
   deps = [
+    ":omnibox_pedal_swift",
     "//base",
     "//components/bookmarks/browser",
     "//components/image_fetcher/core",
@@ -66,7 +69,6 @@ source_set("model") {
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_accessibility_identifier_constants",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_swift",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
     "//ios/chrome/browser/search_engines/model",
@@ -90,6 +92,25 @@ source_set("model") {
   public_deps = [ ":ui_bundled_interface" ]
 }
 
+swift_source_set("omnibox_pedal_swift") {
+  bridge_header = "omnibox_pedal_swift_bridge.h"
+  sources = [ "omnibox_pedal.swift" ]
+
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/app/theme",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
+    "//ios/chrome/common/ui/colors:swift",
+    "//ui/base",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "SwiftUI.framework",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -100,6 +121,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":model",
+    ":omnibox_pedal_swift",
     ":ui_bundled_interface",
     "//base/test:test_support",
     "//components/omnibox/browser",
@@ -109,7 +131,6 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/search_engines:test_support",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_swift",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
