@@ -404,4 +404,11 @@ public abstract class TabOverflowMenuCoordinator<T> {
                     modelList, mCollaborationService.getCurrentUserRoleForGroup(collaborationId));
         }
     }
+
+    public void destroyMenuForTesting() {
+        // This is needed because mMenuHolder#destroy is usually called as an onDismissListener.
+        // However, in Robolectric tests, the onDismissListener may not be called, so the menu won't
+        // be destroyed, and the test will report a lifecycle error.
+        if (mMenuHolder != null) mMenuHolder.destroy();
+    }
 }

@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -525,7 +526,8 @@ public class StripLayoutHelperManager
                         () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
                         bottomSheetController,
                         multiInstanceManager,
-                        shareDelegateSupplier);
+                        shareDelegateSupplier,
+                        TabGroupListBottomSheetCoordinator::new);
         mIncognitoHelper =
                 new StripLayoutHelper(
                         context,
@@ -543,7 +545,8 @@ public class StripLayoutHelperManager
                         () -> getStripVisibilityState() == StripVisibilityState.VISIBLE,
                         bottomSheetController,
                         multiInstanceManager,
-                        shareDelegateSupplier);
+                        shareDelegateSupplier,
+                        TabGroupListBottomSheetCoordinator::new);
 
         tabHoverCardViewStub.setOnInflateListener(
                 (viewStub, view) -> {

@@ -98,6 +98,7 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
 import org.chromium.chrome.browser.tasks.tab_management.TabCardLabelData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
 import org.chromium.chrome.browser.tasks.tab_management.TabListNotificationHandler;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
@@ -361,6 +362,10 @@ public class StripLayoutHelper
     @NonNull private final BottomSheetController mBottomSheetController;
     @NonNull private final Supplier<ShareDelegate> mShareDelegateSupplier;
 
+    @NonNull
+    private final TabGroupListBottomSheetCoordinatorFactory
+            mTabGroupListBottomSheetCoordinatorFactory;
+
     // Internal State
     private StripLayoutView[] mStripViews = new StripLayoutView[0];
     private StripLayoutTab[] mStripTabs = new StripLayoutTab[0];
@@ -560,7 +565,10 @@ public class StripLayoutHelper
             Supplier<Boolean> tabStripVisibleSupplier,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull MultiInstanceManager multiInstanceManager,
-            @NonNull Supplier<ShareDelegate> shareDelegateSupplier) {
+            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
+            @NonNull
+                    TabGroupListBottomSheetCoordinatorFactory
+                            tabGroupListBottomSheetCoordinatorFactory) {
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = NEW_TAB_BUTTON_BACKGROUND_WIDTH_DP;
@@ -575,6 +583,7 @@ public class StripLayoutHelper
         mBottomSheetController = bottomSheetController;
         mMultiInstanceManager = multiInstanceManager;
         mShareDelegateSupplier = shareDelegateSupplier;
+        mTabGroupListBottomSheetCoordinatorFactory = tabGroupListBottomSheetCoordinatorFactory;
         mScrollDelegate = new ScrollDelegate(context);
 
         // Use toolbar menu button padding to align NTB with menu button.
@@ -739,7 +748,14 @@ public class StripLayoutHelper
             mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
             mTabGroupSyncService = null;
         }
-        mTabContextMenuCoordinator = null;
+        if (mTabContextMenuCoordinator != null) {
+            mTabContextMenuCoordinator.dismiss();
+            mTabContextMenuCoordinator = null;
+        }
+        if (mTabGroupListBottomSheetCoordinator != null) {
+            mTabGroupListBottomSheetCoordinator.destroy();
+            mTabGroupListBottomSheetCoordinator = null;
+        }
     }
 
     /**
@@ -2094,7 +2110,7 @@ public class StripLayoutHelper
         if (mTabContextMenuCoordinator == null) {
             if (mTabGroupListBottomSheetCoordinator == null) {
                 mTabGroupListBottomSheetCoordinator =
-                        new TabGroupListBottomSheetCoordinator(
+                        mTabGroupListBottomSheetCoordinatorFactory.create(
                                 mContext,
                                 mTabGroupModelFilter.getTabModel().getProfile(),
                                 (newTabGroupId) -> {
@@ -2105,7 +2121,7 @@ public class StripLayoutHelper
                                 mTabGroupModelFilter,
                                 mBottomSheetController,
                                 /* showNewGroupRow= */ true,
-                                /* destroyOnHide= */ true);
+                                /* destroyOnHide= */ false);
             }
             mTabContextMenuCoordinator =
                     TabContextMenuCoordinator.createContextMenuCoordinator(
@@ -2120,6 +2136,14 @@ public class StripLayoutHelper
         getAnchorRect(tab, anchorRectProvider);
         StripLayoutUtils.performHapticFeedback(mToolbarContainerView);
         mTabContextMenuCoordinator.showMenu(anchorRectProvider, tab.getTabId());
+    }
+
+    /* package */ void showTabContextMenuForTesting(StripLayoutTab tab) {
+        showTabContextMenu(tab);
+    }
+
+    /* package */ void destroyTabContextMenuForTesting() {
+        if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.destroyMenuForTesting();
     }
 
     /**
