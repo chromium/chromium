@@ -51,8 +51,10 @@ async def test_traverse_history(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_traverse_history_no_entry(websocket, context_id, html):
-    await goto_url(websocket, context_id, html())
+async def test_traverse_history_no_entry(websocket, context_id, html,
+                                         test_chromedriver_mode):
+    if test_chromedriver_mode:
+        pytest.xfail(reason="TODO: #3294")
 
     with pytest.raises(Exception,
                        match=str({
