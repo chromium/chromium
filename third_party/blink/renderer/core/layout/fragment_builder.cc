@@ -218,8 +218,10 @@ void FragmentBuilder::PropagateChildAnchors(const PhysicalFragment& child,
         child, node_, IsBlockFragmentationContextRoot() || HasItems());
     if (child.IsExplicitAnchor()) {
       for (const ScopedCSSName* name : child.Style().AnchorName()->GetNames()) {
-        EnsureAnchorQuery().Set(name, *child.GetLayoutObject(), rect, *options,
-                                context);
+        AnchorScopedName* anchor_scoped_name =
+            ToAnchorScopedName(*name, *child.GetLayoutObject());
+        EnsureAnchorQuery().Set(anchor_scoped_name, *child.GetLayoutObject(),
+                                rect, *options, context);
       }
     }
     if (child.IsImplicitAnchor()) {

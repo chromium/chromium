@@ -4263,11 +4263,13 @@ const LayoutObject* LayoutBox::FindTargetAnchor(
     return nullptr;
   }
 
+  AnchorScopedName* anchor_scoped_name = ToAnchorScopedName(anchor_name, *this);
+
   // Go through the already built PhysicalAnchorQuery to avoid tree traversal.
   const LayoutObject* anchor = nullptr;
   auto search_for_anchor = [&](const PhysicalAnchorQuery& anchor_query) {
     if (const LayoutObject* current =
-            anchor_query.AnchorLayoutObject(*this, &anchor_name)) {
+            anchor_query.AnchorLayoutObject(*this, anchor_scoped_name)) {
       if (!anchor ||
           (anchor != current && anchor->IsBeforeInPreOrder(*current))) {
         anchor = current;

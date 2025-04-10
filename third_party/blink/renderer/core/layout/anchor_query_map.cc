@@ -332,8 +332,10 @@ struct StitchedAnchorQueryCollector {
       if (fragment.IsExplicitAnchor()) {
         for (const ScopedCSSName* name :
              fragment.Style().AnchorName()->GetNames()) {
+          AnchorScopedName* anchor_scoped_name =
+              ToAnchorScopedName(*name, *layout_object);
           query.AddAnchorReference(
-              name, *fragment.GetLayoutObject(),
+              anchor_scoped_name, *fragment.GetLayoutObject(),
               {offset_from_fragmentainer, fragment.Size()}, fragmentainer,
               StitchedAnchorQuery::Conflict::kOverwriteIfAfter);
         }

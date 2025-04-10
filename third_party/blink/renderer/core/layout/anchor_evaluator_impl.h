@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/layout/anchor_scope.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/platform/geometry/physical_offset.h"
@@ -27,7 +28,7 @@ class LayoutObject;
 class StitchedAnchorQueries;
 class PaintLayer;
 
-using AnchorKey = std::variant<const ScopedCSSName*, const Element*>;
+using AnchorKey = std::variant<const AnchorScopedName*, const Element*>;
 
 // This class is conceptually a concatenation of two hash maps with different
 // key types but the same value type. To save memory, we don't implement it as
@@ -36,7 +37,7 @@ using AnchorKey = std::variant<const ScopedCSSName*, const Element*>;
 template <typename AnchorReference>
 class AnchorQueryBase : public GarbageCollectedMixin {
   using NamedAnchorMap =
-      HeapHashMap<Member<const ScopedCSSName>, Member<AnchorReference>>;
+      HeapHashMap<Member<const AnchorScopedName>, Member<AnchorReference>>;
   using ImplicitAnchorMap =
       HeapHashMap<Member<const Element>, Member<AnchorReference>>;
 
@@ -46,8 +47,8 @@ class AnchorQueryBase : public GarbageCollectedMixin {
   }
 
   const AnchorReference* GetAnchorReference(const AnchorKey& key) const {
-    if (const ScopedCSSName* const* name =
-            std::get_if<const ScopedCSSName*>(&key)) {
+    if (const AnchorScopedName* const* name =
+            std::get_if<const AnchorScopedName*>(&key)) {
       return GetAnchorReference(named_anchors_, *name);
     }
     return GetAnchorReference(implicit_anchors_, std::get<const Element*>(key));
@@ -59,8 +60,8 @@ class AnchorQueryBase : public GarbageCollectedMixin {
     STACK_ALLOCATED();
   };
   AddResult insert(const AnchorKey& key, AnchorReference* reference) {
-    if (const ScopedCSSName* const* name =
-            std::get_if<const ScopedCSSName*>(&key)) {
+    if (const AnchorScopedName* const* name =
+            std::get_if<const AnchorScopedName*>(&key)) {
       return insert(named_anchors_, *name, reference);
     }
     return insert(implicit_anchors_, std::get<const Element*>(key), reference);
@@ -189,7 +190,6 @@ class CORE_EXPORT PhysicalAnchorQuery
   // have a valid LayoutObject.
   const PhysicalAnchorReference* AnchorReference(const LayoutBox& query_box,
                                                  const AnchorKey&) const;
-
   const LayoutObject* AnchorLayoutObject(const LayoutBox& query_box,
                                          const AnchorKey&) const;
 
