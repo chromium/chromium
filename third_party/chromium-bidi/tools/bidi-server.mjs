@@ -69,6 +69,11 @@ export function parseCommandLineArgs() {
       describe: 'Provide a test name to filter by',
       type: 'string',
     })
+    .option('repeat-times', {
+      describe: 'If set, will repeat each test this many times',
+      type: 'number',
+      default: Number(process.env.REPEAT_TIMES || 1),
+    })
     .option('total-chunks', {
       describe: 'If provided, will split tests into this many shards.',
       type: 'number',

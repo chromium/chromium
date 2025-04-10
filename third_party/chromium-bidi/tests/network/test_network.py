@@ -498,9 +498,9 @@ async def test_network_sends_only_included_cookies(websocket, context_id,
 async def test_network_should_not_block_queue_shared_workers_with_data_url(
         websocket, context_id, url_base):
 
-    await subscribe(websocket, ["network.beforeRequestSent"])
-
     await goto_url(websocket, context_id, url_base)
+
+    await subscribe(websocket, ["network.beforeRequestSent"])
 
     await send_JSON_command(
         websocket, {

@@ -41,6 +41,7 @@ const PYTEST_PREFIX = 'PyTest';
 const PYTEST_TOTAL_CHUNKS = argv['total-chunks'];
 const PYTEST_THIS_CHUNK = argv['this-chunk'];
 const UPDATE_SNAPSHOT = argv['update-snapshot'] === 'true';
+const REPEAT_TIMES = argv['repeat-times'];
 
 /**
  *
@@ -157,6 +158,9 @@ e2eArgs.push(
   '--snapshot-warn-unused',
   ...(UPDATE_SNAPSHOT ? ['--snapshot-update'] : []),
 );
+if (REPEAT_TIMES !== 1) {
+  e2eArgs.push(`--count=${REPEAT_TIMES}`);
+}
 if (PYTEST_TOTAL_CHUNKS !== 1) {
   e2eArgs.push(
     '--num-shards',
