@@ -1092,7 +1092,6 @@ if (is_android) {
     resources_package = "org.chromium.chrome.browser.tasks.tab_management"
 
     sources = [
-      "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/ActionConfirmationManagerUnitTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/CloseAllTabsHelperUnitTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/CollaborationActivityMessageCardViewModelUnitTest.java",
       "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/GroupWindowCheckerUnitTest.java",
