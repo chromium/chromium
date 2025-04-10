@@ -126,4 +126,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   [ChromeEarlGreyUI waitForAppToIdle];
 }
 
+- (void)acceptOmniboxText {
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+}
+
 @end

@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+class FakeSuggestionsBuilder;
+class GURL;
 @class OmniboxCoordinator;
 
 /// Coordinator that presents omnibox UI elements for integration tests.
@@ -17,8 +19,18 @@
 /// The omnibox coordinator.
 @property(nonatomic, strong) OmniboxCoordinator* omniboxCoordinator;
 
-/// Simulates the active page being NTP.
+/// Returns the fake suggestions builder, used to add fake suggestions in the
+/// omnibox.
+- (FakeSuggestionsBuilder*)fakeSuggestionsBuilder;
+
+/// Simulates the active page being NTP. Default on start.
 - (void)simulateNTP;
+
+/// Returns the latest URL loaded by the omnibox.
+- (GURL)lastURLLoaded;
+
+/// Resets the latest URL loaded by the omnibox.
+- (void)resetLastURLLoaded;
 
 @end
 

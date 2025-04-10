@@ -161,6 +161,9 @@ class FakeOmniboxClient : public OmniboxClient {
   void set_on_autocomplete_accept_destination_url(const GURL& url) {
     on_autocomplete_accept_destination_url_ = url;
   }
+  GURL get_on_autocomplete_accept_destination_url() {
+    return on_autocomplete_accept_destination_url_;
+  }
   void set_is_history_embeddings_enabled(bool enabled) {
     is_history_embeddings_enabled_ = enabled;
   }

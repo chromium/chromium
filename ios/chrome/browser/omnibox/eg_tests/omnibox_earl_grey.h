@@ -52,6 +52,9 @@ class EmbeddedTestServer;
 /// Defocus the omnibox.
 - (void)defocusOmnibox;
 
+/// Accepts the current omnibox input.
+- (void)acceptOmniboxText;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_EG_TESTS_OMNIBOX_EARL_GREY_H_

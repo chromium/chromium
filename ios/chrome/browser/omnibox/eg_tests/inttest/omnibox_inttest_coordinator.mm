@@ -7,11 +7,15 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "components/omnibox/browser/omnibox_controller.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/fake_omnibox_client.h"
+#import "ios/chrome/browser/omnibox/eg_tests/inttest/fake_suggestions_builder.h"
+#import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_view_controller.h"
 #import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_view_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/chrome_omnibox_client_ios.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_coordinator+Testing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_coordinator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -23,6 +27,7 @@
 @implementation OmniboxInttestCoordinator {
   OmniboxInttestViewController* _viewController;
   raw_ptr<FakeOmniboxClient> _fakeOmniboxClient;
+  raw_ptr<FakeSuggestionsBuilder> _fakeSuggestionsBuilder;
 }
 
 - (void)start {
@@ -51,6 +56,23 @@
   omniboxCoordinator.isSearchOnlyUI = YES;
   [omniboxCoordinator start];
 
+  auto fakeAutocompleteController =
+      std::make_unique<OmniboxInttestAutocompleteController>();
+  _fakeSuggestionsBuilder =
+      fakeAutocompleteController->fake_suggestions_builder();
+  if (OmniboxController* omniboxController =
+          omniboxCoordinator.omniboxController) {
+    // Remove old AutocompleteController.
+    AutocompleteController* oldAutocomplete =
+        omniboxController->autocomplete_controller();
+    oldAutocomplete->RemoveObserver(omniboxController);
+    // Add fake AutocompleteController.
+    omniboxController->SetAutocompleteControllerForTesting(
+        std::move(fakeAutocompleteController));
+    omniboxController->autocomplete_controller()->AddObserver(
+        omniboxController);
+  }
+
   [omniboxCoordinator.managedViewController
       willMoveToParentViewController:_viewController];
   [_viewController
@@ -66,6 +88,7 @@
 
 - (void)stop {
   _fakeOmniboxClient = nullptr;
+  _fakeSuggestionsBuilder = nullptr;
   [self.omniboxCoordinator stop];
   self.omniboxCoordinator = nil;
 
@@ -75,11 +98,23 @@
   _viewController = nil;
 }
 
+- (FakeSuggestionsBuilder*)fakeSuggestionsBuilder {
+  return _fakeSuggestionsBuilder;
+}
+
 - (void)simulateNTP {
   _fakeOmniboxClient->set_current_page_exists(true);
   _fakeOmniboxClient->set_url(GURL(kChromeUINewTabURL));
   _fakeOmniboxClient->set_page_classification(
       metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
+}
+
+- (GURL)lastURLLoaded {
+  return _fakeOmniboxClient->get_on_autocomplete_accept_destination_url();
+}
+
+- (void)resetLastURLLoaded {
+  _fakeOmniboxClient->set_on_autocomplete_accept_destination_url(GURL());
 }
 
 #pragma mark - OmniboxInttestViewControllerDelegate

@@ -407,4 +407,10 @@
   return self.viewController.textField;
 }
 
+#pragma mark - Testing
+
+- (OmniboxController*)omniboxController {
+  return _editView ? _editView->controller() : nullptr;
+}
+
 @end

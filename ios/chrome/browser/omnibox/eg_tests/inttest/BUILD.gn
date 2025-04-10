@@ -7,6 +7,10 @@ source_set("inttest") {
   sources = [
     "fake_omnibox_client.h",
     "fake_omnibox_client.mm",
+    "fake_suggestions_builder.h",
+    "fake_suggestions_builder.mm",
+    "omnibox_inttest_autocomplete_controller.h",
+    "omnibox_inttest_autocomplete_controller.mm",
     "omnibox_inttest_coordinator.h",
     "omnibox_inttest_coordinator.mm",
     "omnibox_inttest_view_controller.h",
@@ -16,6 +20,7 @@ source_set("inttest") {
   deps = [
     "//base",
     "//components/feature_engagement/public",
+    "//components/omnibox/browser:test_support",
     "//components/search_engines",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -27,6 +32,7 @@ source_set("inttest") {
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
+    "//ios/chrome/browser/omnibox/ui_bundled:test_support",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/sessions/model",
@@ -35,9 +41,71 @@ source_set("inttest") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
+    "//ios/chrome/test:test_support",
     "//ios/components/ui_util",
     "//ios/web/public",
     "//ios/web/public/navigation",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
     "//ui/base",
+    "//ui/gfx:test_support",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "omnibox_inttest_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/omnibox/eg_tests:eg_test_support+eg2",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "omnibox_inttest_app_interface.h",
+    "omnibox_inttest_app_interface.mm",
+  ]
+  visibility = [ "//ios/chrome/test/earl_grey:hooks" ]
+  deps = [
+    ":inttest",
+    "//base",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/earl_grey:eg_app_support+eg2",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//net",
+  ]
+}
+source_set("eg_test_support+eg2") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "omnibox_inttest_app_interface.h",
+    "omnibox_inttest_app_interface_stub.mm",
+    "omnibox_inttest_earl_grey.h",
+    "omnibox_inttest_earl_grey.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net",
+    "//url",
   ]
 }

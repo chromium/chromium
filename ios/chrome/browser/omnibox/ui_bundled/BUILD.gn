@@ -220,10 +220,12 @@ source_set("omnibox_internal") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "omnibox_coordinator+Testing.h",
     "test_web_location_bar.cc",
     "test_web_location_bar.h",
   ]
   deps = [
+    ":omnibox_internal",
     ":ui_bundled",
     "//base",
     "//components/omnibox/browser:location_bar",
