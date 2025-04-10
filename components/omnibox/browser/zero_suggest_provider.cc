@@ -237,28 +237,27 @@ bool ReadStoredResponse(const AutocompleteProviderClient* client,
 // are done in GetResultTypeAndEligibility().
 ResultType ResultTypeForInput(const AutocompleteInput& input) {
   const auto page_class = input.current_page_classification();
-  const auto focus_type_input_type =
-      std::make_pair(input.focus_type(), input.type());
+
+  // Disallow non-zero-prefix inputs.
+  if (!input.IsZeroSuggest()) {
+    return ResultType::kNone;
+  }
 
   // Android Search Widget.
   if (page_class == OEP::ANDROID_SHORTCUTS_WIDGET) {
-    if (focus_type_input_type.first != OFT::INTERACTION_DEFAULT) {
-      return ResultType::kRemoteNoURL;
-    }
+    return ResultType::kRemoteNoURL;
   }
 
   // New Tab Page.
   if (omnibox::IsNTPPage(page_class)) {
-    if (focus_type_input_type ==
-        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
+    if (input.type() == OIT::EMPTY) {
       return ResultType::kRemoteNoURL;
     }
   }
 
   // Lens unimodal, multimodal, and contextual searchboxes.
   if (omnibox::IsLensSearchbox(page_class)) {
-    if (focus_type_input_type ==
-        std::make_pair(OFT::INTERACTION_FOCUS, OIT::EMPTY)) {
+    if (input.type() == OIT::EMPTY) {
       return ResultType::kRemoteNoURL;
     }
   }
@@ -273,12 +272,12 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
   // Open Web and Search Results Page.
   if (omnibox::IsOtherWebPage(page_class) ||
       omnibox::IsSearchResultsPage(page_class)) {
-    if (focus_type_input_type.second == OIT::URL &&
+    if (input.type() == OIT::URL &&
         (is_ios || base::FeatureList::IsEnabled(
                        omnibox::kFocusTriggersWebAndSRPZeroSuggest))) {
       return ResultType::kRemoteSendURL;
     }
-    if (focus_type_input_type.second == OIT::EMPTY && !is_ios) {
+    if (input.type() == OIT::EMPTY && !is_ios) {
       return ResultType::kRemoteSendURL;
     }
   }
