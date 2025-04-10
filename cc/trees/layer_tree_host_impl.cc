@@ -1502,19 +1502,13 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
       }
     } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
       LayerImpl* layer = it.current_layer();
-      if (use_layer_context_for_display_ &&
-          layer->GetLayerType() == mojom::LayerType::kVideo) {
-        // For VideoLayerImpl, WillDraw() and DidDraw() have to be called
-        // as a pair because one acquires the provider mutex and the other
-        // releases it.
-        // TODO(zmo): Do not skip video layer's WillDraw() once DidDraw() is
-        // also added back to renderer side for TreesInViz mode.
-      } else if (layer->WillDraw(context.draw_mode, resource_provider_.get())) {
+      if (layer->WillDraw(context.draw_mode, resource_provider_.get())) {
         DCHECK_EQ(active_tree_.get(), layer->layer_tree_impl());
 
-        if (output_frame_data) {
-          frame->will_draw_layers.push_back(layer);
-        }
+        // This is necessary in TreesInViz mode to trigger DidDraw() through
+        // LayerTreeHostImpl::DidDrawAllLayers().
+        frame->will_draw_layers.push_back(layer);
+
         if (layer->may_contain_video()) {
           num_of_layers_with_videos++;
           if (output_frame_data) {
