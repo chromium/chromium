@@ -7,18 +7,16 @@
 #import "base/test/ios/wait_util.h"
 #import "components/policy/core/browser/signin/profile_separation_policies.h"
 #import "components/signin/public/base/signin_pref_names.h"
+#import "ios/chrome/browser/authentication/ui_bundled/separate_profiles_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_matchers.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
-#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/settings/ui_bundled/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -26,71 +24,11 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/test_switches.h"
-#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Matcher for the identity disc.
-id<GREYMatcher> IdentityDiscMatcher() {
-  return grey_accessibilityID(kNTPFeedHeaderIdentityDisc);
-}
-
-// Matcher for the account menu.
-id<GREYMatcher> AccountMenuMatcher() {
-  return grey_accessibilityID(kAccountMenuTableViewId);
-}
-
-void TapIdentityDisc() {
-  [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:IdentityDiscMatcher()];
-  [[EarlGrey selectElementWithMatcher:IdentityDiscMatcher()]
-      performAction:grey_tap()];
-}
-
-void OpenAccountMenu() {
-  TapIdentityDisc();
-  // Ensure the Account Menu is displayed.
-  [[EarlGrey selectElementWithMatcher:AccountMenuMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-void OpenManageAccountsView() {
-  OpenAccountMenu();
-  // Tap on the Ellipsis button.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kAccountMenuSecondaryActionMenuButtonId)]
-      performAction:grey_tap()];
-  // Tap on Manage accounts.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_text(l10n_util::GetNSString(
-                                       IDS_IOS_ACCOUNT_MENU_EDIT_ACCOUNT_LIST)),
-                                   grey_interactable(), nil)]
-      performAction:grey_tap()];
-  // Checks the manage accounts view is shown
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSettingsEditAccountListTableViewId)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-id<GREYMatcher> SigninScreenMatcher() {
-  return grey_accessibilityID(
-      first_run::kFirstRunSignInScreenAccessibilityIdentifier);
-}
-
-id<GREYMatcher> ManagedProfileCreationScreenMatcher() {
-  return grey_accessibilityID(
-      kManagedProfileCreationScreenAccessibilityIdentifier);
-}
-
-id<GREYMatcher> BrowsingDataManagementScreenMatcher() {
-  return grey_accessibilityID(
-      kBrowsingDataManagementScreenAccessibilityIdentifier);
-}
 
 id<GREYMatcher> ManagedProfileCreationBrowsingDataButtonMatcher() {
   return grey_accessibilityID(kBrowsingDataButtonAccessibilityIdentifier);
@@ -120,29 +58,6 @@ id<GREYMatcher> ManagedProfileCreationDataMigrationDisabledSubtitleMatcher() {
           l10n_util::GetNSString(IDS_IOS_ENTERPRISE_PROFILE_CREATION_SUBTITLE),
           l10n_util::GetNSString(
               IDS_IOS_ENTERPRISE_PROFILE_CREATION_ACCOUNT_KEEP_BROWSING_DATA_DISABLED_DESCRIPTION)]);
-}
-
-id<GREYMatcher> HistoryScreenMatcher() {
-  return grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier);
-}
-
-id<GREYMatcher> DefaultBrowserScreenMatcher() {
-  return grey_accessibilityID(
-      first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier);
-}
-
-// Returns a matcher for the sign-in screen "Continue as <identity>" button.
-id<GREYMatcher> ContinueButtonWithIdentityMatcher(
-    FakeSystemIdentity* fakeIdentity) {
-  NSString* buttonTitle = l10n_util::GetNSStringF(
-      IDS_IOS_FIRST_RUN_SIGNIN_CONTINUE_AS,
-      base::SysNSStringToUTF16(fakeIdentity.userGivenName));
-  id<GREYMatcher> matcher =
-      grey_allOf(grey_accessibilityLabel(buttonTitle),
-                 grey_accessibilityTrait(UIAccessibilityTraitStaticText),
-                 grey_sufficientlyVisible(), nil);
-
-  return matcher;
 }
 
 }  // namespace
@@ -717,8 +632,8 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   // Switch to the managed account, which triggers a switch to a new managed
   // profile.
   OpenAccountMenu();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuSecondaryAccountButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
 
   // Wait for enterprise onboarding screen.
@@ -755,8 +670,8 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   // Switch back to the personal account, which triggers a switch back to the
   // personal profile.
   OpenAccountMenu();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuSecondaryAccountButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
 
   // Wait for the profile to finish loading again.
@@ -796,8 +711,8 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   // Switch to the managed account, which triggers a switch to a new managed
   // profile.
   OpenAccountMenu();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuSecondaryAccountButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
 
   // Wait for enterprise onboarding screen.
@@ -852,8 +767,8 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   // Switch to the managed account, which triggers a switch to a new managed
   // profile.
   OpenAccountMenu();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuSecondaryAccountButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
 
   // Wait for enterprise onboarding screen.
@@ -940,8 +855,8 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   // Switch to the managed account, which triggers a switch to a new managed
   // profile.
   OpenAccountMenu();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuSecondaryAccountButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
   // Wait for the enterprise onboarding screen.
   ConditionBlock enterpriseOnboardingCondition = ^{
@@ -1014,8 +929,8 @@ id<GREYMatcher> ContinueButtonWithIdentityMatcher(
   // Switch to the managed account, which triggers a switch to a new managed
   // profile.
   OpenAccountMenu();
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kAccountMenuSecondaryAccountButtonId)]
+  [[EarlGrey
+      selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
       performAction:grey_tap()];
   // Wait for the enterprise onboarding screen.
   ConditionBlock enterpriseOnboardingCondition = ^{
