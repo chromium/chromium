@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/gmail.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -217,7 +218,8 @@ class GeminiAppInteractiveUiTestBase
         scoped_preinstall_url_allow_list_(
             web_app::SetPreinstallUrlAllowListForTesting(
                 {{web_app::GetConfigForGemini(/*device_info=*/std::nullopt)
-                      .install_url}})) {
+                      .install_url,
+                  web_app::GetConfigForGmail().install_url}})) {
     // Enable Gemini app preinstallation.
     scoped_feature_list_.InitAndEnableFeature(
         chromeos::features::kGeminiAppPreinstall);
@@ -363,7 +365,7 @@ class GeminiAppInteractiveUiTestBase
   // Used to retrieve expected title/URL for the Gemini app.
   std::unique_ptr<web_app::WebAppInstallInfo> gemini_app_install_info_;
 
-  // Allowlists the Gemini app to be preinstalled.
+  // Allowlists the specific apps to be preinstalled.
   web_app::ScopedPreinstallUrlAllowList scoped_preinstall_url_allow_list_;
 };
 
@@ -442,8 +444,7 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, PRE_LaunchFromAppList) {}
 
 // Verifies that the Gemini app can be launched from the app list.
-// TODO(crbug.com/408148646): Re-enable this test.
-IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, DISABLED_LaunchFromAppList) {
+IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromAppList) {
   // Views.
   raw_ptr<ash::AppsGridView> apps_grid_view = nullptr;
   raw_ptr<ash::AppListItemView> files_app = nullptr;
@@ -571,15 +572,12 @@ IN_PROC_BROWSER_TEST_P(GeminiAppInteractiveUiTest, LaunchFromShelf) {
       Check(
           [&]() {
             std::vector<raw_ptr<ash::ShelfAppButton>> apps;
-
             FindDescendantsOfClass(shelf, apps);
-
             const auto gemini_app_index = FindIndex(apps, gemini_app.get());
-            const auto chrome_app_index = FindIndex(apps, chrome_app.get());
             if (IsExistingUser()) {
               return gemini_app_index == 0u;
             }
-
+            const auto chrome_app_index = FindIndex(apps, chrome_app.get());
             return chrome_app_index == 0u && gemini_app_index == 1u;
           },
           "Gemini app is positioned correctly"),
