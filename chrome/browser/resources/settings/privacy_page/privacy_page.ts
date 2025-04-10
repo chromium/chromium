@@ -261,11 +261,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
                 '#thirdPartyCookiesLinkRow');
           }
 
-          if (routes.TRACKING_PROTECTION) {
-            map.set(
-                routes.TRACKING_PROTECTION.path, '#trackingProtectionLinkRow');
-          }
-
           if (routes.SITE_SETTINGS) {
             map.set(routes.SITE_SETTINGS.path, '#permissionsLinkRow');
           }
@@ -498,13 +493,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.interactedWithPage_();
 
     Router.getInstance().navigateTo(routes.COOKIES);
-  }
-
-  private onTrackingProtectionClick_() {
-    this.interactedWithPage_();
-    this.metricsBrowserProxy_.recordAction(
-        'Settings.TrackingProtection.OpenedFromPrivacyPage');
-    Router.getInstance().navigateTo(routes.TRACKING_PROTECTION);
   }
 
   private onCbdDialogClosed_() {

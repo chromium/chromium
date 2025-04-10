@@ -424,8 +424,6 @@ suite(`CookiesSubpage`, function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       isPrivacySandboxRestricted: false,
-      // This test covers the pre-3PCD subpage.
-      is3pcdCookieSettingsRedesignEnabled: false,
     });
     resetRouterForTesting();
 
@@ -446,60 +444,6 @@ suite(`CookiesSubpage`, function() {
     // The subpage is only in the DOM if the corresponding route is open.
     page.shadowRoot!
         .querySelector<CrLinkRowElement>('#thirdPartyCookiesLinkRow')!.click();
-    await flushTasks();
-
-    const cookiesSubpage =
-        page.shadowRoot!.querySelector<PolymerElement>('#cookies');
-    assertTrue(!!cookiesSubpage);
-    assertEquals(
-        page.i18n('thirdPartyCookiesPageTitle'),
-        cookiesSubpage.getAttribute('page-title'));
-    const associatedControl = cookiesSubpage.get('associatedControl');
-    assertTrue(!!associatedControl);
-    assertEquals('thirdPartyCookiesLinkRow', associatedControl.id);
-  });
-});
-
-suite(`TrackingProtectionSubpage`, function() {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-  let metricsBrowserProxy: TestMetricsBrowserProxy;
-
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      isPrivacySandboxRestricted: false,
-      is3pcdCookieSettingsRedesignEnabled: true,
-    });
-    resetRouterForTesting();
-
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    metricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  teardown(function() {
-    resetRouterForTesting();
-  });
-
-
-  test('cookiesSubpageAttributes', async function() {
-    // The subpage is only in the DOM if the corresponding route is open.
-    const thirdPartyCookiesLinkRow =
-        page.shadowRoot!.querySelector<CrLinkRowElement>(
-            '#thirdPartyCookiesLinkRow');
-    assertTrue(!!thirdPartyCookiesLinkRow);
-    thirdPartyCookiesLinkRow.click();
     await flushTasks();
 
     const cookiesSubpage =
