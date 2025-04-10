@@ -1355,7 +1355,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3364869320075768271"><ph name="URL" /> vil bruke virtuell virkelighet-enheten din og -dataene dine</translation>
 <translation id="3369192424181595722">Klokkefeil</translation>
 <translation id="3371064404604898522">Angi Chrome som standardnettleser</translation>
-<translation id="3371186787117738282">La til <ph name="ATTRIBUTE_NAME" /></translation>
+<translation id="3371186787117738282"><ph name="ATTRIBUTE_NAME" /> er lagt til</translation>
 <translation id="337363190475750230">Godkjenningen er opphevet</translation>
 <translation id="3377144306166885718">Tjeneren brukte en foreldet versjon av TLS.</translation>
 <translation id="3377188786107721145">Feil under analysen av enhetsinnstillinger</translation>
@@ -1495,7 +1495,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3586931643579894722">Skjul detaljer</translation>
 <translation id="3587725436724465984">Organisasjonen din har identifisert <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> som et nettsted som kanskje bryter retningslinjene. <ph name="BEGIN_LEARN_MORE_LINK" />Finn ut mer om denne advarselen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3587738293690942763">Midtre</translation>
-<translation id="3596918995172292499">Utstedende myndighet for nummerskilt</translation>
+<translation id="3596918995172292499">Utstedende delstat for nummerskilt</translation>
 <translation id="3600106876108433070">Finn ut mer om sammenligningstabeller</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knappen «Administrer Google-personverninnstillinger» – aktiver for å åpne personverninnstillingene for Google-kontoen din</translation>
