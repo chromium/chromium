@@ -1136,6 +1136,11 @@ BASE_FEATURE(kSafetyHubWeakAndReusedPasswords,
 BASE_FEATURE(kSafetyHubLocalPasswordsModule,
              "SafetyHubLocalPasswordsModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the unified passwords module in Safety Hub.
+BASE_FEATURE(kSafetyHubUnifiedPasswordsModule,
+             "SafetyHubUnifiedPasswordsModule",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

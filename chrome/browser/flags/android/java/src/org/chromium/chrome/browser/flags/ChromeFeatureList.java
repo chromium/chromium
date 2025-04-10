@@ -503,6 +503,8 @@ public abstract class ChromeFeatureList {
     public static final String SAFETY_HUB_FOLLOWUP = "SafetyHubFollowup";
     public static final String SAFETY_HUB_LOCAL_PASSWORDS_MODULE = "SafetyHubLocalPasswordsModule";
     public static final String SAFETY_HUB_MAGIC_STACK = "SafetyHubMagicStack";
+    public static final String SAFETY_HUB_UNIFIED_PASSWORDS_MODULE =
+            "SafetyHubUnifiedPasswordsModule";
     public static final String SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS =
             "SafetyHubWeakAndReusedPasswords";
     public static final String SAFE_BROWSING_DELAYED_WARNINGS = "SafeBrowsingDelayedWarnings";

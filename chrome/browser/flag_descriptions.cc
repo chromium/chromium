@@ -3467,6 +3467,12 @@ const char kSafetyHubLocalPasswordsModuleName[] =
 const char kSafetyHubLocalPasswordsModuleDescription[] =
     "Enables showing the local passwords module in Safety Hub.";
 
+const char kSafetyHubUnifiedPasswordsModuleName[] =
+    "Enables the unified passwords module in Safety Hub";
+const char kSafetyHubUnifiedPasswordsModuleDescription[] =
+    "Enables the unified passwords module in Safety Hub, which includes "
+    "account and local passwords.";
+
 const char kSafetyHubAndroidSurveyName[] =
     "HaTS for Safety Check v2 on Android";
 const char kSafetyHubAndroidSurveyDescription[] =

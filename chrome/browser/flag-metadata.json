@@ -8176,6 +8176,15 @@
     "expiry_milestone": 140
   },
   {
+    "name": "safety-hub-unified-passwords-module",
+    "owners": [
+      "fsenra@google.com",
+      "sideyilmaz@chromium.org",
+      "chrome-browser-privacy-team@google.com"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "safety-hub-weak-reused-passwords",
     "owners": [
       "fsenra@google.com",
