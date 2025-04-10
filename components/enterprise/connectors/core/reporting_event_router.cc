@@ -146,4 +146,30 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
       std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
 }
 
+// Notifies listeners that the user clicked-through a security interstitial.
+void ReportingEventRouter::OnSecurityInterstitialProceeded(
+    const GURL& url,
+    const std::string& reason,
+    int net_error_code) {
+  std::optional<enterprise_connectors::ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyInterstitialEvent) == 0) {
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyReason, reason);
+  event.Set(kKeyNetErrorCode, net_error_code);
+  event.Set(kKeyClickedThrough, true);
+  event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
+                                 enterprise_connectors::EventResult::BYPASSED));
+
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
+      std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
+}
+
 }  // namespace enterprise_connectors

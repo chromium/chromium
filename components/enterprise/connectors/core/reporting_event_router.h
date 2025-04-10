@@ -43,6 +43,11 @@ class ReportingEventRouter : public KeyedService {
       const std::string& threat_type,
       const safe_browsing::RTLookupResponse& response);
 
+  // Notifies listeners that the user clicked-through a security interstitial.
+  void OnSecurityInterstitialProceeded(const GURL& url,
+                                       const std::string& reason,
+                                       int net_error_code);
+
  private:
   raw_ptr<RealtimeReportingClientBase> reporting_client_;
 };

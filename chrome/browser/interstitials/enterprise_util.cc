@@ -91,13 +91,22 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
     const std::string& reason,
     int net_error_code) {
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  extensions::SafeBrowsingPrivateEventRouter* event_router =
+  extensions::SafeBrowsingPrivateEventRouter* safe_browsing_event_router =
       GetSafeBrowsingEventRouter(web_contents);
-  if (!event_router)
+  if (!safe_browsing_event_router) {
     return;
-  event_router->OnSecurityInterstitialProceeded(page_url, reason,
-                                                net_error_code);
-#endif
+  }
+  safe_browsing_event_router->OnSecurityInterstitialProceeded(page_url, reason,
+                                                              net_error_code);
+
+  enterprise_connectors::ReportingEventRouter* reporting_event_router =
+      GetReportingEventRouter(web_contents);
+  if (!reporting_event_router) {
+    return;
+  }
+  reporting_event_router->OnSecurityInterstitialProceeded(page_url, reason,
+                                                          net_error_code);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

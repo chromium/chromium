@@ -148,6 +148,8 @@ inline constexpr char kKeyTriggeredRuleInfo[] = "triggeredRuleInfo";
 inline constexpr char kKeyUrlCategory[] = "urlCategory";
 inline constexpr char kKeyAction[] = "action";
 inline constexpr char kKeyHasWatermarking[] = "hasWatermarking";
+inline constexpr char kKeyReason[] = "reason";
+inline constexpr char kKeyNetErrorCode[] = "netErrorCode";
 
 }  // namespace enterprise_connectors
 

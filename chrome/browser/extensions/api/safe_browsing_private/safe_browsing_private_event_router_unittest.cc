@@ -24,6 +24,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -38,6 +39,7 @@
 #include "components/enterprise/browser/enterprise_switches.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -170,6 +172,11 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
 
   void TriggerOnSecurityInterstitialProceededEvent() {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
+        ->OnSecurityInterstitialProceeded(GURL("https://phishing.com/"),
+                                          "PHISHING", -201);
+    // TODO(mxlg): Move the ReportingEventRouter test code to its own unit test.
+    enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+        profile_)
         ->OnSecurityInterstitialProceeded(GURL("https://phishing.com/"),
                                           "PHISHING", -201);
   }
