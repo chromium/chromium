@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_sectioning_util.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
@@ -832,6 +833,10 @@ void AutofillManager::OnLoadedServerPredictions(
   ParseServerPredictionsQueryResponse(
       std::move(response->response), queried_forms,
       response->queried_form_signatures, log_manager());
+
+  for (const raw_ptr<FormStructure, VectorExperimental> form : queried_forms) {
+    form->RationalizeAndAssignSections(log_manager(), /*legacy_order=*/true);
+  }
 
   OnLoadedServerPredictionsImpl(queried_forms);
 
