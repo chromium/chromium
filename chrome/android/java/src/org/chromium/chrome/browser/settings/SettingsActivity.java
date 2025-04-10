@@ -593,7 +593,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         private ObservableSupplier<String> mCurrentPageTitle;
 
         @Override
-        public void onFragmentResumed(
+        public void onFragmentStarted(
                 @NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
             if (!MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
                 return;
@@ -606,7 +606,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                 mCurrentPageTitle.removeObserver(mSetTitleCallback);
             }
             mCurrentPageTitle = settingsFragment.getPageTitle();
-            mCurrentPageTitle.addObserver(mSetTitleCallback);
+            mCurrentPageTitle.addSyncObserverAndCallIfNonNull(mSetTitleCallback);
         }
     }
 
