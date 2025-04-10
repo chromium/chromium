@@ -338,7 +338,6 @@ suite('FlagsDisabled', function() {
       enableHashPrefixRealTimeLookups: false,
       enableHttpsFirstModeNewSettings: false,
       enableCertManagementUIV2: false,
-      enableEsbAiStringUpdate: false,
       enablePasswordLeakToggleMove: false,
       extendedReportingRemovePrefDependency: false,
       hashPrefixRealTimeLookupsSamplePing: false,
@@ -603,18 +602,6 @@ suite('FlagsDisabled', function() {
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
-
-  // TODO(crbug.com/372743989): Remove the test once the EsbAiStringUpdate is
-  // fully launched. This tests the old string before the AI addition to the
-  // description.
-  test('EnhancedProtectionTextIsRendered', async () => {
-    const enhancedProtection = page.$.safeBrowsingEnhanced;
-    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
-    assertEquals(epSubLabel, enhancedProtection.subLabel);
-
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
-  });
 
   // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove is
   // launched.
@@ -1093,9 +1080,7 @@ suite('SafeBrowsing', function() {
     assertEquals(spSubLabel, standardProtection.subLabel);
   });
 
-  // TODO(crbug.com/372743989): Update test when EsbAiStringUpdate is fully
-  // launched.
-  test('EnhancedProtectionTextWithAI', async () => {
+  test('EnhancedProtectionText', async () => {
     const enhancedProtection = page.$.safeBrowsingEnhanced;
     const epSubLabel =
         loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
