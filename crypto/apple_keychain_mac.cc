@@ -86,11 +86,6 @@ OSStatus AppleKeychain::AddGenericPassword(
       account_name, password_length, password_data, item);
 }
 
-OSStatus AppleKeychain::ItemDelete(AppleSecKeychainItemRef item) const {
-  base::AutoLock lock(GetMacSecurityServicesLock());
-  return SecKeychainItemDelete(item);
-}
-
 ScopedKeychainUserInteractionAllowed::ScopedKeychainUserInteractionAllowed(
     Boolean allowed,
     OSStatus* status) {

@@ -16,8 +16,4 @@ MockAppleKeychain::MockAppleKeychain()
 
 MockAppleKeychain::~MockAppleKeychain() {}
 
-OSStatus MockAppleKeychain::ItemDelete(AppleSecKeychainItemRef itemRef) const {
-  return noErr;
-}
-
 }  // namespace crypto

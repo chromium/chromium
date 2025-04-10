@@ -55,10 +55,6 @@ class CRYPTO_EXPORT MockAppleKeychain : public AppleKeychain {
   // Returns the password that OSCrypt uses to generate its encryption key.
   std::string GetEncryptionPassword() const;
 
-#if !BUILDFLAG(IS_IOS)
-  OSStatus ItemDelete(SecKeychainItemRef itemRef) const override;
-#endif  // !BUILDFLAG(IS_IOS)
-
   // |FindGenericPassword()| can return different results depending on user
   // interaction with the system Keychain.  For mocking purposes we allow the
   // user of this class to specify the result code of the

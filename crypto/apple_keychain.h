@@ -59,10 +59,6 @@ class CRYPTO_EXPORT AppleKeychain {
                                       UInt32 password_length,
                                       const void* password_data,
                                       AppleSecKeychainItemRef* item) const;
-
-#if BUILDFLAG(IS_MAC)
-  virtual OSStatus ItemDelete(AppleSecKeychainItemRef item) const;
-#endif  // !BUILDFLAG(IS_MAC)
 };
 
 #if BUILDFLAG(IS_MAC)
