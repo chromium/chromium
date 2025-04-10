@@ -132,6 +132,7 @@ class GraphImplOrt::ComputeResources {
 
 // static
 void GraphImplOrt::CreateAndBuild(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
@@ -141,8 +142,9 @@ void GraphImplOrt::CreateAndBuild(
   ScopedTrace scoped_trace("GraphImplOrt::CreateAndBuild");
 
   auto wrapped_callback = base::BindPostTaskToCurrentDefault(
-      base::BindOnce(&GraphImplOrt::DidCreateAndBuild, context->AsWeakPtr(),
-                     std::move(compute_resource_info), std::move(callback)));
+      base::BindOnce(&GraphImplOrt::DidCreateAndBuild, std::move(receiver),
+                     context->AsWeakPtr(), std::move(compute_resource_info),
+                     std::move(callback)));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -224,6 +226,7 @@ GraphImplOrt::CreateAndBuildOnBackgroundThread(
 
 // static
 void GraphImplOrt::DidCreateAndBuild(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     base::WeakPtr<WebNNContextImpl> context,
     ComputeResourceInfo compute_resource_info,
     WebNNContextImpl::CreateGraphImplCallback callback,
@@ -241,17 +244,20 @@ void GraphImplOrt::DidCreateAndBuild(
   }
 
   std::move(callback).Run(base::WrapUnique(new GraphImplOrt(
-      std::move(compute_resource_info), std::move(result.value()),
-      static_cast<ContextImplOrt*>(context.get()))));
+      std::move(receiver), std::move(compute_resource_info),
+      std::move(result.value()), static_cast<ContextImplOrt*>(context.get()))));
 }
 
 GraphImplOrt::~GraphImplOrt() = default;
 
 GraphImplOrt::GraphImplOrt(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     ComputeResourceInfo compute_resource_info,
     std::unique_ptr<GraphImplOrt::ComputeResources> compute_resources,
     ContextImplOrt* context)
-    : WebNNGraphImpl(context, std::move(compute_resource_info)) {
+    : WebNNGraphImpl(std::move(receiver),
+                     context,
+                     std::move(compute_resource_info)) {
   compute_resources_state_ =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
           std::move(compute_resources));

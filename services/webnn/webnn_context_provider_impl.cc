@@ -255,7 +255,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
 
     OrtLoggingLevel ort_logging_level = ORT_LOGGING_LEVEL_WARNING;
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtLoggingLevel)) {
+            switches::kWebNNOrtLoggingLevel)) {
       std::string user_logging_level =
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kWebNNOrtLoggingLevel);

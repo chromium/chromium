@@ -823,13 +823,6 @@ GraphBuilderOrt::AddBatchNormalizationOperation(
 
   const std::vector<uint32_t>& input_shape =
       GetOperand(batch_normalization.input_operand_id).descriptor.shape();
-  // TODO: Support NHWC layout-
-  // https://github.com/shiyi9801/chromium/issues/77
-  if (batch_normalization.axis != 1) {
-    return NewNotSupportedError(
-        "Unsupported axis since BatchNormalization only supports NCHW layout "
-        "currently. ");
-  }
   uint32_t input_channel = input_shape[1];
   std::vector<uint32_t> constant_dims = {input_channel};
 
@@ -2095,12 +2088,6 @@ GraphBuilderOrt::AddInstanceNormalizationOperation(
 
   const std::vector<uint32_t>& input_shape =
       GetOperand(instance_normalization.input_operand_id).descriptor.shape();
-  // TODO(crbug.com/387312212): Support NHWC layout
-  if (instance_normalization.layout ==
-      mojom::InputOperandLayout::kChannelsLast) {
-    return NewNotSupportedError(
-        "[WebNN] Currently InstanceNormalization only supports NCHW layout.");
-  }
   CHECK_EQ(context_properties_.input_operand_layout, InputOperandLayout::kNchw);
   uint32_t input_channel = input_shape[1];
   std::vector<uint32_t> constant_dims = {input_channel};

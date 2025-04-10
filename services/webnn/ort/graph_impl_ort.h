@@ -39,6 +39,7 @@ class SessionOptions;
 class GraphImplOrt final : public WebNNGraphImpl {
  public:
   static void CreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       mojom::GraphInfoPtr graph_info,
       ComputeResourceInfo compute_resource_info,
       base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
@@ -53,7 +54,8 @@ class GraphImplOrt final : public WebNNGraphImpl {
  private:
   class ComputeResources;
 
-  GraphImplOrt(ComputeResourceInfo compute_resource_info,
+  GraphImplOrt(mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
+               ComputeResourceInfo compute_resource_info,
                std::unique_ptr<ComputeResources> compute_resources,
                ContextImplOrt* context);
 
@@ -67,6 +69,7 @@ class GraphImplOrt final : public WebNNGraphImpl {
       ScopedTrace scoped_trace);
 
   static void DidCreateAndBuild(
+      mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
       base::WeakPtr<WebNNContextImpl> context,
       ComputeResourceInfo compute_resource_info,
       WebNNContextImpl::CreateGraphImplCallback callback,

@@ -267,6 +267,7 @@ ContextProperties ContextImplOrt::GetContextProperties(
 
   return ContextProperties(
       InputOperandLayout::kNchw, Resample2DAxes::kChannelsFirst,
+      BatchNormalizationAxis::kChannelsFirst,
       /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
       {/*input=*/SupportedDataTypes::All(),
        /*constant=*/SupportedDataTypes::All(),
@@ -476,14 +477,16 @@ base::WeakPtr<WebNNContextImpl> ContextImplOrt::AsWeakPtr() {
 }
 
 void ContextImplOrt::CreateGraphImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
     CreateGraphImplCallback callback) {
-  GraphImplOrt::CreateAndBuild(
-      std::move(graph_info), std::move(compute_resource_info),
-      std::move(constant_operands), this, std::move(callback));
+  GraphImplOrt::CreateAndBuild(std::move(receiver), std::move(graph_info),
+                               std::move(compute_resource_info),
+                               std::move(constant_operands), this,
+                               std::move(callback));
 }
 
 void ContextImplOrt::CreateTensorImpl(
