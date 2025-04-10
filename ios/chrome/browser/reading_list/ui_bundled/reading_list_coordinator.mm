@@ -23,6 +23,7 @@
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/authentication/ui_bundled/account_settings_presenter.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_reading_list_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_promo_view_mediator.h"
@@ -201,15 +202,19 @@
                                                               self);
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForProfile(profile);
+  auto provider = base::BindRepeating(
+      [] { return CreateChangeProfileReadingListContinuation(); });
   _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-       initWithIdentityManager:_identityManager
-         accountManagerService:accountManagerService
-                   authService:_authService
-                   prefService:_prefService
-                   syncService:_syncService
-                   accessPoint:signin_metrics::AccessPoint::kReadingList
-               signinPresenter:self
-      accountSettingsPresenter:self];
+                initWithIdentityManager:_identityManager
+                  accountManagerService:accountManagerService
+                            authService:_authService
+                            prefService:_prefService
+                            syncService:_syncService
+                            accessPoint:signin_metrics::AccessPoint::
+                                            kReadingList
+                        signinPresenter:self
+               accountSettingsPresenter:self
+      changeProfileContinuationProvider:provider];
   _signinPromoViewMediator.signinPromoAction =
       SigninPromoAction::kInstantSignin;
   _signinPromoViewMediator.consumer = self;

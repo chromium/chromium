@@ -41,6 +41,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/authentication/ui_bundled:account_settings_presenter",
     "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/authentication/ui_bundled/change_profile",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/favicon/ui_bundled",

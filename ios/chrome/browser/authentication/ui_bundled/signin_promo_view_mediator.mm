@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/account_settings_presenter.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/signin_promo_view_consumer.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
@@ -607,6 +608,7 @@ id<SystemIdentity> GetDisplayedIdentity(
   raw_ptr<syncer::SyncService> _syncService;
   // Observer for changes to the sync state.
   std::unique_ptr<SyncObserverBridge> _syncObserverBridge;
+  ChangeProfileContinuationProvider _changeProfileContinuationProvider;
 }
 
 + (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
@@ -691,22 +693,27 @@ id<SystemIdentity> GetDisplayedIdentity(
 }
 
 - (instancetype)
-     initWithIdentityManager:(signin::IdentityManager*)identityManager
-       accountManagerService:(ChromeAccountManagerService*)accountManagerService
-                 authService:(AuthenticationService*)authService
-                 prefService:(PrefService*)prefService
-                 syncService:(syncer::SyncService*)syncService
-                 accessPoint:(signin_metrics::AccessPoint)accessPoint
-             signinPresenter:(id<SigninPresenter>)signinPresenter
-    accountSettingsPresenter:
-        (id<AccountSettingsPresenter>)accountSettingsPresenter {
+              initWithIdentityManager:(signin::IdentityManager*)identityManager
+                accountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                          authService:(AuthenticationService*)authService
+                          prefService:(PrefService*)prefService
+                          syncService:(syncer::SyncService*)syncService
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                      signinPresenter:(id<SigninPresenter>)signinPresenter
+             accountSettingsPresenter:
+                 (id<AccountSettingsPresenter>)accountSettingsPresenter
+    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
+                                          changeProfileContinuationProvider {
   self = [super init];
   if (self) {
+    CHECK(changeProfileContinuationProvider);
     CHECK(identityManager);
     CHECK(accountManagerService);
     DCHECK(IsSupportedAccessPoint(accessPoint));
     _identityManager = identityManager;
     _accountManagerService = accountManagerService;
+    _changeProfileContinuationProvider = changeProfileContinuationProvider;
     _authService = authService;
     _prefService = prefService;
     _syncService = syncService;
@@ -1024,12 +1031,13 @@ id<SystemIdentity> GetDisplayedIdentity(
           [weakConsumer signinDidFinish];
         }
       };
-  ShowSigninCommand* command =
-      [[ShowSigninCommand alloc] initWithOperation:operation
-                                          identity:identity
-                                       accessPoint:self.accessPoint
-                                       promoAction:promoAction
-                                        completion:completion];
+  ShowSigninCommand* command = [[ShowSigninCommand alloc]
+                      initWithOperation:operation
+                               identity:identity
+                            accessPoint:self.accessPoint
+                            promoAction:promoAction
+                             completion:completion
+      changeProfileContinuationProvider:_changeProfileContinuationProvider];
   [self.signinPresenter showSignin:command];
 }
 
