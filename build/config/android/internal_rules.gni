@@ -3062,6 +3062,7 @@ if (enable_java_templates) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
     _build_config = invoker.build_config
+    _chromium_code = invoker.chromium_code
 
     _processor_args = []
     if (defined(invoker.processor_args_javac)) {
@@ -3149,10 +3150,8 @@ if (enable_java_templates) {
         args += [
           "--jar-path=$_rebased_output_jar_path",
           "--java-srcjars=$_rebased_java_srcjars",
+          "--generated-dir=$_rebased_generated_dir",
         ]
-        if (!invoker.use_turbine) {
-          args += [ "--generated-dir=$_rebased_generated_dir" ]
-        }
         inputs += _java_srcjars
       }
       inputs += invoker.source_files + [
@@ -3200,6 +3199,20 @@ if (enable_java_templates) {
       }
 
       if (invoker.use_turbine) {
+        # Prefer direct deps for turbine as much as possible.
+        args += [ "--classpath=@FileArg($_rebased_build_config:javac:interface_classpath)" ]
+      } else {
+        args += [ "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)" ]
+      }
+
+      if (invoker.use_turbine) {
+        args += [
+          "--processorpath=@FileArg($_rebased_build_config:javac:processor_classpath)",
+          "--processors=@FileArg($_rebased_build_config:javac:processor_classes)",
+        ]
+      }
+
+      if (invoker.use_turbine) {
         _turbine_jar_path = "//third_party/turbine/cipd/turbine.jar"
         inputs += [ _turbine_jar_path ]
         outputs += [ invoker.generated_jar_path ]
@@ -3208,34 +3221,25 @@ if (enable_java_templates) {
           rebase_path(_turbine_jar_path, root_build_dir),
           "--generated-jar-path",
           rebase_path(invoker.generated_jar_path, root_build_dir),
-          "--processorpath=@FileArg($_rebased_build_config:javac:processor_classpath)",
-          "--processors=@FileArg($_rebased_build_config:javac:processor_classes)",
-
-          # Turbine needs only direct deps.
-          "--classpath=@FileArg($_rebased_build_config:javac:interface_classpath)",
         ]
-      } else {
-        args += [ "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)" ]
-        if (invoker.chromium_code) {
-          args += [ "--chromium-code" ]
-        }
-      }
-      if (treat_warnings_as_errors) {
-        args += [ "--warnings-as-errors" ]
-      }
-      if (defined(invoker.jar_excluded_patterns) &&
-          invoker.jar_excluded_patterns != []) {
-        args += [ "--jar-info-exclude-globs=${invoker.jar_excluded_patterns}" ]
-      }
-      if (defined(invoker.jar_included_patterns) &&
-          invoker.jar_included_patterns != []) {
-        args += [ "--jar-info-include-globs=${invoker.jar_included_patterns}" ]
       }
 
       # Flag enable_kythe_annotations requires
       # checkout_android_prebuilts_build_tools=True in .gclient.
       if (enable_kythe_annotations && !invoker.enable_errorprone) {
         args += [ "--enable-kythe-annotations" ]
+      }
+      if (_chromium_code) {
+        args += [ "--chromium-code" ]
+        if (treat_warnings_as_errors) {
+          args += [ "--warnings-as-errors" ]
+        }
+      }
+      if (defined(invoker.jar_excluded_patterns)) {
+        args += [ "--jar-info-exclude-globs=${invoker.jar_excluded_patterns}" ]
+      }
+      if (defined(invoker.jar_included_patterns)) {
+        args += [ "--jar-info-include-globs=${invoker.jar_included_patterns}" ]
       }
 
       if (invoker.enable_errorprone) {
@@ -4057,15 +4061,15 @@ if (enable_java_templates) {
           if (source_files != []) {
             target_sources_file = _target_sources_file
           }
-          if (!use_turbine) {
-            chromium_code = _chromium_code
-          }
+          chromium_code = _chromium_code
           include_android_sdk = _is_robolectric || _requires_android
         }
       }
       _compile_java_forward_variables = [
         "additional_jar_files",
         "apk_name",
+        "jar_excluded_patterns",
+        "jar_included_patterns",
         "javac_args",
         "processor_args_javac",
       ]
@@ -4090,11 +4094,7 @@ if (enable_java_templates) {
 
       _compile_java_target = "${_main_target_name}__compile_java"
       compile_java_helper(_compile_java_target) {
-        forward_variables_from(invoker,
-                               _compile_java_forward_variables + [
-                                     "jar_excluded_patterns",
-                                     "jar_included_patterns",
-                                   ])
+        forward_variables_from(invoker, _compile_java_forward_variables)
         output_jar_path = _javac_jar_path
         if (!_skip_header_jar) {
           deps = [ ":$_header_target_name" ]

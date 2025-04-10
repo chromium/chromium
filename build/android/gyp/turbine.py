@@ -73,10 +73,6 @@ def main(argv):
     # Interpret a path prefixed with @ as a file containing a list of sources.
     if arg.startswith('@'):
       files.extend(build_utils.ReadSourcesList(arg[1:]))
-    elif arg.startswith('-'):
-      parser.error('Unknown flag: ' + arg)
-    else:
-      files.append(arg)
 
   # The target's .sources file contains both Java and Kotlin files. We use
   # compile_kt.py to compile the Kotlin files to .class and header jars.
