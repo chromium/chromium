@@ -1275,6 +1275,17 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(PasswordManagerNotAvailableReason) -->
+
+<enum name="PasswordManagerNotAvailableReason">
+  <int value="0" label="Internal backend missing"/>
+  <int value="1" label="No GMS, no Play Store"/>
+  <int value="2" label="Outdated GMS"/>
+  <int value="3" label="Auto-export pending"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/password_manager/android/password_manager_android_util.h:PasswordManagerNotAvailableReason) -->
+
 <enum name="PasswordManagerOfferedAndroidCredentials">
   <int value="0" label="None from Android"/>
   <int value="1" label="1+ from Android"/>

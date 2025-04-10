@@ -807,6 +807,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.Android.NotAvailableReason"
+    enum="PasswordManagerNotAvailableReason" expires_after="2025-10-01">
+  <owner>ioanap@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Recorded on startup, before password store instantiation if the password
+    manager is not available. It records the reason for it, which can be an
+    outdated Google Play Services version, etc. Android only.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AndroidAccountStorageNotice.CloseReason"
     enum="AndroidAccountStorageNoticeCloseReason" expires_after="2025-08-24">
   <owner>treib@chromium.org</owner>

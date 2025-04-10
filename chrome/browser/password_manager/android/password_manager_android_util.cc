@@ -366,6 +366,11 @@ std::string_view GetAccessLossWarningTypeName(
   }
 }
 
+void RecordPwmNotActiveReason(PasswordManagerNotAvailableReason reason) {
+  base::UmaHistogramEnumeration("PasswordManager.Android.NotAvailableReason",
+                                reason);
+}
+
 void RecordLocalUpmActivated(bool activated) {
   base::UmaHistogramBoolean("PasswordManager.LocalUpmActivated", activated);
 }
@@ -376,18 +381,44 @@ void RecordLocalUpmActivationStatus(
                                 upm_state);
 }
 
-void RecordLocalUpmActivationMetrics(PrefService* pref_service,
-                                     bool is_internal_backend_present) {
+PasswordManagerNotAvailableReason GetPasswordManagerNotActiveReason(
+    PrefService* pref_service,
+    PasswordManagerUtilBridgeInterface* util_bridge,
+    bool is_internal_backend_present) {
+  if (!is_internal_backend_present) {
+    return PasswordManagerNotAvailableReason::kInternalBackendNotPresent;
+  }
+
+  if (!HasMinGmsVersionForFullUpmSupport()) {
+    if (!util_bridge->IsGooglePlayServicesUpdatable()) {
+      return PasswordManagerNotAvailableReason::kNoGmsCore;
+    }
+    return PasswordManagerNotAvailableReason::kOutdatedGmsCore;
+  }
+
+  CHECK(!pref_service->GetBoolean(
+      password_manager::prefs::kUpmUnmigratedPasswordsExported));
+  return PasswordManagerNotAvailableReason::kAutoExportPending;
+}
+
+void RecordLocalUpmActivationMetrics(
+    PrefService* pref_service,
+    PasswordManagerUtilBridgeInterface* util_bridge) {
   // If the deprecation flag is not enabled these metrics are instead recorded
   // directly in the activation algorithm.
   CHECK(base::FeatureList::IsEnabled(
       password_manager::features::kLoginDbDeprecationAndroid));
+  bool is_internal_backend_present = util_bridge->IsInternalBackendPresent();
   bool is_pwm_available =
       IsPasswordManagerAvailable(pref_service, is_internal_backend_present);
   RecordLocalUpmActivated(is_pwm_available);
   RecordLocalUpmActivationStatus(is_pwm_available
                                      ? UseUpmLocalAndSeparateStoresState::kOn
                                      : UseUpmLocalAndSeparateStoresState::kOff);
+  if (!is_pwm_available) {
+    RecordPwmNotActiveReason(GetPasswordManagerNotActiveReason(
+        pref_service, util_bridge, is_internal_backend_present));
+  }
 }
 
 void InitializeUpmUnmigratedPasswordsExportPref(
@@ -519,8 +550,8 @@ void SetUsesSplitStoresAndUPMForLocal(
           password_manager::features::kLoginDbDeprecationAndroid)) {
     // If the login DB is being deprecated, only record metrics and do not
     // perform the activation algorithm.
-    RecordLocalUpmActivationMetrics(pref_service,
-                                    util_bridge->IsInternalBackendPresent());
+    RecordLocalUpmActivationMetrics(pref_service, util_bridge.get());
+
     return;
   }
 
