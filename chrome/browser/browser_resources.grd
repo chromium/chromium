@@ -130,7 +130,7 @@
         <include name="IDR_DEVICE_EMULATOR_SHARED_STYLES_JS" file="${root_gen_dir}\chrome\browser\resources\chromeos\emulator\shared_styles.js" use_base_dir="false"  type="BINDATA" />
         <if expr="_google_chrome">
           <then>
-            <include name="IDR_GOOGLE_XKB_MANIFEST" file="resources\chromeos\input_method\google_xkb_manifest.json" type="BINDATA" />
+            <include name="IDR_GOOGLE_XKB_MANIFEST" file="${root_gen_dir}\chrome\browser\resources\chromeos\input_method\google_xkb_manifest.json" use_base_dir="false" type="BINDATA" />
           </then>
           <else>
             <include name="IDR_XKB_MANIFEST" file="resources\chromeos\input_method\xkb_manifest.json" type="BINDATA" />

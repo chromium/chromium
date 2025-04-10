@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/jinja2/jinja2.gni")
+
+# Generates a manifest.json from a template.
+#
+# Parameters
+#
+#   template_file (required)
+#       Jinja2 template file.
+#
+#   output_file (required)
+#       Path to output file.
+#
+#   is_manifest_v3
+#       If true, template is generated with is_manifest_v3 set to true,
+#       otherwise it is false.
+template("manifest") {
+  template_file = invoker.input_file
+  output_file = invoker.output_file
+  action(target_name) {
+    script =
+        "//chrome/browser/resources/chromeos/input_method/generate_manifest.py"
+    inputs = [
+               "//tools/json_comment_eater/json_comment_eater.py",
+               "//build/util/version.py",
+             ] + jinja2_sources
+    sources = [ template_file ]
+    outputs = [ output_file ]
+    data = [ output_file ]
+    args = [ "--output_manifest=" + rebase_path(output_file, root_build_dir) ]
+    if (defined(invoker.is_manifest_v3) && invoker.is_manifest_v3) {
+      args += [ "--is_manifest_v3=1" ]
+    }
+    args += rebase_path(sources, root_build_dir)
+  }
+}
