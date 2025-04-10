@@ -20,10 +20,8 @@ namespace calendar_test_utils {
 
 ScopedLibcTimeZone::ScopedLibcTimeZone(const std::string& timezone) {
   auto env = base::Environment::Create();
-  std::string old_timezone_value;
-  if (env->GetVar(kTimeZoneEnvVarName, &old_timezone_value)) {
-    old_timezone_ = old_timezone_value;
-  }
+  old_timezone_ = env->GetVar(kTimeZoneEnvVarName);
+
   if (!env->SetVar(kTimeZoneEnvVarName, timezone)) {
     success_ = false;
   }
