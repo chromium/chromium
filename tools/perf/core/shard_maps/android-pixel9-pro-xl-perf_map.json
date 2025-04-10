@@ -1,5 +1,10 @@
 {
     "0": {
+        "benchmarks": {
+            "jetstream2": {
+                "abridged": false
+            }
+        },
         "executables": {
             "components_perftests": {
                 "arguments": [
@@ -7,17 +12,7 @@
                 ],
                 "path": "components_perftests"
             }
-        },
-        "crossbench": {
-            "jetstream_2.2": {
-                "display_name": "jetstream2.crossbench",
-                "arguments": [
-                    "--fileserver",
-                    "--debug"
-                ]
-            }
-        },
-        "benchmarks": {}
+        }
     },
     "1": {
         "crossbench": {
@@ -62,7 +57,7 @@
         "predicted_min_shard_index": 3,
         "predicted_max_shard_time": 7000,
         "predicted_max_shard_index": 1,
-        "shard #0": 240.0,
+        "shard #0": 70.0,
         "shard #1": 7000,
         "shard #2": 360,
         "shard #3": 60

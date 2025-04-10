@@ -516,7 +516,8 @@ _CROSSBENCH_BENCHMARKS_ALL = frozenset([
     _crossbench_jetstream2(),
 ])
 
-# TODO(b/338630584): Remove it when other benchmarks can be run on Android.
+# TODO(crbug.com/338630584): Remove it when other benchmarks can be run on
+# Android.
 _CROSSBENCH_ANDROID = frozenset([
     _crossbench_speedometer3_0(arguments=['--fileserver']),
     _crossbench_speedometer3_1(arguments=['--fileserver']),
@@ -526,10 +527,12 @@ _CROSSBENCH_ANDROID = frozenset([
     ]),
 ])
 
+# TODO(crbug.com/409326154): Enable crossbench variant when supported.
+# TODO(crbug.com/409571674): Remove --debug flag.
 _CROSSBENCH_PIXEL9 = frozenset([
-    _crossbench_jetstream2(arguments=['--fileserver', '--debug']),
-    _crossbench_speedometer3_1(arguments=['--fileserver', '--debug']),
+    # _crossbench_jetstream2(arguments=['--fileserver', '--debug']),
     _crossbench_motionmark1_3(arguments=['--fileserver', '--debug']),
+    _crossbench_speedometer3_1(arguments=['--fileserver', '--debug']),
     _crossbench_loadline_phone(arguments=[
         '--cool-down-threshold=moderate',
         '--no-splash',
@@ -745,6 +748,11 @@ _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
         _GetBenchmarkConfig('speedometer2-minorms'),
         _GetBenchmarkConfig('speedometer3-minorms'),
     ])
+# TODO(crbug.com/409326154): Remove these for the crossbench variants when
+# supported.
+_ANDROID_PIXEL9_BENCHMARK_CONFIGS = PerfSuite([
+    _GetBenchmarkConfig('jetstream2'),
+])
 # Pixel fold
 _ANDROID_PIXEL_FOLD_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Add([
@@ -843,7 +851,7 @@ WIN_10_LOW_END = PerfPlatform(
     'Low end windows 10 HP laptops. HD Graphics 5500, x86-64-i3-5005U, '
     'SSD, 4GB RAM.',
     _WIN_10_LOW_END_BENCHMARK_CONFIGS,
-    # TODO(b/278947510): Increase the count when m.2 disks stop failing.
+    # TODO(crbug.com/278947510): Increase the count when m.2 disks stop failing.
     45,
     'win',
     crossbench=_CROSSBENCH_BENCHMARKS_ALL)
@@ -999,7 +1007,7 @@ ANDROID_GO_WEMBLEY_WEBVIEW = PerfPlatform(
     _ANDROID_GO_WEBVIEW_BENCHMARK_CONFIGS, 20, 'android')
 ANDROID_PIXEL9 = PerfPlatform('android-pixel9-perf',
                               'Android B',
-                              PerfSuite([]),
+                              _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
                               4,
                               'android',
                               executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
@@ -1007,7 +1015,7 @@ ANDROID_PIXEL9 = PerfPlatform('android-pixel9-perf',
 ANDROID_PIXEL9_PRO = PerfPlatform(
     'android-pixel9-pro-perf',
     'Android B',
-    PerfSuite([]),
+    _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
     4,
     'android',
     executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
@@ -1015,7 +1023,7 @@ ANDROID_PIXEL9_PRO = PerfPlatform(
 ANDROID_PIXEL9_PRO_XL = PerfPlatform(
     'android-pixel9-pro-xl-perf',
     'Android B',
-    PerfSuite([]),
+    _ANDROID_PIXEL9_BENCHMARK_CONFIGS,
     4,
     'android',
     executables=_ANDROID_DEFAULT_EXECUTABLE_CONFIGS,
