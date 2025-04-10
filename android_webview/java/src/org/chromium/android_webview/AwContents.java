@@ -3807,7 +3807,7 @@ public class AwContents implements SmartClipProvider {
                     assert false;
             }
         }
-        mWebContents.setPrimaryMainFrameImportance(effectiveImportance);
+        mWebContents.setImportance(effectiveImportance);
     }
 
     @RendererPriority

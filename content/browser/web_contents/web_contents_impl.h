@@ -358,6 +358,10 @@ class CONTENT_EXPORT WebContentsImpl
   // TODO(crbug.com/40165695): Rename to HasAccessedInitialMainDocument
   bool HasAccessedInitialDocument();
 
+#if BUILDFLAG(IS_ANDROID)
+  void SetPrimaryMainFrameImportance(ChildProcessImportance importance);
+#endif
+
   // Returns the human-readable name for title in Media Controls.
   // If the returned value is an empty string, it means that there is no
   // human-readable name.
@@ -622,9 +626,6 @@ class CONTENT_EXPORT WebContentsImpl
   void ActivateNearestFindResult(float x, float y) override;
   void RequestFindMatchRects(int current_version) override;
   service_manager::InterfaceProvider* GetJavaInterfaces() override;
-  ChildProcessImportance GetPrimaryMainFrameImportanceForTesting() override;
-  void SetPrimaryMainFrameImportance(
-      ChildProcessImportance importance) override;
 #endif
   bool HasRecentInteraction() override;
   [[nodiscard]] ScopedIgnoreInputEvents IgnoreInputEvents(

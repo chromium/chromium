@@ -3053,11 +3053,6 @@ WebContentsImpl::GetPictureInPictureOptions() const {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-ChildProcessImportance
-WebContentsImpl::GetPrimaryMainFrameImportanceForTesting() {
-  return GetPrimaryMainFrame()->GetRenderWidgetHost()->importance();
-}
-
 void WebContentsImpl::SetPrimaryMainFrameImportance(
     ChildProcessImportance importance) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SetMainFrameImportance",

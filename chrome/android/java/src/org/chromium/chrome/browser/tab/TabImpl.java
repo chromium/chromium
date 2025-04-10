@@ -1278,18 +1278,9 @@ class TabImpl implements Tab {
     final void setImportance(@ChildProcessImportance int importance) {
         if (mImportance == importance) return;
         mImportance = importance;
-        updateImportance(getWebContents(), mImportance);
-    }
-
-    private static void updateImportance(
-            WebContents webContents, @ChildProcessImportance int importance) {
-        if (webContents == null
-                || ChromeFeatureList.isEnabled(ChromeFeatureList.PROCESS_RANK_POLICY_ANDROID)) {
-            // When ProcessRankPolicyAndroid of performance manager is enabled, the policy updates
-            // the page importance.
-            return;
-        }
-        webContents.setPrimaryMainFrameImportance(importance);
+        WebContents webContents = getWebContents();
+        if (webContents == null) return;
+        webContents.setImportance(mImportance);
     }
 
     /** Hides the current {@link NativePage}, if any, and shows the {@link WebContents}'s view. */
@@ -1880,11 +1871,11 @@ class TabImpl implements Tab {
             hideNativePage(false, null);
 
             if (oldWebContents != null) {
-                updateImportance(oldWebContents, ChildProcessImportance.NORMAL);
+                oldWebContents.setImportance(ChildProcessImportance.NORMAL);
                 getWebContentsAccessibility(oldWebContents).setObscuredByAnotherView(false);
             }
 
-            updateImportance(mWebContents, mImportance);
+            mWebContents.setImportance(mImportance);
 
             ContentUtils.setUserAgentOverride(
                     mWebContents,
