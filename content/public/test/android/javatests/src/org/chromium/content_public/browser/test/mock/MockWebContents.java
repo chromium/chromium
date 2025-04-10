@@ -169,7 +169,7 @@ public class MockWebContents implements WebContents, WebContentsObserver.Observa
     public void stop() {}
 
     @Override
-    public void setImportance(int importance) {}
+    public void setPrimaryMainFrameImportance(int importance) {}
 
     @Override
     public void suspendAllMediaPlayers() {}

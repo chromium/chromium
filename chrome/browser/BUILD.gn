@@ -3115,6 +3115,8 @@ static_library("browser") {
       "password_manager/android/shared_preferences_delegate_android.cc",
       "password_manager/android/shared_preferences_delegate_android.h",
       "payments/android/service_worker_payment_app_bridge.cc",
+      "performance_manager/policies/process_rank_policy_android.cc",
+      "performance_manager/policies/process_rank_policy_android.h",
       "platform_util_android.cc",
       "plugins/plugin_observer_android.cc",
       "plugins/plugin_observer_android.h",

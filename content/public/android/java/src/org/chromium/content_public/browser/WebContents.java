@@ -256,14 +256,14 @@ public interface WebContents extends Parcelable {
      * independent of visibility. Note this does not affect importance of subframe processes or main
      * frames processeses for non-primary pages.
      *
-     * @param primaryMainFrameImportance importance of the primary page's main frame process.
+     * @param importance importance of the primary page's main frame process.
      */
-    void setImportance(@ChildProcessImportance int primaryMainFrameImportance);
+    void setPrimaryMainFrameImportance(@ChildProcessImportance int importance);
 
     /**
-     * Suspends all media players for this WebContents.  Note: There may still
-     * be activities generating audio, so setAudioMuted() should also be called
-     * to ensure all audible activity is silenced.
+     * Suspends all media players for this WebContents. Note: There may still be activities
+     * generating audio, so setAudioMuted() should also be called to ensure all audible activity is
+     * silenced.
      */
     void suspendAllMediaPlayers();
 
