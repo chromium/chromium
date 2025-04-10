@@ -155,7 +155,7 @@ cq_build_perf_builder(
             config = "base_config",
         ),
     ),
-    gn_args = "try/android-arm64-rel",
+    gn_args = gn_args.config(configs = ["try/android-arm64-rel", "reclient", "no_siso"]),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "android",
@@ -223,7 +223,7 @@ cq_build_perf_builder(
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
-    gn_args = "try/linux-rel",
+    gn_args = gn_args.config(configs = ["try/linux-rel", "reclient", "no_siso"]),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "linux",
@@ -283,7 +283,7 @@ cq_build_perf_builder(
             target_platform = builder_config.target_platform.WIN,
         ),
     ),
-    gn_args = "try/win-rel",
+    gn_args = gn_args.config(configs = ["try/win-rel", "reclient", "no_siso"]),
     os = os.WINDOWS_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "windows",
@@ -379,7 +379,7 @@ cq_build_perf_builder(
             target_platform = builder_config.target_platform.CHROMEOS,
         ),
     ),
-    gn_args = "try/linux-chromeos-rel",
+    gn_args = gn_args.config(configs = ["try/linux-chromeos-rel", "reclient", "no_siso"]),
     os = os.LINUX_DEFAULT,
     console_view_entry = consoles.console_view_entry(
         category = "cros",
@@ -442,7 +442,7 @@ cq_build_perf_builder(
             target_platform = builder_config.target_platform.MAC,
         ),
     ),
-    gn_args = "try/mac-rel",
+    gn_args = gn_args.config(configs = ["try/mac-rel", "reclient", "no_siso"]),
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(
@@ -511,7 +511,7 @@ cq_build_perf_builder(
             target_platform = builder_config.target_platform.IOS,
         ),
     ),
-    gn_args = "try/ios-simulator",
+    gn_args = gn_args.config(configs = ["try/ios-simulator", "reclient", "no_siso"]),
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
     console_view_entry = consoles.console_view_entry(

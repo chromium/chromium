@@ -16,6 +16,8 @@
     "target_cpu": "arm64",
     "target_os": "android",
     "use_clang_coverage": true,
-    "use_remoteexec": true
+    "use_reclient": true,
+    "use_remoteexec": true,
+    "use_siso": false
   }
 }
