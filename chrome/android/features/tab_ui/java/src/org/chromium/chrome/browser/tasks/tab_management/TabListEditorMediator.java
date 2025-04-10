@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.LifecycleObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
@@ -34,7 +35,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.ListModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -68,6 +68,7 @@ class TabListEditorMediator
     private final List<Tab> mVisibleTabs = new ArrayList<>();
     private final TabListEditorLayout mTabListEditorLayout;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
+    private final @CreationMode int mCreationMode;
 
     private @Nullable TabListCoordinator mTabListCoordinator;
     private @Nullable TabListEditorCoordinator.ResetHandler mResetHandler;
@@ -100,7 +101,8 @@ class TabListEditorMediator
             BottomSheetController bottomSheetController,
             TabListEditorLayout tabListEditorLayout,
             @TabActionState int initialTabActionState,
-            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            @CreationMode int creationMode) {
         mContext = context;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mModel = model;
@@ -111,6 +113,7 @@ class TabListEditorMediator
         mTabListEditorLayout = tabListEditorLayout;
         mTabActionState = initialTabActionState;
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mCreationMode = creationMode;
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -177,10 +180,14 @@ class TabListEditorMediator
     }
 
     private void updateColors(boolean isIncognito) {
-        @ColorInt int primaryColor = ChromeColors.getPrimaryBackgroundColor(mContext, isIncognito);
+        @ColorInt
+        int primaryColor =
+                TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                        mContext, isIncognito, mCreationMode);
         @ColorInt
         int toolbarBackgroundColor =
-                TabUiThemeProvider.getTabSelectionToolbarBackground(mContext, isIncognito);
+                TabUiThemeProvider.getTabSelectionToolbarBackground(
+                        mContext, isIncognito, mCreationMode);
         ColorStateList toolbarTintColorList =
                 TabUiThemeProvider.getTabSelectionToolbarIconTintList(mContext, isIncognito);
 

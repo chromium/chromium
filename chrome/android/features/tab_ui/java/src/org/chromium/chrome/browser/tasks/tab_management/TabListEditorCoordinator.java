@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -50,13 +51,25 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.List;
 
 /**
- * This class is a coordinator for TabListEditor component. It manages the communication with
- * {@link TabListCoordinator} as well as the life-cycle of shared component.
+ * This class is a coordinator for TabListEditor component. It manages the communication with {@link
+ * TabListCoordinator} as well as the life-cycle of shared component.
  */
 class TabListEditorCoordinator {
+    @IntDef({CreationMode.FULL_SCREEN, CreationMode.DIALOG})
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CreationMode {
+        int FULL_SCREEN = 0;
+        int DIALOG = 1;
+    }
+
     static final String COMPONENT_NAME = "TabListEditor";
 
     // TODO(crbug.com/41467140): Unify similar interfaces in other components that used the
@@ -284,6 +297,7 @@ class TabListEditorCoordinator {
      * @param modalDialogManager Used for managing the modal dialogs.
      * @param desktopWindowStateManager Manager to get desktop window and app header state.
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param creationMode Mode in which list is created e.g. full screen mode or in a dialog.
      */
     public TabListEditorCoordinator(
             Activity activity,
@@ -301,7 +315,8 @@ class TabListEditorCoordinator {
             @Nullable GridCardOnClickListenerProvider gridCardOnClickListenerProvider,
             @NonNull ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
-            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
+            @Nullable ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @CreationMode int creationMode) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
             mActivity = activity;
             mRootView = rootView;
@@ -339,7 +354,8 @@ class TabListEditorCoordinator {
                             bottomSheetController,
                             mTabListEditorLayout,
                             mTabActionState,
-                            desktopWindowStateManager);
+                            desktopWindowStateManager,
+                            creationMode);
             mTabListEditorMediator.setNavigationProvider(
                     new TabListEditorNavigationProvider(activity, mTabListEditorController));
             mNeedsCleanUp = false;

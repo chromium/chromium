@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ShowMode;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -224,7 +225,8 @@ public class SelectableTabListEditorTest {
                                     /* gridCardOnClickListenerProvider= */ null,
                                     mModalDialogManager,
                                     mAppHeaderStateProvider,
-                                    mEdgeToEdgeSupplier);
+                                    mEdgeToEdgeSupplier,
+                                    CreationMode.FULL_SCREEN);
 
                     mTabListEditorController = mTabListEditorCoordinator.getController();
                     mTabListEditorLayout =

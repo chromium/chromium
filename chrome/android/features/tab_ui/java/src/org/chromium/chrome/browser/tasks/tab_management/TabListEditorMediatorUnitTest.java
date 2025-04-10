@@ -21,6 +21,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -52,7 +53,8 @@ public final class TabListEditorMediatorUnitTest {
                         /* bottomSheetController= */ null,
                         /* tabListEditorLayout= */ null,
                         TabActionState.SELECTABLE,
-                        mDesktopWindowStateManager);
+                        mDesktopWindowStateManager,
+                        CreationMode.FULL_SCREEN);
     }
 
     @After
