@@ -320,8 +320,7 @@ int TabsCloser::UndoCloseTabs() {
   for (const TabGroup* tab_group : web_state_list->GetGroups()) {
     tab_groups::LocalTabGroupID local_id = tab_group->tab_group_id();
     auto iterator = local_to_saved_group_ids_.find(local_id);
-    CHECK(iterator != local_to_saved_group_ids_.end(),
-          base::NotFatalUntil::M132);
+    CHECK(iterator != local_to_saved_group_ids_.end());
 
     base::Uuid saved_id = iterator->second;
     std::optional<tab_groups::SavedTabGroup> saved_group =
