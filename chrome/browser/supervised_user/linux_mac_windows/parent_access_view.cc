@@ -50,10 +50,11 @@ namespace {
 
 constexpr int kViewWidth = 448;
 constexpr int kViewHeight = 390;
+constexpr int kErrorViewHeight = 376;
 constexpr int kMaxWebViewHeight = 540;
 constexpr gfx::Size kViewPreferredSize = gfx::Size(kViewWidth, kViewHeight);
 constexpr gfx::Size kErrorViewPreferredSize =
-    gfx::Size(kViewWidth, kViewHeight);
+    gfx::Size(kViewWidth, kErrorViewHeight);
 
 const GURL GetPacpUrl(
     const GURL& blocked_url,
@@ -298,13 +299,23 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
   error_view->SetLayoutManager(std::move(layout));
 
   // Add error icon.
-  int top_margin = 60;
   auto error_icon_view =
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kErrorOutlineIcon, ui::kColorAlertHighSeverity,
           gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorOutlineIcon)));
-  error_view->SetProperty(views::kMarginsKey,
-                          gfx::Insets().set_top(top_margin));
+  // Spec required the margin to be 60 px from the the top, from which we
+  // subtract the additional space taken by the dialog border displaying the "X"
+  // button.
+  int top_margin = 60;
+  int visible_border_height = widget->widget_delegate()
+                                  ->AsDialogDelegate()
+                                  ->GetBubbleFrameView()
+                                  ->GetBorder()
+                                  ->GetInsets()
+                                  .height();
+  top_margin -= visible_border_height;
+  error_icon_view->SetProperty(views::kMarginsKey,
+                               gfx::Insets().set_top(top_margin));
   error_view->AddChildView(std::move(error_icon_view));
 
   // Add title.
