@@ -138,7 +138,8 @@ public class CustomTabActivityNavigationController
                     // the OS to handle the back event then notify the registered observer that the
                     // back event has happened.
                     if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREDICTIVE_BACK_GESTURE)
-                            && mTabController.onlyOneTabRemaining()) {
+                            && mTabController.onlyOneTabRemaining()
+                            && !mIntentDataProvider.isPartialCustomTab()) {
                         return false;
                     }
                     return mTabProvider.getTab() != null
@@ -447,6 +448,10 @@ public class CustomTabActivityNavigationController
         String assertMsg = "URL used to open browser is null. " + tabInfo + intentDataProviderInfo;
         Log.e(TAG, assertMsg);
         assert false : assertMsg;
+    }
+
+    public BrowserServicesIntentDataProvider getIntentDataProviderForTesting() {
+        return mIntentDataProvider;
     }
 
     public CustomTabActivityTabProvider.Observer getTabObserverForTesting() {

@@ -263,4 +263,16 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
         Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
     }
+
+    @Test
+    public void observerDoesNotDefaultToOS_WhenPartialCCT() {
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
+        when(mNavigationController.getIntentDataProviderForTesting().isPartialCustomTab())
+                .thenReturn(true);
+        mNavigationController
+                .getTabObserverForTesting()
+                .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
+        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+    }
 }
