@@ -1514,8 +1514,8 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
       LayoutUnit decoration_end_offset =
           LayoutUnit(end_width / 2.0f) - end_outset;
 
-      EBorderStyle rule_style =
-          rule_styles.GetGapDecorationForGapIndex(gap_index, gaps.size());
+      EBorderStyle rule_style = ComputedStyle::CollapsedBorderStyle(
+          rule_styles.GetGapDecorationForGapIndex(gap_index, gaps.size()));
       LayoutUnit rule_thickness = LayoutUnit(
           rule_widths.GetGapDecorationForGapIndex(gap_index, gaps.size()));
       if (track_direction == kForColumns) {
