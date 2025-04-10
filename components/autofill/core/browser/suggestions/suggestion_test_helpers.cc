@@ -50,8 +50,19 @@ Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
                Field(&Suggestion::payload, payload));
 }
 
-Matcher<Suggestion> EqualsSuggestion(Suggestion::Icon icon) {
+Matcher<Suggestion> HasIcon(Suggestion::Icon icon) {
   return Field(&Suggestion::icon, icon);
+}
+
+Matcher<Suggestion> HasIphFeature(
+    raw_ptr<const base::Feature> feature_for_iph) {
+  return Field(&Suggestion::iph_metadata,
+               Field(&Suggestion::IPHMetadata::feature, feature_for_iph));
+}
+
+Matcher<Suggestion> HasNoIphFeature() {
+  return Field(&Suggestion::iph_metadata,
+               Field(&Suggestion::IPHMetadata::feature, nullptr));
 }
 
 }  // namespace autofill

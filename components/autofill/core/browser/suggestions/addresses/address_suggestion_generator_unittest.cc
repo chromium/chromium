@@ -792,10 +792,14 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
       SuggestionType::kAddressEntry, NAME_FIRST,
       /*trigger_field_max_length=*/0);
 
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsSuggestion(Suggestion::Icon::kAccount),
-                          EqualsSuggestion(Suggestion::Icon::kHome),
-                          EqualsSuggestion(Suggestion::Icon::kWork)));
+  raw_ptr<const base::Feature> kIphFeature =
+      &feature_engagement::kIPHAutofillHomeWorkProfileSuggestionFeature;
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          AllOf(HasIcon(Suggestion::Icon::kAccount), HasNoIphFeature()),
+          AllOf(HasIcon(Suggestion::Icon::kHome), HasIphFeature(kIphFeature)),
+          AllOf(HasIcon(Suggestion::Icon::kWork), HasIphFeature(kIphFeature))));
 
   suggestions = CreateSuggestionsFromProfilesForTest(
       {profile_default, profile_home, profile_work}, {NAME_FIRST, NAME_LAST},
@@ -803,10 +807,8 @@ TEST_F(AddressSuggestionGeneratorTest, TestAddressSuggestion_HomeAndWorkIcons) {
       /*trigger_field_max_length=*/0);
 
   // If trigger field is email address, don't show home and work icons.
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsSuggestion(Suggestion::Icon::kEmail),
-                          EqualsSuggestion(Suggestion::Icon::kEmail),
-                          EqualsSuggestion(Suggestion::Icon::kEmail)));
+  EXPECT_THAT(suggestions, Each(AllOf(HasIcon(Suggestion::Icon::kEmail),
+                                      HasNoIphFeature())));
 }
 
 // Tests that Home/Work icons are not used if the H&W feature is disabled.
@@ -831,10 +833,8 @@ TEST_F(AddressSuggestionGeneratorTest,
       /*trigger_field_max_length=*/0);
 
   // Default icons are expected.
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsSuggestion(Suggestion::Icon::kAccount),
-                          EqualsSuggestion(Suggestion::Icon::kAccount),
-                          EqualsSuggestion(Suggestion::Icon::kAccount)));
+  EXPECT_THAT(suggestions, Each(AllOf(HasIcon(Suggestion::Icon::kAccount),
+                                      HasNoIphFeature())));
 }
 
 #if !BUILDFLAG(IS_IOS)
