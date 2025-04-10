@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -226,6 +227,11 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
                       const net::NetworkTrafficAnnotationTag& annotation_tag,
                       const base::Location& created_from);
 
+  SimpleURLLoaderImpl(
+      GURL original_url,
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+      const base::Location& created_from);
+
   SimpleURLLoaderImpl(const SimpleURLLoaderImpl&) = delete;
   SimpleURLLoaderImpl& operator=(const SimpleURLLoaderImpl&) = delete;
 
@@ -368,8 +374,15 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   // Starts a request. Used for both the initial request and retries, if any.
   void StartRequest(mojom::URLLoaderFactory* url_loader_factory);
 
+  void AdoptRequest();
+
+  void SetPipesAndStartTimeoutTimer(
+      mojo::PendingRemote<mojom::URLLoader>&& url_loader,
+      mojo::PendingReceiver<mojom::URLLoaderClient>&& url_loader_client);
+
   // Re-initializes state of |this| and |body_handler_| prior to retrying a
-  // request.
+  // request. Only SimpeURLLoaders that are created with valid ResourceRequests
+  // can retry.
   void Retry();
 
   // mojom::URLLoaderClient implementation;
@@ -389,6 +402,9 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   // Choose the TaskPriority based on |resource_request_|'s net priority.
   // TODO(mmenke): Can something better be done here?
   base::TaskPriority GetTaskPriority() const {
+    if (!resource_request_) {
+      return base::TaskPriority::BEST_EFFORT;
+    }
     base::TaskPriority task_priority;
     if (resource_request_->priority >= net::MEDIUM) {
       task_priority = base::TaskPriority::USER_BLOCKING;
@@ -429,7 +445,8 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   // Populated in the constructor, and cleared once no longer needed, when no
   // more retries are possible.
   std::unique_ptr<ResourceRequest> resource_request_;
-  const net::NetworkTrafficAnnotationTag annotation_tag_;
+  const std::optional<net::NetworkTrafficAnnotationTag> annotation_tag_;
+  network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints_;
   const base::Location created_from_;
   // Cloned from the input URLLoaderFactory if it may be needed to follow
   // redirects.
@@ -1286,6 +1303,19 @@ SimpleURLLoaderImpl::SimpleURLLoaderImpl(
 #endif  // DCHECK_IS_ON()
 }
 
+SimpleURLLoaderImpl::SimpleURLLoaderImpl(
+    GURL original_url,
+    network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+    const base::Location& created_from)
+    : url_loader_client_endpoints_(std::move(url_loader_client_endpoints)),
+      created_from_(created_from),
+      request_state_(std::make_unique<RequestState>()),
+      final_url_(std::move(original_url)),
+      timeout_timer_(timeout_tick_clock_) {
+  CHECK(url_loader_client_endpoints_->url_loader_client.is_valid());
+  CHECK(url_loader_client_endpoints_->url_loader.is_valid());
+}
+
 SimpleURLLoaderImpl::~SimpleURLLoaderImpl() {}
 
 void SimpleURLLoaderImpl::DownloadToString(
@@ -1393,6 +1423,8 @@ void SimpleURLLoaderImpl::SetOnResponseStartedCallback(
 
 void SimpleURLLoaderImpl::SetOnUploadProgressCallback(
     UploadProgressCallback on_upload_progress_callback) {
+  // Uploads only work for a SimpleURLLoaderImpl created with a ResourceRequest.
+  DCHECK(resource_request_);
   // Check if a request has not yet been started.
   DCHECK(!body_handler_);
 
@@ -1425,6 +1457,9 @@ void SimpleURLLoaderImpl::SetAllowHttpErrorResults(
 void SimpleURLLoaderImpl::AttachStringForUploadInternal(
     std::string_view upload_data,
     base::optional_ref<std::string_view> upload_content_type) {
+  // Do not allow file upload if this SimpleURLLoader is working with an
+  // in-progress request.
+  DCHECK(resource_request_);
   // Currently only allow a single string to be attached.
   DCHECK(!resource_request_->request_body);
   DCHECK(resource_request_->method != net::HttpRequestHeaders::kGetMethod &&
@@ -1452,6 +1487,7 @@ void SimpleURLLoaderImpl::AttachStringForUploadInternal(
 void SimpleURLLoaderImpl::AttachStringForUploadInternal(
     std::string&& upload_data,
     base::optional_ref<std::string_view> upload_content_type) {
+  DCHECK(resource_request_);
   // Currently only allow a single string to be attached.
   DCHECK(!resource_request_->request_body);
   DCHECK(resource_request_->method != net::HttpRequestHeaders::kGetMethod &&
@@ -1513,6 +1549,10 @@ void SimpleURLLoaderImpl::AttachFileForUploadInternal(
     uint64_t length) {
   DCHECK(!upload_file_path.empty());
 
+  // Do not allow file upload if this SimpleURLLoader is working with an
+  // in-progress request.
+  DCHECK(resource_request_);
+
   // Currently only allow a single file to be attached.
   DCHECK(!resource_request_->request_body);
   DCHECK(resource_request_->method != net::HttpRequestHeaders::kGetMethod &&
@@ -1535,6 +1575,7 @@ void SimpleURLLoaderImpl::AttachFileForUploadInternal(
 void SimpleURLLoaderImpl::SetRetryOptions(int max_retries, int retry_mode) {
   // Check if a request has not yet been started.
   DCHECK(!body_handler_);
+  DCHECK(resource_request_);
   DCHECK_GE(max_retries, 0);
   // Non-zero |max_retries| makes no sense when retries are disabled.
   DCHECK(max_retries > 0 || retry_mode == RETRY_NEVER);
@@ -1559,12 +1600,14 @@ void SimpleURLLoaderImpl::SetRetryOptions(int max_retries, int retry_mode) {
 void SimpleURLLoaderImpl::SetURLLoaderFactoryOptions(uint32_t options) {
   // Check if a request has not yet been started.
   DCHECK(!body_handler_);
+  DCHECK(resource_request_);
   url_loader_factory_options_ = options;
 }
 
 void SimpleURLLoaderImpl::SetRequestID(int32_t request_id) {
   // Check if a request has not yet been started.
   DCHECK(!body_handler_);
+  DCHECK(resource_request_);
   request_id_ = request_id;
 }
 
@@ -1708,11 +1751,16 @@ void SimpleURLLoaderImpl::FinishWithResult(int net_error) {
 
 void SimpleURLLoaderImpl::Start(mojom::URLLoaderFactory* url_loader_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(resource_request_);
   // It's illegal to use a single SimpleURLLoaderImpl to make multiple requests.
   DCHECK(!request_state_->finished);
   DCHECK(!url_loader_);
   DCHECK(!request_state_->body_started);
+
+  if (url_loader_client_endpoints_) {
+    DCHECK(!url_loader_factory);
+    AdoptRequest();
+    return;
+  }
 
   // Stash the information if retries are enabled.
   if (remaining_retries_ > 0) {
@@ -1734,8 +1782,12 @@ void SimpleURLLoaderImpl::OnReadyToStart() {
 
 void SimpleURLLoaderImpl::StartRequest(
     mojom::URLLoaderFactory* url_loader_factory) {
-  DCHECK(resource_request_);
-  DCHECK(url_loader_factory);
+  CHECK(resource_request_);
+  CHECK(annotation_tag_);
+  CHECK(url_loader_factory);
+  CHECK(!url_loader_client_endpoints_);
+  CHECK(!client_receiver_.is_bound());
+  CHECK(!url_loader_.is_bound());
 
   final_url_ = resource_request_->url;
 
@@ -1750,26 +1802,49 @@ void SimpleURLLoaderImpl::StartRequest(
     resource_request_->request_body->AppendDataPipe(
         string_upload_data_pipe_getter_->GetRemoteForNewUpload());
   }
+  mojo::PendingRemote<mojom::URLLoader> url_loader;
+  mojo::PendingReceiver<mojom::URLLoaderClient> url_loader_client;
   url_loader_factory->CreateLoaderAndStart(
-      url_loader_.BindNewPipeAndPassReceiver(), request_id_,
+      url_loader.InitWithNewPipeAndPassReceiver(), request_id_,
       url_loader_factory_options_, *resource_request_,
-      client_receiver_.BindNewPipeAndPassRemote(),
-      net::MutableNetworkTrafficAnnotationTag(annotation_tag_));
-  client_receiver_.set_disconnect_handler(base::BindOnce(
-      &SimpleURLLoaderImpl::OnMojoDisconnect, base::Unretained(this)));
+      url_loader_client.InitWithNewPipeAndPassRemote(),
+      net::MutableNetworkTrafficAnnotationTag(annotation_tag_.value()));
 
-  // Note that this ends up restarting the timer on each retry.
-  if (!timeout_duration_.is_zero()) {
-    timeout_timer_.Start(
-        FROM_HERE, timeout_duration_,
-        base::BindOnce(&SimpleURLLoaderImpl::FinishWithResult,
-                       weak_ptr_factory_.GetWeakPtr(), net::ERR_TIMED_OUT));
-  }
+  SetPipesAndStartTimeoutTimer(std::move(url_loader),
+                               std::move(url_loader_client));
 
   // If no more retries left, can clean up a little.
   if (remaining_retries_ == 0) {
     resource_request_.reset();
     url_loader_factory_remote_.reset();
+  }
+}
+
+void SimpleURLLoaderImpl::AdoptRequest() {
+  CHECK(url_loader_client_endpoints_);
+  CHECK(url_loader_client_endpoints_->url_loader_client.is_valid());
+  CHECK(url_loader_client_endpoints_->url_loader.is_valid());
+  CHECK(!resource_request_);
+
+  SetPipesAndStartTimeoutTimer(
+      std::move(url_loader_client_endpoints_->url_loader),
+      std::move(url_loader_client_endpoints_->url_loader_client));
+  url_loader_client_endpoints_.reset();
+}
+
+void SimpleURLLoaderImpl::SetPipesAndStartTimeoutTimer(
+    mojo::PendingRemote<mojom::URLLoader>&& url_loader,
+    mojo::PendingReceiver<mojom::URLLoaderClient>&& url_loader_client) {
+  client_receiver_.Bind(std::move(url_loader_client));
+  url_loader_.Bind(std::move(url_loader));
+  client_receiver_.set_disconnect_handler(base::BindOnce(
+      &SimpleURLLoaderImpl::OnMojoDisconnect, base::Unretained(this)));
+
+  if (!timeout_duration_.is_zero()) {
+    timeout_timer_.Start(
+        FROM_HERE, timeout_duration_,
+        base::BindOnce(&SimpleURLLoaderImpl::FinishWithResult,
+                       weak_ptr_factory_.GetWeakPtr(), net::ERR_TIMED_OUT));
   }
 }
 
@@ -2022,6 +2097,15 @@ std::unique_ptr<SimpleURLLoader> SimpleURLLoader::Create(
   DCHECK(resource_request);
   return std::make_unique<SimpleURLLoaderImpl>(std::move(resource_request),
                                                annotation_tag, created_from);
+}
+
+std::unique_ptr<SimpleURLLoader> SimpleURLLoader::Create(
+    GURL original_url,
+    network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
+    base::Location created_from) {
+  return std::make_unique<SimpleURLLoaderImpl>(
+      std::move(original_url), std::move(url_loader_client_endpoints),
+      created_from);
 }
 
 void SimpleURLLoader::SetTimeoutTickClockForTest(

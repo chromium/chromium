@@ -18,6 +18,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 class GURL;
@@ -51,7 +52,7 @@ BASE_DECLARE_FEATURE(kSimpleURLLoaderUseReadAndDiscardBodyOption);
 
 class SimpleURLLoaderStreamConsumer;
 
-// Creates and wraps a URLLoader, and runs it to completion. It's recommended
+// Wraps a URLLoader and runs it to completion. It's recommended
 // that consumers use this class instead of URLLoader directly, due to the
 // complexity of the API.
 //
@@ -61,6 +62,13 @@ class SimpleURLLoaderStreamConsumer;
 // that was passed it.
 //
 // Each SimpleURLLoader can only be used for a single request.
+//
+// The SimpleURLLoader can be set up to either start a request or adopt an in-
+// progress request, depending on the Create method used. The methods to attach
+// an upload body or allow retries do not work for SimpleURLLoaders set up with
+// in-progress requests. Methods to monitor the request (except its upload
+// progress) or time it out work for all SimplerURLLoaders, regardless of
+// whether they started or adopted a request.
 //
 // By default SimpleURLLoader will not return the response body for non-2xx
 // HTTP codes. See SetAllowHttpErrorResults() for details.
@@ -154,6 +162,18 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   static std::unique_ptr<SimpleURLLoader> Create(
       std::unique_ptr<ResourceRequest> resource_request,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
+      base::Location created_from = base::Location::Current());
+
+  // Creates a SimpleURLLoader that adopts an in-progress load from
+  // `url_loader_client_endpoints`. The `url_loader_client_endpoints` must
+  // not yet have been bound and read from. The endpoints will be bound when one
+  // of the Download methods is called. The `original_url` is needed here so
+  // that it can be provided to GetFinalURL() and to callbacks that take the url
+  // as a parameter. See class-level comments for information on which methods
+  // may not be called on SimpleURLLoaders created this way.
+  static std::unique_ptr<SimpleURLLoader> Create(
+      GURL original_url,
+      network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       base::Location created_from = base::Location::Current());
 
   // The TickClock to use to configure a timer that tracks if |timeout_duration|
@@ -309,7 +329,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // Attaches the specified string as the upload body. Depending on the length
   // of the string, the string may be copied to the URLLoader, or may be
   // streamed to it from the current process. May only be called once, and only
-  // if ResourceRequest passed to the constructor had a null |request_body|.
+  // if a ResourceRequest was passed to the constructor and it had a null
+  // |request_body|.
   //
   // |content_type| will overwrite any Content-Type header in the
   // ResourceRequest passed to Create().
@@ -371,6 +392,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   //
   // Cannot retry requests with an upload body that contains a data pipe that
   // was added to the ResourceRequest passed to Create() by the consumer.
+  //
+  // Cannot retry requests that were started prior to the creation of the
+  // SimpleURLLoader (i.e. it was created with an URLLoaderClientEndpointsPtr
+  // instead of a ResourceRequest).
   virtual void SetRetryOptions(int max_retries, int retry_mode) = 0;
 
   // Sets options for URLLoaderFactory::CreateLoaderAndStart. See
@@ -385,7 +410,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
 
   // The amount of time to wait before giving up on a given network request and
   // considering it an error. If not set, then the request is allowed to take
-  // as much time as it wants.
+  // as much time as it wants. The timeout represents how long the URLLoader
+  // will wait for a response after a Download method is called, even if this
+  // class adopted an in-progress request.
   virtual void SetTimeoutDuration(base::TimeDelta timeout_duration) = 0;
 
   // Returns the net::Error representing the final status of the request. May
