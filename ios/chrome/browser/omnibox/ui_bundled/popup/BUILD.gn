@@ -121,13 +121,12 @@ source_set("popup_icon") {
     "image_retriever.h",
     "omnibox_icon_view.h",
     "omnibox_icon_view.mm",
-    "simple_omnibox_icon.h",
-    "simple_omnibox_icon.mm",
   ]
   deps = [
     ":popup_ui_protocols",
     "//base",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_suggestion_icon_util",
     "//ios/chrome/browser/shared/public/features",
@@ -143,7 +142,6 @@ source_set("popup_icon") {
 source_set("popup_ui_protocols") {
   sources = [
     "content_providing.h",
-    "omnibox_icon.h",
     "omnibox_popup_consumer.h",
     "omnibox_popup_mutator.h",
     "popup_match_preview_delegate.h",

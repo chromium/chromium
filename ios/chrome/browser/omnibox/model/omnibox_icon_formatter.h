@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/simple_omnibox_icon.h"
+#import "ios/chrome/browser/omnibox/model/simple_omnibox_icon.h"
 
 struct AutocompleteMatch;
 

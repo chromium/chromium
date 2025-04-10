@@ -18,6 +18,7 @@ source_set("ui_bundled_interface") {
     "omnibox_autocomplete_controller_debugger_delegate.h",
     "omnibox_autocomplete_controller_delegate.h",
     "omnibox_controller.h",
+    "omnibox_icon.h",
     "omnibox_icon_formatter.h",
     "omnibox_image_fetcher.h",
     "omnibox_pedal.h",
@@ -26,13 +27,13 @@ source_set("ui_bundled_interface") {
     "omnibox_text_controller_delegate.h",
     "pedal_section_extractor.h",
     "pedal_suggestion_wrapper.h",
+    "simple_omnibox_icon.h",
     "suggest_action.h",
   ]
   deps = [
     "//components/omnibox/browser",
     "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_icon",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
+    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_suggestion_icon_util",
     "//ui/base:types",
   ]
 }
@@ -50,6 +51,7 @@ source_set("model") {
     "omnibox_text_controller.mm",
     "pedal_section_extractor.mm",
     "pedal_suggestion_wrapper.mm",
+    "simple_omnibox_icon.mm",
     "suggest_action.mm",
   ]
   deps = [
@@ -66,11 +68,9 @@ source_set("model") {
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
+    "//ios/chrome/browser/omnibox/ui_bundled:omnibox_suggestion_icon_util",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_util",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_accessibility_identifier_constants",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup/row/actions",
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data:features",
     "//ios/chrome/browser/shared/model/application_context",
@@ -85,6 +85,7 @@ source_set("model") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util:image_util",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ui/base",
     "//ui/base:types",
   ]
@@ -101,7 +102,6 @@ swift_source_set("omnibox_pedal_swift") {
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/common/ui/colors:swift",
     "//ui/base",
   ]
@@ -130,8 +130,6 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/search_engines",
     "//components/search_engines:test_support",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup",
-    "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
