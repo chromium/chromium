@@ -37,6 +37,7 @@ origin_files = glob([
     "build/android/CheckInstallApk-debug.apk",
     "build/android/unused_resources/**",
     "build/linux/**",
+    "build/win/**",
     # We don't care about siso, and the contents of the .sisoenv file tend to be
     # non-deterministic, causing spurious diffs.
     "build/config/siso/**",
@@ -101,6 +102,12 @@ origin_files = glob([
     # "third_party/zlib/**",
     "url/third_party/mozilla/**",
     "third_party/simdutf/**",
+  ]) + glob([
+    "third_party/compiler-rt/**",
+  ]) - glob([
+    # This is not used, and contains a large number of files that slows down
+    # imports and checkouts.
+    "third_party/compiler-rt/src/test/**",
   ]) + glob([
     "third_party/libc++/**",
   ]) - glob([

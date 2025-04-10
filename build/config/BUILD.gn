@@ -297,6 +297,13 @@ group("common_deps") {
   if (use_custom_libcxx) {
     public_deps += [ "//buildtools/third_party/libc++" ]
   }
+
+  if (use_llvm_libatomic) {
+    # Certain C/C++ atomic operations require the separately built "libatomic"
+    # support library, which is not shipped with compiler-rt by default. See
+    # crbug.com/402171653 for context.
+    public_deps += [ "//third_party/compiler-rt:atomic" ]
+  }
 }
 
 # Only the executable template in BUILDCONFIG.gn should reference this.

@@ -54,6 +54,13 @@ declare_args() {
   # For details on the current state of modules in Chromium see
   # https://chromium.googlesource.com/chromium/src/+/main/docs/modules.md
   use_implicit_libcxx_modules = false
+
+  # Build atomic support from in-tree compiler-rt.
+  #
+  # Apple platforms provide the intrinsics from a different library, and the
+  # implementations in compiler-rt are outdated, so avoid building them in this
+  # case.
+  use_llvm_libatomic = !is_apple && !is_nacl
 }
 
 if (use_implicit_libcxx_modules) {

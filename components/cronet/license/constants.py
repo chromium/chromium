@@ -65,6 +65,10 @@ POST_PROCESS_OPERATION = {
         Mapper("License", ['MPLv2'], ["MPL 2.0"])),
     "third_party/apache-portable-runtime/README.chromium": create_license_post_processing(
         Mapper("License", ['Apache-2.0', 'dso', 'Zlib', 'ISC', 'BSD-4-Clause-UC'], ["Apache 2.0"])),
+    "third_party/compiler-rt/README.chromium": create_license_post_processing(
+        Mapper("License",
+               ['NCSA', 'Apache-with-LLVM-Exception', 'MIT'],
+               ["MIT"])),
     "third_party/libc++abi/README.chromium": create_license_post_processing(
         Mapper("License",
                ['NCSA', 'Apache-with-LLVM-Exception', 'MIT'],
