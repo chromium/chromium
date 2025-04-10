@@ -20,6 +20,14 @@ test(t => {
   assert_not_equals(popup.screen.height, popup.innerHeight, "Height");
   assert_not_equals(popup.screen.availWidth, popup.innerWidth, "Avail Width");
   assert_not_equals(popup.screen.availHeight, popup.innerHeight, "Avail Height");
+
+  // Media Queries
+  //
+  // If we're not reducing size information, then `device-width` will be
+  // larger than `innerWidth`, so asking for a minimum width that's just wider will pass.
+  assert_true(popup.matchMedia(`(min-device-width: ${popup.innerWidth + 1}px)`).matches, "Device Width");
+  assert_true(popup.matchMedia(`(min-device-height: ${popup.innerHeight + 1}px)`).matches, "Device Height");
+
   // `window.screen*` doesn't work in content_shell (and we force content_shell
   // for `wpt_internal` tests).
   //
@@ -40,10 +48,18 @@ test(t => {
   assert_equals(popup.screen.height, popup.innerHeight, "Height");
   assert_equals(popup.screen.availWidth, popup.innerWidth, "Avail Width");
   assert_equals(popup.screen.availHeight, popup.innerHeight, "Avail Height");
+
   assert_equals(popup.screenX, 0, "screenX");
   assert_equals(popup.screenLeft, 0, "screenLeft");
   assert_equals(popup.screenY, 0, "screenY");
   assert_equals(popup.screenTop, 0, "screenY");
 
   assert_false(popup.screen.isExtended, "isExtended");
+
+  // Media Queries
+  //
+  // If we're reducing size information, then `device-width` will be
+  // `innerWidth`, so asking for a minimum width that's just wider will fail.
+  assert_false(popup.matchMedia(`(min-device-width: ${popup.innerWidth + 1}px)`).matches, "Device Width")
+  assert_false(popup.matchMedia(`(min-device-height: ${popup.innerHeight + 1}px)`).matches, "Device Height");
 }, "Verify reduced behavior.");
