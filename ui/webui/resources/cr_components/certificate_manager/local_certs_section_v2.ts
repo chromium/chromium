@@ -61,6 +61,7 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
     return {
       numPolicyCertsString_: String,
       numUserCertsString_: String,
+      certManagementMetadata_: Object,
 
       // <if expr="not is_chromeos">
       numSystemCertsString_: String,
@@ -93,14 +94,14 @@ export class LocalCertsSectionV2Element extends LocalCertsSectionV2ElementBase {
     };
   }
 
-  private numPolicyCertsString_: string;
-  private numUserCertsString_: string;
-  private certManagementMetadata_: CertManagementMetadata;
+  declare private numPolicyCertsString_: string;
+  declare private numUserCertsString_: string;
+  declare private certManagementMetadata_: CertManagementMetadata;
   // <if expr="not is_chromeos">
-  private numSystemCertsString_: string;
-  private importOsCertsEnabled_: boolean;
-  private importOsCertsEnabledManaged_: boolean;
-  private showViewOsCertsLinkRow_: boolean;
+  declare private numSystemCertsString_: string;
+  declare private importOsCertsEnabled_: boolean;
+  declare private importOsCertsEnabledManaged_: boolean;
+  declare private showViewOsCertsLinkRow_: boolean;
   // </if>
 
   override ready() {

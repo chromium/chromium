@@ -48,7 +48,7 @@ export class CertificatePasswordDecryptionDialogElement extends
     };
   }
 
-  private password_: string;
+  declare private password_: string;
 
   private onCancelClick_() {
     this.$.dialog.close();

@@ -49,8 +49,8 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
     };
   }
 
-  model: CertificateSubnode;
-  certificateType: CertificateType;
+  declare model: CertificateSubnode;
+  declare certificateType: CertificateType;
   private browserProxy_: CertificatesBrowserProxy =
       CertificatesBrowserProxyImpl.getInstance();
 

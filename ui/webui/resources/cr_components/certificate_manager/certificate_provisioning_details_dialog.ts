@@ -46,8 +46,8 @@ export class CertificateProvisioningDetailsDialogElement extends
     };
   }
 
-  model: CertificateProvisioningProcess;
-  private advancedExpanded_: boolean;
+  declare model: CertificateProvisioningProcess;
+  declare private advancedExpanded_: boolean;
 
   close() {
     this.$.dialog.close();

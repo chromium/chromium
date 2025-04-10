@@ -55,35 +55,71 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     return {
       certSource: Number,
       headerText: String,
-      showImport: Boolean,
-      showImportAndBind: Boolean,
+
+      showImport: {
+        type: Boolean,
+        value: false,
+      },
+
+      showImportAndBind: {
+        type: Boolean,
+        value: false,
+      },
 
       // True if the list should not be collapsible.
       // Empty lists will always not be collapsible.
-      noCollapse: Boolean,
+      noCollapse: {
+        type: Boolean,
+        value: false,
+      },
 
       // True if the export button should be hidden.
       // Export button may also be hidden if there are no certs in the list.
-      hideExport: Boolean,
+      hideExport: {
+        type: Boolean,
+        value: false,
+      },
 
       // True if the entire list (including the header) should be hidden if the
       // list is empty.
-      hideIfEmpty: Boolean,
+      hideIfEmpty: {
+        type: Boolean,
+        value: false,
+      },
 
       // True if the header should be hidden. This will make the list
       // non-collapsible.
-      hideHeader: Boolean,
+      hideHeader: {
+        type: Boolean,
+        value: false,
+      },
 
       // True if the cert metadata is editable
-      certMetadataEditable: Boolean,
+      certMetadataEditable: {
+        type: Boolean,
+        value: false,
+      },
 
-      inSubpage: Boolean,
-      expanded_: Boolean,
-      certificates_: Array,
+      inSubpage: {
+        type: Boolean,
+        value: false,
+      },
+
+      expanded_: {
+        type: Boolean,
+        value: true,
+      },
+
+      certificates_: {
+        type: Array,
+        value: () => [],
+      },
+
       hideEverything_: {
         type: Boolean,
         computed: 'computeHideEverything_(certificates_)',
       },
+
       hasCerts_: {
         type: Boolean,
         computed: 'computeHasCerts_(certificates_)',
@@ -91,20 +127,20 @@ export class CertificateListV2Element extends CertificateListV2ElementBase {
     };
   }
 
-  certSource: CertificateSource;
-  headerText: string;
-  certMetadataEditable: boolean = false;
-  showImport: boolean = false;
-  showImportAndBind: boolean = false;
-  hideExport: boolean = false;
-  hideHeader: boolean = false;
-  inSubpage: boolean = false;
-  noCollapse: boolean = false;
-  hideIfEmpty: boolean = false;
-  private expanded_: boolean = true;
-  private hideEverything_: boolean;
-  private certificates_: SummaryCertInfo[] = [];
-  private hasCerts_: boolean;
+  declare certSource: CertificateSource;
+  declare headerText: string;
+  declare certMetadataEditable: boolean;
+  declare showImport: boolean;
+  declare showImportAndBind: boolean;
+  declare hideExport: boolean;
+  declare hideHeader: boolean;
+  declare inSubpage: boolean;
+  declare noCollapse: boolean;
+  declare hideIfEmpty: boolean;
+  declare private expanded_: boolean;
+  declare private hideEverything_: boolean;
+  declare private certificates_: SummaryCertInfo[];
+  declare private hasCerts_: boolean;
 
   override ready() {
     super.ready();

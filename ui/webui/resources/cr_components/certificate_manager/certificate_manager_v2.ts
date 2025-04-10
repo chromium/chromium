@@ -210,13 +210,26 @@ export class CertificateManagerV2Element extends
 
       toastMessage_: String,
 
-      showInfoDialog_: Boolean,
+      showInfoDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
       infoDialogTitle_: String,
       infoDialogMessage_: String,
-      showPasswordDialog_: Boolean,
+
+      showPasswordDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
       confirmationDialogTitle_: String,
       confirmationDialogMessage_: String,
-      showConfirmationDialog_: Boolean,
+
+      showConfirmationDialog_: {
+        type: Boolean,
+        value: false,
+      },
 
       showSearch_: {
         type: Boolean,
@@ -253,30 +266,30 @@ export class CertificateManagerV2Element extends
     };
   }
 
-  private selectedPage_: Page;
-  private userSubpageLists_: SubpageCertificateList[];
-  private toastMessage_: string;
-  private showInfoDialog_: boolean = false;
-  private infoDialogTitle_: string;
-  private infoDialogMessage_: string;
-  private showPasswordDialog_: boolean = false;
+  declare private selectedPage_: Page;
+  declare private userSubpageLists_: SubpageCertificateList[];
+  declare private toastMessage_: string;
+  declare private showInfoDialog_: boolean;
+  declare private infoDialogTitle_: string;
+  declare private infoDialogMessage_: string;
+  declare private showPasswordDialog_: boolean;
   private passwordEntryResolver_: PromiseResolver<PasswordResult>|null = null;
-  private showConfirmationDialog_: boolean = false;
-  private showSearch_: boolean;
-  private confirmationDialogTitle_: string;
-  private confirmationDialogMessage_: string;
+  declare private showConfirmationDialog_: boolean;
+  declare private showSearch_: boolean;
+  declare private confirmationDialogTitle_: string;
+  declare private confirmationDialogMessage_: string;
   private confirmationDialogResolver_: PromiseResolver<ConfirmationResult>|
       null = null;
-  private enterpriseSubpageLists_: SubpageCertificateList[];
+  declare private enterpriseSubpageLists_: SubpageCertificateList[];
   // <if expr="not is_chromeos">
-  private platformSubpageLists_: SubpageCertificateList[];
+  declare private platformSubpageLists_: SubpageCertificateList[];
   // </if>
-  private clientPlatformSubpageLists_: SubpageCertificateList[];
+  declare private clientPlatformSubpageLists_: SubpageCertificateList[];
   // <if expr="is_chromeos">
-  private showClientCertImport_: boolean;
-  private showClientCertImportAndBind_: boolean;
+  declare private showClientCertImport_: boolean;
+  declare private showClientCertImportAndBind_: boolean;
   // </if>
-  private numPlatformClientCertsString_: string;
+  declare private numPlatformClientCertsString_: string;
 
   override ready() {
     super.ready();

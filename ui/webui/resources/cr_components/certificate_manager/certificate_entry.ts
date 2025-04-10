@@ -35,8 +35,8 @@ class CertificateEntryElement extends CertificateEntryElementBase {
     };
   }
 
-  model: CertificatesOrgGroup;
-  certificateType: CertificateType;
+  declare model: CertificatesOrgGroup;
+  declare certificateType: CertificateType;
 
   /**
    * @return Whether the given index corresponds to the last sub-node.

@@ -36,7 +36,11 @@ export class CertificateProvisioningListElement extends
 
   static get properties() {
     return {
-      removeHeaderPadding: Boolean,
+      removeHeaderPadding: {
+        type: Boolean,
+        value: false,
+      },
+
       provisioningProcesses_: {
         type: Array,
         value() {
@@ -53,10 +57,11 @@ export class CertificateProvisioningListElement extends
     };
   }
 
-  removeHeaderPadding: boolean = false;
-  private provisioningProcesses_: CertificateProvisioningProcess[];
-  private provisioningDetailsDialogModel_: CertificateProvisioningProcess|null;
-  private showProvisioningDetailsDialog_: boolean;
+  declare removeHeaderPadding: boolean;
+  declare private provisioningProcesses_: CertificateProvisioningProcess[];
+  declare private provisioningDetailsDialogModel_:
+      CertificateProvisioningProcess|null;
+  declare private showProvisioningDetailsDialog_: boolean;
   private previousAnchor_: HTMLElement|null = null;
 
   private headerClassList_(removeHeaderPadding: boolean): string {

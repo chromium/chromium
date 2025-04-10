@@ -146,24 +146,25 @@ export class CertificateManagerElement extends CertificateManagerElementBase {
     };
   }
 
-  selected: number;
-  personalCerts: CertificatesOrgGroup[];
-  serverCerts: CertificatesOrgGroup[];
-  caCerts: CertificatesOrgGroup[];
-  otherCerts: CertificatesOrgGroup[];
-  clientImportAllowed: boolean;
-  caImportAllowed: boolean;
-  private showCaTrustEditDialog_: boolean;
-  private showDeleteConfirmationDialog_: boolean;
-  private showPasswordEncryptionDialog_: boolean;
-  private showPasswordDecryptionDialog_: boolean;
-  private showErrorDialog_: boolean;
-  private dialogModel_: CertificateSubnode|NewCertificateSubNode|null;
-  private dialogModelCertificateType_: CertificateType|null;
-  private errorDialogModel_: CertificatesError|CertificatesImportError|null;
-  private activeDialogAnchor_: HTMLElement|null;
-  private isKiosk_: boolean;
-  private tabNames_: string[];
+  declare selected: number;
+  declare personalCerts: CertificatesOrgGroup[];
+  declare serverCerts: CertificatesOrgGroup[];
+  declare caCerts: CertificatesOrgGroup[];
+  declare otherCerts: CertificatesOrgGroup[];
+  declare clientImportAllowed: boolean;
+  declare caImportAllowed: boolean;
+  declare private showCaTrustEditDialog_: boolean;
+  declare private showDeleteConfirmationDialog_: boolean;
+  declare private showPasswordEncryptionDialog_: boolean;
+  declare private showPasswordDecryptionDialog_: boolean;
+  declare private showErrorDialog_: boolean;
+  declare private dialogModel_: CertificateSubnode|NewCertificateSubNode|null;
+  declare private dialogModelCertificateType_: CertificateType|null;
+  declare private errorDialogModel_: CertificatesError|CertificatesImportError|
+      null;
+  declare private activeDialogAnchor_: HTMLElement|null;
+  declare private isKiosk_: boolean;
+  declare private tabNames_: string[];
 
 
   override connectedCallback() {
