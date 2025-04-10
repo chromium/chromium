@@ -1951,7 +1951,7 @@ struct EnhancedSafeBrowsingActivePromoData
 
   bool promoIsTriggered = tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
-  CHECK(promoIsTriggered, base::NotFatalUntil::M131);
+  CHECK(promoIsTriggered);
 
   std::unique_ptr<EnhancedSafeBrowsingActivePromoData> new_data =
       std::make_unique<EnhancedSafeBrowsingActivePromoData>();
@@ -1965,7 +1965,7 @@ struct EnhancedSafeBrowsingActivePromoData
 // Check if this is the last active Enhanced Safe Browsing promo shown and
 // dismisses the FET if so.
 - (void)removeEnhancedSafeBrowsingPromoFETDataIfNeeded {
-  CHECK(_profile, base::NotFatalUntil::M131);
+  CHECK(_profile);
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForProfile(_profile);
   EnhancedSafeBrowsingActivePromoData* data =
