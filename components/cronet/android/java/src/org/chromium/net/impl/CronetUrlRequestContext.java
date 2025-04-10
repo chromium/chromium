@@ -5,7 +5,6 @@
 package org.chromium.net.impl;
 
 import android.os.ConditionVariable;
-import android.os.Process;
 import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
@@ -434,8 +433,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                         .setNetworkThreadPriority(
                                 networkThreadPriorityFlagValue != null
                                         ? (int) networkThreadPriorityFlagValue.getIntValue()
-                                        : engineBuilder.threadPriority(
-                                                Process.THREAD_PRIORITY_BACKGROUND));
+                                        : CronetEngineBuilderImpl.NETWORK_THREAD_PRIORITY);
 
         if (engineBuilder.getUserAgent() != null) {
             resultBuilder.setUserAgent(engineBuilder.getUserAgent());

@@ -45,6 +45,7 @@ import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDeleg
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.httpflags.FlagValue;
+import org.chromium.net.impl.CronetEngineBuilderImpl;
 import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetManifest;
@@ -2144,26 +2145,14 @@ public class CronetUrlRequestContextTest {
     @Test
     @SmallTest
     @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
-    public void testCronetEngineThreadPriority_invalidPriority_throwsException() {
-        CronetEngine.Builder builder =
-                mTestRule
-                        .getTestFramework()
-                        .createNewSecondaryBuilder(mTestRule.getTestFramework().getContext());
-        // Try out of bounds thread priorities.
-        IllegalArgumentException e =
-                assertThrows(IllegalArgumentException.class, () -> builder.setThreadPriority(-21));
-        assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
-
-        e = assertThrows(IllegalArgumentException.class, () -> builder.setThreadPriority(20));
-        assertThat(e).hasMessageThat().isEqualTo("Thread priority invalid");
-    }
-
-    @Test
-    @SmallTest
-    @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
+    @IgnoreFor(
+            implementations = {CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "Test fails against production HttpEngine because it hasn't yet been updated"
+                            + " with the new DEFAULT thread priority.")
     public void testCronetEngineThreadPriority_viaUrlRequest_hasCorrectThreadPriority()
             throws Exception {
-        // Test that valid thread priority range (-20..19) is working.
+        // Test that we ignore setThreadPriority() calls and hardcode network thread priority.
         for (int threadPriority = -20; threadPriority < 20; threadPriority++) {
             final FutureTask<Integer> task = getThreadPriorityTask();
             CronetEngine engine =
@@ -2174,7 +2163,7 @@ public class CronetUrlRequestContextTest {
                             .build();
             try {
                 postToNetworkThread(engine, task);
-                assertThat(task.get()).isEqualTo(threadPriority);
+                assertThat(task.get()).isEqualTo(CronetEngineBuilderImpl.NETWORK_THREAD_PRIORITY);
             } finally {
                 engine.shutdown();
             }
@@ -2245,11 +2234,14 @@ public class CronetUrlRequestContextTest {
     @SmallTest
     @RequiresMinApi(6) // setThreadPriority added in API 6: crrev.com/472449
     @IgnoreFor(
-            implementations = {CronetImplementation.FALLBACK},
-            reason = "BidirectionalStream not supported by fallback.")
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "BidirectionalStream not supported by fallback. Test fails against production"
+                            + " HttpEngine because it hasn't yet been updated with the new DEFAULT"
+                            + " thread priority.")
     public void testCronetEngineThreadPriority_viaBidirectionalStream_hasCorrectThreadPriority()
             throws Exception {
-        // Test that valid thread priority range (-20..19) is working.
+        // Test that we ignore setThreadPriority() calls and hardcode network thread priority.
         for (int threadPriority = -20; threadPriority < 20; threadPriority++) {
             final FutureTask<Integer> task = getThreadPriorityTask();
             CronetEngine engine =
@@ -2272,7 +2264,7 @@ public class CronetUrlRequestContextTest {
                 // Request an invalid URL with a direct executor which results in onFailed()
                 // being called on the network thread.
                 engine.newBidirectionalStreamBuilder("", callback, Runnable::run).build().start();
-                assertThat(task.get()).isEqualTo(threadPriority);
+                assertThat(task.get()).isEqualTo(CronetEngineBuilderImpl.NETWORK_THREAD_PRIORITY);
             } finally {
                 engine.shutdown();
             }

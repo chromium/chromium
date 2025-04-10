@@ -4,7 +4,6 @@
 
 package org.chromium.net.impl;
 
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
 import static android.os.Process.THREAD_PRIORITY_DEFAULT;
 
 import static com.google.common.truth.Truth.assertThat;
@@ -111,7 +110,7 @@ public final class CronetLoggerTest {
         assertThat(builderInfo.isNetworkQualityEstimatorEnabled())
                 .isEqualTo(builder.networkQualityEstimatorEnabled());
         assertThat(builderInfo.getThreadPriority())
-                .isEqualTo(builder.threadPriority(THREAD_PRIORITY_BACKGROUND));
+                .isEqualTo(CronetEngineBuilderImpl.NETWORK_THREAD_PRIORITY);
     }
 
     @Test
