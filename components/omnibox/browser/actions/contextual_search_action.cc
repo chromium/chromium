@@ -6,6 +6,12 @@
 
 #include "components/strings/grit/components_strings.h"
 
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+#include "build/branding_buildflags.h"                // nogncheck
+#include "components/omnibox/browser/vector_icons.h"  // nogncheck
+#include "components/vector_icons/vector_icons.h"     // nogncheck
+#endif
+
 ContextualSearchFulfillmentAction::ContextualSearchFulfillmentAction(
     const GURL& url,
     AutocompleteMatchType::Type match_type,
@@ -47,6 +53,17 @@ void ContextualSearchAskAboutPageAction::Execute(
   context.client_->OpenLensOverlay(/*show=*/false);
 }
 
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+const gfx::VectorIcon& ContextualSearchSelectRegionAction::GetVectorIcon()
+    const {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return vector_icons::kGoogleLensMonochromeLogoIcon;
+#else
+  return vector_icons::kSearchChromeRefreshIcon;
+#endif
+}
+#endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
+
 ContextualSearchAskAboutPageAction::~ContextualSearchAskAboutPageAction() =
     default;
 
@@ -63,6 +80,13 @@ void ContextualSearchSelectRegionAction::Execute(
     ExecutionContext& context) const {
   context.client_->OpenLensOverlay(/*show=*/true);
 }
+
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+const gfx::VectorIcon& ContextualSearchAskAboutPageAction::GetVectorIcon()
+    const {
+  return omnibox::kSearchSparkIcon;
+}
+#endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
 ContextualSearchSelectRegionAction::~ContextualSearchSelectRegionAction() =
     default;

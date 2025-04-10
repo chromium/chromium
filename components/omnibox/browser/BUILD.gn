@@ -354,6 +354,7 @@ static_library("browser") {
 
   deps = [
     "//build:branding_buildflags",
+    "//components/vector_icons",
     "//components/bookmarks/browser",
     "//components/component_updater",
     "//components/dom_distiller/core:core",
