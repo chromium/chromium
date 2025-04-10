@@ -149,6 +149,14 @@ std::string_view HttpStreamPool::AttemptManager::InitialAttemptStateToString(
   }
 }
 
+HttpStreamPool::AttemptManager::AbortedAttempt::AbortedAttempt() = default;
+HttpStreamPool::AttemptManager::AbortedAttempt::~AbortedAttempt() = default;
+HttpStreamPool::AttemptManager::AbortedAttempt::AbortedAttempt(
+    AbortedAttempt&& other) = default;
+HttpStreamPool::AttemptManager::AbortedAttempt&
+HttpStreamPool::AttemptManager::AbortedAttempt::operator=(
+    AbortedAttempt&& other) = default;
+
 HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
     : group_(group),
       net_log_(NetLogWithSource::Make(
@@ -419,7 +427,9 @@ HttpStreamPool::AttemptManager::GetSSLConfig(TcpBasedAttempt* attempt) {
 
   std::optional<AttemptAbortReason> abort_reason;
   const bool svcb_optional = IsSvcbOptional();
-  for (auto& endpoint : service_endpoint_request_->GetEndpointResults()) {
+  const std::vector<ServiceEndpoint>& current_endpoints =
+      service_endpoint_request_->GetEndpointResults();
+  for (auto& endpoint : current_endpoints) {
     if (!IsEndpointUsableForTcpBasedAttempt(endpoint, svcb_optional)) {
       abort_reason = AttemptAbortReason::kEndpointUnusable;
       continue;
@@ -438,21 +448,24 @@ HttpStreamPool::AttemptManager::GetSSLConfig(TcpBasedAttempt* attempt) {
     }
   }
 
+  // TODO(crbug.com/403373872): Remove below once we identify the cause of the
+  // bug.
   if (!abort_reason.has_value()) {
     abort_reason = AttemptAbortReason::kEndpointResultsEmpty;
   }
   base::TimeTicks now = base::TimeTicks::Now();
-  aborted_tcp_based_attempts_.emplace_back(AbortedAttempt{
-      .reason = *abort_reason,
-      .svcb_optional = svcb_optional,
-      .service_endpoint_request_finished = service_endpoint_request_finished_,
-      .endpoint = attempt->ip_endpoint(),
-      .start_to_abort_time = now - attempt->start_time(),
-      .ssl_config_wait_to_abort_time =
-          attempt->ssl_config_wait_start_time().is_null()
-              ? base::TimeDelta()
-              : now - attempt->ssl_config_wait_start_time(),
-  });
+  AbortedAttempt aborted;
+  aborted.reason = *abort_reason;
+  aborted.svcb_optional = svcb_optional;
+  aborted.endpoint = attempt->ip_endpoint();
+  aborted.current_endpoints = current_endpoints;
+  aborted.start_to_abort_time = now - attempt->start_time();
+  aborted.ssl_config_wait_to_abort_time =
+      attempt->ssl_config_wait_start_time().is_null()
+          ? base::TimeDelta()
+          : now - attempt->ssl_config_wait_start_time();
+  aborted_tcp_based_attempts_.emplace_back(std::move(aborted));
+
   attempt->set_is_aborted(true);
   return base::unexpected(TlsStreamAttempt::GetSSLConfigError::kAbort);
 }
@@ -894,6 +907,10 @@ void HttpStreamPool::AttemptManager::
 }
 
 void HttpStreamPool::AttemptManager::ProcessServiceEndpointChanges() {
+  // TODO(crbug.com/403373872): Remove once we identify the cause of the bug.
+  service_endpoint_results_history_.emplace_back(
+      service_endpoint_request_->GetEndpointResults());
+
   // The order of the following checks is important, see the following comments.
   // TODO(crbug.com/383606724): Figure out a better design and algorithms to
   // handle attempts and existing sessions.
@@ -1182,18 +1199,21 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
         // TODO(crbug.com/403373872): Replace the following `if` with CHECK()
         // once we identify the root cause.
         if (!most_recent_tcp_error_.has_value()) {
-          const bool is_svcb_optional = IsSvcbOptional();
-          ConnectionAttempts connection_attempts = connection_attempts_;
-          std::vector<ServiceEndpoint> endpoints =
-              service_endpoint_request_->GetEndpointResults();
+          std::vector<std::vector<ServiceEndpoint>>
+              service_endpoint_results_history =
+                  std::move(service_endpoint_results_history_);
           std::vector<AbortedAttempt> aborted_attempts =
-              aborted_tcp_based_attempts_;
-          base::debug::Alias(&is_svcb_optional);
-          base::debug::Alias(&connection_attempts);
-          base::debug::Alias(&endpoints);
-          base::debug::Alias(endpoints.data());
+              std::move(aborted_tcp_based_attempts_);
+          base::debug::Alias(&service_endpoint_results_history);
+          base::debug::Alias(service_endpoint_results_history.data());
+          for (const auto& endpoints : service_endpoint_results_history) {
+            base::debug::Alias(endpoints.data());
+          }
           base::debug::Alias(&aborted_attempts);
           base::debug::Alias(aborted_attempts.data());
+          for (const auto& aborted : aborted_attempts) {
+            base::debug::Alias(aborted.current_endpoints.data());
+          }
           DEBUG_ALIAS_FOR_GURL(url_buf, stream_key().destination().GetURL());
           NOTREACHED();
         }

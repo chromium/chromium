@@ -562,14 +562,22 @@ class HttpStreamPool::AttemptManager
     kEndpointNotInResults = 2,
   };
   struct AbortedAttempt {
+    AbortedAttempt();
+    ~AbortedAttempt();
+
+    AbortedAttempt(AbortedAttempt&& other);
+    AbortedAttempt& operator=(AbortedAttempt&& other);
+
     AttemptAbortReason reason;
     bool svcb_optional;
     bool service_endpoint_request_finished;
     IPEndPoint endpoint;
+    std::vector<ServiceEndpoint> current_endpoints;
     base::TimeDelta start_to_abort_time;
     base::TimeDelta ssl_config_wait_to_abort_time;
   };
   std::vector<AbortedAttempt> aborted_tcp_based_attempts_;
+  std::vector<std::vector<ServiceEndpoint>> service_endpoint_results_history_;
 
   // TODO(crbug.com/406936736): Remove this once we identify the cause of the
   // bug.
