@@ -93,6 +93,28 @@ GetDeviceRegistrationOutcomeForUMAFromResponse(
   NOTREACHED();
 }
 
+class LocalRecoveryFactorsFactoryImpl
+    : public StandaloneTrustedVaultBackend::LocalRecoveryFactorsFactory {
+ public:
+  LocalRecoveryFactorsFactoryImpl() = default;
+  LocalRecoveryFactorsFactoryImpl(const LocalRecoveryFactorsFactoryImpl&) =
+      delete;
+  ~LocalRecoveryFactorsFactoryImpl() override = default;
+
+  LocalRecoveryFactorsFactoryImpl& operator=(
+      const LocalRecoveryFactorsFactoryImpl&) = delete;
+
+  std::vector<std::unique_ptr<LocalRecoveryFactor>> CreateLocalRecoveryFactors(
+      StandaloneTrustedVaultStorage* storage,
+      const std::optional<CoreAccountInfo>& primary_account) override {
+    std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors;
+    local_recovery_factors.emplace_back(
+        std::make_unique<PhysicalDeviceRecoveryFactor>(storage,
+                                                       primary_account));
+    return local_recovery_factors;
+  }
+};
+
 }  // namespace
 
 StandaloneTrustedVaultBackend::PendingTrustedRecoveryMethod::
@@ -175,17 +197,22 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
                       ? std::make_unique<TrustedVaultThrottlingConnectionImpl>(
                             std::move(connection),
                             storage_.get())
-                      : nullptr) {}
+                      : nullptr),
+      local_recovery_factors_factory_(
+          std::make_unique<LocalRecoveryFactorsFactoryImpl>()) {}
 
 StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
     SecurityDomainId security_domain_id,
     std::unique_ptr<StandaloneTrustedVaultStorage> storage,
     std::unique_ptr<Delegate> delegate,
-    std::unique_ptr<TrustedVaultThrottlingConnection> connection)
+    std::unique_ptr<TrustedVaultThrottlingConnection> connection,
+    std::unique_ptr<LocalRecoveryFactorsFactory> local_recovery_factors_factory)
     : security_domain_id_(security_domain_id),
       storage_(std::move(storage)),
       delegate_(std::move(delegate)),
-      connection_(std::move(connection)) {}
+      connection_(std::move(connection)),
+      local_recovery_factors_factory_(
+          std::move(local_recovery_factors_factory)) {}
 
 StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
@@ -195,10 +222,12 @@ StandaloneTrustedVaultBackend::CreateForTesting(
     SecurityDomainId security_domain_id,
     std::unique_ptr<StandaloneTrustedVaultStorage> storage,
     std::unique_ptr<StandaloneTrustedVaultBackend::Delegate> delegate,
-    std::unique_ptr<TrustedVaultThrottlingConnection> connection) {
+    std::unique_ptr<TrustedVaultThrottlingConnection> connection,
+    std::unique_ptr<LocalRecoveryFactorsFactory>
+        local_recovery_factors_factory) {
   return base::WrapRefCounted(new StandaloneTrustedVaultBackend(
       security_domain_id, std::move(storage), std::move(delegate),
-      std::move(connection)));
+      std::move(connection), std::move(local_recovery_factors_factory)));
 }
 
 void StandaloneTrustedVaultBackend::WriteDegradedRecoverabilityState(
@@ -607,28 +636,17 @@ int StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting(
   return per_user_vault->last_vault_key_version();
 }
 
-void StandaloneTrustedVaultBackend::
-    SetLastRegistrationReturnedLocalDataObsoleteForTesting(
-        const GaiaId& gaia_id) {
-  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
-      storage_->FindUserVault(gaia_id);
-  DCHECK(per_user_vault);
-  per_user_vault->mutable_local_device_registration_info()
-      ->set_last_registration_returned_local_data_obsolete(true);
-  WriteDataToDiskAndNotify();
-}
-
 bool StandaloneTrustedVaultBackend::HasPendingTrustedRecoveryMethodForTesting()
     const {
   return pending_trusted_recovery_method_.has_value();
 }
 
 void StandaloneTrustedVaultBackend::ResetLocalRecoveryFactors() {
-  local_recovery_factors_.clear();
-  // |storage_| outlives |local_recovery_factors_|.
-  local_recovery_factors_.emplace_back(
-      std::make_unique<PhysicalDeviceRecoveryFactor>(storage_.get(),
-                                                     primary_account_));
+  // |storage_| outlives |local_recovery_factors_|, so passing a raw pointer is
+  // ok.
+  local_recovery_factors_ =
+      local_recovery_factors_factory_->CreateLocalRecoveryFactors(
+          storage_.get(), primary_account_);
 }
 
 std::optional<TrustedVaultDeviceRegistrationStateForUMA>
