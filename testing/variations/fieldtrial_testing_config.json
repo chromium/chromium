@@ -12623,6 +12623,21 @@
             ]
         }
     ],
+    "IOSSkipCookieCaching": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkipCookieCaching"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSStart4Hour": [
         {
             "platforms": [

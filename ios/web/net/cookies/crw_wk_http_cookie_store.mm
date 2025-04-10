@@ -5,6 +5,7 @@
 #import "ios/web/net/cookies/crw_wk_http_cookie_store.h"
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
 
@@ -23,6 +24,15 @@ void PrioritizeWKHTTPCookieStoreCallbacks(WKWebsiteDataStore* data_store) {
                     completionHandler:^(NSArray<WKWebsiteDataRecord*>* records){
                     }];
 }
+
+// There appear to be lots of BackupRefPtr corruption crashes related to
+// this cache optimization.  There are also crashes deep within Apple's
+// network code that could be related. Since this optimization may no
+// longer be necessary, experiment with its removal (crbug.com/40620220)
+BASE_FEATURE(kIOSSkipCookieCaching,
+             "SkipCookieCaching",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace
 
 @interface CRWWKHTTPCookieStore () <WKHTTPCookieStoreObserver>
@@ -57,7 +67,9 @@ void PrioritizeWKHTTPCookieStoreCallbacks(WKWebsiteDataStore* data_store) {
   __weak __typeof(self) weakSelf = self;
   [_websiteDataStore.httpCookieStore
       getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
-        weakSelf.cachedCookies = cookies;
+        if (!base::FeatureList::IsEnabled(kIOSSkipCookieCaching)) {
+          weakSelf.cachedCookies = cookies;
+        }
         completionHandler(cookies);
       }];
   PrioritizeWKHTTPCookieStoreCallbacks(_websiteDataStore);
