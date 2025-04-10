@@ -49,6 +49,11 @@ class AuthController : public signin::IdentityManager::Observer {
   void CheckAuthBeforeLoad(
       base::OnceCallback<void(mojom::PrepareForClientResult)> callback);
 
+  // Called before the glic window is shown. Returns true if the glic window
+  // should be shown. Returns false if the login page is shown instead, in which
+  // case the glic window should not be shown.
+  bool CheckAuthBeforeShowSync(base::OnceClosure after_signin);
+
   // Called before the glic window is shown. Checks status of sign-in state and
   // webview cookies. See `BeforeShowResult` for result detail.
   void CheckAuthBeforeShow(FallbackBehavior fallback_behavior,

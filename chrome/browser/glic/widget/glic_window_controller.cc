@@ -428,8 +428,8 @@ void GlicWindowController::OnWidgetUserResizeEnded() {
   }
 }
 
-void GlicWindowController::ShowAfterSignIn() {
-  Toggle(nullptr, true,
+void GlicWindowController::ShowAfterSignIn(base::WeakPtr<Browser> browser) {
+  Toggle(browser.get(), true,
          // Prefer the source that triggered the sign-in, but if that's not
          // available, report it as coming from the sign-in flow.
          opening_source_.value_or(mojom::InvocationSource::kAfterSignIn));
@@ -665,8 +665,14 @@ void GlicWindowController::Show(Browser* browser,
   // At this point State must be kClosed, and all glic window state must be
   // unset.
   CHECK(!attached_browser_);
-  SetWindowState(State::kOpenAnimation);
   opening_source_ = source;
+  if (!glic_service_->GetAuthController().CheckAuthBeforeShowSync(
+          base::BindOnce(&GlicWindowController::ShowAfterSignIn, GetWeakPtr(),
+                         browser ? browser->AsWeakPtr() : nullptr))) {
+    return;
+  }
+
+  SetWindowState(State::kOpenAnimation);
   glic_service_->metrics()->OnGlicWindowOpen(/*attached=*/browser, source);
   glic_service_->GetAuthController().OnGlicWindowOpened();
 

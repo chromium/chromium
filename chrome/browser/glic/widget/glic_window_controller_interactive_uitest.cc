@@ -51,6 +51,7 @@
 namespace glic {
 
 namespace {
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
 const InteractiveBrowserTestApi::DeepQuery
     kMockGlicClientStart3sUnresponsiveButton = {"#busyWork3s"};
@@ -454,11 +455,11 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       InvalidatedAccountSignInOnGlicOpenFlow) {
+                       InvalidatedAccountWhileLoadingGlic) {
   RunTestSequence(
       ObserveState(test::internal::kGlicAppState, &window_controller()),
-      ForceInvalidateAccount(), SimulateGlicHotkey(),
-      CheckControllerHasWidget(true), WaitForAndInstrumentGlic(kHostOnly),
+      SimulateGlicHotkey(), CheckControllerHasWidget(true),
+      ForceInvalidateAccount(), WaitForAndInstrumentGlic(kHostOnly),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn),
       InAnyContext(ClickElement(test::kGlicHostElementId, {"#signInButton"},
                                 ui_controls::LEFT, ui_controls::kNoAccelerator,
@@ -472,23 +473,27 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
+                       InvalidatedAccountSignInOnGlicOpenFlow) {
+  RunTestSequence(
+      ObserveState(test::internal::kGlicAppState, &window_controller()),
+      ForceInvalidateAccount(), SimulateGlicHotkey(),
+      CheckControllerHasWidget(false), InstrumentTab(kFirstTab),
+      WaitForWebContentsReady(kFirstTab),
+      // Without a pause here, we will 'sign-in' before the callback is
+      // registered to listen for it. This isn't a bug because it takes real
+      // users finite time to actually sign-in.
+      Wait(base::Milliseconds(500)), ForceReauthAccount(),
+      WaitForAndInstrumentGlic(kHostOnly),
+      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        AccountInvalidatedWhileGlicOpen) {
   RunTestSequence(
       SimulateGlicHotkey(), CheckControllerHasWidget(true),
       ObserveState(test::internal::kGlicAppState, &window_controller()),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady),
       ForceInvalidateAccount(),
-      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn));
-}
-
-// Open glic with an invalidated account, then sign in without clicking the
-// sign-in button. The web client should loaded and shown.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       OpenGlicWithInvalidatedAccountAndThenSignIn) {
-  RunTestSequence(
-      ForceInvalidateAccount(), SimulateGlicHotkey(),
-      CheckControllerHasWidget(true),
-      ObserveState(test::internal::kGlicAppState, &window_controller()),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kSignIn),
       ForceReauthAccount(),
       WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady));

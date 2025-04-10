@@ -92,7 +92,7 @@ class GlicWindowController : public views::WidgetObserver,
   // If the panel is opened, but sign-in is required, we provide a sign-in
   // button which closes the panel. This is called after the user signs in to
   // open the panel again.
-  void ShowAfterSignIn();
+  void ShowAfterSignIn(base::WeakPtr<Browser> browser);
 
   // Handle Toggle when AlwaysDetached is true.
   void ToggleWhenNotAlwaysDetached(Browser* new_attached_browser,
