@@ -1241,6 +1241,12 @@
       <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_ACCESSIBILITY_OPENED_FULL" desc="Accessibility string that describes that the default browser bottom sheet has fully opened.">
         Default browser bottom sheet opened at full height
       </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_TITLE" desc="Title of the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Browse across devices
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_DESCRIPTION" desc="Description of the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Get your history on all your devices, so you can easily pick up where you left off
+      </message>
 
       <!-- Safety Hub Magic Stack strings -->
       <message name="IDS_SAFETY_HUB_MAGIC_STACK_MODULE_NAME" desc="Title for the Magic Stack card for all Safety Check modules.">

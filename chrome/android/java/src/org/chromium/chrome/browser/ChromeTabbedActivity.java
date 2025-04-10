@@ -195,6 +195,7 @@ import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.survey.ChromeSurveyController;
@@ -262,6 +263,9 @@ import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -282,6 +286,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcherProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.profile_metrics.BrowserProfileType;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.webapps.ShortcutSource;
@@ -2686,6 +2691,36 @@ public class ChromeTabbedActivity extends ChromeActivity {
                 mRootUiCoordinator.getAppMenuHandler().setMenuHighlight(R.id.quick_delete_menu_id);
                 getMenuOrKeyboardActionController()
                         .onMenuOrKeyboardAction(R.id.show_menu, /* fromMenu= */ false);
+            }
+
+            @Override
+            public void showHistorySyncOptIn() {
+                BottomSheetSigninAndHistorySyncConfig bottomSheetConfig =
+                        new BottomSheetSigninAndHistorySyncConfig.Builder(
+                                        new AccountPickerBottomSheetStrings.Builder(
+                                                        R.string
+                                                                .signin_account_picker_bottom_sheet_title)
+                                                .setSubtitleStringId(
+                                                        R.string
+                                                                .signin_account_picker_bottom_sheet_benefits_subtitle)
+                                                .build(),
+                                        BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode
+                                                .NO_SIGNIN,
+                                        BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode
+                                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                        HistorySyncConfig.OptInMode.REQUIRED)
+                                .build();
+                @Nullable
+                Intent intent =
+                        SigninAndHistorySyncActivityLauncherImpl.get()
+                                .createBottomSheetSigninIntentOrShowError(
+                                        ChromeTabbedActivity.this,
+                                        mTabModelSelector.getCurrentModel().getProfile(),
+                                        bottomSheetConfig,
+                                        SigninAccessPoint.HISTORY_SYNC_EDUCATIONAL_TIP);
+                if (intent != null) {
+                    ChromeTabbedActivity.this.startActivity(intent);
+                }
             }
 
             @Override

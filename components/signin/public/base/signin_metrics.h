@@ -278,10 +278,13 @@ enum class AccessPoint : int {
   // Access point triggered when a user attempts to opt-in to history sync from
   // the history sync opt-in expanded pill (expanded on inactivity).
   kHistorySyncOptinExpansionPillOnInactivity = 80,
+  // History sync education tip is shown on the NTP to users who have history
+  // sync disabled. Android only.
+  kHistorySyncEducationalTip = 81,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kHistorySyncOptinExpansionPillOnInactivity,  // This must be last.
+  kMaxValue = kHistorySyncEducationalTip,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

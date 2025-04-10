@@ -35,6 +35,7 @@ public interface ModuleDelegate {
         ModuleType.TAB_GROUP_PROMO,
         ModuleType.TAB_GROUP_SYNC_PROMO,
         ModuleType.QUICK_DELETE_PROMO,
+        ModuleType.HISTORY_SYNC_PROMO,
         ModuleType.NUM_ENTRIES
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -49,7 +50,8 @@ public interface ModuleDelegate {
         int TAB_GROUP_PROMO = 7;
         int TAB_GROUP_SYNC_PROMO = 8;
         int QUICK_DELETE_PROMO = 9;
-        int NUM_ENTRIES = 10;
+        int HISTORY_SYNC_PROMO = 10;
+        int NUM_ENTRIES = 11;
     }
 
     /**

@@ -231,6 +231,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "CollaborationLeaveOrDeleteTabGroup";
       case AccessPoint::kHistorySyncOptinExpansionPillOnInactivity:
         return "HistorySyncOptinExpansionPillOnInactivity";
+      case AccessPoint::kHistorySyncEducationalTip:
+        return "HistorySyncEducationalTip";
     }
   }
 };

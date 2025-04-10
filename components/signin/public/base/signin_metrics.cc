@@ -464,6 +464,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kDriveFilePickerIos:
     case AccessPoint::kHistoryPage:
     case AccessPoint::kWidget:
+    case AccessPoint::kHistorySyncEducationalTip:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
     case AccessPoint::kCollaborationShareTabGroup:
@@ -763,6 +764,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kWidget:
     case AccessPoint::kCollaborationLeaveOrDeleteTabGroup:
     case AccessPoint::kHistorySyncOptinExpansionPillOnInactivity:
+    case AccessPoint::kHistorySyncEducationalTip:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

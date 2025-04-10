@@ -60,6 +60,8 @@ public class EducationalTipCardProviderSignalHandler {
                 return inputContext;
             case ModuleType.QUICK_DELETE_PROMO:
                 return inputContext;
+            case ModuleType.HISTORY_SYNC_PROMO:
+                return inputContext;
             default:
                 assert false : "Card type not supported!";
                 return inputContext;

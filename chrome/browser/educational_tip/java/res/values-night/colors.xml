@@ -12,4 +12,7 @@ found in the LICENSE file.
   <color name="educational_tip_card_logo_color_4">@color/material_primary_60</color>
   <color name="educational_tip_card_logo_color_5">@color/material_primary_70</color>
   <color name="educational_tip_card_logo_color_6">@color/material_primary_80</color>
+  <color name="educational_tip_card_logo_color_7">@color/material_primary_70</color>
+  <color name="educational_tip_card_logo_color_8">@color/material_secondary_40</color>
+  <color name="educational_tip_card_logo_color_9">@color/material_tertiary_40</color>
 </resources>

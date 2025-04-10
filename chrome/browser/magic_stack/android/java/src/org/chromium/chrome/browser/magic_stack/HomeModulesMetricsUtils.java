@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEFAULT_BROWSER_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_EDUCATIONAL_TIP;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.DEPRECATED_TAB_RESUMPTION;
+import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.HISTORY_SYNC_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.PRICE_CHANGE;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.QUICK_DELETE_PROMO;
 import static org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType.SAFETY_HUB;
@@ -127,6 +128,8 @@ public class HomeModulesMetricsUtils {
                 return "TabGroupSyncPromo";
             case QUICK_DELETE_PROMO:
                 return "QuickDeletePromo";
+            case HISTORY_SYNC_PROMO:
+                return "HistorySyncPromo";
             default:
                 assert false : "Module type not supported!";
                 return assumeNonNull(null);
@@ -151,6 +154,8 @@ public class HomeModulesMetricsUtils {
                 return TAB_GROUP_SYNC_PROMO;
             case "QuickDeletePromo":
                 return QUICK_DELETE_PROMO;
+            case "HistorySyncPromo":
+                return HISTORY_SYNC_PROMO;
             default:
                 Log.i(TAG, "Module type %s not supported!", label);
                 return ModuleType.NUM_ENTRIES;
