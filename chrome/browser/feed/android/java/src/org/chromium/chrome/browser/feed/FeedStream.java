@@ -800,6 +800,9 @@ public class FeedStream implements Stream {
         if (mUnreadContentObserver != null) {
             mUnreadContentObserver.destroy();
         }
+        if (mRecyclerView != null) {
+            unbind(false, false);
+        }
         mBridge.destroy();
     }
 
@@ -878,6 +881,8 @@ public class FeedStream implements Stream {
 
     @Override
     public void unbind(boolean shouldPlaceSpacer, boolean switchingStream) {
+        if (mRecyclerView == null) return;
+
         // Find out the specific reason for unbinding the stream.
         if (switchingStream) {
             mClosedReason = ClosedReason.SWITCH_STREAM;
