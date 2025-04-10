@@ -2392,9 +2392,7 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
   frame_metadata.background_blur = GetBackgroundBlurState();
 
   // Set reused |token| and |share_handle| to gmb handle.
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-  gmb_handle.set_dxgi_handle(private_data->CloneHandle());
+  gfx::GpuMemoryBufferHandle gmb_handle(private_data->CloneHandle());
 
   media::CapturedExternalVideoBuffer external_buffer =
       media::CapturedExternalVideoBuffer(

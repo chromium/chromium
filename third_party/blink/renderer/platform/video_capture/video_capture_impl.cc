@@ -411,7 +411,7 @@ bool VideoCaptureImpl::ProcessBuffer(
             !buffer_context->data()) {
           auto gmb_handle = buffer_context->CloneGpuMemoryBufferHandle();
           buffer_context->InitializeFromUnsafeShmemRegion(
-              std::move(gmb_handle.region()));
+              std::move(gmb_handle).dxgi_handle().TakeRegion());
           DCHECK(buffer_context->data());
         }
         RequirePremappedFrames();

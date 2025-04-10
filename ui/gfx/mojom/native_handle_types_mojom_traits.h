@@ -117,9 +117,9 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
     return handle.token();
   }
 
-  static base::UnsafeSharedMemoryRegion shared_memory_handle(
+  static base::UnsafeSharedMemoryRegion& shared_memory_handle(
       gfx::DXGIHandle& handle) {
-    return std::move(handle.region());
+    return handle.region_;
   }
 
   static bool Read(gfx::mojom::DXGIHandleDataView data,
@@ -152,7 +152,7 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
 
   static base::UnsafeSharedMemoryRegion& shared_memory_handle(
       gfx::GpuMemoryBufferHandle& handle) {
-    return handle.region();
+    return handle.region_;
   }
 
 #if BUILDFLAG(IS_APPLE)
@@ -168,7 +168,7 @@ struct COMPONENT_EXPORT(GFX_NATIVE_HANDLE_TYPES_SHARED_MOJOM_TRAITS)
 
 #if BUILDFLAG(IS_WIN)
   static gfx::DXGIHandle& dxgi_handle(gfx::GpuMemoryBufferHandle& handle) {
-    return handle.dxgi_handle();
+    return handle.dxgi_handle_;
   }
 #endif  // BUILDFLAG(IS_WIN)
 

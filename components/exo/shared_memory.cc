@@ -59,9 +59,7 @@ std::unique_ptr<Buffer> SharedMemory::CreateBuffer(const gfx::Size& size,
     return nullptr;
   }
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::SHARED_MEMORY_BUFFER;
-  handle.set_region(shared_memory_region_.Duplicate());
+  gfx::GpuMemoryBufferHandle handle(shared_memory_region_.Duplicate());
   handle.offset = offset;
   handle.stride = stride;
 

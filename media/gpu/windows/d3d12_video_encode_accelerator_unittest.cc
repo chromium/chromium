@@ -143,9 +143,8 @@ class D3D12VideoEncodeAcceleratorTest : public testing::Test {
   }
 
   scoped_refptr<VideoFrame> CreateTestVideoFrame() {
-    gfx::GpuMemoryBufferHandle fake_handle;
-    fake_handle.type = gfx::DXGI_SHARED_HANDLE;
-    fake_handle.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
+    gfx::GpuMemoryBufferHandle fake_handle(
+        gfx::DXGIHandle::CreateFakeForTest());
 
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;

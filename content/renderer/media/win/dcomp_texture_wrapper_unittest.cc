@@ -114,9 +114,7 @@ class DCOMPTextureWrapperTest : public testing::Test {
 void DCOMPTextureWrapperTest::CreateDXBackedVideoFrameTestTask(
     std::unique_ptr<media::DCOMPTextureWrapper> dcomp_texture_wrapper,
     base::OnceClosure closure) {
-  gfx::GpuMemoryBufferHandle dx_handle;
-  dx_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-  dx_handle.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
+  gfx::GpuMemoryBufferHandle dx_handle(gfx::DXGIHandle::CreateFakeForTest());
   gfx::Size frame_size(1920, 1080);
 
   base::WaitableEvent wait_event;

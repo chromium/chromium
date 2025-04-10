@@ -37,7 +37,18 @@ class MemoryAllocatorDumpGuid;
 }  // namespace trace_event
 }  // namespace base
 
+namespace mojo {
+template <typename, typename>
+struct StructTraits;
+template <typename, typename>
+struct UnionTraits;
+}  // namespace mojo
+
 namespace gfx {
+namespace mojom {
+class DXGIHandleDataView;
+class GpuMemoryBufferPlatformHandleDataView;
+}  // namespace mojom
 
 class ColorSpace;
 
@@ -109,6 +120,11 @@ class COMPONENT_EXPORT(GFX) DXGIHandle {
   // `token()` to check if two `DXGIHandle`s actually refer to the same
   // resource.
   DXGIHandle Clone() const;
+  // Similar to above but also associate `region` with the cloned `DXGIHandle`.
+  //
+  // Precondition: `this` must not have an associated region, i.e.
+  // `region().IsValid()` is false.
+  DXGIHandle CloneWithRegion(base::UnsafeSharedMemoryRegion region) const;
 
   HANDLE buffer_handle() const { return buffer_handle_.Get(); }
   base::win::ScopedHandle TakeBufferHandle();
@@ -116,12 +132,11 @@ class COMPONENT_EXPORT(GFX) DXGIHandle {
   const DXGIHandleToken& token() const { return token_; }
 
   const base::UnsafeSharedMemoryRegion& region() const { return region_; }
-  base::UnsafeSharedMemoryRegion& region() { return region_; }
-  void set_region(base::UnsafeSharedMemoryRegion region) {
-    region_ = std::move(region);
-  }
+  base::UnsafeSharedMemoryRegion TakeRegion() { return std::move(region_); }
 
  private:
+  friend mojo::StructTraits<mojom::DXGIHandleDataView, DXGIHandle>;
+
   base::win::ScopedHandle buffer_handle_;
   DXGIHandleToken token_;
   base::UnsafeSharedMemoryRegion region_;
@@ -135,6 +150,10 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   static constexpr GpuMemoryBufferId kInvalidId = GpuMemoryBufferId(-1);
 
   GpuMemoryBufferHandle();
+  explicit GpuMemoryBufferHandle(base::UnsafeSharedMemoryRegion region);
+#if BUILDFLAG(IS_WIN)
+  explicit GpuMemoryBufferHandle(DXGIHandle handle);
+#endif
 #if BUILDFLAG(IS_ANDROID)
   explicit GpuMemoryBufferHandle(
       base::android::ScopedHardwareBufferHandle handle);
@@ -152,7 +171,11 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
   // into memory actually requires an IPC to the GPU process, which then copies
   // the contents into the shmem region so it can be accessed from other
   // processes.
-  const base::UnsafeSharedMemoryRegion& region() const {
+  const base::UnsafeSharedMemoryRegion& region() const& {
+    // For now, allow this to transparently forward as appropriate for DXGI or
+    // shmem handles in production. However, this will be a hard CHECK() in the
+    // future.
+    CHECK_EQ(type, SHARED_MEMORY_BUFFER, base::NotFatalUntil::M138);
     switch (type) {
       case SHARED_MEMORY_BUFFER:
         return region_;
@@ -164,46 +187,21 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
         NOTREACHED();
     }
   }
-  base::UnsafeSharedMemoryRegion& region() {
-    switch (type) {
-      case SHARED_MEMORY_BUFFER:
-        return region_;
-#if BUILDFLAG(IS_WIN)
-      case DXGI_SHARED_HANDLE:
-        return dxgi_handle_.region();
-#endif  // BUILDFLAG(IS_WIN)
-      default:
-        NOTREACHED();
-    }
-  }
-  void set_region(base::UnsafeSharedMemoryRegion region) {
-    switch (type) {
-      case SHARED_MEMORY_BUFFER:
-        region_ = std::move(region);
-        return;
-#if BUILDFLAG(IS_WIN)
-      case DXGI_SHARED_HANDLE:
-        dxgi_handle_.set_region(std::move(region));
-        return;
-#endif  // BUILDFLAG(IS_WIN)
-      default:
-        NOTREACHED();
-    }
+  base::UnsafeSharedMemoryRegion region() && {
+    CHECK_EQ(type, SHARED_MEMORY_BUFFER);
+    type = EMPTY_BUFFER;
+    return std::move(region_);
   }
 
 #if BUILDFLAG(IS_WIN)
-  const DXGIHandle& dxgi_handle() const {
+  const DXGIHandle& dxgi_handle() const& {
     CHECK_EQ(type, DXGI_SHARED_HANDLE);
     return dxgi_handle_;
   }
-  DXGIHandle& dxgi_handle() {
+  DXGIHandle dxgi_handle() && {
     CHECK_EQ(type, DXGI_SHARED_HANDLE);
-    return dxgi_handle_;
-  }
-  void set_dxgi_handle(DXGIHandle handle) {
-    CHECK_EQ(type, DXGI_SHARED_HANDLE);
-    CHECK(handle.IsValid());
-    dxgi_handle_ = std::move(handle);
+    type = EMPTY_BUFFER;
+    return std::move(dxgi_handle_);
   }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -221,6 +219,9 @@ struct COMPONENT_EXPORT(GFX) GpuMemoryBufferHandle {
 #endif
 
  private:
+  friend mojo::UnionTraits<mojom::GpuMemoryBufferPlatformHandleDataView,
+                           GpuMemoryBufferHandle>;
+
   // This naming isn't entirely styleguide-compliant, but per the TODO, the end
   // goal is to make `this` an encapsulated class.
   base::UnsafeSharedMemoryRegion region_;

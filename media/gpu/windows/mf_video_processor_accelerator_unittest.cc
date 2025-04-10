@@ -117,10 +117,8 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
       return nullptr;
     }
 
-    gfx::GpuMemoryBufferHandle gmb_handle;
-    gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
-    gmb_handle.set_dxgi_handle(
-        gfx::DXGIHandle(base::win::ScopedHandle(shared_handle)));
+    gfx::GpuMemoryBufferHandle gmb_handle{
+        gfx::DXGIHandle(base::win::ScopedHandle(shared_handle))};
     const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
                           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
