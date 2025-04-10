@@ -598,10 +598,10 @@ public class WebContentsImpl
     }
 
     @Override
-    public void setImportance(@ChildProcessImportance int primaryMainFrameImportance) {
+    public void setPrimaryMainFrameImportance(@ChildProcessImportance int importance) {
         checkNotDestroyed();
         WebContentsImplJni.get()
-                .setImportance(mNativeWebContentsAndroid, primaryMainFrameImportance);
+                .setPrimaryMainFrameImportance(mNativeWebContentsAndroid, importance);
     }
 
     @Override
@@ -1311,7 +1311,7 @@ public class WebContentsImpl
 
         void collapseSelection(long nativeWebContentsAndroid);
 
-        void setImportance(long nativeWebContentsAndroid, int importance);
+        void setPrimaryMainFrameImportance(long nativeWebContentsAndroid, int importance);
 
         void suspendAllMediaPlayers(long nativeWebContentsAndroid);
 

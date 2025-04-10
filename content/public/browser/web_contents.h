@@ -66,6 +66,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "content/public/browser/android/child_process_importance.h"
 #include "third_party/jni_zero/jni_zero.h"
 #endif
 
@@ -1443,6 +1444,16 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // scoped to this WebContents. This provides access to interfaces implemented
   // in Java in the browser process to C++ code in the browser process.
   virtual service_manager::InterfaceProvider* GetJavaInterfaces() = 0;
+
+  // Returns the primary main frame importance. This is for testing only.
+  virtual ChildProcessImportance GetPrimaryMainFrameImportanceForTesting() = 0;
+
+  // Set an importance of the page to the primary main frame.
+  //
+  // Note this does not affect importance of subframe processes or main frames
+  // processeses for non-primary pages.
+  virtual void SetPrimaryMainFrameImportance(
+      ChildProcessImportance importance) = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns true if the WebContents has completed its first meaningful paint
