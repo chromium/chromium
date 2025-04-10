@@ -7815,6 +7815,14 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, RenderPassHasPerQuadDamage) {
     for (auto* quad : output_root_pass->quad_list) {
       EXPECT_EQ(quad_rects[i], quad->rect);
 
+      if (i < 2) {
+        const SharedQuadState* sqs = quad->shared_quad_state;
+        // Surface color quad should not have an |overlay_damage_index|
+        // even though it is the only non |per_quad_damage| quad in its
+        // render pass.
+        EXPECT_FALSE(sqs->overlay_damage_index.has_value());
+      }
+
       // Looking at only the quads with |per_quad_damage|.
       if (i >= 2) {
         const SharedQuadState* sqs = quad->shared_quad_state;

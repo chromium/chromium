@@ -562,33 +562,21 @@ const DrawQuad* SurfaceAggregator::FindQuadWithOverlayDamage(
     AggregatedRenderPass* dest_pass,
     const gfx::Transform& pass_to_root_target_transform,
     size_t* overlay_damage_index) {
+  // If |source_pass| has per quad damage then don't try to assign the surface
+  // damage to a quad. The order of the surface damage rect list might not match
+  // quad z-order which breaks occlusion when computing damage excluding
+  // overlays, see crbug.com/404618616 and crbug.com/40224514.
+  if (source_pass.has_per_quad_damage) {
+    return nullptr;
+  }
   // The occluding damage optimization currently relies on two things - there
   // can't be any damage above the quad within the surface, and the quad needs
   // its own SQS for the occluding_damage_rect metadata.
-  const DrawQuad* target_quad = nullptr;
-  for (auto* quad : source_pass.quad_list) {
-    // Quads with |per_quad_damage| do not contribute to the |damage_rect| in
-    // the |source_pass|. These quads are also assumed to have unique SQS
-    // objects.
-    if (source_pass.has_per_quad_damage) {
-      auto optional_damage = GetOptionalDamageRectFromQuad(quad);
-      if (optional_damage.has_value()) {
-        continue;
-      }
-    }
-
-    if (target_quad == nullptr) {
-      target_quad = quad;
-    } else {
-      // More that one quad without per_quad_damage.
-      target_quad = nullptr;
-      break;
-    }
+  if (source_pass.quad_list.size() != 1) {
+    return nullptr;
   }
 
-  // No overlay candidate is found.
-  if (!target_quad)
-    return nullptr;
+  const DrawQuad* target_quad = source_pass.quad_list.back();
 
   // Surface damage for a render pass quad does not include damage from its
   // children. We skip this quad to avoid the incomplete damage association.
@@ -1405,9 +1393,6 @@ void SurfaceAggregator::CopyQuadsToPass(
   // Only process the damage rect at the root render pass, once per surface.
   if (needs_surface_damage_rect_list_ &&
       resolved_pass.aggregation().will_draw && resolved_pass.is_root()) {
-    // TODO(crbug.com/40224514): If there is one specific quad for this pass's
-    // damage we should move the allocation of the damage index below to be
-    // consistent with quad ordering.
     quad_with_overlay_damage_index = FindQuadWithOverlayDamage(
         source_pass, dest_pass, pass_to_dest_root_target_transform,
         &overlay_damage_index);
