@@ -10,6 +10,7 @@ import android.provider.Settings;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MockedInTests;
@@ -27,6 +28,7 @@ import org.chromium.ui.util.RunnableTimer;
 class MessageBannerCoordinator {
     private final MessageBannerMediator mMediator;
     private final MessageBannerView mView;
+    private final View mParentView;
     private final PropertyModel mModel;
     private final RunnableTimer mTimer;
     private final Supplier<Long> mAutodismissDurationMs;
@@ -38,16 +40,17 @@ class MessageBannerCoordinator {
      * @param view The inflated {@link MessageBannerView}.
      * @param model The model for the message banner.
      * @param maxTranslationSupplier A {@link Supplier} that supplies the maximum translation Y
-     * value the message banner can have as a result of the animations or the gestures.
+     *     value the message banner can have as a result of the animations or the gestures.
      * @param topOffsetSupplier A {@link Supplier} that supplies the message's top offset.
      * @param resources The {@link Resources}.
+     * @param parentView The parent {@link View}.
      * @param messageDismissed The {@link Runnable} that will run if and when the user dismisses the
-     * message.
+     *     message.
      * @param swipeAnimationHandler The handler that will be used to delegate starting the
-     * animations to {@link WindowAndroid} so the message is not clipped as a result of some Android
-     * SurfaceView optimization.
+     *     animations to {@link WindowAndroid} so the message is not clipped as a result of some
+     *     Android SurfaceView optimization.
      * @param autodismissDurationMs A {@link Supplier} providing autodismiss duration for message
-     * banner.
+     *     banner.
      * @param onTimeUp A {@link Runnable} that will run if and when the auto dismiss timer is up.
      */
     MessageBannerCoordinator(
@@ -56,11 +59,13 @@ class MessageBannerCoordinator {
             Supplier<Integer> maxTranslationSupplier,
             Supplier<Integer> topOffsetSupplier,
             Resources resources,
+            View parentView,
             Runnable messageDismissed,
             SwipeAnimationHandler swipeAnimationHandler,
             Supplier<Long> autodismissDurationMs,
             Runnable onTimeUp) {
         mView = view;
+        mParentView = parentView;
         mModel = model;
         PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
         mMediator =
@@ -221,7 +226,7 @@ class MessageBannerCoordinator {
         } else {
             msg = mView.getResources().getString(R.string.message_new_actions_available);
         }
-        mView.announceForAccessibility(msg);
+        ViewCompat.setAccessibilityPaneTitle(mParentView, msg);
     }
 
     private void setOnTitleChanged(@Nullable Runnable runnable) {

@@ -117,6 +117,7 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
                             mMaxTranslationSupplier,
                             mTopOffsetSupplier,
                             mContainer.getResources(),
+                            mContainer,
                             () -> {
                                 mDismissHandler.invoke(mModel, DismissReason.GESTURE);
                             },
