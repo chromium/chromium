@@ -52,7 +52,7 @@ class Browser;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Starts the sign in flow for the identity given in the constructor. Displays
-// the signed in confirmation dialog allowing the user to sign out or configure
+// the signed inconfirmation dialog allowing the user to sign out or configure
 // sync.
 // It is safe to destroy this authentication flow when `completion` is called.
 // `completion` must not be nil.
