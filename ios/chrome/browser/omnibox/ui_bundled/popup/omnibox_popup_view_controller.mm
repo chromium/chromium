@@ -533,7 +533,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   }
 
   [self.tableView scrollToRowAtIndexPath:path
-                        atScrollPosition:UITableViewScrollPositionTop
+                        atScrollPosition:UITableViewScrollPositionNone
                                 animated:NO];
 
   self.highlightedIndexPath = path;
@@ -576,7 +576,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   }
 
   [self.tableView scrollToRowAtIndexPath:path
-                        atScrollPosition:UITableViewScrollPositionBottom
+                        atScrollPosition:UITableViewScrollPositionNone
                                 animated:NO];
 
   // There is a row below, move highlight there.
