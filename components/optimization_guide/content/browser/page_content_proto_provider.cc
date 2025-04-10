@@ -49,6 +49,7 @@ void ApplyOptionsOverridesForWebContents(
   if (base::FeatureList::IsEnabled(
           features::kAnnotatedPageContentWithActionableElements)) {
     options.enable_experimental_actionable_data = true;
+    options.include_geometry = true;
   }
 }
 
