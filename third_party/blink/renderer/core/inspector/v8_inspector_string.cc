@@ -21,9 +21,8 @@ v8_inspector::StringView ToV8InspectorStringView(const StringView& string) {
     return v8_inspector::StringView(
         reinterpret_cast<const uint8_t*>(string.Characters8()),
         string.length());
-  return v8_inspector::StringView(
-      reinterpret_cast<const uint16_t*>(string.Characters16()),
-      string.length());
+  auto span16 = string.SpanUint16();
+  return v8_inspector::StringView(span16.data(), span16.size());
 }
 
 std::unique_ptr<v8_inspector::StringBuffer> ToV8InspectorStringBuffer(

@@ -223,6 +223,11 @@ class WTF_EXPORT StringView {
     return {static_cast<const UChar*>(bytes_), length_};
   }
 
+  base::span<const uint16_t> SpanUint16() const {
+    DCHECK(!Is8Bit());
+    return {static_cast<const uint16_t*>(bytes_), length_};
+  }
+
   // Returns the Unicode code point starting at the specified offset of this
   // string. If the offset points an unpaired surrogate, this function returns
   // the surrogate code unit as is. If you'd like to check such surroagtes,

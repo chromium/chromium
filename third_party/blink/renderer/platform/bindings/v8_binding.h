@@ -139,9 +139,9 @@ inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
                v8::NewStringType::kNormal, static_cast<int>(string.length()))
         .ToLocalChecked();
   }
-  return v8::String::NewFromTwoByte(
-             isolate, reinterpret_cast<const uint16_t*>(string.Characters16()),
-             v8::NewStringType::kNormal, static_cast<int>(string.length()))
+  return v8::String::NewFromTwoByte(isolate, string.SpanUint16().data(),
+                                    v8::NewStringType::kNormal,
+                                    static_cast<int>(string.length()))
       .ToLocalChecked();
 }
 
@@ -176,10 +176,9 @@ inline v8::Local<v8::String> V8AtomicString(v8::Isolate* isolate,
                static_cast<int>(string.length()))
         .ToLocalChecked();
   }
-  return v8::String::NewFromTwoByte(
-             isolate, reinterpret_cast<const uint16_t*>(string.Characters16()),
-             v8::NewStringType::kInternalized,
-             static_cast<int>(string.length()))
+  return v8::String::NewFromTwoByte(isolate, string.SpanUint16().data(),
+                                    v8::NewStringType::kInternalized,
+                                    static_cast<int>(string.length()))
       .ToLocalChecked();
 }
 
