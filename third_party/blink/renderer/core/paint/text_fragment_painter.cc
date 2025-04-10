@@ -129,38 +129,47 @@ PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
   return is_open ? direction_mode.BlockEnd() : direction_mode.InlineEnd();
 }
 
-PathBuilder CreatePath(base::span<const gfx::PointF, 4> path) {
-  PathBuilder result;
-  result.MoveTo(path[0]);
-  for (size_t i = 1; i < 4; ++i) {
-    result.LineTo(path[i]);
+base::span<const gfx::PointF, 3> GetDisclosurePathPoints(
+    PhysicalDirection direction) {
+  static constexpr gfx::PointF kLeftPoints[3] = {
+      {1.0f, 0.0f}, {0.14f, 0.5f}, {1.0f, 1.0f}};
+  static constexpr gfx::PointF kRightPoints[3] = {
+      {0.0f, 0.0f}, {0.86f, 0.5f}, {0.0f, 1.0f}};
+  static constexpr gfx::PointF kUpPoints[3] = {
+      {0.0f, 0.93f}, {0.5f, 0.07f}, {1.0f, 0.93f}};
+  static constexpr gfx::PointF kDownPoints[3] = {
+      {0.0f, 0.07f}, {0.5f, 0.93f}, {1.0f, 0.07f}};
+
+  switch (direction) {
+    case PhysicalDirection::kLeft:
+      return kLeftPoints;
+    case PhysicalDirection::kRight:
+      return kRightPoints;
+    case PhysicalDirection::kUp:
+      return kUpPoints;
+    case PhysicalDirection::kDown:
+      return kDownPoints;
   }
-  return result;
 }
 
-PathBuilder GetCanonicalDisclosurePath(const ComputedStyle& style,
-                                       bool is_open) {
-  constexpr gfx::PointF kLeftPoints[4] = {
-      {1.0f, 0.0f}, {0.14f, 0.5f}, {1.0f, 1.0f}, {1.0f, 0.0f}};
-  constexpr gfx::PointF kRightPoints[4] = {
-      {0.0f, 0.0f}, {0.86f, 0.5f}, {0.0f, 1.0f}, {0.0f, 0.0f}};
-  constexpr gfx::PointF kUpPoints[4] = {
-      {0.0f, 0.93f}, {0.5f, 0.07f}, {1.0f, 0.93f}, {0.0f, 0.93f}};
-  constexpr gfx::PointF kDownPoints[4] = {
-      {0.0f, 0.07f}, {0.5f, 0.93f}, {1.0f, 0.07f}, {0.0f, 0.07f}};
+Path GetCanonicalDisclosurePath(const ComputedStyle& style,
+                                const gfx::RectF& bounding_box,
+                                bool is_open) {
+  auto points =
+      GetDisclosurePathPoints(GetDisclosureOrientation(style, is_open));
+  auto map_unit_point = [&bounding_box](const gfx::PointF& p) {
+    return gfx::ScalePoint(p, bounding_box.size().width(),
+                           bounding_box.size().height()) +
+           bounding_box.OffsetFromOrigin();
+  };
 
-  switch (GetDisclosureOrientation(style, is_open)) {
-    case PhysicalDirection::kLeft:
-      return CreatePath(kLeftPoints);
-    case PhysicalDirection::kRight:
-      return CreatePath(kRightPoints);
-    case PhysicalDirection::kUp:
-      return CreatePath(kUpPoints);
-    case PhysicalDirection::kDown:
-      return CreatePath(kDownPoints);
+  PathBuilder result;
+  result.MoveTo(map_unit_point(points[0]));
+  for (size_t i = 1; i < points.size(); ++i) {
+    result.LineTo(map_unit_point(points[i]));
   }
-
-  return PathBuilder();
+  result.Close();
+  return result.Finalize();
 }
 
 }  // namespace
@@ -205,12 +214,8 @@ void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
     context.FillRect(snapped_rect, color, auto_dark_mode);
   } else if (type == keywords::kDisclosureOpen ||
              type == keywords::kDisclosureClosed) {
-    const Path path =
-        GetCanonicalDisclosurePath(style, type == keywords::kDisclosureOpen)
-            .Transform(AffineTransform::MakeScaleNonUniform(
-                marker_rect.Width(), marker_rect.Height()))
-            .Translate(gfx::Vector2dF(marker_rect.X(), marker_rect.Y()))
-            .Finalize();
+    const Path path = GetCanonicalDisclosurePath(
+        style, gfx::RectF(marker_rect), type == keywords::kDisclosureOpen);
     context.FillPath(path, auto_dark_mode);
   } else {
     NOTREACHED();
