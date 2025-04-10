@@ -22,6 +22,7 @@
 #include "base/timer/timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -191,7 +192,7 @@ class StateProvider {
   // it should call this method to attempt to propagate the changes.
   void RequestUpdate() { state_observer_->OnStateProviderUpdateRequest(this); }
 
-  virtual void accept(StateVisitor& visitor) const {}
+  virtual void Accept(StateVisitor& visitor) const {}
 
   virtual ~StateProvider() = default;
 
@@ -253,7 +254,7 @@ class ExplicitStateProvider : public StateProvider {
 
  private:
   // StateProvider:
-  void accept(StateVisitor& visitor) const override { visitor.visit(this); }
+  void Accept(StateVisitor& visitor) const override { visitor.visit(this); }
 
   bool active_ = true;
 
@@ -368,7 +369,7 @@ class ShowIdentityNameStateProvider : public StateProvider,
 
  private:
   // StateProvider:
-  void accept(StateVisitor& visitor) const override { visitor.visit(this); }
+  void Accept(StateVisitor& visitor) const override { visitor.visit(this); }
 
   // Initiates showing the identity.
   void OnUserIdentityChanged() {
@@ -537,7 +538,7 @@ class SyncErrorStateProvider : public StateProvider,
   }
 
   // StateProvider:
-  void accept(StateVisitor& visitor) const override { visitor.visit(this); }
+  void Accept(StateVisitor& visitor) const override { visitor.visit(this); }
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService*) override {
@@ -664,7 +665,7 @@ class SigninPendingStateProvider : public StateProvider,
 
  private:
   // StateProvider:
-  void accept(StateVisitor& visitor) const override { visitor.visit(this); }
+  void Accept(StateVisitor& visitor) const override { visitor.visit(this); }
 
   // signin::IdentityManager::Observer:
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
@@ -736,6 +737,7 @@ class SigninPendingStateProvider : public StateProvider,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ManagementStateProvider : public StateProvider,
                                 public ProfileAttributesStorage::Observer,
+                                public policy::ManagementService::Observer,
                                 public BrowserListObserver {
  public:
   explicit ManagementStateProvider(
@@ -747,16 +749,8 @@ class ManagementStateProvider : public StateProvider,
         avatar_toolbar_button_(avatar_toolbar_button) {
     BrowserList::AddObserver(this);
     profile_observation_.Observe(&GetProfileAttributesStorage());
-
-    profile_pref_change_registrar_.Init(profile_->GetPrefs());
-    profile_pref_change_registrar_.Add(
-        prefs::kEnterpriseCustomLabelForProfile,
-        base::BindRepeating(&ManagementStateProvider::RequestUpdate,
-                            weak_ptr_factory_.GetWeakPtr()));
-    profile_pref_change_registrar_.Add(
-        prefs::kEnterpriseProfileBadgeToolbarSettings,
-        base::BindRepeating(&ManagementStateProvider::RequestUpdate,
-                            weak_ptr_factory_.GetWeakPtr()));
+    management_observation_.Observe(
+        policy::ManagementServiceFactory::GetForProfile(&profile));
   }
 
   ~ManagementStateProvider() override { BrowserList::RemoveObserver(this); }
@@ -768,7 +762,7 @@ class ManagementStateProvider : public StateProvider,
 
  private:
   // StateProvider:
-  void accept(StateVisitor& visitor) const override { visitor.visit(this); }
+  void Accept(StateVisitor& visitor) const override { visitor.visit(this); }
 
   void OnBrowserAdded(Browser*) override {
     // This is required so that the enterprise text is shown when a profile is
@@ -782,14 +776,19 @@ class ManagementStateProvider : public StateProvider,
     RequestUpdate();
   }
 
+  // ManagementService::Observer
+  void OnEnterpriseLabelUpdated() override { RequestUpdate(); }
+
   raw_ref<Profile> profile_;
   const raw_ref<const AvatarToolbarButton> avatar_toolbar_button_;
-
-  PrefChangeRegistrar profile_pref_change_registrar_;
 
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
+
+  base::ScopedObservation<policy::ManagementService,
+                          policy::ManagementService::Observer>
+      management_observation_{this};
 
   base::WeakPtrFactory<ManagementStateProvider> weak_ptr_factory_{this};
 };
@@ -810,7 +809,7 @@ class NormalStateProvider : public StateProvider {
 class StateProviderGetter : public StateVisitor {
  public:
   explicit StateProviderGetter(const StateProvider& state_provider) {
-    state_provider.accept(*this);
+    state_provider.Accept(*this);
   }
 
   const ExplicitStateProvider* AsExplicit() { return explicit_state_; }

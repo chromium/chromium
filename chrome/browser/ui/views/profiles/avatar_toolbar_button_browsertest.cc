@@ -1157,6 +1157,28 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
+                       DefaultBadgeUpdatedWithManagementChanges) {
+  enterprise_util::SetUserAcceptedAccountManagement(browser()->profile(), true);
+  AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
+  {
+    policy::ScopedManagementServiceOverrideForTesting profile_management{
+        policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+        policy::EnterpriseManagementAuthority::CLOUD};
+    policy::ManagementServiceFactory::GetForProfile(browser()->profile())
+        ->TriggerPolicyStatusChangedForTesting();
+    EXPECT_EQ(avatar_button->GetText(), u"Work");
+  }
+  {
+    policy::ScopedManagementServiceOverrideForTesting profile_management{
+        policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+        policy::EnterpriseManagementAuthority::NONE};
+    policy::ManagementServiceFactory::GetForProfile(browser()->profile())
+        ->TriggerPolicyStatusChangedForTesting();
+    EXPECT_EQ(avatar_button->GetText(), std::u16string());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
                        DefaultBadgeDisabledbyPolicy) {
   std::u16string work_label = u"Work";
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
