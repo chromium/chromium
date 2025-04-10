@@ -174,8 +174,7 @@ class MEDIA_EXPORT VideoResourceUpdater
   // Write/copy RGB pixels from video frame to hardware resource through
   // WritePixels or TexSubImage2D.
   bool WriteRGBPixelsToTexture(scoped_refptr<VideoFrame> video_frame,
-                               FrameResource* frame_resource,
-                               viz::SharedImageFormat output_si_format);
+                               FrameResource* frame_resource);
 
   // Write/copy YUV pixels for all planes from video frame to hardware resource
   // through WritePixelsYUV. Also perform bit downshifting for
