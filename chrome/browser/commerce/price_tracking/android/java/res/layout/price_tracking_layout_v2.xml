@@ -12,8 +12,9 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height= "wrap_content"
     android:orientation="horizontal"
+    android:gravity="center"
     android:baselineAligned="false"
-    android:layout_marginTop="@dimen/price_insights_content_top_margin">
+    android:layout_marginTop="@dimen/price_tracking_content_top_margin">
 
     <!-- Price tracking title and description -->
     <LinearLayout
@@ -21,7 +22,7 @@ found in the LICENSE file.
         android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/price_insights_general_padding"
+        android:layout_marginEnd="@dimen/price_tracking_layout_padding"
         android:orientation="vertical">
         <TextView
             android:id="@+id/price_tracking_title"
@@ -47,17 +48,18 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        style="@style/FilledButton"
         android:background="@drawable/price_tracking_button_background"
         android:clickable="true"
         android:focusable="true"
+        android:gravity="center"
+        android:paddingVertical="@dimen/price_tracking_button_vertical_padding"
         android:paddingStart="@dimen/price_tracking_button_padding_start"
         android:paddingEnd="@dimen/price_tracking_button_padding_end">
         <ImageView
             android:id="@+id/price_tracking_button_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="@dimen/price_insights_price_tracking_button_drawable_padding"
+            android:paddingEnd="@dimen/price_tracking_button_drawable_end_padding"
             android:importantForAccessibility="no"/>
         <TextView
             android:id="@+id/price_tracking_button_text"

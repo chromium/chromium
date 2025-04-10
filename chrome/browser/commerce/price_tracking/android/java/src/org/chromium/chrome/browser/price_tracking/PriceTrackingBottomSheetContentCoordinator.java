@@ -5,8 +5,11 @@
 package org.chromium.chrome.browser.price_tracking;
 
 import android.content.Context;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
+import android.view.TouchDelegate;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 
@@ -35,6 +38,7 @@ public class PriceTrackingBottomSheetContentCoordinator
         mPriceTrackingContentContainer =
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.price_tracking_layout_v2, /* root= */ null);
+        updateTouchDelegate();
         PropertyModel propertyModel =
                 new PropertyModel(PriceInsightsBottomSheetProperties.PRICE_TRACKING_KEYS);
         PropertyModelChangeProcessor.create(
@@ -69,6 +73,32 @@ public class PriceTrackingBottomSheetContentCoordinator
                         CommerceBottomSheetContentProperties.CUSTOM_VIEW,
                         mPriceTrackingContentContainer)
                 .build();
+    }
+
+    private void updateTouchDelegate() {
+        // Post in the content container's message queue to make sure price tracking button lays out
+        // before setting extra padding.
+        mPriceTrackingContentContainer.post(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Rect delegateArea = new Rect();
+                        LinearLayout priceTrackingButton =
+                                mPriceTrackingContentContainer.findViewById(
+                                        R.id.price_tracking_button);
+                        priceTrackingButton.getHitRect(delegateArea);
+                        int extraPadding =
+                                mContext.getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen
+                                                        .price_tracking_button_touch_delegate_extra_padding);
+                        delegateArea.top -= extraPadding;
+                        delegateArea.bottom += extraPadding;
+                        TouchDelegate touchDelegate =
+                                new TouchDelegate(delegateArea, priceTrackingButton);
+                        mPriceTrackingContentContainer.setTouchDelegate(touchDelegate);
+                    }
+                });
     }
 
     View getContentViewForTesting() {
