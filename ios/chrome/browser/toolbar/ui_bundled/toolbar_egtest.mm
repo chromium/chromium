@@ -178,6 +178,7 @@ void WaitForEmpyOmnibox() {
 // Tests whether input mode in an omnibox can be canceled via tapping the typing
 // shield and asserts it doesn't commit the omnibox contents if the input is
 // canceled.
+// TODO(crbug.com/392545268): Deflake test.
 - (void)FLAKY_testToolbarOmniboxTypingShield {
   // Tablet only (handset keyboard does not have "hide keyboard" button).
   if (![ChromeEarlGrey isIPadIdiom]) {

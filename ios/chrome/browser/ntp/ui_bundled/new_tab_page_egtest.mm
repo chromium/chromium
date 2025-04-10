@@ -417,6 +417,7 @@ BOOL WaitForHistoryToDisappear() {
 
 // Tests that the error badge is shown on top of the identity disc when the
 // primary account has a persistent error.
+// TODO(crbug.com/394268777): Reenable test.
 - (void)DISABLED_testErrorBadge {
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [ChromeEarlGrey addBookmarkWithSyncPassphrase:kPassphrase];
