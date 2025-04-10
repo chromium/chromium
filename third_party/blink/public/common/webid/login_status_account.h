@@ -18,6 +18,8 @@ namespace blink::common::webid {
 // account list entry for Lightweight FedCM. Members are a subset of fields in
 // type `IdentityProviderAccount` in
 // third_party/blink/renderer/modules/credentialmanagement/identity_provider_account.idl
+// When a new field is added, be sure to update the base::Value conversion logic
+// in InMemoryFederatedPermissionContext::GetAccounts
 struct BLINK_COMMON_EXPORT LoginStatusAccount {
   LoginStatusAccount();
 

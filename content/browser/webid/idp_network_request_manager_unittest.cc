@@ -6,6 +6,7 @@
 
 #include <array>
 #include <map>
+#include <memory>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -17,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/common/features.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/manifest_icon_downloader.h"
@@ -30,12 +32,16 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::Return;
 using IdpClientMetadata = content::IdpNetworkRequestManager::ClientMetadata;
 using TokenResult = content::IdpNetworkRequestManager::TokenResult;
 using Endpoints = content::IdpNetworkRequestManager::Endpoints;
@@ -119,10 +125,13 @@ url::Origin GetOriginHeader(const network::ResourceRequest& request) {
 class IdpNetworkRequestManagerTest : public ::testing::Test {
  public:
   std::unique_ptr<IdpNetworkRequestManager> CreateTestManager() {
+    test_permission_delegate_ =
+        std::make_unique<NiceMock<MockPermissionDelegate>>();
     return std::make_unique<IdpNetworkRequestManager>(
         url::Origin::Create(GURL(kTestRpUrl)),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
+        test_permission_delegate_.get(),
         network::mojom::ClientSecurityState::New());
   }
 
@@ -201,6 +210,34 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   }
 
   std::tuple<FetchStatus, std::vector<IdentityRequestAccountPtr>>
+  SendAccountsRequestWithStoredAccounts(base::Value::List test_accounts,
+                                        const char* client_id = "") {
+    GURL accounts_endpoint(kTestAccountsEndpoint);
+    url::Origin idp_origin = url::Origin::Create(accounts_endpoint);
+
+    base::RunLoop run_loop;
+    FetchStatus parsed_accounts_response;
+    std::vector<IdentityRequestAccountPtr> parsed_accounts;
+    auto callback = base::BindLambdaForTesting(
+        [&](FetchStatus response,
+            std::vector<IdentityRequestAccountPtr> accounts) {
+          parsed_accounts_response = response;
+          parsed_accounts = accounts;
+          run_loop.Quit();
+        });
+
+    std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
+
+    EXPECT_CALL(*test_permission_delegate_, GetAccounts(_))
+        .WillOnce(Return(test_accounts.Clone()));
+    manager->SendAccountsRequest(idp_origin, GURL(), client_id,
+                                 std::move(callback));
+    run_loop.Run();
+
+    return {parsed_accounts_response, parsed_accounts};
+  }
+
+  std::tuple<FetchStatus, std::vector<IdentityRequestAccountPtr>>
   SendAccountsRequestAndWaitForResponse(
       const std::string& test_accounts,
       const char* client_id = "",
@@ -221,7 +258,8 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
         });
 
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->SendAccountsRequest(accounts_endpoint, client_id,
+    manager->SendAccountsRequest(url::Origin::Create(accounts_endpoint),
+                                 accounts_endpoint, client_id,
                                  std::move(callback));
     run_loop.Run();
 
@@ -313,6 +351,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
   TokenResponseType token_response_type_;
   std::optional<ErrorDialogType> error_dialog_type_;
   std::optional<ErrorUrlType> error_url_type_;
+  std::unique_ptr<NiceMock<MockPermissionDelegate>> test_permission_delegate_;
 };
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
@@ -826,16 +865,55 @@ TEST_F(IdpNetworkRequestManagerTest, ParsePhoneNumber) {
   EXPECT_EQ("111-111-1111", accounts[0]->display_name);
 }
 
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingleLightweightFedcm) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmLightweightMode);
+
+  FetchStatus accounts_response;
+  std::vector<IdentityRequestAccountPtr> accounts;
+  std::tie(accounts_response, accounts) = SendAccountsRequestWithStoredAccounts(
+      base::Value::List().Append(base::Value::Dict()
+                                     .Set("id", "1234")
+                                     .Set("email", "ken@idp.test")
+                                     .Set("name", "Ken R. Example")));
+
+  EXPECT_EQ(ParseStatus::kSuccess, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ(1UL, accounts.size());
+
+  EXPECT_EQ("1234", accounts[0]->id);
+  EXPECT_EQ("ken@idp.test", accounts[0]->email);
+  EXPECT_EQ("Ken R. Example", accounts[0]->name);
+}
+
+TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmptyLightweightFedcm) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmLightweightMode);
+
+  FetchStatus accounts_response;
+  std::vector<IdentityRequestAccountPtr> accounts;
+  std::tie(accounts_response, accounts) =
+      SendAccountsRequestWithStoredAccounts(base::Value::List());
+
+  EXPECT_EQ(ParseStatus::kEmptyListError, accounts_response.parse_status);
+  EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
+  EXPECT_EQ(0UL, accounts.size());
+}
+
 // Test that IdpNetworkRequestManager::FetchWellKnown() fails when the
 // identity provider domain is empty.
 TEST_F(IdpNetworkRequestManagerTest, FetchWellKnownIllegalDomainFails) {
   GURL illegal_idp_url("https://192.101.0.1/test/");
 
   network::TestURLLoaderFactory test_url_loader_factory;
+  std::unique_ptr<MockPermissionDelegate> test_permission_delegate_ =
+      std::make_unique<MockPermissionDelegate>();
+
   auto network_manager = std::make_unique<IdpNetworkRequestManager>(
       url::Origin::Create(GURL(kTestRpUrl)),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory),
+      test_permission_delegate_.get(),
       network::mojom::ClientSecurityState::New());
 
   base::RunLoop run_loop;
@@ -1806,7 +1884,8 @@ TEST_F(IdpNetworkRequestManagerTest, DontCallCallbackAfterManagerDeletion) {
 
   {
     std::unique_ptr<IdpNetworkRequestManager> manager = CreateTestManager();
-    manager->SendAccountsRequest(accounts_endpoint, /*client_id=*/"",
+    manager->SendAccountsRequest(url::Origin::Create(accounts_endpoint),
+                                 accounts_endpoint, /*client_id=*/"",
                                  std::move(callback));
     // Destroy `manager`.
   }

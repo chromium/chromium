@@ -11,10 +11,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/values.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/fedcm_metrics.h"
 #include "content/browser/webid/flags.h"
 #include "content/browser/webid/webid_utils.h"
+#include "content/public/browser/federated_identity_permission_context_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -27,6 +29,7 @@
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -1035,15 +1038,18 @@ std::unique_ptr<IdpNetworkRequestManager> IdpNetworkRequestManager::Create(
   return std::make_unique<IdpNetworkRequestManager>(
       host->GetLastCommittedOrigin(),
       host->GetStoragePartition()->GetURLLoaderFactoryForBrowserProcess(),
+      host->GetBrowserContext()->GetFederatedIdentityPermissionContext(),
       host->BuildClientSecurityState());
 }
 
 IdpNetworkRequestManager::IdpNetworkRequestManager(
     const url::Origin& relying_party_origin,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+    FederatedIdentityPermissionContextDelegate* permission_delegate,
     network::mojom::ClientSecurityStatePtr client_security_state)
     : relying_party_origin_(relying_party_origin),
       loader_factory_(loader_factory),
+      permission_delegate_(permission_delegate),
       client_security_state_(std::move(client_security_state)) {
   DCHECK(client_security_state_);
   // If COEP:credentialless was used, this would break FedCM credentialled
@@ -1124,9 +1130,39 @@ void IdpNetworkRequestManager::FetchConfig(const GURL& provider,
 }
 
 void IdpNetworkRequestManager::SendAccountsRequest(
+    const url::Origin& idp_origin,
     const GURL& accounts_url,
     const std::string& client_id,
     AccountsRequestCallback callback) {
+  if (IsFedCmLightweightModeEnabled()) {
+    base::Value::List accounts = permission_delegate_->GetAccounts(idp_origin);
+    if (accounts.size() > 0) {
+      OnAccountsRequestParsed(
+          client_id, std::move(callback),
+          {
+              .parse_status = ParseStatus::kSuccess,
+              .response_code = 200,
+          },
+          data_decoder::DataDecoder::ValueOrError(
+              base::Value::Dict().Set(kAccountsKey, std::move(accounts))));
+      return;
+    }
+
+    // If there were no stored accounts and the supplied accounts URL is empty,
+    // behave as though we received an empty accounts_endpoint response.
+    if (accounts_url.is_empty()) {
+      OnAccountsRequestParsed(
+          client_id, std::move(callback),
+          {
+              .parse_status = ParseStatus::kSuccess,
+              .response_code = 200,
+          },
+          data_decoder::DataDecoder::ValueOrError(
+              base::Value::Dict().Set(kAccountsKey, base::Value::List())));
+      return;
+    }
+  }
+
   std::unique_ptr<network::ResourceRequest> resource_request =
       CreateCredentialedResourceRequest(
           accounts_url, CredentialedResourceRequestType::kNoOrigin);

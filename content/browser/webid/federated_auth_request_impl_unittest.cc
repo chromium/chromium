@@ -410,7 +410,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                            GURL(info.client_metadata.brand_icon_url)}));
   }
 
-  void SendAccountsRequest(const GURL& accounts_url,
+  void SendAccountsRequest(const url::Origin& idp_origin,
+                           const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
     ++num_fetched_[FetchedEndpoint::ACCOUNTS];
@@ -540,14 +541,15 @@ class IdpNetworkRequestManagerParamChecker
         rp_brand_icon_minimum_size, std::move(callback));
   }
 
-  void SendAccountsRequest(const GURL& accounts_url,
+  void SendAccountsRequest(const url::Origin& idp_origin,
+                           const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
     if (expected_client_id_) {
       EXPECT_EQ(expected_client_id_, client_id);
     }
-    TestIdpNetworkRequestManager::SendAccountsRequest(accounts_url, client_id,
-                                                      std::move(callback));
+    TestIdpNetworkRequestManager::SendAccountsRequest(
+        idp_origin, accounts_url, client_id, std::move(callback));
   }
 
   void SendTokenRequest(
@@ -875,14 +877,6 @@ class TestPermissionDelegate : public NiceMock<MockPermissionDelegate> {
       const url::Origin& idp_origin,
       std::vector<IdentityRequestAccountPtr>& request_accounts) {
     idp_account_profiles_[idp_origin] = std::move(request_accounts);
-  }
-
-  std::vector<IdentityRequestAccountPtr> GetAccounts(
-      const url::Origin& identity_provider) override {
-    auto it = idp_account_profiles_.find(identity_provider);
-    return (it != idp_account_profiles_.end())
-               ? it->second
-               : std::vector<IdentityRequestAccountPtr>();
   }
 };
 
@@ -1839,33 +1833,6 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulRequest) {
   // expectation does not check that the client metadata was fetched because
   // client metadata is optional.
   EXPECT_TRUE(DidFetch(FetchedEndpoint::CLIENT_METADATA));
-}
-
-TEST_F(FederatedAuthRequestImplTest, SuccessfulLightweightRequest) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmLightweightMode);
-
-  // Use IdpNetworkRequestManagerParamChecker to validate passed-in parameters
-  // to IdpNetworkRequestManager methods.
-  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
-      std::make_unique<IdpNetworkRequestManagerParamChecker>();
-  checker->SetExpectations(kClientId, kAccountId);
-  SetNetworkRequestManager(std::move(checker));
-
-  MockConfiguration configuration = kConfigurationValid;
-  MockIdpInfo& provider = configuration.idp_info[kProviderUrlFull];
-  // Remove the accounts and client metadata endpoints.
-  provider.config.accounts_endpoint = "";
-  provider.config.client_metadata_endpoint = "";
-
-  // Take the accounts that would've been returned by the accounts endpoint and
-  // instead have them stored in the permissions service
-  test_permission_delegate_->SetIdpAccounts(OriginFromString(kProviderUrlFull),
-                                            provider.accounts);
-  provider.accounts = {};
-
-  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
-  EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
 // Test successful well-known fetching.
@@ -4070,7 +4037,8 @@ class ParseStatusOverrideIdpNetworkRequestManager
         idp_brand_icon_minimum_size, std::move(callback));
   }
 
-  void SendAccountsRequest(const GURL& accounts_url,
+  void SendAccountsRequest(const url::Origin& idp_origin,
+                           const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
     if (accounts_parse_status_ != ParseStatus::kSuccess) {
@@ -4083,8 +4051,8 @@ class ParseStatusOverrideIdpNetworkRequestManager
       return;
     }
 
-    TestIdpNetworkRequestManager::SendAccountsRequest(accounts_url, client_id,
-                                                      std::move(callback));
+    TestIdpNetworkRequestManager::SendAccountsRequest(
+        idp_origin, accounts_url, client_id, std::move(callback));
   }
 };
 

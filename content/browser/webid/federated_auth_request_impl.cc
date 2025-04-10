@@ -1422,42 +1422,12 @@ void FederatedAuthRequestImpl::OnAllConfigAndWellKnownFetched(
       continue;
     }
 
-    if (IsFedCmLightweightModeEnabled()) {
-      std::vector<IdentityRequestAccountPtr> stored_accounts =
-          permission_delegate_->GetAccounts(
-              url::Origin::Create(idp_info->provider->config->config_url));
-      if (stored_accounts.size() > 0) {
-        OnAccountsResponseReceived(
-            std::move(idp_info),
-            {.parse_status = IdpNetworkRequestManager::ParseStatus::kSuccess,
-             .response_code = 200},
-            std::move(stored_accounts));
-        continue;
-      }
-
-      // If there were no stored accounts and the accounts endpoint URL is
-      // empty, behave as though we received an empty accounts response.
-      if (idp_info->endpoints.accounts.is_empty()) {
-        OnAccountsResponseReceived(
-            std::move(idp_info),
-            {.parse_status =
-                 IdpNetworkRequestManager::ParseStatus::kEmptyListError,
-             .response_code = 200},
-            {});
-        continue;
-      }
-    }
-
     GURL accounts_endpoint = idp_info->endpoints.accounts;
     std::string client_id = idp_info->provider->config->client_id;
     const GURL& config_url = idp_info->provider->config->config_url;
 
-    // accounts_endpoint can't be empty here; if Lightweight FedCM is enabled,
-    // that condition is checked in the previous block, and we continue on to
-    // the next IdP. If it's not enabled, an empty accounts_endpoint returns an
-    // error state from the FederatedProviderFetcher and we never get here.
     network_manager_->SendAccountsRequest(
-        accounts_endpoint, client_id,
+        url::Origin::Create(config_url), accounts_endpoint, client_id,
         base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
                        weak_ptr_factory_.GetWeakPtr(), std::move(idp_info)));
     fedcm_metrics_->RecordAccountsRequestSent(config_url);

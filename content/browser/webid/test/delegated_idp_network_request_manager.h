@@ -9,6 +9,10 @@
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 // Forwards IdpNetworkRequestManager calls to delegate. The purpose of this
@@ -37,7 +41,8 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                            int rp_brand_icon_ideal_size,
                            int rp_brand_icon_minimum_size,
                            FetchClientMetadataCallback callback) override;
-  void SendAccountsRequest(const GURL& accounts_url,
+  void SendAccountsRequest(const url::Origin& idp_origin,
+                           const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override;
   void SendTokenRequest(

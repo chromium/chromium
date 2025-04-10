@@ -32,7 +32,6 @@ struct LoginStatusOptions;
 }  // namespace blink::common::webid
 
 namespace content {
-class IdentityRequestAccount;
 
 // This class implements the various FedCM delegates. It is used to store
 // permission and login state in memory as a default implementation.
@@ -103,8 +102,7 @@ class InMemoryFederatedPermissionContext
       const std::string& account_id) override;
   std::optional<bool> GetIdpSigninStatus(
       const url::Origin& idp_origin) override;
-  std::vector<scoped_refptr<IdentityRequestAccount>> GetAccounts(
-      const url::Origin& identity_provider) override;
+  base::Value::List GetAccounts(const url::Origin& identity_provider) override;
   void SetIdpSigninStatus(
       const url::Origin& idp_origin,
       bool idp_signin_status,

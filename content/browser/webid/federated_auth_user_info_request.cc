@@ -15,6 +15,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
+#include "url/origin.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -207,7 +208,8 @@ void FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched(
   }
 
   network_manager_->SendAccountsRequest(
-      fetch_results[0].endpoints.accounts, client_id_,
+      url::Origin::Create(idp_config_url_), fetch_results[0].endpoints.accounts,
+      client_id_,
       base::BindOnce(&FederatedAuthUserInfoRequest::OnAccountsResponseReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }

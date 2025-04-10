@@ -2325,11 +2325,15 @@ IN_PROC_BROWSER_TEST_F(WebIdMetricsBrowserTest, Failure) {
   EXPECT_EQ("false", metrics_parameters_["did_show_ui"]);
 }
 
-// Verify that IDP sign-in via JS works.
+// Verify that stored accounts via login.setStatus can be used to complete
+// a signin flow with an empty accounts endpoint.
 IN_PROC_BROWSER_TEST_F(WebIdLightweightFedcmBrowserTest,
                        IdpSigninTopLevelSetViaJs) {
   GURL configURL = GURL(BaseIdpUrl());
-  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+  IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
+  config_details.accounts_endpoint_url = "";
+  idp_server()->SetConfigResponseDetails(config_details);
+
   EXPECT_TRUE(NavigateToURL(shell(), configURL));
 
   EXPECT_FALSE(sharing_context()
@@ -2356,13 +2360,18 @@ IN_PROC_BROWSER_TEST_F(WebIdLightweightFedcmBrowserTest,
       sharing_context()->GetIdpSigninStatus(url::Origin::Create(configURL));
   ASSERT_TRUE(value.has_value());
   EXPECT_TRUE(*value);
-
-  std::vector<scoped_refptr<content::IdentityRequestAccount>> accounts =
+  base::Value::List accounts =
       sharing_context()->GetAccounts(url::Origin::Create(configURL));
   ASSERT_EQ(1U, accounts.size());
-  EXPECT_EQ("12345", accounts[0]->id);
-  EXPECT_EQ("User", accounts[0]->name);
-  EXPECT_EQ("user@idp.example", accounts[0]->email);
+  EXPECT_EQ("12345", *accounts[0].GetDict().FindString("id"));
+  EXPECT_EQ("User", *accounts[0].GetDict().FindString("name"));
+  EXPECT_EQ("user@idp.example", *accounts[0].GetDict().FindString("email"));
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), https_server().GetURL(kRpHostName, "/title1.html")));
+
+  SetTestIdentityRequestDialogController("12345");
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), GetBasicRequestString()));
 }
 
 }  // namespace content

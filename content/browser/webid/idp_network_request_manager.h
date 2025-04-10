@@ -37,6 +37,7 @@ namespace content {
 
 using IdentityProviderDataPtr = scoped_refptr<IdentityProviderData>;
 using IdentityRequestAccountPtr = scoped_refptr<IdentityRequestAccount>;
+class FederatedIdentityPermissionContextDelegate;
 class RenderFrameHostImpl;
 
 // Manages network requests and maintains relevant state for interaction with
@@ -254,6 +255,7 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   IdpNetworkRequestManager(
       const url::Origin& relying_party,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      FederatedIdentityPermissionContextDelegate* permission_delegate,
       network::mojom::ClientSecurityStatePtr client_security_state);
 
   virtual ~IdpNetworkRequestManager();
@@ -282,8 +284,14 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                    int rp_brand_icon_minimum_size,
                                    FetchClientMetadataCallback);
 
-  // Fetch accounts list for this user from the IDP.
-  virtual void SendAccountsRequest(const GURL& accounts_url,
+  // Fetch accounts list for this user from the IDP. idp_origin is required
+  // because accounts_url may be empty when lightweight fedcm is enabled. When
+  // lightweight fedcm is enabled, no actual network request will be sent if
+  // there are unexpired stored accounts for idp_origin. If there are no
+  // unexpired stored accounts and accounts_url is empty, the callback will be
+  // invoked with an empty accounts list.
+  virtual void SendAccountsRequest(const url::Origin& idp_origin,
+                                   const GURL& accounts_url,
                                    const std::string& client_id,
                                    AccountsRequestCallback callback);
 
@@ -372,6 +380,9 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
   url::Origin relying_party_origin_;
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
+
+  raw_ptr<FederatedIdentityPermissionContextDelegate> permission_delegate_ =
+      nullptr;
 
   network::mojom::ClientSecurityStatePtr client_security_state_;
 
