@@ -3396,6 +3396,8 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
 
   run_loop.Run();
 
+  ASSERT_EQ(urn_uuids_observed().size(), 1u);
+
   ExpectAccessObserved(
       {{AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
         a_test_origin_.Serialize(),
@@ -3416,7 +3418,7 @@ IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,
                 {{https_server()->GetURL(host, "/fenced_frames/title0.html"),
                   {}}}),
             /*resolve_to_config=*/true,
-            /*saved_query=*/std::string(),
+            /*saved_query=*/std::string(), urn_uuids_observed()[0],
             /*worklet_id=*/0)}});
 }
 

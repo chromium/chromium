@@ -91,7 +91,9 @@ void TestSharedStorageObserver::OnSharedStorageAccessed(
   accesses_.emplace_back(scope, method, main_frame_id, owner_origin, params);
 }
 
-void TestSharedStorageObserver::OnUrnUuidGenerated(const GURL& urn_uuid) {}
+void TestSharedStorageObserver::OnUrnUuidGenerated(const GURL& urn_uuid) {
+  urn_uuids_observed_.push_back(urn_uuid);
+}
 
 void TestSharedStorageObserver::OnConfigPopulated(
     const std::optional<FencedFrameConfig>& config) {}

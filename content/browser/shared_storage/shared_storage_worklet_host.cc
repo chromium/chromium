@@ -817,7 +817,7 @@ void SharedStorageWorkletHost::SelectURL(
       SharedStorageEventParams::CreateForSelectURL(
           name, keep_alive_after_operation, private_aggregation_config,
           serialized_data, std::move(converted_urls), resolve_to_config,
-          base::UTF16ToUTF8(saved_query_name), worklet_id_));
+          base::UTF16ToUTF8(saved_query_name), urn_uuid, worklet_id_));
 
   if (saved_queries_enabled_ && !saved_query_name.empty()) {
     auto saved_query_callback = base::BindOnce(

@@ -504,6 +504,12 @@ SharedStorageBrowserTestBase::test_runtime_manager() {
   return *test_runtime_manager_;
 }
 
+const std::vector<GURL>& SharedStorageBrowserTestBase::urn_uuids_observed()
+    const {
+  DCHECK(observer_);
+  return observer_->urn_uuids_observed();
+}
+
 SharedStorageBrowserTestBase::~SharedStorageBrowserTestBase() = default;
 
 // static

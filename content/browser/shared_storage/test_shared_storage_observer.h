@@ -52,8 +52,13 @@ class TestSharedStorageObserver
 
   void ExpectAccessObserved(const std::vector<Access>& expected_accesses);
 
+  const std::vector<GURL>& urn_uuids_observed() const {
+    return urn_uuids_observed_;
+  }
+
  private:
   std::vector<Access> accesses_;
+  std::vector<GURL> urn_uuids_observed_;
 };
 
 }  // namespace content

@@ -3068,6 +3068,8 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
   std::vector<SharedStorageUrlSpecWithMetadata> expected_urls_with_metadata =
       GetExpectedUrlsWithMetadata("a.test", /*num_urls=*/8);
 
+  ASSERT_EQ(static_cast<int>(urn_uuids_observed().size()), 2 * call_limit + 1);
+
   std::vector<Access> expected_accesses;
   expected_accesses.push_back(
       {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
@@ -3086,7 +3088,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
              ResolveSelectURLToConfig(),
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
-             /*worklet_id=*/0)});
+             urn_uuids_observed()[call], /*worklet_id=*/0)});
   }
   expected_accesses.push_back(
       {AccessScope::kWindow, AccessMethod::kSelectURL, MainFrameId(),
@@ -3096,7 +3098,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
            SharedStorageEventParams::PrivateAggregationConfigWrapper(),
            blink::CloneableMessage(), expected_urls_with_metadata,
            ResolveSelectURLToConfig(),
-           /*saved_query=*/std::string(),
+           /*saved_query=*/std::string(), urn_uuids_observed()[call_limit],
            /*worklet_id=*/0)});
   for (int call = 0; call < call_limit; call++) {
     expected_accesses.push_back(
@@ -3109,7 +3111,7 @@ IN_PROC_BROWSER_TEST_F(SharedStorageSelectURLSavedQueryBrowserTest,
              ResolveSelectURLToConfig(),
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
-             /*worklet_id=*/0)});
+             urn_uuids_observed()[call_limit + 1 + call], /*worklet_id=*/0)});
   }
 
   ExpectAccessObserved(expected_accesses);
@@ -3202,6 +3204,8 @@ IN_PROC_BROWSER_TEST_F(
           kInsufficientSitePageloadBudget,
       1);
 
+  ASSERT_EQ(static_cast<int>(urn_uuids_observed().size()), 2 * call_limit + 1);
+
   std::vector<Access> expected_accesses;
   for (int call = 0; call < call_limit; call++) {
     std::string host =
@@ -3223,7 +3227,7 @@ IN_PROC_BROWSER_TEST_F(
              ResolveSelectURLToConfig(),
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
-             /*worklet_id=*/call)});
+             urn_uuids_observed()[call], /*worklet_id=*/call)});
   }
   expected_accesses.push_back(
       {AccessScope::kWindow, AccessMethod::kAddModule, MainFrameId(),
@@ -3240,7 +3244,7 @@ IN_PROC_BROWSER_TEST_F(
            blink::CloneableMessage(),
            GetExpectedUrlsWithMetadata("b.test", /*num_urls=*/8),
            ResolveSelectURLToConfig(),
-           /*saved_query=*/std::string(),
+           /*saved_query=*/std::string(), urn_uuids_observed()[call_limit],
            /*worklet_id=*/call_limit)});
   for (int call = 0; call < call_limit; call++) {
     std::string host =
@@ -3262,6 +3266,7 @@ IN_PROC_BROWSER_TEST_F(
              ResolveSelectURLToConfig(),
              /*saved_query=*/
              base::StrCat({"query", base::NumberToString(call)}),
+             urn_uuids_observed()[call_limit + 1 + call],
              /*worklet_id=*/call_limit + 1 + call)});
   }
 

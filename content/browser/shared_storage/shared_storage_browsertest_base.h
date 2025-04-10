@@ -133,6 +133,8 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
 
   TestSharedStorageRuntimeManager& test_runtime_manager();
 
+  const std::vector<GURL>& urn_uuids_observed() const;
+
   ~SharedStorageBrowserTestBase() override;
 
  protected:
