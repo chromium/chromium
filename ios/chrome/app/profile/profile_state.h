@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/time/time.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/browser/scoped_ui_blocker/ui_bundled/ui_blocker_manager.h"
 
@@ -59,6 +60,9 @@ class ProfileIOS;
 // changed since the last cold start, meaning the user was signed out during
 // startup.
 @property(nonatomic) BOOL shouldShowForceSignOutPrompt;
+
+// Timestamp of the most recent scene connection.
+@property(nonatomic, readonly) base::TimeTicks lastSceneConnection;
 
 // The designated initializer.
 - (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;

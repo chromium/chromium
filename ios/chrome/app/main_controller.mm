@@ -1877,6 +1877,36 @@ std::string GetProfileNameForChoice(ProfileChoice choice,
     _profileControllers.erase(iter);
     manager->UnloadProfile(name);
   }
+
+  [self updateLastUsedProfilePref];
+}
+
+// Update the kLastUsedProfile preference if needed.
+- (void)updateLastUsedProfilePref {
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  if (base::Contains(_profileControllers,
+                     localState->GetString(prefs::kLastUsedProfile))) {
+    // The last used profile is still loaded, no need to update the pref.
+    return;
+  }
+
+  // Find the name of the profile which most recently had a scene connected.
+  std::string mostRecentlyUsedProfile;
+  base::TimeTicks lastSceneConnection = base::TimeTicks::Min();
+  for (const auto& [name, controller] : _profileControllers) {
+    const base::TimeTicks timestamp = controller.state.lastSceneConnection;
+    if (timestamp > lastSceneConnection) {
+      lastSceneConnection = timestamp;
+      mostRecentlyUsedProfile = name;
+    }
+  }
+
+  // If mostRecentlyUsedProfile is empty, then there is no profile connected,
+  // which usually mean that app will shutdown. In that case, do not update
+  // the preference.
+  if (!mostRecentlyUsedProfile.empty()) {
+    localState->SetString(prefs::kLastUsedProfile, mostRecentlyUsedProfile);
+  }
 }
 
 // Schedule a call to -unloadUnusedProfiles at the next run loop iteration.

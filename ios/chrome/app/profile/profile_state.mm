@@ -229,6 +229,7 @@
 }
 
 - (void)sceneStateConnected:(SceneState*)sceneState {
+  _lastSceneConnection = base::TimeTicks::Now();
   [sceneState addObserver:self];
   [_connectedSceneStates addObject:sceneState];
   [_observers profileState:self sceneConnected:sceneState];
