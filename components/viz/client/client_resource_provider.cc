@@ -438,6 +438,9 @@ ResourceId ClientResourceProvider::ImportResource(
     ReleaseCallback main_thread_release_callback,
     ResourceEvictedCallback evicted_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // Clients are not allowed to import any empty resource.
+  CHECK(!resource.is_empty());
   ResourceId id;
   if (use_imported_resource_id_) {
     CHECK_NE(resource.id, kInvalidResourceId);
