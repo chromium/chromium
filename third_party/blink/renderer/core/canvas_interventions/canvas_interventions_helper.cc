@@ -8,17 +8,24 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_helper.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/skia_span_util.h"
@@ -53,6 +60,23 @@ bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
   return execution_context &&
          execution_context->GetRuntimeFeatureStateOverrideContext()
              ->IsCanvasInterventionsForceEnabled();
+}
+
+String GetDomainFromSecurityOrigin(const SecurityOrigin* security_origin) {
+  const SecurityOrigin* precursor_origin =
+      security_origin->GetOriginOrPrecursorOriginIfOpaque();
+  if (precursor_origin->IsOpaque()) {
+    return String::Format(
+        "opaque || %u",
+        WTF::GetHash(scoped_refptr<const SecurityOrigin>(precursor_origin)));
+  }
+  // RegistrableDomain() returns null in a couple of cases, such as URLs with IP
+  // addresses. In these cases we can safely return the host.
+  String domain = precursor_origin->RegistrableDomain();
+  if (!domain.IsNull()) {
+    return domain;
+  }
+  return precursor_origin->Host();
 }
 
 }  // namespace
@@ -93,11 +117,23 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   base::span<uint8_t> modify_pixels =
       gfx::SkPixmapToWritableSpan(pixmap_to_noise);
 
-  auto token_hash = NoiseHash(CanvasNoiseToken::Get(),
-                              execution_context->GetSecurityOrigin()
-                                  ->GetOriginOrPrecursorOriginIfOpaque()
-                                  ->RegistrableDomain()
-                                  .Utf8());
+  // TODO(crbug.com/377325952): Extend domain part to follow the general
+  // partitioning properties.
+  String noise_domain;
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    Frame& top_frame = window->GetFrame()->Tree().Top();
+    noise_domain = GetDomainFromSecurityOrigin(
+        top_frame.GetSecurityContext()->GetSecurityOrigin());
+  } else if (auto* worker = DynamicTo<WorkerGlobalScope>(execution_context)) {
+    noise_domain =
+        GetDomainFromSecurityOrigin(worker->top_level_frame_security_origin());
+  } else {
+    NOTREACHED();
+  }
+
+  // TODO(crbug.com/392627601): Use the token that is piped down from the
+  // browser.
+  auto token_hash = NoiseHash(CanvasNoiseToken::Get(), noise_domain);
   NoisePixels(token_hash, modify_pixels, pixmap_to_noise.width(),
               pixmap_to_noise.height());
 

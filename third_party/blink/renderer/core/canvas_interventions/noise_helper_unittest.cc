@@ -41,26 +41,22 @@ std::vector<uint8_t> GetRandomPixels(uint32_t width, uint32_t height) {
 }
 
 TEST_F(NoiseHelperTest, SeedHashFromSite) {
-  net::SchemefulSite site1(GURL("https://a.test"));
-  net::SchemefulSite site2(GURL("https://b.test"));
+  String site1("https://a.test");
+  String site2("https://b.test");
   const uint64_t token = 0x01234678901234567;
-  auto noise_hash1 = std::make_unique<NoiseHash>(
-      token, site1.registrable_domain_or_host_for_testing());
-  auto noise_hash2 = std::make_unique<NoiseHash>(
-      token, site2.registrable_domain_or_host_for_testing());
+  auto noise_hash1 = std::make_unique<NoiseHash>(token, site1);
+  auto noise_hash2 = std::make_unique<NoiseHash>(token, site2);
   // For the same token but different site, the seeds should differ.
   EXPECT_NE(noise_hash1->GetTokenHashForTesting(),
             noise_hash2->GetTokenHashForTesting());
   // The seed should be the same for the same site and token.
-  auto noise_hash1_again = std::make_unique<NoiseHash>(
-      token, site1.registrable_domain_or_host_for_testing());
+  auto noise_hash1_again = std::make_unique<NoiseHash>(token, site1);
   EXPECT_EQ(noise_hash1->GetTokenHashForTesting(),
             noise_hash1_again->GetTokenHashForTesting());
   const uint64_t token2 = token ^ 0xffffffffffffffff;
   // When the token differs, so should the seed even if the site remains the
   // same.
-  auto noise_hash1_different_token = std::make_unique<NoiseHash>(
-      token2, site1.registrable_domain_or_host_for_testing());
+  auto noise_hash1_different_token = std::make_unique<NoiseHash>(token2, site1);
   EXPECT_NE(noise_hash1->GetTokenHashForTesting(),
             noise_hash1_different_token->GetTokenHashForTesting());
 }

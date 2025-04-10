@@ -35,6 +35,7 @@ class CanvasNoiseTest : public PageTestBase {
 
   void SetUp() override {
     PageTestBase::SetUp();
+    NavigateTo(KURL("https://test.example"));
     SetHtmlInnerHTML("<body><canvas id='c' width='300' height='300'></body>");
     UpdateAllLifecyclePhasesForTest();
 
@@ -52,6 +53,7 @@ class CanvasNoiseTest : public PageTestBase {
     PutRandomPixels(context, canvas_element_->width(),
                     canvas_element_->height());
     CanvasNoiseToken::Set(0x1234567890123456);
+    EnableInterventions();
   }
 
   void TearDown() override {
@@ -108,9 +110,9 @@ class CanvasNoiseTest : public PageTestBase {
         ->AsSpan();
   }
 
-  static int GetNumChangedPixels(
-      base::span<uint8_t> pixels_no_interventions,
-      base::span<uint8_t> pixels_with_interventions) {
+  static int GetNumChangedPixels(base::span<uint8_t> pixels_no_interventions,
+                                 base::span<uint8_t> pixels_with_interventions,
+                                 int max_channel_diff) {
     EXPECT_EQ(pixels_with_interventions.size(), pixels_no_interventions.size());
     int num_changed_pixel_values = 0;
     int too_large_diffs = 0;
@@ -121,7 +123,7 @@ class CanvasNoiseTest : public PageTestBase {
       if (diff > 0) {
         ++num_changed_pixel_values;
       }
-      if (diff > 6) {
+      if (diff > max_channel_diff) {
         ++too_large_diffs;
       }
     }
@@ -160,9 +162,11 @@ class CanvasNoiseTest : public PageTestBase {
     String data_url_with_interventions =
         CanvasElement().toDataURL("image/png", exception_state);
     EXPECT_NE(data_url_no_interventions, data_url_with_interventions);
-    int num_changed_pixel_values = GetNumChangedPixels(
-        pixels_no_interventions, GetPixels(Context2D(), CanvasElement().width(),
-                                           CanvasElement().height()));
+    int num_changed_pixel_values =
+        GetNumChangedPixels(pixels_no_interventions,
+                            GetPixels(Context2D(), CanvasElement().width(),
+                                      CanvasElement().height()),
+                            /*max_channel_diff=*/3);
     EXPECT_GT(num_changed_pixel_values, 0);
   }
 
@@ -370,7 +374,48 @@ TEST_F(CanvasNoiseTest, OffscreenCanvasNoise) {
       ->SetCanvasInterventionsForceEnabled();
   int num_changed_pixel_values =
       GetNumChangedPixels(pixels_no_interventions,
-                          GetPixels(context, host->width(), host->height()));
+                          GetPixels(context, host->width(), host->height()),
+                          /*max_channel_diff=*/3);
+  EXPECT_GT(num_changed_pixel_values, 0);
+}
+
+TEST_F(CanvasNoiseTest, NoiseDiffersPerSite) {
+  Context2D()->fillText("CanvasNoiseTest", 0, 0);
+  base::span<uint8_t> pixels_test_site =
+      GetPixels(Context2D(), CanvasElement().width(), CanvasElement().height());
+
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+
+  // Navigate to a different origin.
+  NavigateTo(KURL("https://different.example"));
+  // Need to re-enable after navigating.
+  EnableInterventions();
+
+  SetHtmlInnerHTML("<body><canvas id='c' width='300' height='300'></body>");
+  UpdateAllLifecyclePhasesForTest();
+  auto* diff_canvas_element = To<HTMLCanvasElement>(GetElementById("c"));
+
+  CanvasContextCreationAttributesCore attributes;
+  attributes.alpha = true;
+  attributes.desynchronized = true;
+  attributes.premultiplied_alpha = false;
+  attributes.will_read_frequently =
+      CanvasContextCreationAttributesCore::WillReadFrequently::kFalse;
+  auto* diff_context = static_cast<CanvasRenderingContext2D*>(
+      diff_canvas_element->GetCanvasRenderingContext(/*canvas_type=*/"2d",
+                                                     attributes));
+  PutRandomPixels(diff_context, diff_canvas_element->width(),
+                  diff_canvas_element->height());
+
+  diff_context->fillText("CanvasNoiseTest", 0, 0);
+  // We're taking 2 canvases with different noise applied to them, so the max
+  // difference for per pixel value is 6 (= 2 * max noise per channel).
+  // Still need to figure out why the noise is higher than expected.
+  int num_changed_pixel_values =
+      GetNumChangedPixels(pixels_test_site,
+                          GetPixels(diff_context, diff_canvas_element->width(),
+                                    diff_canvas_element->height()),
+                          /*max_channel_diff=*/6);
   EXPECT_GT(num_changed_pixel_values, 0);
 }
 

@@ -5,10 +5,7 @@
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
 
 #include <bit>
-#include <cmath>
 #include <cstdint>
-#include <memory>
-#include <vector>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -26,11 +23,11 @@ constexpr uint64_t kFnvPrime = 0x00000100000001b3;
 constexpr uint64_t kFnvOffset = 0xcbf29ce484222325;
 }  // namespace
 
-NoiseHash::NoiseHash(const uint64_t token, const std::string_view partition) {
+NoiseHash::NoiseHash(const uint64_t token, const String& partition) {
   token_hash_ = kFnvOffset;
   auto hasher = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
   hasher->Update(base::U64ToLittleEndian(token));
-  hasher->Update(base::as_byte_span(partition));
+  hasher->Update(partition.RawByteSpan());
   std::array<uint8_t, crypto::kSHA256Length> digest;
   hasher->Finish(digest);
   Update(base::U64FromLittleEndian(base::span(digest).first<8>()));

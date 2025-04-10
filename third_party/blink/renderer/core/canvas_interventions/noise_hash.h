@@ -6,10 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CANVAS_INTERVENTIONS_NOISE_HASH_H_
 
 #include <cstdint>
-#include <memory>
-#include <string_view>
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -19,7 +18,7 @@ namespace blink {
 class CORE_EXPORT NoiseHash {
  public:
   // This hashes the provided token with the partition string.
-  NoiseHash(const uint64_t token, const std::string_view partition);
+  NoiseHash(const uint64_t token, const String& partition);
 
   // Computes a new pseudo-random value by hashing with the provided value.
   void Update(const uint64_t value);
