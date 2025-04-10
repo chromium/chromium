@@ -46,14 +46,6 @@ Notice* NoticeCatalogImpl::RegisterAndRetrieveNewNotice(
 void NoticeCatalogImpl::RegisterNoticeGroup(
     std::unique_ptr<Notice> (*notice_creator)(NoticeId),
     std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
-    std::vector<NoticeApi*>&& target_apis) {
-  RegisterNoticeGroup(notice_creator, std::move(notice_ids),
-                      std::move(target_apis), {});
-}
-
-void NoticeCatalogImpl::RegisterNoticeGroup(
-    std::unique_ptr<Notice> (*notice_creator)(NoticeId),
-    std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
     std::vector<NoticeApi*>&& target_apis,
     std::vector<NoticeApi*>&& pre_req_apis) {
   const std::vector<NoticeApi*>& pre_req_apis1 = pre_req_apis;

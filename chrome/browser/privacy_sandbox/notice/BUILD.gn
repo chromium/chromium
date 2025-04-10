@@ -86,6 +86,8 @@ test("fuzz_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "mocks/mock_notice_catalog.cc",
+    "mocks/mock_notice_catalog.h",
     "mocks/mock_notice_service.cc",
     "mocks/mock_notice_service.h",
     "mocks/mock_notice_storage.cc",

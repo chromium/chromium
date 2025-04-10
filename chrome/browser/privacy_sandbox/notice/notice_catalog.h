@@ -20,22 +20,6 @@ class NoticeCatalog {
   virtual const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() = 0;
   virtual const NoticeMap& GetNoticeMap() = 0;
 
-  // Registers a new notice api.
-  virtual NoticeApi* RegisterAndRetrieveNewApi() = 0;
-
-  // Registers a new notice.
-  virtual Notice* RegisterAndRetrieveNewNotice(
-      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
-      NoticeId notice_id) = 0;
-
-  // Registers a group of notices with the same requirements to be shown (for
-  // ex. Topics can have TopicsClankBrApp, TopicsDesktop and TopicsClankCCT)
-  virtual void RegisterNoticeGroup(
-      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
-      std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
-      std::vector<NoticeApi*>&& target_apis,
-      std::vector<NoticeApi*>&& pre_req_apis) = 0;
-
   // Populates the catalog with all the notices and their requirements.
   virtual void Populate() = 0;
 
@@ -51,28 +35,25 @@ class NoticeCatalogImpl : public NoticeCatalog {
   const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() override;
   const NoticeMap& GetNoticeMap() override;
 
-  NoticeApi* RegisterAndRetrieveNewApi() override;
-
-  Notice* RegisterAndRetrieveNewNotice(
-      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
-      NoticeId notice_id) override;
-
-  void RegisterNoticeGroup(
-      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
-      std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
-      std::vector<NoticeApi*>&& target_apis,
-      std::vector<NoticeApi*>&& pre_req_apis) override;
-
-  void RegisterNoticeGroup(
-      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
-      std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
-      std::vector<NoticeApi*>&& target_apis);
-
   void Populate() override;
 
   bool IsPopulated() override;
 
+  NoticeApi* RegisterAndRetrieveNewApi();
+
+  Notice* RegisterAndRetrieveNewNotice(
+      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
+      NoticeId notice_id);
+
  private:
+  // Registers a group of notices with the same requirements to be shown (for
+  // ex. Topics can have TopicsClankBrApp, TopicsDesktop and TopicsClankCCT)
+  void RegisterNoticeGroup(
+      std::unique_ptr<Notice> (*notice_creator)(NoticeId),
+      std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
+      std::vector<NoticeApi*>&& target_apis,
+      std::vector<NoticeApi*>&& pre_req_apis = {});
+
   std::vector<std::unique_ptr<NoticeApi>> apis_;
   NoticeMap notices_;
   bool is_populated_ = false;

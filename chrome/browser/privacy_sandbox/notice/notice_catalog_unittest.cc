@@ -23,8 +23,6 @@ using enum privacy_sandbox::NoticeType;
 using enum privacy_sandbox::SurfaceType;
 
 BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTestFeatureB, "TestFeatureB", base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kTestFeatureC, "TestFeatureC", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Test Consent ID, with arbitrary NoticeType and SurfaceType.
 constexpr NoticeId kTestConsentId = {PrivacySandboxNotice::kTopicsConsentNotice,
@@ -89,59 +87,6 @@ TEST_F(PrivacySandboxNoticeCatalogTest, RegisterAndRetrieveNewNotice) {
   EXPECT_THAT(consent_notice->GetTargetApis(), ElementsAre(target_api));
   EXPECT_THAT(consent_notice->GetPreReqApis(), ElementsAre(prereq_api));
   EXPECT_THAT(target_api->GetLinkedNotices(), Contains(consent_notice));
-}
-
-TEST_F(PrivacySandboxNoticeCatalogTest, RegisterNoticeGroup) {
-  NoticeApi* target_api1 = catalog_.RegisterAndRetrieveNewApi();
-  NoticeApi* target_api2 = catalog_.RegisterAndRetrieveNewApi();
-  NoticeApi* prereq_api = catalog_.RegisterAndRetrieveNewApi();
-
-  const NoticeId consent_id_desktop = {
-      PrivacySandboxNotice::kTopicsConsentNotice, kDesktopNewTab};
-  const NoticeId consent_id_clank = {PrivacySandboxNotice::kTopicsConsentNotice,
-                                     kClankBrApp};
-  const NoticeId notice_id_desktop = {
-      PrivacySandboxNotice::kProtectedAudienceMeasurementNotice,
-      kDesktopNewTab};
-
-  catalog_.RegisterNoticeGroup(&Make<Consent>,
-                               {{consent_id_desktop, &kTestFeatureA},
-                                {consent_id_clank, &kTestFeatureB}},
-                               {target_api1});
-
-  catalog_.RegisterNoticeGroup(&Make<Notice>,
-                               {{notice_id_desktop, &kTestFeatureC}},
-                               {target_api1, target_api2}, {prereq_api});
-
-  EXPECT_EQ(catalog_.GetNoticeApis().size(), 3u);
-  EXPECT_EQ(catalog_.GetNoticeMap().size(), 3u);
-
-  ASSERT_TRUE(catalog_.GetNoticeMap().contains(consent_id_desktop));
-  Notice* consent_desktop =
-      catalog_.GetNoticeMap().at(consent_id_desktop).get();
-  EXPECT_EQ(consent_desktop->GetNoticeType(), kConsent);
-  EXPECT_EQ(consent_desktop->GetFeature(), &kTestFeatureA);
-  EXPECT_THAT(consent_desktop->GetTargetApis(), ElementsAre(target_api1));
-  EXPECT_THAT(consent_desktop->GetPreReqApis(), IsEmpty());
-  EXPECT_THAT(target_api1->GetLinkedNotices(), Contains(consent_desktop));
-
-  ASSERT_TRUE(catalog_.GetNoticeMap().contains(consent_id_clank));
-  Notice* consent_clank = catalog_.GetNoticeMap().at(consent_id_clank).get();
-  EXPECT_EQ(consent_clank->GetNoticeType(), kConsent);
-  EXPECT_EQ(consent_clank->GetFeature(), &kTestFeatureB);
-  EXPECT_THAT(consent_clank->GetTargetApis(), ElementsAre(target_api1));
-  EXPECT_THAT(consent_clank->GetPreReqApis(), IsEmpty());
-  EXPECT_THAT(target_api1->GetLinkedNotices(), Contains(consent_clank));
-
-  ASSERT_TRUE(catalog_.GetNoticeMap().contains(notice_id_desktop));
-  Notice* notice_desktop = catalog_.GetNoticeMap().at(notice_id_desktop).get();
-  EXPECT_EQ(notice_desktop->GetNoticeType(), kNotice);
-  EXPECT_EQ(notice_desktop->GetFeature(), &kTestFeatureC);
-  EXPECT_THAT(notice_desktop->GetTargetApis(),
-              ElementsAre(target_api1, target_api2));
-  EXPECT_THAT(notice_desktop->GetPreReqApis(), ElementsAre(prereq_api));
-  EXPECT_THAT(target_api1->GetLinkedNotices(), Contains(notice_desktop));
-  EXPECT_THAT(target_api2->GetLinkedNotices(), Contains(notice_desktop));
 }
 
 // TODO(crbug.com/392612108): Add a test library util class that implements
