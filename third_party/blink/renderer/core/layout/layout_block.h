@@ -34,7 +34,6 @@
 
 namespace blink {
 
-class BlockNode;
 struct PaintInfo;
 
 using TrackedLayoutBoxLinkedHashSet = GCedHeapLinkedHashSet<Member<LayoutBox>>;
@@ -272,10 +271,6 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   // FIXME: This is temporary as we move code that accesses block flow
   // member variables out of LayoutBlock and into LayoutBlockFlow.
   friend class LayoutBlockFlow;
-
-  // This is necessary for now for interoperability between the old and new
-  // layout code. Primarily for calling layoutPositionedObjects at the moment.
-  friend class BlockNode;
 };
 
 template <>

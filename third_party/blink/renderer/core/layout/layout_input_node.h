@@ -21,6 +21,7 @@
 
 namespace blink {
 
+class BlockNode;
 class ComputedStyle;
 class Document;
 class LayoutObject;
