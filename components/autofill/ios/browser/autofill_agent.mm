@@ -339,7 +339,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   // TODO(crbug.com/366247033): This double-checks the assumption that this
   // crash is caused by an unexpected suggestion type, and not a nil suggestion.
   // It can be removed once a root cause for the issue is known.
-  CHECK(suggestion, base::NotFatalUntil::M133);
+  CHECK(suggestion);
 
   _suggestionHandledCompletion = [completion copy];
 
@@ -452,7 +452,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     // crash has been fixed.
     SCOPED_CRASH_KEY_NUMBER("Bug366247033", "suggestion_type",
                             static_cast<int>(suggestion.type));
-    NOTREACHED(base::NotFatalUntil::M133);
+    NOTREACHED();
   }
 }
 
