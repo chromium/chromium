@@ -1261,28 +1261,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.LoadTime.ProcessCreateToApplicationStart"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="TabletOrClamshellMode" separator=".">
-  <suffix name="ClamshellMode" label="Clamshell Mode Enabled"/>
-  <suffix name="TabletMode" label="Tablet Mode Enabled"/>
-  <affected-histogram name="Apps.AppListContinueTaskOpenType"/>
-  <affected-histogram name="Apps.AppListFolderNameLength"/>
-  <affected-histogram name="Apps.AppListPageSwitcherSource"/>
-  <affected-histogram name="Apps.AppListSearchResultOpenTypeV2"/>
-  <affected-histogram name="Apps.ContextMenuExecuteCommand.FromApp"/>
-  <affected-histogram name="Apps.ContextMenuExecuteCommand.NotFromApp"/>
-  <affected-histogram
-      name="Apps.PaginationTransition.DragScroll.PresentationTime"/>
-  <affected-histogram
-      name="Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency"/>
-  <affected-histogram name="Ash.LoginAnimation.Jank"/>
-  <affected-histogram name="Ash.LoginAnimation.Smoothness"/>
-  <affected-histogram name="Ash.Overview.AnimationSmoothness.Close"/>
-  <affected-histogram name="Ash.Overview.WindowDrag.PresentationTime"/>
-  <affected-histogram name="Ash.TabDrag.PresentationTime"/>
-  <affected-histogram name="Ash.TabDrag.PresentationTime.MaxLatency"/>
-  <affected-histogram name="Ash.UnlockAnimation.Smoothness"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebSocketErrorCodesVariants" separator="_">
   <suffix name="Localhost" label=""/>
   <suffix name="NotLocalhost" label=""/>

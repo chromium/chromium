@@ -235,15 +235,6 @@ chromium-metrics-reviews@google.com.
       summary="The device is shut down gracefully by the user."/>
 </variants>
 
-<!-- LINT.IfChange(AshDisplayModes) -->
-
-<variants name="DisplayModes">
-  <variant name="ClamshellMode" summary="Clamshell mode"/>
-  <variant name="TabletMode" summary="Tablet mode"/>
-</variants>
-
-<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/apps/histograms.xml:AshDisplayModes) -->
-
 <variants name="DriveFsSearchType">
   <variant name="Modified" summary="Most recently modified files"/>
   <variant name="Shared" summary="Files most recently shared with user"/>
@@ -447,6 +438,15 @@ chromium-metrics-reviews@google.com.
   <variant name=".TabletMode.WithOverview" summary=""/>
 </variants>
 
+<!-- LINT.IfChange(AshDisplayModes) -->
+
+<variants name="TabletOrClamshellMode">
+  <variant name="ClamshellMode" summary="Clamshell mode"/>
+  <variant name="TabletMode" summary="Tablet mode"/>
+</variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/apps/histograms.xml:AshDisplayModes) -->
+
 <variants name="WallpaperType">
   <variant name="Customized"/>
   <variant name="Daily"/>
@@ -527,16 +527,15 @@ chromium-metrics-reviews@google.com.
   <summary>Captures usage of Alt+[ and Alt+].</summary>
 </histogram>
 
-<histogram name="Ash.AmbientMode.Activation.{TabletOrClamshell}"
+<histogram name="Ash.AmbientMode.Activation.{TabletOrClamshellMode}"
     enum="AmbientUiMode" expires_after="2025-06-30">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@chromium.org</owner>
   <summary>
-    Recorded whenever Ambient mode is entered from {TabletOrClamshell}.
+    Recorded whenever Ambient mode is entered from {TabletOrClamshellMode}.
     AmbientUiMode indicates whether the user entered Ambient mode from the lock
     screen or from screen idle.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.AnimationSmoothness.PhotoTransition" units="%"
@@ -594,8 +593,8 @@ chromium-metrics-reviews@google.com.
   <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
-<histogram name="Ash.AmbientMode.EngagementTime.{TabletOrClamshell}" units="ms"
-    expires_after="2025-08-31">
+<histogram name="Ash.AmbientMode.EngagementTime.{TabletOrClamshellMode}"
+    units="ms" expires_after="2025-08-31">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
@@ -603,7 +602,6 @@ chromium-metrics-reviews@google.com.
     session. The metric is emitted when ambient mode is ended. 2 new animated
     ambient mode themes have been added started in M104.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.Init.{Settings}" enum="Boolean"
@@ -1760,86 +1758,80 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.AudioRecordingMode.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.AudioRecordingMode.{TabletOrClamshellMode}"
     enum="AudioRecordingMode" expires_after="2025-08-24">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
-    Recorded at the end of a capture mode session in {TabletOrClamshell} to
+    Recorded at the end of a capture mode session in {TabletOrClamshellMode} to
     report the user's audio recording mode setting, only if video recording was
     selected, and the recording type supports audio recording.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshell}"
+<histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshellMode}"
     enum="CaptureModeBarButtonType" expires_after="2025-07-06">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a button from the bar widget displayed in Capture mode is
-    pressed in {TabletOrClamshell}. The recorded enum value indicates the type
-    of the button pressed.
+    pressed in {TabletOrClamshellMode}. The recorded enum value indicates the
+    type of the button pressed.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.CameraDisconnectionsDuringRecordings.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.CameraDisconnectionsDuringRecordings.{TabletOrClamshellMode}"
     units="camera disconnections" expires_after="2025-07-03">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
-    Records the number of camera disconnections in {TabletOrClamshell} during
-    recording.
+    Records the number of camera disconnections in {TabletOrClamshellMode}
+    during recording.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.CameraReconnectDuration.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.CameraReconnectDuration.{TabletOrClamshellMode}"
     units="seconds" expires_after="2025-11-11">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records how many seconds it takes a camera that got disconnected to get
-    reconnected again within the grace period in {TabletOrClamshell}.
+    reconnected again within the grace period in {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.CaptureConfiguration.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.CaptureConfiguration.{TabletOrClamshellMode}"
     enum="CaptureModeConfiguration" expires_after="2025-09-07">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
-    Recorded whenever a user performs a screen capture in {TabletOrClamshell}.
-    The recorded enum indicates the configuration used for the capture. I.e. the
-    capture source and the capture type.
+    Recorded whenever a user performs a screen capture in
+    {TabletOrClamshellMode}. The recorded enum indicates the configuration used
+    for the capture. I.e. the capture source and the capture type.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.CaptureRegionAdjusted.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.CaptureRegionAdjusted.{TabletOrClamshellMode}"
     units="adjustments" expires_after="2025-02-23">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a user is in a region capture session in
-    {TabletOrClamshell} and performs a capture or they switch the capture
+    {TabletOrClamshellMode} and performs a capture or they switch the capture
     source. The recorded count indicates the number of times the user adjusts
     the region. This counts each time they move the region or resize it. It is
     reset whenever a user creates a new region or the count is recorded.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ConsecutiveScreenshots"
@@ -1854,124 +1846,115 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.DemoToolsEnabledOnRecordingStart.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.DemoToolsEnabledOnRecordingStart.{TabletOrClamshellMode}"
     enum="BooleanEnabled" expires_after="2025-08-24">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a capture mode video recording starts with demo tools
-    feature enabled or not in {TabletOrClamshell}.
+    feature enabled or not in {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.EndRecordingReason.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.EndRecordingReason.{TabletOrClamshellMode}"
     enum="EndRecordingReason" expires_after="2025-08-25">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever capture mode screen recording is ended in
-    {TabletOrClamshell}. The recorded enum value indicates the reason that lead
-    to ending the screen recording.
+    {TabletOrClamshellMode}. The recorded enum value indicates the reason that
+    lead to ending the screen recording.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshell}"
+<histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshellMode}"
     enum="CaptureModeEntryType" expires_after="2025-08-24">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
-    Recorded whenever Capture mode is entered from {TabletOrClamshell}. The
+    Recorded whenever Capture mode is entered from {TabletOrClamshellMode}. The
     recorded enum value indicates the method used to enter Capture mode.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.GameDashboard.SaveLocation.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.GameDashboard.SaveLocation.{TabletOrClamshellMode}"
     enum="CaptureModeSaveToLocation" expires_after="2025-08-24">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
-    Recorded whenever the screen capture is saved in {TabletOrClamshell} when
-    captured by the Game Dashboard intiated capture session. The recorded enum
-    value indicates the location that the screen capture is saved.
+    Recorded whenever the screen capture is saved in {TabletOrClamshellMode}
+    when captured by the Game Dashboard intiated capture session. The recorded
+    enum value indicates the location that the screen capture is saved.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.GameDashboard.ScreenRecordingFileSize.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.GameDashboard.ScreenRecordingFileSize.{TabletOrClamshellMode}"
     units="KB" expires_after="2025-05-15">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the size of the successfully recorded WebM file by the Game Dahboard
-    initiated capture mode in {TabletOrClamshell}. This metric will not be
+    initiated capture mode in {TabletOrClamshellMode}. This metric will not be
     recorded if a file was not successfully saved.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.GIFRecordingFileSize.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.GIFRecordingFileSize.{TabletOrClamshellMode}"
     units="KB" expires_after="2025-06-22">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the size of the successfully recorded GIF file by capture mode in
-    {TabletOrClamshell}. This metric will not be recorded if a file was not
+    {TabletOrClamshellMode}. This metric will not be recorded if a file was not
     successfully saved.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.GIFRecordingLength.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.GIFRecordingLength.{TabletOrClamshellMode}"
     units="seconds" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the time of a successful GIF recording in capture mode in
-    {TabletOrClamshell}. This metric will not be recorded if a file was not
+    {TabletOrClamshellMode}. This metric will not be recorded if a file was not
     successfully saved. The upper limit of this histogram is 3 hours.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.GIFRecordingRegionToScreenRatio.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.GIFRecordingRegionToScreenRatio.{TabletOrClamshellMode}"
     units="% of fullscreen area" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the percent ratio between the area of the user selected region for
-    GIF recording to the area of the full screen in {TabletOrClamshell}. Emitted
-    only when GIF recording is about to start.
+    GIF recording to the area of the full screen in {TabletOrClamshellMode}.
+    Emitted only when GIF recording is about to start.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.MultimodalSearchRequest.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.MultimodalSearchRequest.{TabletOrClamshellMode}"
     enum="Boolean" expires_after="2025-08-17">
   <owner>hewer@chromium.org</owner>
   <owner>sophiewen@google.com</owner>
   <summary>
     Recorded each time a multimodal search request is made in the search results
-    panel in {TabletOrClamshell}.
+    panel in {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.CaptureModeController.NumberOfConnectedCameras"
@@ -1985,20 +1968,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.Projector.CaptureRegionAdjusted.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.Projector.CaptureRegionAdjusted.{TabletOrClamshellMode}"
     units="adjustments" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a user is in a region capture session in
-    {TabletOrClamshell} entered from the projector app and performs a capture or
-    they switch the capture source. The recorded count indicates the number of
-    times the user adjusts the region. This counts each time they move the
-    region or resize it. It is reset whenever a user creates a new region or the
-    count is recorded.
+    {TabletOrClamshellMode} entered from the projector app and performs a
+    capture or they switch the capture source. The recorded count indicates the
+    number of times the user adjusts the region. This counts each time they move
+    the region or resize it. It is reset whenever a user creates a new region or
+    the count is recorded.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.CaptureModeController.QuickAction"
@@ -2012,82 +1994,77 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.RecordingCameraPositionOnStart.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.RecordingCameraPositionOnStart.{TabletOrClamshellMode}"
     enum="CameraPreviewSnapPosition" expires_after="2025-06-21">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the camera preview position when the recording is started in
-    {TabletOrClamshell}.
+    {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.RecordingCameraSizeOnStart.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.RecordingCameraSizeOnStart.{TabletOrClamshellMode}"
     enum="CaptureModeCameraSize" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the camera size when the recording is started in
-    {TabletOrClamshell}.
+    {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.RecordingStartsWithCamera.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.RecordingStartsWithCamera.{TabletOrClamshellMode}"
     enum="BooleanEnabled" expires_after="2025-04-13">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a capture mode video recording starts with camera or not in
-    {TabletOrClamshell}.
+    {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.CaptureModeController.SaveLocation.{TabletOrClamshell}"
+<histogram
+    name="Ash.CaptureModeController.SaveLocation.{TabletOrClamshellMode}"
     enum="CaptureModeSaveToLocation" expires_after="2025-04-13">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
-    Recorded whenever screen capture is saved in {TabletOrClamshell}. The
+    Recorded whenever screen capture is saved in {TabletOrClamshellMode}. The
     recorded enum value indicates the location that the screen capture is saved.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.ScreenRecordingFileSize.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.ScreenRecordingFileSize.{TabletOrClamshellMode}"
     units="KB" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the size of the successfully recorded WebM file by capture mode in
-    {TabletOrClamshell}. This metric will not be recorded if a file was not
+    {TabletOrClamshellMode}. This metric will not be recorded if a file was not
     successfully saved, or if it was recorded for Projector.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.ScreenRecordingLength.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.ScreenRecordingLength.{TabletOrClamshellMode}"
     units="seconds" expires_after="2026-01-31">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the time of a successful video recording in capture mode in
-    {TabletOrClamshell}. This metric will not be recorded if a file was not
+    {TabletOrClamshellMode}. This metric will not be recorded if a file was not
     successfully saved. The upper limit of this histogram is 3 hours.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerDay" units="int"
@@ -2118,43 +2095,40 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.SearchButtonPressed.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.SearchButtonPressed.{TabletOrClamshellMode}"
     enum="Boolean" expires_after="2025-09-14">
   <owner>hewer@chromium.org</owner>
   <owner>sophiewen@google.com</owner>
   <summary>
     Recorded each time the Search button is pressed in a default capture session
-    in {TabletOrClamshell}.
+    in {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.SearchButtonShown.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.SearchButtonShown.{TabletOrClamshellMode}"
     enum="Boolean" expires_after="2025-09-07">
   <owner>hewer@chromium.org</owner>
   <owner>sophiewen@google.com</owner>
   <summary>
     Recorded each time the Search button is shown to a user in a default capture
-    session in {TabletOrClamshell}.
+    session in {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.SearchResultClicked.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.SearchResultClicked.{TabletOrClamshellMode}"
     enum="Boolean" expires_after="2025-09-14">
   <owner>hewer@chromium.org</owner>
   <owner>sophiewen@google.com</owner>
   <summary>
     Recorded each time a search result URL was clicked in the search results
-    panel in {TabletOrClamshell}.
+    panel in {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.SearchResultsPanelEntryPoint.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.SearchResultsPanelEntryPoint.{TabletOrClamshellMode}"
     enum="SearchResultsPanelEntryType" expires_after="2025-09-07">
   <owner>hewer@chromium.org</owner>
   <owner>sophiewen@google.com</owner>
@@ -2164,19 +2138,18 @@ chromium-metrics-reviews@google.com.
     Sunfish session, or clicking the search button in a default session. The
     recorded enum value indicates the entry point.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.SearchResultsPanelShown.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.SearchResultsPanelShown.{TabletOrClamshellMode}"
     enum="Boolean" expires_after="2025-09-07">
   <owner>hewer@chromium.org</owner>
   <owner>sophiewen@google.com</owner>
   <summary>
     Recorded each time the search results panel was shown, including panel
-    creation, region adjustment, and region reselection, in {TabletOrClamshell}.
+    creation, region adjustment, and region reselection, in
+    {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.CaptureModeController.SwitchesFromInitialCaptureMode"
@@ -2191,93 +2164,87 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.SwitchToDefaultReason.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.SwitchToDefaultReason.{TabletOrClamshellMode}"
     enum="CaptureModeSwitchToDefaultReason" expires_after="2025-10-30">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever the capture folder is switched to default downloads folder
-    in {TabletOrClamshell}. The recorded enum value indicates the reason that
-    leads to the switching.
+    in {TabletOrClamshellMode}. The recorded enum value indicates the reason
+    that leads to the switching.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.{Client}.AudioRecordingMode.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.{Client}.AudioRecordingMode.{TabletOrClamshellMode}"
     enum="AudioRecordingMode" expires_after="2025-08-24">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded at the end of a {Client}-initiated capture mode session in
-    {TabletOrClamshell} to report the user's audio recording mode setting, only
-    if video recording was selected, and the recording type supports audio
+    {TabletOrClamshellMode} to report the user's audio recording mode setting,
+    only if video recording was selected, and the recording type supports audio
     recording.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
   <token key="Client" variants="ScreenCaptureClient"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.{Client}.CaptureConfiguration.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.{Client}.CaptureConfiguration.{TabletOrClamshellMode}"
     enum="CaptureModeConfiguration" expires_after="2025-08-24">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Recorded whenever a {Client}-initiated a screen capture is performed in
-    {TabletOrClamshell}. The recorded enum indicates the configuration used for
-    the Game Dashboard initiated capture, i.e. the capture source and the
+    {TabletOrClamshellMode}. The recorded enum indicates the configuration used
+    for the Game Dashboard initiated capture, i.e. the capture source and the
     capture type.
   </summary>
   <token key="Client" variants="ScreenCaptureClient"/>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.{Client}.DemoToolsEnabledOnRecordingStart.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.{Client}.DemoToolsEnabledOnRecordingStart.{TabletOrClamshellMode}"
     enum="BooleanEnabled" expires_after="2025-08-24">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a {Client}-initiated recording starts with demo tools
-    feature enabled or not in {TabletOrClamshell}.
+    feature enabled or not in {TabletOrClamshellMode}.
   </summary>
   <token key="Client" variants="ScreenCaptureClient"/>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.{Client}.RecordingStartsWithCamera.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.{Client}.RecordingStartsWithCamera.{TabletOrClamshellMode}"
     enum="BooleanEnabled" expires_after="2025-08-24">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records whether a {Client}-initiated recording starts with camera on or not
-    in {TabletOrClamshell}.
+    in {TabletOrClamshellMode}.
   </summary>
   <token key="Client" variants="ScreenCaptureClient"/>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram
-    name="Ash.CaptureModeController.{Client}.ScreenRecordingLength.{TabletOrClamshell}"
+    name="Ash.CaptureModeController.{Client}.ScreenRecordingLength.{TabletOrClamshellMode}"
     units="seconds" expires_after="2025-08-24">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Records the time of a successful video recording in capture mode entered
-    from the client session in {TabletOrClamshell}. This metric will not be
+    from the client session in {TabletOrClamshellMode}. This metric will not be
     recorded if a file was not successfully saved. The upper limit of this
     histogram is 3 hours.
   </summary>
   <token key="Client" variants="ScreenCaptureClient"/>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.ContentTransfer.AuthenticationResult"
@@ -3622,25 +3589,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Float.MultitaskMenuActionType.{TabletOrClamshell}"
+<histogram name="Ash.Float.MultitaskMenuActionType.{TabletOrClamshellMode}"
     enum="MultitaskMenuActionType" expires_after="2025-09-14">
   <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
   <summary>
-    Recorded whatever action is taken on the {TabletOrClamshell} multitask menu.
+    Recorded whatever action is taken on the {TabletOrClamshellMode} multitask
+    menu.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.Float.MultitaskMenuEntryType.{TabletOrClamshell}"
+<histogram name="Ash.Float.MultitaskMenuEntryType.{TabletOrClamshellMode}"
     enum="MultitaskMenuEntryType" expires_after="2025-08-10">
   <owner>sophiewen@chromium.org</owner>
   <owner>chromeos-wm@chromium.org</owner>
   <summary>
-    Recorded whenever the multitask menu is opened from {TabletOrClamshell}. The
-    recorded enum value indicates the method used to open the menu.
+    Recorded whenever the multitask menu is opened from {TabletOrClamshellMode}.
+    The recorded enum value indicates the method used to open the menu.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.FloatingWorkspace.FloatingWorkspaceV1Initialized"
@@ -4970,8 +4936,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.LoginAnimation.Duration2.{TabletOrClamshell}" units="ms"
-    expires_after="2025-09-14">
+<histogram name="Ash.LoginAnimation.Duration2.{TabletOrClamshellMode}"
+    units="ms" expires_after="2025-09-14">
   <owner>oshima@chromium.org</owner>
   <owner>zhzhliu@google.com</owner>
   <owner>cros-sw-perf@google.com</owner>
@@ -4980,32 +4946,27 @@ chromium-metrics-reviews@google.com.
     login process, from the time the first animation is added, to the time the
     last animation is finished.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram base="true" name="Ash.LoginAnimation.Jank" units="%"
+<histogram name="Ash.LoginAnimation.Jank.{TabletOrClamshellMode}" units="%"
     expires_after="2025-08-24">
   <owner>oshima@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
   <summary>
     Jank metrics of all animations applied during the login process. This
     represents how often the frame update rate changed during animation.
+    {TabletOrClamshellMode}
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.LoginAnimation.Smoothness" units="%"
-    expires_after="2025-08-24">
+<histogram name="Ash.LoginAnimation.Smoothness.{TabletOrClamshellMode}"
+    units="%" expires_after="2025-08-24">
   <owner>oshima@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
   <summary>
     Relative smoothness of all animations applied during the login process. 100%
     represents the ideal smoothness for 60 frames per second.
+    {TabletOrClamshellMode}
   </summary>
 </histogram>
 
@@ -5122,10 +5083,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     The duration of how long it took to finish all animations applied during the
     login process, from the time the first animation is added, to the time the
-    last animation is finished.
+    last animation is finished. {TabletOrClamshellMode}
   </summary>
   <token key="RestoreMode" variants="RestoreMode"/>
-  <token key="TabletOrClamshellMode" variants="DisplayModes"/>
 </histogram>
 
 <histogram
@@ -5137,9 +5097,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Jank metrics of all animations applied during the login process. This
     represents how often the frame update rate changed during animation.
+    {TabletOrClamshellMode}
   </summary>
   <token key="RestoreMode" variants="RestoreMode"/>
-  <token key="TabletOrClamshellMode" variants="DisplayModes"/>
 </histogram>
 
 <histogram
@@ -5151,9 +5111,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Relative smoothness of all animations applied during the login process. 100%
     represents the ideal smoothness for 60 frames per second.
+    {TabletOrClamshellMode}
   </summary>
   <token key="RestoreMode" variants="RestoreMode"/>
-  <token key="TabletOrClamshellMode" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.LoginPerf.{RestoreMode}.ShelfLoginAnimationEnd" units="ms"
@@ -6157,16 +6117,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"
-    expires_after="2025-08-24">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
+<histogram
+    name="Ash.Overview.AnimationSmoothness.Close.{TabletOrClamshellMode}"
+    units="%" expires_after="2025-08-24">
   <owner>omrilio@chromium.org</owner>
   <owner>oshima@chromium.org</owner>
   <summary>
     Relative smoothness of animations when closing a window, recorded when the
     animation completes. 100% represents ideally smooth 60 frames per second.
+    {TabletOrClamshellMode}
   </summary>
 </histogram>
 
@@ -6414,27 +6373,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.Overview.WindowDrag.PresentationTime"
+<histogram
+    name="Ash.Overview.WindowDrag.PresentationTime.MaxLatency.{TabletOrClamshellMode}"
     units="ms" expires_after="2025-04-11">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
-  <owner>xdai@chromium.org</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>Presentation time for dragging a window in overview mode.</summary>
-</histogram>
-
-<histogram base="true"
-    name="Ash.Overview.WindowDrag.PresentationTime.MaxLatency" units="ms"
-    expires_after="2025-04-11">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
   <owner>xdai@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
     Maximum latency of the presentation time for dragging a window in overview
-    mode.
+    mode. {TabletOrClamshellMode}
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.Overview.WindowDrag.PresentationTime.{TabletOrClamshellMode}"
+    units="ms" expires_after="2025-04-11">
+  <owner>xdai@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
+  <summary>
+    Presentation time for dragging a window in overview mode.
+    {TabletOrClamshellMode}
   </summary>
 </histogram>
 
@@ -7172,42 +7129,39 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.Projector.CreationFlow.{TabletOrClamshell}"
+<histogram name="Ash.Projector.CreationFlow.{TabletOrClamshellMode}"
     enum="ProjectorCreationFlow" expires_after="2026-01-15">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Tracks how the user progresses through the creation flow in
-    {TabletOrClamshell}, recorded each time the user starts or ends a screencast
-    recording.
+    {TabletOrClamshellMode}, recorded each time the user starts or ends a
+    screencast recording.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.Projector.CreationFlowError.{TabletOrClamshell}"
+<histogram name="Ash.Projector.CreationFlowError.{TabletOrClamshellMode}"
     enum="ProjectorCreationFlowError" expires_after="2026-01-15">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Tracks the most common errors during the screencast recording creation
-    process in {TabletOrClamshell}, recorded each time an error occurs.
+    process in {TabletOrClamshellMode}, recorded each time an error occurs.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.Projector.MarkerColor.{TabletOrClamshell}"
+<histogram name="Ash.Projector.MarkerColor.{TabletOrClamshellMode}"
     enum="ProjectorMarkerColor" expires_after="2026-01-15">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Recorded whenever the user chooses a marker color on the Projector toolbar
-    in {TabletOrClamshell}. This metric records when the user changes the color
-    or when the annotator toggles on, to record the saved last used color.
+    in {TabletOrClamshellMode}. This metric records when the user changes the
+    color or when the annotator toggles on, to record the saved last used color.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.Projector.OnDeviceToServerSpeechRecognitionFallbackReason"
@@ -7258,29 +7212,27 @@ chromium-metrics-reviews@google.com.
   <token key="Location" variants="RecognizerLocation"/>
 </histogram>
 
-<histogram name="Ash.Projector.Toolbar.{TabletOrClamshell}"
+<histogram name="Ash.Projector.Toolbar.{TabletOrClamshellMode}"
     enum="ProjectorToolbar" expires_after="2026-01-15">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Recorded whenever the user opens, closes, or presses a button the Projector
-    toolbar in {TabletOrClamshell}.
+    toolbar in {TabletOrClamshellMode}.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
-<histogram name="Ash.Projector.TranscriptsCount.{TabletOrClamshell}"
+<histogram name="Ash.Projector.TranscriptsCount.{TabletOrClamshellMode}"
     units="Number of transcripts" expires_after="2026-01-15">
   <owner>dorianbrandon@google.com</owner>
   <owner>bzielinski@google.com</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
     Tracks the number of transcripts generated during a recording in
-    {TabletOrClamshell}, recorded each time the metadata file saved successfully
-    after a recording ends.
+    {TabletOrClamshellMode}, recorded each time the metadata file saved
+    successfully after a recording ends.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.QuickSettings.Button.Activated" enum="QsButtonCatalogName"
@@ -8037,16 +7989,15 @@ chromium-metrics-reviews@google.com.
   <token key="SearchType" variants="DriveFsSearchType"/>
 </histogram>
 
-<histogram name="Ash.SearchModelUpdateTime.{TabletOrClamshell}" units="ms"
+<histogram name="Ash.SearchModelUpdateTime.{TabletOrClamshellMode}" units="ms"
     expires_after="2023-10-01">
   <owner>yulunwu@google.com</owner>
   <owner>tbarzic@google.com</owner>
   <summary>
     Records the time interval between user-initiated search model updates after
     the user starts a search query. Used to record how quickly users update the
-    search model in {TabletOrClamshell} after the first keystroke.
+    search model in {TabletOrClamshellMode} after the first keystroke.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.SearchResultUpdateAnimationShortened" enum="Boolean"
@@ -8614,17 +8565,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit.{TabletOrClamshell}"
+    name="Ash.SplitViewOverviewSession.WindowLayoutCompleteOnSessionExit.{TabletOrClamshellMode}"
     enum="Boolean" expires_after="2025-07-06">
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
   <summary>
     Recorded at the exit point of the split view overview session in
-    {TabletOrClamshell}. Emits true if the window layout setup is complete,
+    {TabletOrClamshellMode}. Emits true if the window layout setup is complete,
     false otherwise.
   </summary>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.SplitViewOverviewSession.WindowListSize" units="int"
@@ -8638,18 +8588,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Ash.SplitViewOverviewSession.{SnapSource}.ExitPoint.{TabletOrClamshell}"
+    name="Ash.SplitViewOverviewSession.{SnapSource}.ExitPoint.{TabletOrClamshellMode}"
     enum="SplitViewOverviewSessionExitPoint" expires_after="2025-05-04">
   <owner>sophiewen@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <owner>cros-snap-groups@google.com</owner>
   <summary>
     Recorded at the exit point of the split view overview session in
-    {TabletOrClamshell}. The recorded enum indicates the reason that triggers
-    the split view overview session exit.
+    {TabletOrClamshellMode}. The recorded enum indicates the reason that
+    triggers the split view overview session exit.
   </summary>
   <token key="SnapSource" variants="SnapActionSource"/>
-  <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
 <histogram name="Ash.SplitViewResize.AnimationSmoothness.DividerAnimation"
@@ -8831,11 +8780,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.TabDrag.PresentationTime" units="ms"
-    expires_after="2025-05-28">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
+<histogram
+    name="Ash.TabDrag.PresentationTime.MaxLatency.{TabletOrClamshellMode}"
+    units="ms" expires_after="2025-05-28">
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wm@google.com</owner>
+  <summary>
+    Maximum presentation time recorded during a tab dragging session in both
+    clamshell and tablet mode. {TabletOrClamshellMode}
+  </summary>
+</histogram>
 
+<histogram name="Ash.TabDrag.PresentationTime.{TabletOrClamshellMode}"
+    units="ms" expires_after="2025-05-28">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -8844,19 +8801,7 @@ chromium-metrics-reviews@google.com.
     frame on screen is recorded. In tablet mode (with webui tab strip enable),
     dragging between displays is precluded, thus each time a tab is dragged, the
     time it takes to present the new frame to screen is recorded.
-  </summary>
-</histogram>
-
-<histogram name="Ash.TabDrag.PresentationTime.MaxLatency" units="ms"
-    expires_after="2025-05-28">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
-  <owner>yichenz@chromium.org</owner>
-  <owner>chromeos-wm@google.com</owner>
-  <summary>
-    Maximum presentation time recorded during a tab dragging session in both
-    clamshell and tablet mode.
+    {TabletOrClamshellMode}
   </summary>
 </histogram>
 
@@ -8939,18 +8884,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Ash.UnlockAnimation.Smoothness" units="%"
-    expires_after="2025-03-23">
+<histogram name="Ash.UnlockAnimation.Smoothness.{TabletOrClamshellMode}"
+    units="%" expires_after="2025-03-23">
   <owner>oshima@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
   <summary>
     Relative smoothness of all animations applied during the unlock process.
     100% represents the ideal smoothness for 60 frames per second. The metric
     was expired from 2022-04-18 to 2023-07-12 (revived in M117), it's possible
-    some data was dropped during that time.
+    some data was dropped during that time. {TabletOrClamshellMode}
   </summary>
 </histogram>
 

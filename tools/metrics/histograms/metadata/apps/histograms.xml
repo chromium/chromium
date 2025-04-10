@@ -21,15 +21,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<!-- LINT.IfChange(AshDisplayModes) -->
-
-<variants name="AppDisplayModes">
-  <variant name="ClamshellMode" summary="Clamshell mode"/>
-  <variant name="TabletMode" summary="Tablet mode"/>
-</variants>
-
-<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/ash/histograms.xml:AshDisplayModes) -->
-
 <variants name="AppInstallSurface">
   <variant name="" summary="All surfaces"/>
   <variant name=".AppInstallUriGetit" summary="URI navigation from Getit"/>
@@ -78,14 +69,14 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="AppUIComponent">
-  <variant name=".AppsCollections" summary="Apps Collections"/>
-  <variant name=".Desktop" summary="Desktop"/>
-  <variant name=".ProductivityLauncherAppGrid"
+  <variant name="AppsCollections" summary="Apps Collections"/>
+  <variant name="Desktop" summary="Desktop"/>
+  <variant name="ProductivityLauncherAppGrid"
       summary="App - Productivity Launcher"/>
-  <variant name=".ProductivityLauncherRecentApp"
+  <variant name="ProductivityLauncherRecentApp"
       summary="Recent App, Productivity Launcher"/>
-  <variant name=".Shelf" summary="Shelf"/>
-  <variant name=".ShelfButton" summary="ShelfButton"/>
+  <variant name="Shelf" summary="Shelf"/>
+  <variant name="ShelfButton" summary="ShelfButton"/>
 </variants>
 
 <variants name="HomeLauncherVisibility">
@@ -182,10 +173,14 @@ chromium-metrics-reviews@google.com.
   <variant name="RecentApps" summary="recent apps row"/>
 </variants>
 
-<variants name="TabletOrClamshellMode">
-  <variant name=".ClamshellMode" summary="Clamshell Mode Enabled"/>
-  <variant name=".TabletMode" summary="Tablet Mode Enabled"/>
+<!-- LINT.IfChange(AshDisplayModes) -->
+
+<variants name="TabletOrClamshell">
+  <variant name="ClamshellMode" summary="Clamshell Mode Enabled"/>
+  <variant name="TabletMode" summary="Tablet Mode Enabled"/>
 </variants>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/ash/histograms.xml:AshDisplayModes) -->
 
 <histogram name="AppManagement.AppDetailViews{AppType}"
     enum="AppManagementUserAction" expires_after="2025-08-10">
@@ -634,16 +629,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppList.ContinueSectionHiddenByUser{TabletOrClamshell}"
+<histogram name="Apps.AppList.ContinueSectionHiddenByUser.{TabletOrClamshell}"
     enum="Boolean" expires_after="2025-11-01">
   <owner>jamescook@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
     Whether the user has manually hidden the productivity launcher
     &quot;continue where you left off&quot; section. Recorded once per launcher
-    open. Split by clamshell vs. tablet mode.
+    open. Split by clamshell vs. tablet mode. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.AppList.DriveSearchProvider.DriveFSLatency" units="ms"
@@ -888,16 +882,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Apps.AppList.LaunchedResultInNewUsersFirstSearch{TabletOrClamshell}"
+    name="Apps.AppList.LaunchedResultInNewUsersFirstSearch.{TabletOrClamshell}"
     enum="AppListSearchResult" expires_after="2024-04-28">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
     Type of the result that a user opened during their first launcher search in
     their first user session on the device. It includes a bucket for the case
-    the user does not launch any results.
+    the user does not launch any results. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.AppList.LocalImageSearchProvider.Latency" units="ms"
@@ -1536,8 +1529,8 @@ chromium-metrics-reviews@google.com.
     tablet mode state under which the sort nudge is shown. In detail, if the
     sort nudge shows initially in tablet (or clamshell), then the discovery
     duration is reported using the histogram for tablet (or clamshell).
+    {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram name="Apps.AppList.SortOrderOnSessionStart.{TabletOrClamshell}"
@@ -1548,12 +1541,12 @@ chromium-metrics-reviews@google.com.
     The app list sort order preserved in the pref service. Triggered when the
     pref service for the new session is ready. Warning: this histogram was
     expired from 2024-11-03 to 2025-01-31; data may be missing.
+    {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
-    name="Apps.AppList.SuccessfulFirstUsageByNewUsers{TabletOrClamshell}"
+    name="Apps.AppList.SuccessfulFirstUsageByNewUsers.{TabletOrClamshell}"
     enum="Boolean" expires_after="2025-12-31">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
@@ -1564,9 +1557,8 @@ chromium-metrics-reviews@google.com.
     the launcher UI. Only recorded in user session started after creating a new
     account on the device. Split by whether the launcher was first shown in
     clamshell or tablet mode. Warning: this histogram was expired from
-    2023-06-19 to 2025-02-22; data may be missing.
+    2023-06-19 to 2025-02-22; data may be missing. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.AppList.SuggestedContent.Enabled" enum="BooleanEnabled"
@@ -1617,7 +1609,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Apps.AppList.TimeToUserAction{TabletOrClamshell}" units="ms"
+<histogram name="Apps.AppList.TimeToUserAction.{TabletOrClamshell}" units="ms"
     expires_after="2025-12-31">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
@@ -1630,10 +1622,9 @@ chromium-metrics-reviews@google.com.
     an action. Recorded for {TabletOrClamshell}. Warning: this histogram was
     expired from 2023-06-19 to 2025-02-22; data may be missing.
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
-<histogram name="Apps.AppList.UserAction{TabletOrClamshell}"
+<histogram name="Apps.AppList.UserAction.{TabletOrClamshell}"
     enum="LauncherUserAction" expires_after="2025-09-07">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
@@ -1644,7 +1635,6 @@ chromium-metrics-reviews@google.com.
     Warning: this histogram was expired from 2023-06-19 to 2025-02-22; data may
     be missing.
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.AppList.UserEvent.Query" enum="Boolean"
@@ -1982,10 +1972,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListContinueTaskOpenType" enum="AppListSearchResult"
-    expires_after="2025-12-31">
-<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
-
+<histogram name="Apps.AppListContinueTaskOpenType.{TabletOrClamshell}"
+    enum="AppListSearchResult" expires_after="2025-12-31">
   <owner>anasalazar@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1993,6 +1981,7 @@ chromium-metrics-reviews@google.com.
     The type of app list continue search result that was opened by the user.
     This is gathered per continue section task opened. Warning: this histogram
     was expired from 2023-08-08 to 2025-02-22; data may be missing.
+    {TabletOrClamshell}
   </summary>
 </histogram>
 
@@ -2041,18 +2030,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true" name="Apps.AppListFolderNameLength" units="characters"
-    expires_after="2024-07-21">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
+<histogram name="Apps.AppListFolderNameLength.{TabletOrClamshell}"
+    units="characters" expires_after="2024-07-21">
   <owner>mmourgos@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>
     The folder name length in characters when an app list folder gets renamed.
     Logged when the folder name is changed and the texfield is no longer in
-    focus.
+    focus. {TabletOrClamshell}
   </summary>
 </histogram>
 
@@ -2187,21 +2173,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.AppListSearchQueryLengthV2{TabletOrClamshell}"
+<histogram name="Apps.AppListSearchQueryLengthV2.{TabletOrClamshell}"
     units="characters" expires_after="2023-10-01">
   <owner>yulunwu@chromium.org</owner>
   <owner>calamity@chromium.org</owner>
   <summary>
     The length of the app list search query when a result is opened. This is
     gathered per click of a search result in launcher search results UI.
+    {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
-<histogram name="Apps.AppListSearchResultOpenTypeV2" enum="AppListSearchResult"
-    expires_after="2025-09-14">
-<!-- Name completed by histogram_suffixes name="TabletOrClamshellMode" -->
-
+<histogram name="Apps.AppListSearchResultOpenTypeV2.{TabletOrClamshell}"
+    enum="AppListSearchResult" expires_after="2025-09-14">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
@@ -2209,6 +2193,7 @@ chromium-metrics-reviews@google.com.
     The type of app list search result that was opened by the user. This is
     gathered per SearchResult opened. Only recorded for search results shown in
     the search result page of the launcher (suggestion chips are not recorded).
+    {TabletOrClamshell}
   </summary>
 </histogram>
 
@@ -2313,7 +2298,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Apps.ContextMenuExecuteCommand{ContextMenuFromApp}"
+<histogram name="Apps.ContextMenuExecuteCommand.{ContextMenuFromApp}{Mode}"
     enum="ChromeOSUICommands" expires_after="2025-08-10">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -2321,18 +2306,23 @@ chromium-metrics-reviews@google.com.
   <summary>
     The number of times a certain command was executed by a context menu, split
     by whether the context menu came from an app, or another part of the system
-    UI. {ContextMenuFromApp}
+    UI. {ContextMenuFromApp} {Mode}
   </summary>
   <token key="ContextMenuFromApp">
-    <variant name=".FromApp"
+    <variant name="FromApp"
         summary="The source of the context menu was an app."/>
-    <variant name=".NotFromApp"
+    <variant name="NotFromApp"
         summary="The source of the context menu was shelf or wallpaper."/>
+  </token>
+  <token key="Mode">
+    <variant name=""/>
+    <variant name=".ClamshellMode" summary="Recorded in Clamshell mode."/>
+    <variant name=".TabletMode" summary="Recorded in Tablet mode."/>
   </token>
 </histogram>
 
 <histogram
-    name="Apps.ContextMenuShowSourceV2{AppUIComponent}{TabletOrClamshellMode}"
+    name="Apps.ContextMenuShowSourceV2.{AppUIComponent}.{TabletOrClamshell}"
     enum="MenuSourceType" expires_after="2025-08-10">
   <owner>wcwang@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
@@ -2340,13 +2330,12 @@ chromium-metrics-reviews@google.com.
   <summary>
     The show source (touch, mouse, keyboard, etc) for a context menu. Split by
     the component from which the context menu originated. {AppUIComponent}
+    {TabletOrClamshell}
   </summary>
-  <token key="AppUIComponent" variants="AppUIComponent"/>
-  <token key="TabletOrClamshellMode" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram
-    name="Apps.ContextMenuUserJourneyTimeV2{AppUIComponent}{TabletOrClamshellMode}"
+    name="Apps.ContextMenuUserJourneyTimeV2.{AppUIComponent}.{TabletOrClamshell}"
     units="ms" expires_after="2025-08-24">
   <owner>wcwang@chromium.org</owner>
   <owner>mmourgos@chromium.org</owner>
@@ -2354,10 +2343,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The user journey time for a ContextMenu, defined as the time between
     launching a context menu and the context menu's close callback being
-    activated. {AppUIComponent}
+    activated. {AppUIComponent} {TabletOrClamshell}
   </summary>
-  <token key="AppUIComponent" variants="AppUIComponent"/>
-  <token key="TabletOrClamshellMode" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.CreateShortcutIcon.Linux.Result"
@@ -2551,9 +2538,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The events that reset the app list pref sort order. Triggered when the pref
     sort order is reset. Warning: this histogram was expired from M125 to
-    2025-01-31; data may be missing.
+    2025-01-31; data may be missing. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
@@ -2565,9 +2551,8 @@ chromium-metrics-reviews@google.com.
     Emitted when an app list drag reorder animation completes. Reports the
     smoothness of this animation. 100% represents the ideally smooth 60 frames
     per second. Warning: this histogram was expired from M125 to 2025-01-31;
-    data may be missing.
+    data may be missing. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram name="Apps.Launcher.ProductivityReorderAction.{TabletOrClamshell}"
@@ -2576,9 +2561,8 @@ chromium-metrics-reviews@google.com.
   <owner>chromeos-launcher@google.com</owner>
   <summary>
     The user-set sort order of the productivity launcher. Triggered when the
-    launcher is set with a new order.
+    launcher is set with a new order. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram
@@ -2590,9 +2574,8 @@ chromium-metrics-reviews@google.com.
     Emitted when the app list sort reorder animation completes. Reports the
     smoothness of this animation. 100% represents the ideally smooth 60 frames
     per second. Warning: this histogram was expired from M125 to 2025-01-31;
-    data may be missing.
+    data may be missing. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
 <histogram name="Apps.MediaApp.Load.OtherOpenWindowCount" units="windows"
@@ -2606,7 +2589,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.NewUserFirstLauncherAction{TabletOrClamshell}"
+<histogram name="Apps.NewUserFirstLauncherAction.{TabletOrClamshell}"
     enum="AppListLaunchedFrom" expires_after="2025-07-06">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2617,9 +2600,8 @@ chromium-metrics-reviews@google.com.
     box, or triggering an app from the continue section. The metric is recorded
     when a launcher action performs on a new user's session for the first time.
     Split depending on whether the first launcher action occurred in clamshell
-    or tablet mode.
+    or tablet mode. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.NoteTakingApp.DefaultLaunchResult"
@@ -2699,12 +2681,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram base="true"
-    name="Apps.PaginationTransition.DragScroll.PresentationTime" units="ms"
-    expires_after="2023-06-25">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
+<histogram
+    name="Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency.{TabletOrClamshell}"
+    units="ms" expires_after="2023-12-17">
+  <owner>omrilio@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Maximum latecy reported during one drag to scroll operation on apps grid.
+    {TabletOrClamshell}
+  </summary>
+</histogram>
 
+<histogram
+    name="Apps.PaginationTransition.DragScroll.PresentationTime.{TabletOrClamshell}"
+    units="ms" expires_after="2023-06-25">
   <owner>omrilio@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
@@ -2712,21 +2703,8 @@ chromium-metrics-reviews@google.com.
     Presentation time for the apps grid scrolling operation. This starts when
     drag starts by gesture and ends before the patination animation starts. The
     smoothness of the pagination animation is recorded in
-    Apps.PaginationTransition.AnimationSmoothness.{TabletMode|ClamshellMode}.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="Apps.PaginationTransition.DragScroll.PresentationTime.MaxLatency"
-    units="ms" expires_after="2023-12-17">
-<!-- Name completed by histogram_suffixes
-     name="TabletOrClamshellMode" -->
-
-  <owner>omrilio@chromium.org</owner>
-  <owner>tbarzic@chromium.org</owner>
-  <owner>newcomer@chromium.org</owner>
-  <summary>
-    Maximum latecy reported during one drag to scroll operation on apps grid.
+    Apps.PaginationTransition.AnimationSmoothness.(TabletMode|ClamshellMode).
+    {TabletOrClamshell}
   </summary>
 </histogram>
 
@@ -2965,7 +2943,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Apps.TimeBetweenAppInstallAndLaunch{TabletOrClamshell}"
+<histogram name="Apps.TimeBetweenAppInstallAndLaunch.{TabletOrClamshell}"
     units="ms" expires_after="2025-08-22">
   <owner>tbarzic@chromium.org</owner>
   <owner>jamescook@chromium.org</owner>
@@ -2974,13 +2952,12 @@ chromium-metrics-reviews@google.com.
     Time between when an app is installed and when the user launches the app.
     Recorded the first time the user launches the app. The clamshell or tablet
     mode state is the state when the app is launched. Warning: this histogram
-    was expired from M120 to M122; data may be missing.
+    was expired from M120 to M122; data may be missing. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram
-    name="Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction{TabletOrClamshell}"
+    name="Apps.TimeBetweenNewUserSessionActivationAndFirstLauncherAction.{TabletOrClamshell}"
     units="ms" expires_after="2024-04-17">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
@@ -2989,9 +2966,8 @@ chromium-metrics-reviews@google.com.
     on a new user session. Launcher actions include the following: activating a
     launcher app and opening a search result from either a launcher suggestion
     chip or the search box. This metric is recorded when a new user triggers the
-    launcher action for the first time.
+    launcher action for the first time. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram
@@ -3009,16 +2985,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening{TabletOrClamshell}"
+    name="Apps.TimeDurationBetweenNewUserSessionActivationAndFirstLauncherOpening.{TabletOrClamshell}"
     units="ms" expires_after="2024-12-29">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
     The time duration between session activation and opening the Launcher for
     the first time on a new user session. This metric is recorded when a new
-    user opens the laucnher for the first time.
+    user opens the laucnher for the first time. {TabletOrClamshell}
   </summary>
-  <token key="TabletOrClamshell" variants="TabletOrClamshellMode"/>
 </histogram>
 
 <histogram name="Apps.UsageTime.{AppType}" units="ms"
