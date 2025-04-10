@@ -113,6 +113,8 @@ component("network_service") {
     "prefetch_url_loader_client.h",
     "private_network_access_checker.cc",
     "private_network_access_checker.h",
+    "private_network_access_url_loader_interceptor.cc",
+    "private_network_access_url_loader_interceptor.h",
     "proxy_auto_config_library.cc",
     "proxy_auto_config_library.h",
     "proxy_config_service_mojo.cc",

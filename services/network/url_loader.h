@@ -42,12 +42,11 @@
 #include "services/network/network_service.h"
 #include "services/network/observer_wrapper.h"
 #include "services/network/partial_decoder.h"
-#include "services/network/private_network_access_checker.h"
+#include "services/network/private_network_access_url_loader_interceptor.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
-#include "services/network/public/cpp/private_network_access_check_result.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
@@ -349,9 +348,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Local Network Access permission check.
   void ProcessLocalNetworkAccessPermissionResultOnConnected(
       const net::TransportInfo& info,
-      net::URLRequest* url_request,
       net::CompletionOnceCallback callback,
-      bool permission_granted);
+      net::Error pna_result);
 
   // A continuation of `OnConnected` to handle an ACCEPT_CH frame, if present.
   int ProcessAcceptCHFrameOnConnected(const net::TransportInfo& info,
@@ -555,12 +553,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Whether `force_ignore_site_for_cookies` should be set on net::URLRequest.
   bool ShouldForceIgnoreSiteForCookies(const ResourceRequest& request);
 
-  // Applies Private Network Access checks to the current request.
-  //
-  // Helper for `OnConnected()`.
-  PrivateNetworkAccessCheckResult PrivateNetworkAccessCheck(
-      const net::TransportInfo& transport_info);
-
   mojom::DevToolsObserver* GetDevToolsObserver() const;
   mojom::CookieAccessObserver* GetCookieAccessObserver() const;
 
@@ -698,7 +690,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // network::ResourceRequest::fetch_window_id for details.
   const std::optional<base::UnguessableToken> fetch_window_id_;
 
-  PrivateNetworkAccessChecker private_network_access_checker_;
+  PrivateNetworkAccessUrlLoaderInterceptor private_network_access_interceptor_;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;
 

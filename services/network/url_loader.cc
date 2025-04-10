@@ -393,7 +393,7 @@ URLLoader::URLLoader(
       resource_scheduler_client_(context.GetResourceSchedulerClient()),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
       fetch_window_id_(request.fetch_window_id),
-      private_network_access_checker_(
+      private_network_access_interceptor_(
           request,
           factory_params_->client_security_state.get(),
           options_),
@@ -956,11 +956,8 @@ void URLLoader::FollowRedirect(
 
   // Reset the state of the PNA checker - redirects should be treated like new
   // requests by the same client.
-  if (new_url.has_value()) {
-    private_network_access_checker_.ResetForRedirect(*new_url);
-  } else {
-    private_network_access_checker_.ResetForRedirect(*deferred_redirect_url_);
-  }
+  private_network_access_interceptor_.ResetForRedirect(
+      new_url ? *new_url : *deferred_redirect_url_);
 
   // Propagate removal or restoration of shared storage eligiblity to the helper
   // if the "Sec-Shared-Storage-Writable" request header has been removed or
@@ -987,138 +984,62 @@ void URLLoader::SetPriority(net::RequestPriority priority,
   }
 }
 
-PrivateNetworkAccessCheckResult URLLoader::PrivateNetworkAccessCheck(
-    const net::TransportInfo& transport_info) {
-  PrivateNetworkAccessCheckResult result =
-      private_network_access_checker_.Check(transport_info);
-
-  mojom::IPAddressSpace response_address_space =
-      *private_network_access_checker_.ResponseAddressSpace();
-  mojom::IPAddressSpace client_address_space =
-      private_network_access_checker_.ClientAddressSpace();
-  mojom::IPAddressSpace target_address_space =
-      private_network_access_checker_.TargetAddressSpace();
-
-  url_request_->net_log().AddEvent(
-      net::NetLogEventType::PRIVATE_NETWORK_ACCESS_CHECK, [&] {
-        return base::Value::Dict()
-            .Set("client_address_space",
-                 IPAddressSpaceToStringPiece(
-                     private_network_access_checker_.ClientAddressSpace()))
-            .Set("resource_address_space",
-                 IPAddressSpaceToStringPiece(response_address_space))
-            .Set("result",
-                 PrivateNetworkAccessCheckResultToStringPiece(result));
-      });
-
-  if (url_loader_network_observer_) {
-    if (response_address_space == mojom::IPAddressSpace::kLocal ||
-        response_address_space == mojom::IPAddressSpace::kPrivate) {
-      url_loader_network_observer_->OnUrlLoaderConnectedToPrivateNetwork(
-          url_request_->url(), response_address_space, client_address_space,
-          target_address_space);
-    }
-  }
-
-  bool is_warning = false;
-  switch (result) {
-    case PrivateNetworkAccessCheckResult::kLNAAllowedByPolicyWarn:
-    case PrivateNetworkAccessCheckResult::kAllowedByPolicyWarn:
-      is_warning = true;
-      break;
-    case PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock:
-      is_warning = false;
-      break;
-    default:
-      // Do not report anything to DevTools in these cases.
-      return result;
-  }
-
-  // If `security_state` was nullptr, then `result` should not have mentioned
-  // the policy set in `security_state->private_network_request_policy`.
-  const mojom::ClientSecurityState* security_state =
-      private_network_access_checker_.client_security_state();
-  DCHECK(security_state);
-
-  if (devtools_observer_) {
-    devtools_observer_->OnPrivateNetworkRequest(
-        devtools_request_id(), url_request_->url(), is_warning,
-        response_address_space, security_state->Clone());
-  }
-
-  return result;
-}
-
 int URLLoader::OnConnected(net::URLRequest* url_request,
                            const net::TransportInfo& info,
                            net::CompletionOnceCallback callback) {
   DCHECK_EQ(url_request, url_request_.get());
 
-  // Now that the request endpoint's address has been resolved, check if
-  // this request should be blocked per Private Network Access.
-  PrivateNetworkAccessCheckResult result = PrivateNetworkAccessCheck(info);
-  std::optional<mojom::CorsError> cors_error =
-      PrivateNetworkAccessCheckResultToCorsError(result);
-  if (cors_error.has_value()) {
-    if (result == PrivateNetworkAccessCheckResult::kBlockedByPolicyBlock &&
-        (info.type == net::TransportType::kCached ||
-         info.type == net::TransportType::kCachedFromProxy)) {
-      // If the cached entry was blocked by the private network access check
-      // without a preflight, we'll start over and attempt to request from the
-      // network, so resetting the checker.
-      private_network_access_checker_.ResetForRetry();
-      return net::
-          ERR_CACHED_IP_ADDRESS_SPACE_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_POLICY;
-    }
-    // Remember the CORS error so we can annotate the URLLoaderCompletionStatus
-    // with it later, then fail the request with the same net error code as
-    // other CORS errors.
-    cors_error_status_ = CorsErrorStatus(
-        *cors_error, private_network_access_checker_.TargetAddressSpace(),
-        *private_network_access_checker_.ResponseAddressSpace());
-    if (result == PrivateNetworkAccessCheckResult::
-                      kBlockedByInconsistentIpAddressSpace ||
-        result ==
-            PrivateNetworkAccessCheckResult::kBlockedByTargetIpAddressSpace) {
-      return net::ERR_INCONSISTENT_IP_ADDRESS_SPACE;
-    }
+  // Delegate the PNA check to the interceptor.
+  net::Error net_error = private_network_access_interceptor_.OnConnected(
+      url_request_->url(), info,
+      // Callback getter for async continuation:
+      base::BindOnce(
+          [](URLLoader* self, const net::TransportInfo* info_ptr,
+             net::CompletionOnceCallback* callback)
+              -> base::OnceCallback<void(net::Error)> {
+            return base::BindOnce(
+                &URLLoader::
+                    ProcessLocalNetworkAccessPermissionResultOnConnected,
+                // Safe to use Unretained, as this callback will be owned by the
+                // interceptor which is owned by the URLLoader.
+                base::Unretained(self), *info_ptr, std::move(*callback));
+          },
+          // Safe to use Unretained, as this callback must be called
+          // synchronously.
+          base::Unretained(this), base::Unretained(&info),
+          base::Unretained(&callback)),
+      // Callback to set CORS error status:
+      base::BindOnce(
+          [](URLLoader* self, CorsErrorStatus cors_error_status) {
+            self->cors_error_status_ = std::move(cors_error_status);
+          },
+          // Safe to use Unretained, as this callback must be called
+          // synchronously.
+          base::Unretained(this)),
+      url_request_->net_log(), devtools_observer_.get(), devtools_request_id(),
+      url_loader_network_observer_.get());
 
-    // Local network access permission is required for this connection.
-    if (url_loader_network_observer_ &&
-        result == PrivateNetworkAccessCheckResult::kLNAPermissionRequired) {
-      // Check if the user has granted permission, otherwise trigger the
-      // permission request and wait for the result.
-      // `ProcessLocalNetworkAccessPermissionResultOnCOnnected` is then called
-      // to either continue the load (if granted) or result in an error (if
-      // denied).
-      // This is bound with a WeakPtr because the URLLoader may not own the
-      // observer's pipe, so we can't rely on destruction to stop the callback
-      // the callback from being invoked.
-      (*url_loader_network_observer_)
-          .OnLocalNetworkAccessPermissionRequired(base::BindOnce(
-              &URLLoader::ProcessLocalNetworkAccessPermissionResultOnConnected,
-              weak_ptr_factory_.GetWeakPtr(), info, url_request,
-              std::move(callback)));
-      return net::ERR_IO_PENDING;
-    }
-
-    // Otherwise, if there was a Private Network Access CORS error, block by
-    // default.
-    return net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
+  // If PNA failed synchronously or requires async LNA (ERR_IO_PENDING), return
+  // now.
+  if (net_error != net::OK) {
+    return net_error;
   }
 
+  // PNA passed synchronously. Proceed to Accept-CH handling.
   return ProcessAcceptCHFrameOnConnected(info, std::move(callback));
 }
 
 void URLLoader::ProcessLocalNetworkAccessPermissionResultOnConnected(
     const net::TransportInfo& info,
-    net::URLRequest* url_request,
     net::CompletionOnceCallback callback,
-    bool permission_granted) {
-  if (!permission_granted) {
-    std::move(callback).Run(net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS);
+    net::Error pna_result) {
+  // If LNA permission was denied, complete the request with the error.
+  if (pna_result != net::OK) {
+    std::move(callback).Run(pna_result);
     return;
   }
+  // LNA granted. Proceed to the next step: Accept-CH handling.
+
   std::pair<net::CompletionOnceCallback, net::CompletionOnceCallback> split =
       base::SplitOnceCallback(std::move(callback));
   int result = ProcessAcceptCHFrameOnConnected(info, std::move(split.first));
@@ -1221,10 +1142,10 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->request_include_credentials = url_request_->allow_credentials();
 
   response->response_address_space =
-      private_network_access_checker_.ResponseAddressSpace().value_or(
+      private_network_access_interceptor_.ResponseAddressSpace().value_or(
           mojom::IPAddressSpace::kUnknown);
   response->client_address_space =
-      private_network_access_checker_.ClientAddressSpace();
+      private_network_access_interceptor_.ClientAddressSpace();
 
   response->load_with_storage_access = ShouldSetLoadWithStorageAccess();
   url_request_->GetClientSideContentDecodingTypes(
@@ -2487,7 +2408,7 @@ void URLLoader::DispatchOnRawRequest(
   devtools_observer_->OnRawRequest(
       devtools_request_id().value(), url_request_->maybe_sent_cookies(),
       std::move(headers), load_timing_info.request_start,
-      private_network_access_checker_.CloneClientSecurityState(),
+      private_network_access_interceptor_.CloneClientSecurityState(),
       std::move(other_partition_info));
 }
 
@@ -2553,7 +2474,7 @@ bool URLLoader::DispatchOnRawResponse() {
   devtools_observer_->OnRawResponse(
       devtools_request_id().value(), url_request_->maybe_stored_cookies(),
       std::move(header_array), raw_response_headers,
-      private_network_access_checker_.ResponseAddressSpace().value_or(
+      private_network_access_interceptor_.ResponseAddressSpace().value_or(
           mojom::IPAddressSpace::kUnknown),
       response_headers->response_code(), url_request_->cookie_partition_key());
 
