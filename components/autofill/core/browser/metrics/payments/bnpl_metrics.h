@@ -47,11 +47,22 @@ std::string GetHistogramSuffixFromIssuerId(std::string_view issuer_id);
 
 // LINT.IfChange(BnplFormEvent)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// TODO(crbug.com/409138442): Remove "Once" suffix from BNPL form event metrics
+// and instead add comment that these are all "Once" metrics. For now, it is
+// fine to leave as is to keep consistent with other in-progress CLs.
 enum class BnplFormEvent {
   // Payments autofill suggestions were shown on a BNPL-eligible merchant.
   kSuggestionsShownOnce = 0,
 
-  kMaxValue = kSuggestionsShownOnce,
+  // Temp note: enum = 1 is reserved for the metric for BNPL suggestion shown.
+
+  // A BNPL suggestion was accepted on the current page.
+  kBnplSuggestionAcceptedOnce = 2,
+
+  kMaxValue = kBnplSuggestionAcceptedOnce,
 };
 
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:BnplFormEvent)

@@ -2987,6 +2987,9 @@ Called by update_autofill_enums.py.-->
 
 <enum name="BnplFormEvent">
   <int value="0" label="Suggestions shown (once)"/>
+<!-- Temporary note: Enum value '1' is reserved for SuggestionsAddOnUpdateSuggestion -->
+
+  <int value="2" label="Suggestion accepted (once)"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/metrics/payments/bnpl_metrics.h:BnplFormEvent) -->

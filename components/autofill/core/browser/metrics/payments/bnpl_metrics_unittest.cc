@@ -258,6 +258,17 @@ TEST_F(BnplFormEventsMetricsTest, BnplSuggestionsNotShownDueToUrl) {
                                      BnplFormEvent::kSuggestionsShownOnce, 0);
 }
 
+TEST_F(BnplFormEventsMetricsTest, SuggestionAccepted) {
+  base::HistogramTester histogram_tester;
+
+  LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAcceptedOnce);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/BnplFormEvent::kBnplSuggestionAcceptedOnce,
+      /*expected_count=*/1);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

@@ -1558,6 +1558,26 @@ TEST_F(BnplManagerTest, GetSortedBnplIssuerContext_CheckoutAmountTooLow) {
           BnplIssuerEligibilityForPage::kNotEligibleCheckoutAmountTooLow)));
 }
 
+// Tests that the `kBnplSuggestionAcceptedOnce` event is logged once when
+// `InitBnplFlow()` is called.
+TEST_F(BnplManagerTest, InitBnplFlow_SuggestionAcceptedLogged) {
+  base::HistogramTester histogram_tester;
+
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAcceptedOnce,
+      /*expected_bucket_count=*/1);
+
+  // Test that `kBnplSuggestionAcceptedOnce` is logged only once even if
+  // `InitBnplFlow()` is called more than once on the same page.
+  bnpl_manager_->InitBnplFlow(kAmount, base::DoNothing());
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAcceptedOnce,
+      /*expected_bucket_count=*/1);
+}
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 

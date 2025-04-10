@@ -564,6 +564,13 @@ void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptCompleted(
   current_authentication_flow_ = flow;
 }
 
+void CreditCardFormEventLogger::OnDidAcceptBnplSuggestion() {
+  if (!has_logged_bnpl_suggestion_accepted_) {
+    LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAcceptedOnce);
+    has_logged_bnpl_suggestion_accepted_ = true;
+  }
+}
+
 void CreditCardFormEventLogger::RecordPollSuggestions() {
   base::RecordAction(
       base::UserMetricsAction("Autofill_PolledCreditCardSuggestions"));

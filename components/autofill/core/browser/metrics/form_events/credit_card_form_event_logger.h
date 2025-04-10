@@ -130,6 +130,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
     signin_state_for_metrics_ = state;
   }
 
+  // Logging when a BNPL suggestion was accepted.
+  void OnDidAcceptBnplSuggestion();
+
  protected:
   // FormEventLoggerBase pure-virtual overrides.
   void RecordPollSuggestions() override;
@@ -214,6 +217,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the suggestions shown on BNPL eligible merchant is logged and
   // should not be logged again.
   bool has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = false;
+  // If true, the metrics for a BNPL suggestion being accepted were already
+  // logged and should not log again.
+  bool has_logged_bnpl_suggestion_accepted_ = false;
 
   CardMetadataLoggingContext metadata_logging_context_;
 

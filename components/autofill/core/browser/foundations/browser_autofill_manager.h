@@ -45,7 +45,6 @@
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/payments/amount_extraction_manager.h"
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
-#include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -83,6 +82,7 @@ struct SuggestionRankingContext;
 
 namespace payments {
 class AmountExtractionManager;
+class BnplManager;
 }  // namespace payments
 
 // Enum for the value patterns metric. Don't renumerate existing value. They are

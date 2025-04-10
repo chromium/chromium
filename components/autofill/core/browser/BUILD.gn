@@ -1336,6 +1336,7 @@ source_set("unit_tests") {
     "metrics/autofill_settings_metrics_unittest.cc",
     "metrics/field_filling_stats_and_score_metrics_unittest.cc",
     "metrics/form_events/address_form_event_logger_unittest.cc",
+    "metrics/form_events/credit_card_form_event_logger_unittest.cc",
     "metrics/form_events/form_event_logger_base_unittest.cc",
     "metrics/form_interactions_ukm_logger_unittest.cc",
     "metrics/payments/bnpl_metrics_unittest.cc",
