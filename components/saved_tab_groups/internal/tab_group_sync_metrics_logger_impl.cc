@@ -333,9 +333,9 @@ void TabGroupSyncMetricsLoggerImpl::RecordMetricsOnStartup(
                                   group.saved_tabs().size());
 
     if (group.is_shared_tab_group()) {
-      base::UmaHistogramCounts1M("TabGroups.Shared.SharedTabGroupAge",
+      base::UmaHistogramCounts1M("TabGroups.Shared.TabGroupAge",
                                  tab_group_age.InMinutes());
-      base::UmaHistogramCounts10000("TabGroups.Shared.SharedTabGroupTabCount",
+      base::UmaHistogramCounts10000("TabGroups.Shared.TotalTabGroupTabCount",
                                     group.saved_tabs().size());
       total_shared_group_count++;
     }
