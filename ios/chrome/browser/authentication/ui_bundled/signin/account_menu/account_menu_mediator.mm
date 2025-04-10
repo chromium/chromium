@@ -284,7 +284,9 @@
   __block BOOL fromWeb = _fromWeb;
   [_authenticationFlow
       startSignInWithCompletion:^(SigninCoordinatorResult result) {
-        if (fromWeb) {
+        // Note: The pref should still get updated even if `weakSelf` is `nil`
+        // (which happens if the signin caused a profile switch).
+        if (fromWeb && result == SigninCoordinatorResultSuccess) {
           GetApplicationContext()->GetLocalState()->SetBoolean(
               prefs::kHasSwitchedAccountsViaWebFlow, true);
         }
