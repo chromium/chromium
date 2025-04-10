@@ -44,6 +44,14 @@ class PrivacySandboxNoticeCatalogTest : public testing::Test {
 TEST_F(PrivacySandboxNoticeCatalogTest, InitialState) {
   EXPECT_THAT(catalog_.GetNoticeApis(), IsEmpty());
   EXPECT_THAT(catalog_.GetNoticeMap(), IsEmpty());
+  EXPECT_FALSE(catalog_.IsPopulated());
+}
+
+TEST_F(PrivacySandboxNoticeCatalogTest, IsPopulated) {
+  EXPECT_FALSE(catalog_.IsPopulated());
+  catalog_.Populate();
+  EXPECT_TRUE(catalog_.IsPopulated());
+  EXPECT_DEATH(catalog_.Populate(), "");
 }
 
 TEST_F(PrivacySandboxNoticeCatalogTest, RegisterAndRetrieveNewApi) {

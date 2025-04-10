@@ -63,6 +63,9 @@ const NoticeMap& NoticeCatalog::GetNoticeMap() {
 void NoticeCatalog::Populate() {
   // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
 
+  CHECK(!is_populated) << "Catalog already populated.";
+  is_populated = true;
+
   // Define APIs.
   NoticeApi* topics = RegisterAndRetrieveNewApi();
   NoticeApi* protected_audience = RegisterAndRetrieveNewApi();

@@ -41,9 +41,13 @@ class NoticeCatalog {
   // Populates the catalog with all the notices and their requirements.
   void Populate();
 
+  // Returns whether the catalog has been populated.
+  bool IsPopulated() { return is_populated; }
+
  private:
   std::vector<std::unique_ptr<NoticeApi>> apis_;
   NoticeMap notices_;
+  bool is_populated = false;
 };
 
 }  // namespace privacy_sandbox
