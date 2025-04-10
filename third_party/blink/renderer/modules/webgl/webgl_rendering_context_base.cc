@@ -7611,7 +7611,11 @@ bool WebGLRenderingContextBase::ValidateLocationLength(
     const String& string) {
   const unsigned max_web_gl_location_length = GetMaxWebGLLocationLength();
   if (string.length() > max_web_gl_location_length) {
-    SynthesizeGLError(GL_INVALID_VALUE, function_name, "location length > 256");
+    StringBuilder builder;
+    builder.Append("location length > ");
+    builder.Append(String::Format("%d", max_web_gl_location_length));
+    SynthesizeGLError(GL_INVALID_VALUE, function_name,
+                      builder.ToString().Ascii().c_str());
     return false;
   }
   return true;
