@@ -158,7 +158,15 @@ android_library {
 
 java_defaults {
     name: "${GN2BP_MODULE_PREFIX}java_framework_defaults",
-    sdk_version: "system_current",
+    sdk_version: "module_current",
+    libs: [
+         "framework-connectivity.stubs.module_lib",
+         "framework-connectivity-t.stubs.module_lib",
+         "framework-location.stubs.module_lib",
+         "framework-mediaprovider.stubs.module_lib",
+         "framework-statsd.stubs.module_lib",
+         "framework-wifi.stubs.module_lib",
+    ],
     visibility: [
         "//external/cronet:__subpackages__",
     ],
