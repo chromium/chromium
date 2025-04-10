@@ -165,13 +165,12 @@ class RemoteSuggestionsService : public KeyedService {
   void LogResponseTime(RemoteRequestType request_type, bool interrupted);
 
   // Returns the suggest endpoint URL for `template_url`.
-  //
-  // `template_url` must not be nullptr.
   // `search_terms_args` is used to build the endpoint URL.
   // `search_terms_data` is used to build the endpoint URL.
-  static GURL EndpointUrl(const TemplateURL* template_url,
-                          TemplateURLRef::SearchTermsArgs search_terms_args,
-                          const SearchTermsData& search_terms_data);
+  static GURL EndpointUrl(
+      const TemplateURL& template_url,
+      const TemplateURLRef::SearchTermsArgs& search_terms_args,
+      const SearchTermsData& search_terms_data);
 
   // Creates and returns a loader for remote suggestions for `template_url`.
   // It uses a number of signals to create the loader, including field trial

@@ -33,6 +33,7 @@
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -285,6 +286,20 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
   return ResultType::kNone;
 }
 
+void MaybeAddContextualUrlSuggestParam(
+    TemplateURLRef::SearchTermsArgs& search_terms_args) {
+  if (!search_terms_args.current_page_url.empty() &&
+      omnibox::IsOtherWebPage(search_terms_args.page_classification)) {
+    std::string_view contextual_url_suggest_param =
+        omnibox_feature_configs::ContextualSearch::Get()
+            .contextual_url_suggest_param;
+    if (!contextual_url_suggest_param.empty()) {
+      search_terms_args.additional_query_params =
+          base::StrCat({"ctxus=", contextual_url_suggest_param});
+    }
+  }
+}
+
 }  // namespace
 
 // static
@@ -410,6 +425,7 @@ void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
                                            : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
+  MaybeAddContextualUrlSuggestParam(search_terms_args);
 
   std::unique_ptr<network::SimpleURLLoader>* prefetch_loader = nullptr;
   if (result_type == ResultType::kRemoteNoURL) {
@@ -493,6 +509,7 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
           : std::string();
   search_terms_args.lens_overlay_suggest_inputs =
       input.lens_overlay_suggest_inputs();
+  MaybeAddContextualUrlSuggestParam(search_terms_args);
 
   const auto* template_url_service = client()->GetTemplateURLService();
   // Create a loader for the request and take ownership of it.

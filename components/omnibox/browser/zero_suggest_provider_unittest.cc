@@ -14,8 +14,10 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -27,6 +29,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -149,7 +152,7 @@ class ZeroSuggestProviderTest : public testing::Test,
 
     TemplateURLService* template_url_service = client_->GetTemplateURLService();
     return RemoteSuggestionsService::EndpointUrl(
-        template_url_service->GetDefaultSearchProvider(), search_terms_args,
+        *template_url_service->GetDefaultSearchProvider(), search_terms_args,
         template_url_service->search_terms_data());
   }
 
@@ -2944,4 +2947,51 @@ TEST_F(ZeroSuggestProviderTest, TestDeleteMatchTriggersDeletionRequest) {
 
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    "Omnibox.ZeroSuggestDelete.Failure"));
+}
+
+TEST_F(ZeroSuggestProviderTest, SuggestUrlIncludesCtxus) {
+  // Intercept the request to determine full URL actually used by provider.
+  auto get_provider_request_url = [&](AutocompleteInput input) {
+    network::ResourceRequest resource_request;
+    test_loader_factory()->SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {
+          resource_request = request;
+        }));
+    provider_->Start(input, false);
+    EXPECT_TRUE(
+        base::test::RunUntil([&] { return !resource_request.url.is_empty(); }));
+    return resource_request.url;
+  };
+
+  // Ensure it's not included by default.
+  {
+    GURL url =
+        get_provider_request_url(ZeroPrefixInputForWeb(/*is_prefetch=*/false));
+    EXPECT_EQ(url.spec().find("ctxus="), std::string::npos);
+  }
+
+  // Ensure it is conditionally included when enabled.
+  omnibox_feature_configs::ScopedConfigForTesting<
+      omnibox_feature_configs::ContextualSearch>
+      config;
+  config.Get().contextual_url_suggest_param = "1";
+
+  // Web gets the param.
+  {
+    GURL url =
+        get_provider_request_url(ZeroPrefixInputForWeb(/*is_prefetch=*/false));
+    EXPECT_NE(url.spec().find("ctxus=1"), std::string::npos);
+  }
+  // NTP does not, even when enabled.
+  {
+    GURL url =
+        get_provider_request_url(ZeroPrefixInputForNTP(/*is_prefetch=*/false));
+    EXPECT_EQ(url.spec().find("ctxus=1"), std::string::npos);
+  }
+  // SRP does not, even when enabled.
+  {
+    GURL url =
+        get_provider_request_url(ZeroPrefixInputForSRP(/*is_prefetch=*/false));
+    EXPECT_EQ(url.spec().find("ctxus=1"), std::string::npos);
+  }
 }

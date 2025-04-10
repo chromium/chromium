@@ -38,6 +38,16 @@ CalcProvider::CalcProvider() {
           .Get();
 }
 
+BASE_FEATURE(ContextualSearch::kSendContextualUrlSuggestParam,
+             "SendContextualUrlSuggestParam",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+ContextualSearch::ContextualSearch() {
+  // This could be taken from a feature param if needed, but currently it's
+  // simply one or none.
+  contextual_url_suggest_param =
+      base::FeatureList::IsEnabled(kSendContextualUrlSuggestParam) ? "1" : "";
+}
+
 DocumentProvider::DocumentProvider() {
   enabled = base::FeatureList::IsEnabled(omnibox::kDocumentProvider);
   min_query_length =

@@ -118,6 +118,18 @@ struct CalcProvider : Config<CalcProvider> {
   size_t num_non_calc_inputs;
 };
 
+// A config struct for features related to contextual search in omnibox.
+struct ContextualSearch : Config<ContextualSearch> {
+  ContextualSearch();
+
+  // Feature to enable use of the "ctxus" param on zero suggest requests.
+  DECLARE_FEATURE(kSendContextualUrlSuggestParam);
+
+  // This specifies the value for "ctxus" param on zero suggest requests,
+  // and is left empty when that parameter is not to be included.
+  std::string contextual_url_suggest_param;
+};
+
 // If enabled, allow document provider requests when all other conditions are
 // met.
 struct DocumentProvider : Config<DocumentProvider> {

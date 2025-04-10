@@ -235,14 +235,14 @@ void RemoteSuggestionsService::LogResponseTime(RemoteRequestType request_type,
 
 // static
 GURL RemoteSuggestionsService::EndpointUrl(
-    const TemplateURL* template_url,
-    TemplateURLRef::SearchTermsArgs search_terms_args,
+    const TemplateURL& template_url,
+    const TemplateURLRef::SearchTermsArgs& search_terms_args,
     const SearchTermsData& search_terms_data) {
-  GURL url = GURL(template_url->suggestions_url_ref().ReplaceSearchTerms(
+  GURL url = GURL(template_url.suggestions_url_ref().ReplaceSearchTerms(
       search_terms_args, search_terms_data));
 
   // Return early for non-Google template URLs.
-  if (!search::TemplateURLIsGoogle(template_url, search_terms_data)) {
+  if (!search::TemplateURLIsGoogle(&template_url, search_terms_data)) {
     return url;
   }
 
@@ -270,6 +270,7 @@ GURL RemoteSuggestionsService::EndpointUrl(
       break;
   }
   url = AddLensOverlaySuggestInputsDataToEndpointUrl(search_terms_args, url);
+
   return url;
 }
 
@@ -284,7 +285,7 @@ RemoteSuggestionsService::StartSuggestionsRequest(
   DCHECK(template_url);
 
   const GURL suggest_url =
-      EndpointUrl(template_url, search_terms_args, search_terms_data);
+      EndpointUrl(*template_url, search_terms_args, search_terms_data);
   if (!suggest_url.is_valid()) {
     return nullptr;
   }
@@ -357,7 +358,7 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
   DCHECK(template_url);
 
   const GURL suggest_url =
-      EndpointUrl(template_url, search_terms_args, search_terms_data);
+      EndpointUrl(*template_url, search_terms_args, search_terms_data);
   if (!suggest_url.is_valid()) {
     return nullptr;
   }

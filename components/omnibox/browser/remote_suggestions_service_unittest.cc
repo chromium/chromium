@@ -375,7 +375,7 @@ TEST_F(RemoteSuggestionsServiceTest, CrOSOverridenOrAppendedQueryParams) {
       metrics::OmniboxEventProto::NTP_REALBOX;
 
   GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &template_url, search_terms_args, SearchTermsData());
+      template_url, search_terms_args, SearchTermsData());
 
   // No additional query params is appended for the realbox entry point.
   ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
@@ -385,7 +385,7 @@ TEST_F(RemoteSuggestionsServiceTest, CrOSOverridenOrAppendedQueryParams) {
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::CHROMEOS_APP_LIST;
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &template_url, search_terms_args, SearchTermsData());
+      template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
 
   // Set up a Google search provider.
@@ -400,7 +400,7 @@ TEST_F(RemoteSuggestionsServiceTest, CrOSOverridenOrAppendedQueryParams) {
   // `sclient=` is appended for the ChromeOS app_list launcher entry point for
   // Google template URL.
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(),
             "https://www.google.com/suggest?q=query&sclient=cros-launcher");
 }
@@ -425,7 +425,7 @@ TEST_F(RemoteSuggestionsServiceTest,
       "iil");
 
   GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // No additional query params is appended for empty Lens suggest inputs.
   // iil is not expected to be sent for contextual searchbox requests.
@@ -438,7 +438,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.lens_overlay_suggest_inputs->set_search_session_id(
       "gsessionid");
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // No additional query params are appended for empty Lens suggest inputs
   // because send_gsession_vsrid_for_contextual_suggest is false.
@@ -449,7 +449,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.lens_overlay_suggest_inputs
       ->set_send_gsession_vsrid_for_contextual_suggest(true);
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // Appended gsessionid and vsrids.
   ASSERT_EQ(endpoint_url.spec(),
@@ -460,7 +460,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.lens_overlay_suggest_inputs
       ->set_contextual_visual_input_type("vit");
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // Appended vit.
   ASSERT_EQ(endpoint_url.spec(),
@@ -487,7 +487,7 @@ TEST_F(RemoteSuggestionsServiceTest,
       std::make_optional<lens::proto::LensOverlaySuggestInputs>();
 
   GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // Just just the client param is appended.
   ASSERT_EQ(endpoint_url.spec(),
@@ -498,7 +498,7 @@ TEST_F(RemoteSuggestionsServiceTest,
       "iil");
 
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // The iil query param is appended.
   ASSERT_EQ(endpoint_url.spec(),
@@ -513,7 +513,7 @@ TEST_F(RemoteSuggestionsServiceTest,
       ->set_encoded_visual_search_interaction_log_data("vsint");
 
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // No additional query params are appended for empty Lens suggest inputs
   // because send_gsession_vsrid_vit_for_lens_suggest and
@@ -525,7 +525,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.lens_overlay_suggest_inputs
       ->set_send_gsession_vsrid_vit_for_lens_suggest(true);
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // Appended gsessionid and vsrids.
   ASSERT_EQ(endpoint_url.spec(),
@@ -536,7 +536,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.lens_overlay_suggest_inputs
       ->set_contextual_visual_input_type("vit");
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // Appended vit.
   ASSERT_EQ(
@@ -548,7 +548,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.lens_overlay_suggest_inputs
       ->set_send_vsint_for_lens_suggest(true);
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // Appended vsint.
   ASSERT_EQ(
@@ -592,7 +592,7 @@ TEST_F(RemoteSuggestionsServiceTest,
       ->set_send_gsession_vsrid_vit_for_lens_suggest(true);
 
   GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &google_template_url, search_terms_args, SearchTermsData());
+      google_template_url, search_terms_args, SearchTermsData());
 
   // Nothing appended.
   ASSERT_EQ(endpoint_url.spec(), "https://www.google.com/suggest?q=query");
@@ -626,7 +626,7 @@ TEST_F(RemoteSuggestionsServiceTest,
       metrics::OmniboxEventProto::NTP_REALBOX;
 
   GURL endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &template_url, search_terms_args, SearchTermsData());
+      template_url, search_terms_args, SearchTermsData());
 
   // No additional query params is appended for the realbox entry point.
   ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
@@ -636,7 +636,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &template_url, search_terms_args, SearchTermsData());
+      template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
 
   // No additional query params is appended for the non-multimodal searchbox
@@ -644,7 +644,7 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX;
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &template_url, search_terms_args, SearchTermsData());
+      template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
 
   // No additional query params is appended for the contextual searchbox entry
@@ -652,6 +652,6 @@ TEST_F(RemoteSuggestionsServiceTest,
   search_terms_args.page_classification =
       metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
-      &template_url, search_terms_args, SearchTermsData());
+      template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
 }
