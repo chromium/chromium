@@ -95,6 +95,7 @@ source_set("commands") {
   deps = [
     "//components/lens",
     "//components/tab_groups",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin_promo",
     "//ios/chrome/browser/browsing_data/model:util",

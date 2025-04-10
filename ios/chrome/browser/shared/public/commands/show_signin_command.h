@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "components/signin/public/base/signin_metrics.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 
@@ -59,12 +60,29 @@ enum class AuthenticationOperation {
 // Initializes a command to perform the specified operation with a
 // SigninInteractionController and invoke a possibly-nil callback when finished.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
+                             identity:(id<SystemIdentity>)identity
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                          promoAction:(signin_metrics::PromoAction)promoAction
+                           completion:
+                               (SigninCoordinatorCompletionCallback)completion
+    changeProfileContinuationProvider:
+        (const ChangeProfileContinuationProvider&)provider
+    NS_DESIGNATED_INITIALIZER;
+
+// Initializes a ShowSigninCommand with the continuation set to do nothing.
+- (instancetype)initWithOperation:(AuthenticationOperation)operation
                          identity:(id<SystemIdentity>)identity
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction
                        completion:
-                           (SigninCoordinatorCompletionCallback)completion
-    NS_DESIGNATED_INITIALIZER;
+                           (SigninCoordinatorCompletionCallback)completion;
+
+// Initializes a ShowSigninCommand with `identity` and `completion` set to nil.
+- (instancetype)initWithOperation:(AuthenticationOperation)operation
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                          promoAction:(signin_metrics::PromoAction)promoAction
+    changeProfileContinuationProvider:
+        (const ChangeProfileContinuationProvider&)provider;
 
 // Initializes a ShowSigninCommand with `identity` and `completion` set to nil.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
@@ -75,6 +93,13 @@ enum class AuthenticationOperation {
 // completion.
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                       accessPoint:(signin_metrics::AccessPoint)accessPoint;
+// Initializes a ShowSigninCommand with PROMO_ACTION_NO_SIGNIN_PROMO and a nil
+// completion.
+
+- (instancetype)initWithOperation:(AuthenticationOperation)operation
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+    changeProfileContinuationProvider:
+        (const ChangeProfileContinuationProvider&)provider;
 
 // If YES, the sign-in command will not be presented and ignored if there is
 // any dialog already presented on the NTP.
@@ -112,6 +137,10 @@ enum class AuthenticationOperation {
 
 // The user action from the sign-in promo to trigger the sign-in operation.
 @property(nonatomic, readonly) signin_metrics::PromoAction promoAction;
+
+// The action to execute after a change of profile. Can be accessed only once.
+@property(nonatomic, readonly)
+    const ChangeProfileContinuationProvider& changeProfileContinuationProvider;
 
 @end
 

@@ -80,6 +80,18 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 NSString* const kAuthenticationSnackbarCategory =
     @"AuthenticationSnackbarCategory";
 
+// The change profile continuation for the authentication flow.
+void AuthenticationFlowContinuationImpl(
+    id<AuthenticationFlowPerformerDelegate> delegate,
+    SceneState* scene_state,
+    base::OnceClosure closure) {
+  CHECK(delegate);
+  [delegate
+      didSwitchToProfileWithNewProfileBrowser:
+          scene_state.browserProviderInterface.currentBrowserProvider.browser
+                                   completion:std::move(closure)];
+}
+
 // Handler for the signout action from a snackbar. Will `clear_selected_type`
 // if it is not std::nullopt.
 void HandleSignoutForSnackbar(
@@ -109,18 +121,6 @@ void HandleSignoutForSnackbar(
   signin::ProfileSignoutRequest(
       signin_metrics::ProfileSignout::kUserTappedUndoRightAfterSignIn)
       .Run(browser);
-}
-
-// The change profile continuation for the authentication flow.
-void AuthenticationFlowContinuationImpl(
-    id<AuthenticationFlowPerformerDelegate> delegate,
-    SceneState* scene_state,
-    base::OnceClosure closure) {
-  CHECK(delegate);
-  [delegate
-      didSwitchToProfileWithNewProfileBrowser:
-          scene_state.browserProviderInterface.currentBrowserProvider.browser
-                                   completion:std::move(closure)];
 }
 
 }  // namespace
@@ -276,7 +276,6 @@ void AuthenticationFlowContinuationImpl(
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(
                        [](__typeof(_delegate) delegate) {
-                         CHECK(delegate);
                          [delegate didFailToSwitchToProfile];
                        },
                        weakDelegate));

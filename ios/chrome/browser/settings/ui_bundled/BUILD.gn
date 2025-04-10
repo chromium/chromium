@@ -120,6 +120,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
     "//ios/chrome/browser/authentication/ui_bundled/cells",
+    "//ios/chrome/browser/authentication/ui_bundled/change_profile",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/autofill/model",
