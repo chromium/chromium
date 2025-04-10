@@ -17,6 +17,12 @@ const MIN_HOLD_LOADING_TIME_MS = loadTimeData.getInteger('minLoadingTimeMs');
 // Maximum time to wait for load before showing error panel.
 const MAX_WAIT_TIME_MS = loadTimeData.getInteger('maxLoadingTimeMs');
 
+// Initial FRE width. Also used as the minimum and maximum width for FRE.
+const INITIAL_WIDTH = loadTimeData.getInteger('freInitialWidth');
+
+// Initial FRE height. Also used as the minimum height for FRE.
+const INITIAL_HEIGHT = loadTimeData.getInteger('freInitialHeight');
+
 interface PageElementTypes {
   webviewContainer: HTMLDivElement;
 }
@@ -279,10 +285,11 @@ export class FreAppController {
     // define properties rather than using setAttribute.
     webview.setAttribute('partition', 'glicfrepart');
     webview.setAttribute('autosize', 'true');
-    webview.setAttribute('minheight', window.outerHeight.toString());
-    webview.setAttribute('minwidth', window.outerWidth.toString());
-    webview.setAttribute('maxwidth', window.outerWidth.toString());
+    webview.setAttribute('minwidth', INITIAL_WIDTH.toString());
+    webview.setAttribute('maxwidth', INITIAL_WIDTH.toString());
+    webview.setAttribute('minheight', INITIAL_HEIGHT.toString());
     webview.setAttribute('maxheight', window.screen.availHeight.toString());
+
     $.webviewContainer.appendChild(webview);
 
     this.webviewEventTracker.add(

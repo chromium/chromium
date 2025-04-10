@@ -106,7 +106,7 @@ class GlicFreController {
 
   gfx::Size GetFreInitialSize();
 
-  void UpdateFreWidgetBounds(const gfx::Rect& bounds);
+  void UpdateFreWidgetSize(const gfx::Size& new_size);
 
   AuthController& GetAuthControllerForTesting() { return auth_controller_; }
 

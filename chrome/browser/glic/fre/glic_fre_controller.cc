@@ -421,11 +421,12 @@ gfx::Size GlicFreController::GetFreInitialSize() {
                    features::kGlicFreInitialHeight.Get());
 }
 
-void GlicFreController::UpdateFreWidgetBounds(const gfx::Rect& bounds) {
+void GlicFreController::UpdateFreWidgetSize(const gfx::Size& new_size) {
   if (!fre_widget_) {
     return;
   }
 
+  gfx::Rect bounds(fre_widget_->GetWindowBoundsInScreen().origin(), new_size);
   fre_widget_->SetBounds(bounds);
 }
 
