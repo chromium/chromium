@@ -167,6 +167,8 @@ source_set("platform_impls") {
     "keyboard_layout_monitor_linux.cc",
     "keyboard_layout_monitor_utils.cc",
     "keyboard_layout_monitor_utils.h",
+    "pipewire_capture_stream.cc",
+    "pipewire_capture_stream.h",
   ]
   deps = [
     ":x11",
