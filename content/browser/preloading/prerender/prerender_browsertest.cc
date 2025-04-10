@@ -461,8 +461,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
   }
 
   void AddPrerendersAsync(const std::vector<GURL>& prerendering_urls) {
-    prerender_helper_->AddPrerendersAsync(prerendering_urls, std::nullopt,
-                                          std::string());
+    prerender_helper_->AddPrerendersAsync(prerendering_urls,
+                                          /*eagerness=*/std::nullopt,
+                                          /*target_hint=*/std::string());
   }
 
   void AddPrerendersAsync(
@@ -477,7 +478,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
       const GURL& prerendering_url,
       blink::mojom::SpeculationEagerness eagerness) {
     prerender_helper_->AddPrerendersAsync({prerendering_url}, eagerness,
-                                          std::string());
+                                          /*target_hint=*/std::string());
   }
 
   std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerender(
