@@ -24,25 +24,34 @@ std::unique_ptr<Notice> Make(NoticeId id) {
 
 }  // namespace
 
-NoticeCatalog::NoticeCatalog() = default;
-NoticeCatalog::~NoticeCatalog() = default;
+NoticeCatalogImpl::NoticeCatalogImpl() = default;
+NoticeCatalogImpl::~NoticeCatalogImpl() = default;
 
-NoticeApi* NoticeCatalog::RegisterAndRetrieveNewApi() {
+NoticeApi* NoticeCatalogImpl::RegisterAndRetrieveNewApi() {
   return apis_.emplace_back(std::make_unique<NoticeApi>()).get();
 }
 
-const std::vector<std::unique_ptr<NoticeApi>>& NoticeCatalog::GetNoticeApis() {
+const std::vector<std::unique_ptr<NoticeApi>>&
+NoticeCatalogImpl::GetNoticeApis() {
   return apis_;
 }
 
-Notice* NoticeCatalog::RegisterAndRetrieveNewNotice(
+Notice* NoticeCatalogImpl::RegisterAndRetrieveNewNotice(
     std::unique_ptr<Notice> (*notice_creator)(NoticeId),
     NoticeId notice_id) {
   notices_.emplace(notice_id, notice_creator(notice_id));
   return notices_[notice_id].get();
 }
 
-void NoticeCatalog::RegisterNoticeGroup(
+void NoticeCatalogImpl::RegisterNoticeGroup(
+    std::unique_ptr<Notice> (*notice_creator)(NoticeId),
+    std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
+    std::vector<NoticeApi*>&& target_apis) {
+  RegisterNoticeGroup(notice_creator, std::move(notice_ids),
+                      std::move(target_apis), {});
+}
+
+void NoticeCatalogImpl::RegisterNoticeGroup(
     std::unique_ptr<Notice> (*notice_creator)(NoticeId),
     std::vector<std::pair<NoticeId, const base::Feature*>>&& notice_ids,
     std::vector<NoticeApi*>&& target_apis,
@@ -56,15 +65,19 @@ void NoticeCatalog::RegisterNoticeGroup(
   }
 }
 
-const NoticeMap& NoticeCatalog::GetNoticeMap() {
+bool NoticeCatalogImpl::IsPopulated() {
+  return is_populated_;
+}
+
+const NoticeMap& NoticeCatalogImpl::GetNoticeMap() {
   return notices_;
 }
 
-void NoticeCatalog::Populate() {
+void NoticeCatalogImpl::Populate() {
   // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
 
-  CHECK(!is_populated) << "Catalog already populated.";
-  is_populated = true;
+  CHECK(!is_populated_) << "Catalog already populated.";
+  is_populated_ = true;
 
   // Define APIs.
   NoticeApi* topics = RegisterAndRetrieveNewApi();

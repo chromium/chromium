@@ -38,7 +38,7 @@ std::unique_ptr<Notice> Make(NoticeId notice_id) {
 
 class PrivacySandboxNoticeCatalogTest : public testing::Test {
  protected:
-  NoticeCatalog catalog_;
+  NoticeCatalogImpl catalog_;
 };
 
 TEST_F(PrivacySandboxNoticeCatalogTest, InitialState) {
@@ -150,7 +150,7 @@ class PrivacySandboxNoticeCatalogPopulateTest : public testing::Test {
  protected:
   void SetUp() override { catalog_.Populate(); }
 
-  NoticeCatalog catalog_;
+  NoticeCatalogImpl catalog_;
 };
 
 // Test that Populate actually registers APIs and Notices.

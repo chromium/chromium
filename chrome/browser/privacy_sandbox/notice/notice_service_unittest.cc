@@ -59,7 +59,7 @@ class PrivacySandboxNoticeServiceTest : public Test {
         CreateProfileForIdentityTestEnvironment();
     auto storage = std::make_unique<MockNoticeStorage>();
     mock_storage_ = storage.get();
-    auto catalog = std::make_unique<NoticeCatalog>();
+    auto catalog = std::make_unique<NoticeCatalogImpl>();
     catalog_ptr_ = catalog.get();
 
     notice_service_ = std::make_unique<PrivacySandboxNoticeService>(
