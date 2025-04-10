@@ -65,8 +65,8 @@ class TaskManagerInterface {
   // Returns if the task is killable.
   virtual bool IsTaskKillable(TaskId task_id) = 0;
 
-  // Kills the task with |task_id|.
-  virtual void KillTask(TaskId task_id) = 0;
+  // Kills the task with |task_id|. Returns true if the process terminates.
+  virtual bool KillTask(TaskId task_id) = 0;
 
   // Returns the CPU usage of the process on which |task_id| is running, over
   // the most recent refresh cycle. The value is in the range zero to

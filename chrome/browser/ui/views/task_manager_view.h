@@ -189,6 +189,7 @@ class TaskManagerView : public TableViewDelegate,
   void SaveCategoryToLocalState(DisplayCategory category);
 
   void EndSelectedProcess();
+  void AnnounceTaskEnded(bool any_task_ended);
   bool IsEndProcessButtonEnabled() const;
 
   // views::TabbedPaneListener:

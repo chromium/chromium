@@ -48,7 +48,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   // task_manager::TaskManagerInterface:
   void ActivateTask(TaskId task_id) override;
   bool IsTaskKillable(TaskId task_id) override;
-  void KillTask(TaskId task_id) override;
+  bool KillTask(TaskId task_id) override;
   double GetPlatformIndependentCPUUsage(TaskId task_id) const override;
   base::Time GetStartTime(TaskId task_id) const override;
   base::TimeDelta GetCpuTime(TaskId task_id) const override;

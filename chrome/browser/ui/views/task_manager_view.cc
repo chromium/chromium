@@ -791,8 +791,14 @@ void TaskManagerView::SaveCategoryToLocalState(DisplayCategory category) {
 void TaskManagerView::EndSelectedProcess() {
   using SelectedIndices = ui::ListSelectionModel::SelectedIndices;
   SelectedIndices selection(tab_table_->selection_model().selected_indices());
+  bool any_task_ended = false;
   for (int index : base::Reversed(selection)) {
-    table_model_->KillTask(index);
+    any_task_ended |= table_model_->KillTask(index);
+  }
+
+  // AX: Announce the result of ending a task group.
+  if (table_config_.layout_refresh) {
+    AnnounceTaskEnded(any_task_ended);
   }
 
   base::TimeTicks current_time = base::TimeTicks::Now();
@@ -801,6 +807,12 @@ void TaskManagerView::EndSelectedProcess() {
                                         ++end_process_count_);
   }
   latest_end_process_time_ = current_time;
+}
+
+void TaskManagerView::AnnounceTaskEnded(bool any_task_ended) {
+  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+      any_task_ended ? IDS_TASK_MANAGER_TASK_KILL_SUCCESS_ACCESSIBILITY_MESSAGE
+                     : IDS_TASK_MANAGER_TASK_KILL_FAIL_ACCESSIBILITY_MESSAGE));
 }
 
 bool TaskManagerView::IsEndProcessButtonEnabled() const {

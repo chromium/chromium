@@ -142,8 +142,8 @@ bool TaskManagerImpl::IsTaskKillable(TaskId task_id) {
   return GetTaskByTaskId(task_id)->IsKillable();
 }
 
-void TaskManagerImpl::KillTask(TaskId task_id) {
-  GetTaskByTaskId(task_id)->Kill();
+bool TaskManagerImpl::KillTask(TaskId task_id) {
+  return GetTaskByTaskId(task_id)->Kill();
 }
 
 double TaskManagerImpl::GetPlatformIndependentCPUUsage(TaskId task_id) const {

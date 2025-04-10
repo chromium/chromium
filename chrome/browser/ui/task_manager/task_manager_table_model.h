@@ -126,7 +126,8 @@ class TaskManagerTableModel : public TaskManagerObserver,
   void ActivateTask(size_t row_index);
 
   // Kills the process on which the task at |row_index| is running.
-  void KillTask(size_t row_index);
+  // Returns true if the process terminates.
+  bool KillTask(size_t row_index);
 
   // Based on the given |visibility| and the |column_id|, a particular refresh
   // type will be enabled or disabled.

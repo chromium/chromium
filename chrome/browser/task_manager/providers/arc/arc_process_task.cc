@@ -134,14 +134,15 @@ bool ArcProcessTask::IsRunningInVM() const {
   return arc::IsArcVmEnabled();
 }
 
-void ArcProcessTask::Kill() {
+bool ArcProcessTask::Kill() {
   auto* process_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc::ArcServiceManager::Get()->arc_bridge_service()->process(),
       KillProcess);
   if (!process_instance)
-    return;
+    return false;
   process_instance->KillProcess(arc_process_.nspid(),
                                 "Killed manually from Task Manager");
+  return true;
 }
 
 void ArcProcessTask::OnConnectionReady() {

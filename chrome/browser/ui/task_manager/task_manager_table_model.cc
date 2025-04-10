@@ -935,8 +935,8 @@ void TaskManagerTableModel::ActivateTask(size_t row_index) {
   observed_task_manager()->ActivateTask(tasks_[row_index]);
 }
 
-void TaskManagerTableModel::KillTask(size_t row_index) {
-  observed_task_manager()->KillTask(tasks_[row_index]);
+bool TaskManagerTableModel::KillTask(size_t row_index) {
+  return observed_task_manager()->KillTask(tasks_[row_index]);
 }
 
 void TaskManagerTableModel::UpdateRefreshTypes(int column_id, bool visibility) {

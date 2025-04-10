@@ -360,6 +360,12 @@ chromium_strings.grd. -->
       <message name="IDS_TASK_MANAGER_KILL_ACCESSIBILITY_NAME" desc="The accessibility description for the End Task button in the Task Manager window">
         Ends the highlighted task.
       </message>
+      <message name="IDS_TASK_MANAGER_TASK_KILL_SUCCESS_ACCESSIBILITY_MESSAGE" desc="The text announced after a process and some of its tasks are killed.">
+        Task(s) ended.
+      </message>
+      <message name="IDS_TASK_MANAGER_TASK_KILL_FAIL_ACCESSIBILITY_MESSAGE" desc="The text announced when all tasks in the process could not be killed.">
+        Failed to end task(s).
+      </message>
       <message name="IDS_TASK_MANAGER_CATEGORY_TABS_AND_EXTENSIONS_NAME" desc="The title of the 'Tabs and extensions' filter category.">
         Tabs &amp; extensions
       </message>
