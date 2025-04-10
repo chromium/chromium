@@ -164,7 +164,7 @@ bool ConvertData(int channels,
 base::span<uint8_t> FillBuffer(base::span<uint8_t> buf,
                                base::span<const uint8_t> data) {
   auto [write_size, rem] = buf.split_at(sizeof(uint16_t));
-  write_size.copy_from(base::numerics::U16ToBigEndian(
+  write_size.copy_from(base::U16ToBigEndian(
       base::checked_cast<uint16_t>(buf.size()) - uint16_t{sizeof(uint16_t)}));
   auto [write_data, uninit] = rem.split_at(data.size());
   write_data.copy_from(data);
