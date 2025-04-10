@@ -114,7 +114,11 @@ if (is_android && export_libcxxabi_from_executables) {
   libcxx_is_shared = true
 }
 
-libcxx_prefix = "//third_party/libc++/src"
+if (use_explicit_libcxx_modules) {
+  libcxx_prefix = "${root_gen_dir}/third_party/libc++/src"
+} else {
+  libcxx_prefix = "//third_party/libc++/src"
+}
 libcxxabi_prefix = "//third_party/libc++abi/src"
 libcxx_module_prefix = "$root_gen_dir/libcxx"
 
