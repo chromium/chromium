@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/history/model/web_history_service_factory.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
+#import "ios/chrome/browser/intelligence/glic/model/glic_service_factory.h"
 #import "ios/chrome/browser/invalidation/model/ios_chrome_profile_invalidation_provider_factory.h"
 #import "ios/chrome/browser/language/model/accept_languages_service_factory.h"
 #import "ios/chrome/browser/language/model/language_model_manager_factory.h"
@@ -264,6 +265,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   DomainDiversityReporterFactory::GetInstance();
   ExternalFileRemoverFactory::GetInstance();
   FollowServiceFactory::GetInstance();
+  GlicServiceFactory::GetInstance();
   GoogleGroupsManagerFactory::GetInstance();
   GoogleLogoServiceFactory::GetInstance();
   HashRealTimeServiceFactory::GetInstance();

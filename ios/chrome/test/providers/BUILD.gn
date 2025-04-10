@@ -19,6 +19,7 @@ group("providers") {
     "//ios/chrome/test/providers/follow",
     "//ios/chrome/test/providers/font",
     "//ios/chrome/test/providers/fullscreen",
+    "//ios/chrome/test/providers/glic",
     "//ios/chrome/test/providers/google_one",
     "//ios/chrome/test/providers/keyboard",
     "//ios/chrome/test/providers/lens",

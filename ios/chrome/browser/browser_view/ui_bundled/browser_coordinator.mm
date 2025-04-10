@@ -120,6 +120,8 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/coordinator/enhanced_calendar_coordinator.h"
 #import "ios/chrome/browser/intelligence/enhanced_calendar/model/enhanced_calendar_configuration.h"
+#import "ios/chrome/browser/intelligence/glic/model/glic_service.h"
+#import "ios/chrome/browser/intelligence/glic/model/glic_service_factory.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_coordinator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
@@ -2352,6 +2354,12 @@ enum class ToolbarKind {
 - (void)dismissEnhancedSafeBrowsingPromo {
   [_enhancedSafeBrowsingPromoCoordinator stop];
   _enhancedSafeBrowsingPromoCoordinator = nil;
+}
+
+- (void)showPageActionMenu {
+  GlicService* glicService =
+      GlicServiceFactory::GetForProfile(self.browser->GetProfile());
+  glicService->PresentOverlayOnViewController(self.viewController);
 }
 
 #pragma mark - BrowserViewVisibilityConsumer

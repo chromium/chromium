@@ -246,6 +246,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
   if (IsPageActionMenuEnabled()) {
     _pageActionMenuEntrypointView = [[PageActionMenuEntrypointView alloc] init];
+    [_pageActionMenuEntrypointView
+               addTarget:self
+                  action:@selector(handlePageActionMenuEntrypointTapped)
+        forControlEvents:UIControlEventTouchUpInside];
   } else if (IsLensOverlayAvailable(_profilePrefs)) {
     _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc]
         initWithProfilePrefs:_profilePrefs];
@@ -1002,6 +1006,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 - (void)handleLensEntrypointPressed {
   RecordAction(UserMetricsAction("MobileToolbarLensOverlayTap"));
   [self openLensOverlay];
+}
+
+- (void)handlePageActionMenuEntrypointTapped {
+  // TODO(crbug.com/402827015): Log opens.
+  [self.dispatcher showPageActionMenu];
 }
 
 // Creates and shows the LVF input selection UI.

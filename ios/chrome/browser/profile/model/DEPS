@@ -45,6 +45,7 @@ specific_include_rules = {
     "+ios/chrome/browser/google/model",
     "+ios/chrome/browser/history/model",
     "+ios/chrome/browser/https_upgrades/model",
+    "+ios/chrome/browser/intelligence/glic/model",
     "+ios/chrome/browser/invalidation/model",
     "+ios/chrome/browser/language/model",
     "+ios/chrome/browser/mailto_handler/model",
