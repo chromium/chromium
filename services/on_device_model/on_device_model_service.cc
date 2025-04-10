@@ -204,6 +204,7 @@ class ModelWrapper final : public mojom::OnDeviceModel {
   struct PendingTask {
     base::WeakPtr<SessionWrapper> session;
     base::OnceClosure task;
+    base::TimeTicks start = base::TimeTicks::Now();
   };
 
   void SessionDisconnected(SessionWrapper* ptr) {
@@ -247,10 +248,16 @@ class ModelWrapper final : public mojom::OnDeviceModel {
       }
     }
     // If no foreground task is available, take what's left.
+    const bool is_foreground = pending_task.has_value();
     if (!pending_task) {
       pending_task = std::move(pending_tasks_.front());
       pending_tasks_.pop_front();
     }
+
+    base::UmaHistogramMediumTimes(
+        base::StrCat({"OnDeviceModel.QueueTime.",
+                      is_foreground ? "Foreground" : "Background"}),
+        base::TimeTicks::Now() - pending_task->start);
 
     is_running_ = true;
     std::move(pending_task->task).Run();

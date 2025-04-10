@@ -6,6 +6,7 @@
 
 #include "base/files/scoped_temp_file.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -713,13 +714,23 @@ TEST_F(OnDeviceModelServiceTest, SetPriority) {
   mojo::Remote<mojom::Session> foreground;
   model->StartSession(foreground.BindNewPipeAndPassReceiver(), nullptr);
 
+  base::HistogramTester histogram_tester;
+
   ForceQueueing(true);
   auto bg_waiter = AppendAndFlush(background, "bg");
   auto fg_waiter = AppendAndFlush(foreground, "fg");
+
+  constexpr char kForegroundHistogram[] = "OnDeviceModel.QueueTime.Foreground";
+  constexpr char kBackgroundHistogram[] = "OnDeviceModel.QueueTime.Background";
+  histogram_tester.ExpectTotalCount(kForegroundHistogram, 0);
+  histogram_tester.ExpectTotalCount(kBackgroundHistogram, 0);
   ForceQueueing(false);
 
   fg_waiter->WaitForCompletion();
   EXPECT_FALSE(bg_waiter->IsComplete());
+  histogram_tester.ExpectTotalCount(kForegroundHistogram, 1);
+  histogram_tester.ExpectTotalCount(kBackgroundHistogram, 0);
+
   ForceQueueing(true);
 
   // Add another call to fg client, should jump ahead of bg again.
@@ -728,7 +739,12 @@ TEST_F(OnDeviceModelServiceTest, SetPriority) {
 
   fg_waiter->WaitForCompletion();
   EXPECT_FALSE(bg_waiter->IsComplete());
+  histogram_tester.ExpectTotalCount(kForegroundHistogram, 2);
+  histogram_tester.ExpectTotalCount(kBackgroundHistogram, 0);
+
   bg_waiter->WaitForCompletion();
+  histogram_tester.ExpectTotalCount(kForegroundHistogram, 2);
+  histogram_tester.ExpectTotalCount(kBackgroundHistogram, 1);
 }
 
 TEST_F(OnDeviceModelServiceTest, SetPriorityAfterQueue) {

@@ -6738,6 +6738,21 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="OnDeviceModel.QueueTime.{Priority}" units="ms"
+    expires_after="2026-04-09">
+  <owner>cduvall@chromium.org</owner>
+  <owner>sophiechang@chromium.org</owner>
+  <summary>
+    Records the time a task for a session with {Priority} priority spent in the
+    queue in the OnDeviceModelService. Logged each time a task is run for a
+    session.
+  </summary>
+  <token key="Priority">
+    <variant name="Background" summary="background"/>
+    <variant name="Foreground" summary="foreground"/>
+  </token>
+</histogram>
+
 <histogram name="OnDeviceModel.SystemRAM.{GpuType}" units="MB"
     expires_after="2025-08-24">
   <owner>cduvall@chromium.org</owner>
