@@ -849,7 +849,7 @@ WebstorePrivateBeginInstallWithManifest3Function::BuildResponse(
     // In the cases where they do not correspond we should add a new enum value.
     // We will need to ensure that the Webstore is entirely basing its logic on
     // the result alone before removing the error.
-    return ErrorWithArguments(
+    return ErrorWithArgumentsDoNotUse(
         BeginInstallWithManifest3::Results::Create(result), error);
   }
 
@@ -1220,7 +1220,7 @@ WebstorePrivateGetReferrerChainFunction::Run() {
                           : nullptr;
 
   if (!outermost_render_frame_host) {
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         api::webstore_private::GetReferrerChain::Results::Create(""),
         kWebstoreUserCancelledError));
   }

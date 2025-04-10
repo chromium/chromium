@@ -989,7 +989,7 @@ ExtensionFunction::ResponseAction InputImeClearCompositionFunction::Run() {
   results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
-                        : ErrorWithArguments(
+                        : ErrorWithArgumentsDoNotUse(
                               std::move(results),
                               InformativeError(error, static_function_name())));
 }
@@ -1080,7 +1080,7 @@ InputImeSetCandidateWindowPropertiesFunction::Run() {
       !engine->SetCandidateWindowVisible(*properties.visible, &error)) {
     base::Value::List results;
     results.Append(false);
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         std::move(results), InformativeError(error, static_function_name())));
   }
 
@@ -1173,7 +1173,7 @@ ExtensionFunction::ResponseAction InputImeSetCandidatesFunction::Run() {
   results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
-                        : ErrorWithArguments(
+                        : ErrorWithArgumentsDoNotUse(
                               std::move(results),
                               InformativeError(error, static_function_name())));
 }
@@ -1197,7 +1197,7 @@ ExtensionFunction::ResponseAction InputImeSetCursorPositionFunction::Run() {
   results.Append(success);
   return RespondNow(success
                         ? ArgumentList(std::move(results))
-                        : ErrorWithArguments(
+                        : ErrorWithArgumentsDoNotUse(
                               std::move(results),
                               InformativeError(error, static_function_name())));
 }

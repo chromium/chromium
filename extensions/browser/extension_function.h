@@ -500,11 +500,13 @@ class ExtensionFunction : public base::RefCountedThreadSafe<
         extensions::ErrorUtils::FormatErrorMessage(format, args...));
   }
   // Error with a list of arguments |args| to pass to caller.
-  // Using this ResponseValue indicates something is wrong with the API.
-  // It shouldn't be possible to have both an error *and* some arguments.
-  // Some legacy APIs do rely on it though, like webstorePrivate.
-  ResponseValue ErrorWithArguments(base::Value::List args,
-                                   const std::string& error);
+  // Using this ResponseValue is incompatible with promise based returns and
+  // indicates something is wrong with the API. If you are trying to use this,
+  // you likely instead want to be returning a value indicating if the API call
+  // was a "success" and/or an enum indicating what may have gone wrong.
+  // Some legacy APIs do still rely on this though.
+  ResponseValue ErrorWithArgumentsDoNotUse(base::Value::List args,
+                                           const std::string& error);
   // Bad message. A ResponseValue equivalent to EXTENSION_FUNCTION_VALIDATE(),
   // so this will actually kill the renderer and not respond at all.
   ResponseValue BadMessage();

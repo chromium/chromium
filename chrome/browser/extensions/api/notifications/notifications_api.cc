@@ -598,7 +598,7 @@ NotificationsCreateFunction::RunNotificationsApi() {
   // TODO(dewittj): Add more human-readable error strings if this fails.
   std::string error;
   if (!CreateNotification(notification_id, &params_->options, &error)) {
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         api::notifications::Create::Results::Create(notification_id), error));
   }
 
@@ -635,7 +635,7 @@ NotificationsUpdateFunction::RunNotificationsApi() {
   bool could_update_notification = UpdateNotification(
       params_->notification_id, &params_->options, &notification, &error);
   if (!could_update_notification) {
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         api::notifications::Update::Results::Create(false), error));
   }
 
