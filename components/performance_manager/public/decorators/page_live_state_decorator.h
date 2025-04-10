@@ -160,9 +160,6 @@ class PageLiveStateDecorator::Data {
   virtual bool IsActiveTab() const = 0;
   virtual bool IsPinnedTab() const = 0;
   virtual bool IsDevToolsOpen() const = 0;
-
-  // TODO(crbug.com/40894717): Add a notifier for this to
-  // PageLiveStateObserver.
   virtual bool UpdatedTitleOrFaviconInBackground() const = 0;
 
   static const Data* FromPageNode(const PageNode* page_node);
@@ -212,6 +209,8 @@ class PageLiveStateObserver : public base::CheckedObserver {
   virtual void OnIsActiveTabChanged(const PageNode* page_node) {}
   virtual void OnIsPinnedTabChanged(const PageNode* page_node) {}
   virtual void OnIsDevToolsOpenChanged(const PageNode* page_node) {}
+  virtual void OnUpdatedTitleOrFaviconInBackgroundChanged(
+      const PageNode* page_node) {}
 };
 
 }  // namespace performance_manager
