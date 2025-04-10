@@ -22645,6 +22645,21 @@
             ]
         }
     ],
+    "ServiceGroupImportance": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "ServiceGroupImportance"
+                    ]
+                }
+            ]
+        }
+    ],
     "ServiceWorkerAutoPreload": [
         {
             "platforms": [

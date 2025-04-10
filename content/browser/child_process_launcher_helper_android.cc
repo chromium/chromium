@@ -16,6 +16,7 @@
 #include "base/android/build_info.h"
 #include "base/android/jni_array.h"
 #include "base/base_switches.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
@@ -47,6 +48,11 @@ using base::android::ToJavaArrayOfStrings;
 namespace content {
 namespace internal {
 namespace {
+
+// Controls whether to explicitly enable service group importance logic.
+BASE_FEATURE(kServiceGroupImportance,
+             "ServiceGroupImportance",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Stops a child process based on the handle returned from StartChildProcess.
 void StopChildProcess(base::ProcessHandle handle) {
@@ -239,10 +245,11 @@ static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
 static jboolean
 JNI_ChildProcessLauncherHelperImpl_ServiceGroupImportanceEnabled(JNIEnv* env) {
   // Not this is called on the launcher thread, not UI thread.
-  return SiteIsolationPolicy::AreIsolatedOriginsEnabled() ||
-         SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
-         SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
-         SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled();
+  return (SiteIsolationPolicy::AreIsolatedOriginsEnabled() ||
+          SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
+          SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
+          SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled()) &&
+         base::FeatureList::IsEnabled(kServiceGroupImportance);
 }
 
 // static
