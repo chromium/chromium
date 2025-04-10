@@ -341,7 +341,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 - (void)manageAccountsCoordinatorWantsToBeStopped:
     (ManageAccountsCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _manageAccountsCoordinator, base::NotFatalUntil::M133);
+  CHECK_EQ(coordinator, _manageAccountsCoordinator);
   [self stopManageAccountsCoordinator];
 }
 
