@@ -176,7 +176,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_asynclayoutinflater_asynclayoutinflater_java") {
-    aar_path = "../androidx/cipd/libs/androidx_asynclayoutinflater_asynclayoutinflater/asynclayoutinflater-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_asynclayoutinflater_asynclayoutinflater/asynclayoutinflater-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_asynclayoutinflater_asynclayoutinflater/androidx_asynclayoutinflater_asynclayoutinflater.info"
     enable_bytecode_checks = false
     deps = [
@@ -189,7 +189,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_asynclayoutinflater_asynclayoutinflater_appcompat_java") {
-    aar_path = "../androidx/cipd/libs/androidx_asynclayoutinflater_asynclayoutinflater_appcompat/asynclayoutinflater-appcompat-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_asynclayoutinflater_asynclayoutinflater_appcompat/asynclayoutinflater-appcompat-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_asynclayoutinflater_asynclayoutinflater_appcompat/androidx_asynclayoutinflater_asynclayoutinflater_appcompat.info"
     enable_bytecode_checks = false
     deps = [
@@ -644,7 +644,7 @@ if (!limit_android_deps) {
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt(
       "androidx_dynamicanimation_dynamicanimation_java") {
-    aar_path = "../androidx/cipd/libs/androidx_dynamicanimation_dynamicanimation/dynamicanimation-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_dynamicanimation_dynamicanimation/dynamicanimation-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_dynamicanimation_dynamicanimation/androidx_dynamicanimation_dynamicanimation.info"
     enable_bytecode_checks = false
     deps = [
@@ -736,7 +736,7 @@ if (!limit_android_deps) {
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_gridlayout_gridlayout_java") {
-    aar_path = "../androidx/cipd/libs/androidx_gridlayout_gridlayout/gridlayout-1.1.0-SNAPSHOT.aar"
+    aar_path = "../androidx/cipd/libs/androidx_gridlayout_gridlayout/gridlayout-1.1.0.aar"
     info_path = "../androidx/committed/libs/androidx_gridlayout_gridlayout/androidx_gridlayout_gridlayout.info"
     enable_bytecode_checks = false
     deps = [
