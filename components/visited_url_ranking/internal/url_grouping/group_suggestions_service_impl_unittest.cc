@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/visited_url_ranking/internal/url_grouping/mock_suggestions_delegate.h"
 #include "components/visited_url_ranking/internal/url_grouping/tab_events_visit_transformer.h"
+#include "components/visited_url_ranking/public/tab_metadata.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
@@ -37,6 +38,12 @@ URLVisitAggregate CreateVisitForTab(base::TimeDelta time_since_active,
   auto* tab = std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
   tab->last_active_tab.id = tab_id;
   return candidate;
+}
+
+TabMetadata& GetTabMetadata(URLVisitAggregate& visit) {
+  auto tab_data_it = visit.fetcher_data_map.find(Fetcher::kTabModel);
+  return std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second)
+      ->last_active_tab.tab_metadata;
 }
 
 class MockTabEventsVisitTransformer : public TabEventsVisitTransformer {
@@ -80,6 +87,7 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
     // Add 5 tabs within 600 seconds and one over 600. The first 5 tabs should
     // be grouped.
     candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+    GetTabMetadata(candidates[0]).is_currently_active = true;
     candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
     candidates.push_back(CreateVisitForTab(base::Seconds(300), 114));
     candidates.push_back(CreateVisitForTab(base::Seconds(500), 115));
@@ -92,6 +100,7 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
     std::vector<URLVisitAggregate> candidates;
     // 5 tabs with new IDs.
     candidates.push_back(CreateVisitForTab(base::Seconds(60), 11));
+    GetTabMetadata(candidates[0]).is_currently_active = true;
     candidates.push_back(CreateVisitForTab(base::Seconds(250), 12));
     candidates.push_back(CreateVisitForTab(base::Seconds(300), 14));
     candidates.push_back(CreateVisitForTab(base::Seconds(500), 15));

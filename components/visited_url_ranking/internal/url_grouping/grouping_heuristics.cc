@@ -229,18 +229,28 @@ std::optional<GroupSuggestion> GetSuggestionFromHeuristicResult(
   GroupSuggestion suggestion;
   suggestion.suggestion_reason = reason;
 
-  // TODO(ssid): pass in current tab from tab fetcher.
   // Find the current tab based on the most recently active tab.
   int current_tab_index = -1;
-  base::Time latest_active_tab;
   for (unsigned i = 0; i < candidates.size(); ++i) {
-    base::Time last_visit_time = candidates[i].GetLastVisitTime();
-    if (last_visit_time > latest_active_tab) {
-      latest_active_tab = last_visit_time;
+    auto it = candidates[i].fetcher_data_map.find(Fetcher::kTabModel);
+    DCHECK(it != candidates[i].fetcher_data_map.end());
+    if (it == candidates[i].fetcher_data_map.end()) {
+      continue;
+    }
+    const auto& tab_data = std::get_if<URLVisitAggregate::TabData>(&it->second);
+    DCHECK(tab_data);
+    if (!tab_data) {
+      continue;
+    }
+    if (tab_data->last_active_tab.tab_metadata.is_currently_active) {
       current_tab_index = i;
     }
   }
-  CHECK(current_tab_index != -1);  // At least one tab should exist.
+  if (current_tab_index == -1) {
+    // If current tab is not a candidate (e.g. if it's a new tab page), don't
+    // show.
+    return std::nullopt;
+  }
   float current_tab_cluster = outputs[current_tab_index];
   if (current_tab_cluster == 0) {
     // If current tab is not part of any cluster, don't show.
@@ -253,9 +263,15 @@ std::optional<GroupSuggestion> GetSuggestionFromHeuristicResult(
       continue;
     }
     auto it = candidates[i].fetcher_data_map.find(Fetcher::kTabModel);
-    CHECK(it != candidates[i].fetcher_data_map.end());
+    DCHECK(it != candidates[i].fetcher_data_map.end());
+    if (it == candidates[i].fetcher_data_map.end()) {
+      continue;
+    }
     const auto& tab_data = std::get_if<URLVisitAggregate::TabData>(&it->second);
-    CHECK(tab_data);
+    DCHECK(tab_data);
+    if (!tab_data) {
+      continue;
+    }
     suggestion.tab_ids.push_back(tab_data->last_active_tab.id);
   }
   // If the number of tabs per the heuristic is too low, dont show suggestion.
