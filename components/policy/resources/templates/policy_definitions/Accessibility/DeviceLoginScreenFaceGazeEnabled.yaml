@@ -30,8 +30,8 @@ owners:
 - file://components/policy/OWNERS
 schema:
   type: boolean
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:137-
 tags: []
 type: main
 generate_device_proto: False
