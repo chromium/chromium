@@ -315,11 +315,14 @@ class RevokedPermissionsServiceTest
     EXPECT_EQ(expected_size, revoked_permissions_list.size());
   }
 
-  void SetupRevokedUnusedPermissionSite(std::string url) {
+  void SetupRevokedUnusedPermissionSite(
+      std::string url,
+      base::TimeDelta lifetime =
+          content_settings::features::
+              kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
+                  .Get()) {
     content_settings::ContentSettingConstraints constraint(clock()->Now());
-    constraint.set_lifetime(
-        content_settings::features::
-            kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get());
+    constraint.set_lifetime(lifetime);
 
     // `REVOKED_UNUSED_SITE_PERMISSIONS` stores base::Value::Dict with two keys:
     // (1) key for a string list of revoked permission types
@@ -350,12 +353,14 @@ class RevokedPermissionsServiceTest
         base::Value(dict.Clone()), constraint);
   }
 
-  void SetupRevokedAbusiveNotificationSite(std::string url) {
-    auto cleanUpThreshold =
-        content_settings::features::
-            kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+  void SetupRevokedAbusiveNotificationSite(
+      std::string url,
+      base::TimeDelta lifetime =
+          content_settings::features::
+              kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold
+                  .Get()) {
     content_settings::ContentSettingConstraints constraint(clock()->Now());
-    constraint.set_lifetime(cleanUpThreshold);
+    constraint.set_lifetime(lifetime);
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(url), GURL(url), revoked_abusive_notification,
         base::Value(base::Value::Dict().Set(
@@ -439,6 +444,19 @@ class RevokedPermissionsServiceTest
       }
     }
     return false;
+  }
+
+  PermissionsData GetPermissionsDataByUrl(std::list<PermissionsData> list,
+                                          std::string url) {
+    std::string url_pattern =
+        ContentSettingsPattern::FromURLNoWildcard(GURL(url)).ToString();
+    auto it =
+        std::find_if(list.begin(), list.end(), [&](const PermissionsData p) {
+          return p.primary_pattern.ToString() == url ||
+                 p.primary_pattern.ToString() == url_pattern;
+        });
+    EXPECT_NE(list.end(), it);
+    return *it;
   }
 
  private:
@@ -1152,15 +1170,23 @@ TEST_P(RevokedPermissionsServiceTest,
 }
 
 TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
+  const auto default_lifetime =
+      content_settings::features::
+          kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+  const auto shorter_lifetime = base::Days(1);
+  const auto longer_lifetime = base::Days(10);
   if (ShouldSetupAbusiveNotificationSites()) {
     SetupAbusiveNotificationSite(url2, ContentSetting::CONTENT_SETTING_ASK);
     SetupAbusiveNotificationSite(url3, ContentSetting::CONTENT_SETTING_ASK);
-    SetupRevokedAbusiveNotificationSite(url2);
+    SetupAbusiveNotificationSite(url4, ContentSetting::CONTENT_SETTING_ASK);
+    SetupRevokedAbusiveNotificationSite(url2, longer_lifetime);
     SetupRevokedAbusiveNotificationSite(url3);
+    SetupRevokedAbusiveNotificationSite(url4, shorter_lifetime);
   }
   if (ShouldSetupUnusedSites()) {
     SetupRevokedUnusedPermissionSite(url1);
-    SetupRevokedUnusedPermissionSite(url2);
+    SetupRevokedUnusedPermissionSite(url2, shorter_lifetime);
+    SetupRevokedUnusedPermissionSite(url4, longer_lifetime);
   }
 
   // When we start up a new service instance, the latest result (i.e. the list
@@ -1173,19 +1199,32 @@ TEST_P(RevokedPermissionsServiceTest, InitializeLatestResult) {
   auto* result =
       static_cast<RevokedPermissionsService::RevokedPermissionsResult*>(
           opt_result.value().get());
+  auto revoked_permissions = result->GetRevokedPermissions();
   if (ShouldSetupUnusedSites() && ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(3U, result->GetRevokedPermissions().size());
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url1));
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url2));
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url3));
+    EXPECT_EQ(4U, revoked_permissions.size());
+    // Verify the constraints are merged properly when there are multiple
+    // revocation types.
+    auto permission_1 = GetPermissionsDataByUrl(revoked_permissions, url1);
+    EXPECT_EQ(permission_1.constraints.lifetime(), default_lifetime);
+
+    auto permission_2 = GetPermissionsDataByUrl(revoked_permissions, url2);
+    EXPECT_EQ(permission_2.constraints.lifetime(), longer_lifetime);
+
+    auto permission_3 = GetPermissionsDataByUrl(revoked_permissions, url3);
+    EXPECT_EQ(permission_3.constraints.lifetime(), default_lifetime);
+
+    auto permission_4 = GetPermissionsDataByUrl(revoked_permissions, url4);
+    EXPECT_EQ(permission_4.constraints.lifetime(), longer_lifetime);
   } else if (ShouldSetupUnusedSites()) {
-    EXPECT_EQ(2U, result->GetRevokedPermissions().size());
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url1));
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url2));
+    EXPECT_EQ(3U, revoked_permissions.size());
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url1));
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
   } else if (ShouldSetupAbusiveNotificationSites()) {
-    EXPECT_EQ(2U, result->GetRevokedPermissions().size());
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url2));
-    EXPECT_TRUE(IsUrlInRevokedSettings(result->GetRevokedPermissions(), url3));
+    EXPECT_EQ(3U, revoked_permissions.size());
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url2));
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url3));
+    EXPECT_TRUE(IsUrlInRevokedSettings(revoked_permissions, url4));
   }
 }
 

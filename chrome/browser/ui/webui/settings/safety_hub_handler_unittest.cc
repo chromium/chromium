@@ -216,9 +216,9 @@ class SafetyHubHandlerTest : public testing::Test {
                      RevokedPermissionsService::ConvertContentSettingsTypeToKey(
                          kUnusedChooserPermission),
                      base::Value::Dict().Set("foo", "bar")))
-            .Set(safety_hub::kAbusiveRevocationExpirationKey,
+            .Set(safety_hub::kExpirationKey,
                  base::TimeToValue(constraint.expiration()))
-            .Set(safety_hub::kAbusiveRevocationLifetimeKey,
+            .Set(safety_hub::kLifetimeKey,
                  base::TimeDeltaToValue(constraint.lifetime()));
     hcsm()->SetWebsiteSettingDefaultScope(
         GURL(kAbusiveAndUnusedTestSite), GURL(kAbusiveAndUnusedTestSite),

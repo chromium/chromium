@@ -58,7 +58,6 @@ struct PermissionsData {
   std::set<ContentSettingsType> permission_types;
   base::Value::Dict chooser_permissions_data;
   content_settings::ContentSettingConstraints constraints;
-  content_settings::ContentSettingConstraints abusive_revocation_constraints;
 };
 
 // This class keeps track of revoked permissions, including unused permissions,

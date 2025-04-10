@@ -159,6 +159,14 @@ base::Value::Dict ConvertChooserContentSettingsIntValuesToString(
   return string_keyed_dict;
 }
 
+content_settings::ContentSettingConstraints GetConstraintFromInfo(
+    const content_settings::SettingInfo& info) {
+  auto constraint = content_settings::ContentSettingConstraints(
+      info.metadata.expiration() - info.metadata.lifetime());
+  constraint.set_lifetime(info.metadata.lifetime());
+  return constraint;
+}
+
 }  // namespace
 
 // static
@@ -222,9 +230,7 @@ PermissionsData::~PermissionsData() = default;
 PermissionsData::PermissionsData(const PermissionsData& other)
     : primary_pattern(other.primary_pattern),
       permission_types(other.permission_types),
-      constraints(other.constraints.Clone()),
-      abusive_revocation_constraints(
-          other.abusive_revocation_constraints.Clone()) {
+      constraints(other.constraints.Clone()) {
   chooser_permissions_data = other.chooser_permissions_data.Clone();
 }
 
@@ -557,7 +563,7 @@ void RevokedPermissionsService::UndoRegrantPermissionsForOrigin(
     abusive_notification_manager_->UndoRegrantPermissionForOriginIfNecessary(
         GURL(permissions_data.primary_pattern.ToString()),
         permissions_data.permission_types,
-        permissions_data.abusive_revocation_constraints.Clone());
+        permissions_data.constraints.Clone());
   }
 
   // If `permissions_data` had abusive notifications revoked, remove the
@@ -776,19 +782,23 @@ RevokedPermissionsService::GetRevokedPermissions() {
 
     // If the origin has a revoked abusive notification, add `NOTIFICATIONS` to
     // the list of revoked permissions.
-    if (safety_hub_util::IsUrlRevokedAbusiveNotification(
-            hcsm(), GURL(revoked_permissions.primary_pattern.ToString()))) {
+    const GURL& url = GURL(revoked_permissions.primary_pattern.ToString());
+    if (safety_hub_util::IsUrlRevokedAbusiveNotification(hcsm(), url)) {
       DCHECK(IsAbusiveNotificationAutoRevocationEnabled());
       permissions_data.permission_types.insert(
           static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
 
-      // Add a new constraint for abusive notification revocations to expire.
-      permissions_data.abusive_revocation_constraints =
-          content_settings::ContentSettingConstraints(
-              revoked_permissions.metadata.expiration() -
-              revoked_permissions.metadata.lifetime());
-      permissions_data.abusive_revocation_constraints.set_lifetime(
-          revoked_permissions.metadata.lifetime());
+      // Update `constraints` to one with the latest expiration.
+      content_settings::SettingInfo info;
+      base::Value stored_abusive_value(hcsm()->GetWebsiteSetting(
+          url, url,
+          ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
+          &info));
+      CHECK(!stored_abusive_value.is_none());
+      if (revoked_permissions.metadata.expiration() <
+          info.metadata.expiration()) {
+        permissions_data.constraints = GetConstraintFromInfo(info);
+      }
     }
 
     result->AddRevokedPermission(permissions_data);
@@ -811,12 +821,10 @@ RevokedPermissionsService::GetRevokedPermissions() {
     permissions_data.permission_types.insert(
         static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
 
-    // Add `abusive_revocation_constraints`.
-    permissions_data.abusive_revocation_constraints =
-        content_settings::ContentSettingConstraints(
-            revoked_abusive_notification_permission.metadata.expiration() -
-            revoked_abusive_notification_permission.metadata.lifetime());
-    permissions_data.abusive_revocation_constraints.set_lifetime(
+    permissions_data.constraints = content_settings::ContentSettingConstraints(
+        revoked_abusive_notification_permission.metadata.expiration() -
+        revoked_abusive_notification_permission.metadata.lifetime());
+    permissions_data.constraints.set_lifetime(
         revoked_abusive_notification_permission.metadata.lifetime());
 
     result->AddRevokedPermission(permissions_data);
