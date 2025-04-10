@@ -2036,17 +2036,9 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
-// TODO: crbug.com/408140463 - This test is flaky on Mac builders.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CacheControlNoStoreSessionTerminated \
-  DISABLED_CacheControlNoStoreSessionTerminated
-#else
-#define MAYBE_CacheControlNoStoreSessionTerminated \
-  CacheControlNoStoreSessionTerminated
-#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreUnlessDeviceBoundSessionTerminated,
-    MAYBE_CacheControlNoStoreSessionTerminated) {
+    CacheControlNoStoreSessionTerminated) {
   EXPECT_TRUE(embedded_test_server()->InitializeAndListen());
   embedded_test_server()->RegisterRequestHandler(
       net::device_bound_sessions::GetTestRequestHandler(
@@ -2092,10 +2084,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(device_bound_session_manager);
 
   base::RunLoop run_loop;
+  cached_rfh->SetDeviceBoundSessionTerminatedCallback(run_loop.QuitClosure());
   device_bound_session_manager->DeleteAllSessions(
       /*created_after_time=*/std::nullopt,
       /*created_before_time=*/std::nullopt,
-      /*filter=*/nullptr, run_loop.QuitClosure());
+      /*filter=*/nullptr, base::DoNothing());
   run_loop.Run();
 
   // 5) Go back. `cached_rfh` should not be restored from bfcache.
@@ -2120,17 +2113,9 @@ std::unique_ptr<net::test_server::HttpResponse> RedirectToUrl(
   return http_response;
 }
 
-// TODO: crbug.com/408140463 - This test is flaky on Mac builders.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CacheControlNoStoreSessionTerminatedOnRedirectedPage \
-  DISABLED_CacheControlNoStoreSessionTerminatedOnRedirectedPage
-#else
-#define MAYBE_CacheControlNoStoreSessionTerminatedOnRedirectedPage \
-  CacheControlNoStoreSessionTerminatedOnRedirectedPage
-#endif
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreUnlessDeviceBoundSessionTerminated,
-    MAYBE_CacheControlNoStoreSessionTerminatedOnRedirectedPage) {
+    CacheControlNoStoreSessionTerminatedOnRedirectedPage) {
   EXPECT_TRUE(embedded_test_server()->InitializeAndListen());
   embedded_test_server()->RegisterRequestHandler(
       net::device_bound_sessions::GetTestRequestHandler(
@@ -2182,10 +2167,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(device_bound_session_manager);
 
   base::RunLoop run_loop;
+  cached_rfh->SetDeviceBoundSessionTerminatedCallback(run_loop.QuitClosure());
   device_bound_session_manager->DeleteAllSessions(
       /*created_after_time=*/std::nullopt,
       /*created_before_time=*/std::nullopt,
-      /*filter=*/nullptr, run_loop.QuitClosure());
+      /*filter=*/nullptr, base::DoNothing());
   run_loop.Run();
 
   // 5) Go back. `cached_rfh` should not be restored from bfcache.

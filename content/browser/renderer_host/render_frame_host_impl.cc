@@ -18404,6 +18404,12 @@ RenderFrameHostImpl::DeviceBoundSessionObserver::~DeviceBoundSessionObserver() =
 void RenderFrameHostImpl::DeviceBoundSessionObserver::
     OnDeviceBoundSessionAccessed(
         const net::device_bound_sessions::SessionAccess& access) {
+  if (!is_terminated_ &&
+      access.access_type ==
+          net::device_bound_sessions::SessionAccess::AccessType::kTermination &&
+      terminated_callback_) {
+    std::move(terminated_callback_).Run();
+  }
   is_terminated_ |=
       access.access_type ==
       net::device_bound_sessions::SessionAccess::AccessType::kTermination;
