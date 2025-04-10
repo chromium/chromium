@@ -109,7 +109,7 @@ public class HistoryTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
+    @EnableFeatures(SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO)
     // Tests that the history sync opt-in promo is shown correctly when display conditions are met,
     // and the history sync opt-in flow works correctly when the CTA is clicked.
     public void testHistorySyncPromoHeader_withHistoryRecord() throws Exception {
@@ -149,7 +149,7 @@ public class HistoryTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(SigninFeatures.HISTORY_OPT_IN_ENTRY_POINTS)
+    @EnableFeatures(SigninFeatures.HISTORY_PAGE_HISTORY_SYNC_PROMO)
     // Tests that the history sync opt-in promo when there's no history record, to verify
     // interactions with the history page empty state.
     public void testHistorySyncPromoHeader_noHistoryRecord() throws Exception {

@@ -4341,17 +4341,17 @@ constexpr char kDisableFacilitatedPaymentsMerchantAllowlistInternalName[] =
 
 #if BUILDFLAG(IS_ANDROID)
 
-const char kHistoryOptInEntryPointVariationFeatures[] =
-    "HistoryOptInEntryPoints,"
-    "HistoryOptInPromoCtaStringVariation";
+const char kHistoryPagePromoVariationFeatures[] =
+    "HistoryPageHistorySyncPromo,"
+    "HistoryPagePromoCtaStringVariation";
 
 const FeatureEntry::Choice kHistoryOptInEntryPointChoices[] = {
     {"Default", "", ""},
-    {"Enabled with Turn On promo CTA", "enable-features",
-     "HistoryOptInEntryPoints"},
-    {"Enabled with Continue promo CTA", "enable-features",
-     kHistoryOptInEntryPointVariationFeatures},
-    {"Disabled", "disable-features", kHistoryOptInEntryPointVariationFeatures},
+    {"Enabled with Turn On CTA", "enable-features",
+     "HistoryPageHistorySyncPromo"},
+    {"Enabled with Continue CTA", "enable-features",
+     kHistoryPagePromoVariationFeatures},
+    {"Disabled", "disable-features", kHistoryPagePromoVariationFeatures},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -10887,9 +10887,9 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kLanguageDetectionAPI)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"history-opt-in-entry-points",
-     flag_descriptions::kHistoryOptInEntryPointsName,
-     flag_descriptions::kHistoryOptInEntryPointsDescription, kOsAndroid,
+    {"history-page-history-sync-promo",
+     flag_descriptions::kHistoryPageHistorySyncPromoName,
+     flag_descriptions::kHistoryPageHistorySyncPromoDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kHistoryOptInEntryPointChoices)},
 
     {"supervised-force-signin-with-capabilities",

@@ -5231,8 +5231,8 @@
     "expiry_milestone": 125
   },
   {
-    "name": "history-opt-in-entry-points",
-    "owners": [ "samarchehade@google.com", "chrome-signin-team@google.com" ],
+    "name": "history-page-history-sync-promo",
+    "owners": [ "myuu@google.com", "chrome-signin-mobile-team@google.com" ],
     "expiry_milestone": 140
   },
   {

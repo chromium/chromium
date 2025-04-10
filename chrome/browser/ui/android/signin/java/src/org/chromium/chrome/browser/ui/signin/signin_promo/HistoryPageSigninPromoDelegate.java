@@ -125,7 +125,7 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
 
     @Override
     String getTextForPrimaryButton(@Nullable DisplayableProfileData profileData) {
-        if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_OPT_IN_PROMO_CTA_STRING_VARIATION)) {
+        if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_PAGE_PROMO_CTA_STRING_VARIATION)) {
             return mContext.getString(R.string.signin_continue);
         } else {
             return mContext.getString(R.string.signin_promo_turn_on);

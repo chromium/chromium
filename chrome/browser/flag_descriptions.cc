@@ -8242,9 +8242,11 @@ const char kSupervisedUserLocalWebApprovalsDescription[] =
 #endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
-const char kHistoryOptInEntryPointsName[] = "History opt-in entry points";
-const char kHistoryOptInEntryPointsDescription[] =
-    "Add some history opt-in entry points.";
+const char kHistoryPageHistorySyncPromoName[] =
+    "History sync promo in History Page";
+const char kHistoryPageHistorySyncPromoDescription[] =
+    "Add a history sync opt-in promo in the History Page for signed-in users "
+    "that are not syncing history & tabs.";
 
 const char kWebSerialOverBluetoothName[] = "Enable Web Serial over Bluetooth";
 const char kWebSerialOverBluetoothDescription[] =

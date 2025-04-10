@@ -10457,6 +10457,7 @@ from previous Chrome versions.
   <int value="-1473179394" label="CrOSLateBootCameraAngleBackend:enabled"/>
   <int value="-1473136627" label="enable-web-payments"/>
   <int value="-1472825316" label="ContextualSearchLongpressResolve:enabled"/>
+  <int value="-1472171434" label="HistoryPageHistorySyncPromo:disabled"/>
   <int value="-1471353813" label="AddToHomescreenIPH:disabled"/>
   <int value="-1471021059"
       label="OmniboxUIExperimentShowSuggestionFavicons:disabled"/>
@@ -12086,6 +12087,7 @@ from previous Chrome versions.
   <int value="-851413329" label="AnnotatorMode:disabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>
   <int value="-849792130" label="UserMediaCaptureOnFocus:disabled"/>
+  <int value="-849065891" label="HistoryPagePromoCtaStringVariation:enabled"/>
   <int value="-848691867" label="DesktopPWAWindowing:enabled"/>
   <int value="-847735582" label="NotificationsViaHelperApp:enabled"/>
   <int value="-847216521" label="ChromeDuplex:enabled"/>
@@ -12320,6 +12322,7 @@ from previous Chrome versions.
   <int value="-753833897" label="AppLaunchAutomation:disabled"/>
   <int value="-753747289" label="AudioDucking:disabled"/>
   <int value="-753170441" label="LocationProviderManager:disabled"/>
+  <int value="-752707368" label="HistoryPagePromoCtaStringVariation:disabled"/>
   <int value="-752554170" label="ShowNewTabAnimations:disabled"/>
   <int value="-752321357" label="AutofillEnableGoogleIssuedCard:enabled"/>
   <int value="-750175757" label="ClientLoFi:enabled"/>
@@ -13702,6 +13705,7 @@ from previous Chrome versions.
   <int value="-217885320" label="CdmFactoryDaemon:disabled"/>
   <int value="-217352290"
       label="BindingManagerUseNotPerceptibleBinding:disabled"/>
+  <int value="-217127288" label="HistoryPageHistorySyncPromo:enabled"/>
   <int value="-216219963" label="ash-shelf-color-scheme"/>
   <int value="-216189310"
       label="DebugHistoryInterventionNoUserActivation:enabled"/>

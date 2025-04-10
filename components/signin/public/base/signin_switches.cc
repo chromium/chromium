@@ -23,15 +23,15 @@ BASE_FEATURE(kForceSupervisedSigninWithCapabilities,
              "ForceSupervisedSigninWithCapabilities",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Add some history opt-in entry points on Android.
-BASE_FEATURE(kHistoryOptInEntryPoints,
-             "HistoryOptInEntryPoints",
+// Add history sync opt-in promo in the History Page.
+BASE_FEATURE(kHistoryPageHistorySyncPromo,
+             "HistoryPageHistorySyncPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Makes the History Page history opt-in promo use a different CTA String.
-// No-op unless "HistoryOptInEntryPoints" is enabled.
-BASE_FEATURE(kHistoryOptInPromoCtaStringVariation,
-             "HistoryOptInPromoCtaStringVariation",
+// No-op unless "HistoryPageHistorySyncPromo" is enabled.
+BASE_FEATURE(kHistoryPagePromoCtaStringVariation,
+             "HistoryPagePromoCtaStringVariation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Add history opt-in IPH in settings on Android.
