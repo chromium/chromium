@@ -106,6 +106,18 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
 
+  // Loads unpacked extension from `path` with manifest `manifest_relative_path`
+  // and imitates that it is a component extension.
+  // `manifest_relative_path` is relative to `path`.
+  const Extension* LoadExtensionAsComponentWithManifest(
+      const base::FilePath& path,
+      const base::FilePath::CharType* manifest_relative_path);
+
+  // Loads unpacked extension from `path` and imitates that it is a component
+  // extension. Equivalent to
+  // `LoadExtensionAsComponentWithManifest(path, kManifestFilename)`.
+  const Extension* LoadExtensionAsComponent(const base::FilePath& path);
+
   void DisableExtension(const ExtensionId& extension_id);
   void DisableExtension(const ExtensionId& extension_id,
                         const DisableReasonSet& disable_reasons);

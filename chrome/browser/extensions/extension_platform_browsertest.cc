@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -337,13 +338,23 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
 const Extension* ExtensionPlatformBrowserTest::LoadExtension(
     const base::FilePath& path,
     const LoadOptions& options) {
-  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
-
   base::FilePath extension_path;
   if (!extensions::browser_test_util::ModifyExtensionIfNeeded(
           options, context_type_, GetTestPreCount(), temp_dir_.GetPath(), path,
           &extension_path)) {
     return nullptr;
+  }
+
+  if (options.load_as_component) {
+    // TODO(crbug.com/40166157): Decide if other load options
+    // can/should be supported when load_as_component is true.
+    DCHECK(!options.allow_in_incognito);
+    DCHECK(!options.allow_file_access);
+    DCHECK(!options.ignore_manifest_warnings);
+    DCHECK(options.wait_for_renderers);
+    DCHECK(options.install_param == nullptr);
+    DCHECK(!options.wait_for_registration_stored);
+    return LoadExtensionAsComponent(extension_path);
   }
 
   ChromeTestExtensionLoader loader(profile());
@@ -357,6 +368,7 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
   }
 
   std::unique_ptr<TestServiceWorkerContextObserver> registration_observer;
+
   if (options.wait_for_registration_stored) {
     registration_observer =
         std::make_unique<TestServiceWorkerContextObserver>(profile());
@@ -364,14 +376,48 @@ const Extension* ExtensionPlatformBrowserTest::LoadExtension(
 
   scoped_refptr<const Extension> extension =
       loader.LoadExtension(extension_path);
+  if (!extension) {
+    return nullptr;
+  }
+
   last_loaded_extension_id_ = extension->id();
 
-  if (options.wait_for_registration_stored) {
-    CHECK(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+  // Note: `options.wait_for_registration_stored` may be set even if an
+  // extension isn't service worker-based if the test is using LoadExtension()
+  // in a parameterized test exercising both MV2 and MV3 extensions.
+  if (options.wait_for_registration_stored &&
+      BackgroundInfo::IsServiceWorkerBased(extension.get())) {
     registration_observer->WaitForRegistrationStored();
   }
 
   return extension.get();
+}
+
+const Extension*
+ExtensionPlatformBrowserTest::LoadExtensionAsComponentWithManifest(
+    const base::FilePath& path,
+    const base::FilePath::CharType* manifest_relative_path) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string manifest;
+  if (!base::ReadFileToString(path.Append(manifest_relative_path), &manifest)) {
+    return nullptr;
+  }
+
+  auto* component_loader = ComponentLoader::Get(profile());
+  component_loader->set_ignore_allowlist_for_testing(true);
+  extensions::ExtensionId extension_id = component_loader->Add(manifest, path);
+  const Extension* extension =
+      extension_registry()->enabled_extensions().GetByID(extension_id);
+  if (!extension) {
+    return nullptr;
+  }
+  set_last_loaded_extension_id(extension->id());
+  return extension;
+}
+
+const Extension* ExtensionPlatformBrowserTest::LoadExtensionAsComponent(
+    const base::FilePath& path) {
+  return LoadExtensionAsComponentWithManifest(path, kManifestFilename);
 }
 
 void ExtensionPlatformBrowserTest::DisableExtension(

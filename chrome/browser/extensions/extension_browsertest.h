@@ -76,26 +76,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
   CreateTestNotificationObserver() final;
   Profile* profile() final;
 
-  // These functions intentionally shadow the versions in the base class
-  // ExtensionPlatformBrowserTest. They cannot be made virtual because there
-  // are too many individual tests that define a LoadExtension() function and
-  // shadowing virtual functions is not allowed.
-  const Extension* LoadExtension(const base::FilePath& path);
-  const Extension* LoadExtension(const base::FilePath& path,
-                                 const LoadOptions& options);
-
-  // Loads unpacked extension from |path| with manifest |manifest_relative_path|
-  // and imitates that it is a component extension.
-  // |manifest_relative_path| is relative to |path|.
-  const Extension* LoadExtensionAsComponentWithManifest(
-      const base::FilePath& path,
-      const base::FilePath::CharType* manifest_relative_path);
-
-  // Loads unpacked extension from |path| and imitates that it is a component
-  // extension. Equivalent to
-  // LoadExtensionAsComponentWithManifest(path, kManifestFilename).
-  const Extension* LoadExtensionAsComponent(const base::FilePath& path);
-
   // Loads and launches the app from |path|, and returns it. Waits until the
   // launched app's WebContents has been created and finished loading. If the
   // app uses a guest view this will create two WebContents (one for the host
