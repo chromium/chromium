@@ -1151,4 +1151,13 @@ TEST_P(FindBufferParamTest, IgnorableElementAtAnnotationLastCrash) {
   // Pass if no crash.
 }
 
+// crbug.com/409358630
+TEST_F(FindBufferTest, OrphanRubyTextCrash) {
+  SetBodyContent("abc<h1 style='display:ruby-text' id='h'>TEXT</h1>def");
+  FindBuffer buffer(EphemeralRangeInFlatTree(PositionFromParentId("h", 0),
+                                             LastPositionInDocument()),
+                    RubySupport::kEnabledForcefully);
+  EXPECT_EQ(1u, CaseInsensitiveMatchCount(buffer, u"textd"));
+}
+
 }  // namespace blink

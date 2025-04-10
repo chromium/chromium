@@ -2098,6 +2098,11 @@
       status: "stable",
     },
     {
+      // crbug.com/409358630
+      name: "FindOrphanAnnotationFix",
+      status: "stable",
+    },
+    {
       name: "Fledge",
       status: "stable",
       base_feature: "none",

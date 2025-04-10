@@ -31,7 +31,9 @@ const Node* FindOuterMostRubyContainerInBlockContainer(const Node& node,
     }
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->Display() == EDisplay::kRuby ||
-          style->Display() == EDisplay::kBlockRuby) {
+          style->Display() == EDisplay::kBlockRuby ||
+          (RuntimeEnabledFeatures::FindOrphanAnnotationFixEnabled() &&
+           style->Display() == EDisplay::kRubyText)) {
         ruby_container = element;
       }
       if (&ancestor == &block) {
