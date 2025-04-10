@@ -757,7 +757,7 @@ void TileManager::InitializeTilesWithResourcesForTesting(
   for (size_t i = 0; i < tiles.size(); ++i) {
     TileDrawInfo& draw_info = tiles[i]->draw_info();
     ResourcePool::InUsePoolResource resource = resource_pool_->AcquireResource(
-        tiles[i]->desired_texture_size(), raster_buffer_provider_->GetFormat(),
+        tiles[i]->desired_texture_size(), client_->GetTileFormat(),
         client_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB)
             .color_space);
     raster_buffer_provider_->AcquireBufferForRaster(
@@ -2006,7 +2006,7 @@ void TileManager::NeedsInvalidationForCheckerImagedTiles() {
 }
 
 viz::SharedImageFormat TileManager::DetermineFormat(const Tile* tile) const {
-  return raster_buffer_provider_->GetFormat();
+  return client_->GetTileFormat();
 }
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat>

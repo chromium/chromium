@@ -2061,6 +2061,10 @@ void LayerTreeHostImpl::SetIsLikelyToRequireADraw(
   is_likely_to_require_a_draw_ = is_likely_to_require_a_draw;
 }
 
+viz::SharedImageFormat LayerTreeHostImpl::GetTileFormat() const {
+  return raster_caps_.tile_format;
+}
+
 TargetColorParams LayerTreeHostImpl::GetTargetColorParams(
     gfx::ContentColorUsage content_color_usage) const {
   TargetColorParams params;

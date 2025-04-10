@@ -2461,15 +2461,14 @@ void RunPartialTileDecodeCheck(std::unique_ptr<LayerTreeHostImpl> host_impl,
   // Create a VerifyResourceContentIdTileTaskManager to ensure that the
   // raster task we see is created with |kExpectedId|.
   VerifyResourceContentIdRasterBufferProvider raster_buffer_provider(
-      viz::SinglePlaneFormat::kRGBA_8888, kExpectedId);
+      host_impl->GetTileFormat(), kExpectedId);
   host_impl->tile_manager()->SetRasterBufferProviderForTesting(
       &raster_buffer_provider);
 
   // Ensure there's a resource with our |kInvalidatedId| in the resource pool.
   ResourcePool::InUsePoolResource resource =
       host_impl->resource_pool()->AcquireResource(
-          kTileSize, viz::SinglePlaneFormat::kRGBA_8888,
-          gfx::ColorSpace::CreateSRGB());
+          kTileSize, host_impl->GetTileFormat(), gfx::ColorSpace::CreateSRGB());
   host_impl->resource_pool()->OnContentReplaced(resource, kInvalidatedId);
   host_impl->resource_pool()->ReleaseResource(std::move(resource));
 
