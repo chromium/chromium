@@ -15,8 +15,13 @@ class WebState;
 
 @class EnhancedCalendarConfiguration;
 
+@protocol EnhancedCalendarMediatorDelegate;
+
 // The mediator for the Enhanced Calendar feature's UI.
 @interface EnhancedCalendarMediator : NSObject <EnhancedCalendarMutator>
+
+// The delegate for this mediator.
+@property(nonatomic, weak) id<EnhancedCalendarMediatorDelegate> delegate;
 
 - (instancetype)initWithWebState:(web::WebState*)webState
           enhancedCalendarConfig:
@@ -27,6 +32,9 @@ class WebState;
 
 // Disconnect the mediator.
 - (void)disconnect;
+
+// Creates the request proto and executes the Enhanced Calendar request.
+- (void)startEnhancedCalendarRequest;
 
 @end
 
