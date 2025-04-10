@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_arc_mixin.h"
 
+#include <string>
+
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -14,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
@@ -274,7 +275,7 @@ void ChromeOSIntegrationArcMixin::SetUpCommandLine(
     command_line->AppendSwitchASCII(ash::switches::kArcAvailability,
                                     "installed");
     scoped_feature_list_.emplace();
-    scoped_feature_list_->InitFromCommandLine("EnableARC", base::EmptyString());
+    scoped_feature_list_->InitFromCommandLine("EnableARC", std::string());
   }
 
   if (mode_ == Mode::kSupported) {

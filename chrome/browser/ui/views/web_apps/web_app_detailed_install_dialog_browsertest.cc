@@ -4,10 +4,10 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
       views::test::AnyWidgetTestPasskey{}, "WebAppDetailedInstallDialog");
   base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
   SetScreenshotFetcher(std::make_unique<FakeScreenshotFetcher>(
-      GetScreenshots(base::EmptyString()), base::flat_set<int>()));
+      GetScreenshots(std::string()), base::flat_set<int>()));
   ShowWebAppDetailedInstallDialog(
       popup_browser->tab_strip_model()->GetActiveWebContents(),
       GetInstallInfo(), std::move(install_tracker), test_future.GetCallback(),
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
         }
       }));
   SetScreenshotFetcher(std::make_unique<FakeScreenshotFetcher>(
-      GetScreenshots(base::EmptyString()), base::flat_set<int>()));
+      GetScreenshots(std::string()), base::flat_set<int>()));
   ShowWebAppDetailedInstallDialog(popup_contents, GetInstallInfo(),
                                   std::move(install_tracker), base::DoNothing(),
                                   screenshot_fetcher(),
@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
   SetScreenshotFetcher(std::make_unique<FakeScreenshotFetcher>(
       GetScreenshots("multiple_screenshots"), base::flat_set<int>({0, 1, 2})));
 
-  ShowUi(base::EmptyString());
+  ShowUi(std::string());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, widget);
 
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
   SetScreenshotFetcher(std::make_unique<FakeScreenshotFetcher>(
       GetScreenshots("multiple_screenshots"), base::flat_set<int>({1})));
 
-  ShowUi(base::EmptyString());
+  ShowUi(std::string());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, widget);
 
@@ -452,7 +452,7 @@ IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,
   SetScreenshotFetcher(std::make_unique<FakeScreenshotFetcher>(
       GetScreenshots("multiple_screenshots"), base::flat_set<int>({2})));
 
-  ShowUi(base::EmptyString());
+  ShowUi(std::string());
   views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
   ASSERT_NE(nullptr, widget);
 
@@ -476,7 +476,7 @@ class PictureInPictureDetailedInstallDialogOcclusionTest
     : public MixinBasedInProcessBrowserTest {
  protected:
   void ShowDialogUi() {
-    FakeScreenshotFetcher fetcher(GetScreenshots(base::EmptyString()),
+    FakeScreenshotFetcher fetcher(GetScreenshots(std::string()),
                                   base::flat_set<int>());
     ShowWebAppDetailedInstallDialog(
         browser()->tab_strip_model()->GetWebContentsAt(0), GetInstallInfo(),
