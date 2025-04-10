@@ -8262,21 +8262,6 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     resp = conn.WaitForResponse(cmd_id1, channel="abc")
     self.assertEqual(9, resp['result']['value'])
 
-  def testLegacyChannel(self):
-    conn = self.createWebSocketConnection()
-    context_id = self.getContextId(conn, 0)
-    self.assertIsNotNone(context_id)
-
-    cmd_id = conn.PostCommand({
-      'id': 10006,
-      'channel': 'some_legacy_channel',
-      'method': 'browsingContext.getTree',
-      'params': {}
-    })
-
-    with self.assertRaises(chromedriver.InvalidArgument):
-      conn.WaitForResponse(cmd_id)
-
   def testMultipleConnections(self):
     conn1 = self.createWebSocketConnection()
     context_id = self.getContextId(conn1, 0)
@@ -8337,7 +8322,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
                                 channel='3')
     cmd_id4 = self.postEvaluate(conn2, '98', context_id=context_id, id=100,
                                 channel='')
-    cmd_id5 = self.postEvaluate(conn2, '6', context_id=context_id, id=100)
+    cmd_id5 = self.postEvaluate(conn2, '6', context_id=context_id, id=101)
 
     resp = conn2.WaitForResponse(cmd_id3, channel='3')
     self.assertEqual(41, resp['result']['value'])
@@ -8345,7 +8330,7 @@ class BidiTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual(77, resp['result']['value'])
     resp = conn1.WaitForResponse(cmd_id2, channel='/')
     self.assertEqual(23, resp['result']['value'])
-    resp = conn2.WaitForResponse(cmd_id4, channel='')
+    resp = conn2.WaitForResponse(cmd_id4)
     self.assertEqual(98, resp['result']['value'])
     resp = conn2.WaitForResponse(cmd_id5)
     self.assertEqual(6, resp['result']['value'])

@@ -83,7 +83,6 @@ struct Session {
   static const base::TimeDelta kDefaultBrowserStartupTimeout;
   // BiDi channels
   static const char kChannelSuffix[];
-  static const char kNoChannelSuffix[];
 
   explicit Session(const std::string& id);
   Session(const std::string& id, std::unique_ptr<Chrome> chrome);

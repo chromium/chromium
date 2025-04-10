@@ -307,15 +307,11 @@ Status InitSessionHelper(const InitSessionParams& bound_params,
 
   if (session->web_socket_url) {
     // Suffixes used with the client channels.
-    std::string client_suffixes[] = {Session::kChannelSuffix,
-                                     Session::kNoChannelSuffix};
-    for (std::string suffix : client_suffixes) {
-      BidiTracker* bidi_tracker = new BidiTracker();
-      bidi_tracker->SetChannelSuffix(std::move(suffix));
-      bidi_tracker->SetBidiCallback(base::BindRepeating(
-          &Session::OnBidiResponse, base::Unretained(session)));
-      devtools_event_listeners.emplace_back(bidi_tracker);
-    }
+    BidiTracker* bidi_tracker = new BidiTracker();
+    bidi_tracker->SetChannelSuffix(std::move(Session::kChannelSuffix));
+    bidi_tracker->SetBidiCallback(base::BindRepeating(
+        &Session::OnBidiResponse, base::Unretained(session)));
+    devtools_event_listeners.emplace_back(bidi_tracker);
   }
 
   status = LaunchChrome(
@@ -1824,21 +1820,10 @@ Status ForwardBidiCommand(Session* session,
 
   base::Value::Dict bidi_cmd = data->Clone();
 
-  if (bidi_cmd.FindString("channel") != nullptr) {
-    return Status{kInvalidArgument,
-                  "Legacy `channel` parameter is deprecated and not supported. "
-                  "Use `goog:channel` instead."};
-  }
-
   std::string* user_channel = bidi_cmd.FindString("goog:channel");
-  std::string channel;
-  if (user_channel) {
-    channel = *user_channel + "/" + base::NumberToString(*connection_id) +
-              Session::kChannelSuffix;
-  } else {
-    channel =
-        "/" + base::NumberToString(*connection_id) + Session::kNoChannelSuffix;
-  }
+  std::string channel = (user_channel ? *user_channel : "") + "/" +
+                        base::NumberToString(*connection_id) +
+                        Session::kChannelSuffix;
 
   bidi_cmd.Set("goog:channel", std::move(channel));
   status = web_view->PostBidiCommand(std::move(bidi_cmd));

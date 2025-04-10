@@ -111,7 +111,6 @@ const base::TimeDelta Session::kDefaultScriptTimeout = base::Seconds(30);
 const base::TimeDelta Session::kDefaultBrowserStartupTimeout =
     base::Seconds(60);
 const char Session::kChannelSuffix[] = "/chan";
-const char Session::kNoChannelSuffix[] = "/nochan";
 
 Session::Session(const std::string& id)
     : id(id),
@@ -229,7 +228,7 @@ Status Session::OnBidiResponse(base::Value::Dict payload) {
     return status;
   }
 
-  if (suffix == kNoChannelSuffix) {
+  if (channel->empty()) {
     payload.Remove("goog:channel");
   } else if (suffix != kChannelSuffix) {
     return Status{kUnknownError,
