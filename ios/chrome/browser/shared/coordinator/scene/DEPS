@@ -49,4 +49,6 @@ include_rules = [
   "+ios/chrome/browser/window_activities/model",
   "+ios/chrome/browser/authentication/ui_bundled",
   "+ios/chrome/browser/youtube_incognito/coordinator",
+  "+ios/chrome/browser/widget_kit/model/features.h",
+  "+ios/chrome/browser/widget_kit/model/model_swift.h",
 ]
