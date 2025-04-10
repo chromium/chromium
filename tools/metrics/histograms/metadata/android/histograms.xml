@@ -7414,6 +7414,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ShouldInterceptRequest.InterceptDuration"
+    units="ms" expires_after="2026-03-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Measures the total time for shouldInterceptRequest in WebView, from the time
+    the invocation is posted to the worker thread pool, until the response is
+    posted back to the IO thread.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.ShouldInterceptRequest.IsRequestIntercepted"
     enum="Boolean" expires_after="2024-06-13">
   <owner>ntfschr@chromium.org</owner>

@@ -1087,6 +1087,10 @@ public final class ProductionSupportedFlagList {
                 MediaFeatures.MULTI_BUFFER_NEVER_DEFER,
                 "Controls behavior of network deferrals during media src=file playbacks."),
         Flag.baseFeature("PrefetchScheduler"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_SEQUENCED_SHOULD_INTERCEPT_REQUEST,
+                "Enforces sequencing of calls to shouldInterceptRequest, "
+                        + "instead of invoking each call on a separate background thread."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

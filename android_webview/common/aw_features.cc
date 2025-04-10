@@ -269,4 +269,13 @@ BASE_FEATURE(kWebViewShortCircuitShouldInterceptRequest,
 BASE_FEATURE(kWebViewUseStartupTasksLogic,
              "WebViewUseStartupTasksLogic",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, WebView will post all calls to shouldInterceptRequest onto a
+// global sequenced task runner, which will guarantee sequential invocation.
+// This is technically the expected behavior, but has not been the implemented
+// behavior since 2017. This flag is meant to experiment to measure the
+// performance impact of restoring the original behavior.
+BASE_FEATURE(kWebViewSequencedShouldInterceptRequest,
+             "WebViewSequencedShouldInterceptRequest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace android_webview::features
