@@ -46,23 +46,17 @@ bool ShouldDisableSiteIsolationDueToMemorySlow(
   //   reduce the amount of memory seen by AmountOfPhysicalMemoryMB(). Both
   //   partial and strict site isolation thresholds can be overridden via
   //   params defined in a kSiteIsolationMemoryThresholds field trial.
-  // - Desktop does not enforce a default memory threshold, but for now we
-  //   still support a threshold defined via a kSiteIsolationMemoryThresholds
-  //   field trial.  The trial typically carries the threshold in a param; if
-  //   it doesn't, use a default that's slightly higher than 1GB (see
-  //   https://crbug.com/844118).
-  int default_memory_threshold_mb;
+  // - Desktop does not enforce a default memory threshold.
 #if BUILDFLAG(IS_ANDROID)
+  int default_memory_threshold_mb;
   if (site_isolation_mode == content::SiteIsolationMode::kStrictSiteIsolation) {
     default_memory_threshold_mb = 3200;
   } else {
     default_memory_threshold_mb = 1900;
   }
-#else
-  default_memory_threshold_mb = 1077;
-#endif
 
-  if (base::FeatureList::IsEnabled(features::kSiteIsolationMemoryThresholds)) {
+  if (base::FeatureList::IsEnabled(
+          features::kSiteIsolationMemoryThresholdsAndroid)) {
     std::string param_name;
     switch (site_isolation_mode) {
       case content::SiteIsolationMode::kStrictSiteIsolation:
@@ -73,12 +67,11 @@ bool ShouldDisableSiteIsolationDueToMemorySlow(
         break;
     }
     int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
-        features::kSiteIsolationMemoryThresholds, param_name,
+        features::kSiteIsolationMemoryThresholdsAndroid, param_name,
         default_memory_threshold_mb);
     return base::SysInfo::AmountOfPhysicalMemoryMB() <= memory_threshold_mb;
   }
 
-#if BUILDFLAG(IS_ANDROID)
   if (base::SysInfo::AmountOfPhysicalMemoryMB() <=
       default_memory_threshold_mb) {
     return true;
@@ -155,8 +148,9 @@ bool SiteIsolationPolicy::IsIsolationForPasswordSitesEnabled() {
   // chrome://flags, enterprise policy controlled via
   // switches::kDisableSiteIsolationForPolicy, and memory threshold checks in
   // ShouldDisableSiteIsolationDueToMemoryThreshold().
-  if (!content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled())
+  if (!content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
     return false;
+  }
 
   // The feature needs to be checked last, because checking the feature
   // activates the field trial and assigns the client either to a control or an
@@ -181,8 +175,9 @@ bool SiteIsolationPolicy::IsIsolationForOAuthSitesEnabled() {
   // chrome://flags, enterprise policy controlled via
   // switches::kDisableSiteIsolationForPolicy, and memory threshold checks in
   // ShouldDisableSiteIsolationDueToMemoryThreshold().
-  if (!content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled())
+  if (!content::SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled()) {
     return false;
+  }
 
   // The feature needs to be checked last, because checking the feature
   // activates the field trial and assigns the client either to a control or an
@@ -254,8 +249,9 @@ void SiteIsolationPolicy::PersistUserTriggeredIsolatedOrigin(
       site_isolation::prefs::kUserTriggeredIsolatedOrigins);
   base::Value::List& list = update.Get();
   base::Value value(origin.Serialize());
-  if (!base::Contains(list, value))
+  if (!base::Contains(list, value)) {
     list.Append(std::move(value));
+  }
 }
 
 // static
@@ -349,8 +345,9 @@ void SiteIsolationPolicy::ApplyPersistedIsolatedOrigins(
       ScopedDictPrefUpdate update(pref_service,
                                   prefs::kWebTriggeredIsolatedOrigins);
       base::Value::Dict& updated_dict = update.Get();
-      for (const auto& entry : expired_entries)
+      for (const auto& entry : expired_entries) {
         updated_dict.Remove(entry);
+      }
     }
 
     if (!origins.empty()) {
@@ -371,8 +368,9 @@ void SiteIsolationPolicy::IsolateStoredOAuthSites(
   // other isolation requirements (such as memory threshold) are satisfied.
   // Note that we don't clear logged-in sites from prefs if site isolation is
   // disabled so that they can be used if isolation is re-enabled later.
-  if (!IsIsolationForOAuthSitesEnabled())
+  if (!IsIsolationForOAuthSitesEnabled()) {
     return;
+  }
 
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
   policy->AddFutureIsolatedOrigins(
@@ -390,8 +388,9 @@ void SiteIsolationPolicy::IsolateStoredOAuthSites(
 void SiteIsolationPolicy::IsolateNewOAuthURL(
     content::BrowserContext* browser_context,
     const GURL& signed_in_url) {
-  if (!IsIsolationForOAuthSitesEnabled())
+  if (!IsIsolationForOAuthSitesEnabled()) {
     return;
+  }
 
   // OAuth information is currently persisted and restored by other layers. See
   // login_detection::prefs::SaveSiteToOAuthSignedInList().
