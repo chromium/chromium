@@ -159,8 +159,7 @@ def FillTrybotRuns(blamelist, trybot, project):
     # into a dict doesn't preserve ordering, so find the largest patchset now.
     for tryjob in all_trybots:
       patchset = int(tryjob['patchset'])
-      if patchset > largest_patchset:
-        largest_patchset = patchset
+      largest_patchset = max(largest_patchset, patchset)
     entry.largest_patchset = largest_patchset
 
     for tryjob in all_trybots:

@@ -277,7 +277,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       while current_time - start_time < 20:
         system_info = tab.browser.GetSystemInfo()
         number_of_crashes = \
-            system_info.gpu.aux_attributes[u'process_crash_count']
+            system_info.gpu.aux_attributes['process_crash_count']
         if number_of_crashes >= expected_kills:
           break
         time.sleep(1)
@@ -288,7 +288,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     time.sleep(5)
     system_info = tab.browser.GetSystemInfo()
     number_of_crashes = \
-        system_info.gpu.aux_attributes[u'process_crash_count']
+        system_info.gpu.aux_attributes['process_crash_count']
 
     if number_of_crashes < expected_kills:
       self.fail('Timed out waiting for a gpu process crash')
