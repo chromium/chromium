@@ -19,11 +19,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/capture/frame_test_util.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
@@ -32,20 +33,25 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace content {
 
 namespace {
 
-gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager() {
+scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface() {
   gpu::GpuChannelEstablishFactory* factory =
       content::BrowserMainLoop::GetInstance()->gpu_channel_establish_factory();
   if (!factory) {
     return nullptr;
   }
 
-  return factory->GetGpuMemoryBufferManager();
+  auto gpu_channel = factory->EstablishGpuChannelSync();
+  if (!gpu_channel) {
+    return nullptr;
+  }
+
+  auto sii = gpu_channel->CreateClientSharedImageInterface();
+  return sii;
 }
 
 }  // namespace
@@ -76,7 +82,6 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
   explicit FakeVideoCaptureStackReceiver(
       base::WeakPtr<FakeVideoCaptureStack> capture_stack)
       : capture_stack_(std::move(capture_stack)),
-        pool_(base::MakeRefCounted<base::UnsafeSharedMemoryPool>()),
         capture_stack_task_runner_(
             base::SequencedTaskRunner::GetCurrentDefault()) {
     DETACH_FROM_SEQUENCE(receiver_sequence_checker_);
@@ -84,8 +89,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     // This will DCHECK if we're not currently on UI thread (due to use of
     // `content::BrowserMainLoop::GetInstance()` in the impl.), but that is
     // fine since the tests currently call us on UI thread:
-    gmb_manager_ = GetGpuMemoryBufferManager();
-
+    sii_ = GetSharedImageInterface();
     receiver_thread_ =
         std::make_unique<base::Thread>("fake-capture-stack-receiver");
     receiver_thread_->StartAndWaitForTesting();
@@ -174,7 +178,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     return video_frame;
   }
 
-  scoped_refptr<media::VideoFrame> GetVideoFrameFromGpuMemoryBuffer(
+  scoped_refptr<media::VideoFrame> GetVideoFrameFromGMBHandle(
       media::ReadyFrameInBuffer frame,
       const gfx::GpuMemoryBufferHandle& gmb_handle) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(receiver_sequence_checker_);
@@ -183,19 +187,18 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
     CHECK_EQ(frame.frame_info->pixel_format,
              media::VideoPixelFormat::PIXEL_FORMAT_NV12);
 
-    gpu::GpuMemoryBufferSupport gmb_support;
-    std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
-        gmb_support.CreateGpuMemoryBufferImplFromHandle(
-            gmb_handle.Clone(), frame.frame_info->coded_size,
-            gfx::BufferFormat::YUV_420_BIPLANAR,
-            gfx::BufferUsage::SCANOUT_VEA_CPU_READ, base::DoNothing(),
-            gmb_manager_, pool_);
-    CHECK(gmb);
-
-    gfx::Size size = gmb->GetSize();
-    auto video_frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        frame.frame_info->visible_rect, size, std::move(gmb),
-        frame.frame_info->timestamp);
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    CHECK(sii_);
+    auto shared_image = sii_->CreateSharedImage(
+        {viz::MultiPlaneFormat::kNV12, frame.frame_info->coded_size,
+         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+         "FakeVideoCaptureStack"},
+        gpu::kNullSurfaceHandle, gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
+        gmb_handle.Clone());
+    auto video_frame = media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), sii_->GenVerifiedSyncToken(),
+        base::NullCallback(), frame.frame_info->visible_rect,
+        frame.frame_info->coded_size, frame.frame_info->timestamp);
     CHECK(video_frame);
 
     video_frame->set_metadata(frame.frame_info->metadata);
@@ -238,7 +241,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
       video_frame = GetVideoFrameFromSharedMemory(
           std::move(frame), it->second->get_read_only_shmem_region().Map());
     } else {
-      video_frame = GetVideoFrameFromGpuMemoryBuffer(
+      video_frame = GetVideoFrameFromGMBHandle(
           std::move(frame), it->second->get_gpu_memory_buffer_handle());
     }
 
@@ -305,16 +308,7 @@ class FakeVideoCaptureStackReceiver final : public media::VideoFrameReceiver {
   base::flat_map<int, media::mojom::VideoBufferHandlePtr> buffers_
       GUARDED_BY_CONTEXT(receiver_sequence_checker_);
 
-  // Needed to create `gfx::GpuMemoryBuffers` from
-  // `gfx::GpuMemoryBufferHandle`s. Will be populated at construction time. Must
-  // be obtained on the UI thread.
-  raw_ptr<gpu::GpuMemoryBufferManager> gmb_manager_
-      GUARDED_BY_CONTEXT(receiver_sequence_checker_) = nullptr;
-
-  // Needed to create `gfx::GpuMemoryBuffers` from
-  // `gfx::GpuMemoryBufferHandle`s. Will be populated at construction time.
-  scoped_refptr<base::UnsafeSharedMemoryPool> pool_
-      GUARDED_BY_CONTEXT(receiver_sequence_checker_);
+  scoped_refptr<gpu::ClientSharedImageInterface> sii_;
 
   // Task runner on which we should be calling into capture stack:
   scoped_refptr<base::SequencedTaskRunner> capture_stack_task_runner_;
