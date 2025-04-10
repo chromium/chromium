@@ -225,6 +225,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the metrics for a form filled with a BNPL issuer VCN were already
   // logged and should not log again.
   bool has_logged_form_filled_with_bnpl_vcn_ = false;
+  // If true, the metrics for a form submitted with a BNPL issuer VCN were
+  // already logged and should not log again.
+  bool has_logged_form_submitted_with_bnpl_vcn_ = false;
 
   CardMetadataLoggingContext metadata_logging_context_;
 

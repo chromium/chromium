@@ -245,4 +245,127 @@ TEST_F(CreditCardFormEventLoggerTest,
                    ->is_bnpl_card());
 }
 
+// Tests that the Bnpl FormSubmittedOnce event is logged once when
+// `LogFormSubmitted()` is called after filling a BNPL suggestion.
+TEST_F(CreditCardFormEventLoggerTest, LogFormSubmitted_BnplFormFilledOnce) {
+  base::HistogramTester histogram_tester;
+
+  FormStructure form =
+      FormStructure(test::GetFormData({.fields = {{}, {}, {}}}));
+  test_api(form).SetFieldTypes({CREDIT_CARD_EXP_MONTH,
+                                CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                                CREDIT_CARD_NUMBER});
+
+  CreditCard card = test::GetVirtualCard();
+  card.set_is_bnpl_card(true);
+  card.set_issuer_id(kBnplAffirmIssuerId);
+
+  auto on_did_fill_form_filling_suggestion = [&, this]() {
+    autofill_manager()
+        .GetCreditCardFormEventLogger()
+        .OnDidFillFormFillingSuggestion(
+            /*credit_card=*/card,
+            /*form=*/form,
+            /*field=*/AutofillField(),
+            /*newly_filled_fields=*/base::flat_set<FieldGlobalId>(),
+            /*safe_filled_fields=*/base::flat_set<FieldGlobalId>(),
+            /*signin_state_for_metrics=*/
+            AutofillMetrics::PaymentsSigninState::kSignedIn,
+            /*trigger_source=*/AutofillTriggerSource::kPopup);
+  };
+
+  on_did_fill_form_filling_suggestion();
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnDidInteractWithAutofillableForm(form);
+  autofill_manager().GetCreditCardFormEventLogger().OnWillSubmitForm(
+      /*form=*/form);
+  autofill_manager().GetCreditCardFormEventLogger().OnFormSubmitted(
+      /*form=*/form);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/autofill_metrics::BnplFormEvent::kFormSubmittedWithAffirmOnce,
+      /*expected_count=*/1);
+
+  // Ensure that BNPL VCN's don't affect regular VCN metrics.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      base::BucketsInclude(
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
+                       /*count=*/0),
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE,
+                       /*count=*/0)));
+
+  // Test that `kFormSubmittedWithAffirmOnce` is logged only once even if
+  // LogFormSubmitted() is called more than once on the same page.
+  on_did_fill_form_filling_suggestion();
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnDidInteractWithAutofillableForm(form);
+  autofill_manager().GetCreditCardFormEventLogger().OnWillSubmitForm(
+      /*form=*/form);
+  autofill_manager().GetCreditCardFormEventLogger().OnFormSubmitted(
+      /*form=*/form);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/autofill_metrics::BnplFormEvent::kFormSubmittedWithAffirmOnce,
+      /*expected_count=*/1);
+
+  // Ensure that BNPL VCN's don't affect regular VCN metrics.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      base::BucketsInclude(
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE,
+                       /*count=*/0),
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE,
+                       /*count=*/0)));
+}
+
+// Tests that the Bnpl FormSubmittedOnce event is not logged when
+// `LogFormSubmitted()` is called after filling a non-BNPL VCN suggestion.
+TEST_F(CreditCardFormEventLoggerTest,
+       LogFormSubmitted_FormSubmittedOnce_NotBnpl) {
+  base::HistogramTester histogram_tester;
+
+  FormStructure form =
+      FormStructure(test::GetFormData({.fields = {{}, {}, {}}}));
+  test_api(form).SetFieldTypes({CREDIT_CARD_EXP_MONTH,
+                                CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                                CREDIT_CARD_NUMBER});
+
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnDidFillFormFillingSuggestion(
+          /*credit_card=*/test::GetVirtualCard(),
+          /*form=*/form,
+          /*field=*/AutofillField(),
+          /*newly_filled_fields=*/base::flat_set<FieldGlobalId>(),
+          /*safe_filled_fields=*/base::flat_set<FieldGlobalId>(),
+          /*signin_state_for_metrics=*/
+          AutofillMetrics::PaymentsSigninState::kSignedIn,
+          /*trigger_source=*/AutofillTriggerSource::kPopup);
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnDidInteractWithAutofillableForm(form);
+  autofill_manager().GetCreditCardFormEventLogger().OnWillSubmitForm(
+      /*form=*/form);
+  autofill_manager().GetCreditCardFormEventLogger().OnFormSubmitted(
+      /*form=*/form);
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/autofill_metrics::BnplFormEvent::kFormSubmittedWithAffirmOnce,
+      /*expected_count=*/0);
+
+  // Ensure that the regular VCN metrics are logged.
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+      base::BucketsInclude(
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED, /*count=*/1),
+          base::Bucket(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_FILLED_ONCE,
+                       /*count=*/1)));
+}
+
 }  // namespace autofill::autofill_metrics

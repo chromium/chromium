@@ -613,7 +613,12 @@ void CreditCardFormEventLogger::LogWillSubmitForm(const FormStructure& form) {
   } else if (logged_suggestion_filled_was_masked_server_card_) {
     Log(FORM_EVENT_MASKED_SERVER_CARD_SUGGESTION_WILL_SUBMIT_ONCE, form);
   } else if (logged_suggestion_filled_was_virtual_card_) {
-    Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, form);
+    CHECK(filled_credit_card_.has_value());
+    // BNPL VCN metrics are handled separately to prevent them from
+    // influencing other VCN metrics, as these represent distinct user flows.
+    if (!filled_credit_card_->is_bnpl_card()) {
+      Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_WILL_SUBMIT_ONCE, form);
+    }
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_WILL_SUBMIT_ONCE, form);
   }
@@ -669,13 +674,23 @@ void CreditCardFormEventLogger::LogFormSubmitted(const FormStructure& form) {
     RecordCardUnmaskFlowEvent(current_authentication_flow_,
                               UnmaskAuthFlowEvent::kFormSubmitted);
   } else if (logged_suggestion_filled_was_virtual_card_) {
-    Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, form);
+    CHECK(filled_credit_card_.has_value());
+    // BNPL VCN metrics are handled separately to prevent them from
+    // influencing other VCN metrics, as these represent distinct user flows.
+    if (filled_credit_card_->is_bnpl_card()) {
+      if (!has_logged_form_submitted_with_bnpl_vcn_) {
+        LogFormSubmittedWithBnplVcn(filled_credit_card_->issuer_id());
+        has_logged_form_submitted_with_bnpl_vcn_ = true;
+      }
+    } else {
+      Log(FORM_EVENT_VIRTUAL_CARD_SUGGESTION_SUBMITTED_ONCE, form);
 
-    // Log BetterAuth.FlowEvents.
-    RecordCardUnmaskFlowEvent(current_authentication_flow_,
-                              UnmaskAuthFlowEvent::kFormSubmitted);
-    LogServerCardUnmaskFormSubmission(
-        payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
+      // Log BetterAuth.FlowEvents.
+      RecordCardUnmaskFlowEvent(current_authentication_flow_,
+                                UnmaskAuthFlowEvent::kFormSubmitted);
+      LogServerCardUnmaskFormSubmission(
+          payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard);
+    }
   } else {
     Log(FORM_EVENT_LOCAL_SUGGESTION_SUBMITTED_ONCE, form);
   }

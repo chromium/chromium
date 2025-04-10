@@ -82,4 +82,16 @@ void LogFormFilledWithBnplVcn(std::string_view issuer_id) {
   }
 }
 
+void LogFormSubmittedWithBnplVcn(std::string_view issuer_id) {
+  if (issuer_id == kBnplAffirmIssuerId) {
+    LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithAffirmOnce);
+  } else if (issuer_id == kBnplZipIssuerId) {
+    LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithZipOnce);
+  } else if (issuer_id == kBnplAfterpayIssuerId) {
+    LogBnplFormEvent(BnplFormEvent::kFormSubmittedWithAfterpayOnce);
+  } else {
+    NOTREACHED();
+  }
+}
+
 }  // namespace autofill::autofill_metrics
