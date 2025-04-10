@@ -486,7 +486,7 @@ void DataTypeManagerImpl::Restart() {
   // restarts.
   if (reason == CONFIGURE_REASON_RECONFIGURATION ||
       reason == CONFIGURE_REASON_NEW_CLIENT ||
-      reason == CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE) {
+      reason == CONFIGURE_REASON_EXISTING_CLIENT_RESTART) {
     for (DataType type : preferred_types_) {
       UMA_HISTOGRAM_ENUMERATION("Sync.ConfigureDataTypes",
                                 DataTypeHistogramValue(type));

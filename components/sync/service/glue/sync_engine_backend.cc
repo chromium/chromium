@@ -182,7 +182,7 @@ void SyncEngineBackend::DoInitialize(
 
   ConfigureReason reason = sync_manager_->InitialSyncEndedTypes().empty()
                                ? CONFIGURE_REASON_NEW_CLIENT
-                               : CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE;
+                               : CONFIGURE_REASON_EXISTING_CLIENT_RESTART;
 
   DataTypeSet new_control_types =
       Difference(ControlTypes(), sync_manager_->InitialSyncEndedTypes());

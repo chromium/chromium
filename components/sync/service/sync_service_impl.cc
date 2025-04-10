@@ -1038,12 +1038,11 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   CacheTrustedVaultDebugInfoToPrefsFromEngine();
 
   if (CanConfigureDataTypes(/*bypass_setup_in_progress_check=*/false)) {
-    // Datatype downloads on restart are generally due to newly supported
-    // datatypes (although it's also possible we're picking up where a failed
-    // previous configuration left off).
-    // TODO(sync): consider detecting configuration recovery and setting
-    // the reason here appropriately.
-    ConfigureDataTypeManager(CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE);
+    // Tentatively use a generic reason, but it may be later overridden
+    // to CONFIGURE_REASON_NEW_CLIENT. The overriding code is needed
+    // anyway in case CanConfigureDataTypes() above returned false due
+    // sync setup being in progress.
+    ConfigureDataTypeManager(CONFIGURE_REASON_EXISTING_CLIENT_RESTART);
   }
 
   // Check for a cookie jar mismatch.

@@ -1619,7 +1619,7 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
 
   ASSERT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
-  EXPECT_EQ(CONFIGURE_REASON_NEWLY_ENABLED_DATA_TYPE,
+  EXPECT_EQ(CONFIGURE_REASON_EXISTING_CLIENT_RESTART,
             engine()->last_configure_reason());
 
   // Reconfiguration.
