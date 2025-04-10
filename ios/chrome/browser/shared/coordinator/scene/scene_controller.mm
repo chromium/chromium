@@ -441,7 +441,8 @@ void OnListFamilyMembersResponse(
 // The coordinator used to control sign-in UI flows. Lazily created the first
 // time it is accessed. Use -[startSigninCoordinatorWithCompletion:] to start
 // the coordinator.
-@property(nonatomic, strong) SigninCoordinator* signinCoordinator;
+@property(nonatomic, strong)
+    SigninCoordinator<InterruptibleChromeCoordinator>* signinCoordinator;
 
 // YES if the process of dismissing the sign-in prompt is from an external
 // trigger and is currently ongoing. An external trigger isn't done from the
@@ -2021,12 +2022,14 @@ using UserFeedbackDataCallback =
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
   Browser* browser = self.mainInterface.browser;
   UIViewController* baseViewController = self.mainInterface.viewController;
-  SigninCoordinator* accountMenuCoordinator = [SigninCoordinator
-      accountMenuCoordinatorWithBaseViewController:baseViewController
-                                           browser:browser
-                                      contextStyle:SigninContextStyle::kDefault
-                                        anchorView:anchorView
-                                           fromWeb:fromWeb];
+  SigninCoordinator<InterruptibleChromeCoordinator>* accountMenuCoordinator =
+      [SigninCoordinator
+          accountMenuCoordinatorWithBaseViewController:baseViewController
+                                               browser:browser
+                                          contextStyle:SigninContextStyle::
+                                                           kDefault
+                                            anchorView:anchorView
+                                               fromWeb:fromWeb];
   self.signinCoordinator = accountMenuCoordinator;
   // TODO(crbug.com/336719423): Record signin metrics based on the
   // selected action from the account switcher.

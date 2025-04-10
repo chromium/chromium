@@ -94,7 +94,7 @@
   base::ScopedClosureRunner _activityOverlayCallback;
   // The child signin coordinator if it’s open. It may be presented by the
   // Manage Account’s coordinator view controller.
-  SigninCoordinator* _signinCoordinator;
+  SigninCoordinator<InterruptibleChromeCoordinator>* _signinCoordinator;
   // Clicked view, used to anchor the menu to it when using
   // UIModalPresentationPopover mode
   UIView* _anchorView;

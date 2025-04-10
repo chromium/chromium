@@ -40,7 +40,8 @@
   // Coordinator for the user to select an account.
   IdentityChooserCoordinator* _identityChooserCoordinator;
   // Coordinator to add an account.
-  SigninCoordinator* _addAccountSigninCoordinator;
+  SigninCoordinator<InterruptibleChromeCoordinator>*
+      _addAccountSigninCoordinator;
   // Overlay to block the current window while the sign-in is in progress.
   ActivityOverlayCoordinator* _activityOverlayCoordinator;
   // Action recorded if sign-in succeeded.

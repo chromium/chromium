@@ -187,12 +187,13 @@ enum class SignInHistorySyncStep {
     createPresentStepChildCoordinator {
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
-      SigninCoordinator* coordinator = [[FullscreenSigninCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                      screenProvider:[[SigninScreenProvider alloc] init]
-                        contextStyle:self.contextStyle
-                         accessPoint:self.accessPoint];
+      SigninCoordinator<InterruptibleChromeCoordinator>* coordinator =
+          [[FullscreenSigninCoordinator alloc]
+              initWithBaseViewController:self.baseViewController
+                                 browser:self.browser
+                          screenProvider:[[SigninScreenProvider alloc] init]
+                            contextStyle:self.contextStyle
+                             accessPoint:self.accessPoint];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {
@@ -201,7 +202,7 @@ enum class SignInHistorySyncStep {
       return coordinator;
     }
     case SignInHistorySyncStep::kBottomSheetSignin: {
-      SigninCoordinator* coordinator =
+      SigninCoordinator<InterruptibleChromeCoordinator>* coordinator =
           [[ConsistencyPromoSigninCoordinator alloc]
               initWithBaseViewController:self.baseViewController
                                  browser:self.browser
@@ -215,13 +216,14 @@ enum class SignInHistorySyncStep {
       return coordinator;
     }
     case SignInHistorySyncStep::kInstantSignin: {
-      SigninCoordinator* coordinator = [[InstantSigninCoordinator alloc]
-          initWithBaseViewController:self.baseViewController
-                             browser:self.browser
-                            identity:nil
-                        contextStyle:self.contextStyle
-                         accessPoint:self.accessPoint
-                         promoAction:_promoAction];
+      SigninCoordinator<InterruptibleChromeCoordinator>* coordinator =
+          [[InstantSigninCoordinator alloc]
+              initWithBaseViewController:self.baseViewController
+                                 browser:self.browser
+                                identity:nil
+                            contextStyle:self.contextStyle
+                             accessPoint:self.accessPoint
+                             promoAction:_promoAction];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {

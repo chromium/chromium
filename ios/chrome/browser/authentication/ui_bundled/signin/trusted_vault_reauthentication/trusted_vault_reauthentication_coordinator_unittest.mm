@@ -80,7 +80,8 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kStartPage;
-  SigninCoordinator* signinCoordinator = [SigninCoordinator
+  SigninCoordinator<
+      InterruptibleChromeCoordinator>* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()
@@ -142,7 +143,8 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestInterruptWithDismiss) {
       syncer::TrustedVaultUserActionTriggerForUMA::kSettings;
   signin_metrics::AccessPoint accessPoint =
       signin_metrics::AccessPoint::kStartPage;
-  SigninCoordinator* signinCoordinator = [SigninCoordinator
+  SigninCoordinator<
+      InterruptibleChromeCoordinator>* signinCoordinator = [SigninCoordinator
       trustedVaultReAuthenticationCoordinatorWithBaseViewController:
           base_view_controller_
                                                             browser:browser()

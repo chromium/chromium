@@ -62,7 +62,8 @@
 @property(nonatomic, strong)
     IdentityChooserCoordinator* identityChooserCoordinator;
 // Coordinator to add an identity.
-@property(nonatomic, strong) SigninCoordinator* addAccountSigninCoordinator;
+@property(nonatomic, strong) SigninCoordinator<InterruptibleChromeCoordinator>*
+    addAccountSigninCoordinator;
 @property(nonatomic, assign) BOOL UMAReportingUserChoice;
 
 @end

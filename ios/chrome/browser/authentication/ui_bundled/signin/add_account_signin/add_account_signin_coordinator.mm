@@ -43,7 +43,8 @@ using signin_metrics::PromoAction;
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 // Coordinator to handle additional steps after the identity is added, i.e.
 // after `addAccountSigninManager` does its job.
-@property(nonatomic, strong) SigninCoordinator* postSigninManagerCoordinator;
+@property(nonatomic, strong) SigninCoordinator<InterruptibleChromeCoordinator>*
+    postSigninManagerCoordinator;
 // Coordinator for history sync opt-in.
 @property(nonatomic, strong)
     HistorySyncPopupCoordinator* historySyncPopupCoordinator;

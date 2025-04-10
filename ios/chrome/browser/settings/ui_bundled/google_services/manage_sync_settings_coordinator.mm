@@ -90,7 +90,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
   // Account menu coordinator.
-  SigninCoordinator* _accountMenuCoordinator;
+  SigninCoordinator<InterruptibleChromeCoordinator>* _accountMenuCoordinator;
 }
 
 // View controller.

@@ -66,7 +66,8 @@
 // `self.defaultAccountCoordinator.selectedIdentity`.
 @property(nonatomic, strong, readonly) id<SystemIdentity> selectedIdentity;
 // Coordinator to add an account to the device.
-@property(nonatomic, strong) SigninCoordinator* addAccountCoordinator;
+@property(nonatomic, strong)
+    SigninCoordinator<InterruptibleChromeCoordinator>* addAccountCoordinator;
 
 @property(nonatomic, strong)
     ConsistencyPromoSigninMediator* consistencyPromoSigninMediator;
