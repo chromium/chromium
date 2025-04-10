@@ -80,6 +80,7 @@
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "services/network/accept_ch_frame_interceptor.h"
 #include "services/network/ad_heuristic_cookie_overrides.h"
 #include "services/network/file_opener_for_upload.h"
 #include "services/network/orb/orb_impl.h"
@@ -182,33 +183,6 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
                                        EXCLUDE_PORT_MISMATCH) ||
          status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
                                        EXCLUDE_SCHEME_MISMATCH);
-}
-
-// Parses AcceptCHFrame and removes client hints already in the headers.
-std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
-    const std::string& accept_ch_frame,
-    const net::HttpRequestHeaders& headers) {
-  std::optional<std::vector<mojom::WebClientHintsType>> maybe_hints =
-      ParseClientHintsHeader(accept_ch_frame);
-
-  if (!maybe_hints)
-    return {};
-
-  // Only look at/add headers that aren't already present.
-  std::vector<mojom::WebClientHintsType> hints;
-  for (auto hint : maybe_hints.value()) {
-    // ResourceWidth is only for images, which won't trigger a restart.
-    if (hint == mojom::WebClientHintsType::kResourceWidth ||
-        hint == mojom::WebClientHintsType::kResourceWidth_DEPRECATED) {
-      continue;
-    }
-
-    const std::string header = GetClientHintToNameMap().at(hint);
-    if (!headers.HasHeader(header))
-      hints.push_back(hint);
-  }
-
-  return hints;
 }
 
 scoped_refptr<RefCountedDeviceBoundSessionAccessObserverRemote>
@@ -445,7 +419,8 @@ URLLoader::URLLoader(
           url_loader_network_observer_.get()),
       has_fetch_streaming_upload_body_(
           url_loader_util::HasFetchStreamingUploadBody(request)),
-      accept_ch_frame_observer_(std::move(accept_ch_frame_observer)),
+      accept_ch_frame_interceptor_(AcceptCHFrameInterceptor::MaybeCreate(
+          std::move(accept_ch_frame_observer))),
       allow_cookies_from_browser_(
           request.trusted_params &&
           request.trusted_params->allow_cookies_from_browser),
@@ -1132,8 +1107,7 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
     return net::ERR_BLOCKED_BY_PRIVATE_NETWORK_ACCESS_CHECKS;
   }
 
-  return ProcessAcceptCHFrameOnConnected(info, url_request,
-                                         std::move(callback));
+  return ProcessAcceptCHFrameOnConnected(info, std::move(callback));
 }
 
 void URLLoader::ProcessLocalNetworkAccessPermissionResultOnConnected(
@@ -1147,8 +1121,7 @@ void URLLoader::ProcessLocalNetworkAccessPermissionResultOnConnected(
   }
   std::pair<net::CompletionOnceCallback, net::CompletionOnceCallback> split =
       base::SplitOnceCallback(std::move(callback));
-  int result = ProcessAcceptCHFrameOnConnected(info, url_request,
-                                               std::move(split.first));
+  int result = ProcessAcceptCHFrameOnConnected(info, std::move(split.first));
   if (result != net::ERR_IO_PENDING) {
     std::move(split.second).Run(result);
   }
@@ -1156,49 +1129,16 @@ void URLLoader::ProcessLocalNetworkAccessPermissionResultOnConnected(
 
 int URLLoader::ProcessAcceptCHFrameOnConnected(
     const net::TransportInfo& info,
-    net::URLRequest* url_request,
     net::CompletionOnceCallback callback) {
   TRACE_EVENT("loading", "URLLoader::ProcessAcceptCHFrameOnConnected",
-              net::NetLogWithSourceToFlow(url_request->net_log()), "url",
-              url_request->url());
-  if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty() ||
-      !base::FeatureList::IsEnabled(features::kAcceptCHFrame)) {
+              net::NetLogWithSourceToFlow(url_request_->net_log()), "url",
+              url_request_->url());
+  if (!accept_ch_frame_interceptor_) {
     return net::OK;
   }
-
-  // Find client hints that are in the ACCEPT_CH frame that were not already
-  // included in the request
-  std::vector<mojom::WebClientHintsType> hints = ComputeAcceptCHFrameHints(
-      info.accept_ch_frame, url_request->extra_request_headers());
-
-  // If there are hints in the ACCEPT_CH frame that weren't included in the
-  // original request, notify the observer. If those hints can be included,
-  // this URLLoader will be destroyed and another with the correct hints
-  // started. Otherwise, the callback to continue the network transaction will
-  // be called and the URLLoader will continue as normal.
-  if (!hints.empty()) {
-    // `accept_ch_frame_observer_` is owned by `this`, so passing in
-    // `callback` is safe.
-    auto record = [](net::CompletionOnceCallback callback,
-                     base::TimeTicks call_time, uint64_t trace_id, int status) {
-      base::UmaHistogramMicrosecondsTimes(
-          "Net.URLLoader.AcceptCH.RoundTripTime",
-          base::TimeTicks::Now() - call_time);
-      TRACE_EVENT_NESTABLE_ASYNC_END1(
-          "loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
-          TRACE_ID_LOCAL(trace_id), "status", status);
-      std::move(callback).Run(status);
-    };
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "loading", "AcceptCHObserver::OnAcceptCHFrameReceived call",
-        TRACE_ID_LOCAL(this), "url", url_request->url());
-    accept_ch_frame_observer_->OnAcceptCHFrameReceived(
-        url::Origin::Create(url_request->url()), hints,
-        base::BindOnce(record, std::move(callback), base::TimeTicks::Now(),
-                       TRACE_ID_LOCAL(this).raw_id()));
-    return net::ERR_IO_PENDING;
-  }
-  return net::OK;
+  return accept_ch_frame_interceptor_->OnConnected(
+      url_request_->url(), info.accept_ch_frame,
+      url_request_->extra_request_headers(), std::move(callback));
 }
 
 mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {

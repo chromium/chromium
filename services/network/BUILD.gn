@@ -10,6 +10,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 component("network_service") {
   sources = [
+    "accept_ch_frame_interceptor.cc",
+    "accept_ch_frame_interceptor.h",
     "ad_heuristic_cookie_overrides.cc",
     "ad_heuristic_cookie_overrides.h",
     "chunked_data_pipe_upload_data_stream.cc",

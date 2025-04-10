@@ -100,6 +100,7 @@ enum class FetchKeepAliveRequestNetworkMetricType {
 
 }  // namespace internal
 
+class AcceptCHFrameInterceptor;
 class FileOpenerForUpload;
 class KeepaliveStatisticsRecorder;
 class NetToMojoPendingBuffer;
@@ -354,7 +355,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // A continuation of `OnConnected` to handle an ACCEPT_CH frame, if present.
   int ProcessAcceptCHFrameOnConnected(const net::TransportInfo& info,
-                                      net::URLRequest* url_request,
                                       net::CompletionOnceCallback callback);
 
   // A `ResourceRequest` where `shared_storage_writable_eligible` is true, is
@@ -771,7 +771,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   bool emitted_devtools_raw_request_ = false;
   bool emitted_devtools_raw_response_ = false;
 
-  mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
+  // Handles processing of the ACCEPT_CH frame during connection, if enabled
+  // and an observer exists. May be nullptr.
+  std::unique_ptr<AcceptCHFrameInterceptor> accept_ch_frame_interceptor_;
 
   // Stores cookies passed from the browser process to later add them to the
   // request. This prevents the network stack from overriding them.
