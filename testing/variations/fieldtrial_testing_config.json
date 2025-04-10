@@ -234,6 +234,21 @@
             ]
         }
     ],
+    "AddAddressManually": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AddAddressManually"
+                    ]
+                }
+            ]
+        }
+    ],
     "AddReferringWebApkToProtegoPings": [
         {
             "platforms": [

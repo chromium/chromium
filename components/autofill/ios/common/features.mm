@@ -7,7 +7,7 @@
 // Features that are exlusive to iOS go here in alphabetical order.
 
 BASE_FEATURE(kAddAddressManually,
-             "AddAdressManually",
+             "AddAddressManually",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAddAddressManuallyEnabled() {
