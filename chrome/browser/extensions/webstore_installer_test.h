@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "url/gurl.h"
 
@@ -19,7 +19,7 @@ namespace net::test_server {
 struct HttpRequest;
 }
 
-class WebstoreInstallerTest : public extensions::ExtensionBrowserTest {
+class WebstoreInstallerTest : public extensions::ExtensionPlatformBrowserTest {
  public:
   WebstoreInstallerTest(const std::string& webstore_domain,
                         const std::string& test_data_path,

@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest, TestWebstoreReinstall) {
                   .Set("update_url",
                        "https://clients2.google.com/service/update2/crx"))
           .Build();
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension.get());
 
   auto mock_response = CreateMockResponse(kTestExtensionId);
   WebstoreDataFetcher::SetMockItemSnippetReponseForTesting(mock_response.get());
@@ -123,8 +123,8 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerBrowserTest, TestWebstoreReinstall) {
   ASSERT_TRUE(registry->enabled_extensions().GetByID(kTestExtensionId));
 
   // WebstoreReinstaller expects corrupted extension.
-  extension_service()->DisableExtension(kTestExtensionId,
-                                        disable_reason::DISABLE_CORRUPTED);
+  extension_registrar()->DisableExtension(kTestExtensionId,
+                                          {disable_reason::DISABLE_CORRUPTED});
 
   content::WebContents* active_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

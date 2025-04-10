@@ -16,7 +16,10 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;

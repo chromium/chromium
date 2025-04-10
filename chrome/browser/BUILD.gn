@@ -421,6 +421,7 @@ static_library("browser") {
     "download/download_core_service_factory.h",
     "download/download_core_service_impl.cc",
     "download/download_core_service_impl.h",
+    "download/download_crx_util.h",
     "download/download_dialog_types.h",
     "download/download_file_picker.cc",
     "download/download_file_picker.h",
@@ -2964,7 +2965,6 @@ static_library("browser") {
       "download/android/service/download_task_scheduler.cc",
       "download/android/service/download_task_scheduler.h",
       "download/android/string_utils.cc",
-      "download/download_crx_util_android.cc",
       "enterprise/reporting/browser_report_generator_android.cc",
       "enterprise/reporting/browser_report_generator_android.h",
       "enterprise/reporting/profile_report_generator_android.cc",
@@ -3682,8 +3682,6 @@ static_library("browser") {
       "download/download_auto_open_policy_handler.cc",
       "download/download_auto_open_policy_handler.h",
       "download/download_commands.cc",
-      "download/download_crx_util.cc",
-      "download/download_crx_util.h",
       "download/download_danger_prompt.cc",
       "download/download_danger_prompt.h",
       "download/download_dir_policy_handler.cc",
@@ -7370,7 +7368,13 @@ static_library("browser") {
     deps += [ "//media/mojo/mojom:remoting" ]
   }
 
+  if (is_android && !enable_desktop_android_extensions) {
+    sources += [ "download/download_crx_util_android.cc" ]
+  }
+
   if (enable_extensions_core) {
+    sources += [ "download/download_crx_util.cc" ]
+
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
     allow_circular_includes_from += [

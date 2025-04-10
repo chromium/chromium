@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/external_provider_manager_factory.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker_factory.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
+#include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/pending_extension_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/shared_module_service_factory.h"
@@ -38,7 +39,6 @@
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_sync_service_factory.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
-#include "chrome/browser/extensions/install_verifier_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/menu_manager_factory.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
@@ -66,6 +66,7 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExternalProviderManagerFactory::GetInstance();
   extensions::InstallStageTrackerFactory::GetInstance();
   extensions::InstallTrackerFactory::GetInstance();
+  extensions::InstallVerifierFactory::GetInstance();
   extensions::PendingExtensionManagerFactory::GetInstance();
   extensions::PermissionsUpdater::EnsureAssociatedFactoryBuilt();
   extensions::SharedModuleServiceFactory::GetInstance();
@@ -86,7 +87,6 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ExtensionGCMAppHandler::GetFactoryInstance();
   extensions::ExtensionManagementFactory::GetInstance();
   extensions::ChromeExtensionSystemFactory::GetInstance();
-  extensions::InstallVerifierFactory::GetInstance();
   extensions::ManifestV2ExperimentManager::GetFactory();
   extensions::MenuManagerFactory::GetInstance();
 #if BUILDFLAG(ENABLE_PLUGINS)

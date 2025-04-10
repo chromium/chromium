@@ -43,6 +43,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/crx_verifier.h"
+#include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
@@ -82,8 +83,6 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
-#else
-#include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #endif
 
 using content::BrowserThread;
@@ -1058,13 +1057,11 @@ void CrxInstaller::ReportSuccessFromUIThread() {
   // TODO(crbug.com/403352172): Remove this block of code when there's a
   // replacement for ExtensionService::OnExtensionInstalled(). It exists
   // for prototyping and manual testing purposes.
-  DesktopAndroidExtensionSystem* system =
-      static_cast<DesktopAndroidExtensionSystem*>(
-          ExtensionSystem::Get(profile_));
-  scoped_refptr<Extension> mutable_extension =
-      const_cast<Extension*>(extension_.get());
-  std::string error;
-  CHECK(system->AddExtension(mutable_extension, error));
+  ExtensionRegistrar::Get(profile_)->AddNewOrUpdatedExtension(
+      extension(), /*disable_reasons=*/{}, kInstallFlagInstallImmediately,
+      syncer::StringOrdinal(),
+      /*install_parameter=*/std::string(),
+      /*ruleset_install_prefs=*/base::Value::Dict());
 #endif
   NotifyCrxInstallComplete(std::nullopt);
 }

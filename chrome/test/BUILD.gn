@@ -1518,6 +1518,9 @@ source_set("platform_browser_tests") {
       "../browser/extensions/system_memory_apitest.cc",
       "../browser/extensions/test_resources_browsertest.cc",
       "../browser/extensions/web_accessible_resources_browsertest.cc",
+      "../browser/extensions/webstore_installer_browsertest.cc",
+      "../browser/extensions/webstore_installer_test.cc",
+      "../browser/extensions/webstore_installer_test.h",
     ]
     deps += [
       ":test_support",
@@ -4430,9 +4433,6 @@ if (!is_android) {
         "../browser/extensions/wasm_mv3_browsertest.cc",
         "../browser/extensions/web_contents_browsertest.cc",
         "../browser/extensions/webstore_domain_browsertest.cc",
-        "../browser/extensions/webstore_installer_browsertest.cc",
-        "../browser/extensions/webstore_installer_test.cc",
-        "../browser/extensions/webstore_installer_test.h",
         "../browser/extensions/webstore_reinstaller_browsertest.cc",
         "../browser/extensions/window_open_apitest.cc",
         "../browser/extensions/worker_apitest.cc",
