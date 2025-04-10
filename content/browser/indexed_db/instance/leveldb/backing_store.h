@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_BACKING_STORE_H_
-#define CONTENT_BROWSER_INDEXED_DB_INSTANCE_BACKING_STORE_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_BACKING_STORE_H_
+#define CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_BACKING_STORE_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -80,12 +80,8 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
 
     ~RecordIdentifier();
 
-    const std::string& primary_key() const {
-      return primary_key_;
-    }
-    int64_t version() const {
-      return version_;
-    }
+    const std::string& primary_key() const { return primary_key_; }
+    int64_t version() const { return version_; }
 
     void Reset(std::string primary_key, int64_t version);
 
@@ -255,9 +251,7 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
 
     virtual ~Cursor();
 
-    const blink::IndexedDBKey& key() const {
-      return *current_key_;
-    }
+    const blink::IndexedDBKey& key() const { return *current_key_; }
 
     bool Continue(Status* s) { return Continue(nullptr, nullptr, SEEK, s); }
     bool Continue(const blink::IndexedDBKey* key,
@@ -571,9 +565,7 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
   int64_t GetInMemorySize() const;
 
 #if DCHECK_IS_ON()
-  int NumBlobFilesDeletedForTesting() {
-    return num_blob_files_deleted_;
-  }
+  int NumBlobFilesDeletedForTesting() { return num_blob_files_deleted_; }
 #endif
   int NumAggregatedJournalCleaningRequestsForTesting() const {
     return num_aggregated_journal_cleaning_requests_;
@@ -603,9 +595,7 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode);
 
-  base::WeakPtr<BackingStore> AsWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
+  base::WeakPtr<BackingStore> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
 
   static bool ShouldSyncOnCommit(
       blink::mojom::IDBTransactionDurability durability);
@@ -778,4 +768,4 @@ class CONTENT_EXPORT BackingStore : public LevelDBCleanupScheduler::Delegate {
 
 }  // namespace content::indexed_db
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_BACKING_STORE_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_BACKING_STORE_H_

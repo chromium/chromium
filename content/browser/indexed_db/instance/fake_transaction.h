@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "content/browser/indexed_db/instance/backing_store.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 
 namespace content::indexed_db {
 

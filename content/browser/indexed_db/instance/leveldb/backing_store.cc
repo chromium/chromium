@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/instance/backing_store.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 
 #include <algorithm>
 #include <optional>
@@ -3664,9 +3664,7 @@ class ObjectStoreCursorImpl : public BackingStore::Cursor {
     return base::WrapUnique(new ObjectStoreCursorImpl(this, std::move(iter)));
   }
 
-  IndexedDBValue* value() override {
-    return &current_value_;
-  }
+  IndexedDBValue* value() override { return &current_value_; }
   bool LoadCurrentRow(Status* s) override;
 
  protected:
@@ -3864,12 +3862,8 @@ class IndexCursorImpl : public BackingStore::Cursor {
   }
 
   // BackingStore::Cursor
-  IndexedDBValue* value() override {
-    return &current_value_;
-  }
-  const IndexedDBKey& primary_key() const override {
-    return *primary_key_;
-  }
+  IndexedDBValue* value() override { return &current_value_; }
+  const IndexedDBKey& primary_key() const override { return *primary_key_; }
   const BackingStore::RecordIdentifier& record_identifier() const override {
     NOTREACHED();
   }

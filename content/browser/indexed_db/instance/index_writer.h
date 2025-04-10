@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/database.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 
 namespace blink {

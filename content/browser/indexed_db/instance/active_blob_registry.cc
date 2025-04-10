@@ -9,7 +9,7 @@
 #include "base/location.h"
 #include "base/task/task_runner.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
-#include "content/browser/indexed_db/instance/backing_store.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 
 namespace content::indexed_db {
 

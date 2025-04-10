@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/instance/backing_store.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 
 #include <stddef.h>
 #include <stdint.h>
