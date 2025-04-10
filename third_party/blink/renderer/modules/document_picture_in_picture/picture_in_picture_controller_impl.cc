@@ -12,8 +12,8 @@
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
-#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -144,8 +144,10 @@ void PictureInPictureControllerImpl::EnterPictureInPicture(
   if (!EnsureService())
     return;
 
-  if (video_element->GetDisplayType() == DisplayType::kFullscreen)
+  if (video_element->GetDisplayType() ==
+      WebMediaPlayer::DisplayType::kFullscreen) {
     Fullscreen::ExitFullscreen(*GetSupplementable());
+  }
 
   video_element->GetWebMediaPlayer()->OnRequestPictureInPicture();
   DCHECK(video_element->GetWebMediaPlayer()->GetSurfaceId().has_value());

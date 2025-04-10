@@ -1763,6 +1763,7 @@ component("platform") {
     "//third_party/blink/renderer/platform/image-decoders:image_decoders",
     "//third_party/blink/renderer/platform/instrumentation",
     "//third_party/blink/renderer/platform/loader",
+    "//third_party/blink/renderer/platform/media:media_final",
     "//third_party/blink/renderer/platform/network",
     "//third_party/blink/renderer/platform/scheduler",
     "//third_party/dawn/include/dawn:cpp_headers",

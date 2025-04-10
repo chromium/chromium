@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_REPORTER_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_REPORTER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_REPORTER_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_REPORTER_H_
 
 #include <vector>
 
@@ -19,9 +19,10 @@
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/media/display_type.h"
-#include "third_party/blink/public/common/media/watch_time_component.h"
+#include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+#include "third_party/blink/renderer/platform/media/watch_time_component.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
@@ -56,7 +57,7 @@ namespace blink {
 //
 // Each seek event will result in a new watch time metric being started and the
 // old metric finalized as accurately as possible.
-class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
+class PLATFORM_EXPORT WatchTimeReporter : base::PowerStateObserver {
  public:
   using GetMediaTimeCB = base::RepeatingCallback<base::TimeDelta(void)>;
   using GetPipelineStatsCB =
@@ -180,7 +181,7 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
                                       battery_power_status) override;
 
   void OnNativeControlsChanged(bool has_native_controls);
-  void OnDisplayTypeChanged(DisplayType display_type);
+  void OnDisplayTypeChanged(WebMediaPlayer::DisplayType display_type);
 
   bool ShouldReportWatchTime() const;
   bool ShouldReportingTimerRun() const;
@@ -203,8 +204,10 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
   media::WatchTimeKey GetPowerKey(bool is_on_battery_power);
   std::unique_ptr<WatchTimeComponent<bool>> CreateControlsComponent();
   media::WatchTimeKey GetControlsKey(bool has_native_controls);
-  std::unique_ptr<WatchTimeComponent<DisplayType>> CreateDisplayTypeComponent();
-  media::WatchTimeKey GetDisplayTypeKey(DisplayType display_type);
+  std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
+  CreateDisplayTypeComponent();
+  media::WatchTimeKey GetDisplayTypeKey(
+      WebMediaPlayer::DisplayType display_type);
 
   // Initialized during construction.
   const media::mojom::PlaybackPropertiesPtr properties_;
@@ -241,7 +244,8 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
     base::TimeDelta timestamp = media::kNoTimestamp;
     base::TimeDelta duration = media::kNoTimestamp;
   };
-  std::vector<UnderflowEvent> pending_underflow_events_;
+  std::vector<UnderflowEvent> pending_underflow_events_
+      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651): Pending migration");
 
   media::PipelineStatistics initial_stats_;
   media::PipelineStatistics last_stats_;
@@ -255,7 +259,8 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
   // to add a new template class definition or you will get linking errors.
   std::unique_ptr<WatchTimeComponent<bool>> base_component_;
   std::unique_ptr<WatchTimeComponent<bool>> power_component_;
-  std::unique_ptr<WatchTimeComponent<DisplayType>> display_type_component_;
+  std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
+      display_type_component_;
   std::unique_ptr<WatchTimeComponent<bool>> controls_component_;
 
   // Special case reporter for handling background video watch time. Configured
@@ -269,4 +274,4 @@ class BLINK_COMMON_EXPORT WatchTimeReporter : base::PowerStateObserver {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_REPORTER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_REPORTER_H_

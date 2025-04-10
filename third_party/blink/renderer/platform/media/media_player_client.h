@@ -34,7 +34,6 @@
 #include <memory>
 
 #include "base/time/time.h"
-#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_client.h"
@@ -125,7 +124,7 @@ class PLATFORM_EXPORT MediaPlayerClient : public WebMediaPlayerClient {
   virtual bool IsAudioElement() = 0;
 
   // Returns the current display type of the media element.
-  virtual DisplayType GetDisplayType() const = 0;
+  virtual WebMediaPlayer::DisplayType GetDisplayType() const = 0;
 
   // Returns the color space to render media into if.
   // Rendering media into this color space may avoid some conversions.

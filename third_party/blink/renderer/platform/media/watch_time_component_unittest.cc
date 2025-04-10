@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/media/watch_time_component.h"
+#include "third_party/blink/renderer/platform/media/watch_time_component.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/media/display_type.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 
 namespace blink {
 
@@ -220,21 +220,21 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
       media::WatchTimeKey::kAudioVideoDisplayInline,
       media::WatchTimeKey::kAudioVideoDisplayFullscreen,
       media::WatchTimeKey::kAudioVideoDisplayPictureInPicture};
-  auto test_component = CreateComponent<DisplayType>(
-      DisplayType::kFullscreen, finalize_keys,
-      base::BindRepeating([](DisplayType display_type) {
+  auto test_component = CreateComponent<WebMediaPlayer::DisplayType>(
+      WebMediaPlayer::DisplayType::kFullscreen, finalize_keys,
+      base::BindRepeating([](WebMediaPlayer::DisplayType display_type) {
         switch (display_type) {
-          case DisplayType::kInline:
+          case WebMediaPlayer::DisplayType::kInline:
             return media::WatchTimeKey::kAudioVideoDisplayInline;
-          case DisplayType::kFullscreen:
+          case WebMediaPlayer::DisplayType::kFullscreen:
             return media::WatchTimeKey::kAudioVideoDisplayFullscreen;
-          case DisplayType::kVideoPictureInPicture:
-          case DisplayType::kDocumentPictureInPicture:
+          case WebMediaPlayer::DisplayType::kVideoPictureInPicture:
+          case WebMediaPlayer::DisplayType::kDocumentPictureInPicture:
             return media::WatchTimeKey::kAudioVideoDisplayPictureInPicture;
         }
       }));
   EXPECT_EQ(test_component->current_value_for_testing(),
-            DisplayType::kFullscreen);
+            WebMediaPlayer::DisplayType::kFullscreen);
   EXPECT_FALSE(test_component->NeedsFinalize());
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
@@ -242,7 +242,7 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
   const base::TimeDelta kStartTime = base::Seconds(1);
   test_component->OnReportingStarted(kStartTime);
   EXPECT_EQ(test_component->current_value_for_testing(),
-            DisplayType::kFullscreen);
+            WebMediaPlayer::DisplayType::kFullscreen);
   EXPECT_FALSE(test_component->NeedsFinalize());
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
@@ -253,31 +253,33 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
                               kWatchTime1 - kStartTime));
   test_component->RecordWatchTime(kWatchTime1);
   EXPECT_EQ(test_component->current_value_for_testing(),
-            DisplayType::kFullscreen);
+            WebMediaPlayer::DisplayType::kFullscreen);
   EXPECT_FALSE(test_component->NeedsFinalize());
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // Change property while saying the timer isn't running to avoid finalize.
   const base::TimeDelta kWatchTime2 = base::Seconds(3);
-  test_component->SetCurrentValue(DisplayType::kInline);
+  test_component->SetCurrentValue(WebMediaPlayer::DisplayType::kInline);
   EXPECT_CALL(recorder_,
               RecordWatchTime(media::WatchTimeKey::kAudioVideoDisplayInline,
                               kWatchTime2 - kStartTime));
   test_component->RecordWatchTime(kWatchTime2);
-  EXPECT_EQ(test_component->current_value_for_testing(), DisplayType::kInline);
+  EXPECT_EQ(test_component->current_value_for_testing(),
+            WebMediaPlayer::DisplayType::kInline);
   EXPECT_FALSE(test_component->NeedsFinalize());
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
   // Cycle through all three properties...
   const base::TimeDelta kWatchTime3 = base::Seconds(4);
-  test_component->SetCurrentValue(DisplayType::kVideoPictureInPicture);
+  test_component->SetCurrentValue(
+      WebMediaPlayer::DisplayType::kVideoPictureInPicture);
   EXPECT_CALL(
       recorder_,
       RecordWatchTime(media::WatchTimeKey::kAudioVideoDisplayPictureInPicture,
                       kWatchTime3 - kStartTime));
   test_component->RecordWatchTime(kWatchTime3);
   EXPECT_EQ(test_component->current_value_for_testing(),
-            DisplayType::kVideoPictureInPicture);
+            WebMediaPlayer::DisplayType::kVideoPictureInPicture);
   EXPECT_FALSE(test_component->NeedsFinalize());
   EXPECT_EQ(test_component->end_timestamp(), media::kNoTimestamp);
 
@@ -285,7 +287,7 @@ TEST_F(WatchTimeComponentTest, WithValueToKeyCB) {
   std::vector<media::WatchTimeKey> actual_finalize_keys;
   const base::TimeDelta kFinalWatchTime = base::Seconds(5);
   EXPECT_CALL(*this, GetMediaTime()).WillOnce(testing::Return(kFinalWatchTime));
-  test_component->SetPendingValue(DisplayType::kFullscreen);
+  test_component->SetPendingValue(WebMediaPlayer::DisplayType::kFullscreen);
   test_component->Finalize(&actual_finalize_keys);
   ASSERT_EQ(actual_finalize_keys.size(), finalize_keys.size());
   for (size_t i = 0; i < finalize_keys.size(); ++i)

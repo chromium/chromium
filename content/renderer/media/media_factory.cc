@@ -48,6 +48,7 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/renderers/decrypting_renderer_factory.h"
 #include "media/renderers/default_decoder_factory.h"
 #include "media/renderers/renderer_impl_factory.h"

@@ -1888,6 +1888,18 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/platform/media/',
+        ],
+        'allowed': [
+            # TODO(crbug.com/40760651): migrate to Blink variant.
+            'media::mojom::MediaMetricsProvider',
+            'media::mojom::PlaybackPropertiesPtr',
+            'media::mojom::SecondaryPlaybackPropertiesPtr',
+            'media::mojom::WatchTimeRecorder',
+        ],
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/platform/wtf/',
         ],
         # base::RefCounted and base::RefCountedThreadSafe are prohibited in
@@ -2429,6 +2441,7 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/public/platform/media/',
             'third_party/blink/public/platform/web_media_player_client.h',
         ],
         'allowed': [

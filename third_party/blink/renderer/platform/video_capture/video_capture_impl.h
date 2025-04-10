@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_VIDEO_CAPTURE_VIDEO_CAPTURE_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 
 #include "base/feature_list.h"
@@ -25,7 +26,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/common/media/video_capture.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 

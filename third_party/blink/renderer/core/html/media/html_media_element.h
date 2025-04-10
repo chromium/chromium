@@ -37,7 +37,6 @@
 #include "base/timer/elapsed_timer.h"
 #include "media/mojo/mojom/media_player.mojom-blink.h"
 #include "media/renderers/remote_playback_client_wrapper.h"
-#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -573,7 +572,7 @@ class CORE_EXPORT HTMLMediaElement
   bool WasAlwaysMuted() final;
   bool HasNativeControls() final;
   bool IsAudioElement() final;
-  DisplayType GetDisplayType() const override;
+  WebMediaPlayer::DisplayType GetDisplayType() const override;
   media::RemotePlaybackClientWrapper* RemotePlaybackClientWrapper() final {
     return this;
   }

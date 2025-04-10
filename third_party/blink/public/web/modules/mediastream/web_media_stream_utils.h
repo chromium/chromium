@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_UTILS_H_
 
 #include "media/capture/video_capture_types.h"
-#include "third_party/blink/public/common/media/video_capture.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"

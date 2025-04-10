@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/media/watch_time_component.h"
+#include "third_party/blink/renderer/platform/media/watch_time_component.h"
 
 #include "base/time/time.h"
-#include "third_party/blink/public/common/common_export.h"
-#include "third_party/blink/public/common/media/display_type.h"
+#include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
@@ -127,7 +127,7 @@ bool WatchTimeComponent<T>::NeedsFinalize() const {
 //
 // Note: These must be the last line in this file, otherwise you will also see
 // linking errors since the templates won't have been fully defined prior.
-template class BLINK_COMMON_EXPORT WatchTimeComponent<bool>;
-template class BLINK_COMMON_EXPORT WatchTimeComponent<DisplayType>;
+template class PLATFORM_EXPORT WatchTimeComponent<bool>;
+template class PLATFORM_EXPORT WatchTimeComponent<WebMediaPlayer::DisplayType>;
 
 }  // namespace blink

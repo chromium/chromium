@@ -25,7 +25,7 @@
 #include "media/muxers/webm_muxer.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/blink/public/common/media/video_capture.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"

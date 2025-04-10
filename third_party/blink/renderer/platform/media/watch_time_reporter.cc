@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/media/watch_time_reporter.h"
+#include "third_party/blink/renderer/platform/media/watch_time_reporter.h"
 
 #include <numeric>
 #include <vector>
@@ -14,6 +14,7 @@
 #include "media/base/pipeline_status.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 
 namespace blink {
 
@@ -294,19 +295,19 @@ void WatchTimeReporter::OnNativeControlsDisabled() {
 }
 
 void WatchTimeReporter::OnDisplayTypeInline() {
-  OnDisplayTypeChanged(DisplayType::kInline);
+  OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline);
 }
 
 void WatchTimeReporter::OnDisplayTypeFullscreen() {
-  OnDisplayTypeChanged(DisplayType::kFullscreen);
+  OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
 }
 
 void WatchTimeReporter::OnDisplayTypeVideoPictureInPicture() {
-  OnDisplayTypeChanged(DisplayType::kVideoPictureInPicture);
+  OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kVideoPictureInPicture);
 }
 
 void WatchTimeReporter::OnDisplayTypeDocumentPictureInPicture() {
-  OnDisplayTypeChanged(DisplayType::kDocumentPictureInPicture);
+  OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kDocumentPictureInPicture);
 }
 
 void WatchTimeReporter::UpdateSecondaryProperties(
@@ -376,11 +377,12 @@ void WatchTimeReporter::OnNativeControlsChanged(bool has_native_controls) {
   }
 }
 
-void WatchTimeReporter::OnDisplayTypeChanged(DisplayType display_type) {
+void WatchTimeReporter::OnDisplayTypeChanged(
+    WebMediaPlayer::DisplayType display_type) {
   if (muted_reporter_)
     muted_reporter_->OnDisplayTypeChanged(display_type);
 
-  if (HandlePropertyChange<DisplayType>(
+  if (HandlePropertyChange<WebMediaPlayer::DisplayType>(
           display_type, reporting_timer_.IsRunning(),
           display_type_component_.get()) == PropertyAction::kFinalizeRequired) {
     RestartTimerForHysteresis();
@@ -680,7 +682,7 @@ media::WatchTimeKey WatchTimeReporter::GetControlsKey(
    : properties_->has_audio ? media::WatchTimeKey::kAudio##key   \
                             : media::WatchTimeKey::kVideo##key)
 
-std::unique_ptr<WatchTimeComponent<DisplayType>>
+std::unique_ptr<WatchTimeComponent<WebMediaPlayer::DisplayType>>
 WatchTimeReporter::CreateDisplayTypeComponent() {
   DCHECK(properties_->has_video || properties_->has_audio);
   DCHECK(!is_background_);
@@ -699,22 +701,22 @@ WatchTimeReporter::CreateDisplayTypeComponent() {
         media::WatchTimeKey::kAudioAutoPipMediaPlayback);
   }
 
-  return std::make_unique<WatchTimeComponent<DisplayType>>(
-      DisplayType::kInline, std::move(keys_to_finalize),
+  return std::make_unique<WatchTimeComponent<WebMediaPlayer::DisplayType>>(
+      WebMediaPlayer::DisplayType::kInline, std::move(keys_to_finalize),
       base::BindRepeating(&WatchTimeReporter::GetDisplayTypeKey,
                           base::Unretained(this)),
       get_media_time_cb_, recorder_.get());
 }
 
 media::WatchTimeKey WatchTimeReporter::GetDisplayTypeKey(
-    DisplayType display_type) {
+    WebMediaPlayer::DisplayType display_type) {
   switch (display_type) {
-    case DisplayType::kInline:
+    case WebMediaPlayer::DisplayType::kInline:
       return DISPLAY_TYPE_KEY(DisplayInline);
-    case DisplayType::kFullscreen:
+    case WebMediaPlayer::DisplayType::kFullscreen:
       return DISPLAY_TYPE_KEY(DisplayFullscreen);
-    case DisplayType::kVideoPictureInPicture:
-    case DisplayType::kDocumentPictureInPicture:
+    case WebMediaPlayer::DisplayType::kVideoPictureInPicture:
+    case WebMediaPlayer::DisplayType::kDocumentPictureInPicture:
       return DISPLAY_TYPE_KEY(DisplayPictureInPicture);
   }
 }

@@ -70,13 +70,12 @@
 #include "net/http/http_request_headers.h"
 #include "net/url_request/url_request_job.h"
 #include "services/device/public/mojom/battery_monitor.mojom-blink.h"
-#include "third_party/blink/public/common/media/display_type.h"
-#include "third_party/blink/public/common/media/watch_time_reporter.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/public/platform/web_media_source.h"
@@ -97,6 +96,7 @@
 #include "third_party/blink/renderer/platform/media/url_index.h"
 #include "third_party/blink/renderer/platform/media/video_decode_stats_reporter.h"
 #include "third_party/blink/renderer/platform/media/video_frame_compositor.h"
+#include "third_party/blink/renderer/platform/media/watch_time_reporter.h"
 #include "third_party/blink/renderer/platform/media/web_content_decryption_module_impl.h"
 #include "third_party/blink/renderer/platform/media/web_media_source_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -845,7 +845,8 @@ void WebMediaPlayerImpl::OnHasNativeControlsChanged(bool has_native_controls) {
     watch_time_reporter_->OnNativeControlsDisabled();
 }
 
-void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
+void WebMediaPlayerImpl::OnDisplayTypeChanged(
+    WebMediaPlayer::DisplayType display_type) {
   DVLOG(2) << __func__ << ": display_type=" << static_cast<int>(display_type);
 
   if (surface_layer_for_video_enabled_) {
@@ -854,9 +855,10 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
         CrossThreadBindOnce(
             &VideoFrameCompositor::SetForceSubmit,
             CrossThreadUnretained(compositor_.get()),
-            display_type == DisplayType::kVideoPictureInPicture));
+            display_type ==
+                WebMediaPlayer::DisplayType::kVideoPictureInPicture));
 
-    if (display_type == DisplayType::kVideoPictureInPicture) {
+    if (display_type == WebMediaPlayer::DisplayType::kVideoPictureInPicture) {
       // In picture in picture mode, since the video is compositing in the PIP
       // windows, stop composting it in the original window. One exception is
       // for persistent video, where can happen in auto-pip mode, where the
@@ -878,13 +880,13 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
 
   if (watch_time_reporter_) {
     switch (display_type) {
-      case DisplayType::kInline:
+      case WebMediaPlayer::DisplayType::kInline:
         watch_time_reporter_->OnDisplayTypeInline();
         break;
-      case DisplayType::kFullscreen:
+      case WebMediaPlayer::DisplayType::kFullscreen:
         watch_time_reporter_->OnDisplayTypeFullscreen();
         break;
-      case DisplayType::kVideoPictureInPicture:
+      case WebMediaPlayer::DisplayType::kVideoPictureInPicture:
         watch_time_reporter_->OnDisplayTypeVideoPictureInPicture();
         break;
       case DisplayType::kDocumentPictureInPicture:
@@ -893,7 +895,8 @@ void WebMediaPlayerImpl::OnDisplayTypeChanged(DisplayType display_type) {
     }
   }
 
-  SetPersistentState(display_type == DisplayType::kVideoPictureInPicture);
+  SetPersistentState(display_type ==
+                     WebMediaPlayer::DisplayType::kVideoPictureInPicture);
   UpdatePlayState();
 }
 
@@ -3582,13 +3585,13 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
     watch_time_reporter_->OnNativeControlsDisabled();
 
   switch (client_->GetDisplayType()) {
-    case DisplayType::kInline:
+    case WebMediaPlayer::DisplayType::kInline:
       watch_time_reporter_->OnDisplayTypeInline();
       break;
-    case DisplayType::kFullscreen:
+    case WebMediaPlayer::DisplayType::kFullscreen:
       watch_time_reporter_->OnDisplayTypeFullscreen();
       break;
-    case DisplayType::kVideoPictureInPicture:
+    case WebMediaPlayer::DisplayType::kVideoPictureInPicture:
       watch_time_reporter_->OnDisplayTypeVideoPictureInPicture();
       break;
     case DisplayType::kDocumentPictureInPicture:
@@ -4079,7 +4082,8 @@ void WebMediaPlayerImpl::RecordEncryptionScheme(
 
 bool WebMediaPlayerImpl::IsInVideoPictureInPicture() const {
   DCHECK(client_);
-  return client_->GetDisplayType() == DisplayType::kVideoPictureInPicture;
+  return client_->GetDisplayType() ==
+         WebMediaPlayer::DisplayType::kVideoPictureInPicture;
 }
 
 void WebMediaPlayerImpl::MaybeSetContainerNameForMetrics() {

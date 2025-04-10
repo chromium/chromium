@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/public/common/media/watch_time_reporter.h"
+#include "third_party/blink/renderer/platform/media/watch_time_reporter.h"
 
 #include <memory>
 
@@ -24,9 +24,9 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/media/display_type.h"
-#include "third_party/blink/public/common/media/watch_time_component.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/web_media_player.h"
+#include "third_party/blink/renderer/platform/media/watch_time_component.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -414,7 +414,7 @@ class WatchTimeReporterTest
             : wtr_->OnNativeControlsDisabled();
   }
 
-  void OnDisplayTypeChanged(DisplayType display_type) {
+  void OnDisplayTypeChanged(WebMediaPlayer::DisplayType display_type) {
     wtr_->OnDisplayTypeChanged(display_type);
   }
 
@@ -485,7 +485,7 @@ class WatchTimeReporterTest
     if (TestFlags & kStartWithNativeControls)
       OnNativeControlsEnabled(true);
     if (TestFlags & kStartWithDisplayFullscreen)
-      OnDisplayTypeChanged(DisplayType::kFullscreen);
+      OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
 
     // Setup all current time expectations first since they need to use the
     // InSequence macro for ease of use, but we don't want the watch time
@@ -1462,7 +1462,7 @@ TEST_P(DisplayTypeWatchTimeReporterTest,
   EXPECT_TRUE(IsBackgroundMonitoring());
   EXPECT_FALSE(IsMonitoring());
 
-  OnDisplayTypeChanged(DisplayType::kFullscreen);
+  OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
 
   EXPECT_BACKGROUND_WATCH_TIME(Ac, kWatchTime1);
   EXPECT_BACKGROUND_WATCH_TIME(All, kWatchTime1);
@@ -1593,7 +1593,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
     wtr_->OnPlaying();
     EXPECT_TRUE(IsMonitoring());
 
-    OnDisplayTypeChanged(DisplayType::kFullscreen);
+    OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
     OnPowerStateChange(true);
 
     EXPECT_WATCH_TIME(Ac, kWatchTime1);
@@ -1634,7 +1634,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterMultiplePartialFinalize) {
 
     OnNativeControlsEnabled(true);
     OnPowerStateChange(true);
-    OnDisplayTypeChanged(DisplayType::kVideoPictureInPicture);
+    OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kVideoPictureInPicture);
 
     EXPECT_WATCH_TIME(Ac, kWatchTime1);
     EXPECT_WATCH_TIME(All, kWatchTime1);
@@ -1870,7 +1870,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
       .WillOnce(testing::Return(base::TimeDelta()))
       .WillOnce(testing::Return(kWatchTime));
   Initialize(false, false, kSizeJustRight);
-  OnDisplayTypeChanged(DisplayType::kFullscreen);
+  OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
   wtr_->OnPlaying();
   SetOnBatteryPower(true);
   EXPECT_TRUE(IsMonitoring());
@@ -1888,7 +1888,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
       .WillOnce(testing::Return(kWatchTime));
   Initialize(false, false, kSizeJustRight);
   OnNativeControlsEnabled(true);
-  OnDisplayTypeChanged(DisplayType::kVideoPictureInPicture);
+  OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kVideoPictureInPicture);
   wtr_->OnPlaying();
   EXPECT_TRUE(IsMonitoring());
   EXPECT_WATCH_TIME(Ac, kWatchTime);
@@ -1906,7 +1906,7 @@ TEST_P(WatchTimeReporterTest, WatchTimeCategoryMapping) {
       .WillOnce(testing::Return(kWatchTime));
   Initialize(false, false, kSizeJustRight);
   OnNativeControlsEnabled(true);
-  OnDisplayTypeChanged(DisplayType::kDocumentPictureInPicture);
+  OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kDocumentPictureInPicture);
   wtr_->OnPlaying();
   EXPECT_TRUE(IsMonitoring());
   EXPECT_WATCH_TIME(Ac, kWatchTime);
@@ -2037,8 +2037,8 @@ TEST_P(DisplayTypeWatchTimeReporterTest,
   RunHysteresisTest<kAccumulationContinuesAfterTest |
                     kFinalizeExitDoesNotRequireCurrentTime |
                     kStartWithDisplayFullscreen>([this]() {
-    OnDisplayTypeChanged(DisplayType::kInline);
-    OnDisplayTypeChanged(DisplayType::kFullscreen);
+    OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline);
+    OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
   });
 }
 
@@ -2046,23 +2046,24 @@ TEST_P(DisplayTypeWatchTimeReporterTest,
        OnDisplayTypeChangeHysteresisNativeFinalized) {
   RunHysteresisTest<kAccumulationContinuesAfterTest |
                     kFinalizeDisplayWatchTime | kStartWithDisplayFullscreen>(
-      [this]() { OnDisplayTypeChanged(DisplayType::kInline); });
+      [this]() { OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline); });
 }
 
 TEST_P(DisplayTypeWatchTimeReporterTest,
        OnDisplayTypeChangeHysteresisInlineContinuation) {
   RunHysteresisTest<kAccumulationContinuesAfterTest |
                     kFinalizeExitDoesNotRequireCurrentTime>([this]() {
-    OnDisplayTypeChanged(DisplayType::kFullscreen);
-    OnDisplayTypeChanged(DisplayType::kInline);
+    OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
+    OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline);
   });
 }
 
 TEST_P(DisplayTypeWatchTimeReporterTest,
        OnDisplayTypeChangeHysteresisNativeOffFinalized) {
   RunHysteresisTest<kAccumulationContinuesAfterTest |
-                    kFinalizeDisplayWatchTime>(
-      [this]() { OnDisplayTypeChanged(DisplayType::kFullscreen); });
+                    kFinalizeDisplayWatchTime>([this]() {
+    OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
+  });
 }
 
 TEST_P(DisplayTypeWatchTimeReporterTest,
@@ -2070,14 +2071,16 @@ TEST_P(DisplayTypeWatchTimeReporterTest,
   RunHysteresisTest<kAccumulationContinuesAfterTest |
                     kFinalizeDisplayWatchTime | kStartWithDisplayFullscreen |
                     kTransitionDisplayWatchTime>(
-      [this]() { OnDisplayTypeChanged(DisplayType::kInline); });
+      [this]() { OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline); });
 }
 
 TEST_P(DisplayTypeWatchTimeReporterTest,
        OnDisplayTypeChangeFullscreenToInline) {
   RunHysteresisTest<kAccumulationContinuesAfterTest |
                     kFinalizeDisplayWatchTime | kTransitionDisplayWatchTime>(
-      [this]() { OnDisplayTypeChanged(DisplayType::kFullscreen); });
+      [this]() {
+        OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
+      });
 }
 
 // Tests that the first finalize is the only one that matters.
@@ -2424,7 +2427,7 @@ TEST_P(MutedWatchTimeReporterTest, MutedDisplayType) {
   EXPECT_TRUE(IsMutedMonitoring());
   EXPECT_FALSE(IsMonitoring());
 
-  OnDisplayTypeChanged(DisplayType::kFullscreen);
+  OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
   EXPECT_MUTED_WATCH_TIME_IF_AUDIO_VIDEO(Ac, kWatchTime1);
   EXPECT_MUTED_WATCH_TIME_IF_AUDIO_VIDEO(All, kWatchTime1);
   EXPECT_MUTED_WATCH_TIME_IF_AUDIO_VIDEO(Eme, kWatchTime1);

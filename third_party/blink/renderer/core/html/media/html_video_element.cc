@@ -33,6 +33,7 @@
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -487,7 +488,7 @@ void HTMLVideoElement::EnterFullscreen() {
 void HTMLVideoElement::DidEnterFullscreen() {
   UpdateControlsVisibility();
 
-  if (GetDisplayType() == DisplayType::kVideoPictureInPicture &&
+  if (GetDisplayType() == WebMediaPlayer::DisplayType::kVideoPictureInPicture &&
       !IsInAutoPIP()) {
     PictureInPictureController::From(GetDocument())
         .ExitPictureInPicture(this, nullptr);
@@ -697,18 +698,18 @@ bool HTMLVideoElement::SupportsPictureInPicture() const {
          PictureInPictureController::Status::kEnabled;
 }
 
-DisplayType HTMLVideoElement::GetDisplayType() const {
+WebMediaPlayer::DisplayType HTMLVideoElement::GetDisplayType() const {
   if (is_auto_picture_in_picture_ ||
       PictureInPictureController::IsElementInPictureInPicture(this)) {
-    return DisplayType::kVideoPictureInPicture;
+    return WebMediaPlayer::DisplayType::kVideoPictureInPicture;
   }
 
   if (PictureInPictureController::IsInDocumentPictureInPicture(this)) {
-    return DisplayType::kDocumentPictureInPicture;
+    return WebMediaPlayer::DisplayType::kDocumentPictureInPicture;
   }
 
   if (is_effectively_fullscreen_)
-    return DisplayType::kFullscreen;
+    return WebMediaPlayer::DisplayType::kFullscreen;
 
   return HTMLMediaElement::GetDisplayType();
 }
@@ -735,7 +736,7 @@ void HTMLVideoElement::DidPlayerMediaPositionStateChange(
 }
 
 void HTMLVideoElement::OnPictureInPictureStateChange() {
-  if (GetDisplayType() != DisplayType::kVideoPictureInPicture ||
+  if (GetDisplayType() != WebMediaPlayer::DisplayType::kVideoPictureInPicture ||
       IsInAutoPIP()) {
     return;
   }

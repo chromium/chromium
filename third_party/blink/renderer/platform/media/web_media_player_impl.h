@@ -278,7 +278,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void SetIsEffectivelyFullscreen(
       WebFullscreenVideoStatus fullscreen_video_status) override;
   void OnHasNativeControlsChanged(bool) override;
-  void OnDisplayTypeChanged(DisplayType display_type) override;
+  void OnDisplayTypeChanged(WebMediaPlayer::DisplayType display_type) override;
 
   // WebMediaPlayerDelegate::Observer implementation.
   void OnPageHidden() override;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_COMPONENT_H_
-#define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_COMPONENT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_COMPONENT_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_COMPONENT_H_
 
 #include <vector>
 
@@ -13,6 +13,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 
 namespace blink {
 
@@ -25,8 +26,6 @@ namespace blink {
 // time, flip the actual value, and then start recording from that previous
 // finalize time. They may also clear the pending value flip if the value
 // changes back to the previous value.
-// TODO(https://crbug.com/1198341): Move to renderer/platform/media once its
-// dependencies are moved to Blink.
 template <typename T>
 class WatchTimeComponent {
  public:
@@ -109,7 +108,8 @@ class WatchTimeComponent {
 
  private:
   // Initialized during construction. See constructor for details.
-  const std::vector<media::WatchTimeKey> keys_to_finalize_;
+  const std::vector<media::WatchTimeKey> keys_to_finalize_
+      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/40760651): Pending migration");
   const ValueToKeyCB value_to_key_cb_;
   const GetMediaTimeCB get_media_time_cb_;
   const raw_ptr<media::mojom::WatchTimeRecorder> recorder_;
@@ -133,4 +133,4 @@ class WatchTimeComponent {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIA_WATCH_TIME_COMPONENT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_WATCH_TIME_COMPONENT_H_

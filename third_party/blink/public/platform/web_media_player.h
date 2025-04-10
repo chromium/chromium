@@ -39,7 +39,6 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
-#include "third_party/blink/public/common/media/display_type.h"
 #include "third_party/blink/public/platform/web_audio_source_provider_impl.h"
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_media_source.h"
@@ -120,6 +119,19 @@ class WebMediaPlayer {
   // Returned by Load() to signal when a players choose to defer (e.g. as part
   // of pre-rendering)
   enum LoadTiming { kImmediate, kDeferred };
+
+  enum class DisplayType {
+    // Playback is happening inline.
+    kInline,
+    // Playback is happening either with the video fullscreen. It may also be
+    // set when Blink detects that the video is effectively fullscreen even if
+    // the element is not.
+    kFullscreen,
+    // Playback is happening in a video Picture-in-Picture window.
+    kVideoPictureInPicture,
+    // Playback is happening in a document Picture-in-Picture window.
+    kDocumentPictureInPicture,
+  };
 
   // This is the reason supplied to `WebMediaPlayer::Pause()`. A
   // `WebMediaPlayer` can be paused for many reasons that affect the internal

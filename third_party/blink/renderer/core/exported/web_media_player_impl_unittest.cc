@@ -175,7 +175,7 @@ class MockWebMediaPlayerClient : public MediaPlayerClient {
   MOCK_METHOD0(GetSelectedVideoTrackId, WebMediaPlayer::TrackId());
   MOCK_METHOD0(HasNativeControls, bool());
   MOCK_METHOD0(IsAudioElement, bool());
-  MOCK_CONST_METHOD0(GetDisplayType, DisplayType());
+  MOCK_CONST_METHOD0(GetDisplayType, WebMediaPlayer::DisplayType());
   MOCK_CONST_METHOD0(IsInAutoPIP, bool());
   MOCK_METHOD1(MediaRemotingStarted, void(const WebString&));
   MOCK_METHOD1(MediaRemotingStopped, void(int));
@@ -2550,7 +2550,8 @@ TEST_F(WebMediaPlayerImplTest, PictureInPictureStateChange) {
   OnMetadata(metadata);
 
   EXPECT_CALL(client_, GetDisplayType())
-      .WillRepeatedly(Return(DisplayType::kVideoPictureInPicture));
+      .WillRepeatedly(
+          Return(WebMediaPlayer::DisplayType::kVideoPictureInPicture));
   EXPECT_CALL(client_, OnPictureInPictureStateChange()).Times(1);
 
   wmpi_->OnSurfaceIdUpdated(surface_id_);
@@ -2577,7 +2578,8 @@ TEST_F(WebMediaPlayerImplTest, OnPictureInPictureStateChangeNotCalled) {
 
   EXPECT_CALL(client_, IsAudioElement()).WillOnce(Return(true));
   EXPECT_CALL(client_, GetDisplayType())
-      .WillRepeatedly(Return(DisplayType::kVideoPictureInPicture));
+      .WillRepeatedly(
+          Return(WebMediaPlayer::DisplayType::kVideoPictureInPicture));
   EXPECT_CALL(client_, OnPictureInPictureStateChange()).Times(0);
 
   wmpi_->OnSurfaceIdUpdated(surface_id_);
@@ -2606,23 +2608,25 @@ TEST_F(WebMediaPlayerImplTest, DisplayTypeChange) {
   // compositing the video in the original window.
   EXPECT_CALL(client_, IsInAutoPIP()).WillOnce(Return(false));
   EXPECT_CALL(client_, SetCcLayer(nullptr));
-  wmpi_->OnDisplayTypeChanged(DisplayType::kVideoPictureInPicture);
+  wmpi_->OnDisplayTypeChanged(
+      WebMediaPlayer::DisplayType::kVideoPictureInPicture);
 
   // When switching back to the inline mode the CC layer is set back to the
   // bridge CC layer.
   EXPECT_CALL(client_, SetCcLayer(testing::NotNull()));
-  wmpi_->OnDisplayTypeChanged(DisplayType::kInline);
+  wmpi_->OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kInline);
 
   // When in persistent state (e.g. auto-pip), video is not playing in the
   // regular Picture-in-Picture mode. Don't set the CC layer to null.
   EXPECT_CALL(client_, IsInAutoPIP()).WillOnce(Return(true));
   EXPECT_CALL(client_, SetCcLayer(_)).Times(0);
-  wmpi_->OnDisplayTypeChanged(DisplayType::kVideoPictureInPicture);
+  wmpi_->OnDisplayTypeChanged(
+      WebMediaPlayer::DisplayType::kVideoPictureInPicture);
 
   // When switching back to fullscreen mode the CC layer is set back to the
   // bridge CC layer.
   EXPECT_CALL(client_, SetCcLayer(testing::NotNull()));
-  wmpi_->OnDisplayTypeChanged(DisplayType::kFullscreen);
+  wmpi_->OnDisplayTypeChanged(WebMediaPlayer::DisplayType::kFullscreen);
 
   EXPECT_CALL(*surface_layer_bridge_ptr_, ClearObserver());
 }
@@ -2849,7 +2853,8 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     if (!IsPictureInPictureOn())
       return;
     EXPECT_CALL(client_, GetDisplayType())
-        .WillRepeatedly(Return(DisplayType::kVideoPictureInPicture));
+        .WillRepeatedly(
+            Return(WebMediaPlayer::DisplayType::kVideoPictureInPicture));
   }
 
   bool IsMediaSuspendOn() {
