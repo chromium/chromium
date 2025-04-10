@@ -166,6 +166,17 @@ class PlatformNotificationContext
   // Trigger all pending notifications.
   virtual void TriggerNotifications() = 0;
 
+  // Updates metadata map of the database entry for `notification_id` and
+  // `origin` with an entry using `metadata_key` as the key and
+  // `metadata_value`. `callback` will be invoked with the success status when
+  // the operation has completed.
+  virtual void WriteNotificationMetadata(
+      const std::string& notification_id,
+      const GURL& origin,
+      const std::string& metadata_key,
+      const std::string& metadata_value,
+      WriteResourcesResultCallback callback) = 0;
+
  protected:
   friend class base::DeleteHelper<PlatformNotificationContext>;
   friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;

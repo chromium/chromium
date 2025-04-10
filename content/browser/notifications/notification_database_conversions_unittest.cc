@@ -57,6 +57,10 @@ const double kNotificationTimestamp = 621046800.;
 const unsigned char kNotificationData[] = {0xdf, 0xff, 0x0, 0x0, 0xff, 0xdf};
 const double kShowTriggerTimestamp = 621086800.;
 const bool kHasTriggered = true;
+const char kNotificationMetadataKey[] = "content-detection";
+const char kNotificationMetadataValue[] = "{\"dummy\":\"value\"}";
+const std::map<std::string, std::string> kNotificationMetadata = {
+    {kNotificationMetadataKey, kNotificationMetadataValue}};
 
 TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   std::vector<int> vibration_pattern(
@@ -114,6 +118,7 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   database_data.closed_reason = NotificationDatabaseData::ClosedReason::USER;
   database_data.has_triggered = kHasTriggered;
   database_data.is_shown_by_browser = true;
+  database_data.serialized_metadata = kNotificationMetadata;
   std::string serialized_data;
 
   // Serialize the data in |notification_data| to the string |serialized_data|.
@@ -146,6 +151,7 @@ TEST(NotificationDatabaseConversionsTest, SerializeAndDeserializeData) {
   EXPECT_EQ(database_data.closed_reason, copied_data.closed_reason);
   EXPECT_EQ(database_data.has_triggered, copied_data.has_triggered);
   EXPECT_EQ(database_data.is_shown_by_browser, copied_data.is_shown_by_browser);
+  EXPECT_EQ(database_data.serialized_metadata, copied_data.serialized_metadata);
 
   const blink::PlatformNotificationData& copied_notification_data =
       copied_data.notification_data;
@@ -378,6 +384,7 @@ TEST(NotificationDatabaseConversionsTest, OptionalFieldsGetCleared) {
   EXPECT_FALSE(copied_database_data.time_until_first_click_millis.has_value());
   EXPECT_FALSE(copied_database_data.time_until_last_click_millis.has_value());
   EXPECT_FALSE(copied_database_data.notification_resources.has_value());
+  EXPECT_EQ(0u, copied_database_data.serialized_metadata.size());
 }
 
 TEST(NotificationDatabaseConversionsTest,
