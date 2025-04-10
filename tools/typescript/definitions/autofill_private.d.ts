@@ -285,7 +285,8 @@ declare global {
       export function getAllAttributeTypesForEntityTypeName(
           entityTypeName: number): Promise<AttributeType[]>;
       export function getAutofillAiOptInStatus(): Promise<boolean>;
-      export function setAutofillAiOptInStatus(optedIn: boolean): void;
+      export function setAutofillAiOptInStatus(optedIn: boolean):
+          Promise<boolean>;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], payOverTimeIssuers: PayOverTimeIssuerEntry[],

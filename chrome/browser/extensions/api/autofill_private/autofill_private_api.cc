@@ -1160,7 +1160,9 @@ AutofillPrivateSetAutofillAiOptInStatusFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(parameters);
   if (!autofill::SetAutofillAiOptInStatus(*autofill_client(),
                                           parameters->opted_in)) {
-    return RespondNow(Error(kErrorAutofillAiUnavailable));
+    return RespondNow(ArgumentList(
+        api::autofill_private::SetAutofillAiOptInStatus::Results::Create(
+            /*success=*/false)));
   }
 
   if (parameters->opted_in) {
@@ -1168,7 +1170,9 @@ AutofillPrivateSetAutofillAiOptInStatusFunction::Run() {
         autofill::AutofillClient::IphFeature::kAutofillAi);
   }
 
-  return RespondNow(NoArguments());
+  return RespondNow(ArgumentList(
+      api::autofill_private::SetAutofillAiOptInStatus::Results::Create(
+          /*success=*/true)));
 }
 
 }  // namespace extensions

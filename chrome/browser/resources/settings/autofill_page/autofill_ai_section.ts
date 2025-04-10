@@ -206,8 +206,15 @@ export class SettingsAutofillAiSectionElement extends
             {sensitivity: 'base'});
   }
 
-  private onOptInToggleChange_() {
-    this.entityDataManager_.setOptInStatus(this.$.prefToggle.checked);
+  private async onOptInToggleChange_() {
+    // `setOptInStatus` returns false when the user tries to toggle the opt-in
+    // status when they're ineligible.  This shouldn't happen usually but in
+    // some cases it can happen (see crbug.com/408145195).
+    this.ineligibleUser = !(await this.entityDataManager_.setOptInStatus(
+        this.$.prefToggle.checked));
+    if (this.ineligibleUser) {
+      this.set('optedIn_.value', false);
+    }
   }
 
   /**

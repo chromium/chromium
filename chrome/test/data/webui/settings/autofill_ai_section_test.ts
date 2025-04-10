@@ -453,6 +453,28 @@ suite('AutofillAiSectionUiTest', function() {
         isVisible(section.shadowRoot!.querySelector('#entries')),
         'With the toggle disabled, the entries should be visible');
   });
+
+  test('testToggleIsDisabledWhenUserIsNotEligible', async function() {
+    // The toggle is initially enabled (see the setup() method). Clicking it
+    // sets the opt-in status to false.
+    const toggle =
+        section.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+            '#prefToggle');
+    assertTrue(!!toggle);
+    assertFalse(toggle.disabled);
+    assertTrue(toggle.checked);
+
+    // Simulate a toggle click that fails because the user meanwhile became
+    // ineligible for Autofill AI.
+    entityDataManager.setSetOptInStatusResponse(false);
+    toggle.click();
+
+    assertFalse(await entityDataManager.whenCalled('setOptInStatus'));
+    await flushTasks();
+
+    assertTrue(toggle.disabled);
+    assertFalse(toggle.checked);
+  });
 });
 
 suite('AutofillAiSectionLongLabelsUiTest', function() {

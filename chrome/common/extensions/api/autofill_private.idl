@@ -443,6 +443,7 @@ namespace autofillPrivate {
   callback GetAllAttributeTypesForEntityTypeNameCallback =
       void(AttributeType[] attributeTypes);
   callback GetAutofillAiOptInStatusCallback = void(boolean optedIn);
+  callback SetAutofillAiOptInStatusCallback = void(boolean success);
   callback GetPayOverTimeIssuerListCallback = void(PayOverTimeIssuerEntry[] entries);
 
   interface Functions {
@@ -594,7 +595,7 @@ namespace autofillPrivate {
     // Sets the AutofillAI opt-in status for the current user.
     static void setAutofillAiOptInStatus(
       boolean optedIn,
-      optional VoidCallback callback);
+      SetAutofillAiOptInStatusCallback callback);
   };
 
   interface Events {
