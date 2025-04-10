@@ -407,8 +407,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-delay-show-list.html"));
 }
 
-// TODO(crbug.com/40844027): Flaky on win
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaComboBoxNext) {
   RunEventTest(FILE_PATH_LITERAL("aria-combo-box-next.html"));
 }
