@@ -323,6 +323,53 @@ void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
       count_discarded_scene_still_connected, 100);
 }
 
+// Possible choices for which profile to use for a scene.
+enum class ProfileChoice {
+  kProfileForScene,
+  kLastUsedProfile,
+  kPersonalProfile,
+  kNewProfile,
+};
+
+// Returns the available ProfileChoices depending on the enabled features.
+base::span<const ProfileChoice> GetProfileChoices() {
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    static constexpr ProfileChoice kProfileChoicesWithSeparateAccounts[] = {
+        ProfileChoice::kProfileForScene,
+        ProfileChoice::kLastUsedProfile,
+        ProfileChoice::kPersonalProfile,
+        ProfileChoice::kNewProfile,
+    };
+    return kProfileChoicesWithSeparateAccounts;
+  }
+
+  static constexpr ProfileChoice kProfileChoices[] = {
+      ProfileChoice::kPersonalProfile,
+      ProfileChoice::kNewProfile,
+  };
+  return kProfileChoices;
+}
+
+// Returns the name of the profile for `choice`. May be empty in some cases,
+// e.g. when a corresponding pref isn't set yet.
+std::string GetProfileNameForChoice(ProfileChoice choice,
+                                    std::string_view scene_id,
+                                    ProfileManagerIOS* manager,
+                                    ProfileAttributesStorageIOS* storage,
+                                    PrefService* local_state) {
+  switch (choice) {
+    case ProfileChoice::kProfileForScene:
+      return storage->GetProfileNameForSceneID(scene_id);
+    case ProfileChoice::kLastUsedProfile:
+      return local_state->GetString(prefs::kLastUsedProfile);
+    case ProfileChoice::kPersonalProfile:
+      return storage->GetPersonalProfileName();
+    case ProfileChoice::kNewProfile:
+      return manager->ReserveNewProfileName();
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 @interface MainController () <AppStateObserver,
@@ -1750,44 +1797,10 @@ void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
   // profile (i.e. the value is set and the profile is known) amongst the
   // following value: the profile configured for the scene, the last used
   // profile, the personal profile, or as a last resort a new profile.
-  enum class ProfileChoice {
-    kProfileForScene,
-    kLastUsedProfile,
-    kPersonalProfile,
-    kNewProfile,
-  };
-
-  static constexpr ProfileChoice kProfileChoices[] = {
-      ProfileChoice::kProfileForScene,
-      ProfileChoice::kLastUsedProfile,
-      ProfileChoice::kPersonalProfile,
-      ProfileChoice::kNewProfile,
-  };
-
   std::string profileName;
-  bool changedProfileNameForScene = false;
-  for (ProfileChoice choice : kProfileChoices) {
-    switch (choice) {
-      case ProfileChoice::kProfileForScene:
-        profileName = storage->GetProfileNameForSceneID(sceneID);
-        changedProfileNameForScene = false;
-        break;
-
-      case ProfileChoice::kLastUsedProfile:
-        profileName = localState->GetString(prefs::kLastUsedProfile);
-        changedProfileNameForScene = true;
-        break;
-
-      case ProfileChoice::kPersonalProfile:
-        profileName = storage->GetPersonalProfileName();
-        changedProfileNameForScene = true;
-        break;
-
-      case ProfileChoice::kNewProfile:
-        profileName = manager->ReserveNewProfileName();
-        changedProfileNameForScene = true;
-        break;
-    }
+  for (ProfileChoice choice : GetProfileChoices()) {
+    profileName =
+        GetProfileNameForChoice(choice, sceneID, manager, storage, localState);
 
     // Pick the first valid profile name found.
     if (storage->HasProfileWithName(profileName)) {
@@ -1802,7 +1815,7 @@ void RecordDiscardSceneStillConnected(NSSet<UISceneSession*>* scene_sessions,
   // If the mapping has changed, store the mapping between the SceneID
   // and the profile in the ProfileAttributesStorageIOS so that it is
   // accessible the next time the window is open.
-  if (changedProfileNameForScene) {
+  if (profileName != storage->GetProfileNameForSceneID(sceneID)) {
     storage->SetProfileNameForSceneID(sceneID, profileName);
   }
 

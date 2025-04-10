@@ -293,9 +293,71 @@
              @"Separate profiles should still be enabled");
 }
 
-// TODO(crbug.com/383977223): Add test coverage for
-// kSeparateProfilesForManagedAccountsKillSwitch - it should turn the feature
-// off even if there are managed accounts/profiles, and force a switch back to
-// the personal profile, but that latter part is not implemented yet.
+- (void)testRollbackWithManagedProfile_KillSwitch {
+  // Separate profiles are only available in iOS 17+.
+  if (!@available(iOS 17, *)) {
+    return;
+  }
+
+  NSString* personalProfileName = [ChromeEarlGrey currentProfileName];
+
+  GREYAssert([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled],
+             @"Separate profiles should initially be enabled");
+
+  // A personal and a managed identity exist; the personal one is the primary
+  // one.
+  FakeSystemIdentity* const personalIdentity =
+      [FakeSystemIdentity fakeIdentity1];
+  FakeSystemIdentity* const managedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+
+  [SigninEarlGrey addFakeIdentity:personalIdentity];
+  [SigninEarlGrey addFakeIdentity:managedIdentity];
+
+  [SigninEarlGreyUI signinWithFakeIdentity:personalIdentity];
+
+  // Switch to the managed account (and profile).
+  OpenAccountMenu();
+  [[EarlGrey
+      selectElementWithMatcher:AccountMenuSecondaryAccountsButtonMatcher()]
+      performAction:grey_tap()];
+  // Confirm the enterprise onboarding screen.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      ManagedProfileCreationScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenPrimaryButtonMatcher()]
+      performAction:grey_tap()];
+  // History sync screen: Decline the promo (irrelevant here).
+  [ChromeEarlGrey waitForMatcher:HistoryScreenMatcher()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          PromoScreenSecondaryButtonMatcher()]
+      performAction:grey_tap()];
+  // Verify we're now on the NTP again.
+  [[EarlGrey selectElementWithMatcher:IdentityDiscMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // We should now be signed in, in a new managed profile.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:managedIdentity];
+  NSString* managedProfileName = [ChromeEarlGrey currentProfileName];
+  GREYAssert(![personalProfileName isEqualToString:managedProfileName],
+             @"Should have switched to a different profile");
+
+  // Relaunch with the multi-profile killswitch.
+  [self relaunchWithIdentities:@[ personalIdentity, managedIdentity ]
+               enabledFeatures:{kSeparateProfilesForManagedAccountsKillSwitch}
+              disabledFeatures:{}];
+
+  // The feature should be disabled now, even though there is (or was) a
+  // managed profile.
+  GREYAssert(![SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled],
+             @"Separate profiles should be disabled");
+
+  // The browser should have automatically switched back to the personal
+  // profile.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:personalIdentity];
+  GREYAssert(
+      [[ChromeEarlGrey currentProfileName] isEqualToString:personalProfileName],
+      @"Should have switched back to the personal profile");
+}
 
 @end
