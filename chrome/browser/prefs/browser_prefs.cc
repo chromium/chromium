@@ -128,6 +128,7 @@
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/network_time/network_time_tracker.h"
+#include "components/ntp_tiles/custom_links_manager_impl.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -312,7 +313,6 @@
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/live_caption/live_caption_controller.h"
 #include "components/live_caption/live_translate_controller.h"
-#include "components/ntp_tiles/custom_links_manager_impl.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
@@ -1892,6 +1892,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   metrics::RegisterDemographicsProfilePrefs(registry);
   NotificationDisplayServiceImpl::RegisterProfilePrefs(registry);
   NotifierStateTracker::RegisterProfilePrefs(registry);
+  ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   optimization_guide::prefs::RegisterProfilePrefs(registry);
   optimization_guide::model_execution::prefs::RegisterProfilePrefs(registry);
@@ -2037,7 +2038,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   NewTabPageHandler::RegisterProfilePrefs(registry);
   NewTabPageUI::RegisterProfilePrefs(registry);
   ntp::SafeBrowsingHandler::RegisterProfilePrefs(registry);
-  ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   OutlookCalendarPageHandler::RegisterProfilePrefs(registry);
   PinnedTabCodec::RegisterProfilePrefs(registry);
   promos_utils::RegisterProfilePrefs(registry);

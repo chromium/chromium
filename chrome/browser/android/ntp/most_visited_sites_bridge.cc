@@ -176,7 +176,7 @@ MostVisitedSitesBridge::MostVisitedSitesBridge(Profile* profile,
     : most_visited_(ChromeMostVisitedSitesFactory::NewForProfile(profile)),
       profile_(profile) {
   DCHECK(!profile->IsOffTheRecord());
-  // TODO(crbug.com/397421743): Use |enable_custom_links|.
+  most_visited_->EnableCustomLinks(enable_custom_links);
 }
 
 MostVisitedSitesBridge::~MostVisitedSitesBridge() = default;

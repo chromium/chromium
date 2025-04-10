@@ -35,9 +35,27 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
+
+namespace {
+
+bool ShouldCreateCustomLinksManager() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(
+      chrome::android::kMostVisitedTilesCustomization);
+#else
+  return true;
+#endif
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ntp_tiles::MostVisitedSites>
@@ -71,11 +89,9 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #else
       nullptr,
 #endif
-#if !BUILDFLAG(IS_ANDROID)
-      ChromeCustomLinksManagerFactory::NewForProfile(profile),
-#else
-      nullptr,
-#endif
+      ShouldCreateCustomLinksManager()
+          ? ChromeCustomLinksManagerFactory::NewForProfile(profile)
+          : nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(
           FaviconServiceFactory::GetForProfile(
               profile, ServiceAccessType::IMPLICIT_ACCESS),

@@ -33,6 +33,11 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/webui/webui_util.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/new_tab_page/ntp_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -87,8 +92,13 @@ std::unique_ptr<ntp_tiles::MostVisitedSites>
 ChromeNTPTilesInternalsMessageHandlerClient::MakeMostVisitedSites() {
   auto most_visited_sites = ChromeMostVisitedSitesFactory::NewForProfile(
       Profile::FromWebUI(web_ui()));
-  // Custom links only exist on Desktop.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  // Custom links on Android: ntp_prefs::kNtpUseMostVisitedTiles is
+  // unavailable. Use feature list instead.
+  most_visited_sites->EnableCustomLinks(base::FeatureList::IsEnabled(
+      chrome::android::kMostVisitedTilesCustomization));
+#else
+  // Custom links on Desktop.
   most_visited_sites->EnableCustomLinks(
       !GetPrefs()->GetBoolean(ntp_prefs::kNtpUseMostVisitedTiles));
 #endif
