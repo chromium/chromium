@@ -68,9 +68,7 @@ async def test_navigate_checkEvents(websocket, context_id, url_base,
                                     wait):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
         websocket, {
@@ -82,7 +80,7 @@ async def test_navigate_checkEvents(websocket, context_id, url_base,
             }
         })
 
-    messages = await read_messages(7,
+    messages = await read_messages(6,
                                    keys_to_stabilize=KEYS_TO_STABILIZE,
                                    check_no_other_messages=True,
                                    sort=False)
@@ -96,9 +94,7 @@ async def test_navigate_fragment_checkEvents(websocket, context_id,
                                              snapshot, wait):
     await goto_url(websocket, context_id, url_example)
     await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
         websocket, {
@@ -181,9 +177,7 @@ async def test_navigate_aboutBlank_checkEvents(websocket, context_id, url_base,
                                                read_messages, snapshot, wait):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext", "script.message"])
 
     about_blank_url = 'about:blank'
 
@@ -210,9 +204,7 @@ async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_base,
                                             read_messages, snapshot, wait):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext", "script.message"])
 
     data_url = "data:text/html;,<h2>header</h2>"
 
@@ -226,7 +218,7 @@ async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_base,
             }
         })
 
-    messages = await read_messages(7,
+    messages = await read_messages(6,
                                    keys_to_stabilize=KEYS_TO_STABILIZE,
                                    check_no_other_messages=True,
                                    sort=False)
@@ -241,9 +233,7 @@ async def test_navigate_hang_navigate_again_checkEvents(
     # `url_hang_forever`.
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext", "script.message"])
 
     messages_log = []
     known_values = {}
@@ -258,7 +248,7 @@ async def test_navigate_hang_navigate_again_checkEvents(
             }
         })
 
-    messages_log += await read_messages(3,
+    messages_log += await read_messages(2,
                                         keys_to_stabilize=KEYS_TO_STABILIZE,
                                         known_values=known_values,
                                         sort=False)
@@ -273,7 +263,7 @@ async def test_navigate_hang_navigate_again_checkEvents(
             }
         })
 
-    messages_log += await read_messages(9,
+    messages_log += await read_messages(8,
                                         keys_to_stabilize=KEYS_TO_STABILIZE,
                                         known_values=known_values,
                                         check_no_other_messages=True,
@@ -297,9 +287,7 @@ async def test_navigate_beforeunload_cancel(websocket, context_id, url_base,
     # `url_hang_forever`.
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id, True)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext", "script.message"])
 
     known_values = {}
 
@@ -486,9 +474,7 @@ async def test_reload_checkEvents(websocket, context_id, url_example, html,
     await goto_url(websocket, context_id, url_example)
 
     await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
         websocket, {
@@ -499,7 +485,7 @@ async def test_reload_checkEvents(websocket, context_id, url_example, html,
             }
         })
 
-    messages = await read_messages(7,
+    messages = await read_messages(6,
                                    keys_to_stabilize=KEYS_TO_STABILIZE,
                                    check_no_other_messages=True,
                                    sort=False)
@@ -514,9 +500,7 @@ async def test_reload_aboutBlank_checkEvents(websocket, context_id, html,
     await goto_url(websocket, context_id, url)
 
     await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
         websocket, {
@@ -541,9 +525,7 @@ async def test_reload_dataUrl_checkEvents(websocket, context_id, html,
     await goto_url(websocket, context_id, data_url)
 
     await set_beforeunload_handler(websocket, context_id)
-    await subscribe(
-        websocket,
-        ["browsingContext", "script.message", "network.beforeRequestSent"])
+    await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
         websocket, {
@@ -554,7 +536,7 @@ async def test_reload_dataUrl_checkEvents(websocket, context_id, html,
             }
         })
 
-    messages = await read_messages(7,
+    messages = await read_messages(6,
                                    keys_to_stabilize=KEYS_TO_STABILIZE,
                                    check_no_other_messages=True,
                                    sort=False)

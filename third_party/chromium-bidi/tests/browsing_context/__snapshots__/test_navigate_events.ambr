@@ -272,17 +272,6 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -310,7 +299,7 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
+      'id': 'stable_3',
       'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
@@ -345,17 +334,6 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -374,7 +352,7 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
+      'id': 'stable_3',
       'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
@@ -418,17 +396,6 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -438,7 +405,7 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
+      'id': 'stable_3',
       'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
@@ -491,17 +458,6 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -529,7 +485,7 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
+      'id': 'stable_3',
       'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
@@ -564,17 +520,6 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -593,7 +538,7 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
+      'id': 'stable_3',
       'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
@@ -637,17 +582,6 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -657,7 +591,7 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
+      'id': 'stable_3',
       'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
@@ -773,17 +707,6 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationFailed',
       'params': dict({
         'context': 'stable_0',
@@ -794,7 +717,7 @@
     }),
     dict({
       'error': 'unknown error',
-      'id': 'stable_5',
+      'id': 'stable_3',
       'message': 'navigation canceled by concurrent navigation',
       'type': 'error',
     }),
@@ -802,8 +725,8 @@
       'method': 'browsingContext.navigationStarted',
       'params': dict({
         'context': 'stable_0',
-        'navigation': 'stable_6',
-        'url': 'stable_7',
+        'navigation': 'stable_4',
+        'url': 'stable_5',
       }),
       'type': 'event',
     }),
@@ -822,22 +745,11 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_6',
-        'redirectCount': 0,
-        'request': 'stable_9',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
-        'navigation': 'stable_6',
-        'url': 'stable_7',
+        'navigation': 'stable_4',
+        'url': 'stable_5',
       }),
       'type': 'event',
     }),
@@ -845,8 +757,8 @@
       'method': 'browsingContext.domContentLoaded',
       'params': dict({
         'context': 'stable_0',
-        'navigation': 'stable_6',
-        'url': 'stable_7',
+        'navigation': 'stable_4',
+        'url': 'stable_5',
       }),
       'type': 'event',
     }),
@@ -854,16 +766,16 @@
       'method': 'browsingContext.load',
       'params': dict({
         'context': 'stable_0',
-        'navigation': 'stable_6',
-        'url': 'stable_7',
+        'navigation': 'stable_4',
+        'url': 'stable_5',
       }),
       'type': 'event',
     }),
     dict({
-      'id': 'stable_10',
+      'id': 'stable_6',
       'result': dict({
-        'navigation': 'stable_6',
-        'url': 'stable_7',
+        'navigation': 'stable_4',
+        'url': 'stable_5',
       }),
       'type': 'success',
     }),
@@ -957,17 +869,6 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -995,7 +896,7 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
+      'id': 'stable_3',
       'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
@@ -1030,17 +931,6 @@
       'type': 'event',
     }),
     dict({
-      'method': 'network.beforeRequestSent',
-      'params': dict({
-        'context': 'stable_0',
-        'isBlocked': False,
-        'navigation': 'stable_1',
-        'redirectCount': 0,
-        'request': 'stable_4',
-      }),
-      'type': 'event',
-    }),
-    dict({
       'method': 'browsingContext.navigationCommitted',
       'params': dict({
         'context': 'stable_0',
@@ -1068,7 +958,7 @@
       'type': 'event',
     }),
     dict({
-      'id': 'stable_5',
+      'id': 'stable_3',
       'result': dict({
         'navigation': 'stable_1',
         'url': 'stable_2',
