@@ -613,6 +613,7 @@ if (current_toolchain == default_toolchain) {
       "//components/favicon/android:java",
       "//components/feature_engagement:feature_engagement_java",
       "//components/feed/core/proto:proto_java_v2",
+      "//components/feed/core/v2:feedv2_common_core_java",
       "//components/feed/core/v2:feedv2_core_java",
       "//components/find_in_page/android:java",
       "//components/gcm_driver/android:gcm_driver_java",

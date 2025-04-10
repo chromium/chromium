@@ -302,7 +302,6 @@ if (is_android) {
   java_cpp_enum("feedv2_enums_java") {
     sources = [
       "enums.h",
-      "public/common_enums.h",
       "public/types.h",
     ]
   }
@@ -312,6 +311,18 @@ if (is_android) {
   # classes define multiple times.
   android_library("feedv2_core_java") {
     srcjar_deps = [ ":feedv2_enums_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
+  java_cpp_enum("feedv2_common_enums_java") {
+    sources = [ "public/common_enums.h" ]
+  }
+
+  # Wrap feedv2_common_enums_java in an android_library so that only one
+  # android_library needs to depend on feedv2_common_enums_java. Otherwise, we
+  # will get classes define multiple times.
+  android_library("feedv2_common_core_java") {
+    srcjar_deps = [ ":feedv2_common_enums_java" ]
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 }

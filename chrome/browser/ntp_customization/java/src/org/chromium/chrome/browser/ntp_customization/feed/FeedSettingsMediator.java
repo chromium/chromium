@@ -29,6 +29,8 @@ import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
+import org.chromium.chrome.browser.feed.FeedUma;
+import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.ListContainerViewDelegate;
@@ -78,10 +80,10 @@ public class FeedSettingsMediator {
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, createListDelegate());
         mBottomSheetPropertyModel.set(
                 BACK_PRESS_HANDLER, v -> delegate.backPressOnCurrentBottomSheet());
+        mFeedSettingsPropertyModel.set(IS_FEED_SWITCH_CHECKED, isFeedTurnedOn());
         mFeedSettingsPropertyModel.set(
                 FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER,
                 (compoundButton, isChecked) -> onFeedSwitchToggled(isChecked));
-        mFeedSettingsPropertyModel.set(IS_FEED_SWITCH_CHECKED, isFeedTurnedOn());
 
         if (sPrefChangeRegistarForTest != null) {
             mPrefChangeRegistrar = sPrefChangeRegistarForTest;
@@ -104,6 +106,8 @@ public class FeedSettingsMediator {
      */
     @VisibleForTesting
     void onFeedSwitchToggled(boolean isChecked) {
+        FeedUma.recordFeedBottomSheetItemsClicked(
+                isChecked ? FeedUserActionType.TAPPED_TURN_ON : FeedUserActionType.TAPPED_TURN_OFF);
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, isChecked);
     }
 
@@ -228,18 +232,22 @@ public class FeedSettingsMediator {
     }
 
     private static void handleActivityClick(View view) {
+        FeedUma.recordFeedBottomSheetItemsClicked(FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
         launchUriActivity(view.getContext(), ACTIVITY_CLICK_URL);
     }
 
     private static void handleFollowingClick(View view) {
+        FeedUma.recordFeedBottomSheetItemsClicked(FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
         launchUriActivity(view.getContext(), FOLLOWING_CLICK_URL);
     }
 
     private static void handleHiddenClick(View view) {
+        FeedUma.recordFeedBottomSheetItemsClicked(FeedUserActionType.TAPPED_MANAGE_HIDDEN);
         launchUriActivity(view.getContext(), HIDDEN_CLICK_URL);
     }
 
     private static void handleInterestsClick(View view) {
+        FeedUma.recordFeedBottomSheetItemsClicked(FeedUserActionType.TAPPED_MANAGE_INTERESTS);
         launchUriActivity(view.getContext(), INTERESTS_CLICK_URL);
     }
 

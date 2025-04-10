@@ -49,7 +49,6 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
@@ -1173,7 +1172,10 @@ public class FeedSurfaceMediator
         // Model and stream visibility set in {@link #showOrHideFeed}
         // which is called by the prefService observer.
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, isExpanded);
-        SuggestionsMetrics.recordArticlesListVisible(mProfile);
+
+        if (!mIsNewTabPageCustomizationEnabled) {
+            FeedUma.recordArticlesListVisible(isExpanded);
+        }
 
         int streamType =
                 mTabToStreamMap
