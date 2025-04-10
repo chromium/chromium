@@ -269,6 +269,12 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
     std::move(dialog_result_reset_callback_).Run();
   }
 
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::kEnableLocalWebApprovalErrorDialog)) {
+    CloseView();
+    return;
+  }
+
   // Remove the web view that displays the PACP widget content, and replace it
   // with a view that displays the error message.
   // Assume ownership of the removed view but do not destruct yet,
