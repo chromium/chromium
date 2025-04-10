@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -142,6 +143,8 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
                                          primaryAction:closeAction];
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  button.accessibilityIdentifier =
+      kActivitySummaryGridCellCloseButtonIdentifier;
   return button;
 }
 

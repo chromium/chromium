@@ -1041,6 +1041,14 @@ id<GREYMatcher> TabGroupBackButton() {
   return [ChromeMatchersAppInterface tabGroupBackButton];
 }
 
+id<GREYMatcher> TabGroupActivitySummaryCell() {
+  return [ChromeMatchersAppInterface tabGroupActivitySummaryCell];
+}
+
+id<GREYMatcher> TabGroupActivitySummaryCellCloseButton() {
+  return [ChromeMatchersAppInterface tabGroupActivitySummaryCellCloseButton];
+}
+
 #pragma mark - Tab Groups Context Menus
 
 id<GREYMatcher> AddTabToNewGroupButton() {

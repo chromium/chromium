@@ -1691,6 +1691,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_kindOfClassName(@"UIAccessibilityBackButtonElement"), nil);
 }
 
++ (id<GREYMatcher>)tabGroupActivitySummaryCell {
+  return grey_allOf(grey_accessibilityID(kActivitySummaryGridCellIdentifier),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGroupActivitySummaryCellCloseButton {
+  return grey_allOf(
+      grey_accessibilityID(kActivitySummaryGridCellCloseButtonIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 #pragma mark - Tab Groups Context Menus
 
 + (id<GREYMatcher>)addTabToNewGroupButton {

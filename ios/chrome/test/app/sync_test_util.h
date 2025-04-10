@@ -165,6 +165,12 @@ void AddGroupToFakeServer(const tab_groups::SavedTabGroup& group);
 // Adds a tab to the list of sync tabs on the server.
 void AddTabToFakeServer(const tab_groups::SavedTabGroupTab& tab);
 
+// Adds a tab to the list of sync tabs on the server. The group where a `tab`
+// belongs to should be shared. The tab is always added by a member
+// (fakeIdentity3).
+void AddSharedTabToFakeServer(const tab_groups::SavedTabGroupTab& tab,
+                              const std::string& collaboration_id);
+
 // Deletes a tab or a group with `uuid` on the server.
 void DeleteTabOrGroupFromFakeServer(const base::Uuid& uuid);
 

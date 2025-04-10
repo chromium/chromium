@@ -137,6 +137,7 @@
 - (void)configureActivitySummaryCell:(TabGroupActivitySummaryCell*)cell {
   cell.text = self.activitySummaryCellText;
   cell.delegate = self;
+  cell.accessibilityIdentifier = kActivitySummaryGridCellIdentifier;
 }
 
 // Returns the header which contains the title and the color view.

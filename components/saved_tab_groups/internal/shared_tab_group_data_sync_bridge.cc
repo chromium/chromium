@@ -1093,6 +1093,13 @@ void SharedTabGroupDataSyncBridge::UntrackEntitiesForCollaboration(
   }
 }
 
+// static
+sync_pb::SharedTabGroupDataSpecifics
+SharedTabGroupDataSyncBridge::SharedTabGroupTabToSpecificsForTest(
+    const SavedTabGroupTab& tab) {
+  return SharedTabGroupTabToSpecifics(tab, sync_pb::UniquePosition());
+}
+
 void SharedTabGroupDataSyncBridge::OnStoreCreated(
     const std::optional<syncer::ModelError>& error,
     std::unique_ptr<syncer::DataTypeStore> store) {

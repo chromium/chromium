@@ -847,6 +847,13 @@ id<GREYMatcher> TabGroupOverflowMenuButton();
 // Returns the matcher for the back button in the tab group view.
 id<GREYMatcher> TabGroupBackButton();
 
+// Returns the matcher for the activity summary cell in the tab group view.
+id<GREYMatcher> TabGroupActivitySummaryCell();
+
+// Returns the matcher for the close button in the activity summary cell in the
+// tab group view.
+id<GREYMatcher> TabGroupActivitySummaryCellCloseButton();
+
 #pragma mark - Tab Groups Context Menus
 
 // Returns the matcher for `Add Tab to New Group` button in the context menu.

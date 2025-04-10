@@ -47,6 +47,12 @@ extern NSString* const kGridSectionHeaderIdentifier;
 // Accessibility identifier for the suggested actions cell.
 extern NSString* const kSuggestedActionsGridCellIdentifier;
 
+// Accessibility identifier for the activity summary cell.
+extern NSString* const kActivitySummaryGridCellIdentifier;
+
+// Accessibility identifier for the close button in the activity summary cell.
+extern NSString* const kActivitySummaryGridCellCloseButtonIdentifier;
+
 // Grid styling.
 extern NSString* const kGridBackgroundColor;
 

@@ -108,6 +108,11 @@ class SharedTabGroupDataSyncBridge : public syncer::DataTypeSyncBridge {
   void UntrackEntitiesForCollaboration(
       const syncer::CollaborationId& collaboration_id);
 
+  // Generates specifics for a shared tab based on the information of `tab`.
+  // Used only for tests.
+  static sync_pb::SharedTabGroupDataSpecifics
+  SharedTabGroupTabToSpecificsForTest(const SavedTabGroupTab& tab);
+
  private:
   // Loads the data already stored in the DataTypeStore.
   void OnStoreCreated(const std::optional<syncer::ModelError>& error,

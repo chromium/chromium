@@ -814,6 +814,13 @@
 // Returns the matcher for the back button in the tab group view.
 + (id<GREYMatcher>)tabGroupBackButton;
 
+// Returns the matcher for the activity summary cell in the tab group view.
++ (id<GREYMatcher>)tabGroupActivitySummaryCell;
+
+// Returns the matcher for the close button in the activity summary cell in the
+// tab group view.
++ (id<GREYMatcher>)tabGroupActivitySummaryCellCloseButton;
+
 #pragma mark - Tab Groups Context Menus
 
 // Returns the matcher for `Add Tab to New Group` button in the context menu.

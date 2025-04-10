@@ -87,6 +87,9 @@ GroupData CreateGroupData(MemberRole member_role,
                                 : data_sharing_pb::MEMBER_ROLE_OWNER;
   *group_data.add_members() = CreateGroupMember(
       [FakeSystemIdentity fakeIdentity2].gaiaID, member_role2);
+  *group_data.add_members() =
+      CreateGroupMember([FakeSystemIdentity fakeIdentity3].gaiaID,
+                        data_sharing_pb::MEMBER_ROLE_MEMBER);
   group_data.set_access_token("fake_access_token");
   return group_data;
 }

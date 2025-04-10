@@ -59,6 +59,8 @@ using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridDoneButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridNewTabButton;
+using chrome_test_util::TabGroupActivitySummaryCell;
+using chrome_test_util::TabGroupActivitySummaryCellCloseButton;
 using chrome_test_util::TabGroupBackButton;
 using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupOverflowMenuButton;
@@ -1015,6 +1017,46 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
       assertWithMatcher:grey_notNil()];
   [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests that the activity summary is displayed when a tab is added from sync to
+// a shared tab group.
+- (void)testActivitySummary {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Verify that 1 tab exists in the group.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Add tab to the shared group from sync.
+  [TabGroupAppInterface addSharedTabToGroupAtIndex:0];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the second tab is added.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridCellAtIndex(1)];
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the activity summary is displayed.
+  [[EarlGrey selectElementWithMatcher:TabGroupActivitySummaryCell()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap the close button on the activity summary.
+  [[EarlGrey selectElementWithMatcher:TabGroupActivitySummaryCellCloseButton()]
+      performAction:grey_tap()];
+
+  // Verify that the activity summary is not visible anymore.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupActivitySummaryCell()];
 }
 
 @end

@@ -179,4 +179,18 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
               outcome));
 }
 
++ (void)addSharedTabToGroupAtIndex:(unsigned int)index {
+  CHECK(IsTabGroupSyncEnabled());
+  std::vector<tab_groups::SavedTabGroup> groups =
+      GetTabGroupSyncService()->GetAllGroups();
+  tab_groups::SavedTabGroup group = groups[index];
+  CHECK(group.collaboration_id().has_value());
+
+  tab_groups::SavedTabGroupTab tab(GURL("https://example.com"), u"Example",
+                                   group.saved_guid(), 1);
+  chrome_test_util::AddSharedTabToFakeServer(
+      tab, group.collaboration_id().value().value());
+  chrome_test_util::TriggerSyncCycle(syncer::SHARED_TAB_GROUP_DATA);
+}
+
 @end
