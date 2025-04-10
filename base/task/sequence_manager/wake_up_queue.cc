@@ -48,11 +48,6 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
   DCHECK(queue->IsQueueEnabled() || !wake_up);
 
   std::optional<WakeUp> previous_wake_up = GetNextDelayedWakeUp();
-  std::optional<WakeUpResolution> previous_queue_resolution;
-  if (queue->heap_handle().IsValid()) {
-    previous_queue_resolution =
-        wake_up_queue_.at(queue->heap_handle()).wake_up.resolution;
-  }
 
   if (wake_up) {
     // Insert a new wake-up into the heap.
@@ -71,15 +66,6 @@ void WakeUpQueue::SetNextWakeUpForQueue(internal::TaskQueueImpl* queue,
   }
 
   std::optional<WakeUp> new_wake_up = GetNextDelayedWakeUp();
-
-  if (previous_queue_resolution &&
-      *previous_queue_resolution == WakeUpResolution::kHigh) {
-    pending_high_res_wake_up_count_--;
-  }
-  if (wake_up && wake_up->resolution == WakeUpResolution::kHigh) {
-    pending_high_res_wake_up_count_++;
-  }
-  DCHECK_GE(pending_high_res_wake_up_count_, 0);
 
   if (new_wake_up != previous_wake_up) {
     OnNextWakeUpChanged(lazy_now, GetNextDelayedWakeUp());
@@ -128,12 +114,6 @@ std::optional<WakeUp> WakeUpQueue::GetNextDelayedWakeUp() const {
     return std::nullopt;
   }
   WakeUp wake_up = wake_up_queue_.top().wake_up;
-  // `wake_up.resolution` is not meaningful since it may be different from
-  // has_pending_high_resolution_tasks(). Return WakeUpResolution::kLow here to
-  // simplify comparison between wake ups.
-  // TODO(crbug.com/40158967): Drive resolution by DelayPolicy and return
-  // has_pending_high_resolution_tasks() here.
-  wake_up.resolution = WakeUpResolution::kLow;
   return wake_up;
 }
 

@@ -17,8 +17,7 @@ FakeTask::FakeTask(TaskType task_type)
                                 task_type),
            EnqueueOrder(),
            EnqueueOrder(),
-           TimeTicks(),
-           WakeUpResolution::kLow) {}
+           TimeTicks()) {}
 
 FakeTaskTiming::FakeTaskTiming() : TaskTiming(false /* has_wall_time */) {}
 

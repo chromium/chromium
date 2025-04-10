@@ -44,10 +44,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kAlignWakeUps);
 // allowed per DelayPolicy.
 BASE_EXPORT BASE_DECLARE_FEATURE(kTimerSlackMac);
 
-// Under this feature, tasks that need high resolution timer are determined
-// based on explicit DelayPolicy rather than based on a threshold.
-BASE_EXPORT BASE_DECLARE_FEATURE(kExplicitHighResolutionTimerWin);
-
 // Under this feature, the Windows UI pump uses a WaitableEvent to wake itself
 // up when not in a native nested loop. It also uses different control flow,
 // calling Win32 MessagePump functions less often.

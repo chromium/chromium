@@ -64,11 +64,6 @@ namespace {
 // An atomic is used here because the value is queried from other threads when
 // tasks are posted cross-thread, which can race with its initialization.
 std::atomic<base::TimeDelta> g_max_precise_delay{kDefaultMaxPreciseDelay};
-#if BUILDFLAG(IS_WIN)
-// An atomic is used here because the flag is queried from other threads when
-// tasks are posted cross-thread, which can race with its initialization.
-std::atomic_bool g_explicit_high_resolution_timer_win{true};
-#endif  // BUILDFLAG(IS_WIN)
 
 void RunTaskSynchronously(AssociatedThreadId* associated_thread,
                           scoped_refptr<SingleThreadTaskRunner> task_runner,
@@ -237,11 +232,6 @@ bool TaskQueueImpl::TaskRunner::RunsTasksInCurrentSequence() const {
 // static
 void TaskQueueImpl::InitializeFeatures() {
   g_max_precise_delay = kMaxPreciseDelay.Get();
-#if BUILDFLAG(IS_WIN)
-  g_explicit_high_resolution_timer_win.store(
-      FeatureList::IsEnabled(kExplicitHighResolutionTimerWin),
-      std::memory_order_relaxed);
-#endif  // BUILDFLAG(IS_WIN)
 }
 
 TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,
@@ -684,20 +674,12 @@ std::optional<WakeUp> TaskQueueImpl::GetNextDesiredWakeUp() {
 
   const auto& top_task = main_thread_only().delayed_incoming_queue.top();
 
-  // High resolution is needed if the queue contains high resolution tasks and
-  // has a priority index <= kNormalPriority (precise execution time is
-  // unnecessary for a low priority queue).
-  WakeUpResolution resolution = has_pending_high_resolution_tasks() &&
-                                        GetQueuePriority() <= DefaultPriority()
-                                    ? WakeUpResolution::kHigh
-                                    : WakeUpResolution::kLow;
   subtle::DelayPolicy delay_policy = top_task.delay_policy;
   if (GetQueuePriority() > DefaultPriority() &&
       delay_policy == subtle::DelayPolicy::kPrecise) {
     delay_policy = subtle::DelayPolicy::kFlexibleNoSooner;
   }
-  return WakeUp{top_task.delayed_run_time, top_task.leeway, resolution,
-                delay_policy};
+  return WakeUp{top_task.delayed_run_time, top_task.leeway, delay_policy};
 }
 
 void TaskQueueImpl::OnWakeUp(LazyNow* lazy_now, EnqueueOrder enqueue_order) {
@@ -1089,7 +1071,6 @@ Value::Dict TaskQueueImpl::TaskAsValue(const Task& task, TimeTicks now) {
   }
   state.Set("sequence_num", task.sequence_num);
   state.Set("nestable", task.nestable == Nestable::kNestable);
-  state.Set("is_high_res", task.is_high_res);
   state.Set("is_cancelled", task.task.IsCancelled());
   state.Set("delayed_run_time",
             (task.delayed_run_time - TimeTicks()).InMillisecondsF());
@@ -1105,11 +1086,6 @@ Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
                                     LazyNow* lazy_now) const {
   EnqueueOrder sequence_number = sequence_manager_->GetNextSequenceNumber();
   base::TimeDelta delay;
-  WakeUpResolution resolution = WakeUpResolution::kLow;
-#if BUILDFLAG(IS_WIN)
-  const bool explicit_high_resolution_timer_win =
-      g_explicit_high_resolution_timer_win.load(std::memory_order_relaxed);
-#endif  // BUILDFLAG(IS_WIN)
   if (std::holds_alternative<base::TimeDelta>(
           delayed_task.delay_or_delayed_run_time)) {
     delay = std::get<base::TimeDelta>(delayed_task.delay_or_delayed_run_time);
@@ -1118,23 +1094,12 @@ Task TaskQueueImpl::MakeDelayedTask(PostedTask delayed_task,
     delay = std::get<base::TimeTicks>(delayed_task.delay_or_delayed_run_time) -
             lazy_now->Now();
   }
-#if BUILDFLAG(IS_WIN)
-  if (!explicit_high_resolution_timer_win &&
-      delay < (2 * base::Milliseconds(Time::kMinLowResolutionThresholdMs))) {
-    // Outside the kExplicitHighResolutionTimerWin experiment, We consider the
-    // task needs a high resolution timer if the delay is more than 0 and less
-    // than 32ms. This caps the relative error to less than 50% : a 33ms wait
-    // can wake at 48ms since the default resolution on Windows is between 10
-    // and 15ms.
-    resolution = WakeUpResolution::kHigh;
-  }
-#endif  // BUILDFLAG(IS_WIN)
   delayed_task.delay_policy = subtle::MaybeOverrideDelayPolicy(
       delayed_task.delay_policy, delay,
       g_max_precise_delay.load(std::memory_order_relaxed));
   // leeway isn't specified yet since this may be called from any thread.
   return Task(std::move(delayed_task), sequence_number, EnqueueOrder(),
-              lazy_now->Now(), resolution);
+              lazy_now->Now());
 }
 
 bool TaskQueueImpl::IsQueueEnabled() const {
@@ -1660,9 +1625,6 @@ void TaskQueueImpl::DelayedIncomingQueue::push(Task task) {
   // TODO(crbug.com/40789839): Remove this once the cause of corrupted tasks in
   // the queue is understood.
   CHECK(task.task);
-  if (task.is_high_res) {
-    pending_high_res_tasks_++;
-  }
   queue_.insert(std::move(task));
 }
 
@@ -1670,23 +1632,14 @@ void TaskQueueImpl::DelayedIncomingQueue::remove(HeapHandle heap_handle) {
   DCHECK(!empty());
   DCHECK_LT(heap_handle.index(), queue_.size());
   Task task = queue_.take(heap_handle);
-  if (task.is_high_res) {
-    pending_high_res_tasks_--;
-    DCHECK_GE(pending_high_res_tasks_, 0);
-  }
 }
 
 Task TaskQueueImpl::DelayedIncomingQueue::take_top() {
   DCHECK(!empty());
-  if (queue_.top().is_high_res) {
-    pending_high_res_tasks_--;
-    DCHECK_GE(pending_high_res_tasks_, 0);
-  }
   return queue_.take_top();
 }
 
 void TaskQueueImpl::DelayedIncomingQueue::swap(DelayedIncomingQueue* rhs) {
-  std::swap(pending_high_res_tasks_, rhs->pending_high_res_tasks_);
   std::swap(queue_, rhs->queue_);
 }
 
@@ -1694,16 +1647,7 @@ void TaskQueueImpl::DelayedIncomingQueue::SweepCancelledTasks(
     SequenceManagerImpl* sequence_manager) {
   // Note: IntrusiveHeap::EraseIf() is safe against re-entrancy caused by
   // deleted tasks posting new tasks.
-  queue_.EraseIf([this](const Task& task) {
-    if (task.task.IsCancelled()) {
-      if (task.is_high_res) {
-        --pending_high_res_tasks_;
-        DCHECK_GE(pending_high_res_tasks_, 0);
-      }
-      return true;
-    }
-    return false;
-  });
+  queue_.EraseIf([](const Task& task) { return task.task.IsCancelled(); });
 }
 
 Value::List TaskQueueImpl::DelayedIncomingQueue::AsValue(TimeTicks now) const {

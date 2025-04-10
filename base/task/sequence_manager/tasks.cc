@@ -14,7 +14,6 @@ Task::Task(internal::PostedTask posted_task,
            EnqueueOrder sequence_order,
            EnqueueOrder enqueue_order,
            TimeTicks queue_time,
-           WakeUpResolution resolution,
            TimeDelta leeway)
     : PendingTask(
           posted_task.location,
@@ -42,7 +41,6 @@ Task::Task(internal::PostedTask posted_task,
   // change of |PendingTask::sequence_num|'s type.
   static_assert(std::is_same_v<decltype(sequence_num), int>, "");
   sequence_num = static_cast<int>(sequence_order);
-  this->is_high_res = resolution == WakeUpResolution::kHigh;
 }
 
 Task::Task(Task&& move_from) = default;
