@@ -30,6 +30,8 @@ using ::privacy_sandbox::notice::mojom::PrivacySandboxNotice;
 using ::privacy_sandbox::notice::mojom::PrivacySandboxNoticeEvent;
 using ::testing::Eq;
 using ::testing::IsEmpty;
+using ::testing::Mock;
+using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::StrEq;
 using ::testing::Test;
@@ -41,6 +43,19 @@ BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
 
 std::unique_ptr<Notice> MakeNotice(NoticeId id) {
   return std::make_unique<Notice>(id);
+}
+
+TEST(PrivacySandboxNoticeServiceCatalogNotReadyTest, Crashes) {
+  auto catalog = std::make_unique<MockNoticeCatalog>();
+  auto mock_catalog = catalog.get();
+  EXPECT_CALL(*mock_catalog, IsPopulated()).WillRepeatedly(Return(false));
+  EXPECT_DEATH(std::make_unique<PrivacySandboxNoticeService>(
+                   IdentityTestEnvironmentProfileAdaptor::
+                       CreateProfileForIdentityTestEnvironment()
+                           .get(),
+                   std::move(catalog), std::make_unique<MockNoticeStorage>()),
+               "");
+  Mock::VerifyAndClearExpectations(mock_catalog);
 }
 
 class PrivacySandboxNoticeServiceTest : public Test {
@@ -55,8 +70,12 @@ class PrivacySandboxNoticeServiceTest : public Test {
     auto catalog = std::make_unique<MockNoticeCatalog>();
     mock_catalog_ = catalog.get();
 
+    EXPECT_CALL(*mock_catalog_, IsPopulated()).WillRepeatedly(Return(true));
+
     notice_service_ = std::make_unique<PrivacySandboxNoticeService>(
         profile_.get(), std::move(catalog), std::move(storage));
+
+    Mock::VerifyAndClearExpectations(mock_catalog_);
   }
 
  protected:
@@ -91,7 +110,7 @@ TEST_F(PrivacySandboxNoticeServiceTest,
 
   // 3. Mock GetNoticeMap to return our prepared map.
   EXPECT_CALL(*mock_catalog(), GetNoticeMap())
-      .WillRepeatedly(testing::ReturnRef(test_notice_map));
+      .WillRepeatedly(ReturnRef(test_notice_map));
 
   // 4. Set expectations on the storage mock.
   PrefService* expected_prefs = profile()->GetPrefs();
@@ -106,8 +125,8 @@ TEST_F(PrivacySandboxNoticeServiceTest,
                                   Event::kAck);
 
   // Ensure mock expectations are met.
-  testing::Mock::VerifyAndClearExpectations(mock_catalog());
-  testing::Mock::VerifyAndClearExpectations(mock_storage());
+  Mock::VerifyAndClearExpectations(mock_catalog());
+  Mock::VerifyAndClearExpectations(mock_storage());
 }
 
 TEST_F(PrivacySandboxNoticeServiceTest, EventOccurred_NoticeNotFound_Crashes) {
@@ -125,7 +144,7 @@ TEST_F(PrivacySandboxNoticeServiceTest, EventOccurred_NoticeNotFound_Crashes) {
       "");
 
   // Ensure mock expectations are met.
-  testing::Mock::VerifyAndClearExpectations(mock_catalog());
+  Mock::VerifyAndClearExpectations(mock_catalog());
 }
 
 // TODO(crbug.com/392612108): Write tests when GetRequiredNotices is

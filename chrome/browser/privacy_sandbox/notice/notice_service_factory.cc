@@ -34,7 +34,9 @@ std::unique_ptr<KeyedService>
 PrivacySandboxNoticeServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+  auto catalog = std::make_unique<privacy_sandbox::NoticeCatalogImpl>();
+  catalog->Populate();
   return std::make_unique<privacy_sandbox::PrivacySandboxNoticeService>(
-      profile, std::make_unique<privacy_sandbox::NoticeCatalogImpl>(),
+      profile, std::move(catalog),
       std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>());
 }
