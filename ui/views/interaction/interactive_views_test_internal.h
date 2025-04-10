@@ -56,7 +56,9 @@ class InteractiveViewsTestPrivate
 
   InteractionTestUtilMouse& mouse_util() { return *mouse_util_; }
 
-  gfx::NativeWindow GetWindowHintFor(ui::TrackedElement* el);
+  InteractionTestUtilMouse::GestureParams GetGestureParamsForStep(
+      ui::TrackedElement* el,
+      const ui::InteractionSequence* seq);
 
   // Represents a temporary data stucture used when building Views hierarchies
   // into `DebugTreeNode`s.

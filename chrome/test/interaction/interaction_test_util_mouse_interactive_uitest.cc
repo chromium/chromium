@@ -81,7 +81,9 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, MoveAndClick) {
                              // button
                              // - click the left mouse button
                              if (!mouse_->PerformGestures(
-                                     view->GetWidget()->GetNativeWindow(),
+                                     Mouse::GestureParams(
+                                         view->GetWidget()->GetNativeWindow(),
+                                         false),
                                      Mouse::MoveTo(pos),
                                      Mouse::Click(ui_controls::LEFT))) {
                                seq->FailForTesting();
@@ -126,7 +128,9 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, GestureAborted) {
                              // button
                              // - click the left mouse button
                              EXPECT_FALSE(mouse_->PerformGestures(
-                                 view->GetWidget()->GetNativeWindow(),
+                                 Mouse::GestureParams(
+                                     view->GetWidget()->GetNativeWindow(),
+                                     false),
                                  Mouse::MoveTo(pos),
                                  Mouse::Click(ui_controls::LEFT)));
                            })))
@@ -170,7 +174,9 @@ IN_PROC_BROWSER_TEST_P(InteractionTestUtilMouseUiTest, Drag) {
                                                    .CenterPoint();
                         // Drag the first tab into the second spot.
                         if (!mouse_->PerformGestures(
-                                tab_strip->GetWidget()->GetNativeWindow(),
+                                Mouse::GestureParams(
+                                    tab_strip->GetWidget()->GetNativeWindow(),
+                                    false),
                                 Mouse::MoveTo(start),
                                 Mouse::DragAndRelease(end))) {
                           seq->FailForTesting();

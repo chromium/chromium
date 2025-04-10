@@ -266,28 +266,15 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         "img",
     };
 
-    DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
-                                        kFirstPaintState);
-    return Steps(
-        InstrumentTab(kActiveTab), NavigateWebContents(kActiveTab, url),
-        EnsurePresent(kActiveTab, kPathToImg),
-        // TODO(https://crbug.com/331859922): This functionality should be built
-        // into test framework.
-        PollState(kFirstPaintState,
-                  [this]() {
-                    return browser()
-                        ->tab_strip_model()
-                        ->GetActiveTab()
-                        ->GetContents()
-                        ->CompletedFirstVisuallyNonEmptyPaint();
-                  }),
-        WaitForState(kFirstPaintState, true),
-        MoveMouseTo(kActiveTab, kPathToImg), ClickMouse(ui_controls::RIGHT),
-        WaitForShow(RenderViewContextMenu::kSearchForImageItem),
-        // Required to fully render the menu before selection.
+    return Steps(InstrumentTab(kActiveTab),
+                 NavigateWebContents(kActiveTab, url),
+                 WaitForWebContentsPainted(kActiveTab),
 
-        SelectMenuItem(RenderViewContextMenu::kSearchForImageItem,
-                       InputType::kMouse));
+                 MoveMouseTo(kActiveTab, kPathToImg),
+                 MayInvolveNativeContextMenu(
+                     ClickMouse(ui_controls::RIGHT),
+                     SelectMenuItem(RenderViewContextMenu::kSearchForImageItem,
+                                    InputType::kMouse)));
   }
 
   InteractiveTestApi::MultiStep OpenLensOverlayFromVideo() {
@@ -311,11 +298,11 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
         EnsurePresent(kActiveTab, kPathToVideo),
         ExecuteJsAt(kActiveTab, kPathToVideo, kPlayVideo),
         WaitForStateChange(kActiveTab, video_is_playing),
-        MoveMouseTo(kActiveTab, kPathToVideo), ClickMouse(ui_controls::RIGHT),
-        WaitForShow(RenderViewContextMenu::kSearchForVideoFrameItem),
-        // Required to fully render the menu before selection.
-        SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem,
-                       InputType::kMouse));
+        MoveMouseTo(kActiveTab, kPathToVideo),
+        MayInvolveNativeContextMenu(
+            ClickMouse(ui_controls::RIGHT),
+            SelectMenuItem(RenderViewContextMenu::kSearchForVideoFrameItem,
+                           InputType::kMouse)));
   }
 
   InteractiveTestApi::MultiStep WaitForScreenshotRendered(

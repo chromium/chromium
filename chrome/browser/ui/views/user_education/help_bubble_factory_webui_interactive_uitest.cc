@@ -95,8 +95,17 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
     return Steps(
         PressButton(kToolbarAppMenuButtonElementId),
         SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
-        SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
-        SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI),
+    // TODO(https://crbug.com/359252812): On Linux and ChromeOS, sometimes
+    // the bookmarks submenu randomly loses focus causing it to close.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+        WithoutDelay(
+#endif
+            SelectMenuItem(BookmarkSubMenuModel::kReadingListMenuItem),
+            SelectMenuItem(ReadingListSubMenuModel::kReadingListMenuShowUI)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+                )
+#endif
+            ,
         AfterShow(kSidePanelElementId,
                   [this](ui::TrackedElement* el) {
                     side_panel_ = AsView(el);
@@ -113,8 +122,17 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
   auto OpenBookmarksSidePanel() {
     return Steps(
         PressButton(kToolbarAppMenuButtonElementId),
-        SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
-        SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem),
+    // TODO(https://crbug.com/359252812): On Linux and ChromeOS, sometimes
+    // the bookmarks submenu randomly loses focus causing it to close.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+        WithoutDelay(
+#endif
+            SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+            SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkSidePanelItem)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+                )
+#endif
+            ,
         WaitForShow(kSidePanelElementId));
   }
 

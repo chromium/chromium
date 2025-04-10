@@ -67,15 +67,6 @@ InteractionSequence::StepBuilder InteractiveTestApi::SelectMenuItem(
             test->test_util().SelectMenuItem(el, input_type));
       },
       input_type, base::Unretained(this)));
-
-  // TODO(https://crbug.com/359252812): On Linux, sometimes a SelectMenuItem is
-  // interrupted by a spurious focus change, even on tests designed to run
-  // single-thread, single-process. Once the culprit has been tracked down and
-  // eliminated, remove this #if.
-#if BUILDFLAG(IS_LINUX)
-  builder.SetStepStartMode(InteractionSequence::StepStartMode::kImmediate);
-#endif
-
   return builder;
 }
 

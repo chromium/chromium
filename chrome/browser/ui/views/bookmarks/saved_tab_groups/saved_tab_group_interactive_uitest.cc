@@ -146,8 +146,17 @@ class SavedTabGroupInteractiveTestBase : public InteractiveBrowserTest {
   MultiStep ShowBookmarksBar() {
     return Steps(
         PressButton(kToolbarAppMenuButtonElementId),
-        SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
-        SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkBarMenuItem),
+    // TODO(https://crbug.com/359252812): On Linux and ChromeOS, sometimes
+    // the bookmarks submenu randomly loses focus causing it to close.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+        WithoutDelay(
+#endif
+            SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
+            SelectMenuItem(BookmarkSubMenuModel::kShowBookmarkBarMenuItem)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+                )
+#endif
+            ,
         // On Mac the menu might still be animating closed, so wait for that.
         WaitForHide(AppMenuModel::kBookmarksMenuItem),
         WaitForShow(kBookmarkBarElementId));

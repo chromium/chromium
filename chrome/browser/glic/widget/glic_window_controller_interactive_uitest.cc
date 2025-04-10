@@ -375,13 +375,13 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, DISABLED_ApiDetach) {
 // TODO: Re-nable this test when there is a glic state for post-resize.
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        DISABLED_CloseWithContextMenu) {
-  RunTestSequence(OpenGlicWindow(GlicWindowMode::kAttached),
-                  CheckControllerHasWidget(true));
-  auto center =
-      window_controller().GetGlicView()->GetBoundsInScreen().CenterPoint();
   RunTestSequence(
-      MoveMouseTo(center), ClickMouse(ui_controls::RIGHT),
-      InAnyContext(SelectMenuItem(RenderViewContextMenu::kGlicCloseMenuItem)),
+      OpenGlicWindow(GlicWindowMode::kAttached), CheckControllerHasWidget(true),
+      MoveMouseTo(kGlicViewElementId),
+      MayInvolveNativeContextMenu(
+          ClickMouse(ui_controls::RIGHT), WaitForHide(kBrowserViewElementId),
+          InAnyContext(
+              SelectMenuItem(RenderViewContextMenu::kGlicCloseMenuItem))),
       CheckControllerHasWidget(false));
 }
 

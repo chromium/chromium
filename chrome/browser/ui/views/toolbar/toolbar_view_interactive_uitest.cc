@@ -80,34 +80,14 @@ class ToolbarViewTest : public InteractiveBrowserTest {
   }
 
   auto OpenSideBySideTab(int tab_index) {
-#if !BUILDFLAG(IS_MAC)
     const char kTabToHover[] = "Tab to hover";
-#endif
 
-    return Steps(
-#if BUILDFLAG(IS_MAC)
-        Do([=, this]() {
-          base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, base::BindLambdaForTesting([=, this]() {
-                TabStrip* const tab_strip =
-                    BrowserView::GetBrowserViewForBrowser(browser())
-                        ->tabstrip();
-                auto* tab = tab_strip->tab_at(tab_index);
-                tab->ShowContextMenu(tab->bounds().CenterPoint(),
-                                     ui::mojom::MenuSourceType::kMouse);
-              }));
-        }),
-        // Because context menus run inside of a system message pump that cannot
-        // process Chrome tasks, the following steps must be executed
-        // immediately on the platform.
-        WithoutDelay(SelectMenuItem(TabMenuModel::kSplitTabsMenuItem))
-#else
-        NameDescendantViewByType<Tab>(kTabStripElementId, kTabToHover,
-                                      tab_index),
-        MoveMouseTo(kTabToHover), ClickMouse(ui_controls::RIGHT),
-        SelectMenuItem(TabMenuModel::kSplitTabsMenuItem)
-#endif
-    );
+    return Steps(NameDescendantViewByType<Tab>(kTabStripElementId, kTabToHover,
+                                               tab_index),
+                 MoveMouseTo(kTabToHover),
+                 MayInvolveNativeContextMenu(
+                     ClickMouse(ui_controls::RIGHT),
+                     SelectMenuItem(TabMenuModel::kSplitTabsMenuItem)));
   }
 
  private:
@@ -341,21 +321,12 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest, BackButtonMenu) {
       // Show the context menu.
       MoveMouseTo(kToolbarBackButtonElementId), ClickMouse(ui_controls::RIGHT),
       Log("Logging to probe crbug.com/1489499. Waiting for back button menu."),
-      WaitForShow(kToolbarBackButtonMenuElementId),
-#if BUILDFLAG(IS_MAC)
-      Log("Skipping remainder of test because native Mac context menus steal "
-          "the event loop making testing unreliable. See b/40074126 for full "
-          "description."));
-#else
-      // Don't try to send an event to the menu before it's fully shown.
-
       // Dismiss the context menu by clicking on it.
       Log("Moving mouse to menu."),
       MoveMouseTo(kToolbarBackButtonMenuElementId),
       Log("Clicking mouse to dismiss."), ClickMouse(),
       Log("Waiting for menu to dismiss."),
       WaitForHide(kToolbarBackButtonMenuElementId), Log("Menu dismissed."));
-#endif
 }
 
 // TODO(crbug.com/402492418): Find workaround for Mac and ChromeOS.
