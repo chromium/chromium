@@ -223,16 +223,7 @@ BrowserAccessibilityStateImpl::BrowserAccessibilityStateImpl()
       if (ax_mode_bundle.compare(kAXModeBundleBasic) == 0) {
         initial_mode = ui::kAXModeBasic;
       } else if (ax_mode_bundle.compare(kAXModeBundleFormControls) == 0) {
-#if BUILDFLAG(IS_ANDROID)
         initial_mode = ui::kAXModeFormControls;
-#else
-        // TODO(crbug.com/40943426) Reenable the flag on non-Android, after
-        // resolving fuzzer issue.
-        DVLOG(1) << "Currently, --force-renderer-accessibility=form-controls "
-                    "is only supported on Android. Basic mode has been "
-                    "enabled instead.";
-        initial_mode = ui::kAXModeBasic;
-#endif
       } else {
         // If AXMode is 'complete' or invalid, default to complete bundle.
         initial_mode = ui::kAXModeComplete;
