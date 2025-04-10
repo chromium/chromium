@@ -2777,21 +2777,6 @@
             ]
         }
     ],
-    "AutofillVirtualViewStructureAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillVirtualViewStructureAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "AvatarsCloudMigration": [
         {
             "platforms": [
