@@ -34,8 +34,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /** Implements app-level keyboard shortcuts for ChromeTabbedActivity and DocumentActivity. */
 public class KeyboardShortcuts {
@@ -44,8 +44,8 @@ public class KeyboardShortcuts {
     private static final int ALT = 1 << 30;
     private static final int SHIFT = 1 << 29;
 
-    private static final Map<Integer, KeyboardShortcutDefinitionInfo>
-            KEYBOARD_SHORTCUT_DEFINITION_MAP = new HashMap<>();
+    private static final LinkedHashMap<Integer, KeyboardShortcutDefinitionInfo>
+            KEYBOARD_SHORTCUT_DEFINITION_MAP = new LinkedHashMap<>();
 
     private KeyboardShortcuts() {}
 
@@ -230,10 +230,11 @@ public class KeyboardShortcuts {
     private static class KeyboardShortcutDefinitionInfo {
 
         private final @KeyboardShortcutsSemanticMeaning int mSemanticMeaning;
-        private final @StringRes int mGroupId;
         private final int mKeyCode;
         private final int mModifier;
         private final @StringRes int mResId;
+        private final @StringRes int mGroupId;
+        private final boolean mDisplayInHelper;
 
         /**
          * Constructs a new {@code KeyboardShortcutDefinitionInfo} object.
@@ -258,6 +259,7 @@ public class KeyboardShortcuts {
             mModifier = modifier;
             mResId = resId;
             mGroupId = groupId;
+            mDisplayInHelper = (groupId != 0);
 
             int metaState = getMetaState(modifier);
 
@@ -282,11 +284,30 @@ public class KeyboardShortcuts {
     // Adds all shortcuts to KEYBOARD_SHORTCUT_DEFINITION_MAP to be referenced by onKeyDown() and
     // createShortcutGroup().
     static {
+        // Tab control shortcuts (keyboard_shortcut_tab_group_header).
         new KeyboardShortcutDefinitionInfo(
                 KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW,
                 KeyEvent.KEYCODE_N,
                 KeyEvent.META_CTRL_ON,
                 R.string.keyboard_shortcut_open_new_window,
+                R.string.keyboard_shortcut_tab_group_header);
+        new KeyboardShortcutDefinitionInfo(
+                KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB,
+                KeyEvent.KEYCODE_T,
+                KeyEvent.META_CTRL_ON,
+                R.string.keyboard_shortcut_open_new_tab,
+                R.string.keyboard_shortcut_tab_group_header);
+        new KeyboardShortcutDefinitionInfo(
+                KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB,
+                KeyEvent.KEYCODE_T,
+                (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON),
+                R.string.keyboard_shortcut_reopen_new_tab,
+                R.string.keyboard_shortcut_tab_group_header);
+        new KeyboardShortcutDefinitionInfo(
+                KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO,
+                KeyEvent.KEYCODE_N,
+                (KeyEvent.META_CTRL_ON | KeyEvent.META_SHIFT_ON),
+                R.string.keyboard_shortcut_new_incognito_tab,
                 R.string.keyboard_shortcut_tab_group_header);
     }
 
@@ -300,16 +321,6 @@ public class KeyboardShortcuts {
         }
 
         switch (keyCodeAndMeta) {
-                // Tab/window creation.
-            case CTRL | SHIFT | KeyEvent.KEYCODE_T:
-                return KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB;
-            case CTRL | KeyEvent.KEYCODE_T:
-                return KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB;
-            case CTRL | SHIFT | KeyEvent.KEYCODE_N:
-                return KeyboardShortcutsSemanticMeaning.OPEN_NEW_TAB_INCOGNITO;
-            case CTRL | KeyEvent.KEYCODE_N:
-                return KeyboardShortcutsSemanticMeaning.OPEN_NEW_WINDOW;
-
                 // Tab control.
             case CTRL | SHIFT | KeyEvent.KEYCODE_R:
             case CTRL | KeyEvent.KEYCODE_R:
@@ -625,6 +636,9 @@ public class KeyboardShortcuts {
 
         for (KeyboardShortcutDefinitionInfo shortcutInfo :
                 KEYBOARD_SHORTCUT_DEFINITION_MAP.values()) {
+            if (!shortcutInfo.mDisplayInHelper) {
+                continue;
+            }
             int groupId = shortcutInfo.mGroupId;
             if (!shortcutGroupsById.containsKey(groupId)) {
                 shortcutGroupsById.put(
@@ -644,24 +658,6 @@ public class KeyboardShortcuts {
         KeyboardShortcutGroup tabShortcutGroup =
                 new KeyboardShortcutGroup(
                         context.getString(R.string.keyboard_shortcut_tab_group_header));
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_open_new_tab,
-                KeyEvent.KEYCODE_T,
-                KeyEvent.META_CTRL_ON);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_reopen_new_tab,
-                KeyEvent.KEYCODE_T,
-                ctrlShift);
-        addShortcut(
-                context,
-                tabShortcutGroup,
-                R.string.keyboard_shortcut_new_incognito_tab,
-                KeyEvent.KEYCODE_N,
-                ctrlShift);
         addShortcut(
                 context,
                 tabShortcutGroup,
