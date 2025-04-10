@@ -1749,9 +1749,7 @@
     // IncludeJSCallStacksInCrashReports. https://chromestatus.com/feature/4731248572628992
     {
       name: "DocumentPolicyIncludeJSCallStacksInCrashReports",
-      status: "experimental",
-      base_feature_status: "enabled",
-      copied_from_base_feature_if: "overridden",
+      status: "stable",
     },
     {
       name: "DocumentPolicyNegotiation",
