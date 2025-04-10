@@ -49,9 +49,9 @@ class LazyWebStateUserData : public base::SupportsUserData::Data {
   // action is triggered.
   template <typename... Args>
   static T* GetOrCreateForWebState(WebState* web_state, Args&&... args) {
-    CHECK(web_state, base::NotFatalUntil::M131);
+    CHECK(web_state);
     if (!FromWebState(web_state)) {
-      CHECK(!web_state->IsBeingDestroyed(), base::NotFatalUntil::M131);
+      CHECK(!web_state->IsBeingDestroyed());
       web_state->SetUserData(
           UserDataKey(),
           base::WrapUnique(new T(web_state, std::forward<Args>(args)...)));

@@ -33,8 +33,8 @@ class WebStateUserData : public base::SupportsUserData::Data {
   // If an instance is already attached, does nothing.
   template <typename... Args>
   static void CreateForWebState(WebState* web_state, Args&&... args) {
-    CHECK(web_state, base::NotFatalUntil::M131);
-    CHECK(!web_state->IsBeingDestroyed(), base::NotFatalUntil::M131);
+    CHECK(web_state);
+    CHECK(!web_state->IsBeingDestroyed());
     if (!FromWebState(web_state)) {
       web_state->SetUserData(
           UserDataKey(),
