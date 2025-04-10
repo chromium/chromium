@@ -27,7 +27,7 @@
 - (instancetype)initWithSigninCompletionCallback:
                     (signin_ui::SigninCompletionCallback)signinCompletion
                changeProfileContinuationProvider:
-                   (ChangeProfileContinuationProvider)
+                   (const ChangeProfileContinuationProvider&)
                        changeProfileContinuationProvider {
   if ((self = [super init])) {
     CHECK(signinCompletion);

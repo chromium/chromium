@@ -19,7 +19,7 @@
 - (instancetype)initWithSigninCompletionCallback:
                     (signin_ui::SigninCompletionCallback)signinCompletion
                changeProfileContinuationProvider:
-                   (ChangeProfileContinuationProvider)
+                   (const ChangeProfileContinuationProvider&)
                        changeProfileContinuationProvider
     NS_DESIGNATED_INITIALIZER;
 
