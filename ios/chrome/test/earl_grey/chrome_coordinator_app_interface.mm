@@ -11,6 +11,7 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/history/ui_bundled/history_coordinator.h"
 #import "ios/chrome/browser/main/model/browser_impl.h"
+#import "ios/chrome/browser/omnibox/eg_tests/inttest/omnibox_inttest_coordinator.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_coordinator.h"
 #import "ios/chrome/browser/sessions/model/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
@@ -271,6 +272,14 @@
   PopupMenuCoordinator* coordinator =
       [[PopupMenuCoordinator alloc] initWithBrowser:self.helper.browser];
   coordinator.baseViewController = [self rootViewController];
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+}
+
++ (void)startOmniboxCoordinator {
+  OmniboxInttestCoordinator* coordinator = [[OmniboxInttestCoordinator alloc]
+      initWithBaseViewController:[self rootViewController]
+                         browser:self.helper.browser];
   self.helper.coordinator = coordinator;
   [self.helper.coordinator start];
 }

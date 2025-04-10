@@ -45,6 +45,7 @@
 + (void)startLensPromoCoordinator;
 + (void)startHistoryCoordinator;
 + (void)startPopupMenuCoordinator;
++ (void)startOmniboxCoordinator;
 
 // Stops the currently started coordinator.
 + (void)stopCoordinator;
