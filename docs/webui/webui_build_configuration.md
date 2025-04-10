@@ -616,17 +616,18 @@ static_files: Optional parameter. List of
                  without any preprocessing.
               Note: JS files are not allowed in this list and will result in
               an assertion error. Instead such files should be passed as
-              |web_component_files| or |non_web_component_files|, assuming the
+              |web_component_files| or |ts_files|, assuming the
               target is allowlisted to use JS instead of TS in
               tools/typescript/validate_tsconfig.py validateJavaScriptAllowed().
 
 web_component_files:  List of TS files that hold Web Component definitions with
-                      equivalent HTML template files. These can be either native
-                      or Polymer Web Components. Optional parameter.
+                      equivalent .html template files. These can be either
+                      native or Polymer Web Components. Optional parameter.
 
-non_web_component_files:  List of TS files that are not Web Components, or
-                          Web Component files that don't have a corresponding
-                          HTML template (rare case). Optional parameter.
+ts_files:  List of TS files that are not Web Components, or Web Component files
+           that don't have a corresponding HTML template or Web Component files
+           that have their corresponding .html.ts template file checked-in.
+           Optional parameter.
 
 icons_html_files: List of HTML files that hold Polymer iron-iconset-svg
                   instances. Optional parameter.
@@ -727,16 +728,20 @@ build_webui("build") {
   ]
 
   # Files holding a CustomElement element definition AND have an equivalent
-  # .html template file.
+  # .html template file. An .html.ts wrapper file will be auto-generated during
+  # the build.
   web_component_files = [
     "app.ts",
     "bar_view.ts",
     "foo_view.ts",
   ]
 
-  # Files not holding a CustomElement element definition, or the CustomElement
-  # does not have a corresponding HTML template.
-  non_web_component_files = [
+  # Files that
+  #  1) are not holding a CustomElement element definition, or
+  #  2) the CustomElement does not have a corresponding HTML template, or
+  #  3) the HTML template is checked in as an .html.ts file and not
+  #     auto-generated.
+  ts_files = [
     "app_proxy.ts",
     "bar_proxy.ts",
     "foo_proxy.ts",

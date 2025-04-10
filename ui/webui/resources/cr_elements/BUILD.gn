@@ -14,19 +14,15 @@ build_webui("build") {
     "cr_tree/cr_tree_item.ts",
   ]
 
-  non_web_component_files = [
-    "cr_ripple/cr_ripple_mixin.ts",
-    "cr_splitter/cr_splitter.ts",
-    "cr_tree/cr_tree_base.ts",
-
-    # Web components files that either
-    #  - don't have a corresponding .html file or
-    #  - have a checked-in *.html.ts wrapper file instead of auto-generated
+  ts_files = [
     "cr_button/cr_button.html.ts",
     "cr_button/cr_button.ts",
+    "cr_ripple/cr_ripple_mixin.ts",
     "cr_ripple/cr_ripple.ts",
+    "cr_splitter/cr_splitter.ts",
     "cr_tabs/cr_tabs.html.ts",
     "cr_tabs/cr_tabs.ts",
+    "cr_tree/cr_tree_base.ts",
   ]
 
   css_files = [
@@ -40,7 +36,7 @@ build_webui("build") {
   if ((!is_android && !is_ios) || is_desktop_android) {
     web_component_files += [ "cr_a11y_announcer/cr_a11y_announcer.ts" ]
 
-    non_web_component_files += [
+    ts_files += [
       "cr_container_shadow_mixin_lit.ts",
       "cr_icon/iconset_map.ts",
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
@@ -146,7 +142,7 @@ build_webui("build") {
   }
 
   if (!is_android && !is_ios) {
-    non_web_component_files += [
+    ts_files += [
       "cr_container_shadow_mixin.ts",
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_ripple/cr_ripple_mixin_polymer.ts",
