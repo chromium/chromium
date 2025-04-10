@@ -91,7 +91,6 @@ class DesktopAndroidExtensionSystem : public ExtensionSystem {
   void Shutdown() override;
 
   bool AddExtension(scoped_refptr<Extension> extension, std::string& error);
-  void ReloadExtension(const std::string& extension_id);
 
   const Extension* LoadExtensionFromDirectory(const base::FilePath& file_path);
 

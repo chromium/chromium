@@ -174,11 +174,6 @@ bool DesktopAndroidExtensionSystem::AddExtension(
   return true;
 }
 
-void DesktopAndroidExtensionSystem::ReloadExtension(
-    const std::string& extension_id) {
-  registrar_->ReloadExtension(extension_id, LoadErrorBehavior::kNoisy);
-}
-
 const Extension* DesktopAndroidExtensionSystem::LoadExtensionFromDirectory(
     const base::FilePath& file_path) {
   base::ScopedAllowBlocking allow_blocking;
