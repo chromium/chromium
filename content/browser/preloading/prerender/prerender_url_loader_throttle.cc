@@ -21,8 +21,7 @@ PrerenderURLLoaderThrottle::PrerenderURLLoaderThrottle(
 // static
 std::unique_ptr<PrerenderURLLoaderThrottle>
 PrerenderURLLoaderThrottle::MaybeCreate(FrameTreeNodeId frame_tree_node_id) {
-  if (!base::FeatureList::IsEnabled(
-          features::kPrerender2FallbackPrefetchSpecRules)) {
+  if (!features::UsePrefetchPrerenderIntegration()) {
     return nullptr;
   }
 

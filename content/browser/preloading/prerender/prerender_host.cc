@@ -1495,8 +1495,7 @@ void PrerenderHost::OnWaitingForHeadersFinished(
 }
 
 bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kPrerender2FallbackPrefetchSpecRules));
+  CHECK(features::UsePrefetchPrerenderIntegration());
 
   auto is_prefetch_used =
       [](const std::optional<PrefetchStatus>& prefetch_status) -> bool {

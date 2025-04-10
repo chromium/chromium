@@ -723,6 +723,12 @@ BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Use code paths for prefetch/prerender integration.
+// See also `kPrerender2FallbackPrefetchSpecRules`.
+BASE_FEATURE(kPrefetchPrerenderIntegration,
+             "PrefetchPrerenderIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, browser-initiated prefetch is allowed.
 // Please see crbug.com/40946257 for more details.
 BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,

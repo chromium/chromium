@@ -422,8 +422,7 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
     }
     PrefetchContainer& prefetch_container_old = *prefetch_iter->second;
 
-    if (!base::FeatureList::IsEnabled(
-            features::kPrerender2FallbackPrefetchSpecRules)) {
+    if (!features::UsePrefetchPrerenderIntegration()) {
       return Action::kReplaceOldWithNew;
     }
 

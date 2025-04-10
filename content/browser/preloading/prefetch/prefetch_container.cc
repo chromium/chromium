@@ -276,8 +276,7 @@ void RecordPrefetchProxyPrefetchMainframeBodyLength(int64_t body_length) {
 
 bool CalculateIsLikelyAheadOfPrerender(
     const PreloadPipelineInfoImpl& preload_pipeline_info) {
-  if (!base::FeatureList::IsEnabled(
-          features::kPrerender2FallbackPrefetchSpecRules)) {
+  if (!features::UsePrefetchPrerenderIntegration()) {
     return false;
   }
 
@@ -545,6 +544,10 @@ PrefetchContainer::PrefetchContainer(
     //
     // TODO(crbug.com/40064891): Remove this once `kPrefetchReusable` is
     // launched.
+    //
+    // Note that we keep the check instead of
+    // `features::UsePrefetchPrerenderIntegration()` as `PrefetchReusable` is
+    // enabled on Desktop and the difference doesn't affect `SearchPreload2`.
     if (base::FeatureList::IsEnabled(
             features::kPrerender2FallbackPrefetchSpecRules)) {
       switch (features::kPrerender2FallbackPrefetchReusablePolicy.Get()) {
@@ -1479,8 +1482,7 @@ bool PrefetchContainer::HasPrefetchBeenConsideredToServe() const {
     return false;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kPrerender2FallbackPrefetchSpecRules)) {
+  if (features::UsePrefetchPrerenderIntegration()) {
     // If `PrefetchResponseReader` of the initial navigation is reusable, it is
     // reusable.
     if (redirect_chain_[0]->response_reader_->is_reusable()) {
@@ -1512,8 +1514,7 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
     return ServableState::kShouldBlockUntilHeadReceived;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kPrerender2FallbackPrefetchSpecRules)) {
+  if (features::UsePrefetchPrerenderIntegration()) {
     switch (load_state_) {
       case LoadState::kNotStarted:
       case LoadState::kEligible:
