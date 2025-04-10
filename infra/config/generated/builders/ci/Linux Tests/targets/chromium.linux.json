@@ -2094,7 +2094,6 @@
           "--test-type=wdspec"
         ],
         "ci_only": true,
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "args": [

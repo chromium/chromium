@@ -542,7 +542,6 @@ ci.thin_tester(
             ),
             "webdriver_wpt_tests": targets.mixin(
                 ci_only = True,
-                experiment_percentage = 100,
             ),
         },
     ),
