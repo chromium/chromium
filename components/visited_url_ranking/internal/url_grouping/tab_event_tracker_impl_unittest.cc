@@ -92,19 +92,19 @@ TEST_F(TabEventTrackerImplTest, SwitchedCount_IgnoreOldSwitch) {
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));
 
-  task_environment_.FastForwardBy(base::Minutes(16));
+  task_environment_.FastForwardBy(base::Minutes(6));
 
   tab_event_tracker_->DidSelectTab(
       2, TabEventTracker::TabSelectionType::kFromUser, 1);
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 
-  task_environment_.FastForwardBy(base::Minutes(16));
+  task_environment_.FastForwardBy(base::Minutes(6));
 
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(1, tab_event_tracker_->GetSelectedCount(kTabId2));
 
-  task_environment_.FastForwardBy(base::Minutes(16));
+  task_environment_.FastForwardBy(base::Minutes(6));
 
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId1));
   EXPECT_EQ(0, tab_event_tracker_->GetSelectedCount(kTabId2));

@@ -120,17 +120,14 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
     std::vector<float> result(inputs.size(), 0.0f);
     const char* tab_opened_by_user_input = GetNameForInput(
         URLVisitAggregateRankingModelInputSignals::kIsTabOpenedByUser);
-    const char* tab_launch_type_input = GetNameForInput(
-        URLVisitAggregateRankingModelInputSignals::kAndroidTabLaunchType);
-    const char* tab_launch_package_name_input =
-        GetNameForInput(URLVisitAggregateRankingModelInputSignals::
-                            kAndroidTabLaunchPackageName);
     const char* tab_parent_id_input = GetNameForInput(
         URLVisitAggregateRankingModelInputSignals::kTabParentId);
     const char* tab_group_sync_id_input = GetNameForInput(
         URLVisitAggregateRankingModelInputSignals::kTabGroupSyncId);
     const char* tab_id_input =
         GetNameForInput(URLVisitAggregateRankingModelInputSignals::kTabId);
+    const char* time_since_active_input = GetNameForInput(
+        URLVisitAggregateRankingModelInputSignals::kTimeSinceLastActiveSec);
 
     std::unordered_map<float, float> tab_id_to_parent_id_map;
     tab_id_to_parent_id_map.reserve(inputs.size());
@@ -139,16 +136,14 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
     for (unsigned i = 0; i < inputs.size(); ++i) {
       std::optional<ProcessedValue> tab_opened_by_user =
           inputs[i]->GetMetadataArgument(tab_opened_by_user_input);
-      std::optional<ProcessedValue> tab_launch_type =
-          inputs[i]->GetMetadataArgument(tab_launch_type_input);
-      std::optional<ProcessedValue> tab_launch_package_name =
-          inputs[i]->GetMetadataArgument(tab_launch_package_name_input);
       std::optional<ProcessedValue> tab_parent_id =
           inputs[i]->GetMetadataArgument(tab_parent_id_input);
       std::optional<ProcessedValue> tab_group_sync_id =
           inputs[i]->GetMetadataArgument(tab_group_sync_id_input);
       std::optional<ProcessedValue> tab_id =
           inputs[i]->GetMetadataArgument(tab_id_input);
+      std::optional<ProcessedValue> duration_sec =
+          inputs[i]->GetMetadataArgument(time_since_active_input);
 
       if (!tab_opened_by_user || tab_opened_by_user->float_val == 0) {
         // Do not group tabs not opened by user.
@@ -156,6 +151,11 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
       }
       if (tab_group_sync_id && !tab_group_sync_id->str_val.empty()) {
         // Not group tabs already grouped.
+        continue;
+      }
+      if (duration_sec &&
+          duration_sec->float_val >= kRecencyTabTimeLimit.InSecondsF()) {
+        // Not group tabs that are not recent.
         continue;
       }
       if (tab_parent_id && tab_id) {

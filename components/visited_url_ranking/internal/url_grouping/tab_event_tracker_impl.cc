@@ -8,7 +8,7 @@ namespace visited_url_ranking {
 
 namespace {
 
-const base::TimeDelta kSelectionTimeWindow = base::Minutes(30);
+const base::TimeDelta kSelectionTimeWindow = base::Minutes(10);
 
 }  // namespace
 
