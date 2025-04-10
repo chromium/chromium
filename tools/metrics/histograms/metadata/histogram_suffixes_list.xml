@@ -1283,28 +1283,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Ash.UnlockAnimation.Smoothness"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ThreadPoolName" separator=".">
-  <suffix base="true" name="Browser"
-      label="ThreadPool for the browser process."/>
-  <suffix base="true" name="ContentChild"
-      label="ThreadPools for various instantiations of content::ChildProcess."/>
-  <suffix base="true" name="GPU" label="ThreadPool for the gpu process."/>
-  <suffix base="true" name="Renderer"
-      label="ThreadPools for renderer processes."/>
-  <affected-histogram name="ThreadPool.UnnecessaryWakeup"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ThreadPoolWorkerGroup" separator=".">
-  <suffix name="Background"
-      label="Applies to the Background priority worker group."/>
-  <suffix name="Foreground"
-      label="Applies to the Foreground priority worker group."/>
-  <affected-histogram name="ThreadPool.UnnecessaryWakeup.Browser"/>
-  <affected-histogram name="ThreadPool.UnnecessaryWakeup.ContentChild"/>
-  <affected-histogram name="ThreadPool.UnnecessaryWakeup.GPU"/>
-  <affected-histogram name="ThreadPool.UnnecessaryWakeup.Renderer"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="WebSocketErrorCodesVariants" separator="_">
   <suffix name="Localhost" label=""/>
   <suffix name="NotLocalhost" label=""/>

@@ -395,17 +395,31 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true" name="ThreadPool.UnnecessaryWakeup" enum="BooleanHit"
-    expires_after="2025-08-09">
+<histogram name="ThreadPool.UnnecessaryWakeup.{ThreadPoolName}.{WorkerGroup}"
+    enum="BooleanHit" expires_after="2025-08-09">
   <owner>spvw@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
     Records a hit when a thread pool worker thread woke up unnecessarily (when
     the first GetWork called by a WorkerThread post-wakeup doesn't return a
     task). This count can be compared between experiments aiming to reduce
-    wakeups. Or, it could be used to derive wakeups/{foo} by using UMA formulas
-    against other time-or-event-based metrics.
+    wakeups. Or, it could be used to derive wakeups/(foo) by using UMA formulas
+    against other time-or-event-based metrics. {ThreadPoolName} {WorkerGroup}
   </summary>
+  <token key="ThreadPoolName">
+    <variant name="Browser" summary="ThreadPool for the browser process."/>
+    <variant name="ContentChild"
+        summary="ThreadPools for various instantiations of
+                 content::ChildProcess."/>
+    <variant name="GPU" summary="ThreadPool for the gpu process."/>
+    <variant name="Renderer" summary="ThreadPools for renderer processes."/>
+  </token>
+  <token key="WorkerGroup">
+    <variant name="Background"
+        summary="Applies to the Background priority worker group."/>
+    <variant name="Foreground"
+        summary="Applies to the Foreground priority worker group."/>
+  </token>
 </histogram>
 
 </histograms>
