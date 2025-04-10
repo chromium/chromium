@@ -6,8 +6,6 @@ package org.chromium.android_webview;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -15,6 +13,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.TraceRecordMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,6 +27,7 @@ import java.util.List;
 /** Manages tracing functionality in WebView. */
 @Lifetime.Singleton
 @JNINamespace("android_webview")
+@NullMarked
 public class AwTracingController {
     public static final int RESULT_SUCCESS = 0;
     public static final int RESULT_ALREADY_TRACING = 1;
@@ -80,7 +81,7 @@ public class AwTracingController {
                             CATEGORIES_FRAME_VIEWER_LIST // CATEGORIES_FRAME_VIEWER
                             ));
 
-    private OutputStream mOutputStream;
+    private @Nullable OutputStream mOutputStream;
 
     // TODO(timvolodine): consider caching mIsTracing value for efficiency.
     // boolean mIsTracing;

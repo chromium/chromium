@@ -11,6 +11,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.CleanupReference;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.OutputStream;
 
@@ -19,6 +20,7 @@ import java.io.OutputStream;
  * chromium skia library.
  */
 @JNINamespace("android_webview")
+@NullMarked
 public class AwPicture extends Picture {
     private long mNativeAwPicture;
 
@@ -49,8 +51,7 @@ public class AwPicture extends Picture {
 
     @Override
     public Canvas beginRecording(int width, int height) {
-        unsupportedOperation();
-        return null;
+        throw new IllegalStateException("Unsupported in AwPicture");
     }
 
     @Override
@@ -75,10 +76,6 @@ public class AwPicture extends Picture {
 
     @SuppressWarnings("deprecation")
     public void writeToStream(OutputStream stream) {
-        unsupportedOperation();
-    }
-
-    private void unsupportedOperation() {
         throw new IllegalStateException("Unsupported in AwPicture");
     }
 

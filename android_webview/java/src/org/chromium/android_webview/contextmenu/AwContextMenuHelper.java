@@ -12,6 +12,8 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
@@ -22,13 +24,15 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import java.util.List;
 
 /** A helper class that handles generating and dismissing context menus for {@link WebContents}. */
+@NullMarked
 public class AwContextMenuHelper {
-    private static Callback<AwContextMenuCoordinator> sMenuShownCallbackForTesting;
+    private static @Nullable Callback<@Nullable AwContextMenuCoordinator>
+            sMenuShownCallbackForTesting;
     private static final String TAG = "AwContextMenuHelper";
     private final WebContents mWebContents;
 
-    private ContextMenuPopulator mCurrentPopulator;
-    private AwContextMenuCoordinator mCurrentContextMenu;
+    private @Nullable ContextMenuPopulator mCurrentPopulator;
+    private @Nullable AwContextMenuCoordinator mCurrentContextMenu;
 
     private AwContextMenuHelper(WebContents webContents) {
         mWebContents = webContents;
@@ -60,6 +64,7 @@ public class AwContextMenuHelper {
                 || view.getParent() == null
                 || windowAndroid == null
                 || windowAndroid.getActivity().get() == null
+                || windowAndroid.getContext().get() == null
                 || mCurrentContextMenu != null) {
             Log.w(TAG, "Could not create context menu");
             if (sMenuShownCallbackForTesting != null) {
@@ -113,7 +118,8 @@ public class AwContextMenuHelper {
                 windowAndroid, mWebContents, params, items, callback, onMenuShown, onMenuClosed);
     }
 
-    public static void setMenuShownCallbackForTests(Callback<AwContextMenuCoordinator> callback) {
+    public static void setMenuShownCallbackForTests(
+            Callback<@Nullable AwContextMenuCoordinator> callback) {
         sMenuShownCallbackForTesting = callback;
         ResettersForTesting.register(() -> sMenuShownCallbackForTesting = null);
     }

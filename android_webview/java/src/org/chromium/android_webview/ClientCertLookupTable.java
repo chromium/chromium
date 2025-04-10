@@ -4,6 +4,9 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,9 +15,10 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Store user's client certificate decision for a host and port pair. Not
- * thread-safe. All accesses are done on UI thread.
+ * Store user's client certificate decision for a host and port pair. Not thread-safe. All accesses
+ * are done on UI thread.
  */
+@NullMarked
 public class ClientCertLookupTable {
 
     /** A container for the certificate data. */
@@ -58,7 +62,7 @@ public class ClientCertLookupTable {
         mDenieds.add(host_and_port);
     }
 
-    public Cert getCertData(String host, int port) {
+    public @Nullable Cert getCertData(String host, int port) {
         return mCerts.get(hostAndPort(host, port));
     }
 
