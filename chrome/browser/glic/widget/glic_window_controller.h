@@ -393,9 +393,8 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Return the last size Resize() was called with, or the default initial size
   // if Resize() hasn't been called. The return value is clamped to fit between
-  // the minimum and maximum sizes (max height is calculated from
-  // `display_height`).
-  gfx::Size GetLastRequestedSizeClamped(int display_height) const;
+  // the minimum and maximum sizes.
+  gfx::Size GetLastRequestedSizeClamped() const;
 
   // Possibly adjusts the size of the window appropriate for the current
   // display workspace, but only if it's different than the current target size.

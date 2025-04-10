@@ -765,8 +765,7 @@ gfx::Rect GlicWindowController::GetInitialBounds(Browser* browser) {
   }
 
   // Get the default detached position.
-  display::Display display = GetDisplayForOpeningDetached();
-  gfx::Size widget_size = GetLastRequestedSizeClamped(display.size().height());
+  gfx::Size widget_size = GetLastRequestedSizeClamped();
 
   // Use the previous position if there is one.
   if (previous_position.has_value()) {
@@ -775,6 +774,7 @@ gfx::Rect GlicWindowController::GetInitialBounds(Browser* browser) {
 
   // Get the default position offset equal distances from the top right corner
   // of the work area (which excludes system UI such as the taskbar).
+  display::Display display = GetDisplayForOpeningDetached();
   gfx::Point top_right = display.work_area().top_right();
   int initial_x =
       top_right.x() - widget_size.width() - kDefaultDetachedTopRightDistance;
@@ -804,8 +804,8 @@ gfx::Rect GlicWindowController::GetInitialAttachedBounds(Browser& browser) {
 
 gfx::Rect GlicWindowController::GetInitialDetachedBoundsFromBrowser(
     Browser& browser) {
+  gfx::Size widget_size = GetLastRequestedSizeClamped();
   gfx::Rect display_bounds = GetDisplayForOpeningDetached().work_area();
-  gfx::Size widget_size = GetLastRequestedSizeClamped(display_bounds.height());
   gfx::Point origin = display_bounds.top_right();
 
   // Open detached relative to the browser.
@@ -834,8 +834,7 @@ void GlicWindowController::StartAttachedAnimation(GlicButton* glic_button) {
   glic_window_animator_->SetGlicWebViewVisibility(false);
 
   // Set target size for animation and run the open attached animation.
-  gfx::Size widget_size =
-      GetLastRequestedSizeClamped(glic_widget_->GetDisplay().size().height());
+  gfx::Size widget_size = GetLastRequestedSizeClamped();
 
   glic_window_animator_->RunOpenAttachedAnimation(
       glic_button, widget_size,
@@ -1049,9 +1048,8 @@ void GlicWindowController::Resize(const gfx::Size& size,
   // animate this transition.
   if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
       state_ == State::kOpenAnimation || state_ == State::kDetaching) {
-    glic_window_animator_->AnimateSize(
-        GetLastRequestedSizeClamped(glic_widget_->GetDisplay().size().height()),
-        duration, std::move(callback));
+    glic_window_animator_->AnimateSize(GetLastRequestedSizeClamped(), duration,
+                                       std::move(callback));
   } else {
     // If the glic window is closed, or the widget isn't ready (e.g. because
     // it's currently still animating closed) immediately post the callback.
@@ -1526,8 +1524,7 @@ bool GlicWindowController::IsBrowserOccludedAtPoint(Browser* browser,
   return false;
 }
 
-gfx::Size GlicWindowController::GetLastRequestedSizeClamped(
-    int display_height) const {
+gfx::Size GlicWindowController::GetLastRequestedSizeClamped() const {
   gfx::Size min = GlicWidget::GetInitialSize();
   if (glic_widget_) {
     gfx::Size widget_min = glic_widget_->GetMinimumSize();
@@ -1547,8 +1544,7 @@ gfx::Size GlicWindowController::GetLastRequestedSizeClamped(
 void GlicWindowController::MaybeAdjustSizeForDisplay(bool animate) {
   if (state_ == State::kOpen || state_ == State::kWaitingForGlicToLoad ||
       state_ == State::kOpenAnimation || state_ == State::kDetaching) {
-    const auto target_size = GetLastRequestedSizeClamped(
-        glic_widget_->GetWorkAreaBoundsInScreen().height());
+    const auto target_size = GetLastRequestedSizeClamped();
     if (target_size != glic_window_animator_->GetCurrentTargetBounds().size()) {
       glic_window_animator_->AnimateSize(
           target_size, animate ? kAnimationDuration : base::Milliseconds(0),
