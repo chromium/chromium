@@ -414,10 +414,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
           safe_browsing::kHashPrefixRealTimeLookupsSamplePing));
 
   html_source->AddBoolean(
-      "enablePasswordLeakToggleMove",
-      base::FeatureList::IsEnabled(safe_browsing::kPasswordLeakToggleMove));
-
-  html_source->AddBoolean(
       "shouldShowPayOverTimeSettings",
       autofill::ContentAutofillClient::FromWebContents(web_ui->GetWebContents())
           ->GetPaymentsAutofillClient()

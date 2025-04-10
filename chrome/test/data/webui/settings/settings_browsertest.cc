@@ -1318,7 +1318,6 @@ class SettingsSecurityPageTest : public SettingsBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {
             features::kEnableCertManagementUIV2,
-            safe_browsing::kPasswordLeakToggleMove,
         },
         {});
   }

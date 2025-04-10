@@ -245,19 +245,6 @@ TEST_F(LeakDetectionDelegateTest, InIncognito) {
   EXPECT_FALSE(delegate().leak_check());
 }
 
-// TODO(crbug.com/397409660): Clean up old test cases
-TEST_F(LeakDetectionDelegateTest, SafeBrowsingOffPreventsLeakDetectionCheck) {
-  feature_list.InitAndDisableFeature(safe_browsing::kPasswordLeakToggleMove);
-  pref_service()->SetBoolean(::prefs::kSafeBrowsingEnabled, false);
-
-  EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
-  const PasswordForm form = CreateTestForm();
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
-                            GetTestUrl());
-
-  EXPECT_FALSE(delegate().leak_check());
-}
-
 TEST_F(LeakDetectionDelegateTest, UsernameIsEmpty) {
   PasswordForm form = CreateTestForm();
   form.username_value.clear();
@@ -351,44 +338,6 @@ TEST_F(LeakDetectionDelegateTest, StartCheckWithNonBlockedFormURL) {
   EXPECT_TRUE(delegate().leak_check());
   EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(
       *pref_service(), GURL("http://not_blocked_domain.com"), nullptr));
-}
-
-// TODO(crbug.com/397409660): Clean up old test cases
-TEST_F(LeakDetectionDelegateTest, StartCheckWithEnhancedProtection) {
-  feature_list.InitAndDisableFeature(safe_browsing::kPasswordLeakToggleMove);
-  SetSBState(safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
-  SetLeakDetectionEnabled(false);
-  const PasswordForm form = CreateTestForm();
-  EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
-  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
-  EXPECT_CALL(*check_instance,
-              Start(LeakDetectionInitiator::kSignInCheck, form.url,
-                    form.username_value, form.password_value));
-  EXPECT_CALL(factory(), TryCreateLeakCheck(&delegate(), _, _, _))
-      .WillOnce(Return(ByMove(std::move(check_instance))));
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
-                            GetTestUrl());
-
-  EXPECT_TRUE(delegate().leak_check());
-  EXPECT_TRUE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(),
-                                                    GetTestUrl(), nullptr));
-}
-
-// TODO(crbug.com/397409660): Clean up old test cases
-TEST_F(LeakDetectionDelegateTest, DoNotStartCheckWithoutSafeBrowsing) {
-  feature_list.InitAndDisableFeature(safe_browsing::kPasswordLeakToggleMove);
-  SetSBState(safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
-  SetLeakDetectionEnabled(true);
-  const PasswordForm form = CreateTestForm();
-  EXPECT_CALL(client(), IsOffTheRecord).WillOnce(Return(false));
-  auto check_instance = std::make_unique<MockLeakDetectionCheck>();
-  EXPECT_CALL(factory(), TryCreateLeakCheck).Times(0);
-  delegate().StartLeakCheck(LeakDetectionInitiator::kSignInCheck, form,
-                            GetTestUrl());
-
-  EXPECT_FALSE(delegate().leak_check());
-  EXPECT_FALSE(LeakDetectionCheck::CanStartLeakCheck(*pref_service(),
-                                                     GetTestUrl(), nullptr));
 }
 
 TEST_F(LeakDetectionDelegateTest, DoNotStartLeakCheckIfLeakCheckIsOff) {
