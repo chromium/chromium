@@ -109,7 +109,6 @@ class CORE_EXPORT CanvasRenderingContextHost : public GarbageCollectedMixin,
   bool IsImageBitmapRenderingContext() const;
 
   SkAlphaType GetRenderingContextAlphaType() const;
-  SkColorType GetRenderingContextSkColorType() const;
   viz::SharedImageFormat GetRenderingContextFormat() const;
   gfx::ColorSpace GetRenderingContextColorSpace() const;
   PlainTextPainter& GetPlainTextPainter();
