@@ -21,11 +21,8 @@ import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptReq
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -98,17 +95,8 @@ public class AwPersistentOriginTrialTest extends AwParameterizedTest {
                         CRITICAL_ORIGIN_TRIAL_HEADER,
                         PERSISTENT_TRIAL_NAME);
 
-        // The page will be loaded twice, so we need a new input stream for each response.
-        mInterceptRequestHelper.setReturnValueSupplierForUrl(
-                requestUrl,
-                () -> {
-                    ByteArrayInputStream body =
-                            new ByteArrayInputStream(
-                                    "<!DOCTYPE html><html><body>Hello, World"
-                                            .getBytes(StandardCharsets.UTF_8));
-                    return new WebResourceResponseInfo(
-                            "text/html", "utf-8", body, 200, "OK", headers);
-                });
+        mInterceptRequestHelper.enqueueHtmlResponseForUrl(
+                requestUrl, "<!DOCTYPE html><html><body>Hello, World", headers);
 
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();

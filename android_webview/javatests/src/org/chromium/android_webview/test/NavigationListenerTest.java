@@ -30,13 +30,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageStartedHelper;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 
-import java.io.ByteArrayInputStream;
 import java.net.URLEncoder;
 
 /** Test suite for the special navigation listener that will be notified of navigation messages */
@@ -643,14 +641,7 @@ public class NavigationListenerTest extends AwParameterizedTest {
 
         TestAwContentsClient.ShouldInterceptRequestHelper shouldInterceptRequestHelper =
                 mContentsClient.getShouldInterceptRequestHelper();
-        shouldInterceptRequestHelper.setReturnValue(
-                new WebResourceResponseInfo(
-                        "text/html",
-                        ENCODING,
-                        new ByteArrayInputStream("foo".getBytes(ENCODING)),
-                        200,
-                        "OK",
-                        /* responseHeaders= */ null));
+        shouldInterceptRequestHelper.enqueueHtmlResponse("data", /* responseHeaders= */ null);
 
         // Navigation #1: Navigate to `url` which will be intercepted to contain "foo".
         final String url = loadUrlFromPath(PAGE_A);
@@ -669,14 +660,13 @@ public class NavigationListenerTest extends AwParameterizedTest {
                 /* loadEnds= */ true);
 
         // Navigation #2: Navigate to `url2`, which will be intercepted to result in an error page.
-        shouldInterceptRequestHelper.setReturnValue(
-                new WebResourceResponseInfo(
-                        "text/html",
-                        ENCODING,
-                        new ByteArrayInputStream("".getBytes(ENCODING)),
-                        500,
-                        "Internal Server Error",
-                        /* responseHeaders= */ null));
+        shouldInterceptRequestHelper.enqueueResponse(
+                "text/html",
+                ENCODING,
+                /* data= */ "",
+                500,
+                "Internal Server Error",
+                /* responseHeaders= */ null);
         final String url2 = loadUrlFromPath(PAGE_B);
         assertNavigationMessages(
                 url2,
