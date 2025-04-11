@@ -193,6 +193,53 @@ cdm::KeyStatus ToCdmKeyStatus(CdmKeyInformation::KeyStatus status) {
   NOTREACHED() << "Unexpected CdmKeyInformation::KeyStatus " << status;
 }
 
+CdmKeyInformation::KeyStatus ToMediaKeyStatus(cdm::KeyStatus_2 status) {
+  switch (status) {
+    case cdm::KeyStatus_2::kUsable:
+      return CdmKeyInformation::USABLE;
+    case cdm::KeyStatus_2::kInternalError:
+      return CdmKeyInformation::INTERNAL_ERROR;
+    case cdm::KeyStatus_2::kExpired:
+      return CdmKeyInformation::EXPIRED;
+    case cdm::KeyStatus_2::kOutputRestricted:
+      return CdmKeyInformation::OUTPUT_RESTRICTED;
+    case cdm::KeyStatus_2::kOutputDownscaled:
+      return CdmKeyInformation::OUTPUT_DOWNSCALED;
+    case cdm::KeyStatus_2::kStatusPending:
+      return CdmKeyInformation::KEY_STATUS_PENDING;
+    case cdm::KeyStatus_2::kReleased:
+      return CdmKeyInformation::RELEASED;
+    case cdm::KeyStatus_2::kUsableInFuture:
+      return CdmKeyInformation::USABLE_IN_FUTURE;
+  }
+  DVLOG(1) << "Unexpected cdm::KeyStatus_2 " << static_cast<uint32_t>(status);
+  return CdmKeyInformation::INTERNAL_ERROR;  // Default in error case
+}
+
+cdm::KeyStatus_2 ToCdmKeyStatus_2(CdmKeyInformation::KeyStatus status) {
+  switch (status) {
+    case CdmKeyInformation::USABLE:
+      return cdm::KeyStatus_2::kUsable;
+    case CdmKeyInformation::INTERNAL_ERROR:
+      return cdm::KeyStatus_2::kInternalError;
+    case CdmKeyInformation::EXPIRED:
+      return cdm::KeyStatus_2::kExpired;
+    case CdmKeyInformation::OUTPUT_RESTRICTED:
+      return cdm::KeyStatus_2::kOutputRestricted;
+    case CdmKeyInformation::OUTPUT_DOWNSCALED:
+      return cdm::KeyStatus_2::kOutputDownscaled;
+    case CdmKeyInformation::KEY_STATUS_PENDING:
+      return cdm::KeyStatus_2::kStatusPending;
+    case CdmKeyInformation::RELEASED:
+      return cdm::KeyStatus_2::kReleased;
+    case CdmKeyInformation::USABLE_IN_FUTURE:
+      return cdm::KeyStatus_2::kUsableInFuture;
+  }
+  DVLOG(1) << "Unexpected CdmKeyInformation::KeyStatus "
+           << static_cast<int>(status);
+  return cdm::KeyStatus_2::kInternalError;  // Default in error case
+}
+
 cdm::EncryptionScheme ToCdmEncryptionScheme(EncryptionScheme scheme) {
   switch (scheme) {
     case EncryptionScheme::kUnencrypted:
