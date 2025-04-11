@@ -65,6 +65,7 @@ enum class SignInHistorySyncStep {
   BOOL _optionalHistorySync;
   // Whether the promo should be displayed in a fullscreen modal.
   BOOL _fullscreenPromo;
+  ChangeProfileContinuationProvider _continuationProvider;
 }
 
 - (instancetype)
@@ -74,12 +75,16 @@ enum class SignInHistorySyncStep {
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
            optionalHistorySync:(BOOL)optionalHistorySync
-               fullscreenPromo:(BOOL)fullscreenPromo {
+               fullscreenPromo:(BOOL)fullscreenPromo
+          continuationProvider:
+              (const ChangeProfileContinuationProvider&)continuationProvider {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                               contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
+    CHECK(continuationProvider);
+    _continuationProvider = continuationProvider;
     _optionalHistorySync = optionalHistorySync;
     _fullscreenPromo = fullscreenPromo;
     _promoAction = promoAction;
@@ -197,8 +202,7 @@ enum class SignInHistorySyncStep {
                                                     init]
                                    contextStyle:self.contextStyle
                                     accessPoint:self.accessPoint
-              changeProfileContinuationProvider:
-                  DoNothingContinuationProvider()];
+              changeProfileContinuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {
@@ -213,7 +217,7 @@ enum class SignInHistorySyncStep {
                                  browser:self.browser
                             contextStyle:self.contextStyle
                              accessPoint:self.accessPoint
-                    continuationProvider:DoNothingContinuationProvider()];
+                    continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {
@@ -231,7 +235,7 @@ enum class SignInHistorySyncStep {
                             contextStyle:self.contextStyle
                              accessPoint:self.accessPoint
                              promoAction:_promoAction
-                    continuationProvider:DoNothingContinuationProvider()];
+                    continuationProvider:_continuationProvider];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {

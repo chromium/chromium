@@ -2189,6 +2189,7 @@ using UserFeedbackDataCallback =
                                             .changeProfileContinuationProvider];
       break;
     case AuthenticationOperation::kSheetSigninAndHistorySync: {
+      auto& provider = command.changeProfileContinuationProvider;
       self.signinCoordinator = [SigninCoordinator
           signinAndHistorySyncCoordinatorWithBaseViewController:
               baseViewController
@@ -2202,7 +2203,8 @@ using UserFeedbackDataCallback =
                                             optionalHistorySync:
                                                 command.optionalHistorySync
                                                 fullscreenPromo:
-                                                    command.fullScreenPromo];
+                                                    command.fullScreenPromo
+                                           continuationProvider:provider];
       break;
     }
     case AuthenticationOperation::kHistorySync:

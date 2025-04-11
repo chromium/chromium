@@ -247,8 +247,11 @@ using signin_metrics::PromoAction;
                                                   (PromoAction)promoAction
                                       optionalHistorySync:
                                           (BOOL)optionalHistorySync
-                                          fullscreenPromo:
-                                              (BOOL)fullscreenPromo {
+                                          fullscreenPromo:(BOOL)fullscreenPromo
+                                     continuationProvider:
+                                         (const ChangeProfileContinuationProvider&)
+                                             continuationProvider {
+  CHECK(continuationProvider);
   return [[SignInAndHistorySyncCoordinator alloc]
       initWithBaseViewController:viewController
                          browser:browser
@@ -256,7 +259,8 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint
                      promoAction:promoAction
              optionalHistorySync:optionalHistorySync
-                 fullscreenPromo:fullscreenPromo];
+                 fullscreenPromo:fullscreenPromo
+            continuationProvider:continuationProvider];
 }
 
 + (SigninCoordinator<InterruptibleChromeCoordinator>*)

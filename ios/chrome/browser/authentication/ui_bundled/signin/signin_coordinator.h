@@ -233,7 +233,10 @@ class PrefRegistrySyncable;
                                                       promoAction
                                       optionalHistorySync:
                                           (BOOL)optionalHistorySync
-                                          fullscreenPromo:(BOOL)fullscreenPromo;
+                                          fullscreenPromo:(BOOL)fullscreenPromo
+                                     continuationProvider:
+                                         (const ChangeProfileContinuationProvider&)
+                                             continuationProvider;
 
 // Returns a coordinator to switch account.
 + (SigninCoordinator<InterruptibleChromeCoordinator>*)

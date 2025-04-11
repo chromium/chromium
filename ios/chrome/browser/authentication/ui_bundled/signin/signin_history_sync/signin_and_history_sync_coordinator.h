@@ -33,7 +33,10 @@ enum class PromoAction : int;
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
            optionalHistorySync:(BOOL)optionalHistorySync
-               fullscreenPromo:(BOOL)fullscreenPromo NS_DESIGNATED_INITIALIZER;
+               fullscreenPromo:(BOOL)fullscreenPromo
+          continuationProvider:
+              (const ChangeProfileContinuationProvider&)continuationProvider
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
