@@ -416,11 +416,13 @@ bool BrowserAccessibilityAndroid::IsInterestingOnAndroid() const {
   const BrowserAccessibility* parent = PlatformGetParent();
 
   // Should not read options in a multiselect combobox as it is invisible.
-  // TODO(crbug.com/395134019): We should be able to select options in
-  // aria list box.
+  // Adding IsFocusable() to handle an edge case in crbug.com/395134019 to allow
+  // select options in aria list box. This is also able to handle edge case in
+  // crbug.com/358195473 to not allow TalkBack to read out collapsed
+  // multi-selectable options.
   if (parent && parent->GetRole() == ax::mojom::Role::kListBox &&
       parent->HasState(ax::mojom::State::kMultiselectable) &&
-      GetRole() == ax::mojom::Role::kListBoxOption) {
+      GetRole() == ax::mojom::Role::kListBoxOption && IsFocusable()) {
     return false;
   }
 
