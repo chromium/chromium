@@ -663,6 +663,11 @@ class BrowserCommandControllerBrowserTestGlic
     BrowserCommandControllerBrowserTest::SetUp();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Bypass glic eligibility check.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -730,9 +735,11 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
 IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
                        ExecuteGlicThreeDotMenuItem) {
   // Bypass glic eligibility check.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(::switches::kGlicDev);
-  // Bypass fre.
   PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->SetInteger(
+      ::prefs::kGeminiSettings,
+      static_cast<int>(glic::prefs::SettingsPolicyState::kEnabled));
+  // Bypass fre.
   profile_prefs->SetInteger(glic::prefs::kGlicCompletedFre,
                             static_cast<int>(glic::prefs::FreStatus::kCompleted));
 
