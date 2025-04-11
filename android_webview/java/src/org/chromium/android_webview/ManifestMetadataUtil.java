@@ -18,6 +18,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +29,7 @@ import java.util.Set;
  * Utility class to fetch metadata declared in the ApplicationManifest.xml file of the embedding
  * app.
  */
+@NullMarked
 public class ManifestMetadataUtil {
     private static final String TAG = "ManifestMetadata";
 
@@ -73,9 +75,9 @@ public class ManifestMetadataUtil {
         private final @Nullable Boolean mContextExperimentValue;
         private final @Nullable Boolean mSafeBrowsingOptInPreference;
         private final @Nullable Integer mAppMultiProfileProfileNameTagKey;
-        private final @NonNull Set<String> mXRequestedAllowList;
+        private final Set<String> mXRequestedAllowList;
 
-        public MetadataCache(@NonNull Context context) {
+        public MetadataCache(Context context) {
             // Cache app level metadata.
             @Nullable Bundle appMetadata = getAppMetadata(context);
             mIsAppOptedOutFromMetricsCollection = isAppOptedOutFromMetricsCollection(appMetadata);
@@ -309,8 +311,7 @@ public class ManifestMetadataUtil {
      *
      * @return AutoCloseable that will reset the value when closed.
      */
-    public static AutoCloseable setXRequestedWithAllowListScopedForTesting(
-            @NonNull Set<String> allowList) {
+    public static AutoCloseable setXRequestedWithAllowListScopedForTesting(Set<String> allowList) {
         sXrwAllowlistForTesting = allowList;
         return () -> sXrwAllowlistForTesting = null;
     }
