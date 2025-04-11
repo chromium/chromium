@@ -48,7 +48,6 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
@@ -107,7 +106,7 @@ public class TabGridDialogViewBinderTest {
 
     private PropertyModel mModel;
     private TabGridDialogToolbarView mToolbarView;
-    private RecyclerView mContentView;
+    private TabListRecyclerView mContentView;
     private TabGridDialogView mTabGridDialogView;
     private ChromeImageView mNewTabButton;
     private ChromeImageView mBackButton;

@@ -10,12 +10,14 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.GET_VISIBLE_RANGE_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_SCROLLING_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.MODE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PAGE_KEY_LISTENER;
 
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.util.Size;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -47,6 +49,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -236,6 +239,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             .with(
                                     IS_SCROLLING_SUPPLIER_CALLBACK,
                                     (f) -> mIsScrollingSupplier.set(f))
+                            .with(PAGE_KEY_LISTENER, this::onPageKeyEvent)
                             .build();
 
             mContainerViewModel = containerViewModel;
@@ -268,6 +272,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 actionConfirmationManager,
                                                 mModalDialogManager,
                                                 desktopWindowStateManager);
+                                mTabGridDialogCoordinator.setPageKeyEvent(this::onPageKeyEvent);
                                 return mTabGridDialogCoordinator.getDialogController();
                             });
 
@@ -482,6 +487,23 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
         if (mTabGroupLabeller != null) {
             mTabGroupLabeller.showAll();
         }
+    }
+
+    @VisibleForTesting
+    /* package */ void onPageKeyEvent(TabKeyEventData eventData) {
+        @TabId int tabId = eventData.tabId;
+        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
+        @Nullable Tab tab = filter.getTabModel().getTabById(tabId);
+
+        if (tab == null) return;
+
+        // TODO(crbug.com/395905035): Make sure tab index works for {@link TabGridView}s that
+        // contain a tab group. Also, add support for moving tabs inside a tab group.
+        int keyCode = eventData.keyCode;
+        int index = filter.representativeIndexOf(tab);
+        index += keyCode == KeyEvent.KEYCODE_PAGE_UP ? -1 : 2;
+
+        filter.moveRelatedTabs(tabId, index);
     }
 
     /** Performs soft cleanup which removes thumbnails to relieve memory usage. */
@@ -743,6 +765,10 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     @Nullable
     EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
         return mEdgeToEdgePadAdjuster;
+    }
+
+    /* package */ TabGridDialogCoordinator getTabGridDialogCoordinatorForTesting() {
+        return mTabGridDialogCoordinator;
     }
 
     void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {

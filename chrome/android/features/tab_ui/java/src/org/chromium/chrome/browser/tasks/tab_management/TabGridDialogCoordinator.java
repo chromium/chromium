@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridDialogProperties.PAGE_KEY_LISTENER;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.graphics.Rect;
@@ -304,6 +306,20 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
         }
     }
 
+    /** Interface to handle Ctrl+Shift+PageUp or Ctrl+Shift+PageDown key press events. */
+    /* package */ interface TabPageKeyListener {
+        /**
+         * Invoked when a valid key combination is detected.
+         *
+         * @param eventData The {@link TabKeyEventData}.
+         */
+        void onPageKeyEvent(TabKeyEventData eventData);
+    }
+
+    void setPageKeyEvent(TabPageKeyListener listener) {
+        mModel.set(PAGE_KEY_LISTENER, listener::onPageKeyEvent);
+    }
+
     @NonNull
     RecyclerViewPosition getRecyclerViewPosition() {
         return mTabListCoordinator.getRecyclerViewPosition();
@@ -477,6 +493,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
 
     TabGridDialogMediator.DialogController getDialogController() {
         return this;
+    }
+
+    /* package */ PropertyModel getModelForTesting() {
+        return mModel;
     }
 
     @Override

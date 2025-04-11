@@ -4,11 +4,15 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -20,8 +24,11 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
@@ -46,6 +53,7 @@ class TabListRecyclerView extends RecyclerView
             new ObservableSupplierImpl<>();
 
     private TabListItemAnimator mTabListItemAnimator;
+    private Callback<TabKeyEventData> mKeyPageListenerCallback;
 
     /** Basic constructor to use during inflation from xml. */
     public TabListRecyclerView(Context context, AttributeSet attributeSet) {
@@ -74,6 +82,23 @@ class TabListRecyclerView extends RecyclerView
         if (mBlockTouchInput) return true;
 
         return super.dispatchTouchEvent(e);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent e) {
+        int keyCode = e.getKeyCode();
+        if (mKeyPageListenerCallback != null
+                && (keyCode == KeyEvent.KEYCODE_PAGE_UP || keyCode == KeyEvent.KEYCODE_PAGE_DOWN)
+                && e.isShiftPressed()
+                && e.isCtrlPressed()
+                && findFocus() instanceof TabGridView tabView) {
+            if (e.getAction() == KeyEvent.ACTION_DOWN) {
+                @TabId int tabId = getTabId(tabView);
+                mKeyPageListenerCallback.onResult(new TabKeyEventData(tabId, keyCode));
+            }
+            return true;
+        }
+        return super.dispatchKeyEvent(e);
     }
 
     /**
@@ -105,6 +130,14 @@ class TabListRecyclerView extends RecyclerView
             mTabListItemAnimator = new TabListItemAnimator(mIsAnimatorRunningSupplier);
             setItemAnimator(mTabListItemAnimator);
         }
+    }
+
+    /**
+     * Sets the callback to be invoked when a Ctrl+Shift+PageUp or Ctrl+Shift+PageDown key press
+     * event is detected.
+     */
+    void setPageKeyListenerCallback(Callback<TabKeyEventData> callback) {
+        mKeyPageListenerCallback = callback;
     }
 
     /**
@@ -299,6 +332,17 @@ class TabListRecyclerView extends RecyclerView
             if (getAdapter().getItemViewType(i) == TabProperties.UiType.TAB) count++;
         }
         return count;
+    }
+
+    private @TabId int getTabId(TabGridView tabView) {
+        int tabIndex = getChildAdapterPosition(tabView);
+        SimpleRecyclerViewAdapter.ViewHolder holder =
+                (SimpleRecyclerViewAdapter.ViewHolder) findViewHolderForAdapterPosition(tabIndex);
+        return (holder != null
+                        && tabIndex != TabModel.INVALID_TAB_INDEX
+                        && holder.model.get(CARD_TYPE) == TAB)
+                ? holder.model.get(TabProperties.TAB_ID)
+                : Tab.INVALID_TAB_ID;
     }
 
     @Override

@@ -23,10 +23,12 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerP
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CLIP_TO_PADDING;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.IS_CONTENT_SENSITIVE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.PAGE_KEY_LISTENER;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -68,6 +70,7 @@ import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
@@ -365,7 +368,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     @Test
     public void testShowTab() {
-        int tabId = 1;
+        @TabId int tabId = 1;
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
         tab.setIsInitialized(true);
         int index = 0;
@@ -474,7 +477,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         TabSwitcherContextMenuCoordinator contextMenuCoordinator = mock();
         View cardView = new View(mActivity);
 
-        int tabId = 1;
+        @TabId int tabId = 1;
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
@@ -489,7 +492,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         TabSwitcherContextMenuCoordinator contextMenuCoordinator = mock();
         View cardView = new View(mActivity);
 
-        int tabId = 1;
+        @TabId int tabId = 1;
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
         tab.setTabGroupId(Token.createRandom());
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
@@ -504,12 +507,67 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     public void testOnLongPressOnTabCard_FeatureEnabled_NullCardView() {
         TabSwitcherContextMenuCoordinator contextMenuCoordinator = mock();
 
-        int tabId = 1;
+        @TabId int tabId = 1;
         MockTab tab = MockTab.createAndInitialize(tabId, mProfile);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         mTabModel.addTab(tab, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
 
         mCoordinator.onLongPressOnTabCard(contextMenuCoordinator, tabId, null);
         verify(contextMenuCoordinator, never()).showMenu(any(), anyInt());
+    }
+
+    @Test
+    public void testGetPageKeyListener() {
+        assertNotNull(mCoordinator.getContainerViewModelForTesting().get(PAGE_KEY_LISTENER));
+        showTabGridDialogWithTabs();
+        assertNotNull(
+                mCoordinator
+                        .getTabGridDialogCoordinatorForTesting()
+                        .getModelForTesting()
+                        .get(TabGridDialogProperties.PAGE_KEY_LISTENER));
+    }
+
+    @Test
+    public void testOnPageKeyEvent_PageUp() {
+        @TabId int tabId = 1;
+        createTabs(2);
+        TabKeyEventData eventData = new TabKeyEventData(tabId, KeyEvent.KEYCODE_PAGE_UP);
+
+        mCoordinator.onPageKeyEvent(eventData);
+        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(eq(tabId), anyInt());
+    }
+
+    @Test
+    public void testOnPageKeyEvent_PageDown() {
+        @TabId int tabId = 1;
+        createTabs(2);
+        TabKeyEventData eventData = new TabKeyEventData(tabId, KeyEvent.KEYCODE_PAGE_DOWN);
+
+        mCoordinator.onPageKeyEvent(eventData);
+        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(eq(tabId), anyInt());
+    }
+
+    @Test
+    public void testOnPageKeyEvent_InvalidTabId() {
+        @TabId int tabId = -1;
+        createTabs(2);
+        TabKeyEventData eventData = new TabKeyEventData(tabId, KeyEvent.KEYCODE_PAGE_UP);
+
+        mCoordinator.onPageKeyEvent(eventData);
+        verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());
+    }
+
+    private void createTabs(int tabCount) {
+        for (int i = 1; i <= tabCount; i++) {
+            MockTab tab = MockTab.createAndInitialize(/* id= */ i, mProfile);
+            when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+            addTabToIndex(tab, /* index= */ i - 1);
+        }
+    }
+
+    private void addTabToIndex(MockTab tab, int index) {
+        mTabModel.addTab(
+                tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        when(mTabGroupModelFilter.representativeIndexOf(tab)).thenReturn(index);
     }
 }

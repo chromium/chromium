@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -113,6 +114,8 @@ class TabGridDialogProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableObjectPropertyKey<Runnable> SEND_FEEDBACK_RUNNABLE =
             new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableObjectPropertyKey<Callback<TabKeyEventData>>
+            PAGE_KEY_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 BINDING_TOKEN,
@@ -159,5 +162,6 @@ class TabGridDialogProperties {
                 IS_CONTENT_SENSITIVE,
                 SHOW_SEND_FEEDBACK,
                 SEND_FEEDBACK_RUNNABLE,
+                PAGE_KEY_LISTENER,
             };
 }
