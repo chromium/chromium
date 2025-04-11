@@ -27,7 +27,7 @@ features:
   dynamic_refresh: true
   per_profile: true
 owners:
-- courtneywong@chromium.org
+- agawronska@chromium.org
 - file://chrome/browser/ash/child_accounts/OWNERS
 schema:
   properties:
