@@ -40,13 +40,6 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
 
   ~BaseBookmarkBubbleViewBrowserTest() override = default;
 
-  void SetUpOnMainThread() override {
-    EXPECT_TRUE(is_browser_context_services_created);
-    mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetForBrowserContext(
-            browser()->profile()));
-  }
-
   void SetUpInProcessBrowserTestFixture() override {
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -56,12 +49,7 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
                                     weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void TearDownInProcessBrowserTestFixture() override {
-    is_browser_context_services_created = false;
-  }
-
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    is_browser_context_services_created = true;
     commerce::ShoppingServiceFactory::GetInstance()->SetTestingFactory(
         context, base::BindRepeating([](content::BrowserContext* context) {
           return commerce::MockShoppingService::Build();
@@ -85,9 +73,13 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
     if (name == "bookmark_details_on_trackable_product") {
       commerce::ProductInfo info;
       info.product_cluster_id.emplace(12345L);
-      mock_shopping_service_->SetIsShoppingListEligible(true);
-      mock_shopping_service_->SetResponseForGetProductInfoForUrl(info);
-      mock_shopping_service_->SetIsSubscribedCallbackValue(false);
+      commerce::MockShoppingService* mock_shopping_service =
+          static_cast<commerce::MockShoppingService*>(
+              commerce::ShoppingServiceFactory::GetForBrowserContext(
+                  browser()->profile()));
+      mock_shopping_service->SetIsShoppingListEligible(true);
+      mock_shopping_service->SetResponseForGetProductInfoForUrl(info);
+      mock_shopping_service->SetIsSubscribedCallbackValue(false);
     }
 
     const GURL url = GURL("https://www.google.com");
@@ -107,10 +99,7 @@ class BaseBookmarkBubbleViewBrowserTest : public DialogBrowserTest {
   base::test::ScopedFeatureList test_features_;
 
  private:
-  raw_ptr<commerce::MockShoppingService, DanglingUntriaged>
-      mock_shopping_service_;
   base::CallbackListSubscription create_services_subscription_;
-  bool is_browser_context_services_created{false};
   base::WeakPtrFactory<BaseBookmarkBubbleViewBrowserTest> weak_ptr_factory_{
       this};
 };
