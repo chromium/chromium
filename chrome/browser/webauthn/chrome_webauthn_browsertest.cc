@@ -66,6 +66,7 @@
 #include "device/fido/virtual_ctap2_device.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -295,11 +296,9 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
       .SetManifestKey("web_accessible_resources",
                       base::test::ParseJson(kWebAccessibleResources));
 
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
   scoped_refptr<const extensions::Extension> extension = builder.Build();
-  service->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
+  extensions::ExtensionRegistrar::Get(browser()->profile())
+      ->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(), 0);
 
   auto virtual_device_factory =
       std::make_unique<device::test::VirtualFidoDeviceFactory>();

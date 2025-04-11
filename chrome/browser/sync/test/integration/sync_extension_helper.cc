@@ -80,10 +80,9 @@ std::string SyncExtensionHelper::InstallExtension(Profile* profile,
   if (!extension.get()) {
     NOTREACHED() << "Could not install extension " << name;
   }
-  extensions::ExtensionSystem::Get(profile)
-      ->extension_service()
-      ->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(),
-                             extensions::kInstallFlagInstallImmediately);
+  extensions::ExtensionRegistrar::Get(profile)->OnExtensionInstalled(
+      extension.get(), syncer::StringOrdinal(),
+      extensions::kInstallFlagInstallImmediately);
   return extension->id();
 }
 

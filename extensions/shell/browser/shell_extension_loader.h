@@ -74,6 +74,10 @@ class ShellExtensionLoader : public ExtensionRegistrar::Delegate {
   bool CanDisableExtension(const Extension* extension) override;
   void GrantActivePermissions(const Extension* extension) override;
   void UpdateExternalExtensionAlert() override;
+  void OnExtensionInstalled(const Extension* extension,
+                            const syncer::StringOrdinal& page_ordinal,
+                            int install_flags,
+                            base::Value::Dict ruleset_install_prefs) override;
 
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.
 

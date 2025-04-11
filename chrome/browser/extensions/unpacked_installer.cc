@@ -393,9 +393,9 @@ void UnpackedInstaller::InstallExtension() {
   perms_updater.InitializePermissions(extension());
   perms_updater.GrantActivePermissions(extension());
 
-  service_->OnExtensionInstalled(extension(), syncer::StringOrdinal(),
-                                 kInstallFlagInstallImmediately,
-                                 std::move(ruleset_install_prefs_));
+  ExtensionRegistrar::Get(profile_)->OnExtensionInstalled(
+      extension(), syncer::StringOrdinal(), kInstallFlagInstallImmediately,
+      std::move(ruleset_install_prefs_));
 
   // Record metrics here since the registry would contain the extension by now.
   RecordCommandLineMetrics();

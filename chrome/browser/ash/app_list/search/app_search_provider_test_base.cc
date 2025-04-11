@@ -29,6 +29,7 @@
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/sync/model/string_ordinal.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -149,8 +150,8 @@ void AppSearchProviderTestBase::AddExtension(const std::string& id,
   const syncer::StringOrdinal& page_ordinal =
       syncer::StringOrdinal::CreateInitialOrdinal();
 
-  service()->OnExtensionInstalled(extension.get(), page_ordinal,
-                                  extensions::kInstallFlagNone);
+  registrar()->OnExtensionInstalled(extension.get(), page_ordinal,
+                                    extensions::kInstallFlagNone);
 }
 
 void AppSearchProviderTestBase::CallViewClosing() {

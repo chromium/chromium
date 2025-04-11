@@ -3711,8 +3711,9 @@ class ThemeSyncableServiceTestForThemeExtension
   }
 
   void InstallExtension() {
-    service_->OnExtensionInstalled(theme_extension(), syncer::StringOrdinal(),
-                                   extensions::kInstallFlagInstallImmediately);
+    registrar()->OnExtensionInstalled(
+        theme_extension(), syncer::StringOrdinal(),
+        extensions::kInstallFlagInstallImmediately);
     EXPECT_TRUE(base::test::RunUntil(
         [&]() { return theme_service()->UsingExtensionTheme(); }));
     EXPECT_TRUE(extensions::ExtensionRegistry::Get(profile())->GetExtensionById(

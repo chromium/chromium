@@ -62,6 +62,10 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   bool CanDisableExtension(const Extension* extension) override;
   void GrantActivePermissions(const Extension* extension) override;
   void UpdateExternalExtensionAlert() override;
+  void OnExtensionInstalled(const Extension* extension,
+                            const syncer::StringOrdinal& page_ordinal,
+                            int install_flags,
+                            base::Value::Dict ruleset_install_prefs) override;
 
   Profile* profile() { return profile_; }
 
@@ -86,6 +90,8 @@ class ChromeExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   void OnUnpackedReloadFailure(const Extension* extension,
                                const base::FilePath& file_path,
                                const std::string& error);
+
+  void RecordInstallHistograms(const Extension* extension);
 
   // The normal profile associated with this delegate.
   raw_ptr<Profile> profile_ = nullptr;

@@ -81,10 +81,6 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
-#endif
-
 using content::BrowserThread;
 
 namespace extensions {
@@ -1048,21 +1044,9 @@ void CrxInstaller::ReportSuccessFromUIThread() {
     }
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  ExtensionService* service =
-      ExtensionSystem::Get(profile_)->extension_service();
-  service->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
-                                std::move(ruleset_install_prefs_));
-#else
-  // TODO(crbug.com/403352172): Remove this block of code when there's a
-  // replacement for ExtensionService::OnExtensionInstalled(). It exists
-  // for prototyping and manual testing purposes.
-  ExtensionRegistrar::Get(profile_)->AddNewOrUpdatedExtension(
-      extension(), /*disable_reasons=*/{}, kInstallFlagInstallImmediately,
-      syncer::StringOrdinal(),
-      /*install_parameter=*/std::string(),
-      /*ruleset_install_prefs=*/base::Value::Dict());
-#endif
+  registrar_->OnExtensionInstalled(extension(), page_ordinal_, install_flags_,
+                                   std::move(ruleset_install_prefs_));
+
   NotifyCrxInstallComplete(std::nullopt);
 }
 

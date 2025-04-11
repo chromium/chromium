@@ -104,6 +104,11 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   MOCK_METHOD1(ShouldBlockExtension, bool(const Extension* extension));
   MOCK_METHOD1(GrantActivePermissions, void(const Extension* extension));
   MOCK_METHOD0(UpdateExternalExtensionAlert, void());
+  MOCK_METHOD4(OnExtensionInstalled,
+               void(const Extension* extension,
+                    const syncer::StringOrdinal& page_ordinal,
+                    int install_flags,
+                    base::Value::Dict ruleset_install_prefs));
 };
 
 }  // namespace

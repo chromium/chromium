@@ -296,24 +296,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // |was_installed_by_default| flag.
   void DisableUserExtensionsExcept(const std::vector<std::string>& except_ids);
 
-  // Informs the service that an extension's files are in place for loading.
-  //
-  // |extension|                the extension
-  // |page_ordinal|             the location of the extension in the app
-  //                            launcher
-  // |install_flags|            a bitmask of InstallFlags
-  // |ruleset_install_prefs|    Install prefs needed for the Declarative Net
-  //                            Request API.
-  void OnExtensionInstalled(const Extension* extension,
-                            const syncer::StringOrdinal& page_ordinal,
-                            int install_flags,
-                            base::Value::Dict ruleset_install_prefs = {});
-  void OnExtensionInstalled(const Extension* extension,
-                            const syncer::StringOrdinal& page_ordinal) {
-    OnExtensionInstalled(extension, page_ordinal,
-                         static_cast<int>(kInstallFlagNone));
-  }
-
   // ExtensionHost of background page calls this method right after its renderer
   // main frame has been created.
   void DidCreateMainFrameForBackgroundPage(ExtensionHost* host);

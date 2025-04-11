@@ -224,9 +224,11 @@ class TestKioskLoaderVisitor
  public:
   TestKioskLoaderVisitor(content::BrowserContext* browser_context,
                          extensions::ExtensionRegistry* extension_registry,
+                         extensions::ExtensionRegistrar* extension_registrar,
                          extensions::ExtensionService* extension_service)
       : browser_context_(browser_context),
         extension_registry_(extension_registry),
+        extension_registrar_(extension_registrar),
         extension_service_(extension_service) {}
   TestKioskLoaderVisitor(const TestKioskLoaderVisitor&) = delete;
   TestKioskLoaderVisitor& operator=(const TestKioskLoaderVisitor&) = delete;
@@ -252,7 +254,7 @@ class TestKioskLoaderVisitor
 
     pending_crx_files_.erase(extension->id());
     pending_update_urls_.erase(extension->id());
-    extension_service_->OnExtensionInstalled(
+    extension_registrar_->OnExtensionInstalled(
         extension, syncer::StringOrdinal::CreateInitialOrdinal(),
         extensions::kInstallFlagInstallImmediately);
     extensions::InstallTracker::Get(browser_context_)
@@ -350,6 +352,7 @@ class TestKioskLoaderVisitor
  private:
   const raw_ptr<content::BrowserContext> browser_context_;
   const raw_ptr<extensions::ExtensionRegistry> extension_registry_;
+  const raw_ptr<extensions::ExtensionRegistrar> extension_registrar_;
   const raw_ptr<extensions::ExtensionService> extension_service_;
 
   std::set<std::string> pending_crx_files_;
@@ -555,7 +558,7 @@ class StartupAppLauncherNoCreateTest
 
     InitializeEmptyExtensionService();
     external_apps_loader_handler_ = std::make_unique<TestKioskLoaderVisitor>(
-        browser_context(), registry(), service());
+        browser_context(), registry(), registrar(), service());
     CreateAndInitializeKioskAppsProviders(external_apps_loader_handler_.get());
 
     extensions::TestEventRouter* event_router =

@@ -8088,7 +8088,7 @@ TEST_F(ExtensionServiceTest, InstallBlocklistedExtension) {
   TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()));
   // Installation should be allowed but the extension should never have been
   // loaded and it should be blocklisted in prefs.
-  service()->OnExtensionInstalled(
+  registrar()->OnExtensionInstalled(
       extension.get(), syncer::StringOrdinal(),
       (kInstallFlagIsBlocklistedForMalware | kInstallFlagInstallImmediately));
   task_environment()->RunUntilIdle();
@@ -8138,8 +8138,8 @@ TEST_F(ExtensionServiceTest, CannotDisableSharedModules) {
           .AddFlags(Extension::FROM_WEBSTORE)
           .Build();
 
-  service()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(),
-                                  kInstallFlagInstallImmediately);
+  registrar()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal(),
+                                    kInstallFlagInstallImmediately);
 
   ASSERT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
   // Try to disable the extension.

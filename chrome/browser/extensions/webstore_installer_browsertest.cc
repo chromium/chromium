@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/webstore_installer_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
@@ -195,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerMV2BrowserTest, SimultaneousInstall) {
           .SetID(kTestExtensionId)
           .SetManifest(std::move(manifest))
           .Build();
-  ExtensionSystem::Get(profile())->extension_service()->OnExtensionInstalled(
+  ExtensionRegistrar::Get(profile())->OnExtensionInstalled(
       extension.get(), syncer::StringOrdinal(), 0);
 
   run_loop.Run();

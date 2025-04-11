@@ -159,7 +159,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, ExtensionWithKeyBinding) {
 
   // Note that we have to OnExtensionInstalled() here rather than just adding it
   // - hotkeys are picked up at install time, not add time.
-  service()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal());
+  registrar()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal());
 
   ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/extension_registrar.h"
 
 namespace test {
 
@@ -54,8 +55,8 @@ void AppListSyncableServiceTestBase::InstallExtension(
     extensions::Extension* extension) {
   const syncer::StringOrdinal& page_ordinal =
       syncer::StringOrdinal::CreateInitialOrdinal();
-  service()->OnExtensionInstalled(extension, page_ordinal,
-                                  extensions::kInstallFlagNone);
+  registrar()->OnExtensionInstalled(extension, page_ordinal,
+                                    extensions::kInstallFlagNone);
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();
 }

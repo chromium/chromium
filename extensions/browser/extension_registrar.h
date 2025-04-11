@@ -113,7 +113,7 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
     virtual void ShowExtensionDisabledError(const Extension* extension,
                                             bool is_remote_install) = 0;
 
-    // Finishes the deplayed installations if there are any delayed
+    // Finishes the delayed installations if there are any delayed
     // extensions ready to be installed.
     virtual void FinishDelayedInstallationsIfAny() = 0;
 
@@ -128,6 +128,20 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
 
     // Checks if there are any new external extensions to notify the user about.
     virtual void UpdateExternalExtensionAlert() = 0;
+
+    // Informs the service that an extension's files are in place for loading.
+    //
+    // |extension|                the extension
+    // |page_ordinal|             the location of the extension in the app
+    //                            launcher
+    // |install_flags|            a bitmask of InstallFlags
+    // |ruleset_install_prefs|    Install prefs needed for the Declarative Net
+    //                            Request API.
+    virtual void OnExtensionInstalled(
+        const Extension* extension,
+        const syncer::StringOrdinal& page_ordinal,
+        int install_flags,
+        base::Value::Dict ruleset_install_prefs) = 0;
   };
 
   explicit ExtensionRegistrar(content::BrowserContext* browser_context);
@@ -171,6 +185,24 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
                                 const syncer::StringOrdinal& page_ordinal,
                                 const std::string& install_parameter,
                                 base::Value::Dict ruleset_install_prefs);
+
+  // Informs the service that an extension's files are in place for loading.
+  //
+  // |extension|                the extension
+  // |page_ordinal|             the location of the extension in the app
+  //                            launcher
+  // |install_flags|            a bitmask of InstallFlags
+  // |ruleset_install_prefs|    Install prefs needed for the Declarative Net
+  //                            Request API.
+  void OnExtensionInstalled(const Extension* extension,
+                            const syncer::StringOrdinal& page_ordinal,
+                            int install_flags,
+                            base::Value::Dict ruleset_install_prefs = {});
+  void OnExtensionInstalled(const Extension* extension,
+                            const syncer::StringOrdinal& page_ordinal) {
+    OnExtensionInstalled(extension, page_ordinal,
+                         static_cast<int>(kInstallFlagNone));
+  }
 
   // Removes |extension| from the extension system by deactivating it if it is
   // enabled and removing references to it from the ExtensionRegistry's

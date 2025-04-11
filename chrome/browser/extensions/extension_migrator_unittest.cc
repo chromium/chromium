@@ -121,7 +121,7 @@ TEST_F(ExtensionMigratorTest, HasPreviouslyForceInstalledNew) {
   InitWithExistingProfile();
   scoped_refptr<const Extension> extension =
       AddExtension(kNewId, mojom::ManifestLocation::kExternalPolicyDownload);
-  service()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal());
+  registrar()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal());
   external_provider_manager()->CheckForExternalUpdates();
   base::RunLoop().RunUntilIdle();
   // A previously-force-installed-extension should not be persisted by the

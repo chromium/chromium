@@ -109,8 +109,8 @@ testing::AssertionResult SharedModuleServiceUnitTest::InstallExtension(
 
   // Notify the service that the extension is installed. This adds it to the
   // registry, notifies interested parties, etc.
-  service()->OnExtensionInstalled(
-      extension, syncer::StringOrdinal(), kInstallFlagInstallImmediately);
+  registrar()->OnExtensionInstalled(extension, syncer::StringOrdinal(),
+                                    kInstallFlagInstallImmediately);
 
   // Verify that the extension is now installed.
   if (!registry()->enabled_extensions().Contains(extension->id())) {
