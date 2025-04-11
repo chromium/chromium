@@ -32,6 +32,7 @@ source_set("shop_card") {
     "//components/url_formatter",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
     "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:impression_limits",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
     "//ios/chrome/browser/favicon/model:model",

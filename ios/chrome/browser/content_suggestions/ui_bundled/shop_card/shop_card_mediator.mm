@@ -8,6 +8,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/field_trial_params.h"
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -24,6 +25,9 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "components/url_formatter/elide_url.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_action_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_constants.h"
@@ -314,10 +318,14 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
     _prefService->SetBoolean(
         prefs::kHomeCustomizationMagicStackShopCardPriceTrackingEnabled, false);
   }
+  UMA_HISTOGRAM_ENUMERATION(kMagicStackModuleDisabledHistogram,
+                            ContentSuggestionsModuleType::kShopCard);
 }
 
 - (void)openShopCardItem:(ShopCardItem*)item {
   [self.NTPActionsDelegate shopCardOpened];
+  [self.contentSuggestionsMetricsRecorder
+      recordShopCardOpened:item.shopCardData];
   [self.shopCardActionDelegate openURL:item.shopCardData.productURL];
   [self.delegate removeShopCard];
   [self logEngagementForItem:item];
@@ -333,6 +341,10 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
     DCHECK(magicStackModule);
     [self logImpressionForItem:static_cast<ShopCardItem*>(magicStackModule)];
   }
+  [self.contentSuggestionsMetricsRecorder
+      recordShopCardImpression:static_cast<ShopCardItem*>(magicStackModule)
+                                   .shopCardData
+                       atIndex:index];
 }
 
 #pragma mark - ShopCardMediatorDelegate

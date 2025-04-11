@@ -18,6 +18,7 @@ namespace commerce {
 class ShoppingService;
 }
 
+@class ContentSuggestionsMetricsRecorder;
 class ImpressionLimitService;
 class PrefService;
 class FaviconLoader;
@@ -68,6 +69,10 @@ class FaviconLoader;
 
 // Delegate for reporting content suggestions actions to the NTP.
 @property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
+
+// Recorder for content suggestions metrics.
+@property(nonatomic, weak)
+    ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
 @end
 
