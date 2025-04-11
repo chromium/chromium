@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -31,19 +32,12 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_management_internal.h"
-#endif
-
 using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 namespace {
 constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// These constants are used by policy-related tests that are not yet supported
-// on desktop Android.
 constexpr char kExtensionSettingsWithUpdateUrlBlocking[] = R"({
   "update_url:https://clients2.google.com/service/update2/crx": {
     "installation_mode": "blocked"
@@ -61,7 +55,6 @@ constexpr char kExtensionSettingsWithIdBlocked[] = R"({
     "installation_mode": "blocked"
   }
 })";
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
@@ -97,9 +90,6 @@ class ExtensionInstallStatusTest : public testing::Test {
     return ExtensionBuilder("extension").SetID(id).Build();
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android then
-  // enable the tests that use these helper functions.
   void SetExtensionSettings(const std::string& settings_string) {
     std::optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
@@ -125,7 +115,6 @@ class ExtensionInstallStatusTest : public testing::Test {
     profile()->GetTestingPrefService()->SetDict(
         prefs::kCloudExtensionRequestIds, std::move(id_values));
   }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   TestingProfile* profile() { return profile_; }
 
@@ -166,9 +155,6 @@ TEST_F(ExtensionInstallStatusTest, ExtensionAllowed) {
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android then
-// enable these tests. They depend on policy.
 TEST_F(ExtensionInstallStatusTest, ExtensionInstalledButDisabledByPolicy) {
   ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
   SetExtensionSettings(kExtensionSettingsWithIdBlocked);
@@ -279,7 +265,6 @@ TEST_F(ExtensionInstallStatusTest, PendingExtenisonIsRejected) {
   EXPECT_EQ(ExtensionInstallStatus::kBlockedByPolicy,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // If an existing, installed extension is disabled due to reason
 // DISABLE_CUSTODIAN_APPROVAL_REQUIRED, then GetWebstoreExtensionInstallStatus()
@@ -297,7 +282,6 @@ TEST_F(ExtensionInstallStatusTest,
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ExtensionInstallStatusTest, ExtensionBlockedByManifestType) {
   // TYPE_EXTENSION is blocked by policy
   // TYPE_THEME and TYPE_HOSTED_APP are allowed.
@@ -596,7 +580,6 @@ TEST_F(ExtensionInstallStatusTest, NonWebstoreUpdateUrlPolicy) {
                 PermissionSet(api_permissions.Clone(), ManifestPermissionSet(),
                               URLPatternSet(), URLPatternSet())));
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // These tests have dependencies on ManifestV2ExperimentManager which is not
 // supported on Android (which only supports manifest V3).
