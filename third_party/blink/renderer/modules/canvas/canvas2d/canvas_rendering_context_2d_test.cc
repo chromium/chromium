@@ -1978,12 +1978,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-  base::RunLoop run_loop;
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2029,11 +2023,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2095,11 +2084,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2147,11 +2131,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2200,11 +2179,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2245,11 +2219,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   CreateContext(kNonOpaque);
   CanvasElement().GetOrCreateCanvasResourceProvider();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  CanvasElement().GetHibernationHandler()->SetBeforeCompressionDelayForTesting(
-      base::Microseconds(10));
 
   ASSERT_FALSE(CanvasElement().IsHibernating());
 
@@ -2293,12 +2262,6 @@ TEST_P(
   CreateContext(kNonOpaque);
   CanvasElement().GetOrCreateCanvasResourceProvider();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  CanvasElement().GetHibernationHandler()->SetBeforeCompressionDelayForTesting(
-      base::Microseconds(10));
-
   ASSERT_FALSE(CanvasElement().IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2332,11 +2295,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
@@ -2386,11 +2344,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Simulate GPU context loss.
@@ -2542,11 +2495,6 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   auto& handler = CHECK_DEREF(CanvasElement().GetHibernationHandler());
-
-  // Install a minimal delay for testing to ensure that the test remains fast
-  // to execute.
-  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
-
   EXPECT_FALSE(handler.IsHibernating());
 
   // Verify that going to the background triggers hibernation asynchronously.
