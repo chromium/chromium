@@ -32,6 +32,14 @@ namespace autofill {
     const std::vector<std::vector<Suggestion::Text>>& labels);
 
 ::testing::Matcher<Suggestion> EqualsSuggestion(
+    SuggestionType type,
+    const std::u16string& main_text,
+    const bool is_main_text_primary,
+    Suggestion::Icon icon,
+    const std::vector<std::vector<Suggestion::Text>>& labels,
+    const Suggestion::Payload& payload);
+
+::testing::Matcher<Suggestion> EqualsSuggestion(
     SuggestionType id,
     const std::u16string& main_text,
     Suggestion::Icon icon,

@@ -5,10 +5,16 @@
 #include "components/autofill/core/browser/suggestions/suggestion_test_helpers.h"
 
 namespace autofill {
-
 using ::testing::AllOf;
 using ::testing::Field;
 using ::testing::Matcher;
+
+namespace {
+Matcher<Suggestion::Text> EqualsTextPrimary(const bool is_primary) {
+  return Field(&Suggestion::Text::is_primary,
+               Suggestion::Text::IsPrimary(is_primary));
+}
+}  // namespace
 
 Matcher<Suggestion> EqualsSuggestion(SuggestionType id) {
   return Field(&Suggestion::type, id);
@@ -48,6 +54,19 @@ Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
                                      const Suggestion::Payload& payload) {
   return AllOf(EqualsSuggestion(id, main_text, icon),
                Field(&Suggestion::payload, payload));
+}
+
+Matcher<Suggestion> EqualsSuggestion(
+    SuggestionType type,
+    const std::u16string& main_text,
+    const bool is_main_text_primary,
+    Suggestion::Icon icon,
+    const std::vector<std::vector<Suggestion::Text>>& labels,
+    const Suggestion::Payload& payload) {
+  return AllOf(
+      EqualsSuggestion(type, main_text, icon),
+      Field(&Suggestion::labels, labels), Field(&Suggestion::payload, payload),
+      Field(&Suggestion::main_text, EqualsTextPrimary(is_main_text_primary)));
 }
 
 Matcher<Suggestion> HasIcon(Suggestion::Icon icon) {

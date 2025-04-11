@@ -88,8 +88,9 @@ constexpr int kRefreshInkDropRadius = 12;
 constexpr auto kPopupItemTypesUsingLeadingIcons = DenseSet<SuggestionType>(
     {SuggestionType::kAllSavedPasswordsEntry, SuggestionType::kManageAddress,
      SuggestionType::kManageAutofillAi, SuggestionType::kManageCreditCard,
-     SuggestionType::kManageIban, SuggestionType::kManagePlusAddress,
-     SuggestionType::kUndoOrClear, SuggestionType::kViewPasswordDetails,
+     SuggestionType::kManageIban, SuggestionType::kManageLoyaltyCard,
+     SuggestionType::kManagePlusAddress, SuggestionType::kUndoOrClear,
+     SuggestionType::kViewPasswordDetails,
      SuggestionType::kPendingStateSignin});
 
 // Max width for the username and masked password.
