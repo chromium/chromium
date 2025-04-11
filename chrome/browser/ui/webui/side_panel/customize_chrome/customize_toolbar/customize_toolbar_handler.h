@@ -44,6 +44,7 @@ class CustomizeToolbarHandler
   void OnActionPinnedChanged(actions::ActionId id, bool pinned);
   void OnShowHomeButtonChanged();
   void OnShowForwardButtonChanged();
+  void OnPinSplitTabButtonChanged();
   void OnActionItemChanged();
 
   PrefService* prefs() const;

@@ -724,6 +724,7 @@ chromium-metrics-reviews@google.com.
   <int value="100324" label="AccessibilityAXTreeFixingEnabled"/>
   <int value="100325" label="TabSearchMigrationComplete"/>
   <int value="100326" label="ReadAloudPlaybackMode"/>
+  <int value="100327" label="PinSplitTabButton"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->

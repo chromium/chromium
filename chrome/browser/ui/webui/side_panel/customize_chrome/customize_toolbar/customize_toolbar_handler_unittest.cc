@@ -8,12 +8,14 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -148,6 +150,7 @@ class CustomizeToolbarHandlerTest : public BrowserWithTestWindowTest {
 
  protected:
   testing::NiceMock<MockPage> mock_page_;
+  base::test::ScopedFeatureList feature_list_{features::kSideBySide};
 
   raw_ptr<MockPinnedToolbarActionsModel> mock_pinned_toolbar_actions_model_;
   raw_ptr<PinnedToolbarActionsModel::Observer>
@@ -239,6 +242,8 @@ TEST_F(CustomizeToolbarHandlerTest, ListActions) {
       side_panel::customize_chrome::mojom::ActionId::kDevTools));
   // EXPECT_TRUE(contains_action(
   //     side_panel::customize_chrome::mojom::ActionId::kShowChromeLabs));
+  EXPECT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kSplitTab));
 }
 
 TEST_F(CustomizeToolbarHandlerTest, PinAction) {
@@ -284,6 +289,18 @@ TEST_F(CustomizeToolbarHandlerTest, PinForward) {
   EXPECT_EQ(true, profile()->GetPrefs()->GetBoolean(prefs::kShowForwardButton));
 }
 
+TEST_F(CustomizeToolbarHandlerTest, PinSplitTab) {
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
+
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kSplitTab,
+                      false);
+  EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
+
+  handler().PinAction(side_panel::customize_chrome::mojom::ActionId::kSplitTab,
+                      true);
+  EXPECT_TRUE(profile()->GetPrefs()->GetBoolean(prefs::kPinSplitTabButton));
+}
+
 TEST_F(CustomizeToolbarHandlerTest, ActionsChanged) {
   EXPECT_CALL(mock_page_, NotifyActionsUpdated).Times(1);
 
@@ -324,6 +341,24 @@ TEST_F(CustomizeToolbarHandlerTest, ForwardPrefUpdated) {
   profile()->GetPrefs()->SetBoolean(prefs::kShowForwardButton, true);
   mock_page_.FlushForTesting();
   EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kForward);
+  EXPECT_EQ(pin, true);
+}
+
+TEST_F(CustomizeToolbarHandlerTest, SplitTabPrefUpdated) {
+  bool pin;
+  side_panel::customize_chrome::mojom::ActionId id;
+  EXPECT_CALL(mock_page_, SetActionPinned)
+      .Times(2)
+      .WillRepeatedly(DoAll(SaveArg<0>(&id), SaveArg<1>(&pin)));
+
+  profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton, false);
+  mock_page_.FlushForTesting();
+  EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kSplitTab);
+  EXPECT_EQ(pin, false);
+
+  profile()->GetPrefs()->SetBoolean(prefs::kPinSplitTabButton, true);
+  mock_page_.FlushForTesting();
+  EXPECT_EQ(id, side_panel::customize_chrome::mojom::ActionId::kSplitTab);
   EXPECT_EQ(pin, true);
 }
 

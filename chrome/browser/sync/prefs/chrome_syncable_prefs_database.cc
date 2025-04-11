@@ -387,6 +387,7 @@ enum {
   kAccessibilityAXTreeFixingEnabled = 100324,
   kTabSearchMigrationComplete = 100325,
   kReadAloudPlaybackMode = 100326,
+  kPinSplitTabButton = 100327,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -541,6 +542,10 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kShowForwardButton,
      {syncable_prefs_ids::kShowForwardButton, syncer::PREFERENCES,
+      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::MergeBehavior::kNone}},
+    {prefs::kPinSplitTabButton,
+     {syncable_prefs_ids::kPinSplitTabButton, syncer::PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kPinnedActions,

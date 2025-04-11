@@ -1318,6 +1318,10 @@ inline constexpr char kShowHomeButton[] = "browser.show_home_button";
 // toolbar.
 inline constexpr char kShowForwardButton[] = "browser.show_forward_button";
 
+// A boolean pref set to true if the Split Tab button should be pinned to the
+// toolbar.
+inline constexpr char kPinSplitTabButton[] = "browser.pin_split_tab_button";
+
 // A boolean pref set to true if Gemini integration be enabled. This is managed
 // by enterprise policy.
 inline constexpr char kGeminiSettings[] = "browser.gemini_settings";

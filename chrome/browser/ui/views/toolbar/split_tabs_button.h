@@ -31,12 +31,16 @@ class SplitTabsToolbarButton : public ToolbarButton, TabStripModelObserver {
                          split_tabs::SplitTabId split_id,
                          TabStripModelObserver::SplitTabAddReason reason,
                          tabs::SplitTabLayout tab_layout) override;
+  void OnSplitTabRemoved(std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+                         split_tabs::SplitTabId split_id,
+                         SplitTabRemoveReason reason) override;
 
  private:
   void ButtonPressed(const ui::Event& event);
 
   void UpdateButtonVisibility();
 
+  BooleanPrefMember pin_state_;
   raw_ptr<Browser> browser_;
 };
 
