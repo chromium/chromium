@@ -367,6 +367,8 @@ const base::FeatureParam<bool> kPageActionsMigrationZoom{&kPageActionsMigration,
                                                          "zoom", false};
 const base::FeatureParam<bool> kPageActionsMigrationOfferNotification{
     &kPageActionsMigration, "offer_notification", false};
+const base::FeatureParam<bool> kPageActionsMigrationFileSystemAccess{
+    &kPageActionsMigration, "file_system_access", false};
 
 BASE_FEATURE(kCompositorLoadingAnimations,
              "CompositorLoadingAnimations",

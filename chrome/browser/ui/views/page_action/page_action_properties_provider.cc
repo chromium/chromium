@@ -68,6 +68,14 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
                   .type = PageActionIconType::kPaymentsOfferNotification,
               },
           },
+          {
+              kActionShowFileSystemAccess,
+              {
+                  .histogram_name = "ShowFileSystemAccess",
+                  .is_ephemeral = true,
+                  .type = PageActionIconType::kFileSystemAccess,
+              },
+          },
       });
 
   CHECK(kPageActionProperties.contains(action_id));
