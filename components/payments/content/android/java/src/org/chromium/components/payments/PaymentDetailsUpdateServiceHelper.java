@@ -223,15 +223,26 @@ public class PaymentDetailsUpdateServiceHelper {
     public boolean isCallerAuthorized(int callerUid) {
         ThreadUtils.assertOnUiThread();
         if (mPackageManagerDelegate == null) {
-            Log.e(TAG, ErrorStrings.UNATHORIZED_SERVICE_REQUEST);
+            Log.e(TAG, "mPackageManagerDelegate is null in isCallerAuthorized");
+            return false;
+        }
+        if (mInvokedAppPackageInfo == null) {
+            Log.e(TAG, "mInvokedAppPackageInfo is null in isCallerAuthorized");
             return false;
         }
         PackageInfo callerPackageInfo =
                 mPackageManagerDelegate.getPackageInfoWithSignatures(callerUid);
-        if (mInvokedAppPackageInfo == null
-                || callerPackageInfo == null
-                || !mInvokedAppPackageInfo.packageName.equals(callerPackageInfo.packageName)) {
-            Log.e(TAG, ErrorStrings.UNATHORIZED_SERVICE_REQUEST);
+        if (callerPackageInfo == null) {
+            Log.e(TAG, "Received null callerPackageInfo for UID %d", callerUid);
+            return false;
+        }
+        if (!mInvokedAppPackageInfo.packageName.equals(callerPackageInfo.packageName)) {
+            Log.e(
+                    TAG,
+                    "Invoked app's package name (\"%s\") is different from calling app's package"
+                            + " name (\"%s\")",
+                    mInvokedAppPackageInfo.packageName,
+                    callerPackageInfo.packageName);
             return false;
         }
 
@@ -240,7 +251,9 @@ public class PaymentDetailsUpdateServiceHelper {
         Signature[] invokedAppSignatures = mInvokedAppPackageInfo.signatures;
 
         boolean result = Arrays.equals(callerSignatures, invokedAppSignatures);
-        if (!result) Log.e(TAG, ErrorStrings.UNATHORIZED_SERVICE_REQUEST);
+        if (!result) {
+            Log.e(TAG, "Invoked app's signature is different from calling app's signature");
+        }
         return result;
     }
 
