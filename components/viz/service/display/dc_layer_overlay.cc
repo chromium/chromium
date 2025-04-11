@@ -614,58 +614,6 @@ bool DCLayerOverlayProcessor::IsPossibleFullScreenLetterboxing(
   return false;
 }
 
-std::optional<OverlayCandidate> DCLayerOverlayProcessor::FromTextureOrYuvQuad(
-    const DisplayResourceProvider* resource_provider,
-    const AggregatedRenderPass* render_pass,
-    const DrawQuad& quad,
-    bool is_possible_full_screen_letterboxing) const {
-  // Backdrop filter occlusion is checked in |OverlayProcessorWin| via
-  // |OverlayCandidate::IsOccludedByFilteredQuad|, so we don't need to populate
-  // this vector.
-  const std::vector<gfx::Rect> backdrop_filter_rects;
-
-  ValidateDrawQuadResult result = ValidateDrawQuad(
-      resource_provider, &quad, backdrop_filter_rects, true,
-      has_p010_video_processor_support_, INT_MAX, INT_MIN, false);
-
-  if (result.code != DC_LAYER_SUCCESS) {
-    RecordDCLayerResult(result.code, &quad);
-    return std::nullopt;
-  }
-
-  OverlayCandidate candidate;
-  int ignore_processed_yuv_overlay_count = 0;
-  FromDrawQuad(resource_provider, render_pass,
-               is_possible_full_screen_letterboxing, &quad,
-               ignore_processed_yuv_overlay_count, candidate);
-
-  // Once we've promoted the video as normal, add extra properties required for
-  // delegated compositing.
-
-  if (quad.shared_quad_state->mask_filter_info.HasRoundedCorners()) {
-    gfx::MaskFilterInfo mask_filter_info =
-        quad.shared_quad_state->mask_filter_info;
-    mask_filter_info.ApplyTransform(render_pass->transform_to_root_target);
-    candidate.rounded_corners = mask_filter_info.rounded_corner_bounds();
-  }
-
-  candidate.opacity = quad.shared_quad_state->opacity;
-
-  // We don't expect quads promoted by |DCLayerOverlayProcessor| to have a
-  // differing |visible_rect|, but we handle it here just in case.
-  if (quad.visible_rect != quad.rect) {
-    // |OverlayCandidate| does not support clipping a candidate via
-    // |visible_rect|, but we can get the same effect by clipping its buffer via
-    // |uv_rect| and resizing its |display_rect|. This is similar to how
-    // |OverlayCandidateFactory| handles |visible_rect|.
-    candidate.uv_rect = gfx::MapRect(gfx::RectF(quad.visible_rect),
-                                     gfx::RectF(quad.rect), candidate.uv_rect);
-    candidate.display_rect = gfx::RectF(quad.visible_rect);
-  }
-
-  return candidate;
-}
-
 DCLayerOverlayProcessor::DCLayerOverlayProcessor(
     int allowed_yuv_overlay_count,
     bool disable_video_overlay_if_moving,
