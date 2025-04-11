@@ -1136,6 +1136,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/signin:junit",
       "//chrome/browser/ui/android/theme:junit",
       "//chrome/browser/ui/android/toolbar:junit",
+      "//chrome/browser/ui/android/web_app_header:junit",
       "//chrome/browser/ui/android/webid/internal:junit",
       "//chrome/browser/ui/android/whats_new:junit",
       "//chrome/browser/ui/messages/android:junit",
