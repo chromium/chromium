@@ -3279,7 +3279,10 @@ TEST_F(AIPageContentAgentTest, CursorForClickability) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
       "<body>"
-      "  <div style='cursor: pointer'>pointer</div>"
+      "  <div style='cursor: pointer'>"
+      "    <p>no-click</p>"
+      "    <p style='cursor: pointer'>click</p>"
+      "  </div>"
       "  <article>article</article>"
       "</body>",
       url_test_helpers::ToKURL("http://foobar.com"));
@@ -3292,6 +3295,13 @@ TEST_F(AIPageContentAgentTest, CursorForClickability) {
   const auto& cursor = *content->root_node->children_nodes[0];
   EXPECT_TRUE(cursor.content_attributes->node_interaction_info);
   EXPECT_TRUE(cursor.content_attributes->node_interaction_info->is_clickable);
+
+  const auto& no_click = *cursor.children_nodes[0];
+  EXPECT_FALSE(no_click.content_attributes->node_interaction_info);
+
+  const auto& click = *cursor.children_nodes[1];
+  EXPECT_TRUE(click.content_attributes->node_interaction_info);
+  EXPECT_TRUE(click.content_attributes->node_interaction_info->is_clickable);
 
   const auto& article = *content->root_node->children_nodes[1];
   EXPECT_FALSE(article.content_attributes->node_interaction_info);
