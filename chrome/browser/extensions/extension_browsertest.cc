@@ -32,7 +32,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -208,7 +207,7 @@ const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
     std::optional<int> expected_change) {
   return InstallOrUpdateExtension(
       id, path, InstallUIType::kNone, std::move(expected_change),
-      ManifestLocation::kInternal, GetWindowController(), Extension::NO_FLAGS,
+      ManifestLocation::kInternal, GetActiveWebContents(), Extension::NO_FLAGS,
       false, false);
 }
 
@@ -217,8 +216,7 @@ const Extension* ExtensionBrowserTest::InstallExtensionWithUIAutoConfirm(
     std::optional<int> expected_change) {
   return InstallOrUpdateExtension(
       std::string(), path, InstallUIType::kAutoConfirm,
-      std::move(expected_change), browser()->extension_window_controller(),
-      Extension::NO_FLAGS);
+      std::move(expected_change), GetActiveWebContents(), Extension::NO_FLAGS);
 }
 
 const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
@@ -227,7 +225,7 @@ const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
   return InstallOrUpdateExtension(
       std::string(), path, InstallUIType::kAutoConfirm,
       std::move(expected_change), ManifestLocation::kInternal,
-      GetWindowController(), Extension::FROM_WEBSTORE, true, false);
+      GetActiveWebContents(), Extension::FROM_WEBSTORE, true, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
@@ -237,7 +235,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     std::optional<int> expected_change) {
   return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
                                   ManifestLocation::kInternal,
-                                  GetWindowController(), Extension::NO_FLAGS,
+                                  GetActiveWebContents(), Extension::NO_FLAGS,
                                   true, false);
 }
 
@@ -246,11 +244,11 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     const base::FilePath& path,
     InstallUIType ui_type,
     std::optional<int> expected_change,
-    WindowController* window_controller,
+    content::WebContents* active_web_contents,
     Extension::InitFromValueFlags creation_flags) {
   return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
                                   ManifestLocation::kInternal,
-                                  window_controller, creation_flags, true,
+                                  active_web_contents, creation_flags, true,
                                   false);
 }
 
@@ -261,7 +259,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     std::optional<int> expected_change,
     ManifestLocation install_source) {
   return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  install_source, GetWindowController(),
+                                  install_source, GetActiveWebContents(),
                                   Extension::NO_FLAGS, true, false);
 }
 
@@ -271,7 +269,7 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
     InstallUIType ui_type,
     std::optional<int> expected_change,
     ManifestLocation install_source,
-    WindowController* window_controller,
+    content::WebContents* active_web_contents,
     Extension::InitFromValueFlags creation_flags,
     bool install_immediately,
     bool grant_permissions) {
@@ -305,8 +303,8 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
 
     std::unique_ptr<ExtensionInstallPrompt> install_ui;
     if (prompt_auto_confirm) {
-      install_ui = std::make_unique<ExtensionInstallPrompt>(
-          window_controller->GetActiveTab());
+      install_ui =
+          std::make_unique<ExtensionInstallPrompt>(active_web_contents);
     }
     installer = CrxInstaller::Create(profile(), std::move(install_ui));
     installer->set_expected_id(id);
@@ -396,15 +394,6 @@ bool ExtensionBrowserTest::WaitForExtensionNotIdle(
     const extensions::ExtensionId& extension_id) {
   return GetChromeExtensionTestNotificationObserver()->WaitForExtensionNotIdle(
       extension_id);
-}
-
-WindowController* ExtensionBrowserTest::GetWindowController() {
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-  // TODO(b/361838438): Provide an implementation for the desktop android build.
-  return nullptr;
-#else
-  return browser() ? browser()->extension_window_controller() : nullptr;
-#endif
 }
 
 ChromeExtensionTestNotificationObserver*

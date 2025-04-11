@@ -39,7 +39,6 @@ class ChromeExtensionTestNotificationObserver;
 class ExtensionBrowserTestPlatformDelegate;
 class ExtensionCacheFake;
 class ExtensionService;
-class WindowController;
 
 // Base class for extension browser tests. Provides utilities for loading,
 // unloading, and installing extensions.
@@ -115,7 +114,7 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
     return InstallOrUpdateExtension(
         std::string(), file_path, InstallUIType::kNone,
         std::move(expected_change), mojom::ManifestLocation::kInternal,
-        GetWindowController(), Extension::NO_FLAGS, false, true);
+        GetActiveWebContents(), Extension::NO_FLAGS, false, true);
   }
 
   // Installs extension as if it came from the Chrome Webstore.
@@ -149,7 +148,7 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
       Extension::InitFromValueFlags creation_flags) {
     return InstallOrUpdateExtension(
         std::string(), path, InstallUIType::kNone, std::move(expected_change),
-        install_source, GetWindowController(), creation_flags, false, false);
+        install_source, GetActiveWebContents(), creation_flags, false, false);
   }
 
   // Begins install process but simulates a user cancel.
@@ -195,7 +194,7 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
       const base::FilePath& path,
       InstallUIType ui_type,
       std::optional<int> expected_change,
-      WindowController* window_controller,
+      content::WebContents* active_web_contents,
       Extension::InitFromValueFlags creation_flags);
   const Extension* InstallOrUpdateExtension(
       const extensions::ExtensionId& id,
@@ -209,13 +208,10 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
       InstallUIType ui_type,
       std::optional<int> expected_change,
       mojom::ManifestLocation install_source,
-      WindowController* window_controller,
+      content::WebContents* active_web_contents,
       Extension::InitFromValueFlags creation_flags,
       bool wait_for_idle,
       bool grant_permissions);
-
-  // Returns the WindowController for this test's browser window.
-  WindowController* GetWindowController();
 
   // A convenience method to get the ExtensionTestNotificationObserver as its
   // Chrome-side implementation.
