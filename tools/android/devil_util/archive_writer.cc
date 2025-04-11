@@ -178,7 +178,10 @@ size_t ArchiveWriter::CreateArchiveStreaming(char* output_buffer,
     WriteCurMemberPath(&output_buffer, &output_buffer_size);
     WriteCurMemberContentLength(&output_buffer, &output_buffer_size);
     WriteCurMemberContent(&output_buffer, &output_buffer_size);
-    if (cur_member_content_pos_ == cur_member_content_length_) {
+    if (cur_member_content_pos_ == cur_member_content_length_ &&
+        cur_member_content_length_pos_ == kContentLengthSize &&
+        cur_member_path_pos_ == cur_member_path_.length() &&
+        cur_member_path_length_pos_ == kPathLengthSize) {
       // We have finished processing the current member.
       cur_member_ifstream_.close();
       start_next_member_ = true;
