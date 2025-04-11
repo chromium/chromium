@@ -227,6 +227,9 @@ class MostVisitedSites :
   // fails. Custom links must be enabled.
   bool DeleteCustomLink(const GURL& url);
 
+  // Returns whether a custom link with the specified |url| exists.
+  bool HasCustomLink(const GURL& url);
+
   // Restores the previous state of custom links before the last action that
   // modified them. If there was no action, does nothing. If this is undoing the
   // first action after initialization, uninitializes the links. Custom links

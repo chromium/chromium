@@ -1587,6 +1587,10 @@ TEST_P(MostVisitedSitesWithCustomLinksTest,
   CheckSingleCustomLink(sections.at(SectionType::PERSONALIZED), kTestTitle,
                         kTestUrl);
 
+  EXPECT_TRUE(most_visited_sites_->HasCustomLink(GURL(kTestUrl)));
+  EXPECT_FALSE(
+      most_visited_sites_->HasCustomLink(GURL("https://not-added.com")));
+
   // Undo the action. This should uninitialize custom links.
   EXPECT_CALL(*mock_custom_links_manager_, UndoAction()).Times(0);
   EXPECT_CALL(*mock_custom_links_manager_, Uninitialize());

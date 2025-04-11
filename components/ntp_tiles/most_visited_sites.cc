@@ -393,6 +393,14 @@ bool MostVisitedSites::DeleteCustomLink(const GURL& url) {
                      base::Unretained(custom_links_manager_.get()), url));
 }
 
+bool MostVisitedSites::HasCustomLink(const GURL& url) {
+  if (!custom_links_manager_ || !IsCustomLinksEnabled()) {
+    return false;
+  }
+
+  return custom_links_cache_.HasUrl(url);
+}
+
 void MostVisitedSites::UndoCustomLinkAction() {
   if (!custom_links_manager_ || !IsCustomLinksEnabled()) {
     return;
