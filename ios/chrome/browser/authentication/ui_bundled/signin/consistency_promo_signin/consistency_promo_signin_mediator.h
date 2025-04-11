@@ -13,6 +13,7 @@
 #import "base/functional/callback_forward.h"
 #import "base/ios/block_types.h"
 #import "components/signin/public/browser/web_signin_tracker.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 class AccountReconcilor;

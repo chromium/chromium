@@ -7,6 +7,7 @@
 #import <UIKit/UIKit.h>
 
 #import "components/signin/core/browser/account_reconcilor.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_promo_signin_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet/consistency_sheet_navigation_controller.h"
@@ -29,7 +30,8 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
         initWithBaseViewController:base_view_controller_mock_
                            browser:browser_.get()
                       contextStyle:SigninContextStyle::kDefault
-                       accessPoint:access_point_];
+                       accessPoint:access_point_
+              continuationProvider:NotReachedContinuationProvider()];
     mediator_mock_ = OCMStrictClassMock([ConsistencyPromoSigninMediator class]);
     consistency_default_account_coordinator_mock_ =
         OCMStrictClassMock([ConsistencyDefaultAccountCoordinator class]);
@@ -102,6 +104,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                           userPrefService:reinterpret_cast<PrefService*>(
                                               [OCMArg anyPointer])
                               accessPoint:access_point_])
+        .ignoringNonObjectArgs()
         .andReturn(mediator_mock_);
     OCMExpect([base_view_controller_mock_ presentViewController:[OCMArg any]
                                                        animated:YES

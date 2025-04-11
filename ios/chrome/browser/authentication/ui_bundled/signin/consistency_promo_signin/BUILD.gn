@@ -69,6 +69,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager/objc",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account",
     "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet",

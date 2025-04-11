@@ -17,11 +17,29 @@ enum class AccessPoint : int;
 @interface ConsistencyPromoSigninCoordinator
     : SigninCoordinator <InterruptibleChromeCoordinator>
 
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                  contextStyle:(SigninContextStyle)contextStyle
+                   accessPoint:(signin_metrics::AccessPoint)accessPoint
+          continuationProvider:
+              (const ChangeProfileContinuationProvider&)continuationProvider
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint
+    NS_UNAVAILABLE;
+
 + (instancetype)
     coordinatorWithBaseViewController:(UIViewController*)viewController
                               browser:(Browser*)browser
                          contextStyle:(SigninContextStyle)contextStyle
-                          accessPoint:(signin_metrics::AccessPoint)accessPoint;
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                 continuationProvider:(const ChangeProfileContinuationProvider&)
+                                          continuationProvider;
 
 @end
 

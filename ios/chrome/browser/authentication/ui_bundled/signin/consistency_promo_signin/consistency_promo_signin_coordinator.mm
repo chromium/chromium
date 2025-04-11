@@ -75,15 +75,35 @@
 
 @end
 
-@implementation ConsistencyPromoSigninCoordinator
+@implementation ConsistencyPromoSigninCoordinator {
+  ChangeProfileContinuationProvider _continuationProvider;
+}
 
 #pragma mark - Public
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                  contextStyle:(SigninContextStyle)contextStyle
+                   accessPoint:(signin_metrics::AccessPoint)accessPoint
+          continuationProvider:
+              (const ChangeProfileContinuationProvider&)continuationProvider {
+  self = [super initWithBaseViewController:viewController
+                                   browser:browser
+                              contextStyle:contextStyle
+                               accessPoint:accessPoint];
+  if (self) {
+    _continuationProvider = continuationProvider;
+  }
+  return self;
+}
 
 + (instancetype)
     coordinatorWithBaseViewController:(UIViewController*)viewController
                               browser:(Browser*)browser
                          contextStyle:(SigninContextStyle)contextStyle
-                          accessPoint:(signin_metrics::AccessPoint)accessPoint {
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                 continuationProvider:(const ChangeProfileContinuationProvider&)
+                                          continuationProvider {
   ProfileIOS* profile = browser->GetProfile();
   if (accessPoint == signin_metrics::AccessPoint::kWebSignin) {
     signin::IdentityManager* identityManager =
@@ -103,7 +123,8 @@
       initWithBaseViewController:viewController
                          browser:browser
                     contextStyle:contextStyle
-                     accessPoint:accessPoint];
+                     accessPoint:accessPoint
+            continuationProvider:continuationProvider];
 }
 
 #pragma mark - InterruptibleChromeCoordinator
@@ -298,14 +319,12 @@
         self.accessPoint);
   }
   DCHECK(!self.addAccountCoordinator);
-  // TODO(crbug.com/375605572) Sends an actual continuation.
   self.addAccountCoordinator = [SigninCoordinator
       addAccountCoordinatorWithBaseViewController:self.navigationController
                                           browser:self.browser
                                      contextStyle:self.contextStyle
                                       accessPoint:self.accessPoint
-                             continuationProvider:
-                                 DoNothingContinuationProvider()];
+                             continuationProvider:_continuationProvider];
   __weak ConsistencyPromoSigninCoordinator* weakSelf = self;
   self.addAccountCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,

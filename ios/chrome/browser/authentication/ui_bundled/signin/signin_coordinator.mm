@@ -220,14 +220,18 @@ using signin_metrics::PromoAction;
                                                     browser:(Browser*)browser
                                                contextStyle:(SigninContextStyle)
                                                                 contextStyle
-                                                accessPoint:(signin_metrics::
-                                                                 AccessPoint)
-                                                                accessPoint {
+                                                accessPoint:
+                                                    (signin_metrics::
+                                                         AccessPoint)accessPoint
+                                       continuationProvider:
+                                           (const ChangeProfileContinuationProvider&)
+                                               continuationProvider {
   return [ConsistencyPromoSigninCoordinator
       coordinatorWithBaseViewController:viewController
                                 browser:browser
                            contextStyle:contextStyle
-                            accessPoint:accessPoint];
+                            accessPoint:accessPoint
+                   continuationProvider:continuationProvider];
 }
 
 + (SigninCoordinator<InterruptibleChromeCoordinator>*)

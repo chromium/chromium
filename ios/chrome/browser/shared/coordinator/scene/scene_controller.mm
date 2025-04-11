@@ -54,6 +54,7 @@
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/appearance/ui_bundled/appearance_customization.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/promo/signin_fullscreen_promo_scene_agent.h"
@@ -2144,7 +2145,8 @@ using UserFeedbackDataCallback =
                                               command
                                                   .changeProfileContinuationProvider];
       break;
-    case AuthenticationOperation::kSigninOnly:
+    case AuthenticationOperation::kSigninOnly: {
+      auto& provider = command.changeProfileContinuationProvider;
       self.signinCoordinator = [SigninCoordinator
           consistencyPromoSigninCoordinatorWithBaseViewController:
               baseViewController
@@ -2152,8 +2154,10 @@ using UserFeedbackDataCallback =
                                                      contextStyle:
                                                          command.contextStyle
                                                       accessPoint:
-                                                          command.accessPoint];
+                                                          command.accessPoint
+                                             continuationProvider:provider];
       break;
+    }
     case AuthenticationOperation::kAddAccount:
       self.signinCoordinator = [SigninCoordinator
           addAccountCoordinatorWithBaseViewController:baseViewController
@@ -2301,6 +2305,8 @@ using UserFeedbackDataCallback =
   if (!signin::ShouldPresentWebSignin(self.mainInterface.profile)) {
     return;
   }
+  ChangeProfileContinuationProvider provider =
+      base::BindRepeating(&CreateChangeProfileOpensURLContinuation, url);
   self.signinCoordinator = [SigninCoordinator
       consistencyPromoSigninCoordinatorWithBaseViewController:baseViewController
                                                       browser:self.mainInterface
@@ -2308,10 +2314,10 @@ using UserFeedbackDataCallback =
                                                  contextStyle:
                                                      SigninContextStyle::
                                                          kDefault
-                                                  accessPoint:
-                                                      signin_metrics::
-                                                          AccessPoint::
-                                                              kWebSignin];
+                                                  accessPoint:signin_metrics::
+                                                                  AccessPoint::
+                                                                      kWebSignin
+                                         continuationProvider:provider];
   if (!self.signinCoordinator) {
     return;
   }

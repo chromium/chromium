@@ -101,6 +101,7 @@ source_set("scene") {
     "//ios/chrome/browser/authentication/ui_bundled",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
+    "//ios/chrome/browser/authentication/ui_bundled/change_profile",
     "//ios/chrome/browser/authentication/ui_bundled/enterprise:enterprise_utils",
     "//ios/chrome/browser/authentication/ui_bundled/signin",
     "//ios/chrome/browser/authentication/ui_bundled/signin:features",
