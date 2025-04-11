@@ -519,6 +519,29 @@ TEST(FreedesktopSecretKeyProviderTest, KWallet) {
                    _))
       .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
 
+  // hasFolder -> true
+  EXPECT_CALL(*mock_kwallet5_proxy,
+              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+                   FreedesktopSecretKeyProvider::kKWalletMethodHasFolder,
+                   MatchArgs(MakeDbusParameters(
+                       DbusInt32(kKWalletHandle),
+                       DbusString(FreedesktopSecretKeyProvider::kKWalletFolder),
+                       DbusString(kProductName))),
+                   _))
+      .WillOnce(RespondWith(DbusBoolean(true)));
+
+  // hasEntry -> true
+  EXPECT_CALL(*mock_kwallet5_proxy,
+              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+                   FreedesktopSecretKeyProvider::kKWalletMethodHasEntry,
+                   MatchArgs(MakeDbusParameters(
+                       DbusInt32(kKWalletHandle),
+                       DbusString(FreedesktopSecretKeyProvider::kKWalletFolder),
+                       DbusString(FreedesktopSecretKeyProvider::kKeyName),
+                       DbusString(kProductName))),
+                   _))
+      .WillOnce(RespondWith(DbusBoolean(true)));
+
   // readPassword -> return a secret
   EXPECT_CALL(*mock_kwallet5_proxy,
               Call(FreedesktopSecretKeyProvider::kKWalletInterface,
@@ -542,6 +565,110 @@ TEST(FreedesktopSecretKeyProviderTest, KWallet) {
       .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
 
   FreedesktopSecretKeyProvider provider("kwallet5", /*use_for_encryption=*/true,
+                                        kProductName, mock_bus);
+  std::string tag;
+  std::optional<Encryptor::Key> key;
+  provider.GetKey(base::BindLambdaForTesting(
+      [&](const std::string& returned_tag,
+          base::expected<Encryptor::Key, KeyProvider::KeyError> returned_key) {
+        tag = returned_tag;
+        key = std::move(returned_key.value());
+      }));
+
+  EXPECT_EQ(tag, "v11");
+  EXPECT_TRUE(key.has_value());
+}
+
+TEST(FreedesktopSecretKeyProviderTest, KWalletCreateFolderAndPassword) {
+  auto mock_bus = base::MakeRefCounted<dbus::MockBus>(dbus::Bus::Options());
+
+  // Initialize object proxies
+  auto mock_dbus_proxy = base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+      mock_bus.get(), DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
+  EXPECT_CALL(*mock_bus, GetObjectProxy(DBUS_SERVICE_DBUS,
+                                        dbus::ObjectPath(DBUS_PATH_DBUS)))
+      .WillRepeatedly(Return(mock_dbus_proxy.get()));
+
+  auto mock_kwallet6_proxy =
+      base::MakeRefCounted<MockObjectProxyWithTypedCalls>(
+          mock_bus.get(), FreedesktopSecretKeyProvider::kKWalletD6Service,
+          dbus::ObjectPath(FreedesktopSecretKeyProvider::kKWalletD6Path));
+  EXPECT_CALL(*mock_bus,
+              GetObjectProxy(FreedesktopSecretKeyProvider::kKWalletD6Service,
+                             dbus::ObjectPath(
+                                 FreedesktopSecretKeyProvider::kKWalletD6Path)))
+      .WillRepeatedly(Return(mock_kwallet6_proxy.get()));
+  EXPECT_CALL(*mock_dbus_proxy,
+              Call(DBUS_INTERFACE_DBUS, "NameHasOwner",
+                   MatchArgs(DbusString(
+                       FreedesktopSecretKeyProvider::kKWalletD6Service)),
+                   _))
+      .WillOnce(RespondWith(DbusBoolean(true)));
+
+  // isEnabled -> true
+  EXPECT_CALL(*mock_kwallet6_proxy,
+              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+                   FreedesktopSecretKeyProvider::kKWalletMethodIsEnabled,
+                   MatchArgs(DbusVoid()), _))
+      .WillOnce(RespondWith(DbusBoolean(true)));
+
+  // networkWallet
+  EXPECT_CALL(*mock_kwallet6_proxy,
+              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+                   FreedesktopSecretKeyProvider::kKWalletMethodNetworkWallet,
+                   MatchArgs(DbusVoid()), _))
+      .WillOnce(RespondWith(DbusString(kNetworkWallet)));
+
+  // open -> non-negative handle
+  EXPECT_CALL(*mock_kwallet6_proxy,
+              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+                   FreedesktopSecretKeyProvider::kKWalletMethodOpen,
+                   MatchArgs(MakeDbusParameters(DbusString(kNetworkWallet),
+                                                DbusInt64(0),
+                                                DbusString(kProductName))),
+                   _))
+      .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
+
+  // hasFolder -> false
+  EXPECT_CALL(*mock_kwallet6_proxy,
+              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+                   FreedesktopSecretKeyProvider::kKWalletMethodHasFolder,
+                   MatchArgs(MakeDbusParameters(
+                       DbusInt32(kKWalletHandle),
+                       DbusString(FreedesktopSecretKeyProvider::kKWalletFolder),
+                       DbusString(kProductName))),
+                   _))
+      .WillOnce(RespondWith(DbusBoolean(false)));
+
+  // createFolder
+  EXPECT_CALL(*mock_kwallet6_proxy,
+              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+                   FreedesktopSecretKeyProvider::kKWalletMethodCreateFolder,
+                   MatchArgs(MakeDbusParameters(
+                       DbusInt32(kKWalletHandle),
+                       DbusString(FreedesktopSecretKeyProvider::kKWalletFolder),
+                       DbusString(kProductName))),
+                   _))
+      .WillOnce(RespondWith(DbusBoolean(true)));
+
+  // writePassword
+  EXPECT_CALL(
+      *mock_kwallet6_proxy,
+      Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+           FreedesktopSecretKeyProvider::kKWalletMethodWritePassword, _, _))
+      .WillOnce(RespondWith(DbusInt32(0)));
+
+  // close
+  EXPECT_CALL(*mock_kwallet6_proxy,
+              Call(FreedesktopSecretKeyProvider::kKWalletInterface,
+                   FreedesktopSecretKeyProvider::kKWalletMethodClose,
+                   MatchArgs(MakeDbusParameters(DbusInt32(kKWalletHandle),
+                                                DbusBoolean(false),
+                                                DbusString(kProductName))),
+                   _))
+      .WillOnce(RespondWith(DbusInt32(kKWalletHandle)));
+
+  FreedesktopSecretKeyProvider provider("kwallet6", /*use_for_encryption=*/true,
                                         kProductName, mock_bus);
   std::string tag;
   std::optional<Encryptor::Key> key;

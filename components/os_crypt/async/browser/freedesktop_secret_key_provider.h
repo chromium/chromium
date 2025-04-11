@@ -52,7 +52,12 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
     kKWalletNoNetworkWallet = 14,
     kKWalletOpenFailed = 15,
     kKWalletNoSecret = 16,
-    kMaxValue = kKWalletNoSecret,
+    kKWalletFolderCheckFailed = 17,
+    kKWalletFolderCreationFailed = 18,
+    kKWalletEntryCheckFailed = 19,
+    kKWalletReadFailed = 20,
+    kKWalletWriteFailed = 21,
+    kMaxValue = kKWalletWriteFailed,
   };
 
   // Supplements InitStatus in case of errors.
@@ -67,7 +72,9 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
     kNoResponse = 6,
     kPromptDismissed = 7,
     kPromptFailedSignalConnection = 8,
-    kMaxValue = kPromptFailedSignalConnection,
+    kKWalletApiReturnedError = 9,
+    kKWalletApiReturnedFalse = 10,
+    kMaxValue = kKWalletApiReturnedFalse,
   };
 
   FreedesktopSecretKeyProvider(const std::string& password_store,
@@ -86,6 +93,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
                            CreateCollectionAndItemWithUnlockPrompt);
   FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest, KWallet);
+  FRIEND_TEST_ALL_PREFIXES(FreedesktopSecretKeyProviderTest,
+                           KWalletCreateFolderAndPassword);
   friend class FreedesktopSecretKeyProviderCompatTest;
 
   template <typename T>
@@ -127,6 +136,10 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kKWalletMethodOpen[] = "open";
   static constexpr char kKWalletMethodReadPassword[] = "readPassword";
   static constexpr char kKWalletMethodClose[] = "close";
+  static constexpr char kKWalletMethodHasFolder[] = "hasFolder";
+  static constexpr char kKWalletMethodCreateFolder[] = "createFolder";
+  static constexpr char kKWalletMethodHasEntry[] = "hasEntry";
+  static constexpr char kKWalletMethodWritePassword[] = "writePassword";
 
   static constexpr char kDefaultAlias[] = "default";
 
@@ -155,6 +168,8 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   static constexpr char kKWalletD5Path[] = "/modules/kwalletd5";
   static constexpr char kKWalletD6Service[] = "org.kde.kwalletd6";
   static constexpr char kKWalletD6Path[] = "/modules/kwalletd6";
+
+  static constexpr int kKWalletInvalidHandle = -1;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static constexpr char kKWalletFolder[] = "Chrome Keys";
@@ -189,9 +204,15 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
   void OnKWalletNetworkWallet(
       base::expected<DbusString, ErrorDetail> wallet_name);
   void OnKWalletOpen(base::expected<DbusInt32, ErrorDetail> handle_reply);
+  void OnKWalletHasFolder(base::expected<DbusBoolean, ErrorDetail> has_folder);
+  void OnKWalletCreateFolder(base::expected<DbusBoolean, ErrorDetail> success);
+  void OnKWalletHasEntry(base::expected<DbusBoolean, ErrorDetail> has_entry);
   void OnKWalletReadPassword(
-      int32_t handle,
       base::expected<DbusString, ErrorDetail> secret_reply);
+  void GenerateAndWriteKWalletPassword();
+  void OnKWalletWritePassword(
+      scoped_refptr<base::RefCountedMemory> generated_secret,
+      base::expected<DbusInt32, ErrorDetail> return_code);
 
   void UnlockDefaultCollection();
   void OpenSession();
@@ -210,6 +231,7 @@ class FreedesktopSecretKeyProvider : public KeyProvider {
 
   // For KWallet password storage
   raw_ptr<dbus::ObjectProxy> kwallet_proxy_ = nullptr;
+  int32_t kwallet_handle_ = kKWalletInvalidHandle;
 
   const std::string password_store_;
   const bool use_for_encryption_;
