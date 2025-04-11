@@ -82,14 +82,8 @@ bool IsInspectionAllowed(Profile* profile,
   using Availability = policy::DeveloperToolsPolicyHandler::Availability;
   Availability availability;
   if (extension) {
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/406406417): Enable the policy checker code.
-    NOTIMPLEMENTED();
-    availability = Availability::kAllowed;
-#else
     availability =
         policy::DeveloperToolsPolicyHandler::GetEffectiveAvailability(profile);
-#endif
   } else {
     // Perform additional checks for browser windows (extension == null).
     availability = GetDevToolsAvailability(profile);
