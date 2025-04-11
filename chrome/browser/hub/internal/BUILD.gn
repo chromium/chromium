@@ -90,10 +90,13 @@ android_library("java") {
 android_resources("java_resources") {
   sources = [
     "android/res/drawable/hub_search_box_background.xml",
+    "android/res/drawable/new_tab_button_background.xml",
     "android/res/layout/hub_layout.xml",
     "android/res/layout/hub_pane_host_layout.xml",
     "android/res/layout/hub_toolbar_layout.xml",
+    "android/res/values/colors.xml",
     "android/res/values/dimens.xml",
+    "android/res/values/themes.xml",
   ]
 }
 

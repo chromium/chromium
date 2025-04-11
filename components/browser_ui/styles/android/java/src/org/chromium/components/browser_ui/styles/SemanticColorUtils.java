@@ -46,7 +46,7 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to default_text_color_accent1. */
     public static @ColorInt int getDefaultTextColorAccent1(Context context) {
-        return resolve(R.attr.colorPrimary, context);
+        return getColorPrimary(context);
     }
 
     /** Returns the semantic color value that corresponds to default_icon_color_on_accent1. */
@@ -71,6 +71,11 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorOnSurfaceVariant, context);
     }
 
+    /** Returns the semantic color value that corresponds to filled_button_bg_color. */
+    public static @ColorInt int getFilledButtonBgColor(Context context) {
+        return getColorPrimary(context);
+    }
+
     /** Returns the semantic color value that corresponds to default_icon_color. */
     public static @ColorInt int getDefaultIconColor(Context context) {
         return resolve(R.attr.colorOnSurface, context);
@@ -83,7 +88,7 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to default_icon_color_accent1. */
     public static @ColorInt int getDefaultIconColorAccent1(Context context) {
-        return resolve(R.attr.colorPrimary, context);
+        return getColorPrimary(context);
     }
 
     /** Returns the semantic color value that corresponds to default_icon_color_secondary. */
@@ -118,7 +123,7 @@ public class SemanticColorUtils {
 
     /** Returns the semantic color value that corresponds to default_control_color_active. */
     public static @ColorInt int getDefaultControlColorActive(Context context) {
-        return resolve(R.attr.colorPrimary, context);
+        return getColorPrimary(context);
     }
 
     /** Returns the semantic color value that corresponds to progress_bar_foreground. */
@@ -211,6 +216,11 @@ public class SemanticColorUtils {
     /** Returns the semantic color values that correspond to colorSurface. */
     public static @ColorInt int getColorSurface(Context context) {
         return resolve(R.attr.colorSurface, context);
+    }
+
+    /** Returns the semantic color values that correspond to colorPrimary. */
+    public static @ColorInt int getColorPrimary(Context context) {
+        return resolve(R.attr.colorPrimary, context);
     }
 
     /** Returns the semantic color values that correspond to colorSurfaceContainerLow. */

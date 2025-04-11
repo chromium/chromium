@@ -55,6 +55,20 @@ public final class HubColors {
         }
     }
 
+    /** Returns the color toolbar action button uses per the given color scheme. */
+    public static @ColorInt int getToolbarActionButtonIconColor(
+            Context context, @HubColorScheme int colorScheme) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                return SemanticColorUtils.getDefaultIconColorOnAccent1(context);
+            case HubColorScheme.INCOGNITO:
+                return ContextCompat.getColor(context, R.color.default_icon_color_on_accent1_dark);
+            default:
+                assert false;
+                return Color.TRANSPARENT;
+        }
+    }
+
     /** Returns the color most icons should use per the given color scheme. */
     public static @ColorInt int getIconColor(Context context, @HubColorScheme int colorScheme) {
         switch (colorScheme) {
@@ -132,6 +146,20 @@ public final class HubColors {
                 backgroundColorRes = Resources.ID_NULL;
         }
         return ContextCompat.getColor(context, backgroundColorRes);
+    }
+
+    /** Returns the hub tool bar action button background color as per the given color scheme. */
+    public static @ColorInt int getToolbarActionButtonBackgroundColor(
+            Context context, @HubColorScheme int colorScheme) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                return SemanticColorUtils.getFilledButtonBgColor(context);
+            case HubColorScheme.INCOGNITO:
+                return ContextCompat.getColor(context, R.color.filled_button_bg_color_light);
+            default:
+                assert false;
+                return Color.TRANSPARENT;
+        }
     }
 
     public static ColorStateList getActionButtonColor(Context context, @ColorInt int color) {

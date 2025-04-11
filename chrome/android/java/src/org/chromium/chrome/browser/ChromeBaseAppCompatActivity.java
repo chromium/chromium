@@ -506,6 +506,12 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             getTheme().applyStyle(optOutEdgeToEdge, true);
             mThemeResIds.add(optOutEdgeToEdge);
         }
+
+        @StyleRes
+        int hubToolbarActionButtonStyleOverlay =
+                R.style.HubToolbarActionButtonStyleOverlay_Baseline;
+        getTheme().applyStyle(hubToolbarActionButtonStyleOverlay, /* force= */ true);
+        mThemeResIds.add(hubToolbarActionButtonStyleOverlay);
     }
 
     /** Sets the default task description that will appear in the recents UI. */

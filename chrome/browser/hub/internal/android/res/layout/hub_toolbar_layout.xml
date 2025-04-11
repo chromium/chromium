@@ -38,15 +38,8 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:minWidth="@dimen/min_touch_target_size"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
         android:visibility="gone"
-        app:buttonColor="@android:color/transparent"
-        app:buttonTextColor="@color/default_text_color_list"
-        app:rippleColor="?attr/globalTextButtonRippleColor"
-        app:verticalInset="0dp" />
+        style="?attr/newTabButtonStyle"/>
 
       <com.google.android.material.tabs.TabLayout
         android:id="@+id/pane_switcher"

@@ -7,4 +7,7 @@ found in the LICENSE file.
 <resources>
     <dimen name="hub_search_box_height">40dp</dimen>
     <dimen name="hub_search_box_background_radius">50dp</dimen>
+    <dimen name="hub_toolbar_action_button_size">40dp</dimen>
+    <dimen name="hub_toolbar_action_button_left_margin">16dp</dimen>
+    <dimen name="hub_toolbar_action_button_padding_lr">8dp</dimen>
 </resources>
