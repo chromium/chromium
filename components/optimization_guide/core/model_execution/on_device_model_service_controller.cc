@@ -435,12 +435,16 @@ OnDeviceModelServiceController::BaseModelController::BaseModelController(
     return;
   }
 
+  // Check if the model needs validation, which may mark it pending validation,
+  // blocking session creation.
+  if (!access_controller().ShouldValidateModel(model_metadata_->version())) {
+    return;
+  }
+
   if (model_metadata_->validation_config().validation_prompts().empty()) {
     // Immediately succeed in validation if there are no prompts specified.
-    if (access_controller().ShouldValidateModel(model_metadata_->version())) {
-      access_controller().OnValidationFinished(
-          OnDeviceModelValidationResult::kSuccess);
-    }
+    access_controller().OnValidationFinished(
+        OnDeviceModelValidationResult::kSuccess);
     return;
   }
 
@@ -561,16 +565,6 @@ void OnDeviceModelServiceController::BaseModelController::OnDisconnect() {
 }
 
 void OnDeviceModelServiceController::BaseModelController::StartValidation() {
-  // Skip validation if the base model is already in use to avoid interrupting.
-  if (remote_) {
-    return;
-  }
-
-  if (!access_controller().ShouldValidateModel(model_metadata_->version())) {
-    return;
-  }
-  controller_->UpdateSolutionProviders();  // For pending validation.
-
   mojo::Remote<on_device_model::mojom::Session> session;
   GetOrCreateRemote()->StartSession(session.BindNewPipeAndPassReceiver(),
                                     nullptr);

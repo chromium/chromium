@@ -2968,6 +2968,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
       {});
 
   base::HistogramTester histogram_tester;
+  fake_launcher_.clear_did_launch_service();
 
   FakeBaseModelAsset base_model(WillPassValidationConfig());
   FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
@@ -2985,12 +2986,13 @@ TEST_F(OnDeviceModelServiceControllerTest,
   task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
 
   // Full validation should never run.
+  EXPECT_FALSE(fake_launcher_.did_launch_service());
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution."
       "OnDeviceModelValidationResultOnValidationStarted",
-      OnDeviceModelValidationResult::kUnknown, 1);
+      OnDeviceModelValidationResult::kUnknown, 2);
 
   EXPECT_TRUE(CreateSession());
 }
