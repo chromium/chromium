@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -160,4 +161,18 @@ IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
   EXPECT_EQ(picker_->GetDialogViewForTesting()->GetWindowTitle(),
             l10n_util::GetStringUTF16(
                 IDS_DESKTOP_MEDIA_PICKER_TITLE_WEB_CONTENTS_ONLY));
+}
+
+// Validate that the scroll view min height is correct
+IN_PROC_BROWSER_TEST_F(DesktopMediaPickerViewsBrowserTest,
+                       CorrectScrollViewMinHeight) {
+  override_source_lists_.push_back(
+      std::make_unique<FakeDesktopMediaList>(DesktopMediaList::Type::kScreen));
+  ShowUi(std::string());
+
+  auto* scroll_view = picker_->GetDialogViewForTesting()->GetViewByID(
+      VIEW_ID_MEDIA_PICKER_SCREEN_SCROLL_VIEW);
+  int expected_height = GetGenericScreenStyle().item_size.height() +
+                        GetGenericScreenStyle().label_rect.height();
+  EXPECT_EQ(scroll_view->bounds().height(), expected_height);
 }

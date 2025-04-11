@@ -113,6 +113,9 @@ enum ViewID {
 
   // Plus button on location bar.
   VIEW_ID_ACTION_BOX_BUTTON,
+
+  // Media Picker screen scroll view.
+  VIEW_ID_MEDIA_PICKER_SCREEN_SCROLL_VIEW,
 };
 
 #endif  // CHROME_BROWSER_UI_VIEW_IDS_H_
