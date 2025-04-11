@@ -11,7 +11,6 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl} from '../sync_browser_proxy.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -128,16 +127,10 @@ export class PromoCardElement extends PromoCardElementBase {
         recordPromoCardAction(PromoCardMetricId.RELAUNCH_CHROME);
         break;
       case PromoCardId.MOVE_PASSWORDS:
-        if (loadTimeData.getBoolean('isBatchUploadDesktopEnabled')) {
-          SyncBrowserProxyImpl.getInstance().openBatchUpload(
-              BatchUploadPasswordsEntryPoint.PROMO_CARD);
-          return;
-        }
-
-        this.dispatchEvent(new CustomEvent(
-            'move-passwords-clicked', {bubbles: true, composed: true}));
+        SyncBrowserProxyImpl.getInstance().openBatchUpload(
+            BatchUploadPasswordsEntryPoint.PROMO_CARD);
         recordPromoCardAction(PromoCardMetricId.MOVE_PASSWORDS);
-        return;
+        break;
       default:
         assertNotReached();
     }

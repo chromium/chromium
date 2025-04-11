@@ -619,16 +619,6 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   source->AddBoolean("canAddShortcut", web_app::AreWebAppsEnabled(profile));
 
-  // TODO(crbug.com/409337246): Cleanup TS/HTML further by removing this value
-  // that is not relevant for non dice platforms.
-  source->AddBoolean("isBatchUploadDesktopEnabled",
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-                     true
-#else
-                     false
-#endif
-  );
-
   source->AddBoolean(
       "passkeyUpgradeSettingsToggleVisible",
       base::FeatureList::IsEnabled(device::kWebAuthnPasskeyUpgrade));

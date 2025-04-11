@@ -29,6 +29,10 @@ syncer::SyncService* GetSyncService(Profile* profile) {
 }
 
 // Checks if there are passwords saved only to this device.
+// TODO(crbug.com/410001569): The dialog now shows the Batch Upload dialog,
+// which uses the sync service to show the local data. Align whether or not
+// promo is shown and the content shown in the dialog to use the same API: the
+// sync service API.
 bool HasLocalPasswords(extensions::PasswordsPrivateDelegate* delegate) {
   if (!delegate) {
     return false;

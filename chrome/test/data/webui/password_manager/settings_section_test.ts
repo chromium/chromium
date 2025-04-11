@@ -539,61 +539,8 @@ suite('SettingsSectionTest', function() {
   });
 
   test(
-      'clicking save passwords in account opens move passwords dialog',
-      async function() {
-        loadTimeData.overrideValues({
-          isBatchUploadDesktopEnabled: false,
-        });
-
-        passwordManager.data.isAccountStorageEnabled = true;
-        syncProxy.syncInfo = {
-          isEligibleForAccountStorage: true,
-          isSyncingPasswords: false,
-        };
-
-        const group = createCredentialGroup({
-          name: 'test.com',
-          credentials: [
-            createPasswordEntry({
-              id: 0,
-              username: 'test1',
-              inProfileStore: true,
-              inAccountStore: false,
-            }),
-          ],
-        });
-
-        passwordManager.data.groups = [group];
-        passwordManager.setRequestCredentialsDetailsResponse(
-            passwordManager.data.groups[0]!.entries);
-
-        const settings = document.createElement('settings-section');
-        document.body.appendChild(settings);
-        await passwordManager.whenCalled('getSavedPasswordList');
-        await flushTasks();
-
-        const movePasswordsButton =
-            settings.shadowRoot!.getElementById('movePasswordsButton');
-        assertTrue(!!movePasswordsButton);
-        assertTrue(isVisible(movePasswordsButton));
-
-        movePasswordsButton.click();
-        await flushTasks();
-
-        const moveDialog =
-            settings.shadowRoot!.querySelector('move-passwords-dialog');
-        assertTrue(!!moveDialog);
-        const dialog = moveDialog.shadowRoot!.querySelector('#dialog');
-        assertTrue(!!dialog);
-      });
-
-  test(
       'clicking save passwords in account opens batch upload dialog',
       async function() {
-        loadTimeData.overrideValues({
-          isBatchUploadDesktopEnabled: true,
-        });
-
         passwordManager.data.isAccountStorageEnabled = true;
         syncProxy.syncInfo = {
           isEligibleForAccountStorage: true,
