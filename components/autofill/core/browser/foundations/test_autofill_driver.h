@@ -70,6 +70,7 @@ class TestAutofillDriverTemplate : public T {
                         const FieldGlobalId& field,
                         const std::u16string& value) override {}
   void SendTypePredictionsToRenderer(const FormStructure& form) override {}
+  void ExposeDomNodeIDs() override {}
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field,
       const std::u16string& value) override {}

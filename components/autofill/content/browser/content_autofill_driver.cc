@@ -480,6 +480,10 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
       form_id, WithNewVersion(std::move(final_handler)));
 }
 
+void ContentAutofillDriver::ExposeDomNodeIDs() {
+  GetAutofillAgent()->ExposeDomNodeIDs();
+}
+
 void ContentAutofillDriver::SendTypePredictionsToRenderer(
     const FormStructure& form) {
   CHECK(base::FeatureList::IsEnabled(

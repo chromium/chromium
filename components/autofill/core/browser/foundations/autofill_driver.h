@@ -286,6 +286,8 @@ class AutofillDriver {
 
   // Sends the field type predictions of `form` to the renderer.
   virtual void SendTypePredictionsToRenderer(const FormStructure& forms) = 0;
+  // Calls the agent and exposes DOM Node IDS as part of devtools protocol.
+  virtual void ExposeDomNodeIDs() = 0;
 
   // Tells the renderer to accept data list suggestions for |value|.
   virtual void RendererShouldAcceptDataListSuggestion(

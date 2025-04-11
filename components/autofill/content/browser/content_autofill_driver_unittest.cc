@@ -194,6 +194,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
               GetPotentialLastFourCombinationsForStandaloneCvc,
               (base::OnceCallback<void(const std::vector<std::string>&)>),
               (override));
+  MOCK_METHOD(void, ExposeDomNodeIDs, (), (override));
   MOCK_METHOD(void,
               ExtractLabeledTextNodeValue,
               (const std::u16string&,

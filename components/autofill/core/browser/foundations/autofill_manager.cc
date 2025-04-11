@@ -302,6 +302,10 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
     OnFormProcessed(form, form_structure);
   }
 
+  if (base::FeatureList::IsEnabled(features::test::kShowDomNodeIDs)) {
+    driver().ExposeDomNodeIDs();
+  }
+
   // Query the server if at least one of the forms was parsed.
   if (!queryable_forms.empty()) {
     NotifyObservers(&Observer::OnBeforeLoadedServerPredictions);
@@ -814,6 +818,9 @@ void AutofillManager::OnLoadedServerPredictions(
       response->queried_form_signatures, log_manager());
 
   OnLoadedServerPredictionsImpl(queried_forms);
+  if (base::FeatureList::IsEnabled(features::test::kShowDomNodeIDs)) {
+    driver().ExposeDomNodeIDs();
+  }
 
   for (const raw_ptr<FormStructure, VectorExperimental> form : queried_forms) {
     form->RationalizeAndAssignSections(log_manager(), /*legacy_order=*/true);

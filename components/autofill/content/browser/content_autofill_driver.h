@@ -230,6 +230,7 @@ class ContentAutofillDriver : public AutofillDriver,
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) override;
   void SendTypePredictionsToRenderer(const FormStructure& form) override;
+  void ExposeDomNodeIDs() override;
 
   // Group (1c): browser -> renderer events, directed to to this driver's main
   // driver (see comment above).

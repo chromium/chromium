@@ -268,6 +268,8 @@ void AutofillDriverIOS::ExtractForm(
   NOTIMPLEMENTED();
 }
 
+void AutofillDriverIOS::ExposeDomNodeIDs() {}
+
 void AutofillDriverIOS::SendTypePredictionsToRenderer(
     const FormStructure& form) {
   CHECK(base::FeatureList::IsEnabled(
