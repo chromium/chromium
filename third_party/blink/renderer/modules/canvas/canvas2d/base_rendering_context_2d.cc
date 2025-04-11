@@ -15,6 +15,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -108,6 +109,16 @@
 // IWYU pragma: no_include "base/numerics/clamped_math.h"
 
 namespace blink {
+namespace {
+
+bool IsContextProviderValid() {
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
+      SharedGpuContext::ContextProviderWrapper();
+  return context_provider_wrapper &&
+         !context_provider_wrapper->ContextProvider().IsContextLost();
+}
+
+}  // namespace
 
 constexpr char kDefaultFont[] = "10px sans-serif";
 const char BaseRenderingContext2D::kInheritString[] = "inherit";
@@ -306,37 +317,36 @@ void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
   DCHECK(context_lost_mode_ !=
          CanvasRenderingContext::kWebGLLoseContextLostContext);
 
-  if (context_lost_mode_ == CanvasRenderingContext::kRealLostContext) {
-    if (SharedGpuContext::IsGpuCompositingEnabled()) {
-      if (!SharedGpuContext::ContextProviderWrapper()) {
-        return;
-      }
-    } else {
-      if (!SharedGpuContext::SharedImageInterfaceProvider()) {
-        return;
-      }
-    }
-  }
-
-  // The GPU context is restored, but the canvas was changed to an invalid size
-  // since the canvas was lost. We can't restore the context until the canvas is
-  // given a valid size.
+  // The canvas was changed to an invalid size since the context was lost. We
+  // can't restore the context until the canvas is given a valid size. Abort
+  // here to avoid creating a shared GPU context we would not use.
   if (!IsValidImageSize(host->Size()) && !host->Size().IsEmpty()) {
     context_lost_mode_ = kInvalidCanvasSize;
     try_restore_context_event_timer_.Stop();
     return;
   }
 
-  RestoreGuard context_is_being_restored(*this);
-  if (GetOrCreateCanvas2DResourceProvider()) {
-    try_restore_context_event_timer_.Stop();
-    DispatchContextRestoredEvent(nullptr);
-    return;
+  // For real context losses, we can only restore if the SharedGpuContext is
+  // ready.
+  if (context_lost_mode_ != CanvasRenderingContext::kRealLostContext ||
+      (SharedGpuContext::IsGpuCompositingEnabled() &&
+       IsContextProviderValid()) ||
+      (!SharedGpuContext::IsGpuCompositingEnabled() &&
+       SharedGpuContext::SharedImageInterfaceProvider())) {
+    RestoreGuard context_is_being_restored(*this);
+    if (GetOrCreateCanvas2DResourceProvider()) {
+      try_restore_context_event_timer_.Stop();
+      DispatchContextRestoredEvent(nullptr);
+      return;
+    }
   }
 
   // Retry up to `kMaxTryRestoreContextAttempts` times before giving up.
   if (++try_restore_context_attempt_count_ > kMaxTryRestoreContextAttempts) {
     try_restore_context_event_timer_.Stop();
+    if (on_restore_failed_callback_for_testing_) {
+      on_restore_failed_callback_for_testing_.Run();
+    }
   }
 }
 

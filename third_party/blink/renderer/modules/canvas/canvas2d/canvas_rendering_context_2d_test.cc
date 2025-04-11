@@ -1897,6 +1897,46 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ContextRestorationAbortsAfterRetry) {
+  // Configure context provider to stay lost after context losses.
+  CreateContextProvider(SetIsContextLost::kNotModifyValue);
+
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_THAT(CanvasElement().ResourceProvider(), Pointee(IsValid()));
+
+  // Set a minimal restoration delay to make the test fast.
+  Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
+
+  // Lose the GPU context.
+  test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
+      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
+
+  // Wait for context to be lost.
+  {
+    EXPECT_FALSE(CanvasElement().IsContextLost());
+    base::RunLoop run_loop;
+    CanvasElement().addEventListener(
+        event_type_names::kContextlost,
+        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_THAT(CanvasElement().ResourceProvider(), IsNull());
+  }
+
+  // Context restoration will fail, wait for the context to give up.
+  {
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    base::RunLoop run_loop;
+    Context2D()->SetRestoreFailedCallbackForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_THAT(CanvasElement().ResourceProvider(), IsNull());
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        GetResourceProviderAfterContextLoss) {
   CreateContext(kNonOpaque);
 

@@ -7,7 +7,9 @@
 
 #include <cstddef>
 #include <memory>
+#include <utility>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -233,6 +235,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void SetTryRestoreContextIntervalForTesting(base::TimeDelta delay) {
     try_restore_context_interval_ = delay;
   }
+  void SetRestoreFailedCallbackForTesting(base::RepeatingClosure callback) {
+    on_restore_failed_callback_for_testing_ = std::move(callback);
+  }
 
   HeapTaskRunnerTimer<BaseRenderingContext2D>
       dispatch_context_lost_event_timer_;
@@ -322,6 +327,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   Canvas2DColorParams color_params_;
   bool need_dispatch_context_restored_ = false;
   base::TimeDelta try_restore_context_interval_ = kTryRestoreContextInterval;
+  base::RepeatingClosure on_restore_failed_callback_for_testing_;
 };
 
 }  // namespace blink
