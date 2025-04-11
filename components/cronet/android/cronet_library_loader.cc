@@ -19,7 +19,6 @@
 #include "base/android/jni_utils.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/check_op.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
@@ -91,12 +90,6 @@ base::WaitableEvent g_init_thread_init_done(
 }  // namespace
 
 void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env) {
-  // Cronet doesn't currently provide any way of using a custom command line
-  // (see https://crbug.com/1488393). For now, initialize an empty command line
-  // so that code attempting to use the command line doesn't crash.
-  static const char* const argv[] = {"cronet", nullptr};
-  base::CommandLine::Init(sizeof(argv) / sizeof(*argv) - 1, argv);
-
   logging::InitLogging(logging::LoggingSettings());
 
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)

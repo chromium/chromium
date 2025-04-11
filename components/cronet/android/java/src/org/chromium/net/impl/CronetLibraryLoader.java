@@ -20,6 +20,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
@@ -127,7 +128,14 @@ public class CronetLibraryLoader {
         try (var traceEvent = ScopedSysTraceEvent.scoped("CronetLibraryLoader#ensureInitialized")) {
             synchronized (sLoadLock) {
                 if (sInitialized) return false;
+
+                // Cronet doesn't currently provide any way of using a custom command line
+                // (see https://crbug.com/1488393). For now, initialize an empty command line
+                // so that code attempting to use the command line doesn't crash.
+                CommandLine.init(new String[] {"cronet"});
+
                 ContextUtils.initApplicationContext(applicationContext);
+
                 // The init thread may already be running if a previous initialization attempt
                 // failed. In this case there is no need to spin it up again.
                 //
@@ -160,6 +168,7 @@ public class CronetLibraryLoader {
                 try (var nativeInitTraceEvent =
                         ScopedSysTraceEvent.scoped(
                                 "CronetLibraryLoader#ensureInitialized calling nativeInit")) {
+                    CommandLine.getInstance().switchToNativeImpl();
                     CronetLibraryLoaderJni.get().nativeInit();
                 }
                 var initializeBuildInfoOnStartup =
