@@ -33,6 +33,7 @@
 #include "chrome/browser/push_messaging/push_messaging_constants.h"
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
+#include "chrome/browser/push_messaging/push_messaging_unsubscribed_entry.h"
 #include "chrome/browser/push_messaging/push_messaging_utils.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/buildflags.h"
@@ -1276,8 +1277,41 @@ void PushMessagingServiceImpl::DidClearPushSubscriptionId(
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
   bool was_subscribed = !app_identifier.is_null();
-  if (was_subscribed)
+  if (was_subscribed) {
     app_identifier.DeleteFromPrefs(profile_);
+    if (base::FeatureList::IsEnabled(
+            features::kPushSubscriptionChangeEventOnResubscribe)) {
+      switch (reason) {
+        case blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED_ABUSIVE:
+        case blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED:
+        case blink::mojom::PushUnregistrationReason::
+            PERMISSION_REVOKED_DISRUPTIVE:
+          // Store an UnsubscribedEntry for future resubscription.
+          PushMessagingUnsubscribedEntry(
+              app_identifier.origin(),
+              app_identifier.service_worker_registration_id())
+              .PersistToPrefs(profile_);
+          break;
+        case blink::mojom::PushUnregistrationReason::UNKNOWN:
+        case blink::mojom::PushUnregistrationReason::JAVASCRIPT_API:
+        case blink::mojom::PushUnregistrationReason::DELIVERY_UNKNOWN_APP_ID:
+        case blink::mojom::PushUnregistrationReason::DELIVERY_PERMISSION_DENIED:
+        case blink::mojom::PushUnregistrationReason::DELIVERY_NO_SERVICE_WORKER:
+        case blink::mojom::PushUnregistrationReason::GCM_STORE_RESET:
+        case blink::mojom::PushUnregistrationReason::
+            SERVICE_WORKER_UNREGISTERED:
+        case blink::mojom::PushUnregistrationReason::SUBSCRIBE_STORAGE_CORRUPT:
+        case blink::mojom::PushUnregistrationReason::
+            GET_SUBSCRIPTION_STORAGE_CORRUPT:
+        case blink::mojom::PushUnregistrationReason::
+            SERVICE_WORKER_DATABASE_WIPED:
+        case blink::mojom::PushUnregistrationReason::SUBSCRIPTION_EXPIRED:
+        case blink::mojom::PushUnregistrationReason::REFRESH_FINISHED:
+        case blink::mojom::PushUnregistrationReason::NO_APP_LEVEL_PERMISSION:
+          break;
+      }
+    }
+  }
 
   // Run the unsubscribe callback *before* asking the InstanceIDDriver/GCMDriver
   // to unsubscribe, since that's a slow process involving network retries, and

@@ -36,6 +36,7 @@
 #include "chrome/browser/push_messaging/push_messaging_features.h"
 #include "chrome/browser/push_messaging/push_messaging_service_factory.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
+#include "chrome/browser/push_messaging/push_messaging_unsubscribed_entry.h"
 #include "chrome/browser/push_messaging/push_messaging_utils.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
@@ -81,6 +82,10 @@
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace {
+
+using testing::ElementsAre;
+using testing::IsEmpty;
+using testing::Property;
 
 const char kManifestSenderId[] = "1234567890";
 const int32_t kApplicationServerKeyLength = 65;
@@ -593,6 +598,8 @@ class PushMessagingBrowserTest : public PushMessagingBrowserTestBase {
  public:
   PushMessagingBrowserTest() {
     disabled_features_.push_back(features::kPushMessagingDisallowSenderIDs);
+    enabled_features_.push_back(
+        features::kPushSubscriptionChangeEventOnResubscribe);
   }
 
   void SetUp() override {
@@ -1940,6 +1947,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
       "PushMessaging.UnregistrationReason",
       static_cast<int>(blink::mojom::PushUnregistrationReason::JAVASCRIPT_API),
       1);
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 
   // Resolves false if there was no longer a subscription.
   EXPECT_EQ("unsubscribe result: false",
@@ -1948,6 +1957,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
       "PushMessaging.UnregistrationReason",
       static_cast<int>(blink::mojom::PushUnregistrationReason::JAVASCRIPT_API),
       2);
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 
   // TODO(johnme): Test that doesn't reject if there was a network error (should
   // deactivate subscription locally anyway).
@@ -2162,6 +2173,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
   EXPECT_TRUE(app_identifier.is_null());
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2188,6 +2202,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 
   // There should not be any subscriptions left.
   EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2229,6 +2246,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
           GetBrowser()->profile(), origin,
           0LL /* service_worker_registration_id */);
   EXPECT_TRUE(app_identifier3.is_null());
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2259,6 +2279,11 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              ElementsAre(Property(
+                  &PushMessagingUnsubscribedEntry::origin,
+                  https_server()->GetURL("/").DeprecatedGetOriginAsURL())));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2292,6 +2317,10 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2325,6 +2354,10 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2355,6 +2388,11 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              ElementsAre(Property(
+                  &PushMessagingUnsubscribedEntry::origin,
+                  https_server()->GetURL("/").DeprecatedGetOriginAsURL())));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2388,6 +2426,10 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2421,6 +2463,10 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       static_cast<int>(
           blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED),
       1);
+
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
@@ -2450,6 +2496,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
 
   histogram_tester_.ExpectTotalCount("PushMessaging.UnregistrationReason", 0);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 // This test is testing some non-trivial content settings rules and make sure
@@ -2491,6 +2540,9 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
 
   histogram_tester_.ExpectTotalCount("PushMessaging.UnregistrationReason", 0);
+
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
 }
 
 // Checks automatically unsubscribing due to a revoked permission after
