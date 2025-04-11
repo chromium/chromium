@@ -150,34 +150,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.Ads.Visible.Bytes.FullPage.Total2"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AdsPageLoadMetricVisibilityType" separator="."
-    ordering="prefix">
-  <suffix name="Clients.Ads" label="Includes all ad iframes."/>
-  <suffix name="Clients.Ads.NonVisible"
-      label="Only includes ad frames that have a display: none style, or have
-             an area less than or equal to 16 pixels."/>
-  <suffix name="Clients.Ads.Visible"
-      label="Only includes ad frames that have a display != none style and
-             have an area greater than 16 pixels."/>
-  <affected-histogram
-      name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint3"/>
-  <affected-histogram
-      name="PageLoad.AdPaintTiming.TopFrameNavigationToFirstContentfulPaint"/>
-  <affected-histogram name="PageLoad.Bytes"/>
-  <affected-histogram name="PageLoad.Cpu"/>
-  <affected-histogram
-      name="PageLoad.FrameCounts.AdFrames.PerFrame.CreativeOriginStatus"/>
-  <affected-histogram
-      name="PageLoad.FrameCounts.AdFrames.PerFrame.CreativeOriginStatusWithThrottling"/>
-  <affected-histogram
-      name="PageLoad.FrameCounts.AdFrames.PerFrame.OriginStatus"/>
-  <affected-histogram
-      name="PageLoad.FrameCounts.AdFrames.PerFrame.UserActivation"/>
-  <affected-histogram name="PageLoad.FrameCounts.AdFrames.Total"/>
-  <affected-histogram name="PageLoad.HeavyAds.ComputedTypeWithThresholdNoise"/>
-  <affected-histogram name="PageLoad.HeavyAds.InterventionType2"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AnimationLoop" separator=".">
   <suffix name="FirstAnimationLoop"
       label="Measurement taken on the first animation loop."/>

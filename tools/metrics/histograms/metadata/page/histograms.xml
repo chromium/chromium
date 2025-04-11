@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AdsPageLoadMetricVisibilityType">
+  <variant name="Clients.Ads" summary="Includes all ad iframes."/>
+  <variant name="Clients.Ads.NonVisible"
+      summary="Only includes ad frames that have a display: none style, or
+               have an area less than or equal to 16 pixels."/>
+  <variant name="Clients.Ads.Visible"
+      summary="Only includes ad frames that have a display != none style and
+               have an area greater than 16 pixels."/>
+</variants>
+
 <variants name="BackgroundSuffix">
   <variant name="" summary="never backgrounded during the navigation"/>
   <variant name=".WasAppBackgrounded"
@@ -383,49 +393,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram base="true"
-    name="PageLoad.AdPaintTiming.NavigationToFirstContentfulPaint3" units="ms"
-    expires_after="never">
-<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
-
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    Records the time from frame navigation start to FirstContentfulPaint of each
-    ad frame that receives a FirstContentfulPaint. The time could be quite
-    large, as some ads don't paint until they're scrolled into view. But the
-    metric is still useful in aggregate.
-
-    Recorded for all ad frames with non-zero bytes or cpu usage that receive a
-    FirstContentfulPaint. Recorded when the ad frame or page is destroyed.
-
-    Changes to how cross-origin content is loaded (e.g., security policies,
-    network prioritization) or to iframes can certainly affect this metric.
-
-    Do not modify this metric in any way without contacting
-    chrome-analysis-team@google.com.
-  </summary>
-</histogram>
-
-<histogram base="true"
-    name="PageLoad.AdPaintTiming.TopFrameNavigationToFirstContentfulPaint"
-    units="ms" expires_after="2025-10-12">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>alexmt@chromium.org</owner>
-  <summary>
-    Records the time from top frame navigation start to FirstContentfulPaint of
-    each ad frame that receives a FirstContentfulPaint. The time could be quite
-    large, as some ads don't paint until they're scrolled into view. But the
-    metric is still useful in aggregate.
-
-    Recorded for all ad frames with non-zero bytes or cpu usage that receive a
-    FirstContentfulPaint. Recorded when the ad frame or page is destroyed.
-
-    Changes to how cross-origin content is loaded (e.g., security policies,
-    network prioritization) or to iframes can certainly affect this metric.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.BackForwardCache.Event"
     enum="PageLoadBackForwardCacheEvent" expires_after="2025-08-31">
   <owner>bmcquade@chromium.org</owner>
@@ -459,22 +426,6 @@ chromium-metrics-reviews@google.com.
     An approximation of a high percentile of user interaction latency of a page
     load before any soft navigation happens, in ms. For this metric, we measure
     the latency of user interactions as described here: https://web.dev/inp
-  </summary>
-</histogram>
-
-<histogram base="true" name="PageLoad.Bytes" units="KB"
-    expires_after="2025-07-10">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>alexmt@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Only recorded if the page has at least one identified ad frame. Recorded in
-    PageLoadMetrics when the page is destroyed. Bytes include all bytes used by
-    the network to load a resource and response body bytes for cached resources
-    (from both the HTTP and memory caches). An ad frame consists of the
-    identified ad frame and all of its children (which may also be ads, but are
-    counted as part of the ancestor ad frame). Includes resources that did not
-    finish loading.
   </summary>
 </histogram>
 
@@ -2818,25 +2769,6 @@ chromium-metrics-reviews@google.com.
   <token key="RTTBucketSuffix" variants="RTTBucketSuffix"/>
 </histogram>
 
-<histogram base="true" name="PageLoad.Cpu" units="units"
-    expires_after="2025-07-10">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Only recorded if the page has at least one identified ad frame. Recorded in
-    PageLoadMetrics when the page is destroyed. Cpu measures the wall time of
-    tasks attributable to a frame as reported by the MainThreadTaskScheduler as
-    well as time spent servicing scripted animations by each document (not
-    attributable by the MainThreadTaskScheduler). An ad frame consists of the
-    identified ad frame and all of its children (which may also be ads, but are
-    counted as part of the ancestor ad frame). Includes resources that did not
-    finish loading. Does not consider time while a page is backgrounded.
-
-    Warning: This metric expired around 04/2022 and was unexpired 07/2023. Data
-    may be missing.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Cpu.TotalUsage" units="ms" expires_after="2025-08-24">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
@@ -3306,130 +3238,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".PassingVisit" summary="passing page visits"/>
     <variant name=".TerminalVisit" summary="terminal page visits"/>
   </token>
-</histogram>
-
-<histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.CreativeOriginStatus"
-    enum="CrossOriginCreativeStatus" expires_after="2021-12-31">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For each identified ad frame, whether the origin of the ad creative frame
-    matches or differs from the origin of the main frame.
-
-    The ad creative frame is heuristically determined, from among an identified
-    ad frame and all of its children, as the first of these frames to record a
-    First Contentful Paint. If no FCP is recorded, the creative origin status is
-    marked as indeterminate.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.FrameCounts.AdFrames.PerFrame.CreativeOriginStatusWithThrottling"
-    enum="CrossOriginCreativeStatusWithThrottling" expires_after="2021-12-31">
-  <owner>cammie@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For each identified ad frame, whether the origin of the ad creative frame
-    matches or differs from the origin of the main frame, further split by
-    whether the frame has lifecycle updates throttled. Metric is emitted on
-    frame deletion.
-
-    The ad creative frame is heuristically determined, from among an identified
-    ad frame and all of its children, as the first of these frames to record a
-    First Contentful Paint. If no FCP is recorded, the creative origin status is
-    marked as indeterminate. Frames that are render-throttled will not have an
-    FCP. Ad frames with indeterminate creative origin status are broken out as
-    throttled or not.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.OriginStatus"
-    enum="CrossOriginAdStatus" expires_after="2025-07-10">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For each identified ad frame, whether the origin of the ad matches the
-    origin of the main frame, differs from the origin of the main frame, or is
-    indeterminable.
-
-    An ad frame consists of the identified ad frame and all of its children
-    (which may also be ads, but are counted as part of the ancestor ad frame).
-    Frames of zero bytes (e.g., never had a document or their document was
-    doc.written and no sub-resources were loaded) are not counted.
-
-    Warning: This metric expired around 04/2022 and unexpired 07/2023. Data may
-    be missing.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.FrameCounts.AdFrames.PerFrame.UserActivation"
-    enum="AdUserActivationStatus" expires_after="2024-04-17">
-  <owner>csharrison@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    For each identified ad frame, whether the sticky user activation bit was
-    ever set on the frame. Recorded for each ad frame when the page is destroyed
-    or navigated away from, including ad frames that no longer exist.
-
-    An ad frame consists of the identified ad frame and all of its children
-    (which may also be ads, but are counted as part of the ancestor ad frame).
-    Frames of zero bytes (e.g., never had a document or their document was
-    doc.written and no sub-resources were loaded) are not counted.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.FrameCounts.AdFrames.Total" units="Ad frames"
-    expires_after="2025-04-17">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    The number of frames on the page that have loaded more than 0 bytes of
-    content or had non-zero CPU usage.
-
-    For pages with zero ad frames, the other PageLoad.Clients.Ads metrics are
-    not recorded unless otherwise specified. This metric is not recorded on
-    sites where the subresource filter is enabled.
-
-    Child frames of an ad frame are not included in the count.
-  </summary>
-</histogram>
-
-<histogram base="true" name="PageLoad.HeavyAds.ComputedTypeWithThresholdNoise"
-    enum="HeavyAdStatus2" expires_after="2024-04-17">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Records heavy ad type for each ad frame, as determined by the first
-    threshold hit (see FrameData::HeavyadStatus). This is recorded regardless of
-    feature flag or other conditions that prevent the heavy ad intervention from
-    occurring. This includes 1 megabyte of random additive noise on the network
-    threshold. As such, it is possible for this histogram to record different
-    values for the same frame than PageLoad.HeavyAds.ComputedType2.
-
-    Recorded for all ad frames with non-zero bytes. Recorded when the ad frame
-    destroyed or when the page is destroyed.
-
-    It is possible for multiple thresholds to be hit at the same time, with the
-    higher valued enums winning those race conditions.
-  </summary>
-</histogram>
-
-<histogram base="true" name="PageLoad.HeavyAds.InterventionType2"
-    enum="HeavyAdStatus2" expires_after="2024-04-17">
-  <owner>jkarlin@chromium.org</owner>
-  <owner>chrome-ads-histograms@google.com</owner>
-  <summary>
-    Records the type of heavy ad unloaded by the heavy ad intervention. Heavy ad
-    type is determined by the first threshold hit. This is not recorded for ad
-    frames that are considered heavy but did not fulfill other criteria for the
-    intervention. This includes the feature being enabled and being below the
-    per-origin intervention cap.
-
-    It is possible for multiple thresholds to be hit at the same time, with the
-    higher valued enums winning those race conditions.
-  </summary>
 </histogram>
 
 <histogram
@@ -4697,6 +4505,222 @@ chromium-metrics-reviews@google.com.
   <summary>
     Measures the LargestContentfulPaint in milliseconds from the start time of
     the soft navigation to the LCP time.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.{AdsPageLoadMetricVisibilityType}.AdPaintTiming.NavigationToFirstContentfulPaint3"
+    units="ms" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    Records the time from frame navigation start to FirstContentfulPaint of each
+    ad frame that receives a FirstContentfulPaint. The time could be quite
+    large, as some ads don't paint until they're scrolled into view. But the
+    metric is still useful in aggregate.
+
+    Recorded for all ad frames with non-zero bytes or cpu usage that receive a
+    FirstContentfulPaint. Recorded when the ad frame or page is destroyed.
+
+    Changes to how cross-origin content is loaded (e.g., security policies,
+    network prioritization) or to iframes can certainly affect this metric.
+    {AdsPageLoadMetricVisibilityType}
+
+    Do not modify this metric in any way without contacting
+    chrome-analysis-team@google.com.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.{AdsPageLoadMetricVisibilityType}.AdPaintTiming.TopFrameNavigationToFirstContentfulPaint"
+    units="ms" expires_after="2025-10-12">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <summary>
+    Records the time from top frame navigation start to FirstContentfulPaint of
+    each ad frame that receives a FirstContentfulPaint. The time could be quite
+    large, as some ads don't paint until they're scrolled into view. But the
+    metric is still useful in aggregate.
+
+    Recorded for all ad frames with non-zero bytes or cpu usage that receive a
+    FirstContentfulPaint. Recorded when the ad frame or page is destroyed.
+
+    Changes to how cross-origin content is loaded (e.g., security policies,
+    network prioritization) or to iframes can certainly affect this metric.
+    {AdsPageLoadMetricVisibilityType}
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.{AdsPageLoadMetricVisibilityType}.Bytes" units="KB"
+    expires_after="2025-07-10">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Only recorded if the page has at least one identified ad frame. Recorded in
+    PageLoadMetrics when the page is destroyed. Bytes include all bytes used by
+    the network to load a resource and response body bytes for cached resources
+    (from both the HTTP and memory caches). An ad frame consists of the
+    identified ad frame and all of its children (which may also be ads, but are
+    counted as part of the ancestor ad frame). Includes resources that did not
+    finish loading. {AdsPageLoadMetricVisibilityType}
+  </summary>
+</histogram>
+
+<histogram name="PageLoad.{AdsPageLoadMetricVisibilityType}.Cpu" units="units"
+    expires_after="2025-07-10">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Only recorded if the page has at least one identified ad frame. Recorded in
+    PageLoadMetrics when the page is destroyed. Cpu measures the wall time of
+    tasks attributable to a frame as reported by the MainThreadTaskScheduler as
+    well as time spent servicing scripted animations by each document (not
+    attributable by the MainThreadTaskScheduler). An ad frame consists of the
+    identified ad frame and all of its children (which may also be ads, but are
+    counted as part of the ancestor ad frame). Includes resources that did not
+    finish loading. Does not consider time while a page is backgrounded.
+    {AdsPageLoadMetricVisibilityType}
+
+    Warning: This metric expired around 04/2022 and was unexpired 07/2023. Data
+    may be missing.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.CreativeOriginStatus"
+    enum="CrossOriginCreativeStatus" expires_after="2021-12-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For each identified ad frame, whether the origin of the ad creative frame
+    matches or differs from the origin of the main frame.
+
+    The ad creative frame is heuristically determined, from among an identified
+    ad frame and all of its children, as the first of these frames to record a
+    First Contentful Paint. If no FCP is recorded, the creative origin status is
+    marked as indeterminate. {AdsPageLoadMetricVisibilityType}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.CreativeOriginStatusWithThrottling"
+    enum="CrossOriginCreativeStatusWithThrottling" expires_after="2021-12-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For each identified ad frame, whether the origin of the ad creative frame
+    matches or differs from the origin of the main frame, further split by
+    whether the frame has lifecycle updates throttled. Metric is emitted on
+    frame deletion.
+
+    The ad creative frame is heuristically determined, from among an identified
+    ad frame and all of its children, as the first of these frames to record a
+    First Contentful Paint. If no FCP is recorded, the creative origin status is
+    marked as indeterminate. Frames that are render-throttled will not have an
+    FCP. Ad frames with indeterminate creative origin status are broken out as
+    throttled or not. {AdsPageLoadMetricVisibilityType}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.OriginStatus"
+    enum="CrossOriginAdStatus" expires_after="2025-07-10">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For each identified ad frame, whether the origin of the ad matches the
+    origin of the main frame, differs from the origin of the main frame, or is
+    indeterminable.
+
+    An ad frame consists of the identified ad frame and all of its children
+    (which may also be ads, but are counted as part of the ancestor ad frame).
+    Frames of zero bytes (e.g., never had a document or their document was
+    doc.written and no sub-resources were loaded) are not counted.
+    {AdsPageLoadMetricVisibilityType}
+
+    Warning: This metric expired around 04/2022 and unexpired 07/2023. Data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.PerFrame.UserActivation"
+    enum="AdUserActivationStatus" expires_after="2024-04-17">
+  <owner>csharrison@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For each identified ad frame, whether the sticky user activation bit was
+    ever set on the frame. Recorded for each ad frame when the page is destroyed
+    or navigated away from, including ad frames that no longer exist.
+
+    An ad frame consists of the identified ad frame and all of its children
+    (which may also be ads, but are counted as part of the ancestor ad frame).
+    Frames of zero bytes (e.g., never had a document or their document was
+    doc.written and no sub-resources were loaded) are not counted.
+    {AdsPageLoadMetricVisibilityType}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.{AdsPageLoadMetricVisibilityType}.FrameCounts.AdFrames.Total"
+    units="Ad frames" expires_after="2025-04-17">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The number of frames on the page that have loaded more than 0 bytes of
+    content or had non-zero CPU usage.
+
+    For pages with zero ad frames, the other PageLoad.Clients.Ads metrics are
+    not recorded unless otherwise specified. This metric is not recorded on
+    sites where the subresource filter is enabled.
+
+    Child frames of an ad frame are not included in the count.
+    {AdsPageLoadMetricVisibilityType}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.{AdsPageLoadMetricVisibilityType}.HeavyAds.ComputedTypeWithThresholdNoise"
+    enum="HeavyAdStatus2" expires_after="2024-04-17">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records heavy ad type for each ad frame, as determined by the first
+    threshold hit (see FrameData::HeavyadStatus). This is recorded regardless of
+    feature flag or other conditions that prevent the heavy ad intervention from
+    occurring. This includes 1 megabyte of random additive noise on the network
+    threshold. As such, it is possible for this histogram to record different
+    values for the same frame than PageLoad.HeavyAds.ComputedType2.
+
+    Recorded for all ad frames with non-zero bytes. Recorded when the ad frame
+    destroyed or when the page is destroyed.
+
+    It is possible for multiple thresholds to be hit at the same time, with the
+    higher valued enums winning those race conditions.
+    {AdsPageLoadMetricVisibilityType}
+  </summary>
+</histogram>
+
+<histogram
+    name="PageLoad.{AdsPageLoadMetricVisibilityType}.HeavyAds.InterventionType2"
+    enum="HeavyAdStatus2" expires_after="2024-04-17">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the type of heavy ad unloaded by the heavy ad intervention. Heavy ad
+    type is determined by the first threshold hit. This is not recorded for ad
+    frames that are considered heavy but did not fulfill other criteria for the
+    intervention. This includes the feature being enabled and being below the
+    per-origin intervention cap.
+
+    It is possible for multiple thresholds to be hit at the same time, with the
+    higher valued enums winning those race conditions.
+    {AdsPageLoadMetricVisibilityType}
   </summary>
 </histogram>
 
