@@ -95,7 +95,6 @@ class LogManager;
 class PersonalDataManager;
 class SingleFieldFillRouter;
 class StrikeDatabase;
-class ValuableManager;
 class VotesUploader;
 struct Suggestion;
 enum class WebauthnDialogState;
@@ -376,9 +375,6 @@ class AutofillClient {
   // functions will return nullptr.
   virtual payments::PaymentsAutofillClient* GetPaymentsAutofillClient();
   const payments::PaymentsAutofillClient* GetPaymentsAutofillClient() const;
-
-  // Gets the ValuableManager instance associated with the client.
-  virtual ValuableManager* GetValuableManager();
 
   // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
   // returned so check before use.

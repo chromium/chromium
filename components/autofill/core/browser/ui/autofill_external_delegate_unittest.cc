@@ -1003,10 +1003,10 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsLoyaltyCardEntry) {
                                       _));
   LoyaltyCard loyalty_card = test::CreateLoyaltyCard();
   std::vector<Suggestion> suggestions;
-  const std::u16string masked_loyalty_card_value = u"**********1234";
-  suggestions.emplace_back(/*main_text=*/masked_loyalty_card_value,
+  const std::u16string full_loyalty_card_value = u"LOYALTYCARD1234";
+  suggestions.emplace_back(/*main_text=*/full_loyalty_card_value,
                            SuggestionType::kLoyaltyCardEntry);
-  suggestions[0].main_text.value = masked_loyalty_card_value;
+  suggestions[0].main_text.value = full_loyalty_card_value;
   suggestions[0].payload = Suggestion::Guid(loyalty_card.id().value());
   OnSuggestionsReturned(queried_field().global_id(), suggestions);
 
@@ -1015,12 +1015,11 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsLoyaltyCardEntry) {
               FillOrPreviewField(mojom::ActionPersistence::kPreview,
                                  mojom::FieldActionType::kReplaceAll,
                                  HasQueriedFormId(), HasQueriedFieldId(),
-                                 masked_loyalty_card_value,
+                                 full_loyalty_card_value,
                                  SuggestionType::kLoyaltyCardEntry,
                                  std::optional(LOYALTY_MEMBERSHIP_ID)));
   external_delegate().DidSelectSuggestion(suggestions[0]);
 
-  const std::u16string full_loyalty_card_value = u"LOYALTYCARD1234";
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
   EXPECT_CALL(manager(),
@@ -1030,14 +1029,6 @@ TEST_F(AutofillExternalDelegateTest, ExternalDelegateFillsLoyaltyCardEntry) {
                                  full_loyalty_card_value,
                                  SuggestionType::kLoyaltyCardEntry,
                                  std::optional(LOYALTY_MEMBERSHIP_ID)));
-
-  ON_CALL(*client().GetValuableManager(), FetchValue)
-      .WillByDefault([full_loyalty_card_value](
-                         ValuableId valuable_id,
-                         MockValuableManager::OnValuableFetchedCallback
-                             on_valuable_fetched) {
-        std::move(on_valuable_fetched).Run(full_loyalty_card_value);
-      });
 
   external_delegate().DidAcceptSuggestion(suggestions[0],
                                           SuggestionPosition{.row = 0});

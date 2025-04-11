@@ -33,7 +33,6 @@
 #include "components/autofill/core/browser/integrators/fast_checkout/mock_fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/integrators/valuables/mock_valuable_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
@@ -214,13 +213,6 @@ class TestAutofillClientTemplate : public T {
           std::make_unique<payments::TestPaymentsAutofillClient>(this);
     }
     return payments_autofill_client_.get();
-  }
-
-  MockValuableManager* GetValuableManager() override {
-    if (!valuable_manager_) {
-      valuable_manager_ = std::make_unique<MockValuableManager>();
-    }
-    return valuable_manager_.get();
   }
 
   TestStrikeDatabase* GetStrikeDatabase() override {
@@ -627,7 +619,6 @@ class TestAutofillClientTemplate : public T {
       payments_autofill_client_;
   std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
-  std::unique_ptr<MockValuableManager> valuable_manager_;
 
   GeoIpCountryCode variation_config_country_code_;
 

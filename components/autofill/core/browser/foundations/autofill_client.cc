@@ -142,10 +142,6 @@ AutofillClient::GetPaymentsAutofillClient() const {
   return const_cast<AutofillClient*>(this)->GetPaymentsAutofillClient();
 }
 
-ValuableManager* AutofillClient::GetValuableManager() {
-  return nullptr;
-}
-
 GeoIpCountryCode AutofillClient::GetVariationConfigCountryCode() const {
   return GeoIpCountryCode(std::string());
 }

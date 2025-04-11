@@ -43,7 +43,6 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_delegate.h"
 #include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
 #include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/integrators/valuables/valuable_manager.h"
 #include "components/autofill/core/browser/metrics/autofill_in_devtools_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -862,27 +861,10 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case SuggestionType::kLoyaltyCardEntry: {
-      const std::string guid =
-          std::get<Suggestion::Guid>(suggestion.payload).value();
-      // User chooses a Loyalty Card suggestion. A request to unmask the card
-      // will be sent to the server, and the card value will be filled if the
-      // request is successful.
-      manager_->client().GetValuableManager()->FetchValue(
-          ValuableId(guid),
-          base::BindOnce(
-              [](base::WeakPtr<AutofillExternalDelegate> delegate,
-                 const std::u16string& value) {
-                if (delegate) {
-                  delegate->manager_->FillOrPreviewField(
-                      mojom::ActionPersistence::kFill,
-                      mojom::FieldActionType::kReplaceAll,
-                      delegate->query_form_, delegate->query_field_, value,
-                      SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
-                  // TODO(crbug.com/405371277): Call
-                  // OnSingleFieldSuggestionSelected.
-                }
-              },
-              GetWeakPtr()));
+      manager_->FillOrPreviewField(
+          mojom::ActionPersistence::kFill, mojom::FieldActionType::kReplaceAll,
+          query_form_, query_field_, suggestion.main_text.value,
+          SuggestionType::kLoyaltyCardEntry, LOYALTY_MEMBERSHIP_ID);
       break;
     }
     case SuggestionType::kTitle:
