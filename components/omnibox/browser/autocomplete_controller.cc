@@ -46,6 +46,7 @@
 #include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -1783,6 +1784,21 @@ void AutocompleteController::UpdateKeywordDescriptions(
 #endif
 
         last_keyword = i->keyword;
+      }
+    } else if (i->type == AutocompleteMatchType::NAVSUGGEST &&
+               i->enterprise_search_aggregator_type ==
+                   AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
+      if (i->keyword != last_keyword) {
+        const TemplateURL* template_url =
+            i->GetTemplateURL(template_url_service_, false);
+        if (template_url) {
+          i->description_class.emplace_back(ACMatchClassification(
+              (i->description).size(), ACMatchClassification::DIM));
+          // TODO(crbug.com/407610885): Localize the people suggestion metadata.
+          i->description +=
+              u" - " + template_url->AdjustedShortNameForLocaleDirection() +
+              u" People";
+        }
       }
     } else {
       last_keyword.clear();

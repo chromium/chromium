@@ -43,6 +43,7 @@
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/url_formatter.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -677,8 +678,7 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 
     const base::Value::Dict& result = result_value.GetDict();
 
-    auto url = GetMatchDestinationUrl(result, template_url_->url_ref(),
-                                      suggestion_type);
+    auto url = GetMatchDestinationUrl(result, suggestion_type);
     // All matches must have a URL.
     if (url.empty()) {
       continue;
@@ -763,7 +763,6 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
 
 std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     const base::Value::Dict& result,
-    const TemplateURLRef& url_ref,
     SuggestionType suggestion_type) const {
   if (suggestion_type == SuggestionType::CONTENT) {
     std::string destination_uri =
@@ -783,6 +782,7 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDestinationUrl(
     return "";
   }
 
+  const TemplateURLRef& url_ref = template_url_->url_ref();
   return url_ref.ReplaceSearchTerms(
       TemplateURLRef::SearchTermsArgs(base::UTF8ToUTF16(query)), {}, nullptr);
 }
@@ -803,9 +803,13 @@ std::string EnterpriseSearchAggregatorProvider::GetMatchDescription(
 std::string EnterpriseSearchAggregatorProvider::GetMatchContents(
     const base::Value::Dict& result,
     SuggestionType suggestion_type) const {
-  if (suggestion_type == SuggestionType::QUERY ||
-      suggestion_type == SuggestionType::PEOPLE) {
+  if (suggestion_type == SuggestionType::QUERY) {
     return ptr_to_string(result.FindString("suggestion"));
+  } else if (suggestion_type == SuggestionType::PEOPLE) {
+    std::string url = GetMatchDestinationUrl(result, suggestion_type);
+    return base::UTF16ToUTF8(url_formatter::FormatUrl(
+        GURL(url), AutocompleteMatch::GetFormatTypes(false, true),
+        base::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
   } else if (suggestion_type == SuggestionType::CONTENT) {
     std::optional<int> response_time =
         result.FindIntByDottedPath("document.derivedStructData.updated_time");
@@ -921,10 +925,20 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
                                text.size(), ACMatchClassification::MATCH,
                                ACMatchClassification::NONE);
   };
-  ACMatchClassifications secondary_text_class =
-      (contents.empty() || description.empty())
-          ? std::vector<ACMatchClassification>{}
-          : std::vector<ACMatchClassification>{{0, ACMatchClassification::DIM}};
+  ACMatchClassifications secondary_text_class;
+  if (contents.empty() || description.empty()) {
+    secondary_text_class = std::vector<ACMatchClassification>{};
+  } else {
+    secondary_text_class =
+        suggestion_type == SuggestionType::PEOPLE
+            ? ClassifyTermMatches(
+                  FindTermMatches(adjusted_input_.text(), match.contents),
+                  match.contents.size(),
+                  ACMatchClassification::MATCH | ACMatchClassification::URL,
+                  ACMatchClassification::URL)
+            : std::vector<ACMatchClassification>{
+                  {0, ACMatchClassification::DIM}};
+  }
   match.description_class = is_navigation
                                 ? primary_text_class(match.description)
                                 : secondary_text_class;
