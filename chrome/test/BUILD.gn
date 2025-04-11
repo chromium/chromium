@@ -3863,7 +3863,7 @@ if (!is_android) {
         "//ui/chromeos/styles:cros_tokens_color_mappings",
       ]
       sources += [
-        "../browser/browser_process_platform_part_chromeos_browsertest.cc",
+        "../browser/browser_process_platform_part_ash_browsertest.cc",
         "../browser/download/notification/download_notification_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_cros_browsertest.cc",
         "../browser/net/network_annotation_monitor_browsertest.cc",

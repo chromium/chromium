@@ -39,7 +39,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"

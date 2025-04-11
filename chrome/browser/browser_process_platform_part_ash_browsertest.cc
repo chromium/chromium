@@ -48,8 +48,9 @@ namespace {
 Browser* FindOneOtherBrowserForProfile(Profile* profile,
                                        Browser* not_this_browser) {
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser != not_this_browser && browser->profile() == profile)
+    if (browser != not_this_browser && browser->profile() == profile) {
       return browser;
+    }
   }
   return nullptr;
 }
@@ -64,11 +65,11 @@ void WaitForLoadStopForBrowser(Browser* browser) {
 
 }  // namespace
 
-using BrowserProcessPlatformPartChromeOSBrowsertest = InProcessBrowserTest;
+using BrowserProcessPlatformPartAshBrowsertest = InProcessBrowserTest;
 
 // We should not apply startup URLs if Chrome has previously exited from a
 // crash.
-IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
+IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
                        UrlsNotRestoredAfterCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -118,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
 
 // If startup pref is set to URLS, the first browser window opened should open
 // a single window with these startup URLs in its tabstrip.
-IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
+IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
                        StartupPrefSetURLs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL original_url = embedded_test_server()->GetURL("/simple.html");
@@ -185,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
 
 // If startup pref is set as LAST_AND_URLS, startup urls should be opened in a
 // new browser window separated from the last session restored browser.
-IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartChromeOSBrowsertest,
+IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
                        StartupPrefSetAsLastAndURLs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL original_url = embedded_test_server()->GetURL("/simple.html");
