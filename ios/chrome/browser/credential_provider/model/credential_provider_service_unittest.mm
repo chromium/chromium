@@ -168,7 +168,7 @@ TEST_F(CredentialProviderServiceTest, FirstSync) {
   task_environment_.FastForwardBy(base::Seconds(30));
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_TRUE(WaitForCredentialCount(1u));
   EXPECT_NSEQ(credential_store_.credentials[0].serviceName, @"g.com");
   EXPECT_NSEQ(credential_store_.credentials[0].username, @"user");
   EXPECT_NSEQ(credential_store_.credentials[0].password, @"qwerty123");
