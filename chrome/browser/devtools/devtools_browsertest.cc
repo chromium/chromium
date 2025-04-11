@@ -1891,8 +1891,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, CantInspectDevtoolsScheme) {
                     "#devtools://devtools/bundled/devtools_compatibility.js"}));
 }
 
-// TODO(crbug.com/369074885): Flaky on Linux
-#if BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/369074885): Flaky on Linux and slow builders like MSAN/debug.
+#if BUILDFLAG(IS_LINUX) || defined(MEMORY_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_CantInspectViewSourceDevtoolsScheme \
   DISABLED_CantInspectViewSourceDevtoolsScheme
 #else
@@ -3498,8 +3498,14 @@ class DevToolsExtensionHostsPolicyTest : public DevToolsExtensionTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// TODO(crbug.com/331650494): Flakily times out on slow builders like debug.
+#if defined(MEMORY_SANITIZER) || !defined(NDEBUG)
+#define MAYBE_CantInspectBlockedHost DISABLED_CantInspectBlockedHost
+#else
+#define MAYBE_CantInspectBlockedHost CantInspectBlockedHost
+#endif
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionHostsPolicyTest,
-                       CantInspectBlockedHost) {
+                       MAYBE_CantInspectBlockedHost) {
   GURL url(embedded_test_server()->GetURL("example.com", kArbitraryPage));
   LoadExtension("can_inspect_url");
   RunTest("waitForTestResultsAsMessage",
