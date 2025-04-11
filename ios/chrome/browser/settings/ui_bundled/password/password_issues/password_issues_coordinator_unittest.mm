@@ -156,8 +156,9 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
   PasswordIssuesCoordinator* coordinator_ = nil;
 };
 
-// Tests that Password Issues is presented only after passing authentication
-TEST_F(PasswordIssuesCoordinatorTest, PasswordIssuesPresentedWithAuth) {
+// Tests that Password Issues is presented only after passing authentication.
+// TODO(crbug.com/409972100): Deflake test.
+TEST_F(PasswordIssuesCoordinatorTest, FLAKY_PasswordIssuesPresentedWithAuth) {
   StartCoordinatorSkippingAuth(/*skip_auth_on_start=*/NO);
 
   // Password Issues should be covered until auth is passed.
