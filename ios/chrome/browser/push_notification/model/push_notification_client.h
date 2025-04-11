@@ -10,6 +10,7 @@
 #import <UserNotifications/UserNotifications.h>
 
 #import <string>
+#import <string_view>
 
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
@@ -91,6 +92,18 @@ class PushNotificationClient {
       NSDictionary<NSString*, NSString*>* data,
       PushNotificationClientId clientId);
 
+  // Schedules a notification `request` associated with a specific
+  // `profile_name`. The `profile_name` will be embedded in the notification
+  // metadata, ensuring it's routed to the correct notification client during
+  // interactions. `profile_name` must not be empty. Calls `completion` upon
+  // finish.
+  //
+  // `kIOSPushNotificationMultiProfile` must be enabled.
+  void ScheduleProfileNotification(
+      ScheduledNotificationRequest request,
+      base::OnceCallback<void(NSError*)> completion,
+      std::string_view profile_name);
+
   // Checks additional constraints before scheduling a notification `request`
   // with `completion` callback.
   void CheckRateLimitBeforeSchedulingNotification(
@@ -157,9 +170,17 @@ class PushNotificationClient {
   void ScheduleNotification(ScheduledNotificationRequest request,
                             base::OnceCallback<void(NSError*)> completion);
 
-  // Helper method to create a request for `notificationId` with `content` and a
-  // delay of `time_interval`.
+  // Creates a `UNNotificationRequest` for an app-wide notification using the
+  // provided `request.content` and triggering after `request.time_interval`.
   UNNotificationRequest* CreateRequest(ScheduledNotificationRequest request);
+
+  // Creates a `UNNotificationRequest` specific to the given `profile_name`.
+  // Uses the provided `request.content` and triggers after
+  // `request.time_interval`. Requires multi-profile handling to be enabled
+  // (`kIOSPushNotificationMultiProfile` must be enabled).
+  UNNotificationRequest* CreateRequestForProfile(
+      ScheduledNotificationRequest request,
+      std::string_view profile_name);
 };
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_H_

@@ -1396,6 +1396,19 @@ chromium-metrics-reviews@google.com.
       label="Bottom Sheet couldn't be presented for various reasons"/>
 </enum>
 
+<!-- LINT.IfChange(ProfileNotificationRequestCreationFailureReason) -->
+
+<enum name="ProfileNotificationRequestCreationFailureReason">
+  <int value="0" label="Invalid Profile Name"/>
+  <int value="1" label="Invalid Time Interval"/>
+  <int value="2" label="Invalid Client Identifier"/>
+  <int value="3" label="Invalid Source Content Provided"/>
+  <int value="4" label="Content MutableCopy Failed"/>
+  <int value="5" label="Trigger Creation Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:ProfileNotificationRequestCreationFailureReason) -->
+
 <enum name="PromoWithInstructionsAction">
   <int value="0" label="Close"/>
   <int value="1" label="Open Instructions"/>

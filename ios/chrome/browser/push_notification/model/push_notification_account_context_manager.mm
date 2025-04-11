@@ -11,8 +11,8 @@
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
@@ -206,8 +206,7 @@ void AddAccountToManager(PushNotificationAccountContextManager* manager,
 // `gaiaID`. This can be either profile prefs or LocalState prefs.
 - (PermissionsPref)prefsForClient:(PushNotificationClientId)clientID
                           account:(const GaiaId&)gaiaID {
-  std::string clientKey =
-      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
+  std::string clientKey = PushNotificationClientIdToString(clientID);
   switch (clientID) {
     case PushNotificationClientId::kCommerce:
     case PushNotificationClientId::kContent:

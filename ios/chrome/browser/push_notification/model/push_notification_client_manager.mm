@@ -166,26 +166,6 @@ void PushNotificationClientManager::OnSceneActiveForegroundBrowserReady() {
   }
 }
 
-std::string PushNotificationClientManager::PushNotificationClientIdToString(
-    PushNotificationClientId client_id) {
-  switch (client_id) {
-    case PushNotificationClientId::kCommerce:
-      return kCommerceNotificationKey;
-    case PushNotificationClientId::kContent:
-      return kContentNotificationKey;
-    case PushNotificationClientId::kTips:
-      return kTipsNotificationKey;
-    case PushNotificationClientId::kSports:
-      return kSportsNotificationKey;
-    case PushNotificationClientId::kSafetyCheck:
-      return kSafetyCheckNotificationKey;
-    case PushNotificationClientId::kSendTab:
-      return kSendTabNotificationKey;
-    case PushNotificationClientId::kReminders:
-      return kReminderNotificationKey;
-  }
-}
-
 // Adds clients that operate on a per-Profile basis.
 void PushNotificationClientManager::AddPerProfilePushNotificationClients() {
   if (optimization_guide::features::IsPushNotificationsEnabled()) {

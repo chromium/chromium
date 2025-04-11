@@ -7,9 +7,9 @@
 #import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
 #import "google_apis/gaia/gaia_id.h"
+#import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager+testing.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -269,8 +269,7 @@ TEST_F(PushNotificationAccountContextManagerTest, UpdatePreferences) {
   static const TestCase kUpdateTestCase[] = {{"0"}, {"2"}, {"4"}};
 
   PushNotificationClientId clientID = PushNotificationClientId::kCommerce;
-  std::string client_key =
-      PushNotificationClientManager::PushNotificationClientIdToString(clientID);
+  std::string client_key = PushNotificationClientIdToString(clientID);
 
   for (const TestCase& test_case : kTestCase) {
     UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),

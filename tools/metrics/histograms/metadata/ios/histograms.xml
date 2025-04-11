@@ -4297,6 +4297,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IOS.PushNotification.ProfileRequestCreationFailureReason.{ClientId}"
+    enum="ProfileNotificationRequestCreationFailureReason"
+    expires_after="2025-07-01">
+  <owner>bwwilliams@google.com</owner>
+  <owner>scottyoder@google.com</owner>
+  <owner>treib@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records the specific reason why creating a Profile-specific
+    UNNotificationRequest failed within PushNotificationClient for the
+    {ClientId}. This helps diagnose issues in scheduling local notifications
+    associated with a user Profile, broken down by the client responsible for
+    the notification.
+  </summary>
+<!-- LINT.IfChange(ClientId) -->
+
+  <token key="ClientId">
+    <variant name="CONTENT" summary="Content feature"/>
+    <variant name="PRICE_DROP" summary="Commerce feature"/>
+    <variant name="REMINDER" summary="Tab Reminders feature"/>
+    <variant name="SAFETY_CHECK" summary="Safety Check feature"/>
+    <variant name="SEND_TAB" summary="Send Tab To Self feature"/>
+    <variant name="SPORTS" summary="Sports feature"/>
+    <variant name="TIPS" summary="Tips feature"/>
+  </token>
+<!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.mm:ClientId) -->
+
+</histogram>
+
 <histogram name="IOS.PushNotification.ProminenceAlert.Result"
     enum="IOSNotificationsProminenceAlertActionResult"
     expires_after="2025-11-10">

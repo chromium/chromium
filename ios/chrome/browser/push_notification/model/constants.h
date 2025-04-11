@@ -9,6 +9,8 @@
 
 #import <string>
 
+enum class PushNotificationClientId;
+
 // Enum specifying the various types of push notifications. Entries should not
 // be renumbered and numeric values should never be reused.
 // LINT.IfChange(NotificationType)
@@ -78,6 +80,42 @@ enum class PushNotificationClientManagerFailurePoint {
   kMaxValue = kGetClientManagerProfileNotFoundByName,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientManagerFailurePoint)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Used in the histogram
+// IOS.PushNotification.ProfileRequestCreationFailureReason.{ClientId}.
+//
+// LINT.IfChange(ProfileNotificationRequestCreationFailureReason)
+enum class ProfileNotificationRequestCreationFailureReason {
+  // Failed inside CreateRequestForProfile() because the input Profile name was
+  // empty. Considered an invalid input state.
+  kInvalidProfileName = 0,
+  // Failed inside CreateRequestForProfile() because the request.time_interval
+  // (base::TimeDelta) in the input ScheduledNotificationRequest was not
+  // positive (i.e., it was zero or negative). This is an invalid state for
+  // UNTimeIntervalNotificationTrigger.
+  kInvalidTimeInterval = 1,
+  // Failed inside CreateRequestForProfile() because the request.identifier (an
+  // NSString*) in the input ScheduledNotificationRequest was
+  // nil or an empty string. Both are considered invalid states.
+  kInvalidIdentifier = 2,
+  // Failed inside CreateRequestForProfile() because the request.content (a
+  // UNNotificationContent*) in the input ScheduledNotificationRequest was nil.
+  // Considered an invalid input state.
+  kInvalidSourceContent = 3,
+  // Failed inside CreateRequestForProfile() because calling [mutableCopy] on
+  // the (non-nil) request.content returned nil. This typically indicates a
+  // failure during memory allocation.
+  kContentCopyFailed = 4,
+  // Failed inside CreateRequestForProfile() because creating the
+  // UNTimeIntervalNotificationTrigger by calling
+  // `triggerWithTimeInterval` returned nil.
+  kTriggerCreationFailed = 5,
+  kMaxValue = kTriggerCreationFailed,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ProfileNotificationRequestCreationFailureReason)
 
 // Enum for the NAU implementation for Content notifications. Change
 // NotificationActionType enum when this one changes.
@@ -175,5 +213,13 @@ extern NSString* const kPushNotificationClientIdKey;
 // originated the local notification. Used for mapping local notifications to
 // the correct Profile on the device.
 extern NSString* const kOriginatingProfileNameKey;
+
+// Returns the string representation of the given `client_id`. This string is
+// used to store the client's push notification permission settings in the pref
+// service, as a preference key on the push notification server, and for
+// suffixing client-specific UMA histogram names (e.g.,
+// `IOS.PushNotification.ProfileRequestCreationFailureReason.{ClientId}`).
+std::string PushNotificationClientIdToString(
+    PushNotificationClientId client_id);
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_CONSTANTS_H_
