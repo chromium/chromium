@@ -343,10 +343,6 @@ void FrameHeader::SetFrameTextOverride(
   SchedulePaintForTitle();
 }
 
-SkPath FrameHeader::GetWindowMaskForFrameHeader(const gfx::Size& size) {
-  return SkPath();
-}
-
 ui::ColorId FrameHeader::GetColorIdForCurrentMode() const {
   return mode_ == MODE_ACTIVE ? ui::kColorFrameActive : ui::kColorFrameInactive;
 }

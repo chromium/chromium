@@ -187,11 +187,6 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   view()->SchedulePaint();
 }
 
-SkPath BrowserFrameHeaderChromeOS::GetWindowMaskForFrameHeader(
-    const gfx::Size& size) {
-  return GetFrameHeaderPath(gfx::Rect(size), header_corner_radius());
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserFrameHeaderChromeOS, private:
 
