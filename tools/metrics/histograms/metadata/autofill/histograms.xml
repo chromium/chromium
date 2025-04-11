@@ -1608,6 +1608,24 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Bnpl.PopupWindowLatency.{Issuer}.{Result}" units="ms"
+    expires_after="2025-07-01">
+  <owner>longsheng@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Logged when the pop-up is closed. Broken down by issuer and result, because
+    each issuer should be looked at separately, and each result should also be
+    looked at separately to understand user behavior better inside of the pop-up
+    flow.
+  </summary>
+  <token key="Issuer" variants="Autofill.BnplIssuer"/>
+  <token key="Result">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+    <variant name="UserClosed"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Bnpl.PopupWindowResult.{Issuer}"
     enum="BnplPopupWindowResult" expires_after="2025-07-01">
   <owner>wilsonlow@google.com</owner>

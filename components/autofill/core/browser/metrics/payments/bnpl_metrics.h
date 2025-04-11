@@ -74,6 +74,9 @@ SupportedBnplIssuer GetEnumForIssuerId(std::string_view issuer_id);
 // Returns the histogram suffix corresponding to the given issuer_id.
 std::string GetHistogramSuffixFromIssuerId(std::string_view issuer_id);
 
+// Converts a BnplFlowResult enum to its string representation.
+std::string ConvertBnplFlowResultToString(BnplFlowResult result);
+
 // LINT.IfChange(BnplFormEvent)
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -145,6 +148,13 @@ void LogBnplPopupWindowShown(std::string_view issuer_id);
 // Logs the result of the BNPL popup window.
 void LogBnplPopupWindowResult(std::string_view issuer_id,
                               BnplFlowResult result);
+
+// Logs the duration a user took to go through the BNPL flow inside of the
+// pop-up window. Broken down by issuer and result, because each issuer and
+// each result should be looked at separately.
+void LogBnplPopupWindowLatency(base::TimeDelta duration,
+                               std::string_view issuer_id,
+                               BnplFlowResult result);
 
 // Logs BNPL form events. Please refer to `BnplFormEvent` for the possible
 // enumerations that can be logged.

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -184,6 +185,46 @@ TEST_P(BnplMetricsTest, LogBnplPopupWindowResult_UserClosed) {
       base::StrCat({"Autofill.Bnpl.PopupWindowResult.",
                     GetHistogramSuffixFromIssuerId(issuer_id)}),
       BnplFlowResult::kUserClosed, 1);
+}
+
+TEST_P(BnplMetricsTest, LogBnplPopupWindowLatency_Success) {
+  base::HistogramTester histogram_tester;
+  std::string_view issuer_id = GetBnplIssuerId();
+
+  LogBnplPopupWindowLatency(base::Milliseconds(1000), issuer_id,
+                            BnplFlowResult::kSuccess);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Autofill.Bnpl.PopupWindowLatency.",
+                    GetHistogramSuffixFromIssuerId(issuer_id), ".",
+                    ConvertBnplFlowResultToString(BnplFlowResult::kSuccess)}),
+      1000, 1);
+}
+
+TEST_P(BnplMetricsTest, LogBnplPopupWindowLatency_Failure) {
+  base::HistogramTester histogram_tester;
+  std::string_view issuer_id = GetBnplIssuerId();
+
+  LogBnplPopupWindowLatency(base::Milliseconds(2000), issuer_id,
+                            BnplFlowResult::kFailure);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"Autofill.Bnpl.PopupWindowLatency.",
+                    GetHistogramSuffixFromIssuerId(issuer_id), ".",
+                    ConvertBnplFlowResultToString(BnplFlowResult::kFailure)}),
+      2000, 1);
+}
+
+TEST_P(BnplMetricsTest, LogBnplPopupWindowLatency_UserClosed) {
+  base::HistogramTester histogram_tester;
+  std::string_view issuer_id = GetBnplIssuerId();
+
+  LogBnplPopupWindowLatency(base::Milliseconds(3000), issuer_id,
+                            BnplFlowResult::kUserClosed);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat(
+          {"Autofill.Bnpl.PopupWindowLatency.",
+           GetHistogramSuffixFromIssuerId(issuer_id), ".",
+           ConvertBnplFlowResultToString(BnplFlowResult::kUserClosed)}),
+      3000, 1);
 }
 
 TEST_P(BnplMetricsTest, LogBnplTosDialogResult_AcceptButtonClicked) {

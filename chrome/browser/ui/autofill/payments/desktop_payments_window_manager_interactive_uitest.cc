@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 // callback is triggered with a success result if the flow was successful.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                        InvokeUi_Bnpl_Success) {
-  ShowUi("Bnpl");
+  ShowUi("Bnpl_Affirm");
   EXPECT_TRUE(VerifyUi());
 
   GURL success_url =
@@ -828,7 +828,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 // shown.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                        InvokeUi_Bnpl_PopupWindowShownLogged) {
-  ShowUi("Bnpl");
+  ShowUi("Bnpl_Affirm");
 
   histogram_tester_.ExpectUniqueSample(
       /*name=*/"Autofill.Bnpl.PopupWindowShown.Affirm",
@@ -839,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 // pop-up flow was successful.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                        InvokeUi_Bnpl_Success_PopupWindowResultLogged) {
-  ShowUi("Bnpl");
+  ShowUi("Bnpl_Affirm");
 
   // Navigate to the URL that denotes success inside of the BNPL pop-up.
   GetPopupWebContents()->OpenURL(
@@ -859,11 +859,31 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       /*expected_bucket_count=*/1);
 }
 
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_Success_PopupWindowLatencyLogged) {
+  ShowUi("Bnpl_Affirm");
+
+  // Navigate to the URL that denotes success inside of the BNPL pop-up.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL(std::string(kBnplSuccessUrlPrefix) +
+                                  "testqueryparam?param1=true"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  WaitForPopupClose();
+
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Bnpl.PopupWindowLatency.Affirm.Success", 1);
+}
+
 // Test that the BNPL pop-up is shown correctly, and on close the completion
 // callback is triggered with a failure result if the flow was a failure.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                        InvokeUi_Bnpl_Failure) {
-  ShowUi("Bnpl");
+  ShowUi("Bnpl_Affirm");
   EXPECT_TRUE(VerifyUi());
 
   GURL failure_url =
@@ -892,7 +912,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 // pop-up flow was a failure.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                        InvokeUi_Bnpl_Failure_PopupWindowResultLogged) {
-  ShowUi("Bnpl");
+  ShowUi("Bnpl_Affirm");
 
   // Navigate to the URL that denotes failure inside of the BNPL pop-up.
   GetPopupWebContents()->OpenURL(
@@ -912,12 +932,32 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       /*expected_bucket_count=*/1);
 }
 
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_Failure_PopupWindowLatencyLogged) {
+  ShowUi("Bnpl_Affirm");
+
+  // Navigate to the URL that denotes success inside of the BNPL pop-up.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL(std::string(kBnplFailureUrlPrefix) +
+                                  "testqueryparam?param1=true"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  WaitForPopupClose();
+
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Bnpl.PopupWindowLatency.Affirm.Failure", 1);
+}
+
 // Test that the BNPL pop-up is shown correctly, and on close the completion
 // callback is triggered with a "user closed" result if the flow was closed by
 // the user.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                        InvokeUi_Bnpl_UserClosedPopup) {
-  ShowUi("Bnpl");
+  ShowUi("Bnpl_Affirm");
   EXPECT_TRUE(VerifyUi());
 
   EXPECT_CALL(bnpl_popup_closed_callback_,
@@ -936,7 +976,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 // pop-up flow was closed by the user.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                        InvokeUi_Bnpl_UserClosedPopup_PopupWindowResultLogged) {
-  ShowUi("Bnpl");
+  ShowUi("Bnpl_Affirm");
   ClosePopupAndWait();
 
   histogram_tester_.ExpectUniqueSample(
@@ -945,13 +985,22 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
       /*expected_bucket_count=*/1);
 }
 
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_UserClosedPopup_PopupWindowLatencyLogged) {
+  ShowUi("Bnpl_Affirm");
+  ClosePopupAndWait();
+
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Bnpl.PopupWindowLatency.Affirm.UserClosed", 1);
+}
+
 // Test that the BNPL pop-up is shown correctly, and on close the completion
 // callback is triggered with a "user closed" result if the flow was closed and
 // the URL contained the success URL prefix, but the success URL prefix was not
 // its prefix.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                        InvokeUi_Bnpl_UrlIsNotAPrefix) {
-  ShowUi("Bnpl");
+  ShowUi("Bnpl_Affirm");
   EXPECT_TRUE(VerifyUi());
 
   GURL success_url_with_different_prefix =

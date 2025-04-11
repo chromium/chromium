@@ -33,6 +33,18 @@ std::string GetHistogramSuffixFromIssuerId(std::string_view issuer_id) {
   NOTREACHED();
 }
 
+std::string ConvertBnplFlowResultToString(BnplFlowResult result) {
+  switch (result) {
+    case BnplFlowResult::kSuccess:
+      return "Success";
+    case BnplFlowResult::kFailure:
+      return "Failure";
+    case BnplFlowResult::kUserClosed:
+      return "UserClosed";
+  }
+  NOTREACHED();
+}
+
 void LogBnplPrefToggled(bool enabled) {
   base::UmaHistogramBoolean("Autofill.SettingsPage.BnplToggled", enabled);
 }
@@ -84,6 +96,17 @@ void LogBnplPopupWindowResult(std::string_view issuer_id,
       base::StrCat({"Autofill.Bnpl.PopupWindowResult.",
                     GetHistogramSuffixFromIssuerId(issuer_id)});
   base::UmaHistogramEnumeration(histogram_name, result);
+}
+
+void LogBnplPopupWindowLatency(base::TimeDelta duration,
+                               std::string_view issuer_id,
+                               BnplFlowResult result) {
+  std::string histogram_name =
+      base::StrCat({"Autofill.Bnpl.PopupWindowLatency.",
+                    GetHistogramSuffixFromIssuerId(issuer_id), ".",
+                    ConvertBnplFlowResultToString(result)});
+
+  base::UmaHistogramLongTimes(histogram_name, duration);
 }
 
 void LogBnplFormEvent(BnplFormEvent event) {

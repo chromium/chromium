@@ -137,6 +137,10 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // logging purposes.
   std::optional<base::TimeTicks> vcn_3ds_popup_shown_timestamp_;
 
+  // The timestamp for when the BNPL payments window pop-up was shown to the
+  // user. Used for logging purposes.
+  std::optional<base::TimeTicks> bnpl_popup_shown_timestamp_;
+
   // Set on every navigation inside of the observed pop-up. Used on pop-up
   // destruction to understand the reason for destruction, and to notify the
   // caller. This class variable is required because at the point where the most
