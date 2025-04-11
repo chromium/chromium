@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.C
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -129,7 +130,7 @@ public class TabGroupRowView extends LinearLayout {
     void setColorIndex(@TabGroupColorId int colorIndex) {
         @ColorInt
         int color =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                         getContext(), colorIndex, /* isIncognito= */ false);
         GradientDrawable drawable = (GradientDrawable) mColorView.getBackground();
         drawable.setColor(color);

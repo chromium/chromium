@@ -27,6 +27,7 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -165,7 +166,8 @@ public class TabGroupColorViewProvider implements Destroyable {
         assert drawable != null;
 
         final @ColorInt int fillColor =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, mColorId, mIsIncognito);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mContext, mColorId, mIsIncognito);
         drawable.setColor(fillColor);
 
         Resources res = mContext.getResources();
@@ -176,7 +178,7 @@ public class TabGroupColorViewProvider implements Destroyable {
             radius = res.getDimension(R.dimen.tab_group_color_icon_item_radius);
         } else {
             int tabGroupColor =
-                    ColorPickerUtils.getTabGroupColorPickerItemColor(
+                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                             mContext, mColorId, mIsIncognito);
             SharedImageTilesConfig config =
                     mSharedImageTilesConfigBuilder.setTabGroupColor(tabGroupColor).build();
@@ -227,7 +229,8 @@ public class TabGroupColorViewProvider implements Destroyable {
 
         @ColorInt
         int tabGroupColor =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, mColorId, mIsIncognito);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mContext, mColorId, mIsIncognito);
         mSharedImageTilesConfigBuilder =
                 SharedImageTilesConfig.Builder.createThumbnail(mContext, tabGroupColor);
 

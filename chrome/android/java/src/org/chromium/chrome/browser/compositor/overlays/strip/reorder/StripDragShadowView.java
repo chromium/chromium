@@ -38,10 +38,10 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.XrUtils;
 import org.chromium.url.GURL;
@@ -216,7 +216,8 @@ public class StripDragShadowView extends FrameLayout {
         @TabGroupColorId int colorId = modelFilter.getTabGroupColorWithFallback(tab.getRootId());
         @ColorInt
         int groupColor =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(context, colorId, isIncognito);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        context, colorId, isIncognito);
         mCardView.setBackgroundTintList(ColorStateList.valueOf(groupColor));
         mMultiThumbnailCardProvider.setMiniThumbnailPlaceholderColor(
                 TabUiThemeUtil.getMiniThumbnailPlaceholderColorForGroup(
@@ -231,7 +232,7 @@ public class StripDragShadowView extends FrameLayout {
                         isIncognito);
         mTitleView.setText(titleText);
         mTitleView.setTextColor(
-                ColorPickerUtils.getTabGroupColorPickerItemTextColor(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
                         context, colorId, isIncognito));
 
         // Clear the tab favicon if needed

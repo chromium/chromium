@@ -101,6 +101,7 @@ import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -1455,8 +1456,11 @@ public class TabSwitcherLayoutTest {
 
                             assertEquals(
                                     ColorStateList.valueOf(
-                                            ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                                    mActivityTestRule.getActivity(), color, false)),
+                                            TabGroupColorPickerUtils
+                                                    .getTabGroupColorPickerItemColor(
+                                                            mActivityTestRule.getActivity(),
+                                                            color,
+                                                            false)),
                                     drawable.getColor());
                         });
     }

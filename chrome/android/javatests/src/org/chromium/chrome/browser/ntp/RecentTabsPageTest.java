@@ -69,6 +69,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -182,7 +183,7 @@ public class RecentTabsPageTest {
         assertEquals(GradientDrawable.OVAL, bgDrawable.getShape());
         assertEquals(
                 ColorStateList.valueOf(
-                        ColorPickerUtils.getTabGroupColorPickerItemColor(
+                        TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                                 mActivity, COLOR_ID, /* isIncognito= */ false)),
                 bgDrawable.getColor());
     }

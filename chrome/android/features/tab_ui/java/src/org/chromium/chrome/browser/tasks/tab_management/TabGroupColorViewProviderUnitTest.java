@@ -48,6 +48,7 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link TabGroupColorViewProvider}. */
@@ -263,7 +264,7 @@ public class TabGroupColorViewProviderUnitTest {
         assertNotNull(drawable);
 
         assertEquals(
-                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                         mContext, initialColorId, isIncognito),
                 drawable.getColor().getDefaultColor());
 
@@ -271,7 +272,7 @@ public class TabGroupColorViewProviderUnitTest {
         assertEquals(colorView, viewProvider.getLazyView());
 
         assertEquals(
-                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                         mContext, finalColorId, isIncognito),
                 drawable.getColor().getDefaultColor());
         float radii = res.getDimension(R.dimen.tab_group_color_icon_item_radius);
@@ -299,7 +300,8 @@ public class TabGroupColorViewProviderUnitTest {
         assertNotNull(drawable);
 
         assertEquals(
-                ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, currentColorId, false),
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mContext, currentColorId, false),
                 drawable.getColor().getDefaultColor());
         int radius = (size + 1) / 2;
         assertAllCornerRadiiAre((float) radius, drawable);

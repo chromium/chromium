@@ -94,7 +94,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabBubbler;
 import org.chromium.chrome.browser.tasks.tab_management.TabCardLabelData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
@@ -117,6 +116,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -3210,7 +3210,8 @@ public class StripLayoutHelper
         if (groupTitle == null) return;
 
         groupTitle.updateTint(
-                ColorPickerUtils.getTabGroupColorPickerItemColor(mContext, newColor, mIncognito));
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mContext, newColor, mIncognito));
         updateGroupTitleBitmapIfNeeded(groupTitle);
     }
 

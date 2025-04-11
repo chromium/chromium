@@ -65,6 +65,7 @@ import org.chromium.chrome.test.transit.tabmodel.TabThumbnailsCapturedCarryOn;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -688,8 +689,11 @@ public class TabSwitcherLayoutPTTest {
 
                             assertEquals(
                                     ColorStateList.valueOf(
-                                            ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                                    mCtaTestRule.getActivity(), color, false)),
+                                            TabGroupColorPickerUtils
+                                                    .getTabGroupColorPickerItemColor(
+                                                            mCtaTestRule.getActivity(),
+                                                            color,
+                                                            false)),
                                     drawable.getColor());
                         });
     }

@@ -54,11 +54,11 @@ import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MultiThumbnailCardProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.TestActivity;
 
@@ -342,7 +342,8 @@ public class StripDragShadowViewUnitTest {
         // Verify card color
         @ColorInt
         int expectedGroupColor =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(mActivity, colorId, incognito);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        mActivity, colorId, incognito);
         assertEquals(
                 "Unexpected card color.",
                 expectedGroupColor,
@@ -357,7 +358,8 @@ public class StripDragShadowViewUnitTest {
         // Verify text color
         @ColorInt
         int expectedTextColor =
-                ColorPickerUtils.getTabGroupColorPickerItemTextColor(mActivity, colorId, incognito);
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemTextColor(
+                        mActivity, colorId, incognito);
         assertEquals("Unexpected text color.", expectedTextColor, mTitleView.getCurrentTextColor());
     }
 }

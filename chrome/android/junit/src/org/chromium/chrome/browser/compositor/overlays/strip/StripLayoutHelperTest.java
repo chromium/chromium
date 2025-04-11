@@ -122,7 +122,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener.DialogType;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
-import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinatorFactory;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -140,6 +139,7 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -3785,7 +3785,7 @@ public class StripLayoutHelperTest {
         assertTrue(EXPECTED_TITLE, views[0] instanceof StripLayoutGroupTitle);
         StripLayoutGroupTitle groupTitle = ((StripLayoutGroupTitle) views[0]);
         int color =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                         mContext, TabGroupColorId.GREY, mIncognito);
         groupTitle.updateTint(color);
 
