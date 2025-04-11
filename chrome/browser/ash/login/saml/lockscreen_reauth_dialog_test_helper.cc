@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
+#include "chrome/browser/ash/login/test/gaia_page_event_waiter.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,9 +95,10 @@ LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad() {
   // With reauth endpoint we start on a Gaia page where user needs to click
   // "Next" before being redirected to SAML IdP page.
   reauth_dialog_helper->WaitForPrimaryGaiaButtonToBeEnabled();
+  auto saml_waiter = reauth_dialog_helper->CreateSamlPageLoadWaiter();
   reauth_dialog_helper->ClickPrimaryGaiaButton();
 
-  reauth_dialog_helper->WaitForSamlIdpPageLoad();
+  saml_waiter->Wait();
   reauth_dialog_helper->ExpectGaiaButtonsHidden();
 
   return reauth_dialog_helper;
@@ -232,12 +234,6 @@ test::UIPath LockScreenReauthDialogTestHelper::SamlNoticeMessage() const {
   return kSamlNoticeMessage;
 }
 
-void LockScreenReauthDialogTestHelper::WaitForSamlNoticeMessage() {
-  DialogJS()
-      .CreateVisibilityWaiter(/*visibility=*/true, kSamlNoticeMessage)
-      ->Wait();
-}
-
 void LockScreenReauthDialogTestHelper::ExpectSamlNoticeMessageVisible() {
   DialogJS().ExpectVisiblePath(kSamlNoticeMessage);
 }
@@ -246,10 +242,10 @@ void LockScreenReauthDialogTestHelper::ExpectSamlNoticeMessageHidden() {
   DialogJS().ExpectHiddenPath(kSamlNoticeMessage);
 }
 
-void LockScreenReauthDialogTestHelper::WaitForSamlIdpPageLoad() {
-  // Rely on the invariant that SAML notice message is shown if and only
-  // if the dialog is currently displaying a 3P IdP page.
-  WaitForSamlNoticeMessage();
+std::unique_ptr<test::TestConditionWaiter>
+LockScreenReauthDialogTestHelper::CreateSamlPageLoadWaiter() {
+  return std::make_unique<GaiaPageEventWaiter>(
+      DialogWebContents(), "$('main-element').authenticator", "samlPageLoaded");
 }
 
 content::WebContents* LockScreenReauthDialogTestHelper::DialogWebContents() {

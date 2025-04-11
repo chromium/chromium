@@ -613,6 +613,9 @@ export class Authenticator extends EventTarget {
     this.webviewEventManager_.addEventListener(
         this.samlHandler_, 'challengeMachineKeyRequired',
         e => this.onChallengeMachineKeyRequired_(e));
+    this.webviewEventManager_.addEventListener(
+        this.samlHandler_, 'isSamlFlowChange',
+        e => this.onIsSamlFlowChanged_(e));
 
     this.webviewEventManager_.addEventListener(
         this.webview_, 'droplink', e => this.onDropLink_(e));
@@ -1296,6 +1299,7 @@ export class Authenticator extends EventTarget {
     if (!e.detail.isSAMLPage) {
       return;
     }
+    this.dispatchEvent(new Event('samlPageLoaded'));
 
     this.authFlow = AuthFlow.SAML;
 
@@ -1348,6 +1352,17 @@ export class Authenticator extends EventTarget {
   onChallengeMachineKeyRequired_(e) {
     sendWithPromise('samlChallengeMachineKey', e.detail.url, e.detail.challenge)
         .then(e.detail.callback);
+  }
+
+  /**
+   * Invoked when |samlHandler_| fires 'isSamlFlowChange' event.
+   * @private
+   */
+  onIsSamlFlowChanged_(e) {
+    const isSamlFlow = e.detail.isSamlFlow;
+    if (isSamlFlow) {
+      this.authFlow = AuthFlow.SAML;
+    }
   }
 
   /**

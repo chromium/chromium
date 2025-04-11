@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SAML_LOCKSCREEN_REAUTH_DIALOG_TEST_HELPER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SAML_LOCKSCREEN_REAUTH_DIALOG_TEST_HELPER_H_
 
+#include <memory>
 #include <optional>
 #include <string>
 
@@ -27,6 +28,10 @@ class LockScreenNetworkDialog;
 class LockScreenNetworkUI;
 class LockScreenCaptivePortalDialog;
 class NetworkConfigMessageHandler;
+
+namespace test {
+class TestConditionWaiter;
+}
 
 // Supports triggering the online re-authentication dialog on the Chrome OS lock
 // screen from browser tests and interacting with it.
@@ -111,11 +116,10 @@ class LockScreenReauthDialogTestHelper {
 
   // SAML notice message is displayed when we show a 3P IdP page.
   test::UIPath SamlNoticeMessage() const;
-  void WaitForSamlNoticeMessage();
   void ExpectSamlNoticeMessageVisible();
   void ExpectSamlNoticeMessageHidden();
 
-  void WaitForSamlIdpPageLoad();
+  std::unique_ptr<test::TestConditionWaiter> CreateSamlPageLoadWaiter();
 
   // Next members allow to wait for the captive portal dialog to load (i.e. be
   // initialized in `LockScreenStartReauthDialog`), be shown or be closed.

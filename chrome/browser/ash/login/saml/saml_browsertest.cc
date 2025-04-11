@@ -53,6 +53,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/users/test_users.h"
@@ -347,21 +348,20 @@ class SamlTestBase : public OobeBaseTest {
         "    });");
   }
 
+  std::unique_ptr<test::TestConditionWaiter> CreateSamlPageLoadWaiter() {
+    return CreateGaiaPageEventWaiter("samlPageLoaded");
+  }
+
   virtual void StartSamlAndWaitForIdpPageLoad(const std::string& gaia_email) {
     OobeScreenWaiter(GetFirstSigninScreen()).Wait();
+    auto saml_waiter = CreateSamlPageLoadWaiter();
 
-    content::DOMMessageQueue message_queue(
-        GetLoginUI()->GetWebContents());  // Start observe before SAML.
-    SetupAuthFlowChangeListener();
     LoginDisplayHost::default_host()
         ->GetOobeUI()
         ->GetView<GaiaScreenHandler>()
         ->ShowSigninScreenForTest(gaia_email, "", "[]");
 
-    std::string message;
-    do {
-      ASSERT_TRUE(message_queue.WaitForMessage(&message));
-    } while (message != "\"SamlLoaded\"");
+    saml_waiter->Wait();
   }
 
   void SendConfirmPassword(const std::string& password_to_confirm) {
@@ -556,6 +556,8 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, IdpRequiresHttpAuth) {
       ->ShowSigninScreenForTest(saml_test_users::kFirstUserCorpExampleComEmail,
                                 "", "[]");
 
+  auto saml_waiter = CreateSamlPageLoadWaiter();
+
   ASSERT_TRUE(base::test::RunUntil(
       []() { return HttpAuthDialog::GetAllDialogsForTest().size() == 1; }));
   // Note that the actual credentials don't matter because `fake_saml_idp()`
@@ -564,10 +566,7 @@ IN_PROC_BROWSER_TEST_P(SamlTestWithFeatures, IdpRequiresHttpAuth) {
       u"user", u"pwd");
 
   // Now the SAML sign-in form should actually load.
-  std::string message;
-  do {
-    ASSERT_TRUE(message_queue.WaitForMessage(&message));
-  } while (message != "\"SamlLoaded\"");
+  saml_waiter->Wait();
 
   test::OobeJS().ExpectPathDisplayed(false, kBackButton);
 
@@ -1184,11 +1183,10 @@ void SAMLEnrollmentTest::StartSamlAndWaitForIdpPageLoad(
   LoginDisplayHost::default_host()->StartWizard(
       EnrollmentScreenView::kScreenId);
   WaitForGaiaPageBackButtonUpdate();
-  auto flow_change_waiter =
-      OobeBaseTest::CreateGaiaPageEventWaiter("authFlowChange");
+  auto saml_waiter = CreateSamlPageLoadWaiter();
   SigninFrameJS().TypeIntoPath(gaia_email, FakeGaiaMixin::kEmailPath);
   test::OobeJS().ClickOnPath(kEnterprisePrimaryButton);
-  flow_change_waiter->Wait();
+  saml_waiter->Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(SAMLEnrollmentTest, WithoutCredentialsPassingAPI) {
@@ -1245,7 +1243,6 @@ class SAMLPolicyTest : public SamlTestBase {
 
   void ShowGAIALoginForm();
   void ShowSAMLLoginForm();
-  void MaybeWaitForSAMLToLoad();
   void ClickBackOnSAMLPage();
   void LogInWithSAML(const std::string& user_id,
                      const GaiaId& gaia_id,
@@ -1453,24 +1450,10 @@ void SAMLPolicyTest::ShowSAMLLoginForm() {
   MaybeWaitForLoginScreenLoad();
   ASSERT_TRUE(LoginScreenTestApi::ClickAddUserButton());
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  auto saml_waiter = CreateSamlPageLoadWaiter();
   test::OobeJS().CreateVisibilityWaiter(true, kSigninFrameDialog)->Wait();
   test::OobeJS().CreateVisibilityWaiter(false, kGaiaLoading)->Wait();
-}
-
-void SAMLPolicyTest::MaybeWaitForSAMLToLoad() {
-  // If SAML already loaded return and otherwise wait for the SamlLoaded
-  // message.
-  if (test::OobeJS().GetAttributeBool("isSamlAuthFlowForTesting()",
-                                      {"gaia-signin"}))
-    return;
-  content::DOMMessageQueue message_queue(GetLoginUI()->GetWebContents());
-  SetupAuthFlowChangeListener();
-  std::string message;
-  do {
-    ASSERT_TRUE(message_queue.WaitForMessage(&message));
-  } while (message != "\"SamlLoaded\"");
-  test::OobeJS().ExpectAttributeEQ("isSamlAuthFlowForTesting()",
-                                   {"gaia-signin"}, true);
+  saml_waiter->Wait();
 }
 
 void SAMLPolicyTest::ClickBackOnSAMLPage() {
@@ -1799,7 +1782,7 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLChangeAccount) {
 // Tests that clicking back on the SAML page successfully closes the oobe
 // dialog. Reopens a dialog and checks that SAML IdP authentication page is
 // loaded and authenticating there is successful.
-IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLClosaAndReopen) {
+IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLCloseAndReopen) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
   fake_gaia_.fake_gaia()->SetConfigurationHelper(
       saml_test_users::kFirstUserCorpExampleComEmail, kTestAuthSIDCookie1,
@@ -1815,7 +1798,6 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLClosaAndReopen) {
   EXPECT_TRUE(LoginScreenTestApi::IsAddUserButtonShown());
 
   ShowSAMLLoginForm();
-  MaybeWaitForSAMLToLoad();
 
   SigninFrameJS().TypeIntoPath("fake_user", {"Email"});
   SigninFrameJS().TypeIntoPath("fake_password", {"Password"});
@@ -1878,7 +1860,6 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, TestLoginMediaPermission) {
   WaitForSigninScreen();
 
   ShowSAMLLoginForm();
-  MaybeWaitForSAMLToLoad();
 
   const GURL url0(fake_saml_idp()->GetSamlPageUrl());
   const GURL url1("https://google.com");
