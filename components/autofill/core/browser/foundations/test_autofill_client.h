@@ -18,6 +18,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -26,6 +27,7 @@
 #include "components/autofill/core/browser/crowdsourcing/test_votes_uploader.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
@@ -139,6 +141,8 @@ class TestAutofillClientTemplate : public T {
     }
     return *test_personal_data_manager_.get();
   }
+
+  ValuablesDataManager& GetValuablesDataManager() override { NOTREACHED(); }
 
   EntityDataManager* GetEntityDataManager() override {
     return entity_data_manager_non_owning_

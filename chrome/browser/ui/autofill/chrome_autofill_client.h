@@ -114,6 +114,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   FieldClassificationModelHandler*
   GetPasswordManagerFieldClassificationModelHandler() final;
   PersonalDataManager& GetPersonalDataManager() final;
+  ValuablesDataManager& GetValuablesDataManager() final;
   EntityDataManager* GetEntityDataManager() final;
   SingleFieldFillRouter& GetSingleFieldFillRouter() final;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() final;

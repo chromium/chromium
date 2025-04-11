@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
 #include "components/autofill/core/browser/integrators/identity_credential_delegate.h"
@@ -257,6 +258,10 @@ class AutofillClient {
   // use the client's `IsOffTheRecord()` function.
   virtual PersonalDataManager& GetPersonalDataManager() = 0;
   const PersonalDataManager& GetPersonalDataManager() const;
+
+  // Gets the ValuablesDataManager instance associated with the profile.
+  virtual ValuablesDataManager& GetValuablesDataManager() = 0;
+  const ValuablesDataManager& GetValuablesDataManager() const;
 
   // Gets the EntityDataManager instance associated with the client, if there is
   // one.

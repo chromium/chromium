@@ -20,6 +20,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
+#import "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
@@ -149,6 +150,10 @@ VotesUploader& ChromeAutofillClientIOS::GetVotesUploader() {
 
 PersonalDataManager& ChromeAutofillClientIOS::GetPersonalDataManager() {
   return CHECK_DEREF(personal_data_manager_.get());
+}
+
+ValuablesDataManager& ChromeAutofillClientIOS::GetValuablesDataManager() {
+  NOTREACHED();
 }
 
 EntityDataManager* ChromeAutofillClientIOS::GetEntityDataManager() {

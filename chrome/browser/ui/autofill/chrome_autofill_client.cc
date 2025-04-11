@@ -31,6 +31,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
+#include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -73,6 +74,7 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_import/form_data_importer.h"
@@ -437,6 +439,12 @@ ChromeAutofillClient::GetPasswordManagerFieldClassificationModelHandler() {
 PersonalDataManager& ChromeAutofillClient::GetPersonalDataManager() {
   return CHECK_DEREF(PersonalDataManagerFactory::GetForBrowserContext(
       web_contents()->GetBrowserContext()));
+}
+
+ValuablesDataManager& ChromeAutofillClient::GetValuablesDataManager() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return CHECK_DEREF(ValuablesDataManagerFactory::GetForProfile(profile));
 }
 
 EntityDataManager* ChromeAutofillClient::GetEntityDataManager() {

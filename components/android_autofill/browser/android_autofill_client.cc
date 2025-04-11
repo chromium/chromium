@@ -92,6 +92,11 @@ autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
   NOTREACHED();
 }
 
+autofill::ValuablesDataManager&
+AndroidAutofillClient::GetValuablesDataManager() {
+  NOTREACHED();
+}
+
 autofill::EntityDataManager* AndroidAutofillClient::GetEntityDataManager() {
   return nullptr;
 }
