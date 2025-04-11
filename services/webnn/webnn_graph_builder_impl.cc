@@ -774,11 +774,12 @@ bool OperationValidationContext::ValidateBatchNormalization(
     }
   }
 
-  const auto validated_output = ValidateBatchNormalizationAndInferOutput(
-      *context_properties_, input->descriptor, mean->descriptor,
-      variance->descriptor,
-      ConvertToBatchNormalizationAttributes(*id_to_operand_map_,
-                                            batch_normalization));
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateBatchNormalizationAndInferOutput(
+          *context_properties_, input->descriptor, mean->descriptor,
+          variance->descriptor,
+          ConvertToBatchNormalizationAttributes(*id_to_operand_map_,
+                                                batch_normalization));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -807,10 +808,11 @@ bool OperationValidationContext::ValidateArgMinMax(
     return false;
   }
 
-  const auto validated_output = ValidateArgMinMaxAndInferOutput(
-      *context_properties_, input->descriptor, arg_min_max.label,
-      arg_min_max.axis, output->descriptor.data_type(),
-      arg_min_max.keep_dimensions);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateArgMinMaxAndInferOutput(*context_properties_, input->descriptor,
+                                      arg_min_max.label, arg_min_max.axis,
+                                      output->descriptor.data_type(),
+                                      arg_min_max.keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -858,8 +860,9 @@ bool OperationValidationContext::ValidateConcat(const mojom::Concat& concat,
     inputs.push_back(input->descriptor);
   }
 
-  auto validated_output = ValidateConcatAndInferOutput(
-      *context_properties_, inputs, concat.axis, concat.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateConcatAndInferOutput(*context_properties_, inputs, concat.axis,
+                                   concat.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -961,9 +964,10 @@ bool OperationValidationContext::ValidateCumulativeSum(
     return false;
   }
 
-  auto validated_output = ValidateCumulativeSumAndInferOutput(
-      *context_properties_, input->descriptor, cumulative_sum.axis,
-      cumulative_sum.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateCumulativeSumAndInferOutput(
+          *context_properties_, input->descriptor, cumulative_sum.axis,
+          cumulative_sum.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -999,9 +1003,10 @@ bool OperationValidationContext::ValidateDequantizeLinear(
     return false;
   }
 
-  auto validated_output = ValidateDequantizeLinearAndInferOutput(
-      *context_properties_, input->descriptor, scale->descriptor,
-      zero_point->descriptor, dequantize_linear.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateDequantizeLinearAndInferOutput(
+          *context_properties_, input->descriptor, scale->descriptor,
+          zero_point->descriptor, dequantize_linear.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1223,22 +1228,16 @@ bool OperationValidationContext::ValidateExpand(const mojom::Expand& expand,
     // The expand operator is invalid.
     return false;
   }
-  if (!context_properties_->data_type_limits.expand_input.Supports(
-          input->descriptor)) {
-    return false;
-  }
-  if (output->descriptor.data_type() != input->descriptor.data_type()) {
-    // The output data type doesn't match input data type.
-    return false;
-  }
 
-  auto output_shape = BroadcastShapes(input->descriptor.shape(),
-                                      output->descriptor.shape(), false);
-  if (!output_shape) {
-    // The input shape is not broadcastable to the output shape.
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateExpandAndInferOutput(*context_properties_, input->descriptor,
+                                   output->descriptor.shape(), expand.label);
+  if (!validated_output.has_value()) {
     return false;
   }
-  CHECK(std::ranges::equal(output_shape.value(), output->descriptor.shape()));
+  if (validated_output != output->descriptor) {
+    return false;
+  }
 
   return true;
 }
@@ -1262,9 +1261,10 @@ bool OperationValidationContext::ValidateGather(const mojom::Gather& gather,
     return false;
   }
 
-  auto validated_output = ValidateGatherAndInferOutput(
-      *context_properties_, input->descriptor, indices->descriptor, gather.axis,
-      gather.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateGatherAndInferOutput(*context_properties_, input->descriptor,
+                                   indices->descriptor, gather.axis,
+                                   gather.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1295,9 +1295,10 @@ bool OperationValidationContext::ValidateGatherElements(
     return false;
   }
 
-  auto validated_output = ValidateGatherElementsAndInferOutput(
-      *context_properties_, input->descriptor, indices->descriptor,
-      gather_elements.axis, gather_elements.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateGatherElementsAndInferOutput(
+          *context_properties_, input->descriptor, indices->descriptor,
+          gather_elements.axis, gather_elements.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1328,7 +1329,7 @@ bool OperationValidationContext::ValidateGatherND(
     return false;
   }
 
-  auto validated_output =
+  const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateGatherNDAndInferOutput(*context_properties_, input->descriptor,
                                      indices->descriptor, gather_nd.label);
   if (!validated_output.has_value()) {
@@ -1374,9 +1375,10 @@ bool OperationValidationContext::ValidateGemm(const mojom::Gemm& gemm,
     }
   }
 
-  auto validated_output = ValidateGemmAndInferOutput(
-      *context_properties_, a->descriptor, b->descriptor,
-      ConvertToGemmAttributes(*id_to_operand_map_, gemm));
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateGemmAndInferOutput(
+          *context_properties_, a->descriptor, b->descriptor,
+          ConvertToGemmAttributes(*id_to_operand_map_, gemm));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1447,10 +1449,11 @@ bool OperationValidationContext::ValidateGru(const mojom::Gru& gru,
     RETURN_IF_FALSE(processed_operands_.insert(output_operand_id).second);
   }
 
-  const auto validated_outputs = ValidateGruAndInferOutput(
-      *context_properties_, input->descriptor, weight->descriptor,
-      recurrent_weight->descriptor, gru.steps, gru.hidden_size,
-      ConvertToGruAttributes(*id_to_operand_map_, gru));
+  const base::expected<std::vector<OperandDescriptor>, std::string>
+      validated_outputs = ValidateGruAndInferOutput(
+          *context_properties_, input->descriptor, weight->descriptor,
+          recurrent_weight->descriptor, gru.steps, gru.hidden_size,
+          ConvertToGruAttributes(*id_to_operand_map_, gru));
   if (!validated_outputs.has_value()) {
     return false;
   }
@@ -1598,10 +1601,11 @@ bool OperationValidationContext::ValidateLayerNormalization(
     NoteDependency(bias_operand_id.value(), operation_id);
   }
 
-  const auto validated_output = ValidateLayerNormalizationAndInferOutput(
-      *context_properties_, input->descriptor, layer_normalization.axes,
-      ConvertToLayerNormalizationAttributes(*id_to_operand_map_,
-                                            layer_normalization));
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateLayerNormalizationAndInferOutput(
+          *context_properties_, input->descriptor, layer_normalization.axes,
+          ConvertToLayerNormalizationAttributes(*id_to_operand_map_,
+                                                layer_normalization));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1718,10 +1722,11 @@ bool OperationValidationContext::ValidateLstm(const mojom::Lstm& lstm,
     RETURN_IF_FALSE(processed_operands_.insert(output_operand_id).second);
   }
 
-  const auto validated_outputs = ValidateLstmAndInferOutput(
-      *context_properties_, input->descriptor, weight->descriptor,
-      recurrent_weight->descriptor, lstm.steps, lstm.hidden_size,
-      ConvertToLstmAttributes(*id_to_operand_map_, lstm));
+  const base::expected<std::vector<OperandDescriptor>, std::string>
+      validated_outputs = ValidateLstmAndInferOutput(
+          *context_properties_, input->descriptor, weight->descriptor,
+          recurrent_weight->descriptor, lstm.steps, lstm.hidden_size,
+          ConvertToLstmAttributes(*id_to_operand_map_, lstm));
   if (!validated_outputs.has_value()) {
     return false;
   }
@@ -1875,10 +1880,12 @@ bool OperationValidationContext::ValidateInstanceNormalization(
     NoteDependency(bias_operand_id.value(), operation_id);
   }
 
-  const auto validated_output = ValidateInstanceNormalizationAndInferOutput(
-      *context_properties_, input->descriptor,
-      ConvertToInstanceNormalizationAttributes(
-          *context_properties_, *id_to_operand_map_, instance_normalization));
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateInstanceNormalizationAndInferOutput(
+          *context_properties_, input->descriptor,
+          ConvertToInstanceNormalizationAttributes(*context_properties_,
+                                                   *id_to_operand_map_,
+                                                   instance_normalization));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1907,8 +1914,9 @@ bool OperationValidationContext::ValidateMatmul(const mojom::Matmul& matmul,
     // The matmul operator is invalid.
     return false;
   }
-  auto validated_output = ValidateMatmulAndInferOutput(
-      *context_properties_, a->descriptor, b->descriptor, matmul.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateMatmulAndInferOutput(*context_properties_, a->descriptor,
+                                   b->descriptor, matmul.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1935,9 +1943,10 @@ bool OperationValidationContext::ValidatePad(const mojom::Pad& pad,
     return false;
   }
 
-  auto validated_output = ValidatePadAndInferOutput(
-      *context_properties_, input->descriptor, pad.beginning_padding,
-      pad.ending_padding, pad.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidatePadAndInferOutput(*context_properties_, input->descriptor,
+                                pad.beginning_padding, pad.ending_padding,
+                                pad.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -1967,10 +1976,11 @@ bool OperationValidationContext::ValidatePool2d(const mojom::Pool2d& pool2d,
   if (output->descriptor.Rank() != 4) {
     return false;
   }
-  auto validated_output = ValidatePool2dAndInferOutput(
-      *context_properties_, input->descriptor,
-      ConvertToPool2dAttributes(*context_properties_, pool2d, output),
-      FromMojoPool2dType(pool2d.kind));
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidatePool2dAndInferOutput(
+          *context_properties_, input->descriptor,
+          ConvertToPool2dAttributes(*context_properties_, pool2d, output),
+          FromMojoPool2dType(pool2d.kind));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2000,8 +2010,9 @@ bool OperationValidationContext::ValidatePrelu(const mojom::Prelu& prelu,
     return false;
   }
 
-  auto validated_output = ValidatePreluAndInferOutput(
-      *context_properties_, input->descriptor, slope->descriptor, prelu.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidatePreluAndInferOutput(*context_properties_, input->descriptor,
+                                  slope->descriptor, prelu.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2037,9 +2048,10 @@ bool OperationValidationContext::ValidateQuantizeLinear(
     return false;
   }
 
-  auto validated_output = ValidateQuantizeLinearAndInferOutput(
-      *context_properties_, input->descriptor, scale->descriptor,
-      zero_point->descriptor, quantize_linear.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateQuantizeLinearAndInferOutput(
+          *context_properties_, input->descriptor, scale->descriptor,
+          zero_point->descriptor, quantize_linear.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2102,7 +2114,7 @@ bool OperationValidationContext::ValidateResample2d(
     scales_or_sizes = sizes;
   }
 
-  auto validated_output =
+  const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateResample2dAndInferOutput(*context_properties_, input->descriptor,
                                        scales_or_sizes, axes, resample2d.label);
   if (!validated_output.has_value()) {
@@ -2162,8 +2174,9 @@ bool OperationValidationContext::ValidateReverseOperation(
     return false;
   }
 
-  auto validated_output = ValidateReverseAndInferOutput(
-      *context_properties_, input->descriptor, reverse.axes, reverse.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateReverseAndInferOutput(*context_properties_, input->descriptor,
+                                    reverse.axes, reverse.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2198,9 +2211,10 @@ bool OperationValidationContext::ValidateScatterElements(
     return false;
   }
 
-  auto validated_output = ValidateScatterElementsAndInferOutput(
-      *context_properties_, input->descriptor, indices->descriptor,
-      updates->descriptor, scatter_elements.axis, scatter_elements.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateScatterElementsAndInferOutput(
+          *context_properties_, input->descriptor, indices->descriptor,
+          updates->descriptor, scatter_elements.axis, scatter_elements.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2235,9 +2249,10 @@ bool OperationValidationContext::ValidateScatterND(
     return false;
   }
 
-  auto validated_output = ValidateScatterNDAndInferOutput(
-      *context_properties_, input->descriptor, indices->descriptor,
-      updates->descriptor, scatter_nd.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateScatterNDAndInferOutput(*context_properties_, input->descriptor,
+                                      indices->descriptor, updates->descriptor,
+                                      scatter_nd.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2265,8 +2280,9 @@ bool OperationValidationContext::ValidateSlice(const mojom::Slice& slice,
     return false;
   }
 
-  auto validated_output = ValidateSliceAndInferOutput(
-      *context_properties_, input->descriptor, ConvertToSliceAttributes(slice));
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateSliceAndInferOutput(*context_properties_, input->descriptor,
+                                  ConvertToSliceAttributes(slice));
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2292,8 +2308,9 @@ bool OperationValidationContext::ValidateSoftmax(const mojom::Softmax& softmax,
     // The softmax operator is invalid.
     return false;
   }
-  auto validated_output = ValidateSoftmaxAndInferOutput(
-      *context_properties_, input->descriptor, softmax.axis, softmax.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateSoftmaxAndInferOutput(*context_properties_, input->descriptor,
+                                    softmax.axis, softmax.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2331,9 +2348,10 @@ bool OperationValidationContext::ValidateSplit(const mojom::Split& split,
     RETURN_IF_FALSE(processed_operands_.insert(output_id).second);
   }
 
-  auto validated_output = ValidateSplitAndInferOutput(
-      *context_properties_, input->descriptor,
-      {.splits = splits, .axis = split.axis, .label = split.label});
+  const base::expected<std::vector<OperandDescriptor>, std::string>
+      validated_output = ValidateSplitAndInferOutput(
+          *context_properties_, input->descriptor,
+          {.splits = splits, .axis = split.axis, .label = split.label});
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2370,8 +2388,9 @@ bool OperationValidationContext::ValidateTile(const mojom::Tile& tile,
     return false;
   }
 
-  auto validated_output = ValidateTileAndInferOutput(
-      *context_properties_, input->descriptor, tile.repetitions, tile.label);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateTileAndInferOutput(*context_properties_, input->descriptor,
+                                 tile.repetitions, tile.label);
   if (!validated_output.has_value()) {
     return false;
   }
@@ -2400,7 +2419,7 @@ bool OperationValidationContext::ValidateTranspose(
     return false;
   }
 
-  auto validated_output =
+  const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateTransposeAndInferOutput(*context_properties_, input->descriptor,
                                       transpose.permutation, transpose.label);
   if (!validated_output.has_value()) {
@@ -2431,7 +2450,7 @@ bool OperationValidationContext::ValidateTriangular(
     return false;
   }
 
-  base::expected<OperandDescriptor, std::string> validated_output =
+  const base::expected<OperandDescriptor, std::string> validated_output =
       ValidateTriangularAndInferOutput(*context_properties_, input->descriptor,
                                        triangular.label);
   if (!validated_output.has_value()) {
@@ -2467,9 +2486,10 @@ bool OperationValidationContext::ValidateWhere(const mojom::Where& where,
     return false;
   }
 
-  auto validated_output_descriptor = ValidateWhereAndInferOutput(
-      *context_properties_, condition->descriptor, true_value->descriptor,
-      false_value->descriptor, where.label);
+  const base::expected<OperandDescriptor, std::string>
+      validated_output_descriptor = ValidateWhereAndInferOutput(
+          *context_properties_, condition->descriptor, true_value->descriptor,
+          false_value->descriptor, where.label);
   if (!validated_output_descriptor.has_value()) {
     return false;
   }
@@ -2496,9 +2516,10 @@ bool OperationValidationContext::ValidateReduce(const mojom::Reduce& reduce,
     return false;
   }
 
-  auto validated_output = ValidateReduceAndInferOutput(
-      *context_properties_, MojoReduceTypeToComponent(reduce.kind),
-      input->descriptor, reduce.label, reduce.axes, reduce.keep_dimensions);
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateReduceAndInferOutput(
+          *context_properties_, MojoReduceTypeToComponent(reduce.kind),
+          input->descriptor, reduce.label, reduce.axes, reduce.keep_dimensions);
   if (!validated_output.has_value()) {
     return false;
   }

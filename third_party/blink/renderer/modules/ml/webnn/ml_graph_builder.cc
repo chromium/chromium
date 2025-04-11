@@ -2136,33 +2136,11 @@ MLOperand* MLGraphBuilder::expand(MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  const std::string label = options->label().Utf8();
-
-  const webnn::SupportedTensors& tensor_constraint =
-      ml_context_->GetProperties().data_type_limits.expand_input;
-  if (!tensor_constraint.Supports(input->Descriptor())) {
-    exception_state.ThrowTypeError(
-        String::FromUTF8(webnn::GetErrorLabelPrefix(options->label().Utf8())) +
-        String(NotSupportedInputArgumentError(input->Descriptor(),
-                                              tensor_constraint)));
-    return nullptr;
-  }
-
-  auto output_shape = webnn::BroadcastShapes(input->Shape(), new_shape,
-                                             /*bidirectional=*/false);
-  if (!output_shape) {
-    exception_state.ThrowTypeError(
-        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        "The input shape is not broadcastable to the new shape.");
-    return nullptr;
-  }
-  CHECK(std::ranges::equal(*output_shape, new_shape));
-
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(ml_context_->GetProperties(),
-                                       input->DataType(), *output_shape,
-                                       label));
+      webnn::ValidateExpandAndInferOutput(ml_context_->GetProperties(),
+                                          input->Descriptor(), new_shape,
+                                          options->label().Utf8()));
 
   auto* expand = MakeGarbageCollected<MLOperator>(
       this, blink_mojom::Operation::Tag::kExpand, options);

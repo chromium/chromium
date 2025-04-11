@@ -1348,6 +1348,31 @@ base::expected<OperandDescriptor, std::string> ValidateReverseAndInferOutput(
   return input;
 }
 
+base::expected<OperandDescriptor, std::string> ValidateExpandAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    base::span<const uint32_t> new_shape,
+    std::string_view label) {
+  // Validate input operand.
+  if (!context_properties.data_type_limits.expand_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.expand_input)));
+  }
+
+  std::optional<std::vector<uint32_t>> output_shape =
+      BroadcastShapes(input.shape(), new_shape,
+                      /*bidirectional=*/false);
+  if (!output_shape) {
+    return base::unexpected(ErrorWithLabel(
+        label, "The input shape is not broadcastable to the new shape."));
+  }
+  CHECK_EQ(new_shape, base::span<const uint32_t>(*output_shape));
+
+  return OperandDescriptor::Create(context_properties, input.data_type(),
+                                   *output_shape, label);
+}
+
 base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
     const ContextProperties& context_properties,
     const OperandDescriptor& input,
@@ -1501,7 +1526,7 @@ base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
                     input.shape().end(), std::back_inserter(output_shape));
 
   return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   std::move(output_shape), label);
+                                   output_shape, label);
 }
 
 GemmAttributes::GemmAttributes() = default;
@@ -2530,7 +2555,7 @@ base::expected<OperandDescriptor, std::string> ValidateTileAndInferOutput(
   }
 
   return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   std::move(output_shape), label);
+                                   output_shape, label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateTransposeAndInferOutput(
@@ -2558,7 +2583,7 @@ base::expected<OperandDescriptor, std::string> ValidateTransposeAndInferOutput(
     output_shape[i] = input.shape()[permutation[i]];
   }
   return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   std::move(output_shape), label);
+                                   output_shape, label);
 }
 
 SliceAttributes::SliceAttributes() = default;
@@ -2654,7 +2679,7 @@ base::expected<OperandDescriptor, std::string> ValidateSliceAndInferOutput(
   }
 
   return OperandDescriptor::Create(context_properties, input.data_type(),
-                                   std::move(output_shape), label);
+                                   output_shape, label);
 }
 
 base::expected<OperandDescriptor, std::string> ValidateReduceAndInferOutput(
@@ -2907,7 +2932,7 @@ base::expected<OperandDescriptor, std::string> ValidateWhereAndInferOutput(
         "from trueValue and falseValue."));
   }
   return OperandDescriptor::Create(context_properties, true_value.data_type(),
-                                   *std::move(output_shape), label);
+                                   *output_shape, label);
 }
 
 base::expected<void, std::string> ValidateAxes(base::span<const uint32_t> axes,

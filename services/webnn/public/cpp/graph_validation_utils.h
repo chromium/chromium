@@ -522,6 +522,15 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
                                   base::span<const uint32_t> axes,
                                   std::string_view label);
 
+// Validate and infer output information of expand operator defined in
+// WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-expand
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateExpandAndInferOutput(const ContextProperties& context_properties,
+                                 const OperandDescriptor& input,
+                                 base::span<const uint32_t> new_shape,
+                                 std::string_view label);
+
 // Validate and infer output information of gather operator defined in
 // WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-gather
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
