@@ -106,7 +106,6 @@ class MockDelegate : public StandaloneTrustedVaultBackend::Delegate {
   MockDelegate() = default;
   ~MockDelegate() override = default;
   MOCK_METHOD(void, NotifyRecoverabilityDegradedChanged, (), (override));
-  MOCK_METHOD(void, NotifyStateChanged, (), (override));
 };
 
 class FakeLocalRecoveryFactor : public LocalRecoveryFactor {

@@ -238,7 +238,7 @@ void StandaloneTrustedVaultBackend::WriteDegradedRecoverabilityState(
       storage_->FindUserVault(primary_account_->gaia);
   *per_user_vault->mutable_degraded_recoverability_state() =
       degraded_recoverability_state;
-  WriteDataToDiskAndNotify();
+  storage_->WriteDataToDisk();
 }
 
 void StandaloneTrustedVaultBackend::OnDegradedRecoverabilityChanged() {
@@ -362,7 +362,7 @@ void StandaloneTrustedVaultBackend::StoreKeys(
         key, per_user_vault->add_vault_key()->mutable_key_material());
   }
 
-  WriteDataToDiskAndNotify();
+  storage_->WriteDataToDisk();
   MaybeRegisterDevice();
 }
 
@@ -480,7 +480,7 @@ void StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo(
       };
 
   storage_->RemoveUserVaults(should_remove_user_data);
-  WriteDataToDiskAndNotify();
+  storage_->WriteDataToDisk();
 }
 
 bool StandaloneTrustedVaultBackend::MarkLocalKeysAsStale(
@@ -493,7 +493,7 @@ bool StandaloneTrustedVaultBackend::MarkLocalKeysAsStale(
   }
 
   per_user_vault->set_keys_marked_as_stale_by_consumer(true);
-  WriteDataToDiskAndNotify();
+  storage_->WriteDataToDisk();
   return true;
 }
 
@@ -595,7 +595,7 @@ void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
 
   *per_user_vault = trusted_vault_pb::LocalTrustedVaultPerUser();
   per_user_vault->set_gaia_id(account_info.gaia.ToString());
-  WriteDataToDiskAndNotify();
+  storage_->WriteDataToDisk();
 
   // This codepath invoked as part of sync reset. While sync reset can cause
   // resetting primary account, this is not the case for Chrome OS and Butter
@@ -727,7 +727,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
               GetConstantTrustedVaultKey(),
               per_user_vault->add_vault_key()->mutable_key_material());
           per_user_vault->set_last_vault_key_version(key_version);
-          WriteDataToDiskAndNotify();
+          storage_->WriteDataToDisk();
         }
       }
       break;
@@ -880,12 +880,7 @@ void StandaloneTrustedVaultBackend::
       };
 
   storage_->RemoveUserVaults(should_remove_user_data);
-  WriteDataToDiskAndNotify();
-}
-
-void StandaloneTrustedVaultBackend::WriteDataToDiskAndNotify() {
   storage_->WriteDataToDisk();
-  delegate_->NotifyStateChanged();
 }
 
 }  // namespace trusted_vault

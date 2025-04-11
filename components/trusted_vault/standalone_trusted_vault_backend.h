@@ -52,8 +52,6 @@ class StandaloneTrustedVaultBackend
     Delegate& operator=(const Delegate&) = delete;
 
     virtual void NotifyRecoverabilityDegradedChanged() = 0;
-    // Called whenever persisted state changes.
-    virtual void NotifyStateChanged() = 0;
   };
 
   class LocalRecoveryFactorsFactory {
@@ -233,8 +231,6 @@ class StandaloneTrustedVaultBackend
   // Removes all data for non-primary accounts if they were previously marked
   // for deletion due to accounts in cookie jar changes.
   void RemoveNonPrimaryAccountKeysIfMarkedForDeletion();
-
-  void WriteDataToDiskAndNotify();
 
   const SecurityDomainId security_domain_id_;
 

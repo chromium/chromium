@@ -224,10 +224,8 @@ IdentityManagerObserver::GetPrimaryAccountRefreshTokenErrorState() const {
 class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
  public:
   explicit BackendDelegate(
-      const base::RepeatingClosure& notify_recoverability_degraded_cb,
-      const base::RepeatingClosure& notify_state_changed_cb)
-      : notify_recoverability_degraded_cb_(notify_recoverability_degraded_cb),
-        notify_state_changed_cb_(notify_state_changed_cb) {}
+      const base::RepeatingClosure& notify_recoverability_degraded_cb)
+      : notify_recoverability_degraded_cb_(notify_recoverability_degraded_cb) {}
 
   ~BackendDelegate() override = default;
 
@@ -236,11 +234,8 @@ class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
     notify_recoverability_degraded_cb_.Run();
   }
 
-  void NotifyStateChanged() override { notify_state_changed_cb_.Run(); }
-
  private:
   const base::RepeatingClosure notify_recoverability_degraded_cb_;
-  const base::RepeatingClosure notify_state_changed_cb_;
 };
 
 }  // namespace
@@ -268,14 +263,10 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
       security_domain,
       std::make_unique<StandaloneTrustedVaultStorage>(base_dir,
                                                       security_domain),
-      std::make_unique<BackendDelegate>(
-          base::BindPostTaskToCurrentDefault(
-              base::BindRepeating(&StandaloneTrustedVaultClient::
-                                      NotifyRecoverabilityDegradedChanged,
-                                  weak_ptr_factory_.GetWeakPtr())),
-          base::BindPostTaskToCurrentDefault(base::BindRepeating(
-              &StandaloneTrustedVaultClient::NotifyBackendStateChanged,
-              weak_ptr_factory_.GetWeakPtr()))),
+      std::make_unique<BackendDelegate>(base::BindPostTaskToCurrentDefault(
+          base::BindRepeating(&StandaloneTrustedVaultClient::
+                                  NotifyRecoverabilityDegradedChanged,
+                              weak_ptr_factory_.GetWeakPtr()))),
       std::move(connection));
   backend_task_runner_->PostTask(
       FROM_HERE,
@@ -414,18 +405,6 @@ void StandaloneTrustedVaultClient::FetchIsDeviceRegisteredForTesting(
                      std::move(callback)));
 }
 
-void StandaloneTrustedVaultClient::AddDebugObserverForTesting(
-    DebugObserver* debug_observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  debug_observer_list_.AddObserver(debug_observer);
-}
-
-void StandaloneTrustedVaultClient::RemoveDebugObserverForTesting(
-    DebugObserver* debug_observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  debug_observer_list_.RemoveObserver(debug_observer);
-}
-
 void StandaloneTrustedVaultClient::
     GetLastAddedRecoveryMethodPublicKeyForTesting(
         base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
@@ -463,13 +442,6 @@ void StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observer_list_) {
     observer.OnTrustedVaultRecoverabilityChanged();
-  }
-}
-
-void StandaloneTrustedVaultClient::NotifyBackendStateChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (DebugObserver& debug_observer : debug_observer_list_) {
-    debug_observer.OnBackendStateChanged();
   }
 }
 
