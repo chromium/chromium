@@ -5,8 +5,8 @@
 #include <optional>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
-#include "base/types/span.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/desks_storage/core/desk_template_util.h"
