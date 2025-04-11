@@ -10,6 +10,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -31,12 +32,15 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 @implementation ExplainWithGeminiMediator {
   // The Browser's WebStateList.
   base::WeakPtr<WebStateList> _webStateList;
+  raw_ptr<signin::IdentityManager> _identityManager;
 }
 
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                     identityManager:(signin::IdentityManager*)identityManager {
   if ((self = [super init])) {
     CHECK(webStateList);
     _webStateList = webStateList->AsWeakPtr();
+    _identityManager = identityManager;
   }
   return self;
 }
@@ -57,11 +61,30 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 // Checks if Explain With Gemini can be performed.
 - (BOOL)canPerformExplainWithGemini {
   // TODO(crbug.com/408000561): Only show for some users.
+  if (![self checkAgeCondition]) {
+    return NO;
+  };
   CHECK(ExplainGeminiEditMenuPosition() !=
         PositionForExplainGeminiEditMenu::kDisabled);
   WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
   return tabHelper && tabHelper->CanRetrieveSelectedText() &&
          self.applicationCommandHandler;
+}
+
+// Checks if the user is signIn and is 18+ years old.
+- (BOOL)checkAgeCondition {
+  if (!_identityManager) {
+    return NO;
+  }
+
+  AccountCapabilities capabilities =
+      _identityManager
+          ->FindExtendedAccountInfo(_identityManager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .capabilities;
+
+  return capabilities.can_use_model_execution_features() ==
+         signin::Tribool::kTrue;
 }
 
 // Returns the title of button Explain With Gemini.

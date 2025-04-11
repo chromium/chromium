@@ -37,6 +37,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
     "//ios/web/public",
     "//ui/base",
     "//ui/strings:ui_strings_grit",

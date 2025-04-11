@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_delegate.h"
 
 @protocol ApplicationCommands;
@@ -23,6 +24,7 @@ class WebStateList;
 // Initializer for a mediator. `webStateList` is the WebStateList for the
 // BrowserContainer that owns this mediator.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                     identityManager:(signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

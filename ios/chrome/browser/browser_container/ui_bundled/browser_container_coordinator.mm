@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "url/gurl.h"
 
 #if BUILDFLAG(IOS_SCREEN_TIME_ENABLED)
@@ -135,8 +136,9 @@
   if (ExplainGeminiEditMenuPosition() !=
           PositionForExplainGeminiEditMenu::kDisabled &&
       !incognito) {
-    _explainWithGeminiMediator =
-        [[ExplainWithGeminiMediator alloc] initWithWebStateList:webStateList];
+    _explainWithGeminiMediator = [[ExplainWithGeminiMediator alloc]
+        initWithWebStateList:webStateList
+             identityManager:IdentityManagerFactory::GetForProfile(profile)];
 
     _explainWithGeminiMediator.applicationCommandHandler =
         applicationCommandsHandler;
