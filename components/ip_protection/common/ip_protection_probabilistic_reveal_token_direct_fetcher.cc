@@ -42,7 +42,6 @@ namespace ip_protection {
 
 namespace {
 
-// TODO(crbug.com/391358219): Add more details.
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation(
         "ip_protection_service_get_probabilistic_reveal_token",
@@ -51,7 +50,12 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       sender: "IP Protection Service Client"
       description:
         "Request to a Google server to obtain probabilistic reveal tokens "
-        "for IP Protection proxied origins."
+        "(PRTs) for the registered domains. PRTs enable a delayed IP sampling "
+        "mechanism to defend against fraud, and analyze emerging fraudulent "
+        "behavior while still mitigating the ability to track users at scale "
+        "using IP addresses. See explainer "
+        "https://github.com/GoogleChrome/ip-protection/blob/main/prt_explainer.md "
+        "for more details."
       trigger:
         "On incognito profile startup, and periodically during incognito "
         "session."
@@ -66,7 +70,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
       user_data {
         type: NONE
       }
-      last_reviewed: "2025-01-16"
+      last_reviewed: "2025-04-10"
     }
     policy {
       cookies_allowed: NO
