@@ -49,7 +49,6 @@ public class HomeButtonCoordinatorTest {
                 new HomeButtonCoordinator(
                         mContext,
                         mHomeButton,
-                        (view) -> {},
                         (context) -> {},
                         () -> mIsHomeButtonMenuDisabled);
     }

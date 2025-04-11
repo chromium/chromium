@@ -198,6 +198,7 @@ public class CustomTabToolbarUnitTest {
                 mMenuButtonCoordinator,
                 mTabSwitcherButtonCoordinator,
                 mHistoryDelegate,
+                mPartnerHomepageEnabledSupplier,
                 mOfflineDownloader,
                 mUserEducationHelper,
                 trackerSupplier,

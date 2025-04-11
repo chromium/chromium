@@ -65,6 +65,7 @@ import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.function.BooleanSupplier;
 
 /** The Toolbar object for Tablet screens. */
 @SuppressLint("Instantiatable")
@@ -309,7 +310,10 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     public void onClick(View v) {
-        if (mForwardButton == v) {
+        if (mHomeButton == v) {
+            recordHomeModuleClickedIfNTPVisible();
+            openHomepage();
+        } else if (mForwardButton == v) {
             forward();
             RecordUserAction.record("MobileToolbarForward");
         } else if (mBookmarkButton == v) {
@@ -549,6 +553,7 @@ public class ToolbarTablet extends ToolbarLayout
             MenuButtonCoordinator menuButtonCoordinator,
             ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
             HistoryDelegate historyDelegate,
+            BooleanSupplier partnerHomepageEnabledSupplier,
             OfflineDownloader offlineDownloader,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
@@ -561,6 +566,7 @@ public class ToolbarTablet extends ToolbarLayout
                 menuButtonCoordinator,
                 tabSwitcherButtonCoordinator,
                 historyDelegate,
+                partnerHomepageEnabledSupplier,
                 offlineDownloader,
                 userEducationHelper,
                 trackerSupplier,

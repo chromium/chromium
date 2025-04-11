@@ -174,8 +174,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPr
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.feature_engagement.EventConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -903,37 +901,6 @@ public class ToolbarManager
                             tab.getWindowAndroid().getActivity().get(), tab, tab.getProfile());
                 };
 
-        View homeButton = controlContainer.findViewById(R.id.home_button);
-        if (homeButton != null) {
-            mHomeButtonCoordinator =
-                    new HomeButtonCoordinator(
-                            mActivity,
-                            homeButton,
-                            (view) -> {
-                                if (ntpDelegate.isCurrentlyVisible()) {
-                                    // Record the clicking action on the home button.
-                                    BrowserUiUtils.recordModuleClickHistogram(
-                                            ModuleTypeOnStartAndNtp.HOME_BUTTON);
-                                }
-                                setUrlBarFocus(false, OmniboxFocusReason.UNFOCUS);
-                                mToolbarTabController.openHomepage();
-                                Tracker tracker =
-                                        profileSupplier.hasValue()
-                                                ? TrackerFactory.getTrackerForProfile(
-                                                        profileSupplier.get())
-                                                : null;
-                                boolean isPartnerHomepageEnabled =
-                                        PartnerBrowserCustomizations.getInstance()
-                                                .isHomepageProviderAvailableAndEnabled();
-                                if (tracker != null && isPartnerHomepageEnabled) {
-                                    tracker.notifyEvent(
-                                            EventConstants.PARTNER_HOME_PAGE_BUTTON_PRESSED);
-                                }
-                            },
-                            this::onHomeButtonMenuClick,
-                            HomepagePolicyManager::isHomepageManagedByPolicy);
-        }
-
         ImageButton backButton = mControlContainer.findViewById(R.id.back_button);
         if (backButton != null) {
             mBackButtonCoordinator =
@@ -1639,6 +1606,8 @@ public class ToolbarManager
                         mHomepageEnabledSupplier,
                         mCompositorViewHolder::getResourceManager,
                         historyDelegate,
+                        PartnerBrowserCustomizations.getInstance()
+                                ::isHomepageProviderAvailableAndEnabled,
                         DownloadUtils::downloadOfflinePage,
                         initializeWithIncognitoColors,
                         constraintsSupplier,
@@ -1660,6 +1629,16 @@ public class ToolbarManager
 
         HomepageManager.getInstance().addListener(mHomepageStateListener);
         mHomepageStateListener.onHomepageStateUpdated();
+
+        View homeButton = controlContainer.findViewById(R.id.home_button);
+        if (homeButton != null) {
+            mHomeButtonCoordinator =
+                    new HomeButtonCoordinator(
+                            mActivity,
+                            homeButton,
+                            this::onHomeButtonMenuClick,
+                            HomepagePolicyManager::isHomepageManagedByPolicy);
+        }
 
         return toolbar;
     }
