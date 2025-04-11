@@ -266,6 +266,12 @@ BASE_FEATURE(kBocaNetworkRestriction,
              "BocaNetworkRestriction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables using a specific app name for speech recognition for Boca
+// on ChromeOS.
+BASE_FEATURE(kBocaClientTypeForSpeechRecognition,
+             "BocaClientTypeForSpeechRecognition",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kCrosSwitcher, "CrosSwitcher", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Indicates whether the camera super resolution is supported. Note that this
@@ -3468,6 +3474,10 @@ bool IsBocaSpotlightEnabled() {
 
 bool IsBocaNetworkRestrictionEnabled() {
   return base::FeatureList::IsEnabled(kBocaNetworkRestriction);
+}
+
+bool IsBocaClientTypeForSpeechRecognitionEnabled() {
+  return base::FeatureList::IsEnabled(kBocaClientTypeForSpeechRecognition);
 }
 
 bool IsBrightnessControlInSettingsEnabled() {

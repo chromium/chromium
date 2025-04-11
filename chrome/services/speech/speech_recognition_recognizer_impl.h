@@ -140,6 +140,9 @@ class SpeechRecognitionRecognizerImpl
 
   media::mojom::SpeechRecognitionOptionsPtr options_;
 
+ protected:
+  bool mask_offensive_words() { return mask_offensive_words_; }
+
  private:
   void OnLanguageChanged(const std::string& language) final;
 

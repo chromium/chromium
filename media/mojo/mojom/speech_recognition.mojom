@@ -12,7 +12,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Next MinVersion: 9
+// Next MinVersion: 10
 
 // Corresponds to the LangIdEvent.ConfidenceInterval defined in
 // http://google3/speech/soda/public/soda_event.proto.
@@ -279,6 +279,8 @@ enum RecognizerClientType {
   kProjector,
   // CastModerator on ChromeOS.
   kCastModerator,
+  // SchoolTools on ChromeOS.
+  [MinVersion=9] kSchoolTools,
 };
 
 // Options for speech recognition.

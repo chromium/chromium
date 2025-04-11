@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/accessibility/live_caption/system_live_caption_service.h"
 #include "chromeos/ash/components/boca/babelorca/babel_orca_speech_recognizer.h"
@@ -76,6 +77,13 @@ void BabelOrcaSpeechRecognizerImpl::ObserveSpeechRecognition(
 
 void BabelOrcaSpeechRecognizerImpl::RemoveSpeechRecognitionObservation() {
   speech_recognition_event_handler_.RemoveSpeechRecognitionObservation();
+}
+
+media::mojom::RecognizerClientType
+BabelOrcaSpeechRecognizerImpl::GetRecognizerClientType() {
+  return features::IsBocaClientTypeForSpeechRecognitionEnabled()
+             ? media::mojom::RecognizerClientType::kSchoolTools
+             : SystemLiveCaptionService::GetRecognizerClientType();
 }
 
 }  // namespace ash::babelorca

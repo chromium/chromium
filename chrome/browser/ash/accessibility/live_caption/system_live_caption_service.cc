@@ -278,6 +278,11 @@ void SystemLiveCaptionService::OnNonChromeOutputStopped() {
   output_running_ = false;
 }
 
+media::mojom::RecognizerClientType
+SystemLiveCaptionService::GetRecognizerClientType() {
+  return media::mojom::RecognizerClientType::kLiveCaption;
+}
+
 void SystemLiveCaptionService::StopTimeoutFinished() {
   StopRecognizing();
   // At this point, we can count the number of chars translated for this
@@ -308,8 +313,7 @@ void SystemLiveCaptionService::CreateClient() {
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
           /*enable_formatting=*/true, GetPrimaryLanguageCode(),
-          /*is_server_based=*/false,
-          media::mojom::RecognizerClientType::kLiveCaption,
+          /*is_server_based=*/false, GetRecognizerClientType(),
           /*skip_continuously_empty_audio=*/true));
 }
 

@@ -289,7 +289,9 @@ void SpeechRecognitionRecognizerImpl::SendAudioToSpeechRecognitionService(
 
   // Update watch time durations.
   if (options_->recognizer_client_type ==
-      media::mojom::RecognizerClientType::kLiveCaption) {
+          media::mojom::RecognizerClientType::kLiveCaption ||
+      options_->recognizer_client_type ==
+          media::mojom::RecognizerClientType::kSchoolTools) {
     base::TimeDelta duration =
         media::AudioTimestampHelper::FramesToTime(frame_count, sample_rate);
     if (is_client_requesting_speech_recognition_) {

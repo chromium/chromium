@@ -46,6 +46,9 @@ class BabelOrcaSpeechRecognizerImpl : public BabelOrcaSpeechRecognizer,
           language_identification_callback) override;
   void RemoveSpeechRecognitionObservation() override;
 
+ protected:
+  media::mojom::RecognizerClientType GetRecognizerClientType() override;
+
  private:
   SodaInstaller soda_installer_;
   SpeechRecognitionEventHandler speech_recognition_event_handler_;
