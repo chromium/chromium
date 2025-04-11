@@ -222,11 +222,11 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   if (base::FeatureList::IsEnabled(features::kSideBySide)) {
     auto split_tab_action = side_panel::customize_chrome::mojom::Action::New(
         MojoActionForChromeAction(kActionSplitTab).value(),
-        base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_ACCNAME_SPLIT_TABS)),
+        base::UTF16ToUTF8(l10n_util::GetStringUTF16(IDS_PIN_SPLIT_TAB_TOGGLE)),
         prefs()->GetBoolean(prefs::kPinSplitTabButton), false,
         side_panel::customize_chrome::mojom::CategoryId::kNavigation,
         GURL(webui::EncodePNGAndMakeDataURI(
-            ui::ImageModel::FromVectorIcon(kSplitTabIcon, icon_color_id)
+            ui::ImageModel::FromVectorIcon(kSplitSceneIcon, icon_color_id)
                 .Rasterize(&provider),
             scale_factor)));
 

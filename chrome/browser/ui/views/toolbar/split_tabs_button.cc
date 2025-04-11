@@ -27,7 +27,7 @@ SplitTabsToolbarButton::SplitTabsToolbarButton(Browser* browser)
               kToolbarSplitTabsToolbarButtonElementId);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_SPLIT_TABS));
-  SetVectorIcon(kSplitTabIcon);
+  SetVectorIcon(kSplitSceneIcon);
   pin_state_.Init(
       prefs::kPinSplitTabButton, browser_->profile()->GetPrefs(),
       base::BindRepeating(&SplitTabsToolbarButton::UpdateButtonVisibility,
