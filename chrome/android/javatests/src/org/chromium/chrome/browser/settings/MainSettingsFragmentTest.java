@@ -70,6 +70,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -919,9 +920,10 @@ public class MainSettingsFragmentTest {
         // this is an instrumentation test there's not a good way to fake or force device
         // characteristics, so we just fork the test's behavior based on the eligibility state.
         boolean showSetting =
-                BuildInfo.getInstance().isFoldable
-                        || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                                mSettingsActivityTestRule.getActivity());
+                !DeviceInfo.isAutomotive()
+                        && (BuildInfo.getInstance().isFoldable
+                                || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                        mSettingsActivityTestRule.getActivity()));
         if (!showSetting) {
             Assert.assertNull(
                     "Address Bar should not be shown for for ineligible devices",

@@ -25,6 +25,7 @@ import androidx.preference.Preference;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -574,6 +575,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         // - showing on Foldables in unfolded (open) state.
         boolean showSetting =
                 ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
+                        && !DeviceInfo.isAutomotive()
                         && (BuildInfo.getInstance().isFoldable
                                 || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                                         getContext()));
