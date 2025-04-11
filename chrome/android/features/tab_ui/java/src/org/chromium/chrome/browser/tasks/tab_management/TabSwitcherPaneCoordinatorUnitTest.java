@@ -52,6 +52,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
@@ -138,6 +139,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
     @Mock private ShareDelegateSupplier mShareDelegateSupplier;
     @Mock private TabBookmarker mTabBookmarker;
+    @Mock private BookmarkModel mBookmarkModel;
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -192,6 +194,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         mIsVisibleSupplier.set(false);
         mIsAnimatingSupplier.set(false);
+
+        BookmarkModel.setInstanceForTesting(mBookmarkModel);
 
         mActivityScenarioRule.getScenario().onActivity(this::onActivityCreated);
     }

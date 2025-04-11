@@ -35,6 +35,7 @@ import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -61,6 +62,8 @@ import java.util.List;
 public class TabSwitcherContextMenuCoordinatorUnitTest {
     private static @TabId final int TAB_ID = 1;
     private static final int MENU_WIDTH = 300;
+    private static final String LOCALHOST_URL = "localhost://";
+    private static final String CHROME_URL = "chrome://";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -83,6 +86,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
     @Mock private ShareDelegate mShareDelegate;
     @Mock private Profile mProfile;
     @Mock private Resources mResources;
+    @Mock private BookmarkModel mBookmarkModel;
 
     private TabSwitcherContextMenuCoordinator mCoordinator;
     private ModelList mMenuItemList;
@@ -104,6 +108,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         when(mResources.getDimensionPixelSize(R.dimen.tab_strip_group_context_menu_max_width))
                 .thenReturn(MENU_WIDTH);
 
+        BookmarkModel.setInstanceForTesting(mBookmarkModel);
+
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
@@ -111,6 +117,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
                 new TabSwitcherContextMenuCoordinator(
                         mActivity,
                         mTabBookmarker,
+                        mProfile,
                         mTabGroupModelFilter,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
@@ -121,6 +128,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         mMenuItemList = new ModelList();
         when(mTabModel.getTabById(anyInt())).thenReturn(mTab);
         when(mTab.getId()).thenReturn(TAB_ID);
+        when(mBookmarkModel.hasBookmarkIdForTab(any())).thenReturn(false);
     }
 
     @Test
@@ -204,6 +212,21 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    public void testGetMenuItemClickedCallback_editBookmark() {
+        TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
+                TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
+                        mTabBookmarker,
+                        mTabGroupModelFilter,
+                        mTabGroupListBottomSheetCoordinator,
+                        mTabGroupCreationDialogManager,
+                        mShareDelegateSupplier,
+                        mTabListEditorManager);
+
+        callback.onClick(R.id.edit_bookmark, TAB_ID, null);
+        verify(mTabBookmarker).addOrEditBookmark(mTab);
+    }
+
+    @Test
     public void testGetMenuItemClickedCallback_selectTabs() {
         TabSwitcherContextMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabSwitcherContextMenuCoordinator.getMenuItemClickedCallback(
@@ -265,70 +288,61 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
     @Test
     public void testBuildMenuActionItems_withGroups() {
-        mUrl = new GURL("localhost://");
+        mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(5, mMenuItemList.size());
-        assertEquals(
-                R.string.add_tab_to_group,
-                mMenuItemList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.add_to_bookmarks,
-                mMenuItemList.get(1).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.share, mMenuItemList.get(2).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.menu_select_tabs,
-                mMenuItemList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.close_tab,
-                mMenuItemList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(R.string.add_tab_to_group, getMenuItemTitleId(0));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
+        assertEquals(R.string.share, getMenuItemTitleId(2));
+        assertEquals(R.string.menu_select_tabs, getMenuItemTitleId(3));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(4));
     }
 
     @Test
     public void testBuildMenuActionItems_noGroups() {
-        mUrl = new GURL("localhost://");
+        mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
         when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(5, mMenuItemList.size());
-        assertEquals(
-                R.string.menu_add_to_new_group,
-                mMenuItemList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.add_to_bookmarks,
-                mMenuItemList.get(1).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.share, mMenuItemList.get(2).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.menu_select_tabs,
-                mMenuItemList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.close_tab,
-                mMenuItemList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(R.string.menu_add_to_new_group, getMenuItemTitleId(0));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
+        assertEquals(R.string.share, getMenuItemTitleId(2));
+        assertEquals(R.string.menu_select_tabs, getMenuItemTitleId(3));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(4));
+    }
+
+    @Test
+    public void testBuildMenuActionItems_alreadyBookmarked() {
+        when(mBookmarkModel.hasBookmarkIdForTab(any())).thenReturn(true);
+
+        mUrl = new GURL(LOCALHOST_URL);
+        when(mTab.getUrl()).thenReturn(mUrl);
+        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
+        mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
+
+        assertEquals(5, mMenuItemList.size());
+        assertEquals(R.string.menu_add_to_new_group, getMenuItemTitleId(0));
+        assertEquals(R.string.edit_bookmark, getMenuItemTitleId(1));
+        assertEquals(R.string.share, getMenuItemTitleId(2));
+        assertEquals(R.string.menu_select_tabs, getMenuItemTitleId(3));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(4));
     }
 
     @Test
     public void testBuildMenuActionItems_sharingDisabled() {
-        mUrl = new GURL("chrome://");
+        mUrl = new GURL(CHROME_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(4, mMenuItemList.size());
-        assertEquals(
-                R.string.add_tab_to_group,
-                mMenuItemList.get(0).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.add_to_bookmarks,
-                mMenuItemList.get(1).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.menu_select_tabs,
-                mMenuItemList.get(2).model.get(ListMenuItemProperties.TITLE_ID));
-        assertEquals(
-                R.string.close_tab,
-                mMenuItemList.get(3).model.get(ListMenuItemProperties.TITLE_ID));
+        assertEquals(R.string.add_tab_to_group, getMenuItemTitleId(0));
+        assertEquals(R.string.add_to_bookmarks, getMenuItemTitleId(1));
+        assertEquals(R.string.menu_select_tabs, getMenuItemTitleId(2));
+        assertEquals(R.string.close_tab, getMenuItemTitleId(3));
     }
 
     @Test
@@ -352,5 +366,9 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
     public void testGetCollaborationIdOrNull_tabNotFound() {
         when(mTabModel.getTabById(anyInt())).thenReturn(null);
         assertNull(mCoordinator.getCollaborationIdOrNull(TAB_ID));
+    }
+
+    private int getMenuItemTitleId(int mMenuItemListIndex) {
+        return mMenuItemList.get(mMenuItemListIndex).model.get(ListMenuItemProperties.TITLE_ID);
     }
 }
