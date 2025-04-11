@@ -24,6 +24,7 @@ class PushMessagingUnsubscribedEntry {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   static std::vector<PushMessagingUnsubscribedEntry> GetAll(Profile* profile);
+  static void DeleteAllFromPrefs(Profile* profile);
 
   // Constructs a valid unsubscribed entry.
   PushMessagingUnsubscribedEntry(GURL origin,

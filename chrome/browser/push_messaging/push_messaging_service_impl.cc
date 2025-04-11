@@ -1397,6 +1397,8 @@ void PushMessagingServiceImpl::SetUnsubscribeCallbackForTesting(
 void PushMessagingServiceImpl::DidDeleteServiceWorkerRegistration(
     const GURL& origin,
     int64_t service_worker_registration_id) {
+  PushMessagingUnsubscribedEntry(origin, service_worker_registration_id)
+      .DeleteFromPrefs(profile_);
   const PushMessagingAppIdentifier& app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           profile_, origin, service_worker_registration_id);
@@ -1426,6 +1428,8 @@ void PushMessagingServiceImpl::SetServiceWorkerUnregisteredCallbackForTesting(
 // DidDeleteServiceWorkerDatabase methods --------------------------------------
 
 void PushMessagingServiceImpl::DidDeleteServiceWorkerDatabase() {
+  PushMessagingUnsubscribedEntry::DeleteAllFromPrefs(profile_);
+
   std::vector<PushMessagingAppIdentifier> app_identifiers =
       PushMessagingAppIdentifier::GetAll(profile_);
 

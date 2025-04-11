@@ -90,6 +90,12 @@ PushMessagingUnsubscribedEntry::GetAll(Profile* profile) {
   return result;
 }
 
+// static
+void PushMessagingUnsubscribedEntry::DeleteAllFromPrefs(Profile* profile) {
+  profile->GetPrefs()->SetList(prefs::kPushMessagingUnsubscribedEntriesList,
+                               base::Value::List());
+}
+
 void PushMessagingUnsubscribedEntry::PersistToPrefs(Profile* profile) const {
   DCheckValid();
 

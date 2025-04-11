@@ -158,3 +158,19 @@ TEST_F(PushMessagingUnsubscribedEntryTest, Delete) {
   PushMessagingUnsubscribedEntry(origin_2, 2).DeleteFromPrefs(profile());
   EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()), IsEmpty());
 }
+
+TEST_F(PushMessagingUnsubscribedEntryTest, DeleteAllFromPrefs) {
+  ASSERT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()), IsEmpty());
+
+  PushMessagingUnsubscribedEntry entry_1 =
+      PushMessagingUnsubscribedEntry(GURL("https://example.test"), 1);
+  entry_1.PersistToPrefs(profile());
+  PushMessagingUnsubscribedEntry entry_2 =
+      PushMessagingUnsubscribedEntry(GURL("https://example2.test"), 2);
+  entry_2.PersistToPrefs(profile());
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()),
+              UnorderedPointwise(EntryEquals(), {entry_1, entry_2}));
+
+  PushMessagingUnsubscribedEntry::DeleteAllFromPrefs(profile());
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()), IsEmpty());
+}

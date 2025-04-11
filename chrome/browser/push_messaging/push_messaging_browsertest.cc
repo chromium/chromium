@@ -2208,6 +2208,91 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
+                       UnregisteringServiceWorkerDeletesUnsubscribedEntries) {
+  ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(origin, GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_BLOCK);
+    run_loop.Run();
+  }
+
+  // There should be no subscription but one unsubscribed entry.
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
+
+  // Unregister service worker and wait for callback.
+  {
+    base::RunLoop run_loop;
+    push_service()->SetServiceWorkerUnregisteredCallbackForTesting(
+        run_loop.QuitClosure());
+    EXPECT_EQ("service worker unregistration status: true",
+              RunScript("unregisterServiceWorker()"));
+    run_loop.Run();
+  }
+
+  // There should be no subscription and no unsubscribed entry anymore.
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PushMessagingBrowserTest,
+    ServiceWorkerDatabaseDeletionDeletesUnsubscribedEntries) {
+  ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
+
+  EXPECT_EQ("true - subscribed", RunScript("hasSubscription()"));
+
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
+
+  {
+    base::RunLoop run_loop;
+    push_service()->SetContentSettingChangedCallbackForTesting(
+        run_loop.QuitClosure());
+
+    HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
+        ->SetContentSettingDefaultScope(origin, GURL(),
+                                        ContentSettingsType::NOTIFICATIONS,
+                                        CONTENT_SETTING_BLOCK);
+    run_loop.Run();
+  }
+
+  // There should be no subscription but one unsubscribed entry.
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+  EXPECT_THAT(
+      PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+      ElementsAre(Property(&PushMessagingUnsubscribedEntry::origin, origin)));
+
+  // Pretend as if the Service Worker database went away, and wait for callback
+  // to complete.
+  {
+    base::RunLoop run_loop;
+    push_service()->SetServiceWorkerDatabaseWipedCallbackForTesting(
+        run_loop.QuitClosure());
+    push_service()->DidDeleteServiceWorkerDatabase();
+    run_loop.Run();
+  }
+
+  // There should be no subscription and no unsubscribed entry anymore.
+  EXPECT_EQ(PushMessagingAppIdentifier::GetCount(GetBrowser()->profile()), 0u);
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(GetBrowser()->profile()),
+              IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                        InvalidGetSubscriptionUnsubscribes) {
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
 
