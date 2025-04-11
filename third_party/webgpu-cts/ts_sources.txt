@@ -87,9 +87,6 @@ src/webgpu/util/binary_stream.ts
 src/webgpu/util/conversion.ts
 src/webgpu/util/device_pool.ts
 src/webgpu/util/texture/texel_data.ts
-src/webgpu/util/texture/texel_view.ts
-src/webgpu/util/texture/texture_ok.ts
-src/webgpu/util/texture.ts
 src/webgpu/gpu_test.ts
 src/stress/compute/compute_pass.spec.ts
 src/stress/device/bind_group_allocation.spec.ts
@@ -115,6 +112,10 @@ src/stress/render/render_pass.spec.ts
 src/stress/render/vertex_buffers.spec.ts
 src/stress/shaders/entry_points.spec.ts
 src/stress/shaders/non_halting.spec.ts
+src/webgpu/util/texture/texel_view.ts
+src/webgpu/util/texture/texture_ok.ts
+src/webgpu/util/texture.ts
+src/webgpu/texture_test_utils.ts
 src/stress/shaders/slow.spec.ts
 src/stress/texture/large.spec.ts
 src/unittests/test_group_test.ts
