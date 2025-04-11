@@ -9,7 +9,6 @@ import android.util.TypedValue;
 
 import androidx.annotation.AttrRes;
 import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
 
 import org.chromium.build.annotations.NullMarked;
 
@@ -41,15 +40,15 @@ public final class AttrUtils {
 
     /**
      * Returns the given color attribute from the theme or resolves and returns the given default
-     * resource if the attribute is not set in the theme.
+     * color if the attribute is not set in the theme.
      */
     public static @ColorInt int resolveColor(
-            Theme theme, @AttrRes int attrRes, @ColorRes int defaultColorRes) {
+            Theme theme, @AttrRes int attrRes, @ColorInt int defaultColor) {
         TypedValue typedValue = new TypedValue();
         if (theme.resolveAttribute(attrRes, typedValue, /* resolveRefs= */ true)) {
             return typedValue.data;
         } else {
-            return theme.getResources().getColor(defaultColorRes, theme);
+            return defaultColor;
         }
     }
 }

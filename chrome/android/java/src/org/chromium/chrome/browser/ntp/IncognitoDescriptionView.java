@@ -147,8 +147,7 @@ public class IncognitoDescriptionView extends LinearLayout {
 
         ChromeClickableSpan span =
                 new ChromeClickableSpan(
-                        getContext(),
-                        R.color.default_text_color_link_light,
+                        getContext().getColor(R.color.default_text_color_link_light),
                         (unused) -> {
                             new ChromeAsyncTabLauncher(/* incognito= */ true)
                                     .launchUrl(
@@ -361,8 +360,7 @@ public class IncognitoDescriptionView extends LinearLayout {
 
         final ChromeClickableSpan learnMoreSpan =
                 new ChromeClickableSpan(
-                        getContext(),
-                        R.color.default_text_color_link_light,
+                        getContext().getColor(R.color.default_text_color_link_light),
                         (view) -> mLearnMore.callOnClick());
 
         boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;

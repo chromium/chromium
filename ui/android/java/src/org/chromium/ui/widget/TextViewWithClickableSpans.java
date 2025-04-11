@@ -10,7 +10,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.text.Layout;
-import android.text.SpannableString;
+import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.util.AttributeSet;
 import android.view.Menu;
@@ -38,11 +38,10 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
     private @Nullable PopupMenu mDisambiguationMenu;
 
     public TextViewWithClickableSpans(Context context) {
-        super(context);
-        init();
+        this(context, /* attrs= */ null);
     }
 
-    public TextViewWithClickableSpans(Context context, AttributeSet attrs) {
+    public TextViewWithClickableSpans(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
@@ -114,9 +113,7 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         // so we should only try to simplify clicking on a clickable span if the touch event
         // isn't already over a clickable span.
 
-        CharSequence text = getText();
-        if (!(text instanceof SpannableString)) return false;
-        SpannableString spannable = (SpannableString) text;
+        if (!(getText() instanceof Spanned text)) return false;
 
         int x = (int) event.getX();
         int y = (int) event.getY();
@@ -131,18 +128,16 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         int line = layout.getLineForVertical(y);
         int off = layout.getOffsetForHorizontal(line, x);
 
-        ClickableSpan[] clickableSpans = spannable.getSpans(off, off, ClickableSpan.class);
+        ClickableSpan[] clickableSpans = text.getSpans(off, off, ClickableSpan.class);
         return clickableSpans.length > 0;
     }
 
     /** Returns the ClickableSpans in this TextView's text. */
     @VisibleForTesting
     public ClickableSpan @Nullable [] getClickableSpans() {
-        CharSequence text = getText();
-        if (!(text instanceof SpannableString)) return null;
+        if (!(getText() instanceof Spanned text)) return null;
 
-        SpannableString spannable = (SpannableString) text;
-        return spannable.getSpans(0, spannable.length(), ClickableSpan.class);
+        return text.getSpans(0, text.length(), ClickableSpan.class);
     }
 
     private void handleAccessibilityClick() {
@@ -162,14 +157,13 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
             return;
         }
 
-        SpannableString spannable = (SpannableString) getText();
+        Spanned spanned = (Spanned) getText();
         mDisambiguationMenu = new PopupMenu(getContext(), this);
         Menu menu = mDisambiguationMenu.getMenu();
         for (final ClickableSpan clickableSpan : clickableSpans) {
             CharSequence itemText =
-                    spannable.subSequence(
-                            spannable.getSpanStart(clickableSpan),
-                            spannable.getSpanEnd(clickableSpan));
+                    spanned.subSequence(
+                            spanned.getSpanStart(clickableSpan), spanned.getSpanEnd(clickableSpan));
             MenuItem menuItem = menu.add(itemText);
             menuItem.setOnMenuItemClickListener(
                     new MenuItem.OnMenuItemClickListener() {
