@@ -1569,6 +1569,14 @@ void DesksController::OnWindowActivating(ActivationReason reason,
   if (!window_desk || window_desk == active_desk_)
     return;
 
+  // If the identified desk is not in the set of current desks (that is, those
+  // that are visible in the mini view), then we ignore the activation. This can
+  // happen in cases when close all is used and the window is on a desk that is
+  // about to go away.
+  if (!HasDesk(window_desk)) {
+    return;
+  }
+
   ActivateDesk(window_desk, DesksSwitchSource::kWindowActivated);
 }
 
