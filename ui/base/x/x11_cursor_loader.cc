@@ -681,7 +681,7 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
         !ReadU32(chunk_header.version) ||  //
         chunk_header.type != entry.type ||
         chunk_header.subtype != entry.subtype) {
-      continue;
+      return {};
     }
 
     struct ImageHeader {
@@ -696,12 +696,12 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
         !ReadU32(image.xhot) ||    //
         !ReadU32(image.yhot) ||    //
         !ReadU32(image.delay)) {
-      continue;
+      return {};
     }
     // Ignore unreasonably-sized cursors to prevent allocating too much
     // memory in the bitmap below.
     if (image.width > 8192u || image.height > 8192u) {
-      continue;
+      return {};
     }
     SkBitmap bitmap;
     bitmap.allocN32Pixels(image.width, image.height);
@@ -714,7 +714,7 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
         UNSAFE_TODO(base::span(static_cast<uint8_t*>(bitmap.getPixels()),
                                bitmap.computeByteSize()));
     if (!ReadBytes(pixels)) {
-      continue;
+      return {};
     }
     images.push_back(XCursorLoader::Image{bitmap,
                                           gfx::Point(image.xhot, image.yhot),
