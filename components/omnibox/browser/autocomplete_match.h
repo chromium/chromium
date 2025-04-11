@@ -482,6 +482,10 @@ struct AutocompleteMatch {
   // and provider type.
   bool IsIPHSuggestion() const;
 
+  // Checks if this match is a contextual search suggestion to be fulfilled
+  // by lens in the side panel.
+  bool IsContextualSearchSuggestion() const;
+
   // Returns true if this match may attach one or more `actions`.
   // This method is used to keep actions off of matches with types that don't
   // mix well with Pedals or other actions (e.g. entities).

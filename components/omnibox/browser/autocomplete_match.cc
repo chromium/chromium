@@ -552,8 +552,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
 
     case Type::SEARCH_SUGGEST:
       return IsTrendSuggestion() ? omnibox::kTrendingUpChromeRefreshIcon
-             : (subtypes.contains(
-                    omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH) &&
+             : (IsContextualSearchSuggestion() &&
                 OmniboxFieldTrial::IsStarterPackPageEnabled())
                  ? omnibox::kSearchSparkIcon
                  : vector_icons::kSearchChromeRefreshIcon;
@@ -883,10 +882,12 @@ bool AutocompleteMatch::IsSearchHistoryType(Type type) {
          type == AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED;
 }
 
+// static
 bool AutocompleteMatch::IsStarterPackType(Type type) {
   return type == AutocompleteMatchType::STARTER_PACK;
 }
 
+// static
 bool AutocompleteMatch::IsClipboardType(Type type) {
   return type == AutocompleteMatchType::CLIPBOARD_URL ||
          type == AutocompleteMatchType::CLIPBOARD_TEXT ||
@@ -1658,6 +1659,10 @@ bool AutocompleteMatch::IsTrendSuggestion() const {
 
 bool AutocompleteMatch::IsIPHSuggestion() const {
   return iph_type != IphType::kNone;
+}
+
+bool AutocompleteMatch::IsContextualSearchSuggestion() const {
+  return subtypes.contains(omnibox::SuggestSubtype::SUBTYPE_CONTEXTUAL_SEARCH);
 }
 
 void AutocompleteMatch::FilterOmniboxActions(

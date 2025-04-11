@@ -886,7 +886,7 @@ void AutocompleteResult::AttachPedalsToMatches(
 
 void AutocompleteResult::AttachContextualSearchFulfillmentActionToMatches() {
   for (AutocompleteMatch& match : matches_) {
-    if (match.subtypes.contains(omnibox::SUBTYPE_CONTEXTUAL_SEARCH)) {
+    if (match.IsContextualSearchSuggestion()) {
       match.takeover_action =
           base::MakeRefCounted<ContextualSearchFulfillmentAction>(
               match.destination_url, match.type,
@@ -1662,6 +1662,12 @@ std::ostream& operator<<(std::ostream& os, const AutocompleteResult& result) {
        << (match.allowed_to_be_default_match ? '*' : ' ');
     if (match.suggestion_group_id) {
       os << " group=" << match.suggestion_group_id.value();
+    }
+    if (!match.subtypes.empty()) {
+      os << " subtypes=";
+      for (auto subtype : match.subtypes) {
+        os << subtype << ',';
+      }
     }
     os << std::endl;
   }
