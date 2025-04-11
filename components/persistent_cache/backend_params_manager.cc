@@ -31,6 +31,7 @@ BackendParamsManager::~BackendParamsManager() = default;
 void BackendParamsManager::GetParamsSyncOrCreateAsync(
     BackendType backend_type,
     const std::string& key,
+    AccessRights access_rights,
     CompletedCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -45,29 +46,36 @@ void BackendParamsManager::GetParamsSyncOrCreateAsync(
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(&BackendParamsManager::CreateParamsSync, top_directory_,
-                     backend_type, key),
+                     backend_type, key, access_rights),
       base::BindOnce(&BackendParamsManager::SaveParams,
                      weak_factory_.GetWeakPtr(), key, std::move(callback)));
 }
 
 // static
-BackendParams BackendParamsManager::CreateParamsSync(base::FilePath directory,
-                                                     BackendType backend_type,
-                                                     const std::string& key) {
+BackendParams BackendParamsManager::CreateParamsSync(
+    base::FilePath directory,
+    BackendType backend_type,
+    const std::string& key,
+    AccessRights access_rights) {
   BackendParams params;
   params.type = backend_type;
 
-  uint32_t flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                   base::File::FLAG_WRITE;
+  const bool writes_supported = (access_rights == AccessRights::kReadWrite);
+  uint32_t flags = base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ;
+
+  if (writes_supported) {
+    flags |= base::File::FLAG_WRITE;
+  }
+
   params.db_file = base::File(
       directory.AppendASCII(base::StrCat({key, kPathSeparator, kDbFile})),
       flags);
-  params.db_file_is_writable = true;
+  params.db_file_is_writable = writes_supported;
 
   params.journal_file = base::File(
       directory.AppendASCII(base::StrCat({key, kPathSeparator, kJournalFile})),
       flags);
-  params.journal_file_is_writable = true;
+  params.journal_file_is_writable = writes_supported;
 
   return params;
 }
