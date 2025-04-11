@@ -5,35 +5,53 @@
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 
 #include <algorithm>
+#include <cinttypes>
+#include <cstdint>
+#include <list>
+#include <map>
+#include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
+#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/format_macros.h"
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
+#include "components/services/storage/indexed_db/scopes/leveldb_scope_deletion_mode.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
@@ -46,13 +64,14 @@
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
-#include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
+#include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/active_blob_registry.h"
+#include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h"
 #include "content/browser/indexed_db/instance/leveldb_compaction_task.h"
@@ -61,7 +80,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/common/database/database_identifier.h"
-#include "storage/common/file_system/file_system_mount_option.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -1434,7 +1452,8 @@ Status BackingStore::ValidateBlobFiles() {
   return Status::OK();
 }
 
-std::unique_ptr<Transaction::Delegate> BackingStore::CreateTransaction(
+std::unique_ptr<indexed_db::BackingStore::Transaction>
+BackingStore::CreateTransaction(
     blink::mojom::IDBTransactionDurability durability,
     blink::mojom::IDBTransactionMode mode) {
   level_db_cleanup_scheduler_.OnTransactionStart();
@@ -1787,7 +1806,7 @@ Status BackingStore::DeleteDatabase(const std::u16string& name,
 }
 
 Status BackingStore::SetDatabaseVersion(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t row_id,
     int64_t version,
     blink::IndexedDBDatabaseMetadata* metadata) {
@@ -1804,7 +1823,7 @@ Status BackingStore::SetDatabaseVersion(
 }
 
 Status BackingStore::CreateObjectStore(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     int64_t object_store_id,
     std::u16string name,
@@ -1892,7 +1911,7 @@ Status BackingStore::CreateObjectStore(
 }
 
 Status BackingStore::DeleteObjectStore(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     const blink::IndexedDBObjectStoreMetadata& object_store) {
   if (!KeyPrefix::ValidIds(database_id, object_store.id)) {
@@ -1951,7 +1970,7 @@ Status BackingStore::DeleteObjectStore(
 }
 
 Status BackingStore::RenameObjectStore(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     std::u16string new_name,
     std::u16string* old_name,
@@ -2002,15 +2021,16 @@ Status BackingStore::RenameObjectStore(
   return s;
 }
 
-Status BackingStore::CreateIndex(Transaction::Delegate* delegate,
-                                 int64_t database_id,
-                                 int64_t object_store_id,
-                                 int64_t index_id,
-                                 std::u16string name,
-                                 blink::IndexedDBKeyPath key_path,
-                                 bool is_unique,
-                                 bool is_multi_entry,
-                                 blink::IndexedDBIndexMetadata* metadata) {
+Status BackingStore::CreateIndex(
+    indexed_db::BackingStore::Transaction* delegate,
+    int64_t database_id,
+    int64_t object_store_id,
+    int64_t index_id,
+    std::u16string name,
+    blink::IndexedDBKeyPath key_path,
+    bool is_unique,
+    bool is_multi_entry,
+    blink::IndexedDBIndexMetadata* metadata) {
   if (!KeyPrefix::ValidIds(database_id, object_store_id, index_id)) {
     return InvalidDBKeyStatus();
   }
@@ -2060,7 +2080,7 @@ Status BackingStore::CreateIndex(Transaction::Delegate* delegate,
 }
 
 Status BackingStore::DeleteIndex(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     int64_t object_store_id,
     const blink::IndexedDBIndexMetadata& metadata) {
@@ -2078,12 +2098,13 @@ Status BackingStore::DeleteIndex(
       LevelDBScopeDeletionMode::kImmediateWithRangeEndExclusive));
 }
 
-Status BackingStore::RenameIndex(Transaction::Delegate* delegate,
-                                 int64_t database_id,
-                                 int64_t object_store_id,
-                                 std::u16string new_name,
-                                 std::u16string* old_name,
-                                 blink::IndexedDBIndexMetadata* metadata) {
+Status BackingStore::RenameIndex(
+    indexed_db::BackingStore::Transaction* delegate,
+    int64_t database_id,
+    int64_t object_store_id,
+    std::u16string new_name,
+    std::u16string* old_name,
+    blink::IndexedDBIndexMetadata* metadata) {
   if (!KeyPrefix::ValidIds(database_id, object_store_id, metadata->id)) {
     return InvalidDBKeyStatus();
   }
@@ -2109,7 +2130,7 @@ void BackingStore::Compact() {
   db_->CompactAll();
 }
 
-Status BackingStore::GetRecord(Transaction::Delegate* delegate,
+Status BackingStore::GetRecord(indexed_db::BackingStore::Transaction* delegate,
                                int64_t database_id,
                                int64_t object_store_id,
                                const IndexedDBKey& key,
@@ -2180,7 +2201,7 @@ int64_t BackingStore::GetInMemorySize() const {
   return blob_size + level_db_size;
 }
 
-Status BackingStore::PutRecord(Transaction::Delegate* delegate,
+Status BackingStore::PutRecord(indexed_db::BackingStore::Transaction* delegate,
                                int64_t database_id,
                                int64_t object_store_id,
                                const IndexedDBKey& key,
@@ -2238,9 +2259,10 @@ Status BackingStore::PutRecord(Transaction::Delegate* delegate,
   return s;
 }
 
-Status BackingStore::ClearObjectStore(Transaction::Delegate* delegate,
-                                      int64_t database_id,
-                                      int64_t object_store_id) {
+Status BackingStore::ClearObjectStore(
+    indexed_db::BackingStore::Transaction* delegate,
+    int64_t database_id,
+    int64_t object_store_id) {
 #if DCHECK_IS_ON()
   DCHECK(initialized_);
 #endif
@@ -2281,10 +2303,11 @@ Status BackingStore::ClearObjectStore(Transaction::Delegate* delegate,
       LevelDBScopeDeletionMode::kImmediateWithRangeEndExclusive));
 }
 
-Status BackingStore::DeleteRecord(Transaction::Delegate* delegate,
-                                  int64_t database_id,
-                                  int64_t object_store_id,
-                                  const RecordIdentifier& record_identifier) {
+Status BackingStore::DeleteRecord(
+    indexed_db::BackingStore::Transaction* delegate,
+    int64_t database_id,
+    int64_t object_store_id,
+    const RecordIdentifier& record_identifier) {
   TRACE_EVENT0("IndexedDB", "BackingStore::DeleteRecord");
   if (!KeyPrefix::ValidIds(database_id, object_store_id)) {
     return InvalidDBKeyStatus();
@@ -2310,10 +2333,11 @@ Status BackingStore::DeleteRecord(Transaction::Delegate* delegate,
   return Status(leveldb_transaction->Remove(exists_entry_key));
 }
 
-Status BackingStore::DeleteRange(Transaction::Delegate* delegate,
-                                 int64_t database_id,
-                                 int64_t object_store_id,
-                                 const IndexedDBKeyRange& key_range) {
+Status BackingStore::DeleteRange(
+    indexed_db::BackingStore::Transaction* delegate,
+    int64_t database_id,
+    int64_t object_store_id,
+    const IndexedDBKeyRange& key_range) {
 #if DCHECK_IS_ON()
   DCHECK(initialized_);
 #endif
@@ -2322,18 +2346,20 @@ Status BackingStore::DeleteRange(Transaction::Delegate* delegate,
   // TODO(dmurph): Remove the need to create these cursors.
   // https://crbug.com/980678
   Status s;
-  std::unique_ptr<BackingStore::Cursor> start_cursor = OpenObjectStoreCursor(
-      transaction, database_id, object_store_id, key_range,
-      blink::mojom::IDBCursorDirection::Next, &s);
+  std::unique_ptr<indexed_db::BackingStore::Cursor> start_cursor =
+      transaction->OpenObjectStoreCursor(
+          database_id, object_store_id, key_range,
+          blink::mojom::IDBCursorDirection::Next, &s);
   if (!s.ok()) {
     return s;
   }
   if (!start_cursor) {
     return Status::OK();  // Empty range == delete success.
   }
-  std::unique_ptr<BackingStore::Cursor> end_cursor = OpenObjectStoreCursor(
-      transaction, database_id, object_store_id, key_range,
-      blink::mojom::IDBCursorDirection::Prev, &s);
+  std::unique_ptr<indexed_db::BackingStore::Cursor> end_cursor =
+      transaction->OpenObjectStoreCursor(
+          database_id, object_store_id, key_range,
+          blink::mojom::IDBCursorDirection::Prev, &s);
 
   if (!s.ok()) {
     return s;
@@ -2344,14 +2370,14 @@ Status BackingStore::DeleteRange(Transaction::Delegate* delegate,
 
   BlobEntryKey start_blob_number, end_blob_number;
   std::string start_key = ObjectStoreDataKey::Encode(
-      database_id, object_store_id, start_cursor->key());
+      database_id, object_store_id, start_cursor->GetKey());
   std::string_view start_key_piece(start_key);
   if (!BlobEntryKey::FromObjectStoreDataKey(&start_key_piece,
                                             &start_blob_number)) {
     return InternalInconsistencyStatus();
   }
   std::string stop_key = ObjectStoreDataKey::Encode(
-      database_id, object_store_id, end_cursor->key());
+      database_id, object_store_id, end_cursor->GetKey());
   std::string_view stop_key_piece(stop_key);
   if (!BlobEntryKey::FromObjectStoreDataKey(&stop_key_piece,
                                             &end_blob_number)) {
@@ -2372,14 +2398,16 @@ Status BackingStore::DeleteRange(Transaction::Delegate* delegate,
 
   // Remove the ExistsEntryKeys for the deleted records.
   s = transaction->transaction()->RemoveRange(
-      ExistsEntryKey::Encode(database_id, object_store_id, start_cursor->key()),
-      ExistsEntryKey::Encode(database_id, object_store_id, end_cursor->key()),
+      ExistsEntryKey::Encode(database_id, object_store_id,
+                             start_cursor->GetKey()),
+      ExistsEntryKey::Encode(database_id, object_store_id,
+                             end_cursor->GetKey()),
       LevelDBScopeDeletionMode::kImmediateWithRangeEndInclusive);
   return s;
 }
 
 Status BackingStore::GetKeyGeneratorCurrentNumber(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t* key_generator_current_number) {
@@ -2463,7 +2491,7 @@ Status BackingStore::GetKeyGeneratorCurrentNumber(
 }
 
 Status BackingStore::MaybeUpdateKeyGeneratorCurrentNumber(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t new_number,
@@ -2497,7 +2525,7 @@ Status BackingStore::MaybeUpdateKeyGeneratorCurrentNumber(
 }
 
 Status BackingStore::KeyExistsInObjectStore(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     int64_t object_store_id,
     const IndexedDBKey& key,
@@ -2855,7 +2883,7 @@ bool BackingStore::UpdateEarliestCompactionTime() {
          txn->Commit().ok();
 }
 
-Status BackingStore::ClearIndex(Transaction::Delegate* delegate,
+Status BackingStore::ClearIndex(indexed_db::BackingStore::Transaction* delegate,
                                 int64_t database_id,
                                 int64_t object_store_id,
                                 int64_t index_id) {
@@ -2887,7 +2915,7 @@ Status BackingStore::ClearIndex(Transaction::Delegate* delegate,
 }
 
 Status BackingStore::PutIndexDataForRecord(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -2990,7 +3018,7 @@ Status BackingStore::FindKeyInIndex(BackingStore::Transaction* transaction,
 }
 
 Status BackingStore::GetPrimaryKeyViaIndex(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -3031,7 +3059,7 @@ Status BackingStore::GetPrimaryKeyViaIndex(
 }
 
 Status BackingStore::KeyExistsInIndex(
-    Transaction::Delegate* delegate,
+    indexed_db::BackingStore::Transaction* delegate,
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -3231,6 +3259,10 @@ BackingStore::Cursor::~Cursor() {
   }
 }
 
+const blink::IndexedDBKey& BackingStore::Cursor::GetKey() const {
+  return *current_key_;
+}
+
 // static
 std::unique_ptr<TransactionalLevelDBIterator>
 BackingStore::Cursor::CloneIterator(const BackingStore::Cursor* other) {
@@ -3281,13 +3313,13 @@ bool BackingStore::Cursor::FirstSeek(Status* s) {
       return false;
     }
   }
-  return Continue(nullptr, READY, s);
+  return Continue(nullptr, nullptr, READY, s);
 }
 
 bool BackingStore::Cursor::Advance(uint32_t count, Status* s) {
   *s = Status::OK();
   while (count--) {
-    if (!Continue(s)) {
+    if (!indexed_db::BackingStore::Cursor::Continue(s)) {
       return false;
     }
   }
@@ -3446,7 +3478,7 @@ BackingStore::Cursor::ContinueResult BackingStore::Cursor::ContinuePrevious(
     // TODO(jsbell): If Seek() optimization is added above, remove this.
     if (key) {
       if (primary_key && key->Equals(*current_key_) &&
-          primary_key->IsLessThan(this->primary_key())) {
+          primary_key->IsLessThan(this->GetPrimaryKey())) {
         continue;
       }
       if (key->IsLessThan(*current_key_)) {
@@ -3537,7 +3569,7 @@ void BackingStore::Cursor::RemoveTombstoneOrIncrementCount(Status* s) {
   }
 }
 
-const IndexedDBKey& BackingStore::Cursor::primary_key() const {
+const IndexedDBKey& BackingStore::Cursor::GetPrimaryKey() const {
   return *current_key_;
 }
 
@@ -3554,7 +3586,7 @@ class ObjectStoreKeyCursorImpl : public BackingStore::Cursor {
   ObjectStoreKeyCursorImpl(const ObjectStoreKeyCursorImpl&) = delete;
   ObjectStoreKeyCursorImpl& operator=(const ObjectStoreKeyCursorImpl&) = delete;
 
-  std::unique_ptr<Cursor> Clone() const override {
+  std::unique_ptr<indexed_db::BackingStore::Cursor> Clone() const override {
     auto iter = CloneIterator(this);
     if (!iter) {
       return nullptr;
@@ -3564,7 +3596,7 @@ class ObjectStoreKeyCursorImpl : public BackingStore::Cursor {
   }
 
   // BackingStore::Cursor
-  IndexedDBValue* value() override { NOTREACHED(); }
+  IndexedDBValue& GetValue() override { NOTREACHED(); }
   bool LoadCurrentRow(Status* s) override;
 
  protected:
@@ -3590,11 +3622,6 @@ BackingStore::Cursor::CursorOptions::CursorOptions(const CursorOptions& other) =
     default;
 
 BackingStore::Cursor::CursorOptions::~CursorOptions() = default;
-
-const BackingStore::RecordIdentifier& BackingStore::Cursor::record_identifier()
-    const {
-  return record_identifier_;
-}
 
 bool ObjectStoreKeyCursorImpl::LoadCurrentRow(Status* s) {
   std::string_view slice(iterator_->Key());
@@ -3640,7 +3667,7 @@ class ObjectStoreCursorImpl : public BackingStore::Cursor {
 
   // BackingStore::Cursor:
 
-  std::unique_ptr<Cursor> Clone() const override {
+  std::unique_ptr<indexed_db::BackingStore::Cursor> Clone() const override {
     auto iter = CloneIterator(this);
     if (!iter) {
       return nullptr;
@@ -3648,7 +3675,7 @@ class ObjectStoreCursorImpl : public BackingStore::Cursor {
     return base::WrapUnique(new ObjectStoreCursorImpl(this, std::move(iter)));
   }
 
-  IndexedDBValue* value() override { return &current_value_; }
+  IndexedDBValue& GetValue() override { return current_value_; }
   bool LoadCurrentRow(Status* s) override;
 
  protected:
@@ -3720,7 +3747,7 @@ class IndexKeyCursorImpl : public BackingStore::Cursor {
 
   ~IndexKeyCursorImpl() override = default;
 
-  std::unique_ptr<Cursor> Clone() const override {
+  std::unique_ptr<indexed_db::BackingStore::Cursor> Clone() const override {
     auto iter = CloneIterator(this);
     if (!iter) {
       return nullptr;
@@ -3729,11 +3756,8 @@ class IndexKeyCursorImpl : public BackingStore::Cursor {
   }
 
   // BackingStore::Cursor
-  IndexedDBValue* value() override { NOTREACHED(); }
-  const IndexedDBKey& primary_key() const override { return *primary_key_; }
-  const BackingStore::RecordIdentifier& record_identifier() const override {
-    NOTREACHED();
-  }
+  IndexedDBValue& GetValue() override { NOTREACHED(); }
+  const IndexedDBKey& GetPrimaryKey() const override { return *primary_key_; }
   bool LoadCurrentRow(Status* s) override;
 
  protected:
@@ -3837,7 +3861,7 @@ class IndexCursorImpl : public BackingStore::Cursor {
 
   ~IndexCursorImpl() override = default;
 
-  std::unique_ptr<Cursor> Clone() const override {
+  std::unique_ptr<indexed_db::BackingStore::Cursor> Clone() const override {
     auto iter = CloneIterator(this);
     if (!iter) {
       return nullptr;
@@ -3846,11 +3870,8 @@ class IndexCursorImpl : public BackingStore::Cursor {
   }
 
   // BackingStore::Cursor
-  IndexedDBValue* value() override { return &current_value_; }
-  const IndexedDBKey& primary_key() const override { return *primary_key_; }
-  const BackingStore::RecordIdentifier& record_identifier() const override {
-    NOTREACHED();
-  }
+  IndexedDBValue& GetValue() override { return current_value_; }
+  const IndexedDBKey& GetPrimaryKey() const override { return *primary_key_; }
   bool LoadCurrentRow(Status* s) override;
 
  protected:
@@ -3947,8 +3968,8 @@ bool IndexCursorImpl::LoadCurrentRow(Status* s) {
   return s->ok();
 }
 
-std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreCursor(
-    Transaction::Delegate* delegate,
+std::unique_ptr<indexed_db::BackingStore::Cursor>
+BackingStore::Transaction::OpenObjectStoreCursor(
     int64_t database_id,
     int64_t object_store_id,
     const IndexedDBKeyRange& range,
@@ -3956,11 +3977,9 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreCursor(
     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenObjectStoreCursor");
 
-  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
-  TransactionalLevelDBTransaction* leveldb_transaction =
-      transaction->transaction();
+  TransactionalLevelDBTransaction* leveldb_transaction = transaction();
   BackingStore::Cursor::CursorOptions cursor_options;
-  cursor_options.mode = transaction->mode();
+  cursor_options.mode = mode();
   // TODO(cmumford): Handle this error (crbug.com/363397)
   if (!ObjectStoreCursorOptions(leveldb_transaction, database_id,
                                 object_store_id, range, direction,
@@ -3968,8 +3987,8 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreCursor(
     return nullptr;
   }
   std::unique_ptr<ObjectStoreCursorImpl> cursor(
-      std::make_unique<ObjectStoreCursorImpl>(transaction->AsWeakPtr(),
-                                              database_id, cursor_options));
+      std::make_unique<ObjectStoreCursorImpl>(AsWeakPtr(), database_id,
+                                              cursor_options));
   if (!cursor->FirstSeek(s)) {
     return nullptr;
   }
@@ -3977,8 +3996,8 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreCursor(
   return std::move(cursor);
 }
 
-std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreKeyCursor(
-    Transaction::Delegate* delegate,
+std::unique_ptr<indexed_db::BackingStore::Cursor>
+BackingStore::Transaction::OpenObjectStoreKeyCursor(
     int64_t database_id,
     int64_t object_store_id,
     const IndexedDBKeyRange& range,
@@ -3986,11 +4005,9 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreKeyCursor(
     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenObjectStoreKeyCursor");
 
-  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
-  TransactionalLevelDBTransaction* leveldb_transaction =
-      transaction->transaction();
+  TransactionalLevelDBTransaction* leveldb_transaction = transaction();
   BackingStore::Cursor::CursorOptions cursor_options;
-  cursor_options.mode = transaction->mode();
+  cursor_options.mode = mode();
   // TODO(cmumford): Handle this error (crbug.com/363397)
   if (!ObjectStoreCursorOptions(leveldb_transaction, database_id,
                                 object_store_id, range, direction,
@@ -3998,8 +4015,8 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreKeyCursor(
     return nullptr;
   }
   std::unique_ptr<ObjectStoreKeyCursorImpl> cursor(
-      std::make_unique<ObjectStoreKeyCursorImpl>(transaction->AsWeakPtr(),
-                                                 database_id, cursor_options));
+      std::make_unique<ObjectStoreKeyCursorImpl>(AsWeakPtr(), database_id,
+                                                 cursor_options));
   if (!cursor->FirstSeek(s)) {
     return nullptr;
   }
@@ -4007,8 +4024,8 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenObjectStoreKeyCursor(
   return std::move(cursor);
 }
 
-std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexKeyCursor(
-    Transaction::Delegate* delegate,
+std::unique_ptr<indexed_db::BackingStore::Cursor>
+BackingStore::Transaction::OpenIndexKeyCursor(
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -4017,18 +4034,16 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexKeyCursor(
     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenIndexKeyCursor");
   *s = Status::OK();
-  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
-  TransactionalLevelDBTransaction* leveldb_transaction =
-      transaction->transaction();
+  TransactionalLevelDBTransaction* leveldb_transaction = transaction();
   BackingStore::Cursor::CursorOptions cursor_options;
-  cursor_options.mode = transaction->mode();
+  cursor_options.mode = mode();
   if (!IndexCursorOptions(leveldb_transaction, database_id, object_store_id,
                           index_id, range, direction, &cursor_options, s)) {
     return nullptr;
   }
   std::unique_ptr<IndexKeyCursorImpl> cursor(
-      std::make_unique<IndexKeyCursorImpl>(transaction->AsWeakPtr(),
-                                           database_id, cursor_options));
+      std::make_unique<IndexKeyCursorImpl>(AsWeakPtr(), database_id,
+                                           cursor_options));
   if (!cursor->FirstSeek(s)) {
     return nullptr;
   }
@@ -4036,8 +4051,8 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexKeyCursor(
   return std::move(cursor);
 }
 
-std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexCursor(
-    Transaction::Delegate* delegate,
+std::unique_ptr<indexed_db::BackingStore::Cursor>
+BackingStore::Transaction::OpenIndexCursor(
     int64_t database_id,
     int64_t object_store_id,
     int64_t index_id,
@@ -4046,17 +4061,15 @@ std::unique_ptr<BackingStore::Cursor> BackingStore::OpenIndexCursor(
     Status* s) {
   TRACE_EVENT0("IndexedDB", "BackingStore::OpenIndexCursor");
 
-  Transaction* transaction = reinterpret_cast<Transaction*>(delegate);
-  TransactionalLevelDBTransaction* leveldb_transaction =
-      transaction->transaction();
+  TransactionalLevelDBTransaction* leveldb_transaction = transaction();
   BackingStore::Cursor::CursorOptions cursor_options;
-  cursor_options.mode = transaction->mode();
+  cursor_options.mode = mode();
   if (!IndexCursorOptions(leveldb_transaction, database_id, object_store_id,
                           index_id, range, direction, &cursor_options, s)) {
     return nullptr;
   }
-  auto cursor = std::make_unique<IndexCursorImpl>(transaction->AsWeakPtr(),
-                                                  database_id, cursor_options);
+  auto cursor = std::make_unique<IndexCursorImpl>(AsWeakPtr(), database_id,
+                                                  cursor_options);
   if (!cursor->FirstSeek(s)) {
     return nullptr;
   }

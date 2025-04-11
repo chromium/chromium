@@ -25,9 +25,9 @@
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
+#include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/connection_coordinator.h"
 #include "content/browser/indexed_db/instance/factory_client.h"
-#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/pending_connection.h"
 #include "content/browser/indexed_db/list_set.h"
 #include "content/common/content_export.h"
@@ -300,8 +300,6 @@ class CONTENT_EXPORT Database {
   class ConnectionRequest;
   class OpenRequest;
   class DeleteRequest;
-
-  level_db::BackingStore* leveldb_backing_store();
 
   Status OpenInternal();
 

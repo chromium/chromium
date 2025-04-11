@@ -11,8 +11,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/database.h"
-#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/transaction.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -30,7 +30,7 @@ class Cursor : public blink::mojom::IDBCursor {
  public:
   // Creates a new self-owned instance and binds to `pending_remote`.
   static Cursor* CreateAndBind(
-      std::unique_ptr<level_db::BackingStore::Cursor> cursor,
+      std::unique_ptr<BackingStore::Cursor> cursor,
       indexed_db::CursorType cursor_type,
       blink::mojom::IDBTaskType task_type,
       base::WeakPtr<Transaction> transaction,
@@ -51,20 +51,20 @@ class Cursor : public blink::mojom::IDBCursor {
                 blink::mojom::IDBCursor::PrefetchCallback callback) override;
   void PrefetchReset(int32_t used_prefetches) override;
 
-  const blink::IndexedDBKey& key() const { return cursor_->key(); }
+  const blink::IndexedDBKey& key() const { return cursor_->GetKey(); }
   const blink::IndexedDBKey& primary_key() const {
-    return cursor_->primary_key();
+    return cursor_->GetPrimaryKey();
   }
   IndexedDBValue* Value() const {
     return (cursor_type_ == indexed_db::CursorType::kKeyOnly)
                ? nullptr
-               : cursor_->value();
+               : &cursor_->GetValue();
   }
 
   void Close();
 
  private:
-  Cursor(std::unique_ptr<level_db::BackingStore::Cursor> cursor,
+  Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
          indexed_db::CursorType cursor_type,
          blink::mojom::IDBTaskType task_type,
          base::WeakPtr<Transaction> transaction);
@@ -89,9 +89,9 @@ class Cursor : public blink::mojom::IDBCursor {
   base::WeakPtr<Transaction> transaction_;
 
   // Must be destroyed before transaction_.
-  std::unique_ptr<level_db::BackingStore::Cursor> cursor_;
+  std::unique_ptr<BackingStore::Cursor> cursor_;
   // Must be destroyed before transaction_.
-  std::unique_ptr<level_db::BackingStore::Cursor> saved_cursor_;
+  std::unique_ptr<BackingStore::Cursor> saved_cursor_;
 
   bool closed_ = false;
 

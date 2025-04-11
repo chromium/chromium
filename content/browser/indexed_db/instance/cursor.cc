@@ -6,18 +6,25 @@
 
 #include <stddef.h>
 
+#include <cstdint>
+#include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/trace_event/base_tracing.h"
-#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
+#include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
+#include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/callback_helpers.h"
 #include "content/browser/indexed_db/instance/transaction.h"
+#include "content/browser/indexed_db/status.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -49,7 +56,7 @@ DatabaseError CreateError(blink::mojom::IDBException code,
 
 // static
 Cursor* Cursor::CreateAndBind(
-    std::unique_ptr<level_db::BackingStore::Cursor> cursor,
+    std::unique_ptr<BackingStore::Cursor> cursor,
     indexed_db::CursorType cursor_type,
     blink::mojom::IDBTaskType task_type,
     base::WeakPtr<Transaction> transaction,
@@ -62,7 +69,7 @@ Cursor* Cursor::CreateAndBind(
   return instance_ptr;
 }
 
-Cursor::Cursor(std::unique_ptr<level_db::BackingStore::Cursor> cursor,
+Cursor::Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
                indexed_db::CursorType cursor_type,
                blink::mojom::IDBTaskType task_type,
                base::WeakPtr<Transaction> transaction)
@@ -187,9 +194,8 @@ Status Cursor::ContinueOperation(
     Transaction* /*transaction*/) {
   TRACE_EVENT0("IndexedDB", "Cursor::ContinueOperation");
   Status s = Status::OK();
-  if (!cursor_ ||
-      !cursor_->Continue(key.get(), primary_key.get(),
-                         level_db::BackingStore::Cursor::SEEK, &s)) {
+  if (!cursor_ || !cursor_->Continue(key.get(), primary_key.get(),
+                                     BackingStore::Cursor::SEEK, &s)) {
     cursor_.reset();
     if (s.ok()) {
       // This happens if we reach the end of the iterator and can't continue.
@@ -298,8 +304,8 @@ Status Cursor::PrefetchIterationOperation(
       saved_cursor_ = cursor_->Clone();
     }
 
-    found_keys.push_back(cursor_->key());
-    found_primary_keys.push_back(cursor_->primary_key());
+    found_keys.push_back(cursor_->GetKey());
+    found_primary_keys.push_back(cursor_->GetPrimaryKey());
 
     switch (cursor_type_) {
       case indexed_db::CursorType::kKeyOnly:
@@ -307,7 +313,7 @@ Status Cursor::PrefetchIterationOperation(
         break;
       case indexed_db::CursorType::kKeyAndValue: {
         IndexedDBValue value;
-        value.swap(*cursor_->value());
+        value.swap(cursor_->GetValue());
         size_estimate += value.SizeEstimate();
         found_values.push_back(value);
         break;
@@ -315,8 +321,8 @@ Status Cursor::PrefetchIterationOperation(
       default:
         NOTREACHED();
     }
-    size_estimate += cursor_->key().size_estimate();
-    size_estimate += cursor_->primary_key().size_estimate();
+    size_estimate += cursor_->GetKey().size_estimate();
+    size_estimate += cursor_->GetPrimaryKey().size_estimate();
 
     if (size_estimate > max_size_estimate) {
       break;

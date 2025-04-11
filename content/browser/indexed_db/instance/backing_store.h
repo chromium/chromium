@@ -10,8 +10,16 @@
 #include <string>
 #include <vector>
 
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
+#include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
-#include "content/browser/indexed_db/instance/transaction.h"
+#include "content/browser/indexed_db/status.h"
+#include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
+
+namespace base {
+class WaitableEvent;
+}
 
 namespace content::indexed_db {
 
@@ -65,6 +73,77 @@ class BackingStore {
     int64_t version_ = -1;
   };
 
+  class Cursor;
+
+  // This interface wraps state and actions executed on the backing store by the
+  // store-agnostic `Transaction`, and is to be implemented by backends such as
+  // LevelDB or SQLite.
+  class Transaction {
+   public:
+    virtual ~Transaction() = default;
+
+    // For now, refer to comments in level_db::BackingStore::Transaction for
+    // documentation.
+    virtual void Begin(std::vector<PartitionedLock> locks) = 0;
+    virtual Status CommitPhaseOne(BlobWriteCallback callback) = 0;
+    virtual Status CommitPhaseTwo() = 0;
+    virtual void Rollback() = 0;
+
+    // Called after the transaction is aborted or completed.
+    // TODO(crbug.com/40253999): can this be removed in favor of deleting the
+    // object?
+    virtual void Reset() = 0;
+
+    virtual std::unique_ptr<Cursor> OpenObjectStoreKeyCursor(
+        int64_t database_id,
+        int64_t object_store_id,
+        const blink::IndexedDBKeyRange& key_range,
+        blink::mojom::IDBCursorDirection,
+        Status*) = 0;
+    virtual std::unique_ptr<Cursor> OpenObjectStoreCursor(
+        int64_t database_id,
+        int64_t object_store_id,
+        const blink::IndexedDBKeyRange& key_range,
+        blink::mojom::IDBCursorDirection,
+        Status*) = 0;
+    virtual std::unique_ptr<Cursor> OpenIndexKeyCursor(
+        int64_t database_id,
+        int64_t object_store_id,
+        int64_t index_id,
+        const blink::IndexedDBKeyRange& key_range,
+        blink::mojom::IDBCursorDirection,
+        Status*) = 0;
+    virtual std::unique_ptr<Cursor> OpenIndexCursor(
+        int64_t database_id,
+        int64_t object_store_id,
+        int64_t index_id,
+        const blink::IndexedDBKeyRange& key_range,
+        blink::mojom::IDBCursorDirection,
+        Status*) = 0;
+  };
+
+  // Another interface to be implemented by a backend implementation.
+  class Cursor {
+   public:
+    enum IteratorState { READY = 0, SEEK };
+
+    virtual ~Cursor() = default;
+
+    virtual const blink::IndexedDBKey& GetKey() const = 0;
+    virtual const blink::IndexedDBKey& GetPrimaryKey() const = 0;
+    virtual IndexedDBValue& GetValue() = 0;
+
+    virtual bool Continue(const blink::IndexedDBKey* key,
+                          const blink::IndexedDBKey* primary_key,
+                          IteratorState state,
+                          Status*) = 0;
+    virtual bool Advance(uint32_t count, Status*) = 0;
+    // Clone may return a nullptr if cloning fails for any reason.
+    virtual std::unique_ptr<Cursor> Clone() const = 0;
+
+    bool Continue(Status* s) { return Continue(nullptr, nullptr, SEEK, s); }
+  };
+
   virtual ~BackingStore() = default;
 
   // Get tasks to be run after a BackingStore no longer has any connections.
@@ -94,19 +173,19 @@ class BackingStore {
       const std::u16string& name,
       blink::IndexedDBDatabaseMetadata* metadata,
       bool* found) = 0;
-  virtual std::unique_ptr<Transaction::Delegate> CreateTransaction(
+  virtual std::unique_ptr<Transaction> CreateTransaction(
       blink::mojom::IDBTransactionDurability durability,
       blink::mojom::IDBTransactionMode mode) = 0;
   // TODO(crbug.com/40273263): move these transaction-scoped operations to a
   // separate interface.
   // Changes the database version to |version|.
   [[nodiscard]] virtual Status SetDatabaseVersion(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t row_id,
       int64_t version,
       blink::IndexedDBDatabaseMetadata* metadata) = 0;
   [[nodiscard]] virtual Status CreateObjectStore(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       std::u16string name,
@@ -114,11 +193,11 @@ class BackingStore {
       bool auto_increment,
       blink::IndexedDBObjectStoreMetadata* metadata) = 0;
   [[nodiscard]] virtual Status DeleteObjectStore(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       const blink::IndexedDBObjectStoreMetadata& object_store) = 0;
   [[nodiscard]] virtual Status RenameObjectStore(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       std::u16string new_name,
       std::u16string* old_name,
@@ -126,7 +205,7 @@ class BackingStore {
 
   // Creates a new index metadata and writes it to the transaction.
   [[nodiscard]] virtual Status CreateIndex(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
@@ -137,79 +216,78 @@ class BackingStore {
       blink::IndexedDBIndexMetadata* metadata) = 0;
   // Deletes the index metadata on the transaction (but not any index entries).
   [[nodiscard]] virtual Status DeleteIndex(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBIndexMetadata& metadata) = 0;
   // Renames the given index and writes it to the transaction.
   [[nodiscard]] virtual Status RenameIndex(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       std::u16string new_name,
       std::u16string* old_name,
       blink::IndexedDBIndexMetadata* metadata) = 0;
-  [[nodiscard]] virtual Status GetRecord(Transaction::Delegate* transaction,
+  [[nodiscard]] virtual Status GetRecord(Transaction* transaction,
                                          int64_t database_id,
                                          int64_t object_store_id,
                                          const blink::IndexedDBKey& key,
                                          IndexedDBValue* record) = 0;
-  [[nodiscard]] virtual Status PutRecord(Transaction::Delegate* transaction,
+  [[nodiscard]] virtual Status PutRecord(Transaction* transaction,
                                          int64_t database_id,
                                          int64_t object_store_id,
                                          const blink::IndexedDBKey& key,
                                          IndexedDBValue* value,
                                          RecordIdentifier* record) = 0;
-  [[nodiscard]] virtual Status ClearObjectStore(
-      Transaction::Delegate* transaction,
-      int64_t database_id,
-      int64_t object_store_id) = 0;
-  [[nodiscard]] virtual Status DeleteRecord(Transaction::Delegate* transaction,
+  [[nodiscard]] virtual Status ClearObjectStore(Transaction* transaction,
+                                                int64_t database_id,
+                                                int64_t object_store_id) = 0;
+  [[nodiscard]] virtual Status DeleteRecord(Transaction* transaction,
                                             int64_t database_id,
                                             int64_t object_store_id,
                                             const RecordIdentifier& record) = 0;
-  [[nodiscard]] virtual Status DeleteRange(Transaction::Delegate* transaction,
+  [[nodiscard]] virtual Status DeleteRange(Transaction* transaction,
                                            int64_t database_id,
                                            int64_t object_store_id,
                                            const blink::IndexedDBKeyRange&) = 0;
   [[nodiscard]] virtual Status GetKeyGeneratorCurrentNumber(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t* current_number) = 0;
   [[nodiscard]] virtual Status MaybeUpdateKeyGeneratorCurrentNumber(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t new_state,
       bool check_current) = 0;
   [[nodiscard]] virtual Status KeyExistsInObjectStore(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       const blink::IndexedDBKey& key,
       RecordIdentifier* found_record_identifier,
       bool* found) = 0;
-  [[nodiscard]] virtual Status ClearIndex(Transaction::Delegate* transaction,
+  [[nodiscard]] virtual Status ClearIndex(Transaction* transaction,
                                           int64_t database_id,
                                           int64_t object_store_id,
                                           int64_t index_id) = 0;
   [[nodiscard]] virtual Status PutIndexDataForRecord(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
       const RecordIdentifier& record) = 0;
   [[nodiscard]] virtual Status GetPrimaryKeyViaIndex(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,
       const blink::IndexedDBKey& key,
       std::unique_ptr<blink::IndexedDBKey>* primary_key) = 0;
   [[nodiscard]] virtual Status KeyExistsInIndex(
-      Transaction::Delegate* transaction,
+      Transaction* transaction,
       int64_t database_id,
       int64_t object_store_id,
       int64_t index_id,

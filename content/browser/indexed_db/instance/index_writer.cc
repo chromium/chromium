@@ -6,11 +6,16 @@
 
 #include <stddef.h>
 
+#include <cstdint>
+#include <memory>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/transaction.h"
+#include "content/browser/indexed_db/status.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -31,7 +36,7 @@ IndexWriter::IndexWriter(const IndexedDBIndexMetadata& index_metadata,
 IndexWriter::~IndexWriter() {}
 
 bool IndexWriter::VerifyIndexKeys(BackingStore* backing_store,
-                                  Transaction::Delegate* transaction,
+                                  BackingStore::Transaction* transaction,
                                   int64_t database_id,
                                   int64_t object_store_id,
                                   int64_t index_id,
@@ -63,7 +68,7 @@ bool IndexWriter::VerifyIndexKeys(BackingStore* backing_store,
 Status IndexWriter::WriteIndexKeys(
     const BackingStore::RecordIdentifier& record_identifier,
     BackingStore* backing_store,
-    Transaction::Delegate* transaction,
+    BackingStore::Transaction* transaction,
     int64_t database_id,
     int64_t object_store_id) const {
   int64_t index_id = index_metadata_.id;
@@ -79,7 +84,7 @@ Status IndexWriter::WriteIndexKeys(
 }
 
 bool IndexWriter::AddingKeyAllowed(BackingStore* backing_store,
-                                   Transaction::Delegate* transaction,
+                                   BackingStore::Transaction* transaction,
                                    int64_t database_id,
                                    int64_t object_store_id,
                                    int64_t index_id,
