@@ -3447,11 +3447,11 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
   tabs::TabInterface* tab = GetTabAtIndex(index);
   const std::optional<tab_groups::TabGroupId> old_group = tab->GetGroup();
 
-  if (tab->IsSplit()) {
+  std::optional<int> next_selected_index = DetermineNewSelectedIndex(index);
+  const bool removed_tab_is_split = tab->IsSplit();
+  if (removed_tab_is_split) {
     RemoveSplitImpl(tab->GetSplit().value());
   }
-
-  std::optional<int> next_selected_index = DetermineNewSelectedIndex(index);
 
   // Remove the tab.
   std::unique_ptr<tabs::TabModel> old_data =
@@ -3465,7 +3465,12 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
     ui::ListSelectionModel old_model;
     old_model = selection_model_;
     if (index == old_active) {
-      if (!selection_model_.empty()) {
+      if (removed_tab_is_split) {
+        // If the removed tab was part of a split, we should go to the first tab
+        // in the split.
+        selection_model_.set_active(next_selected_index);
+        selection_model_.set_anchor(next_selected_index);
+      } else if (!selection_model_.empty()) {
         // The active tab was removed, but there is still something selected.
         // Move the active and anchor to the first selected index.
         selection_model_.set_active(
@@ -4169,6 +4174,17 @@ std::optional<int> TabStripModel::DetermineNewSelectedIndex(
   }
 
   if (selection_model().size() > 1) {
+    // In the case of split tabs, return the first non-removed tab in the split.
+    if (GetSplitForTab(removing_index).has_value()) {
+      split_tabs::SplitTabId split_id = GetSplitForTab(removing_index).value();
+      for (const ::tabs::TabInterface* split_tab :
+           GetSplitData(split_id)->ListTabs()) {
+        int split_tab_index = GetIndexOfTab(split_tab);
+        if (split_tab_index != removing_index) {
+          return GetTabIndexAfterClosing(split_tab_index, removing_index);
+        }
+      }
+    }
     return std::nullopt;
   }
 
