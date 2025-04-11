@@ -93,8 +93,7 @@ bool MovePasswordsPromo::ShouldShowPromo() const {
   if (!sync_service ||
       !password_manager::features_util::IsAccountStorageEnabled(
           profile_->GetPrefs(), sync_service) ||
-      (switches::IsBatchUploadDesktopEnabled() &&
-       !sync_service->IsEngineInitialized())) {
+      !sync_service->IsEngineInitialized()) {
     return false;
   }
 

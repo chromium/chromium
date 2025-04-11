@@ -229,20 +229,6 @@ BASE_FEATURE(kEnableASWebAuthenticationSession,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-BASE_FEATURE(kBatchUploadDesktop,
-             "BatchUploadDesktop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-
-bool IsBatchUploadDesktopEnabled() {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  return base::FeatureList::IsEnabled(kBatchUploadDesktop);
-#else
-  return false;
-#endif
-}
-
 // Enables showing the enterprise dialog after every signin into a managed
 // account.
 BASE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin,

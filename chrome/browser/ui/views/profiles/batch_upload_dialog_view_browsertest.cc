@@ -16,7 +16,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/signin_constants.h"
@@ -136,10 +135,6 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
   }
 
   base::HistogramTester histogram_tester_;
-
-  // Needed to make sure the mojo binders are set.
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kBatchUploadDesktop};
 };
 
 IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,

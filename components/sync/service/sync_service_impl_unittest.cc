@@ -25,7 +25,6 @@
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -2331,19 +2330,7 @@ TEST_F(SyncServiceImplTest,
   service()->TriggerLocalDataMigration({DEVICE_INFO});
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class SyncServiceImplWithBatchUploadDesktopTest : public SyncServiceImplTest {
-  void SetUp() override {
-    SyncServiceImplTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kBatchUploadDesktop}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
+TEST_F(SyncServiceImplTest,
        ShouldNotForwardUponTriggerLocalDataMigrationForItemsIfSyncDisabled) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
@@ -2374,7 +2361,7 @@ TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
   service()->TriggerLocalDataMigrationForItems(items);
 }
 
-TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
+TEST_F(SyncServiceImplTest,
        ShouldDoNothingUponTriggerLocalDataMigrationForItemsForSyncingUsers) {
   PopulatePrefsForInitialSyncFeatureSetupComplete();
   SignInWithSyncConsent();
@@ -2400,7 +2387,8 @@ TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
   service()->TriggerLocalDataMigrationForItems(items);
 }
 
-TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(SyncServiceImplTest,
        ShouldForwardUponSelectTypeAndMigrateLocalDataItemsWhenActive) {
   SignInWithoutSyncConsent();
 
@@ -2423,7 +2411,7 @@ TEST_F(SyncServiceImplWithBatchUploadDesktopTest,
 }
 
 TEST_F(
-    SyncServiceImplWithBatchUploadDesktopTest,
+    SyncServiceImplTest,
     ShouldForwardUponSelectTypeAndMigrateLocalDataItemsWhenActiveWithDataTypeDisabled) {
   SignInWithoutSyncConsent();
 
@@ -2449,9 +2437,10 @@ TEST_F(
   service()->SelectTypeAndMigrateLocalDataItemsWhenActive(PASSWORDS, items);
   EXPECT_TRUE(service()->GetActiveDataTypes().Has(PASSWORDS));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(
-    SyncServiceImplWithBatchUploadDesktopTest,
+    SyncServiceImplTest,
     ShouldNotForwardUponSelectTypeAndMigrateLocalDataItemsWhenActiveWithEnterprisePolicy) {
   prefs()->SetManagedPref(prefs::internal::kSyncManaged, base::Value(true));
   SignInWithoutSyncConsent();
@@ -2480,7 +2469,7 @@ TEST_F(
 }
 
 TEST_F(
-    SyncServiceImplWithBatchUploadDesktopTest,
+    SyncServiceImplTest,
     ShouldNotForwardUponSelectTypeAndMigrateLocalDataItemsWhenActiveWithTypeDisabledByPolicy) {
   PrefValueMap policy_prefs;
   SyncPrefs::SetTypeDisabledByPolicy(&policy_prefs,
@@ -2514,7 +2503,7 @@ TEST_F(
 }
 
 TEST_F(
-    SyncServiceImplWithBatchUploadDesktopTest,
+    SyncServiceImplTest,
     ShouldNotForwardUponSelectTypeAndMigrateLocalDataItemsWhenActiveWithoutTransportOnlyMode) {
   SignInWithoutSyncConsent();
 
@@ -2536,7 +2525,6 @@ TEST_F(
   service()->SelectTypeAndMigrateLocalDataItemsWhenActive(BOOKMARKS, items);
   EXPECT_FALSE(service()->GetActiveDataTypes().Has(BOOKMARKS));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(SyncServiceImplTest, ShouldRecordLocalDataMigrationRequests) {
   base::HistogramTester histogram_tester;

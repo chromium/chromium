@@ -72,6 +72,22 @@ class FakePasswordStore : public TestPasswordStore {
   bool able_to_save_ = true;
 };
 
+// Create `count` local passwords and returns them as a list.
+std::vector<PasswordForm> CreatePasswordFormsInStore(int count,
+                                                     FakePasswordStore* store) {
+  base::test::TestFuture<void> wait_add;
+  std::vector<PasswordForm> passwords;
+  std::string store_string = store->IsAccountStore() ? "account" : "local";
+  for (int i = 0; i < count; ++i) {
+    PasswordForm password = CreatePasswordForm(
+        base::StringPrintf("http://%s%i.com", store_string, i));
+    passwords.push_back(password);
+    store->AddLogin(password, wait_add.GetCallback());
+    EXPECT_TRUE(wait_add.WaitAndClear());
+  }
+  return passwords;
+}
+
 class PasswordLocalDataBatchUploaderTest : public ::testing::Test {
  public:
   PasswordLocalDataBatchUploaderTest() {
@@ -176,13 +192,9 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(description.Get().item_count, 1u);
   EXPECT_EQ(description.Get().domain_count, 1u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{"local.com"});
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   ASSERT_EQ(description.Get().local_data_models.size(), 1u);
   EXPECT_EQ(description.Get().local_data_models[0].title, "local.com");
   EXPECT_EQ(description.Get().local_data_models[0].subtitle, "username");
-#else
-  EXPECT_EQ(description.Get().local_data_models.size(), 0u);
-#endif
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -206,13 +218,9 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(first_description.Get().domain_count, 1u);
   EXPECT_EQ(first_description.Get().domains,
             std::vector<std::string>{"local.com"});
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   ASSERT_EQ(first_description.Get().local_data_models.size(), 1u);
   EXPECT_EQ(first_description.Get().local_data_models[0].title, "local.com");
   EXPECT_EQ(first_description.Get().local_data_models[0].subtitle, "username");
-#else
-  EXPECT_EQ(first_description.Get().local_data_models.size(), 0u);
-#endif
   EXPECT_EQ(second_description.Get(), first_description.Get());
 }
 
@@ -499,34 +507,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 3, 1);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest
-    : public PasswordLocalDataBatchUploaderTest {
- public:
-  // Create `count` local passwords and returns them as a list.
-  std::vector<PasswordForm> CreatePasswordFormsInStore(
-      int count,
-      FakePasswordStore* store) {
-    base::test::TestFuture<void> wait_add;
-    std::vector<PasswordForm> passwords;
-    std::string store_string = store->IsAccountStore() ? "account" : "local";
-    for (int i = 0; i < count; ++i) {
-      PasswordForm password = CreatePasswordForm(
-          base::StringPrintf("http://%s%i.com", store_string, i));
-      passwords.push_back(password);
-      store->AddLogin(password, wait_add.GetCallback());
-      EXPECT_TRUE(wait_add.WaitAndClear());
-    }
-    return passwords;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kBatchUploadDesktop};
-};
-
-TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
-       MigrationUploadsEmptyKeys) {
+TEST_F(PasswordLocalDataBatchUploaderTest, MigrationUploadsEmptyKeys) {
   base::HistogramTester histogram_tester;
   std::vector<PasswordForm> passwords =
       CreatePasswordFormsInStore(3, profile_store());
@@ -543,7 +524,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 0, 1);
 }
 
-TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+TEST_F(PasswordLocalDataBatchUploaderTest,
        MigrationUploadsPartialPasswordsAndRecordsMetricOnce) {
   base::HistogramTester histogram_tester;
   std::vector<PasswordForm> passwords =
@@ -572,7 +553,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 2, 1);
 }
 
-TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+TEST_F(PasswordLocalDataBatchUploaderTest,
        MigrationUploadsAllPasswordsWithKeys) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> wait_add;
@@ -598,8 +579,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, passwords.size(), 1);
 }
 
-TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
-       MigrationUploadsPasswordsSameKey) {
+TEST_F(PasswordLocalDataBatchUploaderTest, MigrationUploadsPasswordsSameKey) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> wait_add;
   std::vector<PasswordForm> passwords =
@@ -626,7 +606,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 1, 1);
 }
 
-TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+TEST_F(PasswordLocalDataBatchUploaderTest,
        MigrationUploadsPasswordsWithUnavailableKey) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> wait_add;
@@ -656,7 +636,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 1, 1);
 }
 
-TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+TEST_F(PasswordLocalDataBatchUploaderTest,
        MigrationUploadsPasswordsKeyAlreadyInAccountStore) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> wait_add;
@@ -695,7 +675,7 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 1, 1);
 }
 
-TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+TEST_F(PasswordLocalDataBatchUploaderTest,
        MigrationUploadsPasswordInAccountAndProfileStore) {
   base::HistogramTester histogram_tester;
   base::test::TestFuture<void> wait_add;
@@ -726,8 +706,6 @@ TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
   // No upload recorded.
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 0, 1);
 }
-
-#endif
 
 }  // namespace
 }  // namespace password_manager

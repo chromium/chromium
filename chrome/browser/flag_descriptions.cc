@@ -8114,12 +8114,6 @@ const char kProfilesReorderingDescription[] =
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-const char kBatchUploadDesktopName[] = "Batch Upload Desktop";
-const char kBatchUploadDesktopDescription[] =
-    "Enables the Batch Upload feature for Desktop. This allows to upload local "
-    "data to the account data when signed in. Currently only supports "
-    "Passwords and Addresses";
-
 const char kEnableHistorySyncOptinExpansionPillName[] =
     "History Sync Opt-in Expansion Pill";
 const char kEnableHistorySyncOptinExpansionPillDescription[] =

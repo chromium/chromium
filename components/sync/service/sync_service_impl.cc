@@ -2320,8 +2320,6 @@ void SyncServiceImpl::TriggerLocalDataMigration(DataTypeSet types) {
 
 void SyncServiceImpl::TriggerLocalDataMigrationForItems(
     std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) {
-  CHECK(switches::IsBatchUploadDesktopEnabled());
-
   for (const auto& [type, _] : items) {
     base::UmaHistogramEnumeration("Sync.BatchUpload.Requests3",
                                   syncer::DataTypeHistogramValue(type));

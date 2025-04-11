@@ -37,7 +37,6 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
@@ -620,8 +619,15 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
 
   source->AddBoolean("canAddShortcut", web_app::AreWebAppsEnabled(profile));
 
+  // TODO(crbug.com/409337246): Cleanup TS/HTML further by removing this value
+  // that is not relevant for non dice platforms.
   source->AddBoolean("isBatchUploadDesktopEnabled",
-                     switches::IsBatchUploadDesktopEnabled());
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+                     true
+#else
+                     false
+#endif
+  );
 
   source->AddBoolean(
       "passkeyUpgradeSettingsToggleVisible",

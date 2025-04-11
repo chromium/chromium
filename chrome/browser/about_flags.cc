@@ -10184,10 +10184,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    {"batch-upload-desktop", flag_descriptions::kBatchUploadDesktopName,
-     flag_descriptions::kBatchUploadDesktopDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(switches::kBatchUploadDesktop)},
     {"enable-history-sync-optin-expansion-pill",
      flag_descriptions::kEnableHistorySyncOptinExpansionPillName,
      flag_descriptions::kEnableHistorySyncOptinExpansionPillDescription,

@@ -4807,9 +4807,6 @@ extern const char kProfilesReorderingDescription[];
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-extern const char kBatchUploadDesktopName[];
-extern const char kBatchUploadDesktopDescription[];
-
 extern const char kEnableHistorySyncOptinExpansionPillName[];
 extern const char kEnableHistorySyncOptinExpansionPillDescription[];
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

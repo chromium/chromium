@@ -21,7 +21,6 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/service/local_data_description.h"
 #include "url/gurl.h"
 
@@ -154,27 +153,22 @@ void PasswordLocalDataBatchUploader::TriggerLocalDataMigrationForItems(
 void PasswordLocalDataBatchUploader::OnGotLocalPasswordsForDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> description_callback,
     std::unique_ptr<PasswordFetchRequest> request) {
-  const bool is_batch_upload_desktop_enabled =
-      switches::IsBatchUploadDesktopEnabled();
   std::vector<GURL> urls;
   std::vector<syncer::LocalDataItemModel> local_data_models;
   for (auto& result : request->TakeResults()) {
-    if (is_batch_upload_desktop_enabled) {
-      syncer::LocalDataItemModel item;
-      item.id = PasswordFormKey(PasswordFormUniqueKey(*result.get()));
-      item.title = result->url.host();
-      item.subtitle = base::UTF16ToUTF8(result->username_value);
-      item.icon = syncer::LocalDataItemModel::PageUrlIcon(result->url);
-      local_data_models.push_back(std::move(item));
-    }
+    syncer::LocalDataItemModel item;
+    item.id = PasswordFormKey(PasswordFormUniqueKey(*result.get()));
+    item.title = result->url.host();
+    item.subtitle = base::UTF16ToUTF8(result->username_value);
+    item.icon = syncer::LocalDataItemModel::PageUrlIcon(result->url);
+    local_data_models.push_back(std::move(item));
+
     urls.push_back(result->url);
   }
 
   syncer::LocalDataDescription local_data(std::move(urls));
-  if (is_batch_upload_desktop_enabled) {
-    local_data.type = syncer::DataType::PASSWORDS;
-    local_data.local_data_models = std::move(local_data_models);
-  }
+  local_data.type = syncer::DataType::PASSWORDS;
+  local_data.local_data_models = std::move(local_data_models);
   std::move(description_callback).Run(std::move(local_data));
 }
 

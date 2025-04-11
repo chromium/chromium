@@ -1208,10 +1208,8 @@ void PopulateChromeWebUIFrameBinders(
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  if (base::FeatureList::IsEnabled(switches::kBatchUploadDesktop)) {
-    RegisterWebUIControllerInterfaceBinder<
-        batch_upload::mojom::PageHandlerFactory, BatchUploadUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      batch_upload::mojom::PageHandlerFactory, BatchUploadUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       signout_confirmation::mojom::PageHandlerFactory, SignoutConfirmationUI>(
