@@ -23,7 +23,7 @@ import type {SearchboxGhostLoaderElement} from '/lens/shared/searchbox_ghost_loa
 
 import type {LensSidePanelPageHandlerInterface} from '../lens_side_panel.mojom-webui.js';
 import {PageContentType} from '../page_content_type.mojom-webui.js';
-import {handleEscapeSearchbox, onSearchboxKeydown} from '../searchbox_utils.js';
+import {handleEscapeSearchbox} from '../searchbox_utils.js';
 
 import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
@@ -245,11 +245,6 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
       this.suppressGhostLoader = false;
       this.showErrorState = false;
     });
-    this.eventTracker_.add(document, 'keydown', (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' && this.isSearchboxFocused) {
-        onSearchboxKeydown(this, this.$.searchbox);
-      }
-    });
     this.eventTracker_.add(
         document, 'query-autocomplete',
         this.handleQueryAutocomplete.bind(this));
@@ -358,8 +353,14 @@ export class LensSidePanelAppElement extends LensSidePanelAppElementBase {
   }
 
   // Called when the searchbox requests autocomplete suggestions.
-  private handleQueryAutocomplete() {
+  private handleQueryAutocomplete(e: CustomEvent) {
     this.autocompleteRequestStarted = true;
+    if (!e.detail.inputValue.trim()) {
+      // If there is an input of only whitespace, don't show ghost loader since
+      // no results will ever be returned for these inputs.
+      this.suppressGhostLoader = e.detail.inputValue;
+      this.showErrorState = false;
+    }
   }
 
   private setShowErrorPage(shouldShowErrorPage: boolean) {

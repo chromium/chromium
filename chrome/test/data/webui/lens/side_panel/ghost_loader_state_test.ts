@@ -53,17 +53,27 @@ suite('SearchboxBackButton', () => {
     assertTrue(isVisible(ghostLoader.shadowRoot!.getElementById('errorState')));
     // Notify side panel to reset the ghost loader to loading state.
     assertTrue(isVisible(lensSidePanelElement.$.searchbox));
-    // Mock sending input to the searchbox.
-    lensSidePanelElement.$.searchbox.$.input.value = 'hello';
-    lensSidePanelElement.dispatchEvent(new KeyboardEvent('keydown', {
+    // Mock sending input to the querying autocomplete.
+    lensSidePanelElement.dispatchEvent(new CustomEvent('query-autocomplete', {
       bubbles: true,
       cancelable: true,
-      key: 'o',
+      detail: {inputValue: ''},
     }));
 
     await waitAfterNextRender(lensSidePanelElement);
-    // State should be switched back to loading state after any input.
+    // Ghost loader should show on true empty input.
     assertTrue(
+        isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
+
+    lensSidePanelElement.dispatchEvent(new CustomEvent('query-autocomplete', {
+      bubbles: true,
+      cancelable: true,
+      detail: {inputValue: '    '},
+    }));
+
+    await waitAfterNextRender(lensSidePanelElement);
+    // Ghost loader should not show when input is only whitespace.
+    assertFalse(
         isVisible(ghostLoader.shadowRoot!.getElementById('loadingState')));
   });
 

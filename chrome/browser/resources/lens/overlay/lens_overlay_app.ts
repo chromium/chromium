@@ -37,7 +37,7 @@ import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
 import {PageContentType} from './page_content_type.mojom-webui.js';
 import {PerformanceTracker} from './performance_tracker.js';
-import {handleEscapeSearchbox, onSearchboxKeydown} from './searchbox_utils.js';
+import {handleEscapeSearchbox} from './searchbox_utils.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
 import {focusShimmerOnRegion, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
 import type {TranslateButtonElement} from './translate_button.js';
@@ -341,11 +341,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.eventTracker_.add(document, 'language-picker-opened', () => {
       this.handleLanguagePickersOpened();
     });
-    this.eventTracker_.add(document, 'keydown', (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' && this.isSearchboxFocused) {
-        onSearchboxKeydown(this, this.$.searchbox);
-      }
-    });
     this.eventTracker_.add(
         document, 'query-autocomplete',
         this.handleQueryAutocomplete.bind(this));
@@ -412,8 +407,14 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   // Called when the searchbox requests autocomplete suggestions.
-  private handleQueryAutocomplete() {
+  private handleQueryAutocomplete(e: CustomEvent) {
     this.autocompleteRequestStarted = true;
+    if (!e.detail.inputValue.trim()) {
+      // If there is an input of only whitespace, don't show ghost loader since
+      // no results will ever be returned for these inputs.
+      this.suppressGhostLoader = e.detail.inputValue;
+      this.showErrorState = false;
+    }
   }
 
   private focusShimmerOnSearchbox() {
