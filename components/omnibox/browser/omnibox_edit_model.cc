@@ -507,6 +507,7 @@ std::u16string OmniboxEditModel::GetPermanentDisplayText() const {
 
 void OmniboxEditModel::SetUserText(const std::u16string& text) {
   SetInputInProgress(true);
+  controller_->client()->OnKeywordModeChanged(false, keyword_);
   keyword_.clear();
   keyword_placeholder_.clear();
   is_keyword_hint_ = false;
@@ -756,6 +757,7 @@ void OmniboxEditModel::Revert() {
   input_.Clear();
   paste_state_ = NONE;
   InternalSetUserText(std::u16string());
+  controller_->client()->OnKeywordModeChanged(false, keyword_);
   keyword_.clear();
   keyword_placeholder_.clear();
   is_keyword_hint_ = false;
