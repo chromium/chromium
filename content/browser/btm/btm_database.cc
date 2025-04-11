@@ -34,10 +34,9 @@ namespace content {
 namespace {
 
 // NOTE: This is flag is intended for local testing and debugging only.
-// TODO: crbug.com/380903149 - re-enable exclusive locking.
 BASE_FEATURE(kDisableExclusiveLockingOnDipsDatabase,
              "DisableExclusiveLockingOnDipsDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr char kTimerLastFiredKey[] = "timer_last_fired";
 
