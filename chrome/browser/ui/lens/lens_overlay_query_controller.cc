@@ -626,6 +626,7 @@ void LensOverlayQueryController::StartQueryFlow(
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const lens::PageContent> underlying_page_contents,
     lens::MimeType primary_content_type,
+    std::optional<uint32_t> pdf_current_page,
     float ui_scale_factor,
     base::TimeTicks invocation_time) {
   original_screenshot_ = screenshot;
@@ -634,6 +635,7 @@ void LensOverlayQueryController::StartQueryFlow(
   significant_region_boxes_ = std::move(significant_region_boxes);
   underlying_page_contents_ = underlying_page_contents;
   primary_content_type_ = primary_content_type;
+  pdf_current_page_ = pdf_current_page;
   ui_scale_factor_ = ui_scale_factor;
   invocation_time_ = invocation_time;
   gen204_id_ = base::RandUint64();
@@ -695,6 +697,7 @@ void LensOverlayQueryController::SendEndTranslateModeQuery() {
 void LensOverlayQueryController::ResetPageContentData() {
   underlying_page_contents_ = base::span<const lens::PageContent>();
   primary_content_type_ = lens::MimeType::kUnknown;
+  pdf_current_page_ = std::nullopt;
   page_url_ = GURL();
   page_title_ = std::nullopt;
   partial_content_ = base::span<const std::u16string>();
@@ -705,6 +708,7 @@ void LensOverlayQueryController::SendUpdatedPageContent(
     std::optional<lens::MimeType> primary_content_type,
     std::optional<GURL> new_page_url,
     std::optional<std::string> new_page_title,
+    std::optional<uint32_t> pdf_current_page,
     const SkBitmap& screenshot) {
   if (underlying_page_content.has_value()) {
     underlying_page_contents_ = underlying_page_content.value();
@@ -712,6 +716,7 @@ void LensOverlayQueryController::SendUpdatedPageContent(
     page_url_ = new_page_url.value();
     page_title_ = new_page_title;
   }
+  pdf_current_page_ = pdf_current_page;
   if (!screenshot.drawsNothing()) {
     original_screenshot_ = screenshot;
   }
@@ -1177,6 +1182,12 @@ void LensOverlayQueryController::
   request.mutable_objects_request()->mutable_request_context()->CopyFrom(
       request_context);
   request.mutable_objects_request()->mutable_image_data()->CopyFrom(image_data);
+
+  if (pdf_current_page_.has_value()) {
+    request.mutable_objects_request()
+        ->mutable_viewport_request_context()
+        ->set_pdf_page_number(pdf_current_page_.value());
+  }
 
   FullImageRequestDataReady(sequence_id, request);
 }

@@ -111,6 +111,7 @@ class LensOverlayQueryController {
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const PageContent> underlying_page_contents,
       lens::MimeType primary_content_type,
+      std::optional<uint32_t> pdf_current_page,
       float ui_scale_factor,
       base::TimeTicks invocation_time);
 
@@ -145,6 +146,7 @@ class LensOverlayQueryController {
       std::optional<lens::MimeType> primary_content_type,
       std::optional<GURL> new_page_url,
       std::optional<std::string> new_page_title,
+      std::optional<uint32_t> pdf_current_page,
       const SkBitmap& screenshot);
 
   // Sends a request to the server with a portion of the page content.
@@ -647,6 +649,9 @@ class LensOverlayQueryController {
 
   // The page title, if it is allowed to be shared.
   std::optional<std::string> page_title_;
+
+  // The current page of the PDF document if page_content_type_ is kPdf.
+  std::optional<uint32_t> pdf_current_page_;
 
   // Options needed to send a translate request with the proper parameters.
   struct TranslateOptions {
