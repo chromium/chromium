@@ -125,9 +125,9 @@ def main():
     args.extend(targets)
     env = os.environ.copy()
     if use_prepare_header_only:
-        env['SISO_EXPERIMENTS'] = 'no-fast-deps,prepare-header-only'
+        env['SISO_EXPERIMENTS'] = 'no-fast-deps,prepare-header-only,ignore-missing-targets'
     else:
-        env['SISO_EXPERIMENTS'] = 'no-fast-deps'
+        env['SISO_EXPERIMENTS'] = 'no-fast-deps,ignore-missing-targets'
     with subprocess.Popen(
         args,
         cwd=repo_root,
