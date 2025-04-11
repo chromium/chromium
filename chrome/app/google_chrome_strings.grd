@@ -1720,6 +1720,14 @@ Google Chrome is unable to recover your settings.
           desc="Notification shown in the Lens Overlay when the user has copied the selected image to the clipboard.">
           Image copied
         </message>
+        <message name="IDS_LENS_OVERLAY_FEEDBACK_TOAST_MESSAGE"
+          desc="The message on the toast prompting the user to share their thoughts by sending feedback.">
+          Share your thoughts
+        </message>
+        <message name="IDS_LENS_OVERLAY_SEND_FEEDBACK_BUTTON_LABEL"
+          desc="The label for the button that on click opens a feedback form for the user to send feedback about the feature.">
+          Send feedback
+        </message>
         <message name="IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL"
           desc="Text that is shown in the tooltip of the more options button in the Lens Overlay.">
           More options

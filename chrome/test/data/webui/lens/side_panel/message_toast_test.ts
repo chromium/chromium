@@ -13,7 +13,7 @@ import {isVisible} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {TestLensSidePanelBrowserProxy} from './test_side_panel_browser_proxy.js';
 
-suite('ShowToast', () => {
+suite('MessageToast', () => {
   let testBrowserProxy: TestLensSidePanelBrowserProxy;
   let lensSidePanelElement: LensSidePanelAppElement;
   let callbackRouterRemote: LensSidePanelPageRemote;
@@ -29,10 +29,10 @@ suite('ShowToast', () => {
     document.body.appendChild(lensSidePanelElement);
   });
 
-  test('ShowToast', async () => {
+  test('ShowMessageToast', async () => {
     callbackRouterRemote.showToast('message');
     await waitAfterNextRender(lensSidePanelElement);
 
-    assertTrue(isVisible(lensSidePanelElement.$.toast));
+    assertTrue(isVisible(lensSidePanelElement.$.messageToast));
   });
 });

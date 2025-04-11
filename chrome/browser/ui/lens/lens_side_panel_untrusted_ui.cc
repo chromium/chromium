@@ -67,6 +67,10 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "searchboxGhostLoaderNoSuggestText",
       IDS_GOOGLE_SEARCH_BOX_CONTEXTUAL_NO_SUGGEST_TEXT);
+  html_source->AddLocalizedString("feedbackToastMessage",
+                                  IDS_LENS_OVERLAY_FEEDBACK_TOAST_MESSAGE);
+  html_source->AddLocalizedString("sendFeedbackButtonText",
+                                  IDS_LENS_OVERLAY_SEND_FEEDBACK_BUTTON_LABEL);
   const bool dark_mode = lens::LensOverlayShouldUseDarkMode(
       ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui)));
 
@@ -88,6 +92,9 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddLocalizedString(
       "searchBoxHintContextualPdf",
       IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_CONTEXTUAL_PDF);
+  html_source->AddBoolean(
+      "newFeedbackEnabled",
+      lens::features::IsLensSearchSidePanelNewFeedbackEnabled());
 
   // Allow FrameSrc from all Google subdomains as redirects can occur.
   GURL results_side_panel_url =

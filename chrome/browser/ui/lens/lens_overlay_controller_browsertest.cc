@@ -239,7 +239,7 @@ constexpr char kCheckSidePanelThumbnailShownScript[] =
 constexpr char kCheckSidePanelToastShownScript[] =
     "(function() {const appRoot = "
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
-    "const toast = appRoot.getElementById('toast');"
+    "const toast = appRoot.getElementById('messageToast');"
     "const toastStyle = window.getComputedStyle(toast);"
     "return toastStyle.visibility !== 'hidden' && "
     "        toastStyle.opacity !== 0;})();";
