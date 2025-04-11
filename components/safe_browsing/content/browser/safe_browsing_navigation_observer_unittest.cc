@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
