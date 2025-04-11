@@ -257,8 +257,8 @@ sessions::LiveTab* BrowserLiveTabContext::AddRestoredTab(
 
       // Move the group into `browser_` if it is open in a different browser.
       if (source_browser != browser_) {
-        tab_groups::SavedTabGroupUtils::MoveGroupToExistingWindow(
-            source_browser, browser_, group_id.value(), saved_group_id.value());
+        chrome::MoveGroupToExistingWindow(source_browser, browser_,
+                                          group_id.value());
       }
     } else {
       // Open the group in this browser if it is closed.

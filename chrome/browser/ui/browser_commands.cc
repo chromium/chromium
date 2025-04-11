@@ -1224,6 +1224,17 @@ void MoveTabsToExistingWindow(Browser* source,
   target->window()->Show();
 }
 
+void MoveGroupToExistingWindow(Browser* source,
+                               Browser* target,
+                               tab_groups::TabGroupId group) {
+  CHECK(source->tab_strip_model()->group_model()->ContainsTabGroup(group));
+  std::unique_ptr<DetachedTabGroup> detached_group =
+      source->tab_strip_model()->DetachTabGroupForInsertion(group);
+  target->tab_strip_model()->InsertDetachedTabGroupAt(std::move(detached_group),
+                                                      0);
+  target->window()->Show();
+}
+
 void PinTab(Browser* browser) {
   browser->tab_strip_model()->ExecuteContextMenuCommand(
       browser->tab_strip_model()->active_index(),

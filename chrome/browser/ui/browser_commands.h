@@ -144,6 +144,9 @@ bool CanDuplicateTabAt(const Browser* browser, int index);
 void MoveTabsToExistingWindow(Browser* source,
                               Browser* target,
                               const std::vector<int>& tab_indices);
+void MoveGroupToExistingWindow(Browser* source,
+                               Browser* target,
+                               tab_groups::TabGroupId group);
 void MuteSite(Browser* browser);
 void PinTab(Browser* browser);
 void GroupTab(Browser* browser);
