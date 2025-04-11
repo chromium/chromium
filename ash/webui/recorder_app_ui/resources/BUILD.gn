@@ -66,26 +66,26 @@ build_webui("build") {
   # first before assigning new value...
   static_files = []
   static_files = [ "index.html" ]
-  non_web_component_files = [ "init.ts" ]
+  ts_files = [ "init.ts" ]
 
   # Note that since we don't use separate .html/.css file for template in
-  # components, all components/pages files are under non_web_component_files
+  # components, all components/pages files are under ts_files
   # even though they're actually lit components.
 
   foreach(file, component_files) {
-    non_web_component_files += [ "components/$file" ]
+    ts_files += [ "components/$file" ]
   }
 
   foreach(file, page_files) {
-    non_web_component_files += [ "pages/$file" ]
+    ts_files += [ "pages/$file" ]
   }
 
   foreach(file, platform_files) {
-    non_web_component_files += [ "platforms/$file" ]
+    ts_files += [ "platforms/$file" ]
   }
 
   foreach(file, core_files) {
-    non_web_component_files += [ "core/$file" ]
+    ts_files += [ "core/$file" ]
   }
 
   ts_definitions = [

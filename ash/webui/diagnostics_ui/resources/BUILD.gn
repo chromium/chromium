@@ -50,7 +50,7 @@ build_webui("build") {
     "wifi_info.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "diagnostics_browser_proxy.ts",
     "diagnostics_types.ts",
     "diagnostics_utils.ts",

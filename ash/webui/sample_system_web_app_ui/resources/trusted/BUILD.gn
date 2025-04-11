@@ -23,7 +23,7 @@ build_webui("build") {
     "timer.html",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "component_playground.ts",
     "inter_frame_communication.ts",
     "main.ts",

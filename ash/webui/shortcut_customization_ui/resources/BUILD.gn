@@ -27,7 +27,7 @@ build_webui("build") {
     "js/shortcuts_page.ts",
     "js/text_accelerator.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "js/accelerator_lookup_manager.ts",
     "js/fake_data.ts",
     "js/fake_shortcut_provider.ts",

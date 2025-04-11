@@ -37,7 +37,7 @@ web_component_files = [
   "smb_shares/add_smb_share_dialog.js",
 ]
 
-non_web_component_files = [
+ts_files = [
   "assert.js",
   "cr.js",
   "cr.m.js",
@@ -125,7 +125,7 @@ web_component_files_ts = [
   "traffic_counters/traffic_counters.ts",
 ]
 
-non_web_component_files_ts = [
+ts_files_ts = [
   "accessibility/macro_names.ts",
   "accessibility/facial_gestures.ts",
   "bluetooth/bluetooth_metrics_utils.ts",
@@ -228,8 +228,8 @@ preprocess_if_expr("preprocess") {
   in_folder = "."
   out_folder = preprocessed_dir
   out_manifest = "$target_gen_dir/$preprocessed_manifest"
-  in_files = non_web_component_files + web_component_files + icons_html_files +
-             html_files + css_files
+  in_files =
+      ts_files + web_component_files + icons_html_files + html_files + css_files
   if (is_chrome_branded) {
     deps = [ ":copy_internal_icons" ]
   }
@@ -258,7 +258,7 @@ css_to_wrapper("css_wrapper_files") {
 
 preprocess_if_expr("preprocess_ts") {
   in_folder = "."
-  in_files = non_web_component_files_ts + web_component_files_ts
+  in_files = ts_files_ts + web_component_files_ts
   out_folder = preprocessed_dir
 }
 
@@ -266,8 +266,8 @@ webui_ts_library("build_ts") {
   tsconfig_base = "//tools/typescript/tsconfig_base_polymer_cros.json"
   root_dir = preprocessed_dir
   out_dir = preprocessed_dir
-  in_files = non_web_component_files_ts + web_component_files_ts +
-             mojo_files_ts + generated_files_ts
+  in_files =
+      ts_files_ts + web_component_files_ts + mojo_files_ts + generated_files_ts
   composite = true
   deps = [
     "//ash/webui/common/resources/cr_elements:build_ts",

@@ -12,7 +12,7 @@ build_webui("build") {
     "index.html",
   ]
 
-  non_web_component_files = [ "index.ts" ]
+  ts_files = [ "index.ts" ]
 
   mojo_files_deps = [ "//ash/webui/mall:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/ash/webui/mall/mall_ui.mojom-webui.ts" ]

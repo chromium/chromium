@@ -15,7 +15,7 @@ build_webui("build") {
     "privacy_indicator_app_manager.ts",
     "status_area_internals.ts",
   ]
-  non_web_component_files = [ "page_handler.ts" ]
+  ts_files = [ "page_handler.ts" ]
   mojo_files = [ "$root_gen_dir/ash/webui/status_area_internals/mojom/status_area_internals.mojom-webui.ts" ]
   mojo_files_deps =
       [ "//ash/webui/status_area_internals/mojom:mojom_ts__generator" ]
