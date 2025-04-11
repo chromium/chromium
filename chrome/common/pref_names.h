@@ -3514,9 +3514,7 @@ inline constexpr char kRecoveryComponentNeedsElevation[] =
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Policy that indicates how to handle animated images.
 inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";
-#endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Boolean that indicates whether Chrome enterprise extension request is enabled
 // or not.
 inline constexpr char kCloudExtensionRequestEnabled[] =
@@ -3548,13 +3546,11 @@ inline constexpr char kCreatePasskeysInICloudKeychain[] =
 inline constexpr char kCWSInfoTimestamp[] = "extensions.cws_info_timestamp";
 inline constexpr char kCWSInfoFetchErrorTimestamp[] =
     "extensions.cws_info_fetch_error_timestamp";
-#endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // A bool value for running GarbageCollectStoragePartitionCommand.
 inline constexpr char kShouldGarbageCollectStoragePartitions[] =
     "storage_partitions.should_garbage_collect";
-#endif
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 inline constexpr char kAllowDinosaurEasterEgg[] = "allow_dinosaur_easter_egg";
 

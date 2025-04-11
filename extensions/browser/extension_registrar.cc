@@ -157,6 +157,7 @@ void ExtensionRegistrar::AddExtension(
   UntrackTerminatedExtension(extension->id());
 
   // Notify the delegate we will add the extension.
+  CHECK(delegate_);
   delegate_->PreAddExtension(extension.get(), old);
 
   if (was_reloading) {

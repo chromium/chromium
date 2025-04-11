@@ -183,6 +183,10 @@ source_set("extensions") {
     "corrupted_extension_reinstaller_factory.h",
     "crx_installer.cc",
     "crx_installer.h",
+    "cws_info_service.cc",
+    "cws_info_service.h",
+    "cws_info_service_factory.cc",
+    "cws_info_service_factory.h",
     "data_deleter.cc",
     "data_deleter.h",
     "delayed_install_manager.cc",
@@ -217,6 +221,8 @@ source_set("extensions") {
     "extension_install_prompt.h",
     "extension_install_prompt_show_params.cc",
     "extension_install_prompt_show_params.h",
+    "extension_management.cc",
+    "extension_management.h",
     "extension_management_constants.cc",
     "extension_management_constants.h",
     "extension_management_internal.cc",
@@ -246,6 +252,8 @@ source_set("extensions") {
     "external_install_manager_factory.h",
     "external_loader.cc",
     "external_loader.h",
+    "external_policy_loader.cc",
+    "external_policy_loader.h",
     "external_pref_loader.cc",
     "external_pref_loader.h",
     "external_provider_impl.cc",
@@ -297,6 +305,8 @@ source_set("extensions") {
     "permissions/permissions_updater.h",
     "permissions/scripting_permissions_modifier.cc",
     "permissions/scripting_permissions_modifier.h",
+    "permissions_based_management_policy_provider.cc",
+    "permissions_based_management_policy_provider.h",
     "permissions_url_constants.cc",
     "permissions_url_constants.h",
     "policy_handlers.cc",
@@ -316,6 +326,8 @@ source_set("extensions") {
     "shared_module_service.h",
     "shared_module_service_factory.cc",
     "shared_module_service_factory.h",
+    "standard_management_policy_provider.cc",
+    "standard_management_policy_provider.h",
     "startup_helper.cc",
     "startup_helper.h",
     "system_display/display_info_provider.h",
@@ -351,6 +363,11 @@ source_set("extensions") {
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
   ]
+  allow_circular_includes_from = [
+    # TODO(crbug.com/40161499): Remove this circular dependency.
+    "//chrome/browser/devtools",
+    "//chrome/browser/ui/safety_hub",
+  ]
   deps = [
     "//base",
     "//chrome/app:command_ids",
@@ -383,6 +400,7 @@ source_set("extensions") {
     "//components/data_sharing/public",
     "//components/data_sharing/public:features",
     "//components/embedder_support",
+    "//components/enterprise",
     "//components/infobars/content",
     "//components/infobars/core",
     "//components/no_state_prefetch/browser",
@@ -646,10 +664,6 @@ source_set("extensions") {
       "context_menu_helpers.h",
       "context_menu_matcher.cc",
       "context_menu_matcher.h",
-      "cws_info_service.cc",
-      "cws_info_service.h",
-      "cws_info_service_factory.cc",
-      "cws_info_service_factory.h",
       "device_permissions_dialog_controller.cc",
       "device_permissions_dialog_controller.h",
       "extension_action_runner.cc",
@@ -673,8 +687,6 @@ source_set("extensions") {
       "extension_gcm_app_handler.h",
       "extension_keybinding_registry.cc",
       "extension_keybinding_registry.h",
-      "extension_management.cc",
-      "extension_management.h",
       "extension_menu_icon_loader.cc",
       "extension_menu_icon_loader.h",
       "extension_safety_check_utils.cc",
@@ -702,8 +714,6 @@ source_set("extensions") {
       "extension_view_host_factory.h",
       "external_install_error_desktop.cc",
       "external_install_error_desktop.h",
-      "external_policy_loader.cc",
-      "external_policy_loader.h",
       "file_handlers/file_handling_launch_utils.cc",
       "file_handlers/file_handling_launch_utils.h",
       "forced_extensions/force_installed_metrics.cc",
@@ -727,12 +737,8 @@ source_set("extensions") {
       "omaha_attributes_handler.h",
       "permissions/site_permissions_helper.cc",
       "permissions/site_permissions_helper.h",
-      "permissions_based_management_policy_provider.cc",
-      "permissions_based_management_policy_provider.h",
       "safe_browsing_verdict_handler.cc",
       "safe_browsing_verdict_handler.h",
-      "standard_management_policy_provider.cc",
-      "standard_management_policy_provider.h",
       "sync_bundle.cc",
       "sync_bundle.h",
       "tab_helper.cc",
@@ -772,12 +778,9 @@ source_set("extensions") {
       ]
     }
 
-    allow_circular_includes_from = [
+    allow_circular_includes_from += [
       # TODO(b/40251079): Remove this circular dependency.
       "//chrome/browser/apps/app_service/app_icon",
-
-      # TODO(crbug.com/40161499): Remove this circular dependency.
-      "//chrome/browser/devtools",
 
       # Lots of APIs use headers from the list above.
       "//chrome/browser/extensions/api:api_registration",
@@ -802,7 +805,6 @@ source_set("extensions") {
 
       "//chrome/browser/feedback",
       "//chrome/browser/ui/views/toolbar",
-      "//chrome/browser/ui/safety_hub",
     ]
 
     # Since browser and browser_extensions actually depend on each other,

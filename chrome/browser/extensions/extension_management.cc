@@ -41,8 +41,6 @@
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -62,6 +60,11 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/url_pattern.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -312,11 +315,13 @@ bool ExtensionManagement::IsOffstoreInstallAllowed(
 bool ExtensionManagement::IsAllowedManifestType(
     Manifest::Type manifest_type,
     const std::string& extension_id) const {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // If a managed theme has been set for the current profile, theme extension
   // installations are not allowed.
   if (manifest_type == Manifest::Type::TYPE_THEME &&
       ThemeServiceFactory::GetForProfile(profile_)->UsingPolicyTheme())
     return false;
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   if (!global_settings_->allowed_types.has_value())
     return true;

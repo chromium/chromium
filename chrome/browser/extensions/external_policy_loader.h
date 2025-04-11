@@ -12,7 +12,7 @@
 #include "chrome/browser/extensions/external_loader.h"
 #include "extensions/buildflags/buildflags.h"
 
-static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

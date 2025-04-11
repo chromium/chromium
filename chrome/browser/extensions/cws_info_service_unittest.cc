@@ -31,6 +31,9 @@
 
 namespace extensions {
 
+// TODO(crbug.com/409634950): Port this test to desktop Android. It probably
+// needs an ExtensionRegistrar::Delegate and a FakeCWSInfoService (see
+// TestExtensionSystem for details).
 class CWSInfoServiceTest : public ::testing::Test,
                            public CWSInfoService::Observer {
  protected:
