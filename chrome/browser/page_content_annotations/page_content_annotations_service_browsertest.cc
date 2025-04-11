@@ -1258,8 +1258,15 @@ class PageContentAnnotationsServiceContentExtractionPdfTest
   }
 };
 
+// TODO(crbug.com/410068541): Test is slow for debug/sanitized builds.
+// Reenable once timeouts are fixed.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+#define MAYBE_PdfPageCount DISABLED_PdfPageCount
+#else
+#define MAYBE_PdfPageCount PdfPageCount
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionPdfTest,
-                       PdfPageCount) {
+                       MAYBE_PdfPageCount) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::TestFuture<void> future;
   ukm_recorder.SetOnAddEntryCallback(
@@ -1279,8 +1286,15 @@ IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionPdfTest,
                               kPdfPageCountName));
 }
 
+// TODO(crbug.com/410068541): Test is slow for debug/sanitized builds.
+// Reenable once timeouts are fixed.
+#if defined(MEMORY_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+#define MAYBE_TwoPdfPageLoads DISABLED_TwoPdfPageLoads
+#else
+#define MAYBE_TwoPdfPageLoads TwoPdfPageLoads
+#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceContentExtractionPdfTest,
-                       TwoPdfPageLoads) {
+                       MAYBE_TwoPdfPageLoads) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   base::test::TestFuture<void> future;
   ukm_recorder.SetOnAddEntryCallback(
