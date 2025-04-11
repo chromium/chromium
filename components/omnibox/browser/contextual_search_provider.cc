@@ -116,8 +116,9 @@ void ContextualSearchProvider::Start(
 
   AddDefaultVerbatimMatch(input);
 
-  if(!input.text().empty()) {
-    // Only make the suggest request for zero suggest in keyword mode.
+  // Exit early if the input is not in ZPS keyword mode or the autocomplete
+  // input is not allowed to make asynchronous requests.
+  if (!input.text().empty() || autocomplete_input.omit_asynchronous_matches()) {
     done_ = true;
     return;
   }
