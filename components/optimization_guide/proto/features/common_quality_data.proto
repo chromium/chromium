@@ -271,17 +271,6 @@ message ContentAttributes {
     TableRowData table_row_data = 13;
   }
 
-  // The ID for this ContentNode. This is unique to the AnnotatedPageContent,
-  // including the embedded iframes. The value may change across different
-  // AnnotatedPageContent extractions for the same page; it is not guaranteed to
-  // be stable in the same page across different time.
-  int32 content_node_id = 22;
-
-  // The IDs of the DOM nodes whose content is represented by this ContentNode.
-  // This is used to map the results of the receiver's action back to the
-  // original DOM node.
-  repeated int32 dom_node_ids = 1;
-
   // If this content node has the content of an entire subtree, this is the ID
   // of the common ancestor of all the nodes in the subtree.
   int32 common_ancestor_dom_node_id = 2;
@@ -306,7 +295,7 @@ message ContentAttributes {
   // be "Submit".
   string label = 16;
 
-  reserved 5, 6, 7, 17, 18;
+  reserved 5, 6, 7, 17, 18, 1, 22;
 }
 
 // The geometry of the content, in the page coordinate system.
@@ -489,6 +478,7 @@ message SelectOption {
   string text = 2;
 
   // Whether the option is selected.
+  // Not set for FormsAI purposes, but used in PCA.
   bool is_selected = 3;
 }
 
@@ -664,6 +654,7 @@ message FormData {
   uint64 form_signature = 4;
 }
 
+// Next ID: 14
 message FormFieldData {
   // The name for the field.
   string field_name = 1;
@@ -671,13 +662,12 @@ message FormFieldData {
   // The label for the field.
   string field_label = 2;
 
-  // The value of the field.
-  string field_value = 3;
+  string field_value = 3 [deprecated = true];
 
-  // Whether the field is visible.
-  bool is_visible = 4;
+  bool is_visible = 4 [deprecated = true];
 
   // Whether the field is focusable.
+  // Only set during data collection, not in prediction requests.
   bool is_focusable = 5;
 
   // The type of control for this form field.
@@ -692,9 +682,7 @@ message FormFieldData {
   // The AX node ID of the form control for this field.
   int32 form_control_ax_node_id = 9;
 
-  // Whether the field is eligible for filling and importing. This flag does not
-  // take the value of the field into consideration.
-  bool is_eligible = 10;
+  bool is_eligible = 10 [deprecated = true];
 
   // Only set during data collection, not in prediction requests.
   AutofillGlobalId global_id = 11;
@@ -703,6 +691,14 @@ message FormFieldData {
   // changes dynamically.
   // Only set during data collection, not in prediction requests.
   uint32 field_signature = 12;
+
+  // The text of the elements denoted by the aria-labelledby attribute of field
+  // or the value of its aria-label attribute, with priority given to the
+  // aria-labelledby attribute.
+  // TODO(crbug.com/389631485): The client doesn't set this for model requests at the
+  // moment. But it can and should be used for inference since it is contained
+  // in the metadata pipeline.
+  string aria_label = 13;
 }
 
 message TableRow {

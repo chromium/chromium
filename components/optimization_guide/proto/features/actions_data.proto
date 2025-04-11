@@ -24,7 +24,7 @@ option optimize_for = LITE_RUNTIME;
 // Next ID: 4
 message ActionTarget {
   // Id of the content node within the frame. Same as
-  // ContentNode.content_node_id.
+  // ContentNode.common_ancestor_dom_node_id.
   int32 content_node_id = 1;
 
   Coordinate coordinate = 2;
