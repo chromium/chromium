@@ -165,4 +165,37 @@ IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest,
 
   EXPECT_NE(field_color, canvas_color);
 }
+
+IN_PROC_BROWSER_TEST_F(WebThemeEngineImplDefaultBrowserTest,
+                       ActiveLinkAndVisitedTextAreDistinctInDarkMode) {
+  GURL url(
+      "data:text/html,"
+      "<!doctype html><html>"
+      "<body style='color-scheme: dark;'>"
+      "<div id='active-text' style='color: ActiveText'>ActiveText</div>"
+      "<div id='link-text' style='color: LinkText'>LinkText</div>"
+      "<div id='visited-text' style='color: VisitedText'>VisitedText</div>"
+      "</body></html>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  const std::string active_text_color =
+      EvalJs(shell(),
+             "window.getComputedStyle(document.getElementById('active-text'))."
+             "getPropertyValue('color').toString()")
+          .ExtractString();
+  const std::string link_text_color =
+      EvalJs(shell(),
+             "window.getComputedStyle(document.getElementById('link-text'))."
+             "getPropertyValue('color').toString()")
+          .ExtractString();
+  const std::string visitied_text_color =
+      EvalJs(shell(),
+             "window.getComputedStyle(document.getElementById('visited-text'))."
+             "getPropertyValue('color').toString()")
+          .ExtractString();
+
+  EXPECT_NE(active_text_color, link_text_color);
+  EXPECT_NE(link_text_color, visitied_text_color);
+  EXPECT_NE(visitied_text_color, active_text_color);
+}
 }  // namespace content

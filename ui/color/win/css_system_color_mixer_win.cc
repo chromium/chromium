@@ -29,6 +29,9 @@ void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
     mixer[kColorCssSystemWindowText] = {kColorNativeWindowText};
     mixer[kColorCssSystemField] = {kColorCssSystemWindow};
     mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
+    mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
+    mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
+    mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
   }
 }
 
