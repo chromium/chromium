@@ -137,12 +137,15 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // search engines created by policy and search engines the user manually
   // edited. Keep in sync with `SearchPolicyConflictType` in
   // tools/metrics/histograms/enums.xml.
+
+  // LINT.IfChange(SearchPolicyConflictType)
   enum class SearchPolicyConflictType {
     kNone = 0,
     kWithFeatured = 1,
     kWithNonFeatured = 2,
     kMaxValue = kWithNonFeatured,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchPolicyConflictType)
 
   TemplateURLService(
       PrefService& prefs,
