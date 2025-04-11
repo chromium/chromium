@@ -4,13 +4,26 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_cell.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_constants.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_container_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+
+namespace {
+// The size for the default avatar symbol.
+constexpr CGFloat kDefaultAvatarSize = 20;
+}  // namespace
 
 @implementation RecentActivityLogCell {
   // Container view that displays the `faviconView`.
   FaviconContainerView* _faviconContainerView;
+  // The container for the avatar.
+  UIView* _avatarContainer;
+  // The avatar.
+  UIView* _avatar;
 }
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
@@ -18,7 +31,7 @@
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
     self.isAccessibilityElement = YES;
-    _avatarView = [[UIView alloc] init];
+    _avatarContainer = [[UIView alloc] init];
     _uniqueIdentifier = [[NSUUID UUID] UUIDString];
 
     _faviconContainerView = [[FaviconContainerView alloc] init];
@@ -51,7 +64,7 @@
 
     UIStackView* horizontalStack =
         [[UIStackView alloc] initWithArrangedSubviews:@[
-          _avatarView, verticalStack, _faviconContainerView
+          _avatarContainer, verticalStack, _faviconContainerView
         ]];
     horizontalStack.translatesAutoresizingMaskIntoConstraints = NO;
     horizontalStack.axis = UILayoutConstraintAxisHorizontal;
@@ -66,6 +79,10 @@
     // height.
     heightConstraint.priority = UILayoutPriorityRequired - 1;
     [NSLayoutConstraint activateConstraints:@[
+      [_avatarContainer.heightAnchor
+          constraintEqualToConstant:kRecentActivityLogAvatarSize],
+      [_avatarContainer.widthAnchor
+          constraintEqualToAnchor:_avatarContainer.heightAnchor],
       // Horizontal Stack constraints.
       [horizontalStack.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
@@ -87,10 +104,38 @@
   return self;
 }
 
-#pragma mark - Getters
+#pragma mark - Accessors
 
 - (FaviconView*)faviconView {
   return _faviconContainerView.faviconView;
+}
+
+- (void)setAvatar:(UIView*)avatar {
+  [_avatar removeFromSuperview];
+  if (!avatar) {
+    UIImageView* defaultAvatarImage = [[UIImageView alloc]
+        initWithImage:DefaultSymbolWithPointSize(kPersonFillSymbol,
+                                                 kDefaultAvatarSize)];
+    defaultAvatarImage.translatesAutoresizingMaskIntoConstraints = NO;
+    defaultAvatarImage.tintColor = [UIColor colorNamed:kBlue900Color];
+
+    avatar = [[UIView alloc] init];
+    avatar.translatesAutoresizingMaskIntoConstraints = NO;
+    avatar.backgroundColor = [UIColor colorNamed:kBlue100Color];
+    avatar.layer.cornerRadius = kRecentActivityLogAvatarSize / 2;
+    [NSLayoutConstraint activateConstraints:@[
+      [avatar.heightAnchor
+          constraintEqualToConstant:kRecentActivityLogAvatarSize],
+      [avatar.widthAnchor constraintEqualToAnchor:avatar.heightAnchor],
+    ]];
+
+    [avatar addSubview:defaultAvatarImage];
+    AddSameCenterConstraints(avatar, defaultAvatarImage);
+  }
+  _avatar = avatar;
+
+  [_avatarContainer addSubview:avatar];
+  AddSameCenterConstraints(_avatar, _avatarContainer);
 }
 
 #pragma mark - UITableViewCell
@@ -101,9 +146,7 @@
   _titleLabel.text = nil;
   _descriptionLabel.text = nil;
   _faviconContainerView = nil;
-  for (UIView* subview in _avatarView.subviews) {
-    [subview removeFromSuperview];
-  }
+  [self setAvatar:nil];
 }
 
 @end

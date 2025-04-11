@@ -16,6 +16,7 @@ bundle_data_xcassets("resources") {
     "Assets.xcassets/blue_500_color.colorset/Contents.json",
     "Assets.xcassets/blue_600_color.colorset/Contents.json",
     "Assets.xcassets/blue_700_color.colorset/Contents.json",
+    "Assets.xcassets/blue_900_color.colorset/Contents.json",
     "Assets.xcassets/blue_color.colorset/Contents.json",
     "Assets.xcassets/blue_halo_color.colorset/Contents.json",
     "Assets.xcassets/close_button_color.colorset/Contents.json",

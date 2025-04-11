@@ -107,6 +107,7 @@ extern NSString* const kBlue400Color;
 extern NSString* const kBlue500Color;
 extern NSString* const kBlue600Color;
 extern NSString* const kBlue700Color;
+extern NSString* const kBlue900Color;
 // Static blue palette (same color for light and dark modes).
 extern NSString* const kStaticBlueColor;
 extern NSString* const kStaticBlue400Color;

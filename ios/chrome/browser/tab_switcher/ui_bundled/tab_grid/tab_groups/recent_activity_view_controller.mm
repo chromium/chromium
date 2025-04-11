@@ -193,17 +193,8 @@ NSString* RecentActivityLogCellAccessibilityIdentifier(NSUInteger index) {
                }
              }];
 
-  if (itemIdentifier.avatarPrimitive) {
-    UIView* view = [itemIdentifier.avatarPrimitive view];
-    [cell.avatarView addSubview:view];
-    [NSLayoutConstraint activateConstraints:@[
-      [view.centerXAnchor
-          constraintEqualToAnchor:cell.avatarView.centerXAnchor],
-      [view.centerYAnchor
-          constraintEqualToAnchor:cell.avatarView.centerYAnchor],
-    ]];
-    [itemIdentifier.avatarPrimitive resolve];
-  }
+  [cell setAvatar:[itemIdentifier.avatarPrimitive view]];
+  [itemIdentifier.avatarPrimitive resolve];
   return cell;
 }
 

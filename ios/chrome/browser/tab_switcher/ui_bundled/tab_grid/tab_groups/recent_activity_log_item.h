@@ -18,6 +18,8 @@ enum class RecentActivityAction;
 
 // Represents a log item in a diffable data source. It contains the data of
 // ActivityLogItem obtained from MessagingBackendService.
+// The equality between two objects is based on the id of the
+// `activityMetadata`.
 @interface RecentActivityLogItem : NSObject
 
 // When true, all other values should be ignored. This represents an absence of

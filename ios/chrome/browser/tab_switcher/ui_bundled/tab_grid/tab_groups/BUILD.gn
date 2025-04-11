@@ -254,6 +254,8 @@ source_set("tab_group_consumer") {
 
 source_set("tab_groups_constant") {
   sources = [
+    "recent_activity_constants.h",
+    "recent_activity_constants.mm",
     "tab_groups_constants.h",
     "tab_groups_constants.mm",
   ]

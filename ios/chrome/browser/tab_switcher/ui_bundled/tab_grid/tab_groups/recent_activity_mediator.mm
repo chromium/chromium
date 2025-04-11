@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/recent_activity_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_constants.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_log_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -35,8 +36,6 @@ namespace {
 
 // The size of a favicon image.
 const CGFloat kFaviconSize = 20;
-// The size of an avatar image.
-const CGFloat kAvatarSize = 30;
 
 // The maximum number of logs to query, and thus display in the list.
 const int kMaxNumberOfLogs = 5;
@@ -208,7 +207,8 @@ const int kMaxNumberOfLogs = 5;
 
   NSMutableArray<RecentActivityLogItem*>* items = [[NSMutableArray alloc] init];
 
-  for (auto& log : _messagingService->GetActivityLog(params)) {
+  for (collaboration::messaging::ActivityLogItem& log :
+       _messagingService->GetActivityLog(params)) {
     RecentActivityLogItem* item = [[RecentActivityLogItem alloc] init];
     if (log.show_favicon && log.activity_metadata.tab_metadata.has_value() &&
         log.activity_metadata.tab_metadata.value().last_known_url.has_value()) {
@@ -243,7 +243,8 @@ const int kMaxNumberOfLogs = 5;
         config.displayName = user->display_name.empty()
                                  ? base::SysUTF8ToNSString(user->email)
                                  : base::SysUTF8ToNSString(user->display_name);
-        config.avatarSize = CGSizeMake(kAvatarSize, kAvatarSize);
+        config.avatarSize = CGSizeMake(kRecentActivityLogAvatarSize,
+                                       kRecentActivityLogAvatarSize);
         item.avatarPrimitive = _shareKitService->AvatarImage(config);
       }
     }
