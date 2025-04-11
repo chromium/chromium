@@ -125,7 +125,7 @@ source_set("unit_tests") {
     "instance/fake_transaction.cc",
     "instance/fake_transaction.h",
     "instance/leveldb/backing_store_unittest.cc",
-    "instance/leveldb_cleanup_on_io_error_unittest.cc",
+    "instance/leveldb/cleanup_on_io_error_unittest.cc",
     "instance/leveldb_cleanup_scheduler_unittest.cc",
     "instance/leveldb_tombstone_sweeper_unittest.cc",
     "instance/mock_factory_client.cc",

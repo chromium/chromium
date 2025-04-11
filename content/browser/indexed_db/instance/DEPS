@@ -16,9 +16,6 @@ include_rules = [
 # introducing new abstractions or by moving relevant files into the leveldb
 # subdirectory.
 specific_include_rules = {
-  "active_blob_registry.cc": [
-    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
-  ],
   "bucket_context\\..*": [
     "+content/browser/indexed_db/instance/leveldb/backing_store.h",
   ],
@@ -32,9 +29,6 @@ specific_include_rules = {
     "+content/browser/indexed_db/instance/leveldb/backing_store.h",
   ],
   "index_writer\\..*": [
-    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
-  ],
-  "leveldb_cleanup_on_io_error_unittest.cc": [
     "+content/browser/indexed_db/instance/leveldb/backing_store.h",
   ],
 }
