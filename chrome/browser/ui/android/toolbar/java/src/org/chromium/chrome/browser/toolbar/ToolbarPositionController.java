@@ -379,12 +379,13 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             boolean isFormFieldFocusedWithKeyboardVisible,
             boolean doesUserPreferTopToolbar,
             @ControlsPosition int currentPosition) {
+        boolean miniOriginBarEnabled = ChromeFeatureList.sMiniOriginBar.isEnabled();
         @ControlsPosition int newControlsPosition;
         if (ntpShowing
                 || tabSwitcherShowing
                 || isOmniboxFocused
                 || isFindInPageShowing
-                || isFormFieldFocusedWithKeyboardVisible
+                || (isFormFieldFocusedWithKeyboardVisible && !miniOriginBarEnabled)
                 || doesUserPreferTopToolbar) {
             newControlsPosition = ControlsPosition.TOP;
         } else {
