@@ -149,8 +149,8 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerMouse) {
   ASSERT_EQ("pointer1", base::OptionalFromPtr(action1.FindString("id")));
   ASSERT_EQ("pointerMove",
             base::OptionalFromPtr(action1.FindString("subtype")));
-  ASSERT_EQ(30, action1.FindInt("x"));
-  ASSERT_EQ(60, action1.FindInt("y"));
+  ASSERT_EQ(30, action1.FindDouble("x"));
+  ASSERT_EQ(60, action1.FindDouble("y"));
 
   const base::Value::Dict& action2 = action_list[1];
   ASSERT_EQ("pointer", base::OptionalFromPtr(action2.FindString("type")));
@@ -210,8 +210,8 @@ TEST(WindowCommandsTest, ProcessInputActionSequencePointerTouch) {
   ASSERT_EQ("pointer1", base::OptionalFromPtr(action1.FindString("id")));
   ASSERT_EQ("pointerMove",
             base::OptionalFromPtr(action1.FindString("subtype")));
-  ASSERT_EQ(30, action1.FindInt("x"));
-  ASSERT_EQ(60, action1.FindInt("y"));
+  ASSERT_EQ(30, action1.FindDouble("x"));
+  ASSERT_EQ(60, action1.FindDouble("y"));
 
   const base::Value::Dict& action2 = action_list[1];
   ASSERT_EQ("pointer", base::OptionalFromPtr(action2.FindString("type")));
