@@ -106,6 +106,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                             context,
                             this,
                             renderHost,
+                            this,
                             getContentContainer(),
                             mCompositorViewHolderSupplier,
                             mContentView,

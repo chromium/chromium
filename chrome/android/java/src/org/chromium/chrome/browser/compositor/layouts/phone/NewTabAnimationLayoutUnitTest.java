@@ -41,7 +41,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.UserDataHost;
-import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayerJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayerJni;
@@ -89,7 +90,6 @@ public class NewTabAnimationLayoutUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private ObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     @Mock private CompositorViewHolder mCompositorViewHolder;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private BrowserControlsManager mBrowserControlsManager;
@@ -97,6 +97,7 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private StaticTabSceneLayer.Natives mStaticTabSceneLayerJni;
     @Mock private LayoutUpdateHost mUpdateHost;
     @Mock private LayoutRenderHost mRenderHost;
+    @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
@@ -104,8 +105,12 @@ public class NewTabAnimationLayoutUnitTest {
     @Mock private Tab mNewTab;
     @Mock private LayoutTab mLayoutTab;
     @Mock private ToggleTabStackButton mTabSwitcherButton;
-    @Mock private ObservableSupplier<Boolean> mScrimVisibilitySupplier;
 
+    private ObservableSupplierImpl<Tab> mCurrentTabSupplier = new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<CompositorViewHolder> mCompositorViewHolderSupplier =
+            new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<Boolean> mScrimVisibilitySupplier =
+            new ObservableSupplierImpl<>();
     private NewTabAnimationLayout mNewTabAnimationLayout;
     private FrameLayout mContentContainer;
     private FrameLayout mAnimationHostView;
@@ -134,6 +139,7 @@ public class NewTabAnimationLayoutUnitTest {
                 .when(mStaticTabSceneLayerJni)
                 .init(any());
 
+        when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
         when(mTabModelSelector.getModelForTabId(anyInt())).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getTabById(CURRENT_TAB_ID)).thenReturn(mCurrentTab);
@@ -147,8 +153,8 @@ public class NewTabAnimationLayoutUnitTest {
         mUserDataHost = new UserDataHost();
         when(mCurrentTab.getUserDataHost()).thenReturn(mUserDataHost);
         when(mNewTab.getId()).thenReturn(NEW_TAB_ID);
-        when(mCompositorViewHolderSupplier.get()).thenReturn(mCompositorViewHolder);
-        when(mScrimVisibilitySupplier.get()).thenReturn(false);
+        mCompositorViewHolderSupplier.set(mCompositorViewHolder);
+        mScrimVisibilitySupplier.set(false);
         when(mLayoutTab.isInitFromHostNeeded()).thenReturn(true);
         doAnswer(
                         invocation -> {
@@ -171,6 +177,7 @@ public class NewTabAnimationLayoutUnitTest {
                                 activity,
                                 mUpdateHost,
                                 mRenderHost,
+                                mLayoutStateProvider,
                                 mContentContainer,
                                 mCompositorViewHolderSupplier,
                                 mAnimationHostView,
