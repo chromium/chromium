@@ -256,8 +256,9 @@ const user_manager::User* ProfileHelperImpl::GetUserByProfile(
   CHECK_IS_TEST();
   const user_manager::User* active_user = user_manager->GetActiveUser();
   return active_user &&
-                 browser_context_helper_->GetBrowserContextPathByUserIdHash(
-                     active_user->username_hash()) == profile->GetPath()
+                 active_user->username_hash() ==
+                     ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(
+                         const_cast<Profile*>(profile))
              ? active_user
              : nullptr;
 }
