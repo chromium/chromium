@@ -666,6 +666,7 @@ AshNotificationView::~AshNotificationView() {
   // b/330585555: We need to abort any in progress animations before we destroy
   // the views hierarchy to make sure there are no dangling pointers associated
   // with an animations' OnAborted callback.
+  weak_factory_.InvalidateWeakPtrs();
   layer()->GetAnimator()->AbortAllAnimations();
 }
 
