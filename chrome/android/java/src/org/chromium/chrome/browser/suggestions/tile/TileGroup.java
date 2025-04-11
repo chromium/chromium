@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsOfflineModelObserver;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.CustomLinkOperations;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.chrome.browser.suggestions.tile.tile_edit_dialog.CustomTileEditCoordinator;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
@@ -80,6 +81,12 @@ public class TileGroup implements MostVisitedSites.Observer {
 
         /** Initialize AndroidPrerenderManager JNI interface. */
         void initAndroidPrerenderManager(AndroidPrerenderManager androidPrerenderManager);
+
+        /**
+         * @param originalTile The tile to edit, or null to add a new tile.
+         * @return A new CustomTileEditCoordinator instance.
+         */
+        CustomTileEditCoordinator createCustomTileEditCoordinator(@Nullable Tile originalTile);
 
         /**
          * To be called before this instance is abandoned to the garbage collector so it can do any
@@ -222,6 +229,7 @@ public class TileGroup implements MostVisitedSites.Observer {
     @Nullable private GURL mPendingInsertionUrl;
 
     private boolean mHasReceivedData;
+    private boolean mHavePendingCustomLinkUpdate;
 
     // TODO(dgn): Attempt to avoid cycling dependencies with TileRenderer. Is there a better way?
     private final TileSetupDelegate mTileSetupDelegate =
@@ -304,7 +312,13 @@ public class TileGroup implements MostVisitedSites.Observer {
             expectedChangeCompleted = true;
         }
 
-        if (!mHasReceivedData || !mUiDelegate.isVisible() || expectedChangeCompleted) loadTiles();
+        if (!mHasReceivedData
+                || !mUiDelegate.isVisible()
+                || expectedChangeCompleted
+                || mHavePendingCustomLinkUpdate) {
+            mHavePendingCustomLinkUpdate = false;
+            loadTiles();
+        }
     }
 
     @Override
@@ -658,9 +672,7 @@ public class TileGroup implements MostVisitedSites.Observer {
             if (tile == null) return;
 
             GURL url = tile.getUrl();
-            // TODO(crbug.com/397422235): Trigger reload by having onSiteSuggestionsAvailable()
-            // call loadTiles() if the operation below succeeds.
-            mTileGroupDelegate.assignCustomLink(url, tile.getTitle(), url);
+            assignCustomLinkAndUpdateOnSuccess(url, tile.getTitle(), url);
         }
 
         @Override
@@ -670,9 +682,11 @@ public class TileGroup implements MostVisitedSites.Observer {
 
             // Unlike removeItem(), don't run {@link mOnRemoveRunnable}.
 
-            // TODO(crbug.com/397422235): Trigger reload by having onSiteSuggestionsAvailable()
-            // call loadTiles() if the operation below succeeds.
-            mTileGroupDelegate.deleteCustomLink(tile.getUrl());
+            // On success, onSiteSuggestionsAvailable() triggers.
+            mHavePendingCustomLinkUpdate = true;
+            if (!mTileGroupDelegate.deleteCustomLink(tile.getUrl())) {
+                mHavePendingCustomLinkUpdate = false;
+            }
         }
 
         @Override
@@ -680,7 +694,13 @@ public class TileGroup implements MostVisitedSites.Observer {
             @Nullable Tile tile = findTile(mSuggestion);
             if (tile == null) return;
 
-            // TODO(crbug.com/397422235): Show "Edit shortcut" dialog.
+            CustomTileEditCoordinator customTileEditCoordinator =
+                    mTileGroupDelegate.createCustomTileEditCoordinator(tile);
+            customTileEditCoordinator.show(
+                    (String name, GURL url) -> {
+                        return assignCustomLinkAndUpdateOnSuccess(tile.getUrl(), name, url);
+                    },
+                    mTileGroupDelegate::hasCustomLink);
         }
 
         @Override
@@ -744,6 +764,17 @@ public class TileGroup implements MostVisitedSites.Observer {
             }
             boolean isCustomLink = (mSuggestion.source == TileSource.CUSTOM_LINKS);
             return isCustomLink == matchIsCustomLink;
+        }
+
+        private boolean assignCustomLinkAndUpdateOnSuccess(
+                GURL keyUrl, String name, @Nullable GURL url) {
+            // On success, onSiteSuggestionsAvailable() triggers.
+            mHavePendingCustomLinkUpdate = true;
+            boolean success = mTileGroupDelegate.assignCustomLink(keyUrl, name, url);
+            if (!success) {
+                mHavePendingCustomLinkUpdate = false;
+            }
+            return success;
         }
     }
 
