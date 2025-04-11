@@ -1528,32 +1528,15 @@ bool Equal(const StringImpl* a, base::span<const UChar> b) {
 template <typename StringType>
 bool EqualToCString(const StringType* a, const LChar* b) {
   DCHECK(b);
-  wtf_size_t length = a->length();
-
-  if (a->Is8Bit()) {
-    const LChar* a_ptr = a->Characters8();
-    for (wtf_size_t i = 0; i != length; ++i) {
-      LChar bc = b[i];
-      LChar ac = a_ptr[i];
-      if (!bc)
+  return VisitCharacters(*a, [b](auto chars) {
+    for (wtf_size_t i = 0; auto ac : chars) {
+      LChar bc = b[i++];
+      if (!bc || ac != bc) {
         return false;
-      if (ac != bc)
-        return false;
+      }
     }
-
-    return !b[length];
-  }
-
-  const UChar* a_ptr = a->Characters16();
-  for (wtf_size_t i = 0; i != length; ++i) {
-    LChar bc = b[i];
-    if (!bc)
-      return false;
-    if (a_ptr[i] != bc)
-      return false;
-  }
-
-  return !b[length];
+    return !b[chars.size()];
+  });
 }
 
 bool EqualToCString(const StringImpl* a, const char* latin1) {
