@@ -35,7 +35,6 @@ group("all") {
       "//remoting/host:remoting_native_messaging_manifests",
       "//remoting/host:remoting_start_host",
       "//remoting/host/it2me:remote_assistance_host",
-      "//remoting/host/webauthn:remote_webauthn",
     ]
 
     if (is_linux || is_win) {
@@ -43,7 +42,10 @@ group("all") {
     }
 
     if (enable_me2me_host && (is_linux || is_win)) {
-      deps += [ "//remoting/host/remote_open_url" ]
+      deps += [
+        "//remoting/host/remote_open_url",
+        "//remoting/host/webauthn:remote_webauthn",
+      ]
     }
   }
 }
@@ -82,6 +84,8 @@ source_set("host_main_headers") {
     ":*",
     "//remoting/host/crash:crash_uploader_main_headers",
     "//remoting/host/it2me:main_headers",
+    "//remoting/host/mac:agent_process_broker_main_headers",
+    "//remoting/host/mac:host_service_main_headers",
     "//remoting/host/mac:remoting_native_messaging_host",
     "//remoting/host/mac:remoting_native_messaging_host_executable",
     "//remoting/host/remote_open_url:remote_open_url_main_headers",
@@ -973,17 +977,14 @@ if (enable_remoting_host) {
   }
 }
 
-if (enable_remoting_host) {
+if (enable_me2me_host) {
   executable("remoting_start_host") {
     sources = [ "setup/start_host_entry_point.cc" ]
 
-    deps = [ "//remoting/host/setup:start_host_main_headers" ]
-
-    if (is_win || is_linux) {
-      deps += [ ":remoting_core" ]
-    } else {
-      deps += [ "//remoting/host/setup:start_host_main" ]
-    }
+    deps = [
+      ":remoting_core",
+      "//remoting/host/setup:start_host_main_headers",
+    ]
 
     configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -1182,47 +1183,62 @@ if (enable_me2me_host) {
   }
 
   # Windows defines its own entry point function.
-  # TODO(yuweih): Enable shared library on Mac.
   if (!is_win) {
     source_set("entry_point") {
       sources = [ "entry_point.cc" ]
-      deps = [ ":host_main_headers" ]
-      if (is_mac) {
-        deps += [ ":main" ]
-      } else {
-        deps += [ ":remoting_core" ]
-      }
+      deps = [
+        ":host_main_headers",
+        ":remoting_core",
+      ]
     }
   }
 
-  if (is_win || is_linux) {
-    group("implementation") {
-      deps = [
-        ":main",
+  group("implementation") {
+    # Dependencies here will be compiled into the remoting_core shared lib.
+    deps = [
+      ":main",
+      "//remoting/host/it2me:main",
+      "//remoting/host/setup:native_messaging_host_main",
+      "//remoting/host/setup:start_host_main",
+    ]
+    if (is_mac) {
+      deps += [
+        "//remoting/host/mac:agent_process_broker_main",
+        "//remoting/host/mac:host_service_main",
+      ]
+    } else {
+      deps += [
         "//remoting/host/crash:crash_uploader_main",
-        "//remoting/host/it2me:main",
         "//remoting/host/remote_open_url:main",
-        "//remoting/host/setup:native_messaging_host_main",
-        "//remoting/host/setup:start_host_main",
         "//remoting/host/webauthn:main",
       ]
-      if (is_win) {
-        deps += [ "//remoting/host/security_key:main" ]
-      }
     }
     if (is_win) {
-      group("remoting_core") {
-        deps = [ "//remoting/host/win:remoting_core" ]
-      }
-    } else {
-      shared_library("remoting_core") {
-        deps = [ ":implementation" ]
+      deps += [ "//remoting/host/security_key:main" ]
+    }
+  }
 
-        if (!is_component_build) {
-          # Set rpath on dependent executables so that they can find the shared
-          # lib in the same directory, in a non-component build.
+  if (is_win) {
+    group("remoting_core") {
+      deps = [ "//remoting/host/win:remoting_core" ]
+    }
+  } else {
+    shared_library("remoting_core") {
+      deps = [ ":implementation" ]
+
+      if (!is_component_build) {
+        if (is_linux) {
+          # Set rpath on dependent executables so that they can find the
+          # shared lib in the same directory, in a non-component build.
           all_dependent_configs =
               [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+        }
+        if (is_mac) {
+          # Non-component build sets install_name to
+          # `./libremoting_core.dylib` by default. It needs to be overwritten
+          # to support rpath resolution.
+          ldflags = [ "-Wl,-install_name,@rpath/libremoting_core.dylib" ]
+          all_dependent_configs = [ "//remoting/build/config:mac_host_rpath" ]
         }
       }
     }
@@ -1235,28 +1251,22 @@ if (enable_me2me_host) {
     group("remoting_native_messaging_host") {
       deps = [ "//remoting/host/win:remoting_native_messaging_host" ]
     }
-  } else {
-    if (is_mac) {
-      group("remoting_me2me_host") {
-        deps = [ "//remoting/host/mac:remoting_me2me_host" ]
-      }
-    } else {
-      executable("remoting_me2me_host") {
-        deps = [ ":entry_point" ]
-
-        # https://crbug.com/1198747
-        assert_no_deps = [ "//ui/gtk" ]
-      }
+  } else if (is_mac) {
+    group("remoting_me2me_host") {
+      deps = [ "//remoting/host/mac:remoting_me2me_host" ]
     }
+    group("remoting_native_messaging_host") {
+      deps = [ "//remoting/host/mac:remoting_native_messaging_host" ]
+    }
+  } else {
+    executable("remoting_me2me_host") {
+      deps = [ ":entry_point" ]
 
-    if (is_mac) {
-      group("remoting_native_messaging_host") {
-        deps = [ "//remoting/host/mac:remoting_native_messaging_host" ]
-      }
-    } else {
-      group("remoting_native_messaging_host") {
-        public_deps = [ "//remoting/host/linux:remoting_native_messaging_host" ]
-      }
+      # https://crbug.com/1198747
+      assert_no_deps = [ "//ui/gtk" ]
+    }
+    group("remoting_native_messaging_host") {
+      public_deps = [ "//remoting/host/linux:remoting_native_messaging_host" ]
     }
   }
   if (is_chrome_branded && enable_me2me_host && is_linux) {

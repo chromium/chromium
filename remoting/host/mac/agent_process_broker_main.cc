@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "remoting/host/mac/agent_process_broker_main.h"
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -13,7 +15,9 @@
 #include "remoting/base/logging.h"
 #include "remoting/host/mac/agent_process_broker.h"
 
-int main(int argc, char const* argv[]) {
+namespace remoting {
+
+int AgentProcessBrokerMain(int argc, char** argv) {
   base::AtExitManager exitManager;
   base::CommandLine::Init(argc, argv);
   remoting::InitHostLogging();
@@ -33,3 +37,5 @@ int main(int argc, char const* argv[]) {
   run_loop.Run();
   return 0;
 }
+
+}  // namespace remoting
