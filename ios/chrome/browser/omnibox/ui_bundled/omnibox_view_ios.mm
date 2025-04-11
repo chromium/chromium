@@ -413,23 +413,6 @@ void OmniboxViewIOS::WillPaste() {
   [field_ exitPreEditState];
 }
 
-void OmniboxViewIOS::UpdateAppearance() {
-  // If Siri is thinking, treat that as user input being in progress.  It is
-  // unsafe to modify the text field while voice entry is pending.
-  if (model() && model()->ResetDisplayTexts()) {
-    // Revert everything to the baseline look.
-    RevertAll();
-  } else if (model() && !model()->has_focus()) {
-    // Even if the change wasn't "user visible" to the model, it still may be
-    // necessary to re-color to the URL string.  Only do this if the omnibox is
-    // not currently focused.
-    NSAttributedString* as = [[NSMutableAttributedString alloc]
-        initWithString:base::SysUTF16ToNSString(
-                           model()->GetPermanentDisplayText())];
-    [field_ setText:as userTextLength:[as length]];
-  }
-}
-
 void OmniboxViewIOS::OnDeleteBackward() {
   if (field_.text.length == 0) {
     // If the user taps backspace while the pre-edit text is showing,

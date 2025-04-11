@@ -46,6 +46,28 @@
   _omniboxViewIOS = nullptr;
 }
 
+- (void)updateAppearance {
+  if (!_omniboxEditModel) {
+    return;
+  }
+  // If Siri is thinking, treat that as user input being in progress.  It is
+  // unsafe to modify the text field while voice entry is pending.
+  if (_omniboxEditModel->ResetDisplayTexts()) {
+    if (_omniboxViewIOS) {
+      // Revert everything to the baseline look.
+      _omniboxViewIOS->RevertAll();
+    }
+  } else if (!_omniboxEditModel->has_focus()) {
+    // Even if the change wasn't "user visible" to the model, it still may be
+    // necessary to re-color to the URL string.  Only do this if the omnibox is
+    // not currently focused.
+    NSAttributedString* as = [[NSMutableAttributedString alloc]
+        initWithString:base::SysUTF16ToNSString(
+                           _omniboxEditModel->GetPermanentDisplayText())];
+    [self.textField setText:as userTextLength:[as length]];
+  }
+}
+
 #pragma mark - Autocomplete events
 
 - (void)setAdditionalText:(const std::u16string&)text {

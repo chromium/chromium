@@ -264,7 +264,7 @@
 }
 
 - (void)updateOmniboxState {
-  _editView->UpdateAppearance();
+  [_omniboxTextController updateAppearance];
 }
 
 - (BOOL)isOmniboxFirstResponder {

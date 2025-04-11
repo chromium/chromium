@@ -38,6 +38,9 @@ class OmniboxViewIOS;
 /// Removes all C++ references.
 - (void)disconnect;
 
+/// Updates the omnibox text based on its current client state.
+- (void)updateAppearance;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.
