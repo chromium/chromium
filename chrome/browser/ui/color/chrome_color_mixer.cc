@@ -376,7 +376,6 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPipWindowSkipAdButtonBackground] = {gfx::kGoogleGrey700};
   mixer[kColorPipWindowSkipAdButtonBorder] = {kColorPipWindowForeground};
   mixer[kColorProfileMenuBackground] = {ui::kColorDialogBackground};
-  mixer[kColorProfileMenuSyncInfoBackground] = {ui::kColorSyncInfoBackground};
   // TODO(crbug.com/40833357): stop forcing the light theme once the
   // reauth dialog supports the dark mode.
   mixer[kColorProfilesReauthDialogBorder] = {SK_ColorWHITE};

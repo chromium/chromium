@@ -186,7 +186,6 @@ aggregate_vector_icons("chrome_vector_icons") {
     "supervisor_account_circle.icon",
     "sync_chrome_refresh.icon",
     "sync_circle.icon",
-    "sync_disabled_chrome_refresh.icon",
     "sync_error_circle.icon",
     "sync_paused_circle.icon",
     "sync_refresh.icon",

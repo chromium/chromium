@@ -460,15 +460,6 @@
   E_CPONLY(kColorProfileMenuIdentityInfoBackground) \
   E_CPONLY(kColorProfileMenuIdentityInfoTitle) \
   E_CPONLY(kColorProfileMenuIdentityInfoSubtitle) \
-  E_CPONLY(kColorProfileMenuHeaderLabel) \
-  E_CPONLY(kColorProfileMenuIconButton) \
-  E_CPONLY(kColorProfileMenuIconButtonBackground) \
-  E_CPONLY(kColorProfileMenuIconButtonBackgroundHovered) \
-  E_CPONLY(kColorProfileMenuSyncErrorIcon) \
-  E_CPONLY(kColorProfileMenuSyncIcon) \
-  E_CPONLY(kColorProfileMenuSyncInfoBackground) \
-  E_CPONLY(kColorProfileMenuSyncOffIcon) \
-  E_CPONLY(kColorProfileMenuSyncPausedIcon) \
   /* Profiles colors. */ \
   E_CPONLY(kColorProfilesReauthDialogBorder) \
   /* PWA colors. */ \

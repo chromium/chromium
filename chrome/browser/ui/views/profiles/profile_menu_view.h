@@ -48,7 +48,6 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
   // ProfileMenuViewBase:
   void BuildMenu() override;
-  gfx::ImageSkia GetSyncIcon() const override;
 
  private:
   friend class ProfileMenuViewExtensionsTest;

@@ -200,35 +200,6 @@ void ProfileMenuView::BuildMenu() {
   }
 }
 
-gfx::ImageSkia ProfileMenuView::GetSyncIcon() const {
-  Profile* profile = browser()->profile();
-  if (profile->IsOffTheRecord() || profile->IsGuestSession()) {
-    return gfx::ImageSkia();
-  }
-
-  bool is_sync_feature_enabled =
-      IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
-          signin::ConsentLevel::kSync);
-  if (!is_sync_feature_enabled) {
-    // This is done regardless of GetAvatarSyncErrorType() because the icon
-    // should reflect that sync-the-feature is off. The error will still be
-    // highlighted by other parts of the UI.
-    return ColoredImageForMenu(kSyncDisabledChromeRefreshIcon,
-                               kColorProfileMenuSyncOffIcon);
-  }
-
-  std::optional<AvatarSyncErrorType> error = GetAvatarSyncErrorType(profile);
-  if (!error) {
-    return ColoredImageForMenu(kSyncChromeRefreshIcon,
-                               kColorProfileMenuSyncIcon);
-  }
-
-  ui::ColorId color_id = error == AvatarSyncErrorType::kSyncPaused
-                             ? kColorProfileMenuSyncPausedIcon
-                             : kColorProfileMenuSyncErrorIcon;
-  return ColoredImageForMenu(kSyncDisabledChromeRefreshIcon, color_id);
-}
-
 std::u16string ProfileMenuView::GetAccessibleWindowTitle() const {
   std::u16string title =
       l10n_util::GetStringUTF16(IDS_PROFILES_PROFILE_BUBBLE_ACCESSIBLE_TITLE);
@@ -569,12 +540,8 @@ void ProfileMenuView::BuildGuestIdentity() {
           IDS_GUEST_WINDOW_COUNT_MESSAGE, guest_window_count);
     }
 
-    SetProfileIdentityInfo(
-        /*profile_name=*/std::u16string(),
-        /*profile_background_color=*/SK_ColorTRANSPARENT,
-        /*edit_button_params=*/std::nullopt, profiles::GetGuestAvatar(),
-        ui::ImageModel(), menu_title_, menu_subtitle_,
-        /*management_label=*/std::u16string(), &kGuestMenuArtIcon);
+    SetProfileIdentityInfo(profiles::GetGuestAvatar(), menu_title_,
+                           menu_subtitle_, &kGuestMenuArtIcon);
   }
 
   if (GetWidget()) {
