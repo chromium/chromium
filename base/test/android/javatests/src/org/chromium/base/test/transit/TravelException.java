@@ -4,14 +4,18 @@
 
 package org.chromium.base.test.transit;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * {@link RuntimeException}s thrown by Public Transit transitions; the message of the wrapping
  * Exception give context to when the underlying Exception happened.
  */
+@NullMarked
 public class TravelException extends RuntimeException {
 
     // Private, call one of the public factory methods instead.
-    private TravelException(String message, Throwable cause) {
+    private TravelException(@Nullable String message, @Nullable Throwable cause) {
         super(message, cause);
     }
 
@@ -23,7 +27,7 @@ public class TravelException extends RuntimeException {
      * @param message the error message
      * @return a new TravelException instance
      */
-    public static TravelException newTravelException(String message) {
+    public static TravelException newTravelException(@Nullable String message) {
         return newTravelException(message, /* cause= */ null);
     }
 
@@ -36,7 +40,8 @@ public class TravelException extends RuntimeException {
      * @param cause the root cause
      * @return a new TravelException instance
      */
-    public static TravelException newTravelException(String message, Throwable cause) {
+    public static TravelException newTravelException(
+            @Nullable String message, @Nullable Throwable cause) {
         TravelException travelException = new TravelException(message, cause);
         PublicTransitConfig.onTravelException(travelException);
         return travelException;

@@ -8,6 +8,10 @@ import static org.junit.Assert.fail;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -36,9 +40,10 @@ import java.util.List;
  *
  * <p>This is the base class for {@link Station} and {@link Facility}.
  */
+@NullMarked
 public abstract class ConditionalState {
     @Phase private int mLifecyclePhase = Phase.NEW;
-    private Elements mElements;
+    private @Nullable Elements mElements;
 
     /** Lifecycle phases of ConditionalState. */
     @IntDef({
@@ -73,6 +78,7 @@ public abstract class ConditionalState {
         return mElements;
     }
 
+    @EnsuresNonNull("mElements")
     private void initElements() {
         if (mElements == null) {
             mElements = new Elements();

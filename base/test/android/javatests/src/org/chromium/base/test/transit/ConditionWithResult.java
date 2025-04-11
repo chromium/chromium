@@ -5,22 +5,25 @@
 package org.chromium.base.test.transit;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A {@link Condition} which supplies {@param <ResultT>} when fulfilled.
  *
  * @param <ResultT> The type of the result supplied when the condition is fulfilled.
  */
+@NullMarked
 public abstract class ConditionWithResult<ResultT> extends Condition implements Supplier<ResultT> {
 
-    private ResultT mResult;
+    private @Nullable ResultT mResult;
 
     public ConditionWithResult(boolean isRunOnUiThread) {
         super(isRunOnUiThread);
     }
 
     @Override
-    public ResultT get() {
+    public @Nullable ResultT get() {
         return mResult;
     }
 

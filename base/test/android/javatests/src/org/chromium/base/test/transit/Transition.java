@@ -4,16 +4,17 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /** A transition into and/or out of {@link ConditionalState}s. */
+@NullMarked
 public abstract class Transition {
     /**
      * A trigger that will be executed to start the transition after all Conditions are in place and
@@ -29,7 +30,7 @@ public abstract class Transition {
 
     protected final int mId;
     protected final TransitionOptions mOptions;
-    @Nullable protected final Trigger mTrigger;
+    protected final @Nullable Trigger mTrigger;
     protected final List<? extends ConditionalState> mExitedStates;
     protected final List<? extends ConditionalState> mEnteredStates;
     protected final ConditionWaiter mConditionWaiter;

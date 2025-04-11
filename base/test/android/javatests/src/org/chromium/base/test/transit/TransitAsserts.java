@@ -7,10 +7,12 @@ package org.chromium.base.test.transit;
 import android.util.Pair;
 
 import org.chromium.base.test.transit.ConditionalState.Phase;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.List;
 
 /** Assertions specific to Public Transit. */
+@NullMarked
 public class TransitAsserts {
     private static final String TAG = "Transit";
 

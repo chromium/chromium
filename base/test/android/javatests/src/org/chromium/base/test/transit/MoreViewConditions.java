@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * More specific {@link Condition}s related to Android {@link View}s.
@@ -16,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
  * supply the {@link View} matched. {@link MoreViewConditions} contains more specific, rarely used
  * Conditions which use the {@link View} matched from the Supplier.
  */
+@NullMarked
 public class MoreViewConditions {
 
     /** Condition that the supplied View has exactly the expected number of children. */

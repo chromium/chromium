@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.any;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.View;
 
 import androidx.test.espresso.AmbiguousViewMatcherException;
@@ -26,10 +28,13 @@ import org.hamcrest.StringDescription;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.RawFailureHandler;
 import org.chromium.base.test.util.ViewPrinter;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 
 /** {@link Condition}s related to Android {@link View}s. */
+@NullMarked
 public class ViewConditions {
 
     private static final ViewPrinter.Options PRINT_SHALLOW_WITH_BOUNDS =
@@ -44,7 +49,7 @@ public class ViewConditions {
     public static class DisplayedCondition extends ConditionWithResult<View> {
         private final Matcher<View> mMatcher;
         private final Options mOptions;
-        private View mViewMatched;
+        private @Nullable View mViewMatched;
         private int mPreviousViewX = Integer.MIN_VALUE;
         private int mPreviousViewY = Integer.MIN_VALUE;
         private int mPreviousViewWidth = Integer.MIN_VALUE;
@@ -113,6 +118,7 @@ public class ViewConditions {
             }
 
             // Assume found a View, or NoMatchingViewException would be thrown.
+            assumeNonNull(mViewMatched);
             boolean fulfilled = true;
             messages.add(ViewPrinter.describeView(mViewMatched, PRINT_SHALLOW_WITH_BOUNDS));
 

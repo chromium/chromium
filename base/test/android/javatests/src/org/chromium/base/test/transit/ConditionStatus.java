@@ -8,6 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.TimeUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,6 +19,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>Includes whether the condition is fulfilled, an optional message and the timestamp of the
  * check.
  */
+@NullMarked
 public class ConditionStatus {
 
     private static final int TRUNCATE_STATUS_UPDATE = 1000;

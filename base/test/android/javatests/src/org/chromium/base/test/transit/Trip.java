@@ -5,6 +5,8 @@
 package org.chromium.base.test.transit;
 
 import org.chromium.base.test.transit.ConditionalState.Phase;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.List;
  * A {@link Transition} into a {@link Station}, either from another {@link Station} or as an entry
  * point.
  */
+@NullMarked
 class Trip extends Transition {
     private final Station mOrigin;
     private final Station mDestination;
@@ -25,7 +28,11 @@ class Trip extends Transition {
      * @param options the {@link TransitionOptions}.
      * @param trigger the action that triggers the transition. e.g. clicking a View.
      */
-    Trip(Station origin, Station destination, TransitionOptions options, Trigger trigger) {
+    Trip(
+            Station origin,
+            Station destination,
+            TransitionOptions options,
+            @Nullable Trigger trigger) {
         super(
                 options,
                 getStationPlusFacilitiesWithPhase(origin, Phase.ACTIVE),

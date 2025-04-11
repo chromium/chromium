@@ -8,7 +8,10 @@ import android.view.View;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A {@link Condition} that checks if a {@link ViewElement} matches a {@link Matcher<View>}. */
+@NullMarked
 public class ViewElementMatchesCondition extends InstrumentationThreadCondition {
 
     private ViewElement mViewElement;

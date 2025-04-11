@@ -4,10 +4,12 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.concurrent.Callable;
 import java.util.function.Function;
@@ -30,6 +32,7 @@ import java.util.function.Function;
  *
  * @param <ParamT> type of parameter the |checkFunction| requires.
  */
+@NullMarked
 public class LogicalElement<ParamT> extends Element<Void> {
 
     private static final ConditionWithResult<Void> CONDITION_WITH_NULL_RESULT =
@@ -46,7 +49,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
 
                 @Override
                 protected ConditionStatusWithResult<Void> resolveWithSuppliers() {
-                    return fulfilled().withResult(null);
+                    return fulfilled().withResult(assumeNonNull(null));
                 }
             };
     private final boolean mIsRunOnUiThread;

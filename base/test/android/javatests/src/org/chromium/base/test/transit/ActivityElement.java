@@ -6,10 +6,10 @@ package org.chromium.base.test.transit;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ import java.util.List;
  *
  * @param <ActivityT> exact type of Activity expected
  */
+@NullMarked
 public class ActivityElement<ActivityT extends Activity> extends Element<ActivityT> {
     private final Class<ActivityT> mActivityClass;
 

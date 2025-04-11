@@ -7,6 +7,8 @@ package org.chromium.base.test.transit;
 import android.util.Pair;
 
 import org.chromium.base.test.transit.ConditionalState.Phase;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +18,12 @@ import java.util.List;
  *
  * <p>Also keeps track of which test is currently running for batched tests.
  */
+@NullMarked
 public class TrafficControl {
     private static final List<Pair<String, Station<?>>> sAllStations = new ArrayList<>();
-    private static String sCurrentTestCase;
+    private static @Nullable String sCurrentTestCase;
 
-    private static Station<?> sActiveStation;
+    private static @Nullable Station<?> sActiveStation;
 
     static void notifyCreatedStation(Station<?> station) {
         sAllStations.add(Pair.create(sCurrentTestCase, station));
@@ -50,7 +53,7 @@ public class TrafficControl {
         return sAllStations;
     }
 
-    public static Station<?> getActiveStation() {
+    public static @Nullable Station<?> getActiveStation() {
         return sActiveStation;
     }
 
@@ -62,7 +65,7 @@ public class TrafficControl {
         sCurrentTestCase = null;
     }
 
-    static String getCurrentTestCase() {
+    static @Nullable String getCurrentTestCase() {
         return sCurrentTestCase;
     }
 }

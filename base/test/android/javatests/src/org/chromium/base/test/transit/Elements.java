@@ -11,6 +11,9 @@ import org.hamcrest.Matcher;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +32,7 @@ import java.util.Set;
  *     elements).
  * </pre>
  */
+@NullMarked
 public class Elements {
     static final Elements EMPTY = new Elements();
 
@@ -81,7 +85,7 @@ public class Elements {
      * ConditionalState's elements by calling the declare___() methods.
      */
     public static class Builder {
-        private Elements mOwner;
+        private @Nullable Elements mOwner;
         private ArrayList<Element<?>> mElements = new ArrayList<>();
         private Map<Condition, ElementFactory> mElementFactories = new HashMap<>();
         private ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
@@ -213,6 +217,7 @@ public class Elements {
             return newElements;
         }
 
+        @EnsuresNonNull("mOwner")
         private void assertNotBuilt() {
             assert mOwner != null
                     : "Elements.Builder already built; if in declareElementFactory(), probably"

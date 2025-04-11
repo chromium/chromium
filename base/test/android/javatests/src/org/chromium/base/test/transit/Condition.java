@@ -7,7 +7,6 @@ package org.chromium.base.test.transit;
 import android.util.ArrayMap;
 
 import androidx.annotation.CallSuper;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.errorprone.annotations.FormatMethod;
@@ -16,6 +15,10 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus.Status;
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.Transition.Trigger;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -25,11 +28,12 @@ import java.util.function.Function;
  * <p>{@link ConditionWaiter} waits for multiple Conditions to be fulfilled. {@link
  * ConditionChecker} performs one-time checks for whether multiple Conditions are fulfilled.
  */
+@NullMarked
 public abstract class Condition {
-    private String mDescription;
+    private @MonotonicNonNull String mDescription;
 
     private final boolean mIsRunOnUiThread;
-    private ArrayMap<String, Supplier<?>> mDependentSuppliers;
+    private @MonotonicNonNull ArrayMap<String, Supplier<?>> mDependentSuppliers;
 
     @VisibleForTesting boolean mHasStartedMonitoringForTesting;
     @VisibleForTesting boolean mHasStoppedMonitoringForTesting;
@@ -100,6 +104,7 @@ public abstract class Condition {
      * Invalidates last description; the next time {@link #getDescription()}, it will get a new one
      * from {@link #buildDescription()}.
      */
+    @EnsuresNonNull("mDescription")
     protected void rebuildDescription() {
         mDescription = buildDescription();
         assert mDescription != null
@@ -143,7 +148,7 @@ public abstract class Condition {
         return checkWithSuppliers();
     }
 
-    private ConditionStatus checkDependentSuppliers() {
+    private @Nullable ConditionStatus checkDependentSuppliers() {
         if (mDependentSuppliers == null) {
             return null;
         }

@@ -4,20 +4,22 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
-
 import com.google.common.base.Strings;
 
 import org.chromium.base.test.transit.ConditionStatus.Status;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 /** Receives status updates and stores them as regions of equal updates. */
+@NullMarked
 class StatusStore {
     private ArrayList<StatusRegion> mStatusRegions = new ArrayList<>();
-    private StatusRegion mLastRegion;
+    private @Nullable StatusRegion mLastRegion;
     private boolean mAnyErrorsReported;
     private boolean mAnyMessages;
 
@@ -37,6 +39,7 @@ class StatusStore {
         }
     }
 
+    @EnsuresNonNullIf("mLastRegion")
     private boolean statusCanBeCollapsed(ConditionStatus status) {
         if (mLastRegion == null) {
             return false;

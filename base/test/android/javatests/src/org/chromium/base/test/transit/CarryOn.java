@@ -8,11 +8,13 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.test.transit.Transition.TransitionOptions;
 import org.chromium.base.test.transit.Transition.Trigger;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Collections;
 import java.util.List;
 
 /** CarryOn is a lightweight, stand-alone ConditionalState not tied to any Station. */
+@NullMarked
 public abstract class CarryOn extends ConditionalState {
 
     private final int mId;

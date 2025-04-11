@@ -11,12 +11,15 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Configuration for PublicTransit tests. */
+@NullMarked
 public class PublicTransitConfig {
     private static final String TAG = "Transit";
     private static long sTransitionPause;
-    private static Runnable sOnExceptionCallback;
+    private static @Nullable Runnable sOnExceptionCallback;
     private static boolean sFreezeOnException;
     private static boolean sOnExceptionCallbackIsRecurring;
 

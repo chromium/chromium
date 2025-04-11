@@ -22,10 +22,12 @@ import org.hamcrest.StringDescription;
 
 import org.chromium.base.test.util.ForgivingClickAction;
 import org.chromium.base.test.util.ViewPrinter;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Arrays;
 
 /** A spec to generate ViewElements representing a view characteristic of a ConditionalState. */
+@NullMarked
 public class ViewSpec {
 
     private final Matcher<View> mViewMatcher;

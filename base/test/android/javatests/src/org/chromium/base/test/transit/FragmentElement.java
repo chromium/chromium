@@ -8,6 +8,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /**
@@ -16,6 +18,7 @@ import java.util.List;
  * @param <FragmentT> the exact type of fragment expected.
  * @param <ActivityT> the {@link ActivityElement} corresponding to the owning activity.
  */
+@NullMarked
 public class FragmentElement<FragmentT extends Fragment, ActivityT extends FragmentActivity>
         extends Element<FragmentT> {
     private ActivityElement<ActivityT> mActivityElement;

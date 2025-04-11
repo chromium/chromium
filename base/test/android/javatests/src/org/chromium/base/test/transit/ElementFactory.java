@@ -5,8 +5,10 @@
 package org.chromium.base.test.transit;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 /** Fabricates new elements after a Condition is first fulfilled. */
+@NullMarked
 public class ElementFactory {
     private Elements mOwner;
     private Callback<Elements.Builder> mDelayedDeclarations;

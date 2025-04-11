@@ -6,22 +6,23 @@ package org.chromium.base.test.transit;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
 import org.hamcrest.Matcher;
 
 import org.chromium.base.test.transit.ViewConditions.DisplayedCondition;
 import org.chromium.base.test.transit.ViewConditions.NotDisplayedAnymoreCondition;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Represents a {@link ViewSpec} added to a {@link ConditionalState}.
  *
- * <p>{@link ViewSpec}s should be declared as constants, while {@link ViewElement}s are
- * created by calling {@link Elements.Builder#declareView(ViewSpec)}.
+ * <p>{@link ViewSpec}s should be declared as constants, while {@link ViewElement}s are created by
+ * calling {@link Elements.Builder#declareView(ViewSpec)}.
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the ViewElement is in
  * the right state.
  */
+@NullMarked
 public class ViewElement extends Element<View> {
 
     /**
@@ -96,7 +97,7 @@ public class ViewElement extends Element<View> {
         protected boolean mScoped = true;
         protected boolean mExpectEnabled = true;
         protected boolean mExpectDisabled;
-        protected String mElementId;
+        protected @Nullable String mElementId;
         protected int mDisplayedPercentageRequired = ViewElement.MIN_DISPLAYED_PERCENT;
         protected int mInitialSettleTimeMs;
 

@@ -4,9 +4,9 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Set;
 
@@ -15,9 +15,9 @@ import java.util.Set;
  *
  * @param <ProductT> the type of object supplied when this Element is present.
  */
-public abstract class Element<ProductT> implements Supplier<ProductT> {
+@NullMarked
+public abstract class Element<ProductT extends @Nullable Object> implements Supplier<ProductT> {
     private final String mId;
-    private boolean mEnterConditionCreated;
     private boolean mExitConditionCreated;
     private @Nullable ConditionWithResult<ProductT> mEnterCondition;
     private @Nullable Condition mExitCondition;
@@ -40,7 +40,7 @@ public abstract class Element<ProductT> implements Supplier<ProductT> {
     public abstract @Nullable Condition createExitCondition();
 
     @Override
-    public ProductT get() {
+    public @Nullable ProductT get() {
         return getEnterCondition().get();
     }
 
@@ -53,9 +53,8 @@ public abstract class Element<ProductT> implements Supplier<ProductT> {
      * @return an ENTER Condition to ensure the element is present in the ConditionalState.
      */
     public ConditionWithResult<ProductT> getEnterCondition() {
-        if (!mEnterConditionCreated) {
+        if (mEnterCondition == null) {
             mEnterCondition = createEnterCondition();
-            mEnterConditionCreated = true;
         }
         return mEnterCondition;
     }
@@ -65,7 +64,7 @@ public abstract class Element<ProductT> implements Supplier<ProductT> {
      * @return an EXIT Condition to ensure the element is not present after transitioning to the
      *     destination.
      */
-    public Condition getExitCondition(Set<String> destinationElementIds) {
+    public @Nullable Condition getExitCondition(Set<String> destinationElementIds) {
         if (!mExitConditionCreated) {
             // Elements don't generate exit Conditions when the same element is in a
             // destination state.
