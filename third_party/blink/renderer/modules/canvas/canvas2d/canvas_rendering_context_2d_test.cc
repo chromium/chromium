@@ -155,7 +155,8 @@ class GrDirectContext;
 namespace blink {
 class CanvasResourceHost;
 class ExecutionContext;
-}  // namespace blink
+
+namespace {
 
 using ::base::test::ScopedFeatureList;
 using ::blink_testing::ClearRectFlags;
@@ -174,6 +175,7 @@ using ::cc::SaveLayerOp;
 using ::cc::SaveOp;
 using ::cc::SetMatrixOp;
 using ::cc::TranslateOp;
+using PageVisibilityState = ::blink::mojom::blink::PageVisibilityState;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -181,8 +183,6 @@ using ::testing::Message;
 using ::testing::Mock;
 using ::testing::Optional;
 using ::testing::SaveArg;
-
-namespace blink {
 
 enum BitmapOpacity { kOpaqueBitmap, kTransparentBitmap };
 
@@ -233,6 +233,20 @@ scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
     *status = kNormalSourceImageStatus;
   return image_;
 }
+
+void SetDocumentVisibility(Document& document, PageVisibilityState visibility) {
+  document.GetPage()->SetVisibilityState(visibility,
+                                         /*is_initial_state=*/false);
+}
+
+void RunIdleTasks() {
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  blink::test::RunPendingTasks();
+}
+
+}  // namespace
 
 //============================================================================
 
@@ -1925,13 +1939,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   UpdateAllLifecyclePhasesForTest();
 
   // Hide element to trigger hibernation (if enabled).
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
-  // Run hibernation task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
   // The above fillRect() call caused the CanvasPerformanceMonitor to start
   // observing tasks. Reset this task observation before running pending tasks
@@ -1939,7 +1947,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // not being expected to be called at this point in the flow.
   CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
 
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
   // If enabled, hibernation should cause repaint of the painting layer.
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
@@ -1953,9 +1962,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
       DocumentUpdateReason::kTest);
 
   // Wake up again, which should request repaint of the painting layer.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
   EXPECT_EQ(features::IsCanvas2DHibernationEnabled(),
             painting_layer->SelfNeedsRepaint());
@@ -1982,9 +1989,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -1992,12 +1997,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(handler.IsHibernating());
@@ -2006,9 +2007,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that coming to the foreground ends hibernation synchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kVisible,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2040,9 +2039,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2052,18 +2049,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Toggle visibility to foreground before the task that enters hibernation
   // gets a chance to run.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
   // Move the page to the background again and verify that hibernation is not
   // newly scheduled, as the hibernation scheduled on the first backgrounding is
   // still pending.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2071,12 +2064,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  // Run the task that initiates hibernation and verify that hibernation
-  // triggers.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(handler.IsHibernating());
@@ -2085,9 +2074,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that coming to the foreground ends hibernation synchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kVisible,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2118,9 +2105,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2128,12 +2113,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, TeardownEndsHibernation) {
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
 
   EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kCPU);
   EXPECT_TRUE(handler.IsHibernating());
@@ -2176,9 +2157,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2194,12 +2173,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2235,9 +2210,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2253,12 +2226,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2287,9 +2256,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2305,12 +2272,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2341,9 +2304,7 @@ TEST_P(
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2356,12 +2317,8 @@ TEST_P(
   CanvasElement().EnableAcceleration();
   ASSERT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
 
-  // The toggle from SW back to HW rendering should be a no-op from the POV of
-  // the pending hibernation, which should still occur when initiated.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
   EXPECT_TRUE(CanvasElement().IsHibernating());
 }
 
@@ -2385,9 +2342,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2396,21 +2351,15 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   }
 
   // Foreground the page while hibernation is pending.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
   // Verify that running the hibernation task aborts hibernation due to the
   // page having been foregrounded.
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2450,9 +2399,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2465,12 +2412,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
   {
     base::HistogramTester histogram_tester;
 
-    // Run the task that initiates hibernation, which has been posted as an idle
-    // task.
-    ThreadScheduler::Current()
-        ->ToMainThreadScheduler()
-        ->StartIdlePeriodForTesting();
-    blink::test::RunPendingTasks();
+    // Run hibernation task.
+    RunIdleTasks();
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2559,9 +2502,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Move the page to the background. This should cause resource recycling to be
   // disabled and the previously-released resource to now be dropped.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
 
   // Emulate the display compositor releasing the second resource. The resource
@@ -2582,14 +2523,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   EXPECT_FALSE(CanvasElement().CcLayer()->needs_set_resource_for_testing());
 
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
   EXPECT_TRUE(CanvasElement().CcLayer()->needs_set_resource_for_testing());
 }
 
@@ -2615,9 +2552,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   // Verify that going to the background triggers hibernation asynchronously.
   {
     base::HistogramTester histogram_tester;
-    GetDocument().GetPage()->SetVisibilityState(
-        mojom::blink::PageVisibilityState::kHidden,
-        /*is_initial_state=*/false);
+    SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
     histogram_tester.ExpectUniqueSample(
         "Blink.Canvas.HibernationEvents",
@@ -2625,12 +2560,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_FALSE(handler.IsHibernating());
   }
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
   EXPECT_TRUE(handler.IsHibernating());
 
   // Verify that PrepareTransferableResource() fails while hibernating.
@@ -2669,20 +2600,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(handler.IsHibernating());
 
   // Hide the page to trigger the hibernation task.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
   // Hibernation is triggered asynchronously.
   EXPECT_FALSE(handler.is_encoded());
   EXPECT_FALSE(handler.IsHibernating());
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
   EXPECT_FALSE(CanvasElement().ResourceProvider());
   EXPECT_TRUE(handler.IsHibernating());
 
@@ -2727,20 +2652,14 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_FALSE(handler.IsHibernating());
 
   // Hide the page to trigger the hibernation task.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
 
   // Hibernation is triggered asynchronously.
   ASSERT_FALSE(handler.is_encoded());
   ASSERT_FALSE(handler.IsHibernating());
 
-  // Run the task that initiates hibernation, which has been posted as an idle
-  // task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  // Run hibernation task.
+  RunIdleTasks();
 
   ASSERT_FALSE(CanvasElement().ResourceProvider());
   ASSERT_TRUE(handler.IsHibernating());
@@ -2839,12 +2758,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   blink::test::RunPendingTasks();
 
   // Hibernate the canvas. Hibernation is handled in a idle task.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden, /*is_initial_state=*/false);
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  RunIdleTasks();
 
   // Hibernating should have rastered paint ops preceding `beginLayer`.
   EXPECT_THAT(hibernation_raster,
@@ -2852,8 +2767,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
                                                    FillFlags())));
 
   // Wake up from hibernation.
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kVisible, /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
 
   NonThrowableExceptionState exception_state;
   Context2D()->endLayer(exception_state);
@@ -2889,14 +2803,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   canvas_element_->ReplaceResourceProvider(nullptr);
 
   // Hide element to trigger hibernation (if enabled).
-  GetDocument().GetPage()->SetVisibilityState(
-      mojom::blink::PageVisibilityState::kHidden,
-      /*is_initial_state=*/false);
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
   // Run hibernation task.
-  ThreadScheduler::Current()
-      ->ToMainThreadScheduler()
-      ->StartIdlePeriodForTesting();
-  blink::test::RunPendingTasks();
+  RunIdleTasks();
 
   // Never hibernate a canvas with no resource provider.
   EXPECT_FALSE(box->NeedsPaintPropertyUpdate());
