@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -108,18 +107,15 @@
 }
 
 - (void)stop {
-  [self stopHistorySyncCoordinator];
-  _navigationController.presentationController.delegate = nil;
-  [_navigationController dismissViewControllerAnimated:NO completion:nil];
-  _navigationController = nil;
-  [super stop];
+  [self stopAnimated:NO];
 }
 
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
+- (void)stopAnimated:(BOOL)animated {
+  [self stopHistorySyncCoordinator];
+  _navigationController.presentationController.delegate = nil;
   [_navigationController dismissViewControllerAnimated:animated completion:nil];
-  [self viewWasDismissedWithResult:SigninCoordinatorResultInterrupted];
+  _navigationController = nil;
+  [super stop];
 }
 
 #pragma mark - Private
@@ -130,9 +126,6 @@
 }
 
 - (void)viewWasDismissedWithResult:(SigninCoordinatorResult)result {
-  _navigationController.presentationController.delegate = nil;
-  _navigationController = nil;
-
   if (result != SigninCoordinatorResultSuccess && _signOutIfDeclined) {
     signin::ProfileSignoutRequest(
         signin_metrics::ProfileSignout::

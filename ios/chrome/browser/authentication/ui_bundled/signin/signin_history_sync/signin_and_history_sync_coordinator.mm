@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
@@ -54,7 +55,7 @@ enum class SignInHistorySyncStep {
 
 @implementation SignInAndHistorySyncCoordinator {
   // Sign-in or history sync coordinator, according to `_currentStep`.
-  ChromeCoordinator<InterruptibleChromeCoordinator>* _childCoordinator;
+  ChromeCoordinator* _childCoordinator;
   // The current step.
   SignInHistorySyncStep _currentStep;
   // Promo button used to trigger the sign-in.
@@ -121,9 +122,25 @@ enum class SignInHistorySyncStep {
   // TODO(crbug.com/40929259): Turn into CHECK.
   DUMP_WILL_BE_CHECK(_childCoordinator)
       << base::SysNSStringToUTF8([self description]);
-  // Interrupt `_childCoordinator` which will trigger the end of this
-  // coordinator. Its callback will triggered.
-  [_childCoordinator interruptAnimated:animated];
+  if ([_childCoordinator
+          conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]) {
+    ChromeCoordinator<InterruptibleChromeCoordinator>* interruptibleChild =
+        base::apple::ObjCCastStrict<
+            ChromeCoordinator<InterruptibleChromeCoordinator>>(
+            _childCoordinator);
+    // Interrupt `_childCoordinator` which will trigger the end of this
+    // coordinator. Its callback will triggered.
+    [interruptibleChild interruptAnimated:animated];
+    return;
+  }
+
+  CHECK([_childCoordinator
+      conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)]);
+  ChromeCoordinator<StopAnimatedChromeCoordinator>* stopAnimatedChild =
+      base::apple::ObjCCast<ChromeCoordinator<StopAnimatedChromeCoordinator>>(
+          _childCoordinator);
+  [stopAnimatedChild stopAnimated:animated];
+  [self currentStepDidFinishWithResult:SigninCoordinatorResultInterrupted];
 }
 
 #pragma mark - HistorySyncPopupCoordinatorDelegate
@@ -189,8 +206,7 @@ enum class SignInHistorySyncStep {
 }
 
 // Creates the current step coordinator according to `_currentStep`.
-- (ChromeCoordinator<InterruptibleChromeCoordinator>*)
-    createPresentStepChildCoordinator {
+- (ChromeCoordinator*)createPresentStepChildCoordinator {
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
       // TODO(crbug.com/375605572) Sends an actual continuation.

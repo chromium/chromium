@@ -53,7 +53,7 @@
 #pragma mark - InterruptibleChromeCoordinator
 
 - (void)interruptAnimated:(BOOL)animated {
-  [_syncPopupCoordinator interruptAnimated:animated];
+  [_syncPopupCoordinator stopAnimated:animated];
   _syncPopupCoordinator.delegate = nil;
   _syncPopupCoordinator = nil;
 }

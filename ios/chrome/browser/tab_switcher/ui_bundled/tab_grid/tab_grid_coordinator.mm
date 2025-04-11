@@ -388,7 +388,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   } else if (completion) {
     completion();
   }
-  [_historySyncPopupCoordinator interruptAnimated:NO];
+  [self stopHistorySyncPopupCoordinator];
 }
 
 - (void)setActiveMode:(TabGridMode)mode {
@@ -1152,8 +1152,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
 
-  [_historySyncPopupCoordinator interruptAnimated:NO];
-  _historySyncPopupCoordinator = nil;
+  [self stopHistorySyncPopupCoordinator];
 
   [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
