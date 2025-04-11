@@ -556,6 +556,13 @@
       timeout);
 }
 
+- (ChangeProfileContinuation)changeProfileContinuation {
+  // TODO(crbug.com/375605572): Store the provider in the mediator.
+  // This currently can’t be done, because OCMock raise exception when a mocked
+  // method gets a parameter whose type is a once or repeating callback.
+  return _continuationProvider.Run();
+}
+
 #pragma mark - NSObject
 
 - (NSString*)description {

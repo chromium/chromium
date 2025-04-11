@@ -270,8 +270,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 - (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
   _authenticationFlow.requestHelper = nil;
   _authenticationFlow = nil;
-  // TODO(crbug.com/375605572) Sends an actual continuation.
-  return DoNothingContinuation();
+  return [self.delegate changeProfileContinuation];
 }
 
 #pragma mark - Private
