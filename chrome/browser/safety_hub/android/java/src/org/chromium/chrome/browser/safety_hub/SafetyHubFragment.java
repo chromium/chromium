@@ -154,7 +154,11 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                         ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE)) {
             SafetyHubPasswordsModuleMediator passwordsModuleMediator =
                     new SafetyHubPasswordsModuleMediator(
-                            findPreference(PREF_UNIFIED_PASSWORDS), mDelegate);
+                            findPreference(PREF_UNIFIED_PASSWORDS),
+                            accountPasswordsDataSource,
+                            localPasswordsDataSource,
+                            /* mediatorDelegate= */ this,
+                            mDelegate);
             mModuleMediators.add(passwordsModuleMediator);
         } else {
             SafetyHubAccountPasswordsModuleMediator accountPasswordsModuleMediator =

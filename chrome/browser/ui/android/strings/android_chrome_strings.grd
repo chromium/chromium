@@ -1819,6 +1819,11 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_LOCAL_PASSWORDS_CHECKING_TITLE" desc="Title for the local password check row in the Safety Check page indicating that the check is in progress.">
         Checking passwords on this device…
       </message>
+      <message name="IDS_SAFETY_HUB_PASSWORDS_COMPROMISED_TITLE" desc="Title for the password check row in the Safety Check page indicating that the user has account and local passwords which have been compromised.">
+        {NUM_PASSWORDS, plural,
+        =1 {1 compromised password}
+        other {# compromised passwords}}
+      </message>
       <message name="IDS_SAFETY_HUB_ACCOUNT_PASSWORDS_COMPROMISED_EXIST" desc="Title for the account password check row in the Safety Check page indicating that the user has account passwords which have been compromised.">
         {NUM_PASSWORDS, plural,
         =1 {1 compromised password in your Google Account}
@@ -1828,6 +1833,9 @@ Your Google account may have other forms of browsing history like searches and a
         {NUM_PASSWORDS, plural,
         =1 {1 compromised password on this device}
         other {# compromised passwords on this device}}
+      </message>
+      <message name="IDS_SAFETY_HUB_PASSWORD_SUBPAGE_NAVIGATION_BUTTON" desc="Text for the button in the password check row in the Safety Check page indicating that upon clicking on it, the user will be redirected to the Safety Hub passwords subpage.">
+        View details
       </message>
       <message name="IDS_SAFETY_HUB_PASSWORDS_NAVIGATION_BUTTON" desc="Text for the button in the password check row in the Safety Check page indicating that upon clicking on it, the user will be redirected to the Google password manager.">
         Go to Password Manager

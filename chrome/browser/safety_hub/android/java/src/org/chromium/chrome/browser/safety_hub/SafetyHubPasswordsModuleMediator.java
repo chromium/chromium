@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import android.content.Context;
+
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
@@ -14,16 +16,32 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * Mediator for the Safety Hub passwords module. Populates the {@link SafetyHubExpandablePreference}
  * with the user's local and account passwords state, including compromised, weak and reused.
  */
-public class SafetyHubPasswordsModuleMediator implements SafetyHubModuleMediator {
+public class SafetyHubPasswordsModuleMediator
+        implements SafetyHubModuleMediator,
+                SafetyHubAccountPasswordsDataSource.Observer,
+                SafetyHubLocalPasswordsDataSource.Observer {
     private final SafetyHubExpandablePreference mPreference;
+    private final SafetyHubModuleMediatorDelegate mMediatorDelegate;
     private final SafetyHubModuleDelegate mModuleDelegate;
 
+    private SafetyHubAccountPasswordsDataSource mAccountPasswordsDataSource;
+    private SafetyHubLocalPasswordsDataSource mLocalPasswordsDataSource;
     private SafetyHubModuleHelper mModuleHelper;
     private PropertyModel mModel;
 
+    private boolean mAccountPasswordsReturned;
+    private boolean mLocalPasswordsReturned;
+
     SafetyHubPasswordsModuleMediator(
-            SafetyHubExpandablePreference preference, SafetyHubModuleDelegate moduleDelegate) {
+            SafetyHubExpandablePreference preference,
+            SafetyHubAccountPasswordsDataSource accountPasswordsDataSource,
+            SafetyHubLocalPasswordsDataSource localPasswordsDataSource,
+            SafetyHubModuleMediatorDelegate mediatorDelegate,
+            SafetyHubModuleDelegate moduleDelegate) {
         mPreference = preference;
+        mAccountPasswordsDataSource = accountPasswordsDataSource;
+        mLocalPasswordsDataSource = localPasswordsDataSource;
+        mMediatorDelegate = mediatorDelegate;
         mModuleDelegate = moduleDelegate;
     }
 
@@ -38,18 +56,64 @@ public class SafetyHubPasswordsModuleMediator implements SafetyHubModuleMediator
         PropertyModelChangeProcessor.create(
                 mModel, mPreference, SafetyHubModuleViewBinder::bindProperties);
 
-        // TODO(crbug.com/407748843): Update the preferences according to state of local and account
-        // passwords.
-        mModuleHelper =
-                new SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper(
-                        mPreference.getContext(), mModuleDelegate);
+        mAccountPasswordsDataSource.addObserver(this);
+        mLocalPasswordsDataSource.addObserver(this);
+        mAccountPasswordsDataSource.setUp();
+        mLocalPasswordsDataSource.setUp();
+
+        // TODO(crbug.com/407927786): Add loading UI if check is triggered and trigger account
+        // password checkup.
+        mLocalPasswordsDataSource.maybeTriggerPasswordCheckup();
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        if (mAccountPasswordsDataSource != null) {
+            mAccountPasswordsDataSource.destroy();
+            mAccountPasswordsDataSource = null;
+        }
+        if (mLocalPasswordsDataSource != null) {
+            mLocalPasswordsDataSource.destroy();
+            mLocalPasswordsDataSource = null;
+        }
+        mModuleHelper = null;
+    }
 
     @Override
     public void updateModule() {
+        mAccountPasswordsReturned = false;
+        mLocalPasswordsReturned = false;
+        mAccountPasswordsDataSource.updateState();
+        mLocalPasswordsDataSource.updateState();
+    }
+
+    private SafetyHubModuleHelper getModuleHelper(
+            @SafetyHubAccountPasswordsDataSource.ModuleType int accountModuleType,
+            @SafetyHubLocalPasswordsDataSource.ModuleType int localModuleType) {
+        Context context = mPreference.getContext();
+
+        // TODO(crbug.com/407930886): Add all states for account and local passwords.
+        if (accountModuleType
+                        == SafetyHubAccountPasswordsDataSource.ModuleType.HAS_COMPROMISED_PASSWORDS
+                || localModuleType
+                        == SafetyHubLocalPasswordsDataSource.ModuleType.HAS_COMPROMISED_PASSWORDS) {
+            return new SafetyHubCompromisedPasswordsModuleHelper(
+                    context,
+                    mModuleDelegate,
+                    mAccountPasswordsDataSource.getCompromisedPasswordCount(),
+                    mLocalPasswordsDataSource.getCompromisedPasswordCount(),
+                    /* unifiedModule= */ true);
+        }
+
+        return new SafetyHubAccountPasswordsUnavailableAllPasswordsModuleHelper(
+                context, mModuleDelegate);
+    }
+
+    private void updateModule(
+            @SafetyHubAccountPasswordsDataSource.ModuleType int accountModuleType,
+            @SafetyHubLocalPasswordsDataSource.ModuleType int localModuleType) {
+        mModuleHelper = getModuleHelper(accountModuleType, localModuleType);
+
         mModel.set(SafetyHubModuleProperties.TITLE, mModuleHelper.getTitle());
         mModel.set(SafetyHubModuleProperties.SUMMARY, mModuleHelper.getSummary());
         mModel.set(
@@ -76,6 +140,9 @@ public class SafetyHubPasswordsModuleMediator implements SafetyHubModuleMediator
 
     @Override
     public @ModuleState int getModuleState() {
+        if (mModuleHelper == null) {
+            return ModuleState.UNAVAILABLE;
+        }
         return mModuleHelper.getModuleState();
     }
 
@@ -87,5 +154,30 @@ public class SafetyHubPasswordsModuleMediator implements SafetyHubModuleMediator
     @Override
     public boolean isManaged() {
         return false;
+    }
+
+    @Override
+    public void accountPasswordsStateChanged(
+            @SafetyHubAccountPasswordsDataSource.ModuleType int moduleType) {
+        mAccountPasswordsReturned = true;
+        maybeUpdateModule();
+    }
+
+    @Override
+    public void localPasswordsStateChanged(
+            @SafetyHubLocalPasswordsDataSource.ModuleType int moduleType) {
+        mLocalPasswordsReturned = true;
+        maybeUpdateModule();
+    }
+
+    private void maybeUpdateModule() {
+        if (!mAccountPasswordsReturned || !mLocalPasswordsReturned) {
+            return;
+        }
+
+        updateModule(
+                mAccountPasswordsDataSource.getModuleType(),
+                mLocalPasswordsDataSource.getModuleType());
+        mMediatorDelegate.onUpdateNeeded();
     }
 }

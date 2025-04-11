@@ -47,7 +47,7 @@ public class SafetyHubAccountPasswordsDataSourceTest {
         @ModuleType int mModuleType;
 
         @Override
-        public void stateChanged(@ModuleType int moduleType) {
+        public void accountPasswordsStateChanged(@ModuleType int moduleType) {
             mModuleType = moduleType;
         }
 
@@ -98,7 +98,7 @@ public class SafetyHubAccountPasswordsDataSourceTest {
                         mSafetyHubFetchServiceMock,
                         mSigninManagerMock,
                         mProfile);
-        mDataSource.setObserver(mObserver);
+        mDataSource.addObserver(mObserver);
         mDataSource.setUp();
     }
 

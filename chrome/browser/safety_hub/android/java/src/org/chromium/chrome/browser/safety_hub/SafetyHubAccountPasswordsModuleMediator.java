@@ -50,7 +50,7 @@ public class SafetyHubAccountPasswordsModuleMediator
         PropertyModelChangeProcessor.create(
                 mModel, mPreference, SafetyHubModuleViewBinder::bindProperties);
 
-        mAccountPasswordsDataSource.setObserver(this);
+        mAccountPasswordsDataSource.addObserver(this);
         mAccountPasswordsDataSource.setUp();
     }
 
@@ -80,10 +80,12 @@ public class SafetyHubAccountPasswordsModuleMediator
                 return new SafetyHubAccountPasswordsNoPasswordsModuleHelper(
                         context, mModuleDelegate);
             case ModuleType.HAS_COMPROMISED_PASSWORDS:
-                return new SafetyHubAccountPasswordsHasCompromisedPasswordsModuleHelper(
+                return new SafetyHubCompromisedPasswordsModuleHelper(
                         context,
                         mModuleDelegate,
-                        mAccountPasswordsDataSource.getCompromisedPasswordCount());
+                        mAccountPasswordsDataSource.getCompromisedPasswordCount(),
+                        /* localCompromisedPasswordsCount= */ 0,
+                        /* unifiedModule= */ false);
             case ModuleType.NO_COMPROMISED_PASSWORDS:
                 return new SafetyHubAccountPasswordsNoCompromisedPasswordsModuleHelper(
                         context, mModuleDelegate, mAccountPasswordsDataSource.getAccountEmail());
@@ -160,7 +162,7 @@ public class SafetyHubAccountPasswordsModuleMediator
     }
 
     @Override
-    public void stateChanged(@ModuleType int moduleType) {
+    public void accountPasswordsStateChanged(@ModuleType int moduleType) {
         updateModule(moduleType);
         mMediatorDelegate.onUpdateNeeded();
     }

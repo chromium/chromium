@@ -89,7 +89,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(false);
 
-        mModuleMediator.stateChanged(ModuleType.NO_COMPROMISED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.NO_COMPROMISED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -113,7 +113,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(true);
 
-        mModuleMediator.stateChanged(ModuleType.NO_COMPROMISED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.NO_COMPROMISED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -139,7 +139,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(false);
 
-        mModuleMediator.stateChanged(ModuleType.HAS_REUSED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.HAS_REUSED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -171,7 +171,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(true);
 
-        mModuleMediator.stateChanged(ModuleType.HAS_REUSED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.HAS_REUSED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -196,7 +196,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(false);
 
-        mModuleMediator.stateChanged(ModuleType.HAS_WEAK_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.HAS_WEAK_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -226,7 +226,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(true);
 
-        mModuleMediator.stateChanged(ModuleType.HAS_WEAK_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.HAS_WEAK_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -252,7 +252,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(false);
 
-        mModuleMediator.stateChanged(ModuleType.NO_COMPROMISED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.NO_COMPROMISED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -279,7 +279,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(true);
 
-        mModuleMediator.stateChanged(ModuleType.NO_COMPROMISED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.NO_COMPROMISED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -306,7 +306,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(false);
 
-        mModuleMediator.stateChanged(ModuleType.HAS_COMPROMISED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.HAS_COMPROMISED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -343,7 +343,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(true);
 
-        mModuleMediator.stateChanged(ModuleType.HAS_COMPROMISED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.HAS_COMPROMISED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -371,7 +371,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(false);
 
-        mModuleMediator.stateChanged(ModuleType.NO_SAVED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.NO_SAVED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_no_account_passwords_title);
@@ -392,7 +392,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(true);
 
-        mModuleMediator.stateChanged(ModuleType.NO_SAVED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.NO_SAVED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_no_account_passwords_title);
@@ -418,7 +418,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(false);
 
-        mModuleMediator.stateChanged(ModuleType.UNAVAILABLE_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.UNAVAILABLE_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -444,7 +444,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(true);
 
-        mModuleMediator.stateChanged(ModuleType.UNAVAILABLE_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.UNAVAILABLE_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -471,7 +471,8 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(false);
 
-        mModuleMediator.stateChanged(ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(
+                ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -500,7 +501,8 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(true);
         mockManaged(true);
 
-        mModuleMediator.stateChanged(ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS);
+        mModuleMediator.accountPasswordsStateChanged(
+                ModuleType.UNAVAILABLE_COMPROMISED_NO_WEAK_REUSED_PASSWORDS);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =
@@ -523,7 +525,7 @@ public class SafetyHubAccountPasswordsModuleMediatorTest {
         mockSignedInState(false);
         mockManaged(false);
 
-        mModuleMediator.stateChanged(ModuleType.SIGNED_OUT);
+        mModuleMediator.accountPasswordsStateChanged(ModuleType.SIGNED_OUT);
         verify(mMediatorDelegateMock, times(1)).onUpdateNeeded();
 
         String expectedTitle =

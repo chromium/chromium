@@ -1153,6 +1153,135 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_AccountAndLocalCompromisedPasswords() {
+        int accountCompromisedPasswordsCount = 2;
+        int localCompromisedPasswordsCount = 3;
+        setAccountCompromisedPasswordsCount(accountCompromisedPasswordsCount);
+        setLocalCompromisedPasswordsCount(localCompromisedPasswordsCount);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        addCredentialToAccountStore();
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the warning state is expanded by
+        // default.
+        int totalCompromisedPasswordsCount =
+                accountCompromisedPasswordsCount + localCompromisedPasswordsCount;
+        String compromisedPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_passwords_compromised_title,
+                                totalCompromisedPasswordsCount,
+                                totalCompromisedPasswordsCount);
+        scrollToExpandedPreference(compromisedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(compromisedPasswordsTitle, true);
+
+        // Verify the information module is not expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+
+        clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_AccountCompromisedPasswords() {
+        int accountCompromisedPasswordsCount = 2;
+        setAccountCompromisedPasswordsCount(accountCompromisedPasswordsCount);
+        setLocalCompromisedPasswordsCount(0);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        addCredentialToAccountStore();
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the warning state is expanded by
+        // default.
+        String compromisedPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_account_passwords_compromised_exist,
+                                accountCompromisedPasswordsCount,
+                                accountCompromisedPasswordsCount);
+        scrollToExpandedPreference(compromisedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(compromisedPasswordsTitle, true);
+
+        // Verify the information module is not expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+
+        clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS,
+        ChromeFeatureList.SAFETY_HUB_LOCAL_PASSWORDS_MODULE,
+        ChromeFeatureList.SAFETY_HUB_UNIFIED_PASSWORDS_MODULE
+    })
+    public void testUnifiedPasswordsModule_LocalCompromisedPasswords() {
+        int localCompromisedPasswordsCount = 3;
+        setAccountCompromisedPasswordsCount(0);
+        setLocalCompromisedPasswordsCount(localCompromisedPasswordsCount);
+        setLocalPasswordCheckTimestamp(TimeUtils.currentTimeMillis());
+        addCredentialToAccountStore();
+        addCredentialToProfileStore();
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that unified passwords module which is in the warning state is expanded by
+        // default.
+        String compromisedPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_local_passwords_compromised_title,
+                                localCompromisedPasswordsCount,
+                                localCompromisedPasswordsCount);
+        scrollToExpandedPreference(compromisedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(compromisedPasswordsTitle, true);
+
+        // Verify the information module is not expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+
+        clearLocalCompromisedPasswordsCount();
+        setLocalPasswordCheckTimestamp(0);
+    }
+
+    @Test
+    @MediumTest
     @Feature({"SafetyHubPermissions"})
     public void testPermissionsModule_ClearList() {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
