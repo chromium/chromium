@@ -277,6 +277,8 @@ class GlicWindowController : public views::WidgetObserver,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerUiTest, TestInitialBounds);
+  FRIEND_TEST_ALL_PREFIXES(GlicWindowControllerWithPreviousPostionUiTest,
+                           TestInitialBounds);
 
   // ui::AcceleratorTarget
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
@@ -341,6 +343,9 @@ class GlicWindowController : public views::WidgetObserver,
 
   // Causes an immediate close (eg, for during shutdown).
   void ForceClose();
+
+  // Save the top-right corner position for re-opening.
+  void SaveWidgetPosition();
 
   // Determines the correct position for the glic window when attached to a
   // browser window. The top right of the widget should be placed here.

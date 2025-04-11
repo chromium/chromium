@@ -199,6 +199,10 @@ class GlicKeyedService : public KeyedService {
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level);
 
+  // Called by GlicWindowController when the widget position is updated.
+  void SetPosition(const gfx::Point& position);
+  std::optional<gfx::Point> GetPreviousPosition();
+
  private:
   GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
 
@@ -218,12 +222,14 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<GlicActorController> actor_controller_;
-  // Unowned
-  raw_ptr<GlicProfileManager> glic_profile_manager_;
+  std::optional<gfx::Point> previous_position_;
   base::OnceCallbackList<void()> web_client_created_callbacks_;
   // The set of live `GlicPageHandler`s.
   base::flat_set<raw_ptr<GlicPageHandler>> page_handlers_;
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+
+  // Unowned
+  raw_ptr<GlicProfileManager> glic_profile_manager_;
   raw_ptr<contextual_cueing::ContextualCueingService>
       contextual_cueing_service_;
 

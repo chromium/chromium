@@ -66,6 +66,10 @@ inline constexpr char kGlicCompletedFre[] = "glic.completed_fre";
 inline constexpr char kGlicWindowLastDismissedTime[] =
     "glic.window.last_dimissed_time";
 
+// Integer prefs for the top right corner of the previous window position.
+inline constexpr char kGlicPreviousPositionX[] = "glic.previous_bounds.x";
+inline constexpr char kGlicPreviousPositionY[] = "glic.previous_bounds.y";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 

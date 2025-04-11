@@ -22,6 +22,7 @@
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -518,6 +519,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
+  // Check that with no saved position the default location is used.
   gfx::Rect initial_bounds = window_controller().GetInitialBounds(nullptr);
   gfx::Point top_right =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().top_right();
@@ -526,10 +528,31 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
   int expected_y = top_right.y() + glic::kDefaultDetachedTopRightDistance;
   ASSERT_EQ(initial_bounds.origin(), gfx::Point(expected_x, expected_y));
 
-  // A position set on GlicProfileManager is used as the initial bounds.
-  glic::GlicProfileManager::GetInstance()->SetPosition({10, 20});
+  // A position set on an active GlicService is used over the default.
+  glic_service()->SetPosition({10, 20});
   initial_bounds = window_controller().GetInitialBounds(nullptr);
   ASSERT_EQ(initial_bounds.origin(), gfx::Point(10, 20));
+}
+
+class GlicWindowControllerWithPreviousPostionUiTest
+    : public GlicWindowControllerUiTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    // Set initial bounds via pref and check that they are used.
+    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
+        prefs::kGlicPreviousPositionX, 20);
+    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
+        prefs::kGlicPreviousPositionY, 10);
+    test::InteractiveGlicTest::SetUpBrowserContextKeyedServices(context);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithPreviousPostionUiTest,
+                       TestInitialBounds) {
+  // Check that the saved initial bounds are used.
+  gfx::Rect initial_bounds = window_controller().GetInitialBounds(nullptr);
+  ASSERT_EQ(initial_bounds.origin(), gfx::Point(20, 10));
 }
 
 class GlicWindowControllerWithMemoryPressureUiTest

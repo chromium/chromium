@@ -767,7 +767,7 @@ gfx::Rect GlicWindowController::GetInitialBounds(Browser* browser) {
   }
 
   std::optional<gfx::Point> previous_position =
-      glic::GlicProfileManager::GetInstance()->GetPreviousPosition();
+      glic_service_->GetPreviousPosition();
 
   if (browser && !previous_position.has_value()) {
     return GetInitialDetachedBoundsFromBrowser(*browser);
@@ -1121,6 +1121,12 @@ void GlicWindowController::CloseInternal(
     return;
   }
 
+  // If the default location is not being used save the final position since it
+  // may have moved without a drag event.
+  if (glic_service_->GetPreviousPosition().has_value()) {
+    SaveWidgetPosition();
+  }
+
   const bool reopen_detached = state_ == State::kClosingToReopenDetached;
   DCHECK(!reopen_detached || reopen_detached_source.has_value());
 
@@ -1187,6 +1193,11 @@ void GlicWindowController::CloseAndReopenDetached(
   CloseInternal(source);
 }
 
+void GlicWindowController::SaveWidgetPosition() {
+  gfx::Rect bounds = GetGlicWidget()->GetWindowBoundsInScreen();
+  glic_service_->SetPosition(bounds.origin());
+}
+
 void GlicWindowController::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
 #if BUILDFLAG(IS_WIN)
   views::View::ConvertPointToScreen(GetGlicView(), &event_loc);
@@ -1233,8 +1244,7 @@ void GlicWindowController::HandleWindowDragWithOffset(
     // request.
     glic_window_animator_->MaybeAnimateToTargetSize();
 
-    gfx::Rect bounds = GetGlicWidget()->GetWindowBoundsInScreen();
-    glic::GlicProfileManager::GetInstance()->SetPosition(bounds.origin());
+    SaveWidgetPosition();
 
     if (!AlwaysDetached()) {
       // set glic z-order back to normal after drag is done.

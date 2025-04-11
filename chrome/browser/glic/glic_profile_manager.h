@@ -41,10 +41,6 @@ class GlicProfileManager {
   // Called by GlicKeyedService.
   void SetActiveGlic(GlicKeyedService* glic);
 
-  // Called by GlicWindowController when the widget position is updated.
-  void SetPosition(const gfx::Point& position);
-  std::optional<gfx::Point> GetPreviousPosition();
-
   // Called by GlicKeyedService.
   void OnServiceShutdown(GlicKeyedService* glic);
 
@@ -96,7 +92,6 @@ class GlicProfileManager {
   bool IsLastActiveGlicProfile(Profile* profile) const;
   bool IsLastLoadedGlicProfile(Profile* profile) const;
 
-  std::optional<gfx::Point> previous_position_;
   base::ObserverList<Observer> observers_;
   base::WeakPtr<GlicKeyedService> last_active_glic_;
   base::WeakPtr<GlicKeyedService> last_loaded_glic_;
