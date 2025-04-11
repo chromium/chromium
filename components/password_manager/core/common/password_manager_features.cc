@@ -25,11 +25,6 @@ BASE_FEATURE(kIOSPasswordBottomSheetAutofocus,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
-// Enables password reuse detection.
-BASE_FEATURE(kPasswordReuseDetectionEnabled,
-             "PasswordReuseDetectionEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Removes password suggestion filtering by username.
 BASE_FEATURE(kNoPasswordSuggestionFiltering,
              "NoPasswordSuggestionFiltering",

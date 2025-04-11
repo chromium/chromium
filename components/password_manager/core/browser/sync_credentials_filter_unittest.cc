@@ -15,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
@@ -31,7 +30,6 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -65,10 +63,6 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   FakePasswordManagerClient(signin::IdentityManager* identity_manager,
                             const syncer::SyncService* sync_service)
       : identity_manager_(identity_manager), sync_service_(sync_service) {
-    if (!base::FeatureList::IsEnabled(
-            features::kPasswordReuseDetectionEnabled)) {
-      return;
-    }
     ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
         .WillByDefault(testing::Return(base::ok(&passkeys_)));
     ON_CALL(webauthn_credentials_delegate_, IsSecurityKeyOrHybridFlowAvailable)
@@ -171,8 +165,6 @@ class CredentialsFilterTest : public SyncUsernameTestBase {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
-
   std::unique_ptr<FakePasswordManagerClient> client_;
   StubPasswordManagerDriver driver_;
   PasswordForm pending_ = SimpleGaiaForm("user@gmail.com");

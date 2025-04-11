@@ -109,18 +109,6 @@ optimize_ts("password_protection_ts") {
   deps = [ "//ios/web/public/js_messaging:util_scripts" ]
 }
 
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//components/password_manager/core/common:features",
-  ]
-}
-
 source_set("infobar_delegate") {
   sources = [
     "enhanced_safe_browsing_infobar_delegate.h",
@@ -142,7 +130,6 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
-    "//components/password_manager/core/common:features",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings",
