@@ -23,7 +23,12 @@
 using ItemBlock = void (^)(id idResponse, NSError* error);
 
 namespace {
+
 const CGFloat kShareSheetCornerRadius = 20;
+
+// Character limit for the text search.
+const NSUInteger kSearchCharacterLimit = 1000;
+
 }  // namespace
 
 @interface ExtendedShareViewController () <ShareExtensionDelegate>
@@ -53,6 +58,9 @@ const CGFloat kShareSheetCornerRadius = 20;
 
 // The text to share.
 @property(nonatomic, copy) NSString* shareText;
+
+// Whether a text reach the character limit.
+@property(nonatomic, assign) BOOL characterLimitReached;
 
 // Creates a file in `app_group::ShareExtensionItemsFolder()` containing a
 // serialized NSDictionary.
@@ -247,6 +255,7 @@ const CGFloat kShareSheetCornerRadius = 20;
     self.shareSheet.sharedImage = _shareImage;
   } else if (_shareText) {
     self.shareSheet.sharedText = _shareText;
+    self.shareSheet.displayMaxLimit = _characterLimitReached;
   }
 
   __weak ExtendedShareViewController* weakSelf = self;
@@ -355,6 +364,15 @@ const CGFloat kShareSheetCornerRadius = 20;
 - (void)handleText:(id)idText
            forItem:(NSExtensionItem*)item
          withError:(NSError*)error {
+  NSString* shareText = [[item attributedContentText] string];
+  if ([shareText length] > kSearchCharacterLimit) {
+    self.shareText =
+        [shareText substringWithRange:NSMakeRange(0, kSearchCharacterLimit)];
+    self.characterLimitReached = YES;
+  } else {
+    self.shareText = shareText;
+    self.characterLimitReached = NO;
+  }
   self.shareText = [[item attributedContentText] string];
   self.shareItem = item;
 

@@ -218,6 +218,9 @@
     <message name="IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION" desc="Label for the search in incognito button in the share extension.">
         Search in Incognito
     </message>
+    <message name="IDS_IOS_SEARCH_MAX_LIMIT" desc="String to add to the end of the search text to inform the user that the character limit of a search has been reached.">
+        (Max limit)
+    </message>
     </messages>
   </release>
 </grit>

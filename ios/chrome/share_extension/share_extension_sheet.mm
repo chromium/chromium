@@ -323,9 +323,31 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
 - (UIView*)configureSharedTextView {
   UILabel* sharedTextLabel = [[UILabel alloc] init];
-  sharedTextLabel.text = self.sharedText;
   sharedTextLabel.numberOfLines = 0;
+  if (!self.displayMaxLimit) {
+    sharedTextLabel.text = self.sharedText;
+    return sharedTextLabel;
+  }
 
+  NSMutableAttributedString* sharedTextAttributedString =
+      [[NSMutableAttributedString alloc] initWithString:self.sharedText];
+
+  NSMutableAttributedString* attributedSpace =
+      [[NSMutableAttributedString alloc] initWithString:@" "];
+  NSMutableAttributedString* maxLimitString = [[NSMutableAttributedString alloc]
+      initWithString:NSLocalizedString(
+                         @"IDS_IOS_SEARCH_MAX_LIMIT",
+                         @"The text at the end of the shared text.")
+          attributes:@{
+            NSForegroundColorAttributeName :
+                [UIColor colorNamed:kTextTertiaryColor],
+            NSFontAttributeName :
+                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote],
+          }];
+
+  [sharedTextAttributedString appendAttributedString:attributedSpace];
+  [sharedTextAttributedString appendAttributedString:maxLimitString];
+  sharedTextLabel.attributedText = sharedTextAttributedString;
   return sharedTextLabel;
 }
 

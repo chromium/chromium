@@ -25,6 +25,7 @@
 				<string>IDS_IOS_SEARCH_IN_INCOGNITO_BUTTON_SHARE_EXTENSION</string>
 				<string>IDS_IOS_SEARCH_IN_BUTTON_SHARE_EXTENSION</string>
 				<string>IDS_IOS_OPEN_IN_BUTTON_SHARE_EXTENSION</string>
+				<string>IDS_IOS_SEARCH_MAX_LIMIT</string>
 			</array>
 		</dict>
 	</array>
