@@ -400,7 +400,7 @@ class SyncService : public KeyedService {
   // the change before local and remote data are irrevocably merged).
   // The UI calls this and holds onto the instance for as long as any part of
   // the Sync setup/configuration UI is visible.
-  virtual std::unique_ptr<SyncSetupInProgressHandle>
+  [[nodiscard]] virtual std::unique_ptr<SyncSetupInProgressHandle>
   GetSetupInProgressHandle() = 0;
 
   // Whether a Sync setup is currently in progress, i.e. a setup UI is being

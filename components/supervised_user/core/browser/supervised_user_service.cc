@@ -183,7 +183,7 @@ void SupervisedUserService::SetActive(bool active) {
       sync_service_->GetUserSettings()->IsInitialSyncFeatureSetupComplete()) {
     // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and
     // immediately releasing it again (via the temporary unique_ptr going away).
-    sync_service_->GetSetupInProgressHandle();
+    std::ignore = sync_service_->GetSetupInProgressHandle();
   }
 
   if (active_) {

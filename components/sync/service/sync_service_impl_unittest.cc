@@ -1606,7 +1606,7 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
   // Reconfiguration.
   // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and immediately
   // releasing it again (via the temporary unique_ptr going away).
-  service()->GetSetupInProgressHandle();
+  std::ignore = service()->GetSetupInProgressHandle();
   EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
             engine()->last_configure_reason());
   ShutdownAndReleaseService();
@@ -1624,7 +1624,7 @@ TEST_F(SyncServiceImplTest, ConfigureDataTypeManagerReason) {
   // Reconfiguration.
   // Trigger a reconfig by grabbing a SyncSetupInProgressHandle and immediately
   // releasing it again (via the temporary unique_ptr going away).
-  service()->GetSetupInProgressHandle();
+  std::ignore = service()->GetSetupInProgressHandle();
   EXPECT_EQ(CONFIGURE_REASON_RECONFIGURATION,
             engine()->last_configure_reason());
   ShutdownAndReleaseService();
