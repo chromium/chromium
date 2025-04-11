@@ -1850,6 +1850,7 @@
                 "android",
                 "chromeos",
                 "chromeos_lacros",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
