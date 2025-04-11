@@ -5,6 +5,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
@@ -77,9 +78,13 @@ bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
     return false;
   }
 
+  std::vector<std::string> warnings;
   if (!manifest_handler_helpers::LoadIconsFromDictionary(
-          *icons_dict, &icons_info->icons, error)) {
+          *icons_dict, &icons_info->icons, error, &warnings)) {
     return false;
+  }
+  for (const auto& warning : warnings) {
+    extension->AddInstallWarning(InstallWarning(warning, keys::kIcons));
   }
 
   extension->SetManifestData(keys::kIcons, std::move(icons_info));

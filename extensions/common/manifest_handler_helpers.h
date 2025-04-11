@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_COMMON_MANIFEST_HANDLER_HELPERS_H_
 #define EXTENSIONS_COMMON_MANIFEST_HANDLER_HELPERS_H_
 
-#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -13,6 +12,10 @@
 #include "base/values.h"
 
 class ExtensionIconSet;
+
+namespace base {
+class FilePath;
+}
 
 namespace extensions::manifest_handler_helpers {
 
@@ -30,10 +33,15 @@ std::optional<int> LoadValidSizeFromString(const std::string& string_size);
 
 // Loads icon paths defined in dictionary |icons_value| into ExtensionIconSet
 // `icons`. `icons_value` is a dictionary value {icon size -> icon path}.
-// Returns success. If load fails, `error` will be set.
+// Returns success. If load fails, `error` will be set. Files which can't be
+// used as icons will be ignored and a warning will be added to `warnings`.
 bool LoadIconsFromDictionary(const base::Value::Dict& icons_value,
                              ExtensionIconSet* icons,
-                             std::u16string* error);
+                             std::u16string* error,
+                             std::vector<std::string>* warnings);
+
+// Returns true if the given path's mime type can be used for an icon.
+bool IsIconMimeTypeValid(const base::FilePath& relative_path);
 
 }  // namespace extensions::manifest_handler_helpers
 

@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/icons/extension_icon_variants.h"
 #include "extensions/common/manifest_constants.h"
@@ -106,18 +106,38 @@ std::unique_ptr<ActionInfo> ActionInfo::Load(
       default_icon_str = default_icon->GetString();
 
     if (default_icon->is_dict()) {
+      std::vector<std::string> warnings;
       if (!manifest_handler_helpers::LoadIconsFromDictionary(
-              default_icon->GetDict(), &result->default_icon, error)) {
+              default_icon->GetDict(), &result->default_icon, error,
+              &warnings)) {
         return nullptr;
+      }
+      if (!warnings.empty()) {
+        install_warnings->reserve(install_warnings->size() + warnings.size());
+        std::string manifest_key = GetManifestKeyForActionType(type);
+        for (const auto& warning : warnings) {
+          install_warnings->emplace_back(warning, manifest_key,
+                                         keys::kActionDefaultIcon);
+        }
       }
     } else if (default_icon->is_string() &&
                manifest_handler_helpers::NormalizeAndValidatePath(
                    &default_icon_str)) {
-      // Choose the most optimistic (highest) icon density regardless of the
-      // actual icon resolution, whatever that happens to be. Code elsewhere
-      // knows how to scale down to 19.
-      result->default_icon.Add(extension_misc::EXTENSION_ICON_GIGANTOR,
-                               default_icon_str);
+      if (manifest_handler_helpers::IsIconMimeTypeValid(
+              base::FilePath::FromUTF8Unsafe(default_icon_str))) {
+        // Choose the most optimistic (highest) icon density regardless of the
+        // actual icon resolution, whatever that happens to be. Code elsewhere
+        // knows how to scale down to 19.
+        result->default_icon.Add(extension_misc::EXTENSION_ICON_GIGANTOR,
+                                 default_icon_str);
+      } else {
+        // Issue a warning and ignore this file. This is a warning and not a
+        // hard-error to preserve both backwards compatibility and potential
+        // future-compatibility if mime types change.
+        install_warnings->emplace_back(
+            manifest_errors::kInvalidActionDefaultIconMimeType,
+            GetManifestKeyForActionType(type), keys::kActionDefaultIcon);
+      }
     } else {
       *error = errors::kInvalidActionDefaultIcon;
       return nullptr;

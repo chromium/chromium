@@ -1,11 +1,11 @@
 {
-  "name": "scss style sheet",
+  "name": "user.js content script",
   "manifest_version": 3,
   "version": "1",
   "content_scripts": [
     {
       "matches": ["http://*/*"],
-      "css": ["good.scss"]
+      "js": ["files/good.user.js"]
     }
   ]
 }

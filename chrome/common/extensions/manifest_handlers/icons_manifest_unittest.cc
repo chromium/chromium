@@ -8,21 +8,21 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/manifest_handlers/background_info.h"
+#include "extensions/common/manifest_handlers/icons_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 namespace errors = manifest_errors;
 
-using BackgroundScriptsManifestTest = ChromeManifestTest;
+using IconsManifestTest = ChromeManifestTest;
 
-TEST_F(BackgroundScriptsManifestTest, FailLoadingNonJsScripts) {
+TEST_F(IconsManifestTest, FailLoadingNonImageIcon) {
   scoped_refptr<Extension> extension = LoadAndExpectWarning(
-      "mime_type/bad_background_script.json",
-      ErrorUtils::FormatErrorMessage(errors::kInvalidBackgroundScriptMimeType,
-                                     base::NumberToString(0)));
-  EXPECT_FALSE(BackgroundInfo::HasPersistentBackgroundPage(extension.get()));
+      "mime_type/bad_icon.json",
+      ErrorUtils::FormatErrorMessage(errors::kInvalidIconMimeType,
+                                     base::NumberToString(32)));
+  EXPECT_TRUE(IconsInfo::GetIcons(extension.get()).empty());
 }
 
 }  // namespace extensions

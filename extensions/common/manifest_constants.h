@@ -284,6 +284,8 @@ inline constexpr char16_t kInvalidAboutPageExpectRelativePath[] =
 inline constexpr char kInvalidAction[] = "Invalid value for 'action'.";
 inline constexpr char16_t kInvalidActionDefaultIcon[] =
     u"Invalid value for 'default_icon'.";
+inline constexpr char kInvalidActionDefaultIconMimeType[] =
+    "Invalid mime type for 'default_icon'.";
 inline constexpr char16_t kInvalidActionDefaultPopup[] =
     u"Invalid type for 'default_popup'.";
 inline constexpr char16_t kInvalidActionDefaultState[] =
@@ -415,6 +417,8 @@ inline constexpr char kInvalidHostPermission[] = "Invalid value for '*[*]'.";
 inline constexpr char kInvalidHostPermissions[] = "Invalid value for '*'.";
 inline constexpr char kInvalidIconKey[] = "Invalid key in icons: \"*\".";
 inline constexpr char kInvalidIconPath[] = "Invalid value for 'icons[\"*\"]'.";
+inline constexpr char kInvalidIconMimeType[] =
+    "Invalid mime type for 'icons[\"*\"]'.";
 inline constexpr char16_t kInvalidIcons[] = u"Invalid value for 'icons'.";
 inline constexpr char16_t kInvalidImportAndExport[] =
     u"Simultaneous 'import' and 'export' are not allowed.";
