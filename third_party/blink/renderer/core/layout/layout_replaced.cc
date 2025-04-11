@@ -177,7 +177,8 @@ std::optional<PhysicalRect> LayoutReplaced::ComputeObjectViewBoxRect(
   DCHECK_EQ(object_view_box->GetType(), BasicShape::kBasicShapeInsetType);
 
   const gfx::RectF bounding_box{gfx::SizeF(sizing_info.size)};
-  const Path path = object_view_box->GetPath(bounding_box, 1.f);
+  const Path path =
+      object_view_box->GetPath(bounding_box, /*zoom=*/1.f, /*path_scale=*/1.f);
 
   const PhysicalRect view_box_rect =
       PhysicalRect::EnclosingRect(path.BoundingRect());

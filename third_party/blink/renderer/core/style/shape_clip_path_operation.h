@@ -50,8 +50,10 @@ class ShapeClipPathOperation final : public ClipPathOperation {
   }
 
   const BasicShape* GetBasicShape() const { return shape_.Get(); }
-  Path GetPath(const gfx::RectF& bounding_rect, float zoom) const {
-    return shape_->GetPath(bounding_rect, zoom);
+  Path GetPath(const gfx::RectF& bounding_rect,
+               float zoom,
+               float path_scale) const {
+    return shape_->GetPath(bounding_rect, zoom, path_scale);
   }
 
   GeometryBox GetGeometryBox() const { return geometry_box_; }

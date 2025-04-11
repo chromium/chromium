@@ -32,6 +32,7 @@
 
 namespace blink {
 
+class AffineTransform;
 class Path;
 
 class SVGPathBuilder final : public SVGPathConsumer {
@@ -47,8 +48,8 @@ class SVGPathBuilder final : public SVGPathConsumer {
 
   Path Finalize() { return path_builder_.Finalize(); }
 
-  void Translate(const gfx::Vector2dF& offset) {
-    path_builder_.Translate(offset);
+  void Transform(const AffineTransform& transform) {
+    path_builder_.Transform(transform);
   }
 
  private:

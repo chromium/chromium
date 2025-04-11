@@ -33,7 +33,7 @@ bool StyleRay::IsEqualAssumingSameType(const BasicShape& o) const {
          has_explicit_center_ == other.has_explicit_center_;
 }
 
-Path StyleRay::GetPath(const gfx::RectF&, float) const {
+Path StyleRay::GetPath(const gfx::RectF&, float, float) const {
   // ComputedStyle::ApplyMotionPathTransform cannot call GetPath
   // for rays as they may have infinite length.
   NOTREACHED();

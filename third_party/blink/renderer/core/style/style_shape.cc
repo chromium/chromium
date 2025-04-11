@@ -15,8 +15,10 @@
 #include "third_party/blink/renderer/platform/geometry/length_point.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_types.h"
+#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -134,7 +136,9 @@ class SegmentVisitor {
 };
 }  // namespace
 
-Path StyleShape::GetPath(const gfx::RectF& box_rect, float zoom) const {
+Path StyleShape::GetPath(const gfx::RectF& box_rect,
+                         float /*zoom*/,
+                         float path_scale) const {
   SVGPathBuilder builder(GetWindRule());
 
   builder.EmitSegment(
@@ -147,7 +151,10 @@ Path StyleShape::GetPath(const gfx::RectF& box_rect, float zoom) const {
   }
 
   // TODO(crbug.com/384870258): retain an LRU size->path cache.
-  builder.Translate(box_rect.OffsetFromOrigin());
+  const gfx::Vector2dF offset = box_rect.OffsetFromOrigin();
+  builder.Transform(
+      AffineTransform::Translation(offset.x(), offset.x()).Scale(path_scale));
+
   return builder.Finalize();
 }
 

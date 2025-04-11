@@ -411,16 +411,15 @@ std::optional<gfx::RectF> ClipPathClipper::LocalClipPathBoundingBox(
     auto zoom = object.StyleRef().EffectiveZoom();
 
     bool uses_zoomed_reference_box = UsesZoomedReferenceBox(object);
-    gfx::RectF adjusted_reference_box =
+    const gfx::RectF adjusted_reference_box =
         uses_zoomed_reference_box ? reference_box
                                   : gfx::ScaleRect(reference_box, zoom);
+    const float path_scale = uses_zoomed_reference_box ? 1.f : 1.f / zoom;
 
     auto& shape = To<ShapeClipPathOperation>(clip_path);
     gfx::RectF bounding_box =
-        shape.GetPath(adjusted_reference_box, zoom).BoundingRect();
+        shape.GetPath(adjusted_reference_box, zoom, path_scale).BoundingRect();
 
-    if (!uses_zoomed_reference_box)
-      bounding_box = gfx::ScaleRect(bounding_box, 1.f / zoom);
     bounding_box.Intersect(gfx::RectF(InfiniteIntRect()));
     return bounding_box;
   }
@@ -481,11 +480,9 @@ static Path GetPathWithObjectZoom(const ShapeClipPathOperation& shape,
   const gfx::RectF zoomed_reference_box =
       uses_zoomed_reference_box ? reference_box
                                 : gfx::ScaleRect(reference_box, zoom);
-  Path path = shape.GetPath(zoomed_reference_box, zoom);
-  if (!uses_zoomed_reference_box) {
-    path.Transform(AffineTransform::MakeScale(1.f / zoom));
-  }
-  return path;
+  const float path_scale = uses_zoomed_reference_box ? 1.f : 1.f / zoom;
+
+  return shape.GetPath(zoomed_reference_box, zoom, path_scale);
 }
 
 bool ClipPathClipper::HitTest(const LayoutObject& object,
