@@ -9,10 +9,9 @@ found in the LICENSE file.
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:color="?android:attr/colorControlHighlight">
   <item>
-    <org.chromium.components.browser_ui.widget.SurfaceColorDrawable
-      android:shape="rectangle"
-      app:surfaceElevation="@dimen/default_elevation_1">
+    <shape android:shape="rectangle">
+      <solid android:color="?attr/colorSurfaceContainerLow"/>
       <corners android:radius="@dimen/fast_checkout_inner_corner_radius" />
-    </org.chromium.components.browser_ui.widget.SurfaceColorDrawable>
+    </shape>
   </item>
 </org.chromium.chrome.browser.ui.fast_checkout.UnsharableRippleDrawable>

@@ -95,7 +95,6 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableRecyclerViewAdapter.DragListener;
@@ -1558,7 +1557,7 @@ public class BookmarkManagerMediatorTest {
         final @ColorInt int specialBackgroundColor =
                 SemanticColorUtils.getColorPrimaryContainer(mActivity);
         final @ColorInt int normalBackgroundColor =
-                ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_1);
+                SemanticColorUtils.getColorSurfaceContainerLow(mActivity);
         finishLoading();
 
         mMediator.openFolder(mRootFolderId);

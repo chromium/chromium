@@ -20,7 +20,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
@@ -82,8 +81,8 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
 
         final Context context = getContext();
         final @ColorInt int surfaceColor = SemanticColorUtils.getColorSurface(context);
-        final @ColorInt int surface1 =
-                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1);
+        final @ColorInt int colorSurfaceContainerLow =
+                SemanticColorUtils.getColorSurfaceContainerLow(context);
 
         mPrimaryImage = findViewById(R.id.primary_image);
         mPrimaryImage.setOutlineProvider(mPrimaryImageOutline);
@@ -106,18 +105,18 @@ public class ImprovedBookmarkFolderView extends FrameLayout {
         mChildCountBackgroundOneImage = findViewById(R.id.child_count_background_one_image);
         View childCountBackgroundOneImageTop =
                 findViewById(R.id.child_count_background_one_image_top);
-        childCountBackgroundOneImageTop.setBackgroundColor(surface1);
+        childCountBackgroundOneImageTop.setBackgroundColor(colorSurfaceContainerLow);
         childCountBackgroundOneImageTop.setOutlineProvider(mChildTextBackgroundOutlineOneImageTop);
         childCountBackgroundOneImageTop.setClipToOutline(true);
         View childCountBackgroundOneImageBot =
                 findViewById(R.id.child_count_background_one_image_bot);
-        childCountBackgroundOneImageBot.setBackgroundColor(surface1);
+        childCountBackgroundOneImageBot.setBackgroundColor(colorSurfaceContainerLow);
         childCountBackgroundOneImageBot.setOutlineProvider(mChildTextBackgroundOutlineOneImageBot);
         childCountBackgroundOneImageBot.setClipToOutline(true);
 
         // Setup the background for the child count view when there's two images present.
         mChildCountBackgroundTwoImages = findViewById(R.id.child_count_background_two_images);
-        mChildCountBackgroundTwoImages.setBackgroundColor(surface1);
+        mChildCountBackgroundTwoImages.setBackgroundColor(colorSurfaceContainerLow);
         mChildCountBackgroundTwoImages.setOutlineProvider(mChildTextContainerOutlineTwoImages);
         mChildCountBackgroundTwoImages.setClipToOutline(true);
 

@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayP
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -153,7 +153,7 @@ public class ImprovedBookmarkRowCoordinator {
         } else {
             propertyModel.set(
                     ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR,
-                    ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
+                    SemanticColorUtils.getColorSurfaceContainerLow(mContext));
             propertyModel.set(ImprovedBookmarkRowProperties.START_ICON_TINT, null);
         }
 
