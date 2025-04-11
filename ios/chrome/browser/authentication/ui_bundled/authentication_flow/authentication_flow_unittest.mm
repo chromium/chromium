@@ -400,12 +400,11 @@ class AuthenticationFlowTest : public PlatformTest,
   void SignOutPersonalProfile() {
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(personal_profile_.get());
-    // Can't use a RunLoop multiple times, create a new one.
-    run_loop_ = std::make_unique<base::RunLoop>();
+    std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
     authentication_service->SignOut(
         signin_metrics::ProfileSignout::kSignoutForAccountSwitching,
-        base::CallbackToBlock(run_loop_->QuitClosure()));
-    run_loop_->Run();
+        base::CallbackToBlock(run_loop->QuitClosure()));
+    run_loop->Run();
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
