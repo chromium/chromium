@@ -8,6 +8,7 @@ found in the LICENSE file.
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:descendantFocusability="blocksDescendants"
+    android:importantForAccessibility="yes"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingEnd="@dimen/account_selection_sheet_horizontal_margin"

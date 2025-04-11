@@ -40,6 +40,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -55,6 +56,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionMediator.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionProperties.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/android/webid/ExpandOnFocusAccessibilityDelegate.java",
   ]
 
   resources_package = "org.chromium.chrome.browser.ui.android.webid"
