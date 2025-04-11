@@ -314,6 +314,7 @@ class GlicWindowController : public views::WidgetObserver,
   void CloseAndReopenDetached(mojom::InvocationSource source);
 
   void SetupGlicWidget(Browser* browser);
+  void SetupGlicWidgetAccessibilityText();
   void StartAttachedAnimation(GlicButton* glic_button);
 
   // This sends a message to glic to get ready to show. This will eventually
@@ -483,6 +484,9 @@ class GlicWindowController : public views::WidgetObserver,
 
   mojom::WebUiState webui_state_ = mojom::WebUiState::kUninitialized;
   base::ObserverList<WebUiStateObserver> webui_state_observers_;
+
+  // The announcement should happen the first time focus is lost after the FRE.
+  bool do_focus_loss_announcement_ = false;
 
   // The invocation source requesting the opening of the web client. Note that
   // this value is retained until it is consumed by the web client. Because

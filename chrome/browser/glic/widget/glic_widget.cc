@@ -38,7 +38,6 @@ class GlicWidgetDelegate : public views::WidgetDelegate {
  public:
   GlicWidgetDelegate() {
     SetFocusTraversesOut(true);
-    SetAccessibleTitle(l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
     RegisterDeleteDelegateCallback(
         RegisterDeleteCallbackPassKey(),
         base::BindOnce(&GlicWidgetDelegate::Destroy, base::Unretained(this)));

@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
 #include "chrome/browser/glic/widget/glic_view.h"
 #include "chrome/browser/glic/widget/glic_widget.h"
@@ -40,6 +41,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_observer.h"
@@ -79,6 +81,11 @@ constexpr int kFocusToggleAcceleratorModifiers =
     ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN;
 #endif
 constexpr ui::KeyboardCode kFocusToggleAcceleratorKey = ui::VKEY_G;
+
+ui::Accelerator GetFocusToggleAccelerator() {
+  return ui::Accelerator(kFocusToggleAcceleratorKey,
+                         kFocusToggleAcceleratorModifiers);
+}
 
 mojom::PanelState CreatePanelState(bool widget_visible,
                                    Browser* attached_browser) {
@@ -385,9 +392,19 @@ void GlicWindowController::SetWebClient(GlicWebClientAccess* web_client) {
 // Monitoring the glic widget.
 void GlicWindowController::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
-  if (GetGlicWidget() == widget) {
-    window_activation_callback_list_.Notify(active);
+  if (GetGlicWidget() != widget) {
+    return;
   }
+  if (!active && do_focus_loss_announcement_) {
+    widget->widget_delegate()->SetAccessibleTitle(
+        l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
+    GetGlicView()->GetViewAccessibility().AnnounceAlert(
+        l10n_util::GetStringFUTF16(
+            IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT,
+            GetFocusToggleAccelerator().GetShortcutText()));
+    do_focus_loss_announcement_ = false;
+  }
+  window_activation_callback_list_.Notify(active);
 }
 
 // Monitoring the glic widget.
@@ -727,6 +744,7 @@ void GlicWindowController::SetupGlicWidget(Browser* browser) {
                                     /*accelerator_delegate=*/GetWeakPtr(),
                                     user_resizable_);
   glic_widget_observation_.Observe(glic_widget_.get());
+  SetupGlicWidgetAccessibilityText();
   AddAccelerators();
 
   if (AlwaysDetached()) {
@@ -749,6 +767,19 @@ void GlicWindowController::SetupGlicWidget(Browser* browser) {
 
   // Immediately hook up the WebView to the WebContents.
   GetGlicView()->SetWebContents(contents_->web_contents());
+}
+
+void GlicWindowController::SetupGlicWidgetAccessibilityText() {
+  auto* widget_delegate = glic_widget_->widget_delegate();
+  if (opening_source_ == mojom::InvocationSource::kFre) {
+    widget_delegate->SetAccessibleTitle(l10n_util::GetStringFUTF16(
+        IDS_GLIC_WINDOW_TITLE_FIRST_LOAD,
+        GetFocusToggleAccelerator().GetShortcutText()));
+    do_focus_loss_announcement_ = true;
+  } else {
+    widget_delegate->SetAccessibleTitle(
+        l10n_util::GetStringUTF16(IDS_GLIC_WINDOW_TITLE));
+  }
 }
 
 void GlicWindowController::SetGlicWindowToFloatingMode(bool floating) {
