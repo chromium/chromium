@@ -44,6 +44,12 @@ NSString* const kZipLabel =
     base::SysUTF8ToNSString(autofill::FieldTypeToDeveloperRepresentationString(
         autofill::ADDRESS_HOME_ZIP));
 
+NSString* const kNameLabel = base::SysUTF8ToNSString(
+    autofill::FieldTypeToDeveloperRepresentationString(autofill::NAME_FULL));
+
+NSString* const kCompanyNameLabel = base::SysUTF8ToNSString(
+    autofill::FieldTypeToDeveloperRepresentationString(autofill::COMPANY_NAME));
+
 // Matcher for the "Save Address" button.
 id<GREYMatcher> SaveAddressButton() {
   return ButtonWithAccessibilityLabelId(
@@ -162,7 +168,7 @@ void OpenAddressSettings() {
                   @"Profile should have been saved.");
 
   // Confirm saved profile is a local profile.
-  GREYAssertEqual(NO, [AutofillAppInterface isAccountProfileAtIndex:0],
+  GREYAssertFalse([AutofillAppInterface isAccountProfileAtIndex:0],
                   @"Profile should have been saved locally.");
 }
 
@@ -183,8 +189,8 @@ void OpenAddressSettings() {
                   @"Profile should have been saved.");
 
   // Confirm saved profile is an account profile.
-  GREYAssertEqual(YES, [AutofillAppInterface isAccountProfileAtIndex:0],
-                  @"Profile should have been saved to account.");
+  GREYAssertTrue([AutofillAppInterface isAccountProfileAtIndex:0],
+                 @"Profile should have been saved to account.");
 
   // Exit settings.
   [self exitSettingsMenu];
@@ -342,6 +348,53 @@ void OpenAddressSettings() {
 
   // Sign out.
   [SigninEarlGrey signOut];
+}
+
+// Tests adding a local address manually through settings, filling only
+// non-required fields.
+- (void)testAddLocalAddressManuallyWithOptionalFields {
+  [self openAddAddressView:NO];
+
+  // Fill the non-required fields.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kNameLabel)]
+      performAction:grey_replaceText(@"Custom Name")];
+
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kCompanyNameLabel)]
+      performAction:grey_replaceText(@"Custom Company Name")];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  // Confirm saved profile is a local profile.
+  GREYAssertFalse([AutofillAppInterface isAccountProfileAtIndex:0],
+                  @"Profile should have been saved locally.");
+}
+
+// Tests adding a local address manually through settings, filling some of the
+// required fields.
+- (void)testAddLocalAddressWithSomeRequiredFields {
+  [self openAddAddressView:NO];
+
+  // Fill a required field.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(kCityLabel)]
+      performAction:grey_replaceText(@"Montreal")];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:SaveAddressButton()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  // Confirm saved profile is a local profile.
+  GREYAssertFalse([AutofillAppInterface isAccountProfileAtIndex:0],
+                  @"Profile should have been saved locally.");
 }
 
 @end
