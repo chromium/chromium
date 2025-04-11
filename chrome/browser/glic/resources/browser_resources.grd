@@ -198,6 +198,9 @@ found in the LICENSE file.
       <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" translateable="false" desc="Subheading for the 'keyboard shortcut' toggle.">
         Open with shortcut
       </message>
+      <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL" translateable="false" desc="Label for the 'Learn more' link in the sublabel describing the keyboard shortcut.">
+        Learn more about shortcuts
+      </message>
       <message name="IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE" translateable="false" desc="Name of the 'enable location sharing' setting.">
         Location
       </message>
