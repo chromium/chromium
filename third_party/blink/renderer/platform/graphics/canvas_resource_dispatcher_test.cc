@@ -443,6 +443,9 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
   Dispatcher()->DispatchFrame(canvas_resource, base::TimeTicks::Now(),
                               damage_rect, !context_alpha /* is_opaque */);
   platform->RunUntilIdle();
+  viz::ResourceId reclaim_resource_id(1u);
+  Dispatcher()->OnPlaceholderReleasedResource(reclaim_resource_id,
+                                              std::move(canvas_resource));
 }
 
 const TestParams kTestCases[] = {
