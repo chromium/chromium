@@ -26,6 +26,9 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
   UILabel* _textLabel;
   UIButton* _activityButton;
   UIButton* _closeButton;
+
+  NSArray<NSLayoutConstraint*>* _normalConstraints;
+  NSArray<NSLayoutConstraint*>* _accessibilityConstraints;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -40,38 +43,82 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
     _activityButton = [self createActivityButton];
     _closeButton = [self createCloseButton];
 
-    UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-      _textLabel, _activityButton, _closeButton
-    ]];
-    stackView.translatesAutoresizingMaskIntoConstraints = NO;
-    stackView.axis = UILayoutConstraintAxisHorizontal;
-    stackView.distribution = UIStackViewDistributionFill;
-    stackView.alignment = UIStackViewAlignmentCenter;
-    [stackView setCustomSpacing:kHorizontalPadding afterView:_activityButton];
-    [contentView addSubview:stackView];
+    [contentView addSubview:_textLabel];
+    [contentView addSubview:_activityButton];
+    [contentView addSubview:_closeButton];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [stackView.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor
-                                              constant:kHorizontalPadding],
-      [stackView.trailingAnchor
-          constraintEqualToAnchor:contentView.trailingAnchor
+    _accessibilityConstraints = @[
+      [_textLabel.trailingAnchor
+          constraintLessThanOrEqualToAnchor:_closeButton.leadingAnchor
+                                   constant:-kHorizontalPadding],
+      [_textLabel.topAnchor constraintEqualToAnchor:contentView.topAnchor
+                                           constant:kVerticalPadding],
+      [_activityButton.leadingAnchor
+          constraintEqualToAnchor:contentView.leadingAnchor
+                         constant:kHorizontalPadding],
+      [_activityButton.topAnchor constraintEqualToAnchor:_textLabel.bottomAnchor
+                                                constant:kVerticalPadding],
+      [_activityButton.bottomAnchor
+          constraintEqualToAnchor:contentView.bottomAnchor
+                         constant:-kVerticalPadding],
+      [_closeButton.topAnchor constraintEqualToAnchor:contentView.topAnchor
+                                             constant:kVerticalPadding],
+    ];
+
+    _normalConstraints = @[
+      [_textLabel.trailingAnchor
+          constraintLessThanOrEqualToAnchor:_activityButton.leadingAnchor],
+      [_activityButton.trailingAnchor
+          constraintEqualToAnchor:_closeButton.leadingAnchor
                          constant:-kHorizontalPadding],
-      [stackView.topAnchor
-          constraintGreaterThanOrEqualToAnchor:contentView.topAnchor
-                                      constant:kVerticalPadding],
-      [stackView.bottomAnchor
-          constraintLessThanOrEqualToAnchor:contentView.bottomAnchor
-                                   constant:-kVerticalPadding],
-
+      [_activityButton.centerYAnchor
+          constraintEqualToAnchor:contentView.centerYAnchor],
+      [_textLabel.centerYAnchor
+          constraintEqualToAnchor:contentView.centerYAnchor],
+      [_closeButton.centerYAnchor
+          constraintEqualToAnchor:contentView.centerYAnchor],
       [_textLabel.widthAnchor
-          constraintLessThanOrEqualToAnchor:stackView.widthAnchor
+          constraintLessThanOrEqualToAnchor:contentView.widthAnchor
                                  multiplier:kTextLabelWidthMultiplier],
       [_activityButton.widthAnchor
-          constraintLessThanOrEqualToAnchor:stackView.widthAnchor
+          constraintLessThanOrEqualToAnchor:contentView.widthAnchor
                                  multiplier:kActivityButtonWidthMultiplier],
+    ];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_closeButton.trailingAnchor
+          constraintEqualToAnchor:contentView.trailingAnchor
+                         constant:-kHorizontalPadding],
+      [_closeButton.leadingAnchor
+          constraintGreaterThanOrEqualToAnchor:_activityButton.trailingAnchor
+                                      constant:kHorizontalPadding],
+      [_textLabel.topAnchor
+          constraintGreaterThanOrEqualToAnchor:contentView.topAnchor
+                                      constant:kVerticalPadding],
+      [_textLabel.bottomAnchor
+          constraintLessThanOrEqualToAnchor:contentView.bottomAnchor
+                                   constant:-kVerticalPadding],
+      [_textLabel.leadingAnchor
+          constraintEqualToAnchor:contentView.leadingAnchor
+                         constant:kHorizontalPadding],
+      [_activityButton.topAnchor
+          constraintGreaterThanOrEqualToAnchor:contentView.topAnchor
+                                      constant:kVerticalPadding],
+      [_activityButton.bottomAnchor
+          constraintLessThanOrEqualToAnchor:contentView.bottomAnchor
+                                   constant:-kVerticalPadding],
       [_closeButton.widthAnchor constraintEqualToConstant:kSymbolSize],
       [_closeButton.heightAnchor constraintEqualToConstant:kSymbolSize],
     ]];
+
+    [self updateConstraintsForContentSizeCategory];
+
+    if (@available(iOS 17, *)) {
+      [self
+          registerForTraitChanges:@[ UITraitPreferredContentSizeCategory.class ]
+                       withAction:@selector
+                       (updateConstraintsForContentSizeCategory)];
+    }
   }
 
   return self;
@@ -91,6 +138,20 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
   _text = [text copy];
   _textLabel.text = _text;
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateConstraintsForContentSizeCategory];
+  }
+}
+#endif
 
 #pragma mark - Private
 
@@ -112,20 +173,33 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
       [UIAction actionWithHandler:^(UIAction* action) {
         [weakSelf.delegate activityButtonForActivitySummaryTapped];
       }];
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem
-                                primaryAction:openActivityAction];
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  NSDirectionalEdgeInsets contentInsets = buttonConfiguration.contentInsets;
+  contentInsets.leading = 0;
+  contentInsets.trailing = 0;
+  buttonConfiguration.contentInsets = contentInsets;
+  UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
+                                         primaryAction:openActivityAction];
   [button setAttributedTitle:
               [[NSAttributedString alloc]
                   initWithString:
                       l10n_util::GetNSString(
                           IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_BUTTON)
                       attributes:@{
-                        NSFontAttributeName : CreateDynamicFont(
+                        NSFontAttributeName : PreferredFontForTextStyle(
                             UIFontTextStyleSubheadline, UIFontWeightSemibold)
                       }]
                     forState:UIControlStateNormal];
   button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.titleLabel.adjustsFontForContentSizeCategory = YES;
   button.titleLabel.adjustsFontSizeToFitWidth = YES;
+  button.titleLabel.maximumContentSizeCategory =
+      UIContentSizeCategoryAccessibilityLarge;
+  // Make sure that the button has priority over the text.
+  [button
+      setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
+                                      forAxis:UILayoutConstraintAxisHorizontal];
   return button;
 }
 
@@ -146,6 +220,19 @@ const CGFloat kActivityButtonWidthMultiplier = 0.4;
   button.accessibilityIdentifier =
       kActivitySummaryGridCellCloseButtonIdentifier;
   return button;
+}
+
+// Updates the constraints to be appropriate for the current content size
+// category.
+- (void)updateConstraintsForContentSizeCategory {
+  if (UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory)) {
+    [NSLayoutConstraint deactivateConstraints:_normalConstraints];
+    [NSLayoutConstraint activateConstraints:_accessibilityConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
+    [NSLayoutConstraint activateConstraints:_normalConstraints];
+  }
 }
 
 @end
