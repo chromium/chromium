@@ -736,6 +736,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Close Tab"/>
 </enum>
 
+<!-- LINT.IfChange(IOSOmniboxCopyType) -->
+
+<enum name="IOSOmniboxCopyType">
+  <int value="0" label="Text"/>
+  <int value="1" label="URL edited"/>
+  <int value="2" label="URL pre-edit"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h:OmniboxCopyType) -->
+
 <enum name="IOSOpenExtensionOutcome">
   <int value="0" label="Open Extension Success"/>
   <int value="1" label="Open Extension Invalid outcome"/>

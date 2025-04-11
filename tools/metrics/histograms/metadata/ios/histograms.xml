@@ -3337,6 +3337,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.Omnibox.Copy" enum="IOSOmniboxCopyType"
+    expires_after="2026-04-09">
+  <owner>christianxu@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>Records copy event in the omnibox with the type of copy.</summary>
+</histogram>
+
 <histogram name="IOS.Omnibox.DeviceSwitcherResult.{Context}"
     enum="OmniboxDeviceSwitcherResult" expires_after="2025-08-24">
   <owner>christianxu@chromium.org</owner>

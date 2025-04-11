@@ -11,6 +11,7 @@
 #import "components/omnibox/browser/omnibox_view.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -200,8 +201,17 @@
   [item setObject:[NSString cr_fromString16:text]
            forKey:UTTypePlainText.identifier];
 
+  using enum OmniboxCopyType;
   if (writeURL && URL.is_valid()) {
     [item setObject:net::NSURLWithGURL(URL) forKey:UTTypeURL.identifier];
+
+    if ([textField isPreEditing]) {
+      RecordOmniboxCopy(kPreEditURL);
+    } else {
+      RecordOmniboxCopy(kEditedURL);
+    }
+  } else {
+    RecordOmniboxCopy(kText);
   }
 
   StoreItemInPasteboard(item);

@@ -31,3 +31,7 @@ void RecordSuggestionsListScrolled(
                                 HistogramPageClassSuffix(page_classification),
                             was_scrolled);
 }
+
+void RecordOmniboxCopy(OmniboxCopyType type) {
+  base::UmaHistogramEnumeration("IOS.Omnibox.Copy", type);
+}

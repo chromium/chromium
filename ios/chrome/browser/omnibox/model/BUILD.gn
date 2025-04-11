@@ -66,6 +66,7 @@ source_set("model") {
     "//ios/chrome/browser/default_browser/model",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled:model_interface",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_suggestion_icon_util",
