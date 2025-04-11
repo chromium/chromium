@@ -1529,7 +1529,8 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
                 setting,
                 descriptionIds,
                 iconIds,
-                getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled());
+                getSiteSettingsDelegate().isPermissionSiteSettingsRadioButtonFeatureEnabled(),
+                getResources().getDimensionPixelSize(R.dimen.radio_button_compact_icon_margin_end));
     }
 
     private void configureBinaryToggle(ChromeSwitchPreference binaryToggle, int contentType) {
