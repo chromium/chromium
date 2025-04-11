@@ -82,6 +82,12 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
     });
   }
 
+  auto SimulateOsButton() {
+    return Do([this]() {
+      glic_controller_->Toggle(mojom::InvocationSource::kOsButton);
+    });
+  }
+
   auto ForceInvalidateAccount() {
     return Do([this]() { InvalidateAccount(window_controller().profile()); });
   }
@@ -398,6 +404,18 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, MAYBE_OpenMenuItemShows) {
                   CheckControllerWidgetMode(GlicWindowMode::kDetached),
                   CloseGlicWindow(), CheckControllerHasWidget(false));
 }
+
+#if BUILDFLAG(IS_WIN)
+// On Windows, the OsButton toggles opening and closing floaty, because floaty
+// will never be active when the os button is clicked.
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, OsButtonToggles) {
+  RunTestSequence(
+      SimulateOsButton(), WaitForAndInstrumentGlic(kHostAndContents),
+      CheckControllerHasWidget(true),
+      CheckControllerWidgetMode(GlicWindowMode::kDetached), SimulateOsButton(),
+      WaitForHide(test::kGlicHostElementId), CheckControllerHasWidget(false));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        OpenMenuItemWhenAttachedToActiveBrowserDoesNotClose) {

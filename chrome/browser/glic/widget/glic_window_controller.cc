@@ -488,8 +488,17 @@ void GlicWindowController::Toggle(BrowserWindowInterface* bwi,
     Show(new_attached_browser, source);
     return;
   }
-  // If floaty is focused or the source is the top button, close it
-  // If floaty is unfocused and open, focus it
+
+#if BUILDFLAG(IS_WIN)
+  // Clicking status tray on Windows makes floaty not active so always close.
+  if (source == mojom::InvocationSource::kOsButton) {
+    Close();
+    return;
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  // If floaty is focused or the source is the top button, close it.
+  // If floaty is unfocused and open, focus it.
   if (IsActive() ||
       (source == mojom::InvocationSource::kTopChromeButton &&
        !base::FeatureList::IsEnabled(features::kGlicZOrderChanges))) {
