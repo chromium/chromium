@@ -55,6 +55,7 @@
 namespace glic {
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSettingsTab);
 std::vector<std::string> GetTestSuiteNames() {
   return {
@@ -615,6 +616,31 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabStateV2) {
   ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testGetFocusedTabStateV2WithNavigation) {
+  // Confirm that the observer is notified through getFocusedTabState of the
+  // initial state, i.e. the first page navigation.
+  ExecuteJsTest();
+
+  // Navigate to another page in the existing tab.
+  RunTestSequence(NavigateWebContents(
+      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
+                     "/scrollable_page_with_content.html")));
+
+  // Confirm that the observer is notified through getFocusedTabState of the
+  // second page navigation.
+  ContinueJsTest();
+
+  // Open a new tab and navigate to a another page.
+  RunTestSequence(AddInstrumentedTab(
+      kSecondTab,
+      InProcessBrowserTest::embedded_test_server()->GetURL("/glic/test.html")));
+
+  // Confirm that the observer is notified through getFocusedTabState that due
+  // to a page navigation in a new tab, a new tab has gained focus.
+  ContinueJsTest();
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {

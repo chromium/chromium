@@ -32,6 +32,9 @@ class SequencedSubscriber<T> {
   next(): Promise<T> {
     return this.getSignal(this.readIndex++).promise;
   }
+  isEmpty(): boolean {
+    return this.readIndex === this.writeIndex;
+  }
   unsubscribe() {
     this.subscriber.unsubscribe();
   }
@@ -318,6 +321,44 @@ class ApiTests extends ApiTestFixtureBase {
         `url=${focus.hasFocus.tabData.url}`);
     assertEquals('Test Page', focus.hasFocus.tabData.title);
     assertFalse(!!focus.hasNoFocus);
+  }
+
+  async testGetFocusedTabStateV2WithNavigation() {
+    // Initial state.
+    assertTrue(!!this.host.getFocusedTabStateV2);
+    const sequence = observeSequence(this.host.getFocusedTabStateV2());
+    const focus = await sequence.next();
+    assertTrue(!!focus.hasFocus);
+    assertTrue(
+        focus.hasFocus.tabData.url.endsWith('glic/test.html'),
+        `url=${focus.hasFocus.tabData.url}`);
+    assertFalse(!!focus.hasNoFocus);
+
+    // After a second navigation occurs.
+    await this.advanceToNextStep();
+    const focus2 = await sequence.next();
+    assertTrue(!!focus2.hasFocus);
+    assertTrue(
+        focus2.hasFocus.tabData.url.endsWith(
+            'scrollable_page_with_content.html'),
+        `url=${focus2.hasFocus.tabData.url}`);
+
+    await this.advanceToNextStep();
+    let focus3 = await sequence.next();
+
+    // After a navigation occurs in a new tab, there could first exist a
+    // transitory states where the focus is not yet available.
+    while (focus3.hasNoFocus) {
+      focus3 = await sequence.next();
+    }
+
+    // Final state, after the tab is fully loaded.
+    assertTrue(!!focus3.hasFocus);
+    assertTrue(
+        focus3.hasFocus.tabData.url.endsWith('glic/test.html'),
+        `url=${focus3.hasFocus.tabData.url}`);
+    assertFalse(!!focus3.hasNoFocus);
+    assertTrue(sequence.isEmpty());
   }
 
   async testGetFocusedTabStateV2BrowserClosed() {
