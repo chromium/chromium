@@ -207,9 +207,10 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(
           ntp_features::kNtpMostRelevantTabResumptionModuleDeviceIcon));
   source->AddBoolean(
-      "mostRelevantTabResumptionUseIsKnownToSync",
+      "mostRelevantTabResumptionAllowFaviconServerFallback",
       base::FeatureList::IsEnabled(
-          ntp_features::kNtpMostRelevantTabResumptionUseIsKnownToSync));
+          ntp_features::
+              kNtpMostRelevantTabResumptionAllowFaviconServerFallback));
   source->AddBoolean(
       "mostRelevantTabResumptionModuleFallbackToHost",
       base::FeatureList::IsEnabled(

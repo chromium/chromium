@@ -16,8 +16,8 @@
       <div id="hoverLayer"></div>
       <page-favicon class="icon" .fallbackToHost="${this.fallbackToHost_}"
                     .url="${item.url}" size="24"
-                    .isKnownToSync="${this.useIsKnownToSync_ &&
-                    item.isKnownToSync}">
+                    .isKnownToSync="${item.isKnownToSync ||
+                    this.allowFaviconServerFallback_}">
       </page-favicon>
       <div class="url-visit-info">
         <div class="url-visit-title">${item.title}</div>

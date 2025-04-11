@@ -72,7 +72,7 @@ export class ModuleElement extends I18nMixinLit
 
       showInfoDialog_: {type: Boolean},
 
-      useIsKnownToSync_: {type: Boolean},
+      allowFaviconServerFallback_: {type: Boolean},
     };
   }
 
@@ -83,8 +83,9 @@ export class ModuleElement extends I18nMixinLit
   protected accessor shouldShowDeviceIcon_: boolean =
       loadTimeData.getBoolean('mostRelevantTabResumptionDeviceIconEnabled');
   protected accessor showInfoDialog_: boolean = false;
-  protected accessor useIsKnownToSync_: boolean =
-      loadTimeData.getBoolean('mostRelevantTabResumptionUseIsKnownToSync');
+  protected accessor allowFaviconServerFallback_: boolean =
+      loadTimeData.getBoolean(
+          'mostRelevantTabResumptionAllowFaviconServerFallback');
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);

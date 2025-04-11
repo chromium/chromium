@@ -242,9 +242,10 @@ BASE_FEATURE(kNtpMostRelevantTabResumptionModuleDeviceIcon,
              "NtpMostRelevantTabResumptionModuleDeviceIcon",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the Tab Resumption module will use the synced fallback icon.
-BASE_FEATURE(kNtpMostRelevantTabResumptionUseIsKnownToSync,
-             "NtpMostRelevantTabResumptionUseIsKnownToSync",
+// If enabled, the Tab Resumption module will be allowed to fallback to the
+// favicon server when fetching favicons for displayed continuation suggestions.
+BASE_FEATURE(kNtpMostRelevantTabResumptionAllowFaviconServerFallback,
+             "NtpMostRelevantTabResumptionAllowFaviconServerFallback",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the Tab Resumption module will fallback to host url to find a
