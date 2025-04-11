@@ -127,6 +127,10 @@ const CGFloat kClearButtonImageSize = 17.0f;
       // Button to delete the thumbnail.
       _thumbnailButton = [[OmniboxThumbnailButton alloc] init];
       _thumbnailButton.translatesAutoresizingMaskIntoConstraints = NO;
+      _thumbnailButton.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_LABEL);
+      _thumbnailButton.accessibilityHint =
+          l10n_util::GetNSString(IDS_IOS_OMNIBOX_REMOVE_THUMBNAIL_HINT);
       _thumbnailButton.hidden = YES;
       [NSLayoutConstraint activateConstraints:@[
         [_thumbnailButton.widthAnchor

@@ -646,7 +646,8 @@ using base::UserMetricsAction;
 
 /// Handles interaction with the thumbnail button. (tap or keyboard delete)
 - (void)didTapThumbnailButton {
-  if (!self.view.thumbnailButton.selected) {
+  if (!self.view.thumbnailButton.selected &&
+      !self.view.thumbnailButton.accessibilityElementIsFocused) {
     self.view.thumbnailButton.selected = YES;
   } else {
     [self.mutator removeThumbnail];

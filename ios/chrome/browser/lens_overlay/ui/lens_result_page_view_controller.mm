@@ -17,6 +17,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/ui_util/dynamic_type_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -165,6 +166,8 @@ const CGFloat kProgressBarFull = 1.0f;
   [_omniboxTapTarget addTarget:self
                         action:@selector(didTapOmniboxTapTarget:)
               forControlEvents:UIControlEventTouchUpInside];
+  _omniboxTapTarget.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_OMNIBOX_FOCUS);
   AddSameConstraints(_omniboxContainer, _omniboxTapTarget);
 
   // Cancel button.
