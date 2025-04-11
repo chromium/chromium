@@ -9,6 +9,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.ViewUtils;
 
 /** A custom RecyclerView implementation for the home modules. */
 @NullMarked
@@ -35,6 +37,15 @@ public class HomeModulesRecyclerView extends RecyclerView {
     /* The internal padding between two modules in pixel. */
     private int mModuleInternalPaddingPx;
 
+    /** The minimal module height. */
+    private int mModuleMiniHeightPx;
+
+    /** The last height of the RecyclerView. */
+    private int mPreviousHeight;
+
+    /** The last children count of the RecyclerView. */
+    private int mPreviousChildCount;
+
     public HomeModulesRecyclerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
@@ -51,13 +62,25 @@ public class HomeModulesRecyclerView extends RecyclerView {
         mStartMarginPx = startMarginPx;
 
         mItemPerScreen = itemPerScreen;
-        mModuleInternalPaddingPx =
-                getContext().getResources().getDimensionPixelSize(R.dimen.module_internal_padding);
+        Resources resources = getContext().getResources();
+        mModuleInternalPaddingPx = resources.getDimensionPixelSize(R.dimen.module_internal_padding);
+        mModuleMiniHeightPx = resources.getDimensionPixelSize(R.dimen.home_module_height);
     }
 
     @Override
     public void onDraw(Canvas c) {
         super.onDraw(c);
+
+        int height = getMeasuredHeight();
+        int childCount = getChildCount();
+        // Updates Children' heights if the RecyclerView's height is changed or when the children
+        // count changes.
+        if (childCount != 0 && (height != mPreviousHeight || childCount != mPreviousChildCount)) {
+            mPreviousHeight = height;
+            mPreviousChildCount = childCount;
+            updateHeight(childCount);
+        }
+
         // Don't need to change the width of a child view on phones since there is only one item
         // shown per screen, and it never changes.
         if (!mIsTablet) return;
@@ -67,6 +90,46 @@ public class HomeModulesRecyclerView extends RecyclerView {
         int measuredWidth = getMeasuredWidth();
         for (int i = 0; i < getChildCount(); i++) {
             onDrawImplTablet(getChildAt(i), itemCount, measuredWidth);
+        }
+    }
+
+    /**
+     * Returns the maximum height of children of the RecyclerView if they grow higher than the
+     * minimal module height.
+     */
+    @VisibleForTesting
+    int getMaxHeight() {
+        // A minimal height is set for all modules.
+        int maxHeight = mModuleMiniHeightPx;
+
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            maxHeight = Math.max(maxHeight, child.getHeight());
+        }
+
+        return maxHeight;
+    }
+
+    /**
+     * Updates the heights of all children to make them heights equal.
+     *
+     * @param childCount The total count of children.
+     */
+    @VisibleForTesting
+    void updateHeight(int childCount) {
+        boolean isLayoutChanged = false;
+        int maxHeight = getMaxHeight();
+        for (int i = 0; i < childCount; i++) {
+            View child = getChildAt(i);
+            if (child.getHeight() < maxHeight) {
+                child.setMinimumHeight(maxHeight);
+                isLayoutChanged = true;
+            }
+        }
+
+        // Request layout to apply the changes
+        if (isLayoutChanged) {
+            ViewUtils.requestLayout(this, "HomeModulesRecyclerView.updateHieght");
         }
     }
 

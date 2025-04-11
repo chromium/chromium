@@ -7,10 +7,8 @@ package org.chromium.chrome.browser.magic_stack;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.SystemClock;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,7 +40,6 @@ import java.util.Set;
 @NullMarked
 public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCallback {
     public static int MAXIMUM_MODULE_SIZE = 5;
-    private final Context mContext;
     private final ModuleDelegateHost mModuleDelegateHost;
     private HomeModulesMediator mMediator;
     private final HomeModulesRecyclerView mRecyclerView;
@@ -86,7 +83,6 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             HomeModulesConfigManager homeModulesConfigManager,
             ObservableSupplier<Profile> profileSupplier,
             ModuleRegistry moduleRegistry) {
-        mContext = activity;
         mModuleDelegateHost = moduleDelegateHost;
         mHomeModulesConfigManager = homeModulesConfigManager;
         mHomeModulesStateListener = this::onModuleConfigChanged;
@@ -392,12 +388,6 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     public void onViewCreated(@ModuleType int moduleType, ViewGroup group) {
         ModuleProvider moduleProvider = getModuleProvider(moduleType);
 
-        LayoutParams layoutParams = group.getLayoutParams();
-        layoutParams.height =
-                mContext.getResources()
-                        .getDimensionPixelSize(
-                                org.chromium.chrome.browser.magic_stack.R.dimen.home_module_height);
-        group.setLayoutParams(layoutParams);
         // Handle long clicks.
         group.setOnLongClickListener(
                 view -> {
