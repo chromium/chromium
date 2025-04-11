@@ -12,16 +12,17 @@ build_webui("build") {
 
   static_files = [ "discards.html" ]
 
-  web_component_files = [
-    "database_tab.ts",
-    "discards_main.ts",
-    "discards_tab.ts",
-    "graph_tab.ts",
-  ]
-
   ts_files = [
+    "database_tab.html.ts",
+    "database_tab.ts",
     "discards.ts",
+    "discards_main.html.ts",
+    "discards_main.ts",
+    "discards_tab.html.ts",
+    "discards_tab.ts",
     "graph.ts",
+    "graph_tab.html.ts",
+    "graph_tab.ts",
     "sorted_table_mixin_lit.ts",
   ]
 
@@ -42,7 +43,6 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/discards/site_data.mojom-webui.ts",
   ]
 
-  html_to_wrapper_template = "detect"
   ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_deps = [

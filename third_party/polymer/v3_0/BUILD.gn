@@ -124,7 +124,6 @@ ts_library("library") {
     "//chrome/browser/resources/app_service_internals:build_ts",
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
     "//chrome/browser/resources/compose:build_ts",
-    "//chrome/browser/resources/discards:build_ts",
     "//chrome/browser/resources/history:build_ts",
     "//chrome/browser/resources/inline_login:build_ts",
     "//chrome/browser/resources/lens/overlay:build_ts",
