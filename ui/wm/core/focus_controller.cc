@@ -53,6 +53,12 @@ FocusController::FocusController(FocusRules* rules)
 
 FocusController::~FocusController() = default;
 
+void FocusController::SetFocusRules(std::unique_ptr<FocusRules> new_rules) {
+  CHECK(!pending_activation_);
+
+  rules_ = std::move(new_rules);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // FocusController, ActivationClient implementation:
 

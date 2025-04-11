@@ -47,6 +47,7 @@
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/scoped_display_for_new_windows.h"
@@ -61,6 +62,8 @@
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/accelerator_filter.h"
+#include "ui/wm/core/focus_controller.h"
+#include "ui/wm/core/window_util.h"
 
 using aura::RootWindow;
 
@@ -644,6 +647,67 @@ using NoDuplicateShellContainerIdsTest = AshTestBase;
 
 TEST_F(NoDuplicateShellContainerIdsTest, ValidateContainersIds) {
   ExpectAllContainers();
+}
+
+// A test fixture that host `ActivationChanger` to simulate window activation
+// change during Shell shutdown and verifies no crash will happen.
+class ShellShutdownTest : public AshTestBase {
+ protected:
+  // Helper to activate `to_activate` when `to_observe` is destroyed. The
+  // intention is to simulate active window change during Shell destruction.
+  // The activation change needs to affect `CloseAllRootWindowChildWindows()`
+  // in Shell destructor.
+  class ActivationChanger : public aura::WindowObserver {
+   public:
+    ActivationChanger(aura::Window* to_observe, aura::Window* to_activate)
+        : to_observe_(to_observe), to_activate_(to_activate) {
+      // No `RemoveObsever` because `this` outlives `Shell` and all windows.
+      to_observe_->AddObserver(this);
+    }
+
+    // aura::WindowObserver:
+    void OnWindowDestroying(aura::Window* window) override {
+      Shell::Get()->focus_controller()->ActivateWindow(to_activate_);
+
+      // Clear out references to avoid `raw_ptr` dangling pointer warnings.
+      to_observe_ = nullptr;
+      to_activate_ = nullptr;
+    }
+
+   private:
+    raw_ptr<aura::Window> to_observe_;
+    raw_ptr<aura::Window> to_activate_;
+  };
+
+  void CreateActivationChanger(aura::Window* to_observe,
+                               aura::Window* to_activate) {
+    activation_changer_ =
+        std::make_unique<ActivationChanger>(to_observe, to_activate);
+  }
+
+ private:
+  std::unique_ptr<ActivationChanger> activation_changer_;
+};
+
+TEST_F(ShellShutdownTest, ActivateWindow) {
+  aura::Window* to_observe =
+      CreateTestWindowInShellWithBounds(gfx::Rect(40, 0, 60, 40));
+  to_observe->Show();
+
+  aura::Window* to_activate =
+      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 30, 20));
+  // Put `to_activate` in a container after desks containers so that its
+  // destruction (and activations of `to_activate`) comes after desk containers
+  // destruction.
+  Shell::GetPrimaryRootWindow()
+      ->GetChildById(kShellWindowId_FloatContainer)
+      ->AddChild(to_activate);
+  to_activate->Show();
+
+  wm::ActivateWindow(to_observe);
+
+  // Creates an ActivationChanger to activate `to_activate` during shutdown.
+  CreateActivationChanger(to_observe, to_activate);
 }
 
 }  // namespace ash
