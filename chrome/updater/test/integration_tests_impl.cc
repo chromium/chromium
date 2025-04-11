@@ -164,7 +164,9 @@ std::string GetUpdateResponseForAppV4(const std::string& app_id,
       R"(          {"operations":[)"
       R"(            { "type":"download",)"
       R"(              "urls":[{"url":"%s/%s"}],)"
-      R"(              "out":{"sha256":"%s"}},)"
+      R"(              "out":{"sha256":"%s"},)"
+      // arbitrary size, must be greater than 0:
+      R"(              "size": 10},)"
       R"(            { "type":"crx3",)"
       R"(              "arguments":"%s",)"
       R"(              "path":"%s",)"

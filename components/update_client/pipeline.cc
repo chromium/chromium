@@ -31,6 +31,8 @@
 #include "components/update_client/op_puffin.h"
 #include "components/update_client/op_xz.h"
 #include "components/update_client/op_zucchini.h"
+#include "components/update_client/pipeline_util.h"
+#include "components/update_client/protocol_definition.h"
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/unzipper.h"
 #include "components/update_client/update_client_errors.h"
@@ -55,6 +57,14 @@ using Operation = base::OnceCallback<base::OnceClosure(
     const base::FilePath&,
     base::OnceCallback<void(
         base::expected<base::FilePath, CategorizedError>)>)>;
+
+constexpr CategorizedError kUnsupportedOperationError = CategorizedError(
+    {.category_ = ErrorCategory::kUpdateCheck,
+     .code_ = static_cast<int>(ProtocolError::UNSUPPORTED_OPERATION)});
+
+constexpr CategorizedError kInvalidOperationAttributesError = CategorizedError(
+    {.category_ = ErrorCategory::kUpdateCheck,
+     .code_ = static_cast<int>(ProtocolError::INVALID_OPERATION_ATTRIBUTES)});
 
 // `Pipeline` manages the flow of operations, passing the output path of
 // each operation to the next one, short-circuiting on errors.
@@ -201,23 +211,29 @@ Operation SkipIfCached(
       cache_getter, std::move(operation));
 }
 
-// Creates an operation that always fails.
-Operation MakeErrorOperation(
-    base::RepeatingCallback<void(base::Value::Dict)> event_adder) {
-  return base::BindOnce(
-      [](const base::FilePath&,
+// Creates an operation queue to replace the existing queue that always fails
+// for cases where a pipeline is impossible to process.
+std::queue<Operation> MakeErrorOperations(
+    base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+    CategorizedError error,
+    const int event_type) {
+  std::queue<Operation> error_ops;
+  error_ops.push(base::BindOnce(
+      [](base::RepeatingCallback<void(base::Value::Dict)> event_adder,
+         CategorizedError error, const int event_type, const base::FilePath&,
          base::OnceCallback<void(
              base::expected<base::FilePath, CategorizedError>)> callback)
           -> base::OnceClosure {
+        event_adder.Run(MakeSimpleOperationEvent(
+            kInvalidOperationAttributesError, event_type));
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(std::move(callback),
-                           base::unexpected(CategorizedError(
-                               {.category_ = ErrorCategory::kUpdateCheck,
-                                .code_ = static_cast<int>(
-                                    ProtocolError::UNSUPPORTED_OPERATION)}))));
+                           base::unexpected(kInvalidOperationAttributesError)));
         return base::DoNothing();
-      });
+      },
+      event_adder, error, event_type));
+  return error_ops;
 }
 
 std::queue<Operation> MakeOperations(
@@ -246,6 +262,13 @@ std::queue<Operation> MakeOperations(
   std::queue<Operation> ops;
   for (const ProtocolParser::Operation& operation : pipeline.operations) {
     if (operation.type == "download") {
+      // expects: `urls` (list of url objects), `size`, and `out` (hash object)
+      if (operation.urls.empty() || operation.size <= 0 ||
+          operation.sha256_out.empty()) {
+        return MakeErrorOperations(event_adder,
+                                   kInvalidOperationAttributesError,
+                                   protocol_request::kEventDownload);
+      }
       ops.push(SkipIfCached(
           cache_check,
           base::BindOnce(&DownloadOperation, config, get_available_space,
@@ -253,23 +276,43 @@ std::queue<Operation> MakeOperations(
                          operation.sha256_out, event_adder, state_tracker,
                          download_progress_callback)));
     } else if (operation.type == "puff") {
+      // expects: `previous` (hash object)
+      if (operation.sha256_previous.empty()) {
+        return MakeErrorOperations(event_adder,
+                                   kInvalidOperationAttributesError,
+                                   protocol_request::kEventPuff);
+      }
       ops.push(SkipIfCached(
           cache_check,
           base::BindOnce(&PuffOperation, crx_cache,
                          config->GetPatcherFactory()->Create(), event_adder, id,
                          operation.sha256_previous)));
     } else if (operation.type == "xz") {
+      // expects no extra fields.
       ops.push(SkipIfCached(
           cache_check,
           base::BindOnce(&XzOperation, config->GetUnzipperFactory()->Create(),
                          event_adder)));
     } else if (operation.type == "zucc") {
+      // expects: `previous` (hash object)
+      if (operation.sha256_previous.empty()) {
+        return MakeErrorOperations(event_adder,
+                                   kInvalidOperationAttributesError,
+                                   protocol_request::kEventZucchini);
+      }
       ops.push(SkipIfCached(
           cache_check,
           base::BindOnce(&ZucchiniOperation, crx_cache,
                          config->GetPatcherFactory()->Create(), event_adder, id,
                          operation.sha256_previous)));
     } else if (operation.type == "crx3") {
+      // expects: `in` (hash object)
+      // Note: `path` and `arguments` fields are optional.
+      if (operation.sha256_in.empty()) {
+        return MakeErrorOperations(event_adder,
+                                   kInvalidOperationAttributesError,
+                                   protocol_request::kEventCrx3);
+      }
       ops.push(base::BindOnce(
           &InstallOperation, crx_cache, config->GetUnzipperFactory()->Create(),
           crx_format, id, operation.sha256_in, pk_hash, installer,
@@ -280,6 +323,13 @@ std::queue<Operation> MakeOperations(
           event_adder, state_tracker, install_progress_callback,
           install_complete_callback));
     } else if (operation.type == "run") {
+      // expects: `path`
+      // Note: `arguments` field is optional.
+      if (operation.path.empty()) {
+        return MakeErrorOperations(event_adder,
+                                   kInvalidOperationAttributesError,
+                                   protocol_request::kEventAction);
+      }
       ops.push(base::BindOnce(&RunOperation, action_handler, installer,
                               operation.path, session_id, event_adder,
                               state_tracker));
@@ -289,9 +339,8 @@ std::queue<Operation> MakeOperations(
       // the entire pipeline with an operation that simply records an error.
       VLOG(2) << "Unrecognized operation '" << operation.type
               << "', skipping pipeline.";
-      std::queue<Operation> error_ops;
-      error_ops.push(MakeErrorOperation(event_adder));
-      return error_ops;
+      return MakeErrorOperations(event_adder, kUnsupportedOperationError,
+                                 protocol_request::kEventUnknown);
     }
   }
   return ops;

@@ -834,8 +834,9 @@ attmpted as part of this update session. All events have the following members:
      *   14: A `download` operation.
      *   60: An `xz` operation.
      *   61: A `zucc` patch application operation.
-     *   62: A `puffin` patch application operation.
+     *   62: A `puff` patch application operation.
      *   63: A `crx3` package installation operation.
+     *   64: An unknown operation.
      *   41: An app command completion event.
      *   42: A `run` operation.
  *   `eventresult`: The outcome of the operation. Default: 0. Known values:
@@ -890,7 +891,7 @@ For `eventtype == 14` events:
      pipeline.
  *   `url`: The URL from which the download was attempted.
 
-For `eventtype == 60, 61, 62, or 63` events:
+For `eventtype == 60, 61, 62, 63, or 64` events:
  *   All the members of `eventtype == 3` events.
  *   `pipeline_id`: The `pipeline_id` set in the request for this operation's
      pipeline.

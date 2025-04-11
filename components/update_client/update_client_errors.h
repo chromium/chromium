@@ -151,6 +151,7 @@ enum class ProtocolError : int {
   UNSUPPORTED_OPERATION = -10014,
   INEXPRESSIBLE = -10015,
   UNKNOWN_ERROR = -10016,
+  INVALID_OPERATION_ATTRIBUTES = -10017,
 };
 
 struct CategorizedError {
