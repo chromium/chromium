@@ -6326,14 +6326,6 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // unmultiply has been requested or we need to never premultiply for Image
   // creation from a VideoFrame.
 
-#if BUILDFLAG(IS_MAC)
-  // TODO(crbug.com/1180726): Sampling from macOS IOSurfaces requires
-  // GL_ARB_texture_rectangle which is not available in the WebGL context.
-  constexpr bool kAllowZeroCopyImages = false;
-#else
-  constexpr bool kAllowZeroCopyImages = true;
-#endif
-
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // TODO(crbug.com/1175907): Only TexImage2D seems to work with the GPU path on
   // Android M -- appears to work fine on R, but to avoid regressions in <video>
@@ -6380,7 +6372,7 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
   scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
-      std::move(media_video_frame), kAllowZeroCopyImages,
+      std::move(media_video_frame), /*allow_zero_copy_images=*/true,
       image_cache.GetCanvasResourceProvider(dest_rect.size(), format,
                                             alpha_type, color_space),
       video_renderer, dest_rect, /*prefer_tagged_orientation=*/false,
