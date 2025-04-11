@@ -1,0 +1,95 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "llguidance"
+  epoch = "0.7"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/api.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/constraint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/earley/from_guidance.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/earley/grammar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/earley/lexer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/earley/lexerspec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/earley/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/earley/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/earley/perf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/earley/regexvec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/earley/slicer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/factory.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/ffi.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/ffi_par.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/grammar_builder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/compiler.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/context_ref.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/context_simple/context.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/context_simple/draft.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/context_simple/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/formats.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/numeric.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/schema.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/shared_context.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json_validation.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/lark/ast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/lark/common.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/lark/compiler.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/lark/lexer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/lark/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/lark/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/logging.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/matcher.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/output.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/panic_utils.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/stop_controller.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/substring.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/tokenizer_json.rs",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/tokenparser.rs",
+  ]
+  inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/json/README.md",
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/src/lark/README.md",
+  ]
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "0.7.13"
+  cargo_pkg_name = "llguidance"
+  cargo_pkg_description = "Super-fast Structured Outputs"
+  library_configs -= [ "//build/config/coverage:default_coverage" ]
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/anyhow/v1:lib",
+    "//third_party/rust/derivre/v0_3:lib",
+    "//third_party/rust/indexmap/v2:lib",
+    "//third_party/rust/regex_syntax/v0_8:lib",
+    "//third_party/rust/serde/v1:lib",
+    "//third_party/rust/serde_json/v1:lib",
+    "//third_party/rust/toktrie/v0_7:lib",
+  ]
+  features = [ "lark" ]
+  build_root =
+      "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/build.rs"
+  build_sources = [
+    "//third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/build.rs",
+  ]
+  rustflags = [
+    "--cap-lints=allow",  # Suppress all warnings in crates.io crates
+  ]
+}

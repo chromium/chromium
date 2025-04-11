@@ -1,0 +1,10 @@
+Name: derivre
+URL: https://crates.io/crates/derivre
+Version: 0.3.5
+Revision: 3d296e9739adc528bb1242089c503f6d4ac2d20f
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/derivre-v0_3/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: A derivative-based regular expression engine

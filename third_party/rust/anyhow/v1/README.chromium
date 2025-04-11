@@ -4,7 +4,7 @@ Version: 1.0.97
 Revision: bfb89ef244fa60af17fb844dc3bddf4b62e4ac9f
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/anyhow-v1/LICENSE-APACHE
-Shipped: no
-Security Critical: no
+Shipped: yes
+Security Critical: yes
 
 Description: Flexible concrete Error type built on std::error::Error

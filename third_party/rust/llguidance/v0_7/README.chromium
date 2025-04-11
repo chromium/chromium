@@ -1,0 +1,10 @@
+Name: llguidance
+URL: https://crates.io/crates/llguidance
+Version: 0.7.13
+Revision: 0d15b8368650b7a07df0be6ac26c4d08b52d2a84
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/llguidance-v0_7/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Super-fast Structured Outputs

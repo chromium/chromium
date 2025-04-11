@@ -26,6 +26,7 @@ font-types = "0.8"
 hex = "0.4"
 lazy_static = "1"
 libc = "0.2"
+llguidance = { version = "0.7.13", default-features = false, features = ["lark"] }
 png = "=0.18.0-rc"
 proc-macro2 = "1"
 prost = "0.13.3"
