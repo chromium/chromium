@@ -100,10 +100,11 @@ class TargetHandler : public DevToolsDomainHandler,
   Response ActivateTarget(const std::string& target_id) override;
   Response CloseTarget(const std::string& target_id,
                        bool* out_success) override;
-  Response ExposeDevToolsProtocol(
+  void ExposeDevToolsProtocol(
       const std::string& target_id,
       std::optional<std::string> binding_name,
-      std::optional<bool> inherit_permissions) override;
+      std::optional<bool> inherit_permissions,
+      std::unique_ptr<ExposeDevToolsProtocolCallback> callback) override;
   void CreateBrowserContext(
       std::optional<bool> in_disposeOnDetach,
       std::optional<String> in_proxyServer,
