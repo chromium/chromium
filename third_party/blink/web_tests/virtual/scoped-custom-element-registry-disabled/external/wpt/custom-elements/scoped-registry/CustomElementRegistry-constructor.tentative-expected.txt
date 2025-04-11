@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Create non-global CustomElementRegistry and add definitions
-  Failed to construct 'CustomElementRegistry': Illegal constructor
-Harness: the test ran to completion.
-
