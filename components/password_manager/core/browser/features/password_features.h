@@ -74,9 +74,6 @@ BASE_DECLARE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests);
 extern const base::FeatureParam<int>
     kIosPasswordFormExtractionRequestsTimeoutMs;
 
-// Enable saving username in UFF on iOS.
-BASE_DECLARE_FEATURE(kIosDetectUsernameInUff);
-
 // Enables improving detecting the password fields when retrieving password
 // suggestions for filling.
 BASE_DECLARE_FEATURE(kIOSImprovePasswordFieldDetectionForFilling);

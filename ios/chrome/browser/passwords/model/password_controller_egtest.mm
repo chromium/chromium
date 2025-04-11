@@ -183,13 +183,6 @@ void LoginOnUff() {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector(testStickySavePromptJourney)]) {
     config.features_enabled.push_back(kAutofillStickyInfobarIos);
-  } else if ([self isRunningTest:@selector
-                   (testSaveCredentialWithAutofilledEmailInUFF)] ||
-             [self isRunningTest:@selector(testSaveTypedCredentialInUff)] ||
-             [self isRunningTest:@selector
-                   (DISABLED_testUpdateTypedCredentialInUff)]) {
-    config.features_enabled.push_back(
-        password_manager::features::kIosDetectUsernameInUff);
   }
 
   // The proactive password suggestion bottom sheet isn't tested here, it
