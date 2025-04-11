@@ -1480,7 +1480,6 @@ void PrerenderHost::OnWaitingForHeadersStarted(
 }
 
 void PrerenderHost::OnWaitingForHeadersFinished(
-    NavigationHandle& navigation_handle,
     WaitingForHeadersFinishedReason reason) {
   // Prerender frame tree is alive. This check is also done by the caller.
   CHECK(frame_tree_);
@@ -1491,7 +1490,7 @@ void PrerenderHost::OnWaitingForHeadersFinished(
       reason);
 
   for (auto& observer : observers_) {
-    observer.OnWaitingForHeadersFinished(navigation_handle, reason);
+    observer.OnWaitingForHeadersFinished(reason);
   }
 }
 
