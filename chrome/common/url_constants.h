@@ -546,6 +546,10 @@ inline constexpr char kSigninOnDesktopLearnMoreURL[] =
     "https://support.google.com/"
     "chrome?p=settings_sign_in#zippy=sign-in-turn-on-sync";
 
+// The URL for the "Learn more" page for adding a new profile to Chrome.
+inline constexpr char kAddNewProfileOnDesktopLearnMoreURL[] =
+    "https://support.google.com/chrome/?p=add_profile";
+
 // The URL for the "Learn more" page for AI settings for managed users.
 inline constexpr char16_t kAiSettingsLearnMorePageManagedUrl[] =
     u"https://support.google.com/chrome/a?p=generative_ai_settings";

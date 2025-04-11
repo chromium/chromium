@@ -84,7 +84,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest, DeleteProfile);
   FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
                            DeleteProfileFromOwnTab);
-  FRIEND_TEST_ALL_PREFIXES(ProfilePickerCreationFlowBrowserTest,
+  FRIEND_TEST_ALL_PREFIXES(ProfilePickerWithGlicParamBrowserTest,
                            GlicLearnMoreClicked);
   FRIEND_TEST_ALL_PREFIXES(
       ProfilePickerEnterpriseCreationFlowBrowserTest,
@@ -170,7 +170,9 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
 
   // Returns the list of profiles in the same order as when the picker
   // was first shown.
-  std::vector<ProfileAttributesEntry*> GetProfileAttributes();
+  // Filters out profiles that are not eligible to be shown: e.g. omitted
+  // profiles and glic ineligible profiles if applicable.
+  std::vector<ProfileAttributesEntry*> GetProfilesAttributesForDisplay();
 
   const bool is_glic_version_;
 
