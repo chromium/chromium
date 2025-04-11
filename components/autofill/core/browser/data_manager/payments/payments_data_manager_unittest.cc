@@ -38,6 +38,8 @@
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -150,6 +152,8 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
     return *payments_data_manager_;
   }
 
+  TestAutofillClient* autofill_client() { return &autofill_client_; }
+
   // Adds three local cards to the `payments_data_manager_`. The three cards are
   // different: two are from different companies and the third doesn't have a
   // number. All three have different owners and credit card number. This allows
@@ -255,6 +259,7 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
   }
 
  private:
+  TestAutofillClient autofill_client_;
   std::unique_ptr<PaymentsDataManager> payments_data_manager_;
 };
 
@@ -2782,6 +2787,62 @@ TEST_F(PaymentsDataManagerTest,
   histogram_tester.ExpectTotalCount(
       "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
 }
+
+// Params:
+// 1. App Locale.
+class PaymentsDataManagerShouldBlockBenefitsTest
+    : public PaymentsDataManagerHelper,
+      public testing::Test,
+      public testing::WithParamInterface<std::string> {
+ public:
+  PaymentsDataManagerShouldBlockBenefitsTest() {
+    SetUpTest();
+    ResetPaymentsDataManager(false, app_locale());
+  }
+  const std::string& app_locale() { return GetParam(); }
+};
+
+// Tests that card benefits should be blocked if the app locale is not en-US or
+// en-GB.
+TEST_P(PaymentsDataManagerShouldBlockBenefitsTest, NonSupportedAppLocale) {
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example-non-blocked-url.com/"));
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
+      .WillByDefault(testing::Return(false));
+  if (app_locale() == "en-US" || app_locale() == "en-GB") {
+    EXPECT_FALSE(test_api(payments_data_manager())
+                     .ShouldBlockCardBenefitSuggestionLabels(
+                         test::GetMaskedServerCard(), origin,
+                         autofill_client()->GetAutofillOptimizationGuide()));
+  } else {
+    EXPECT_TRUE(test_api(payments_data_manager())
+                    .ShouldBlockCardBenefitSuggestionLabels(
+                        test::GetMaskedServerCard(), origin,
+                        autofill_client()->GetAutofillOptimizationGuide()));
+  }
+}
+
+// Tests that card benefits should be blocked when benefit suggestions are
+// disabled for the given card and url.
+TEST_P(PaymentsDataManagerShouldBlockBenefitsTest, BlockedUrl) {
+  const url::Origin origin =
+      url::Origin::Create(GURL("https://example-blocked-url.com/"));
+  ON_CALL(*static_cast<MockAutofillOptimizationGuide*>(
+              autofill_client()->GetAutofillOptimizationGuide()),
+          ShouldBlockBenefitSuggestionLabelsForCardAndUrl)
+      .WillByDefault(testing::Return(true));
+  EXPECT_TRUE(test_api(payments_data_manager())
+                  .ShouldBlockCardBenefitSuggestionLabels(
+                      test::GetMaskedServerCard(), origin,
+                      autofill_client()->GetAutofillOptimizationGuide()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PaymentsDataManagerShouldBlockBenefitsTest,
+    testing::Values("en-US", "en-GB", "en-CA", "en-AU", "fr-CA", "de-DE"));
 
 // Ensure that verified credit cards can be saved via
 // OnAcceptedLocalCreditCardSave.

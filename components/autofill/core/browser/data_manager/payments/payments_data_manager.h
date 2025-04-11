@@ -627,6 +627,12 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Check if credit card benefits sync flag is enabled.
   bool IsCardBenefitsSyncEnabled() const;
 
+  // Returns whether Autofill card benefit suggestion labels should be blocked.
+  bool ShouldBlockCardBenefitSuggestionLabels(
+      const CreditCard& credit_card,
+      const url::Origin& origin,
+      const AutofillOptimizationGuide* optimization_guide) const;
+
   // Returns the value of the AutofillBnplEnabled pref.
   virtual bool IsAutofillBnplPrefEnabled() const;
 

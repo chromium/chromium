@@ -65,6 +65,14 @@ void PaymentsDataManagerTestApi::AddBnplIssuer(const BnplIssuer& bnpl_issuer) {
   }
 }
 
+bool PaymentsDataManagerTestApi::ShouldBlockCardBenefitSuggestionLabels(
+    const CreditCard& credit_card,
+    const url::Origin& origin,
+    const AutofillOptimizationGuide* optimization_guide) {
+  return payments_data_manager_->ShouldBlockCardBenefitSuggestionLabels(
+      credit_card, origin, std::move(optimization_guide));
+}
+
 bool PaymentsDataManagerTestApi::ShouldSuggestServerPaymentMethods() {
   return payments_data_manager_->ShouldSuggestServerPaymentMethods();
 }
