@@ -34,11 +34,10 @@ ChromeVoxBackgroundTest = class extends ChromeVoxE2ETest {
 
   /** @override */
   get featureList() {
-    return {
-      enabled: [
-        'ash::features::kOnDeviceSpeechRecognition',
-      ],
-    };
+    let list = super.featureList || {};
+    list.enabled = list.enabled || [];
+    list.enabled.push('ash::features::kOnDeviceSpeechRecognition');
+    return list;
   }
 
   simulateHitTestResult(node) {

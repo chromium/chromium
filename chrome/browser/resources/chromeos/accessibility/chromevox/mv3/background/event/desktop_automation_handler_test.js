@@ -486,10 +486,14 @@ AX_TEST_F(
  * inherits from ChromeVoxE2ETest.
  */
 ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest =
-    class extends ChromeVoxDesktopAutomationHandlerTest {};
-ChromeVoxDesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest.prototype
-    .featureList = {
-  disabled: ['features::kTaskManagerDesktopRefresh'],
+    class extends ChromeVoxDesktopAutomationHandlerTest {
+  /** @override */
+  get featureList() {
+    let list = super.featureList || {};
+    list.disabled = list.disabled || [];
+    list.disabled.push('features::kTaskManagerDesktopRefresh');
+    return list;
+  }
 };
 
 TEST_F(
@@ -528,10 +532,14 @@ TEST_F(
  * inherits from ChromeVoxE2ETest.
  */
 ChromeVoxDesktopAutomationHandlerWithTaskManagerDesktopRefreshTest =
-    class extends ChromeVoxDesktopAutomationHandlerTest {};
-ChromeVoxDesktopAutomationHandlerWithTaskManagerDesktopRefreshTest.prototype
-    .featureList = {
-  enabled: ['features::kTaskManagerDesktopRefresh'],
+    class extends ChromeVoxDesktopAutomationHandlerTest {
+  /** @override */
+  get featureList() {
+    let list = super.featureList = {};
+    list.enabled = list.enabled || [];
+    list.enabled.push('features::kTaskManagerDesktopRefresh');
+    return list;
+  }
 };
 
 TEST_F(

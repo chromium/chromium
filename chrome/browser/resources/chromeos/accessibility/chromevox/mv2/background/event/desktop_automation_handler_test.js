@@ -491,11 +491,16 @@ AX_TEST_F(
  * inherits from ChromeVoxE2ETest.
  */
 ChromeVoxMV2DesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest =
-    class extends ChromeVoxMV2DesktopAutomationHandlerTest {};
-ChromeVoxMV2DesktopAutomationHandlerWithoutTaskManagerDesktopRefreshTest
-    .prototype.featureList = {
-  disabled: ['features::kTaskManagerDesktopRefresh'],
+    class extends ChromeVoxMV2DesktopAutomationHandlerTest {
+  /** @override */
+  get featureList() {
+    let list = super.featureList || {};
+    list.disabled = list.disabled || [];
+    list.disabled.push('features::kTaskManagerDesktopRefresh');
+    return list;
+  }
 };
+
 
 // TODO(crbug.com/407459387): Fix and re-enable this test.
 TEST_F(
@@ -534,10 +539,14 @@ TEST_F(
  * inherits from ChromeVoxE2ETest.
  */
 ChromeVoxMV2DesktopAutomationHandlerWithTaskManagerDesktopRefreshTest =
-    class extends ChromeVoxMV2DesktopAutomationHandlerTest {};
-ChromeVoxMV2DesktopAutomationHandlerWithTaskManagerDesktopRefreshTest.prototype
-    .featureList = {
-  enabled: ['features::kTaskManagerDesktopRefresh'],
+    class extends ChromeVoxMV2DesktopAutomationHandlerTest {
+  /** @override */
+  get featureList() {
+    let list = super.featureList || {};
+    list.enabled = list.enabled || [];
+    list.enabled.push('features::kTaskManagerDesktopRefresh');
+    return list;
+  }
 };
 
 TEST_F(

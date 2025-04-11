@@ -43,6 +43,7 @@ ChromeVoxE2ETest = class extends E2ETestBase {
     super.testGenCppIncludes();
     GEN(`
   #include "extensions/common/extension_l10n_util.h"
+  #include "ui/accessibility/accessibility_features.h"
       `);
   }
 
@@ -59,6 +60,10 @@ ChromeVoxE2ETest = class extends E2ETestBase {
 
     super.testGenPreambleCommon(
         'kChromeVoxExtensionId', ChromeVoxE2ETest.prototype.failOnConsoleError);
+  }
+
+  get featureList() {
+    return {disabled: ['features::kAccessibilityManifestV3ChromeVox']};
   }
 
   /**
