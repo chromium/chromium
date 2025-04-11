@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.serial;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -34,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Creates and destroys the WebSerial notification when a website is connected to a serial port. */
+@NullMarked
 public class SerialNotificationManager {
     private static final String NOTIFICATION_NAMESPACE = "SerialNotificationManager";
 
@@ -66,14 +69,14 @@ public class SerialNotificationManager {
         return mNotificationIds.contains(notificationId);
     }
 
-    public void onStartCommand(Intent intent, int flags, int startId) {
+    public void onStartCommand(@Nullable Intent intent, int flags, int startId) {
         if (intent == null || intent.getExtras() == null) {
             cancelPreviousSerialNotifications();
             mDelegate.stopSelf();
         } else if (ACTION_SERIAL_UPDATE.equals(intent.getAction())) {
             int notificationId = intent.getIntExtra(NOTIFICATION_ID_EXTRA, Tab.INVALID_TAB_ID);
             boolean isConnected = intent.getBooleanExtra(NOTIFICATION_IS_CONNECTED, false);
-            String url = intent.getStringExtra(NOTIFICATION_URL_EXTRA);
+            String url = assertNonNull(intent.getStringExtra(NOTIFICATION_URL_EXTRA));
             boolean isIncognito = intent.getBooleanExtra(NOTIFICATION_IS_INCOGNITO, false);
             updateNotification(notificationId, isConnected, url, isIncognito, startId);
         }
