@@ -39,7 +39,7 @@ promise_test(async t => {
     // Inputs and expectations:
     // "def" is duplicate. "\x19" is invalid. "undefined" indicates no tag.
     const rulesetTag = "def";
-    const ruleTags = ["jkl", "def", "null", "\x19", "abc", undefined, "ghi"];
+    const ruleTags = ["def", "jkl", "def", "null", "\x19", "abc", undefined, "ghi"];
     // "def" should be deduped.
     // "\x19" and "undefined" should be ignored (should not send null tag).
     const expectedTags = '"abc", "def", "ghi", "jkl", "null"';
@@ -71,5 +71,55 @@ promise_test(async t => {
       preloadingType === "prefetch" ? "prefetch" : "prefetch;prerender");
     assert_equals(headers.get("sec-speculation-tags"), expectedTags);
 }, "Sec-Speculation-Tags: deduped and sorted tags");
+
+// Test the case where multiple tags (including duplicate tags, invalid tags,
+// and no tags) specified only on the rule level. These should be deduped and
+// sorted before sent as the header. Unlike the previous test, no tag on the
+// rule should result in the null tag.
+promise_test(async t => {
+    const params = new URLSearchParams(window.location.search);
+    const preloadingType = params.get('type');
+
+    // Inputs and expectations:
+    // No ruleset level tag.
+    const rulesetTag = undefined;
+    // "def" is duplicate. "\x19" is invalid. "undefined" indicates no tag.
+    const ruleTags = ["def", "jkl", "def", "null", "\x19", "abc", undefined, "ghi"];
+    // 5 rules are (no ruleset level tag) + (rule level tag) =
+    //     "abc" only, "def" only, "ghi" only, "jkl" only, "null" only.
+    // 1 rule is (no ruleset level tag) + (no rule level tag) = null only.
+    // 2 rule are duplicate or invalid.
+    //
+    // All 6 effective rules, including the null rule, get combined to match
+    // expectedTags.
+    const expectedTags = 'null, "abc", "def", "ghi", "jkl", "null"';
+
+    const rcHelper = new RemoteContextHelper();
+    const referrerRC = await rcHelper.addWindow(undefined, { features: 'noopener' });
+
+    const extraConfig = {};
+    const preloadedRC = await referrerRC.helper.createContext({
+        executorCreator(url) {
+          const speculationRule = constructSpeculationRule(
+              preloadingType, url, rulesetTag, ruleTags);
+          return referrerRC.executeScript((speculationRule) => {
+              const script = document.createElement("script");
+              script.type = "speculationrules";
+              script.textContent = speculationRule;
+              document.head.append(script);
+          }, [speculationRule]);
+        }, extraConfig
+    });
+
+    // Navigate to the preloaded page.
+    await referrerRC.navigateTo(preloadedRC.url);
+
+    const headers = await preloadedRC.getRequestHeaders();
+    // Make sure the page is preloaded.
+    assert_equals(
+      headers.get("sec-purpose"),
+      preloadingType === "prefetch" ? "prefetch" : "prefetch;prerender");
+    assert_equals(headers.get("sec-speculation-tags"), expectedTags);
+}, "Sec-Speculation-Tags: deduped and sorted tags within rules");
 
 </script>
