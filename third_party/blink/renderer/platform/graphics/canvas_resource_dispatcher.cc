@@ -41,7 +41,7 @@ namespace blink {
 struct CanvasResourceDispatcher::FrameResource {
   FrameResource() = default;
   ~FrameResource() {
-    if (release_callback) {
+    if (canvas_resource && release_callback) {
       std::move(release_callback)
           .Run(std::move(canvas_resource), sync_token, is_lost);
     }

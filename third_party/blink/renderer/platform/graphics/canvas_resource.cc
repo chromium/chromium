@@ -127,9 +127,7 @@ static void ReleaseFrameResources(
     scoped_refptr<CanvasResource>&& resource,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
-  if (!resource) {
-    return;
-  }
+  CHECK(resource);
 
   // If there is a LastUnrefCallback, we need to abort because recycling the
   // resource now will prevent the LastUnrefCallback from ever being called.
