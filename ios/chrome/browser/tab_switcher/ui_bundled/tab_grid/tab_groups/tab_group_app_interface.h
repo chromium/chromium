@@ -33,7 +33,8 @@
 + (void)mockSharedEntitiesPreview;
 
 // Adds a tab to the group specified by `index`. `index` considers only groups
-// not tabs. The group should be shared already.
+// not tabs. The group should be shared already and the tab is added by a member
+// (fakeIdentity3).
 + (void)addSharedTabToGroupAtIndex:(unsigned int)index;
 
 @end

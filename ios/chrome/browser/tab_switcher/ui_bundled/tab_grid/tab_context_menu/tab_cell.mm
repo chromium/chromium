@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_view.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_item_identifier.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 
 namespace {
 
@@ -74,6 +75,7 @@ const CGFloat kNewActivityLabelBottomOffset = 10;
 // Initializes the activity label and adds it as a subview.
 - (void)setupActivityLabel {
   _activityLabelView = [[ActivityLabelView alloc] init];
+  _activityLabelView.accessibilityIdentifier = kTabCellActivityLabelIdentifier;
   UIView* contentView = self.contentView;
   [contentView addSubview:_activityLabelView];
 

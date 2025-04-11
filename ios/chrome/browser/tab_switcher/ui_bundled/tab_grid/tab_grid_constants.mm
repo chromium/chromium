@@ -58,6 +58,9 @@ NSString* const kTabGridSearchBarIdentifier = @"kTabGridSearchBarIdentifier";
 NSString* const kTabGridSearchTextFieldIdentifierPrefix = @"kSearchTextId_";
 NSString* const kTabGridScrimIdentifier = @"kTabGridScrimIdentifier";
 
+NSString* const kTabCellActivityLabelIdentifier =
+    @"TabCellActivityLabelIdentifier";
+
 // The color of the text buttons in the toolbars.
 const int kTabGridToolbarTextButtonColor = 0xFFFFFF;
 

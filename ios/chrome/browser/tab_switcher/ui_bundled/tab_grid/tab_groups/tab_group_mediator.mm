@@ -62,10 +62,12 @@ using ScopedDataSharingSyncObservation =
 using tab_groups::SharingState;
 
 namespace {
+
 // The preferred size in points for the avatar icons.
 constexpr CGFloat kFacePileAvatarSize = 24;
 // The preferred size in points for the avatar icon in the activity label.
 constexpr CGFloat kActivityLabelAvatarSize = 16;
+
 }  // namespace
 
 @interface TabGroupMediator () <DataSharingServiceObserverDelegate,
@@ -393,9 +395,6 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
 
   if (!_shareKitService->IsSupported() ||
       !message.attribution.triggering_user.has_value()) {
-    // TODO(crbug.com/385090658): Now, `triggering_user` doesn't have a value in
-    // any cases (a tab is added / updated) and the label isn't created. Confirm
-    // why `triggering_user` is nil.
     return nil;
   }
 

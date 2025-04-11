@@ -568,6 +568,14 @@ id<GREYMatcher> TabGroupsPanelCellWithName(NSString* group_name,
 // activity in the tab group.
 id<GREYMatcher> TabGroupRecentActivityCellAtIndex(unsigned int index);
 
+// Returns a matcher for the activity label on the group cell at `index` in the
+// tab grid.
+id<GREYMatcher> TabGroupActivityLabelOnGroupCellAtIndex(unsigned int index);
+
+// Returns a matcher for the activity label on the grid cell at `index` in the
+// tab grid.
+id<GREYMatcher> TabGroupActivityLabelOnGridCellAtIndex(unsigned int index);
+
 // Returns a matcher for the button that closes the tab grid.
 id<GREYMatcher> TabGridDoneButton();
 

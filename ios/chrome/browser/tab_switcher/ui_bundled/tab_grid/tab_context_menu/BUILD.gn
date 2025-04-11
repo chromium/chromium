@@ -52,6 +52,7 @@ source_set("tab_item") {
 
   deps = [
     "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:activity_label_view",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_item_identifier",
     "//ios/web/public",

@@ -1196,6 +1196,20 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_sufficientlyVisible(), nil);
 }
 
++ (id<GREYMatcher>)tabGroupActivityLabelOnGroupCellAtIndex:(unsigned int)index {
+  return grey_allOf(grey_accessibilityID(kTabCellActivityLabelIdentifier),
+                    grey_ancestor(grey_accessibilityID(
+                        IdentifierForGridGroupCellAtIndex(index))),
+                    grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGroupActivityLabelOnGridCellAtIndex:(unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(kTabCellActivityLabelIdentifier),
+      grey_ancestor(grey_accessibilityID(IdentifierForGridCellAtIndex(index))),
+      grey_sufficientlyVisible(), nil);
+}
+
 + (id<GREYMatcher>)tabGridDoneButton {
   return grey_allOf(grey_accessibilityID(kTabGridDoneButtonIdentifier),
                     grey_sufficientlyVisible(), nil);

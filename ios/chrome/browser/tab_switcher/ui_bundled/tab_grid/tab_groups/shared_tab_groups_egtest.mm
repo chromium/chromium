@@ -60,6 +60,8 @@ using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::TabGridDoneButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
 using chrome_test_util::TabGridNewTabButton;
+using chrome_test_util::TabGroupActivityLabelOnGridCellAtIndex;
+using chrome_test_util::TabGroupActivityLabelOnGroupCellAtIndex;
 using chrome_test_util::TabGroupActivitySummaryCell;
 using chrome_test_util::TabGroupActivitySummaryCellCloseButton;
 using chrome_test_util::TabGroupBackButton;
@@ -1117,6 +1119,57 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   // Verify that the activity summary is not visible anymore.
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:TabGroupActivitySummaryCell()];
+}
+
+// Tests that the activity label on a group cell and a grid cell is updated when
+// a shared group is updated.
+- (void)testActivityLabel {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Add a tab to the shared group by a member in the shared group.
+  [TabGroupAppInterface addSharedTabToGroupAtIndex:0];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the activity label appears on the group cell.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      TabGroupActivityLabelOnGroupCellAtIndex(0)];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupActivityLabelOnGroupCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Verify that the activity label appears on the grid cell.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      TabGroupActivityLabelOnGridCellAtIndex(1)];
+  [[EarlGrey selectElementWithMatcher:TabGroupActivityLabelOnGridCellAtIndex(1)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Open the tab added by a member in the shared group.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
+      performAction:grey_tap()];
+
+  // Go back to the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Verify that the activity label on the grid cell disappears.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      TabGroupActivityLabelOnGridCellAtIndex(1)];
+
+  // Leave from the group view.
+  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+      performAction:grey_tap()];
+
+  // Verify that the activity label on the group cell disappears.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      TabGroupActivityLabelOnGroupCellAtIndex(0)];
 }
 
 @end

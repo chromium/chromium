@@ -534,6 +534,14 @@
 // activity in the tab group.
 + (id<GREYMatcher>)tabGroupRecentActivityCellAtIndex:(unsigned int)index;
 
+// Returns a matcher for the activity label on the group cell at `index` in the
+// tab grid.
++ (id<GREYMatcher>)tabGroupActivityLabelOnGroupCellAtIndex:(unsigned int)index;
+
+// Returns a matcher for the activity label on the grid cell at `index` in the
+// tab grid.
++ (id<GREYMatcher>)tabGroupActivityLabelOnGridCellAtIndex:(unsigned int)index;
+
 // Returns the GREYMatcher for the button that closes the tab grid.
 + (id<GREYMatcher>)tabGridDoneButton;
 
