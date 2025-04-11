@@ -1566,7 +1566,7 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   if [[ -x "/usr/bin/gktool" ]]; then
     note "using gktool to force ahead-of-time Gatekeeper check"
     /usr/bin/gktool scan "${installed_app}" >& /dev/null
-  elif
+  else
     note "gktool not available; skipping ahead-of-time Gatekeeper check"
   fi
 
