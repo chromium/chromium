@@ -1091,6 +1091,10 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_SEQUENCED_SHOULD_INTERCEPT_REQUEST,
                 "Enforces sequencing of calls to shouldInterceptRequest, "
                         + "instead of invoking each call on a separate background thread."),
+        Flag.baseFeature(
+                BlinkFeatures.RENDER_BLOCKING_FULL_FRAME_RATE,
+                "Enable the <link blocking=\"full-frame-rate\"/> API to lower the frame rate during"
+                        + " loading"),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
