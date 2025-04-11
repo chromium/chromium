@@ -257,6 +257,7 @@ source_set("policy_specific_browser_tests") {
     "//components/proxy_config",
     "//components/safe_browsing/core/common",
     "//components/security_interstitials/content:security_interstitial_page",
+    "//components/site_isolation",
     "//components/unified_consent",
     "//content/test:test_support",
     "//testing/gmock",
@@ -335,6 +336,10 @@ source_set("policy_specific_browser_tests") {
   if (!is_chromeos) {
     sources += [ "test/variation_restrict_parameter_policy_browsertest.cc" ]
     deps += [ "//components/variations/service" ]
+  }
+
+  if (is_android) {
+    deps += [ "//chrome/browser/safe_browsing/android:test_support" ]
   }
 
   if (enable_on_device_translation) {

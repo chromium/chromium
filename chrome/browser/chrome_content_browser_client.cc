@@ -807,6 +807,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/feed/feed_service_factory.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_android.h"
 #include "components/feed/feed_feature_list.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -849,6 +850,10 @@ using web_apps::ChromeContentBrowserClientIsolatedWebAppsPart;
 namespace {
 
 const char kAIManagerUserDataKey[] = "ai_manager";
+
+// Whether to disable caching of the advanced-protection state in
+// ShouldEnableStrictSiteIsolation().
+bool g_disable_advanced_protection_caching_for_tests = false;
 
 BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
              "SkipPagehideInCommitForDSENavigation",
@@ -1676,6 +1681,11 @@ void ChromeContentBrowserClient::SetApplicationLocale(
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SetApplicationLocaleOnIOThread, locale));
+}
+
+// static
+void ChromeContentBrowserClient::DisableAdvancedProtectionCachingForTests() {
+  g_disable_advanced_protection_caching_for_tests = true;
 }
 
 void ChromeContentBrowserClient::MaybeProxyNetworkBoundRequest(
@@ -2561,7 +2571,27 @@ ChromeContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
 }
 
 bool ChromeContentBrowserClient::ShouldEnableStrictSiteIsolation() {
-  return base::FeatureList::IsEnabled(features::kSitePerProcess);
+  if (base::FeatureList::IsEnabled(features::kSitePerProcess)) {
+    return true;
+  }
+
+#if BUILDFLAG(IS_ANDROID)
+  // Minimum memory requirements are checked in ShouldDisableSiteIsolation().
+  // See crbug.com/395862563
+
+  if (g_disable_advanced_protection_caching_for_tests) {
+    return safe_browsing::AdvancedProtectionStatusManagerAndroid::
+        QueryIsUnderAdvancedProtection();
+  }
+  // Don't change ShouldEnableStrictSiteIsolation() return value at runtime. A
+  // restart is needed to update site isolation mode when the Advanced
+  // Protection state changes.
+  static bool g_in_os_advanced_protection_mode = safe_browsing::
+      AdvancedProtectionStatusManagerAndroid::QueryIsUnderAdvancedProtection();
+  return g_in_os_advanced_protection_mode;
+#else
+  return false;
+#endif
 }
 
 bool ChromeContentBrowserClient::ShouldDisableSiteIsolation(

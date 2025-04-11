@@ -170,6 +170,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   // update our I/O thread cache of this value.
   static void SetApplicationLocale(const std::string& locale);
 
+  // Disables caching of the advanced-protection state in
+  // ShouldEnableStrictSiteIsolation().
+  static void DisableAdvancedProtectionCachingForTests();
+
   // content::ContentBrowserClient:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       bool is_integration_test) override;

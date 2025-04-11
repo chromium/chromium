@@ -28,6 +28,12 @@ public class AdvancedProtectionStatusManagerAndroidBridge
                 nativeAdvancedProtectionStatusManagerAndroid);
     }
 
+    @CalledByNative
+    public static boolean isAdvancedProtectionRequestedByOs() {
+        var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
+        return provider != null && provider.isAdvancedProtectionRequestedByOs();
+    }
+
     public AdvancedProtectionStatusManagerAndroidBridge(
             long nativeAdvancedProtectionStatusManagerAndroid) {
         mNative = nativeAdvancedProtectionStatusManagerAndroid;
@@ -35,11 +41,6 @@ public class AdvancedProtectionStatusManagerAndroidBridge
         if (mProvider == null) return;
 
         mProvider.addObserver(this);
-    }
-
-    @CalledByNative
-    public boolean isAdvancedProtectionRequestedByOs() {
-        return mProvider != null && mProvider.isAdvancedProtectionRequestedByOs();
     }
 
     @CalledByNative

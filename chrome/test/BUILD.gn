@@ -1711,6 +1711,8 @@ if (is_android) {
       "//chrome/browser/preloading/prerender:browser_tests",
       "//chrome/browser/privacy_budget:browser_tests",
       "//chrome/browser/profiling_host:profiling_browsertests",
+      "//chrome/browser/safe_browsing:test_support",
+      "//chrome/browser/safe_browsing/android:test_support_java",
       "//chrome/browser/search_engines",
       "//chrome/browser/segmentation_platform:test_utils",
       "//chrome/browser/sync",

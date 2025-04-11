@@ -22,6 +22,8 @@ class AdvancedProtectionStatusManagerAndroid
   AdvancedProtectionStatusManagerAndroid& operator=(
       const AdvancedProtectionStatusManagerAndroid&) = delete;
 
+  static bool QueryIsUnderAdvancedProtection();
+
   // AdvancedProtectionStatusManager:
   Type GetAdvancedProtectionType() const override;
   void SetAdvancedProtectionStatusForTesting(bool enrolled) override;
