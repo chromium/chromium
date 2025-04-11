@@ -17,11 +17,9 @@ namespace network {
 PrivateNetworkAccessUrlLoaderInterceptor::
     PrivateNetworkAccessUrlLoaderInterceptor(
         const ResourceRequest& resource_request,
-        const mojom::ClientSecurityState* factory_client_security_state,
+        const mojom::ClientSecurityState* client_security_state,
         int32_t url_load_options)
-    : checker_(resource_request,
-               factory_client_security_state,
-               url_load_options) {}
+    : checker_(resource_request, client_security_state, url_load_options) {}
 
 PrivateNetworkAccessUrlLoaderInterceptor::
     ~PrivateNetworkAccessUrlLoaderInterceptor() = default;

@@ -41,9 +41,12 @@ class URLLoaderNetworkServiceObserver;
 class PrivateNetworkAccessUrlLoaderInterceptor {
  public:
   // Constructs an interceptor for a given request.
+  //
+  // `client_security_state` should point to the client security to use for the
+  // request, and must outlive the PrivateNetworkAccessChecker, if non-null.
   PrivateNetworkAccessUrlLoaderInterceptor(
       const ResourceRequest& resource_request,
-      const mojom::ClientSecurityState* factory_client_security_state,
+      const mojom::ClientSecurityState* client_security_state,
       int32_t url_load_options);
 
   PrivateNetworkAccessUrlLoaderInterceptor(

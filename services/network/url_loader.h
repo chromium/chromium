@@ -48,6 +48,7 @@
 #include "services/network/public/cpp/orb/orb_api.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
@@ -580,6 +581,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // `partial_decoder_result_` is set unless an error occurred during decoding.
   void CheckPartialDecoderResult(int result);
 
+  // Gets the client security state that should apply to the request. May be the
+  // value from the request (if present), the URLLoaderFactoryParams, or null.
+  const mojom::ClientSecurityState* GetClientSecurityState();
+
   const raw_ptr<net::URLRequestContext> url_request_context_;
 
   const raw_ptr<mojom::NetworkContextClient> network_context_client_;
@@ -599,6 +604,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   const int32_t request_id_;
   const int keepalive_request_size_;
   const bool keepalive_;
+  // ClientSecurityState from ResourceRequest::trusted_params, if present.
+  // Otherwise, null. Use GetClientSecurityState() to access, which falls back
+  // to the value from the URLLoaderFactory.
+  const mojom::ClientSecurityStatePtr client_security_state_;
   const bool do_not_prompt_for_login_;
   std::unique_ptr<net::URLRequest> url_request_;
   mojo::Receiver<mojom::URLLoader> receiver_;
@@ -690,6 +699,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // network::ResourceRequest::fetch_window_id for details.
   const std::optional<base::UnguessableToken> fetch_window_id_;
 
+  // Must be below `client_security_state_`.
   PrivateNetworkAccessUrlLoaderInterceptor private_network_access_interceptor_;
 
   mojo::Remote<mojom::TrustedHeaderClient> header_client_;

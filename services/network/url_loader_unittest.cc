@@ -2535,6 +2535,63 @@ TEST_P(URLLoaderFakeTransportInfoTest, PrivateNetworkRequestLoadsCorrectly) {
             ResponseAddressSpace(params));
 }
 
+// Test the case where a PrivateNetworkRequestPolicy is set on the request via
+// TrustedParams, rather than on the factory. the value should still be
+// respected.
+TEST_P(ParameterizedURLLoaderTest, PrivateNetworkRequestPolicyOnRequest) {
+  auto client_security_state = NewSecurityState();
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+  request.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
+  request.trusted_params.emplace();
+  request.trusted_params->client_security_state =
+      std::move(client_security_state);
+
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
+  EXPECT_THAT(
+      client()->completion_status().cors_error_status,
+      Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
+                               mojom::IPAddressSpace::kPrivate,
+                               mojom::IPAddressSpace::kLocal)));
+}
+
+// Test the case where a PrivateNetworkRequestPolicy is set on the request via
+// TrustedParams, and on the URLLoaderFactory via URLLoaderFactoryParams. The
+// value set on the request should be preferred.
+TEST_P(ParameterizedURLLoaderTest,
+       PrivateNetworkRequestPolicyOnRequestAndFactory) {
+  auto client_security_state = NewSecurityState();
+  // The value set on the factory should not block the request. `kAllow` will
+  // actually DCHECK(), so this test may DCHECK instead on regression, instead
+  // of LoadRequest() succeeding.
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kAllow;
+  set_factory_client_security_state(client_security_state->Clone());
+
+  // The value set on the request should block the request.
+  client_security_state->ip_address_space = mojom::IPAddressSpace::kPublic;
+  client_security_state->private_network_request_policy =
+      mojom::PrivateNetworkRequestPolicy::kPreflightBlock;
+
+  ResourceRequest request = CreateCrossOriginResourceRequest();
+  request.target_ip_address_space = mojom::IPAddressSpace::kPrivate;
+  request.trusted_params.emplace();
+  request.trusted_params->client_security_state =
+      std::move(client_security_state);
+
+  // The request should be blocked, based on the per-request value, rather than
+  // the factory value.
+  EXPECT_EQ(net::ERR_FAILED, LoadRequest(request));
+  EXPECT_THAT(
+      client()->completion_status().cors_error_status,
+      Optional(CorsErrorStatus(mojom::CorsError::kInvalidPrivateNetworkAccess,
+                               mojom::IPAddressSpace::kPrivate,
+                               mojom::IPAddressSpace::kLocal)));
+}
+
 // Lists all combinations we want to test in URLLoaderFakeTransportInfoTest.
 constexpr URLLoaderFakeTransportInfoTestParams
     kURLLoaderFakeTransportInfoTestParamsList[] = {

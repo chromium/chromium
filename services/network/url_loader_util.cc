@@ -27,6 +27,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/sri_message_signatures.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_request.mojom-shared.h"
@@ -675,6 +676,16 @@ void SetRequestCredentials(
   if (!policies_allow_credentials) {
     url_request.SetLoadFlags(url_request.load_flags() | net::LOAD_BYPASS_CACHE);
   }
+}
+
+const mojom::ClientSecurityState* SelectClientSecurityState(
+    const mojom::ClientSecurityState*
+        url_loader_factory_params_client_security_state,
+    const mojom::ClientSecurityState* trusted_params_client_security_state) {
+  if (trusted_params_client_security_state) {
+    return trusted_params_client_security_state;
+  }
+  return url_loader_factory_params_client_security_state;
 }
 
 }  // namespace network::url_loader_util

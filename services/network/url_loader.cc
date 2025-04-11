@@ -100,6 +100,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/sri_message_signatures.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -368,6 +369,10 @@ URLLoader::URLLoader(
       request_id_(request_id),
       keepalive_request_size_(keepalive_request_size),
       keepalive_(request.keepalive),
+      client_security_state_(
+          request.trusted_params
+              ? request.trusted_params->client_security_state.Clone()
+              : nullptr),
       do_not_prompt_for_login_(request.do_not_prompt_for_login),
       receiver_(this, std::move(url_loader_receiver)),
       url_loader_client_(std::move(url_loader_client),
@@ -393,10 +398,9 @@ URLLoader::URLLoader(
       resource_scheduler_client_(context.GetResourceSchedulerClient()),
       keepalive_statistics_recorder_(std::move(keepalive_statistics_recorder)),
       fetch_window_id_(request.fetch_window_id),
-      private_network_access_interceptor_(
-          request,
-          factory_params_->client_security_state.get(),
-          options_),
+      private_network_access_interceptor_(request,
+                                          GetClientSecurityState(),
+                                          options_),
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
       storage_access_api_status_(request.storage_access_api_status),
       shared_dictionary_checker_(std::move(shared_dictionary_checker)),
@@ -2824,6 +2828,12 @@ bool URLLoader::ShouldSetLoadWithStorageAccess() const {
       "API.StorageAccessHeader.ActivateStorageAccessLoadOutcome", outcome);
   return outcome ==
          net::cookie_util::ActivateStorageAccessLoadOutcome::kSuccess;
+}
+
+const mojom::ClientSecurityState* URLLoader::GetClientSecurityState() {
+  return url_loader_util::SelectClientSecurityState(
+      factory_params_->client_security_state.get(),
+      client_security_state_.get());
 }
 
 }  // namespace network

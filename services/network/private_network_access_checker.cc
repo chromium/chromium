@@ -23,46 +23,13 @@ namespace {
 using Result = PrivateNetworkAccessCheckResult;
 using Policy = mojom::PrivateNetworkRequestPolicy;
 
-mojom::ClientSecurityStatePtr GetRequestClientSecurityState(
-    const ResourceRequest& request) {
-  if (!request.trusted_params.has_value()) {
-    return nullptr;
-  }
-
-  return request.trusted_params->client_security_state.Clone();
-}
-
-// WARNING: This should be kept in sync with similar logic in
-// `network::cors::CorsURLLoader::GetClientSecurityState()`.
-const mojom::ClientSecurityState* ChooseClientSecurityState(
-    const mojom::ClientSecurityState* factory_client_security_state,
-    const mojom::ClientSecurityState* request_client_security_state) {
-  if (factory_client_security_state) {
-    // Enforce that only one ClientSecurityState is ever given to us, as this
-    // is an invariant in the current codebase. In case of a compromised
-    // renderer process, we might be passed both, in which case we prefer to
-    // use the factory params' value: contrary to the request params, it is
-    // always sourced from the browser process.
-    DCHECK(!request_client_security_state)
-        << "Must not provide a ClientSecurityState in both "
-           "URLLoaderFactoryParams and ResourceRequest::TrustedParams.";
-
-    return factory_client_security_state;
-  }
-
-  return request_client_security_state;
-}
-
 }  // namespace
 
 PrivateNetworkAccessChecker::PrivateNetworkAccessChecker(
     const ResourceRequest& request,
-    const mojom::ClientSecurityState* factory_client_security_state,
+    const mojom::ClientSecurityState* client_security_state,
     int32_t url_load_options)
-    : request_client_security_state_(GetRequestClientSecurityState(request)),
-      client_security_state_(
-          ChooseClientSecurityState(factory_client_security_state,
-                                    request_client_security_state_.get())),
+    : client_security_state_(client_security_state),
       should_block_local_request_(url_load_options &
                                   mojom::kURLLoadOptionBlockLocalRequest),
       target_address_space_(request.target_ip_address_space),

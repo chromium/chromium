@@ -16,6 +16,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -114,6 +115,19 @@ void SetRequestCredentials(
     mojom::CredentialsMode credentials_mode,
     const std::optional<url::Origin>& initiator,
     net::URLRequest& url_request);
+
+// Selects between the `client_security_state` fields in
+// `url_loader_factory_params` and the ClientSecurityState from
+// ResourceRequest::TrustedParams`, preferring the latter. If both have null
+// values, returns null, which is a valid value.
+//
+// While it would be safer to take a ResourceRequest/TrustedParams and/or
+// URLLoaderFactoryParams to prevent misordering of arguments, unfortunately,
+// the callsites for this method don't consistently have those available.
+const mojom::ClientSecurityState* SelectClientSecurityState(
+    const mojom::ClientSecurityState*
+        url_loader_factory_params_client_security_state,
+    const mojom::ClientSecurityState* trusted_params_client_security_state);
 
 }  // namespace url_loader_util
 }  // namespace network
