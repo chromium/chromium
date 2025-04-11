@@ -100,7 +100,7 @@ public class MessageBannerView extends BoundedLinearLayout {
     void enableA11y(boolean enabled) {
         setImportantForAccessibility(
                 enabled
-                        ? IMPORTANT_FOR_ACCESSIBILITY_AUTO
+                        ? IMPORTANT_FOR_ACCESSIBILITY_YES
                         : IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
 
@@ -289,7 +289,8 @@ public class MessageBannerView extends BoundedLinearLayout {
         int largeSize = getResources().getDimensionPixelSize(R.dimen.message_icon_size_large);
         LayoutParams params = (LayoutParams) mIconView.getLayoutParams();
         if (enabled) {
-            params.height = params.width = largeSize;
+            params.height = largeSize;
+            params.width = largeSize;
         } else {
             params.width = LayoutParams.WRAP_CONTENT;
             params.height = smallSize;

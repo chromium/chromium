@@ -172,7 +172,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:layout_gravity="start|top"
-            android:focusable="true" />
+            android:descendantFocusability="afterDescendants" />
 
         <ViewStub
             android:id="@+id/status_indicator_stub"
