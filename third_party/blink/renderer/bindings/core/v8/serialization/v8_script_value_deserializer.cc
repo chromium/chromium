@@ -8,7 +8,6 @@
 #include <limits>
 #include <optional>
 
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
@@ -448,8 +447,6 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
           SerializedPredefinedColorSpace::kSRGB;
       SerializedImageDataPixelFormat image_data_pixel_format =
           SerializedImageDataPixelFormat::kRgbaUnorm8;
-      uint32_t width = 0, height = 0;
-      const void* pixels = nullptr;
       if (Version() >= 18) {
         bool is_done = false;
         do {
@@ -484,12 +481,17 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         } while (!is_done);
       }
 
+      uint32_t width = 0, height = 0;
+      if (!ReadUint32(&width) || !ReadUint32(&height)) {
+        return nullptr;
+      }
+
       uint64_t byte_length_64 = 0;
       size_t byte_length = 0;
-      if (!ReadUint32(&width) || !ReadUint32(&height) ||
-          !ReadUint64(&byte_length_64) ||
+      base::span<const uint8_t> pixel_data;
+      if (!ReadUint64(&byte_length_64) ||
           !base::MakeCheckedNum(byte_length_64).AssignIfValid(&byte_length) ||
-          !ReadRawBytes(byte_length, &pixels)) {
+          !ReadRawBytesToSpan(byte_length, &pixel_data)) {
         return nullptr;
       }
 
@@ -498,13 +500,14 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       ImageData* image_data = ImageData::ValidateAndCreate(
           width, height, std::nullopt, settings.GetImageDataSettings(),
           ImageData::ValidateAndCreateParams(), exception_state);
-      if (!image_data)
+      if (!image_data) {
         return nullptr;
-      SkPixmap image_data_pixmap = image_data->GetSkPixmap();
-      if (image_data_pixmap.computeByteSize() != byte_length)
+      }
+      base::span<uint8_t> image_data_bytes = image_data->RawByteSpan();
+      if (image_data_bytes.size() != pixel_data.size()) {
         return nullptr;
-      UNSAFE_TODO(
-          memcpy(image_data_pixmap.writable_addr(), pixels, byte_length));
+      }
+      image_data_bytes.copy_from(pixel_data);
       return image_data;
     }
     case kDOMPointTag: {

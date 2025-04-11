@@ -536,10 +536,9 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     if (image_data->IsBufferBaseDetached()) {
       WriteUint64(0u);
     } else {
-      SkPixmap image_data_pixmap = image_data->GetSkPixmap();
-      size_t pixel_buffer_length = image_data_pixmap.computeByteSize();
-      WriteUint64(base::strict_cast<uint64_t>(pixel_buffer_length));
-      WriteRawBytes(image_data_pixmap.addr(), pixel_buffer_length);
+      base::span<const uint8_t> image_data_bytes = image_data->RawByteSpan();
+      WriteUint64(base::strict_cast<uint64_t>(image_data_bytes.size()));
+      WriteRawBytes(image_data_bytes.data(), image_data_bytes.size());
     }
     return true;
   }
