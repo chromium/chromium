@@ -16,6 +16,7 @@ source_set("two_screens_signin") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_screen_provider",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:stop_animated_chrome_coordinator",
     "//ios/chrome/browser/authentication/ui_bundled/signin/logging",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
     "//ios/chrome/browser/first_run/ui_bundled:utils",

@@ -13,7 +13,6 @@
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/identity_chooser/identity_chooser_coordinator_delegate.h"
-#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
@@ -103,6 +102,8 @@
   return self;
 }
 
+#pragma mark - ChromeCoordinator
+
 - (void)start {
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
@@ -152,8 +153,15 @@
 }
 
 - (void)stop {
+  [self stopAnimated:NO];
+}
+
+#pragma mark - StopAnimatedChromeCoordinator
+
+- (void)stopAnimated:(BOOL)animated {
   [self.browser->GetCommandDispatcher()
       stopDispatchingForProtocol:@protocol(TOSCommands)];
+  [self stopAddAccountCoordinator];
   [self stopIdentityChooserCoordinator];
   self.delegate = nil;
   self.viewController = nil;
@@ -162,12 +170,6 @@
   self.accountManagerService = nil;
   self.authenticationService = nil;
   [super stop];
-}
-
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
-  [self.addAccountSigninCoordinator interruptAnimated:animated];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate

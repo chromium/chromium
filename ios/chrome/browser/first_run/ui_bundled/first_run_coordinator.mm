@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/docking_promo/coordinator/docking_promo_coordinator.h"
@@ -102,11 +103,8 @@ class FirstRunCoordinatorMetricsHelper final {
     base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                   first_run::kFirstRunInterrupted);
     ChromeCoordinator* childCoordinator = self.childCoordinator;
-    if ([childCoordinator
-            conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]) {
-      [((id<InterruptibleChromeCoordinator>)childCoordinator)
-          interruptAnimated:NO];
-    }
+    CHECK(![childCoordinator
+        conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]);
     [self stopChildCoordinator];
   }
   [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
