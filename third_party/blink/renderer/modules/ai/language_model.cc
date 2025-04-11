@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/ai/ai.h"
 #include "third_party/blink/renderer/modules/ai/ai_context_observer.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
@@ -277,6 +278,8 @@ ConvertPromptToMojoContent(V8LanguageModelPromptType content_type,
     case V8LanguageModelPromptType::Enum::kText:
       return ToMojo(content->GetAsString());
     case V8LanguageModelPromptType::Enum::kImage:
+      UseCounter::Count(execution_context,
+                        WebFeature::kLanguageModel_Prompt_Input_Image);
       if (content->IsV8ImageBitmapSource()) {
         return ToMojo(content->GetAsV8ImageBitmapSource(), script_state,
                       exception_state);
@@ -284,6 +287,8 @@ ConvertPromptToMojoContent(V8LanguageModelPromptType content_type,
       return base::unexpected(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kSyntaxError, "Unsupported image content type"));
     case V8LanguageModelPromptType::Enum::kAudio:
+      UseCounter::Count(execution_context,
+                        WebFeature::kLanguageModel_Prompt_Input_Audio);
       switch (content->GetContentType()) {
         case V8LanguageModelPromptContent::ContentType::kAudioBuffer:
           return ToMojo(content->GetAsAudioBuffer());
