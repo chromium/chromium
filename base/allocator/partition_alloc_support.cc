@@ -1380,4 +1380,10 @@ std::string PartitionAllocSupport::ExtractDanglingPtrSignatureForTests(
 }
 #endif
 
+void CheckHeapIntegrity(const void* ptr) {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  partition_alloc::PartitionRoot::CheckMetadataIntegrity(ptr);
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
+
 }  // namespace base::allocator
