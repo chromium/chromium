@@ -116,9 +116,18 @@ int Screen::width() const {
 }
 
 unsigned Screen::colorDepth() const {
-  if (!DomWindow())
-    return 0;
-  return base::saturated_cast<unsigned>(GetScreenInfo().depth);
+  // "If the user agent does not know the color depth or does not want to
+  // return it for privacy considerations, it should return 24."
+  //
+  // https://drafts.csswg.org/cssom-view/#dom-screen-colordepth
+  unsigned unknown_color_depth = 24u;
+
+  if (!DomWindow() || ShouldReduceScreenSize()) {
+    return unknown_color_depth;
+  }
+  return GetScreenInfo().depth == 0
+             ? unknown_color_depth
+             : base::saturated_cast<unsigned>(GetScreenInfo().depth);
 }
 
 unsigned Screen::pixelDepth() const {

@@ -38,6 +38,9 @@ test(t => {
   //
   // TODO: There doesn't seem to be any way to pretend that `isExtended` should
   // be true, which makes it hard to test in its unreduced state.
+  //
+  // TODO: There doesn't seem to be any way to pretend that the color depth is
+  // anything other than the default value.
 }, "Verify default behavior.");
 
 test(t => {
@@ -55,6 +58,9 @@ test(t => {
   assert_equals(popup.screenTop, 0, "screenY");
 
   assert_false(popup.screen.isExtended, "isExtended");
+
+  assert_equals(popup.screen.colorDepth, 24, "Color Depth");
+  assert_equals(popup.screen.pixelDepth, 24, "Pixel Depth");
 
   // Media Queries
   //
