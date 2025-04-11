@@ -43,6 +43,7 @@
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/cells/table_view_account_item.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_settings_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin_presenter.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
@@ -1994,16 +1995,21 @@ struct EnhancedSafeBrowsingActivePromoData
   }
   self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
+  ChangeProfileContinuationProvider provider =
+      base::BindRepeating(&CreateChangeProfileSettingsContinuation);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AuthenticationOperation::kSheetSigninAndHistorySync
-               identity:nil
-            accessPoint:signin_metrics::AccessPoint::kSettings
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:^(SigninCoordinatorResult result,
-                          id<SystemIdentity> completionIdentity) {
-               [weakSelf didFinishSignin];
-             }];
+                      initWithOperation:AuthenticationOperation::
+                                            kSheetSigninAndHistorySync
+                               identity:nil
+                            accessPoint:signin_metrics::AccessPoint::kSettings
+                            promoAction:signin_metrics::PromoAction::
+                                            PROMO_ACTION_NO_SIGNIN_PROMO
+                             completion:^(
+                                 SigninCoordinatorResult result,
+                                 id<SystemIdentity> completionIdentity) {
+                               [weakSelf didFinishSignin];
+                             }
+      changeProfileContinuationProvider:provider];
   [self.applicationHandler showSignin:command baseViewController:self];
 }
 
