@@ -697,7 +697,13 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest,
   EXPECT_EQ(expected_tabs, app_browser->tab_strip_model()->count());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, CommandLineTab) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CommandLineTab DISABLED_CommandLineTab
+#else
+#define MAYBE_CommandLineTab CommandLineTab
+#endif
+// TODO(crbug.com/409956115): Reenable the test when failure is fixed.
+IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, MAYBE_CommandLineTab) {
   base::HistogramTester tester;
   ASSERT_TRUE(embedded_test_server()->Start());
 
