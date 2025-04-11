@@ -71,6 +71,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsModuleMediator.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsPreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPasswordsFetchService.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPasswordsModuleMediator.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsPreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsRevocationModuleMediator.java",

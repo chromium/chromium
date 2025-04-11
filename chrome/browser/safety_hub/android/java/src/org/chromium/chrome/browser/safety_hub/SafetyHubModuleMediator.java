@@ -46,6 +46,7 @@ interface SafetyHubModuleMediator {
         ModuleOption.UPDATE_CHECK,
         ModuleOption.ACCOUNT_PASSWORDS,
         ModuleOption.LOCAL_PASSWORDS,
+        ModuleOption.UNIFIED_PASSWORDS,
         ModuleOption.SAFE_BROWSING,
         ModuleOption.UNUSED_PERMISSIONS,
         ModuleOption.NOTIFICATION_REVIEW,
@@ -55,10 +56,11 @@ interface SafetyHubModuleMediator {
         int UPDATE_CHECK = 0;
         int ACCOUNT_PASSWORDS = 1;
         int LOCAL_PASSWORDS = 2;
-        int SAFE_BROWSING = 3;
-        int UNUSED_PERMISSIONS = 4;
-        int NOTIFICATION_REVIEW = 5;
-        int NUM_ENTRIES = 6;
+        int UNIFIED_PASSWORDS = 3;
+        int SAFE_BROWSING = 4;
+        int UNUSED_PERMISSIONS = 5;
+        int NOTIFICATION_REVIEW = 6;
+        int NUM_ENTRIES = 7;
     }
 
     public void setUpModule();
