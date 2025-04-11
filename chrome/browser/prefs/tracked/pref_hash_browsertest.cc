@@ -527,8 +527,8 @@ class PrefHashBrowserTestUnchangedCustom
   void SetupPreferences() override {
     profile()->GetPrefs()->SetString(prefs::kHomePage, "http://example.com");
 
-    InstallExtensionWithUIAutoConfirm(
-        test_data_dir_.AppendASCII("good.crx"), 1, browser());
+    InstallExtensionWithUIAutoConfirm(test_data_dir_.AppendASCII("good.crx"),
+                                      1);
   }
 
   void VerifyReactionToPrefAttack() override {
@@ -860,8 +860,8 @@ PREF_HASH_BROWSER_TEST(PrefHashBrowserTestChangedAtomic, ChangedAtomic);
 class PrefHashBrowserTestChangedSplitPref : public PrefHashBrowserTestBase {
  public:
   void SetupPreferences() override {
-    InstallExtensionWithUIAutoConfirm(
-        test_data_dir_.AppendASCII("good.crx"), 1, browser());
+    InstallExtensionWithUIAutoConfirm(test_data_dir_.AppendASCII("good.crx"),
+                                      1);
   }
 
   void AttackPreferencesOnDisk(
@@ -1301,8 +1301,8 @@ class PrefHashBrowserTestExtensionDictTypeChanged
     : public PrefHashBrowserTestBase {
  public:
   void SetupPreferences() override {
-    InstallExtensionWithUIAutoConfirm(test_data_dir_.AppendASCII("good.crx"), 1,
-                                      browser());
+    InstallExtensionWithUIAutoConfirm(test_data_dir_.AppendASCII("good.crx"),
+                                      1);
   }
 
   void AttackPreferencesOnDisk(

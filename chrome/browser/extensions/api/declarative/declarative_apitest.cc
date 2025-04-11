@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, ExtensionLifetimeRulesHandling) {
                                        kRedirectToDataInstallRules));
   ExtensionTestMessageListener ready("ready");
   const Extension* extension = InstallExtensionWithUIAutoConfirm(
-      ext_dir.Pack(), 1 /*+1 installed extension*/, browser());
+      ext_dir.Pack(), 1 /*+1 installed extension*/);
   ASSERT_TRUE(extension);
   // Wait for declarative rules to be set up.
   profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(DeclarativeApiTest, NoTracesAfterUninstalling) {
                                        kRedirectToDataInstallRules));
   ExtensionTestMessageListener ready("ready");
   const Extension* extension = InstallExtensionWithUIAutoConfirm(
-      ext_dir.Pack(), 1 /*+1 installed extension*/, browser());
+      ext_dir.Pack(), 1 /*+1 installed extension*/);
   ASSERT_TRUE(extension);
   // Wait for declarative rules to be set up.
   profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();

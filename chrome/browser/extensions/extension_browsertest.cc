@@ -214,11 +214,10 @@ const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
 
 const Extension* ExtensionBrowserTest::InstallExtensionWithUIAutoConfirm(
     const base::FilePath& path,
-    std::optional<int> expected_change,
-    Browser* browser) {
+    std::optional<int> expected_change) {
   return InstallOrUpdateExtension(
       std::string(), path, InstallUIType::kAutoConfirm,
-      std::move(expected_change), browser->extension_window_controller(),
+      std::move(expected_change), browser()->extension_window_controller(),
       Extension::NO_FLAGS);
 }
 

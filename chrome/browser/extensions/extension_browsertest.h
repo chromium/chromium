@@ -140,8 +140,7 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
 
   const Extension* InstallExtensionWithUIAutoConfirm(
       const base::FilePath& path,
-      std::optional<int> expected_change,
-      Browser* browser);
+      std::optional<int> expected_change);
 
   const Extension* InstallExtensionWithSourceAndFlags(
       const base::FilePath& path,
