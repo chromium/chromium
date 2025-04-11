@@ -229,6 +229,10 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // current site's fps  and records the event.
   void OpenAllSitesViewFilteredToRws();
 
+  // Handles opening the link to show Chrome Sync settings and records the
+  // event.
+  void OpenSyncSettingsView();
+
   // Handles opening the cookies dialog and records the event.
   void OpenCookiesDialog();
 
@@ -276,6 +280,8 @@ class PageInfo : private content_settings::CookieControlsObserver,
   const SafeBrowsingStatus& safe_browsing_status() const {
     return safe_browsing_status_;
   }
+
+  content::WebContents* web_contents() const { return web_contents_.get(); }
 
   // For most sites, this returns a human-friendly string based on site origin,
   // without scheme, the username and password, the path or trivial subdomains.

@@ -595,6 +595,10 @@ void PageInfo::RecordPageInfoAction(page_info::PageInfoAction action) {
       base::RecordAction(
           base::UserMetricsAction("PageInfo.SafeBrowsing.HelpOpened"));
       break;
+    case page_info::PAGE_INFO_SYNC_SETTINGS_OPENED:
+      base::RecordAction(base::UserMetricsAction(
+          "PageInfo.CookiesSubpage.SyncSettingsLinkClicked"));
+      break;
   }
 }
 
@@ -820,6 +824,15 @@ void PageInfo::OpenAllSitesViewFilteredToRws() {
     delegate_->ShowAllSitesSettingsFilteredByRwsOwner(std::u16string());
   }
 
+#endif
+}
+
+void PageInfo::OpenSyncSettingsView() {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED();
+#else
+  RecordPageInfoAction(page_info::PAGE_INFO_SYNC_SETTINGS_OPENED);
+  delegate_->ShowSyncSettings();
 #endif
 }
 

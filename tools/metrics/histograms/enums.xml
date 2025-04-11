@@ -26654,6 +26654,7 @@ This is true even if the type has been removed from the mojom file.
   <int value="35" label="'All sites' settings opened with a filter for FPS"/>
   <int value="36" label="Show full history clicked in Last Visited"/>
   <int value="37" label="Safe Browsing help opened"/>
+  <int value="38" label="Chrome Sync settings opened"/>
 </enum>
 
 <!--LINT.ThenChange(//components/page_info/core/page_info_action.h:PageInfoAction) -->

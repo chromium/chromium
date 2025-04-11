@@ -831,6 +831,12 @@
   <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_COOKIES_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info Tracking Protection subpage if the user is visiting a site on their third-party cookies allow list.">
     This means site features should work as expected, but you may have less browsing protection.
   </message>
+  <message name="IDS_PAGE_INFO_COOKIE_SYNC_DESCRIPTION" desc="The disclaimer about cookies for this site being synced across ChromeOS devices.">
+    Cookies for this site are synced across your ChromeOS devices. To manage what you sync, go to <ph name="SYNC_SETTINGS">$1<ex>Sync settings</ex></ph>.
+  </message>
+  <message name="IDS_PAGE_INFO_SYNC_SETTINGS_LINK" desc="The text of the link to Chrome Sync settings.">
+    Sync settings
+  </message>
 
   <!-- Merchant trust strings -->
   <message name="IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE" desc="The title of the merchant trust side panel.">

@@ -29,15 +29,11 @@ namespace ash::floating_sso {
 
 namespace {
 
-bool IsGoogleCookie(const net::CanonicalCookie& cookie) {
-  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
-      cookie.Domain(), cookie.SecureAttribute());
-
+bool IsGoogleUrl(const GURL& url) {
   return google_util::IsGoogleDomainUrl(
-             cookie_domain_url, google_util::ALLOW_SUBDOMAIN,
+             url, google_util::ALLOW_SUBDOMAIN,
              google_util::ALLOW_NON_STANDARD_PORTS) ||
-         google_util::IsYoutubeDomainUrl(cookie_domain_url,
-                                         google_util::ALLOW_SUBDOMAIN,
+         google_util::IsYoutubeDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
                                          google_util::ALLOW_NON_STANDARD_PORTS);
 }
 
@@ -333,24 +329,25 @@ bool FloatingSsoService::ShouldSyncCookie(
     return false;
   }
 
+  const GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
+      cookie.Domain(), cookie.SecureAttribute());
+  return ShouldSyncCookiesForUrl(cookie_domain_url);
+}
+
+bool FloatingSsoService::ShouldSyncCookiesForUrl(const GURL& url) const {
   // Filter out Google cookies.
-  if (IsGoogleCookie(cookie)) {
+  if (IsGoogleUrl(url)) {
     return false;
   }
-
   // Filter out policy-blocked URLs.
-  if (!IsDomainAllowed(cookie)) {
+  if (!IsDomainAllowed(url)) {
     return false;
   }
-
   return true;
 }
 
-bool FloatingSsoService::IsDomainAllowed(
-    const net::CanonicalCookie& cookie) const {
-  GURL cookie_domain_url = net::cookie_util::CookieOriginToURL(
-      cookie.Domain(), cookie.SecureAttribute());
-  bool is_excepted = !except_url_matcher_->MatchURL(cookie_domain_url).empty();
+bool FloatingSsoService::IsDomainAllowed(const GURL& url) const {
+  bool is_excepted = !except_url_matcher_->MatchURL(url).empty();
 
   // Exception list takes precedence.
   if (is_excepted) {
@@ -358,7 +355,7 @@ bool FloatingSsoService::IsDomainAllowed(
   }
 
   // The domain is not blocked if it doesn't have matches in the blocklist.
-  return block_url_matcher_->MatchURL(cookie_domain_url).empty();
+  return block_url_matcher_->MatchURL(url).empty();
 }
 
 void FloatingSsoService::OnCookieSet(net::CookieAccessResult result) {

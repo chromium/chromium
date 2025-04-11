@@ -274,6 +274,11 @@ void ChromePageInfoDelegate::ShowAllSitesSettingsFilteredByRwsOwner(
                                                  base::UTF16ToUTF8(rws_owner));
 }
 
+void ChromePageInfoDelegate::ShowSyncSettings() {
+  Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+  chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
+}
+
 void ChromePageInfoDelegate::OpenCookiesDialog() {
   FocusWebContents();
   TabDialogs::FromWebContents(web_contents_)->ShowCollectedCookies();

@@ -31855,6 +31855,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="PageInfo.CookiesSubpage.SyncSettingsLinkClicked">
+  <owner>andreydav@google.com</owner>
+  <description>
+    Chrome Sync settings link clicked in Cookies subpage from PageInfo.
+  </description>
+</action>
+
 <action name="PageInfo.ForgetSite.Cleared">
   <owner>olesiamarukhno@google.com</owner>
   <owner>dullweber@chromium.org</owner>

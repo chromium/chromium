@@ -20,6 +20,10 @@ class BoxLayoutView;
 class Label;
 }  // namespace views
 
+#if BUILDFLAG(IS_CHROMEOS)
+class NonAccessibleImageView;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 // The view that is used as a content view of the Cookies subpage in page info.
 // It contains information about cookies (short description, how many sites
 // are allowed).
@@ -36,6 +40,8 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   void SetCookieInfo(const CookiesNewInfo& cookie_info) override;
 
   void CookiesSettingsLinkClicked(const ui::Event& event);
+
+  void SyncSettingsLinkClicked(const ui::Event& event);
 
   void RwsSettingsButtonClicked(const ui::Event& event);
 
@@ -116,6 +122,13 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // an active exception.
   void AddThirdPartyCookiesContainer();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // There is a ChromeOS enterprise policy which allows moving user's cookies
+  // across devices. In that case, we add a section which mentions it in Cookies
+  // subpage in page info.
+  void MaybeAddSyncDisclaimer();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   std::u16string GetStatusLabel(
       content_settings::TrackingProtectionBlockingStatus blocking_status);
 
@@ -131,6 +144,15 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
 
   // The StyledLabel that appears above |third_party_cookies_container|.
   raw_ptr<views::StyledLabel> cookies_description_label_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Cookie sync disclaimer which consists of an enterprise icon and a
+  // description. It should be displayed for ChromeOS enterprise users when
+  // their admin has configured cookie sync.
+  raw_ptr<views::BoxLayoutView> cookies_sync_container_ = nullptr;
+  raw_ptr<NonAccessibleImageView> cookies_sync_icon_ = nullptr;
+  raw_ptr<views::StyledLabel> cookies_sync_description_ = nullptr;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // The toggle on |blocking_third_party_cookies_row| when state is managed by
   // the user.

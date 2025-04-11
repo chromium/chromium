@@ -73,6 +73,8 @@ class FloatingSsoService : public KeyedService,
   // entities on initial Sync cycle.
   void MarkToNotOverride(const net::CanonicalCookie& cookie);
 
+  bool ShouldSyncCookiesForUrl(const GURL& url) const;
+
   FloatingSsoSyncBridge* GetBridgeForTesting() { return bridge_.get(); }
   bool IsBoundToCookieManagerForTesting() { return receiver_.is_bound(); }
 
@@ -94,7 +96,7 @@ class FloatingSsoService : public KeyedService,
   void OnCookiesLoaded(const net::CookieList& cookies);
   bool ShouldSyncCookie(const net::CanonicalCookie& cookie) const;
   void OnConnectionError();
-  bool IsDomainAllowed(const net::CanonicalCookie& cookie) const;
+  bool IsDomainAllowed(const GURL& url) const;
   void OnCookieSet(net::CookieAccessResult result);
   void OnCookieDeleted(bool success);
   void DecrementChangesCountAndMaybeNotify();
