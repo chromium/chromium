@@ -204,7 +204,7 @@ const CGFloat kGradientOverlayBottomAlpha = 0.14;
       initWithArrangedSubviews:@[ _productAndFaviconContainer, _textStack ]];
   _contentStack.translatesAutoresizingMaskIntoConstraints = NO;
   _contentStack.spacing = kHorizontalStackSpacing;
-  _contentStack.alignment = UIStackViewAlignmentTop;
+  _contentStack.alignment = UIStackViewAlignmentCenter;
   [self addSubview:_contentStack];
   AddSameConstraints(_contentStack, self);
 
