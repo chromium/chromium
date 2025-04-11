@@ -406,7 +406,8 @@ void CanvasHibernationHandler::Hibernate() {
 
   hibernation_scheduled_ = false;
 
-  if (!resource_host_->ResourceProvider()) {
+  CanvasResourceProvider* provider = resource_host_->ResourceProvider();
+  if (!provider) {
     ReportHibernationEvent(
         HibernationEvent::kHibernationAbortedBecauseNoSurface);
     return;
@@ -424,7 +425,7 @@ void CanvasHibernationHandler::Hibernate() {
     return;
   }
 
-  if (resource_host_->GetRasterMode() == RasterMode::kCPU) {
+  if (!provider->IsAccelerated()) {
     ReportHibernationEvent(
         HibernationEvent::
             kHibernationAbortedDueToSwitchToUnacceleratedRendering);
@@ -437,7 +438,7 @@ void CanvasHibernationHandler::Hibernate() {
   // exactly one failure or exit event.
   resource_host_->FlushRecording(FlushReason::kHibernating);
   scoped_refptr<StaticBitmapImage> snapshot =
-      resource_host_->ResourceProvider()->Snapshot(FlushReason::kHibernating);
+      provider->Snapshot(FlushReason::kHibernating);
   if (!snapshot) {
     ReportHibernationEvent(
         HibernationEvent::kHibernationAbortedDueSnapshotFailure);
@@ -450,8 +451,7 @@ void CanvasHibernationHandler::Hibernate() {
         HibernationEvent::kHibernationAbortedDueSnapshotFailure);
     return;
   }
-  SaveForHibernation(std::move(sw_image),
-                     resource_host_->ResourceProvider()->ReleaseRecorder());
+  SaveForHibernation(std::move(sw_image), provider->ReleaseRecorder());
 
   resource_host_->ReplaceResourceProvider(nullptr);
   resource_host_->ClearLayerTexture();
