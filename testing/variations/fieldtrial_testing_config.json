@@ -22769,45 +22769,6 @@
             ]
         }
     ],
-    "ServiceWorkerAvoidMainThreadForInitializationForDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ServiceWorkerAvoidMainThreadForInitialization"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ServiceWorkerDebugCorsExemptHeaderList": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ServiceWorkerDebugCorsExemptHeaderList"
-                    ]
-                }
-            ]
-        }
-    ],
     "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement": [
         {
             "platforms": [
