@@ -202,6 +202,10 @@ declare namespace chrome {
     // via the webui language menu.
     function onLanguagePrefChange(lang: string, enabled: boolean): void;
 
+    // Called when there is no text content after building the tree but we're
+    // not showing the empty page either.
+    function onNoTextContent(): void;
+
     // Returns the actual spacing value to use based on the given lineSpacing
     // category.
     function getLineSpacingValue(lineSpacing: number): number;

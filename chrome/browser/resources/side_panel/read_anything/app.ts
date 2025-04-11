@@ -768,9 +768,17 @@ export class AppElement extends AppElementBase {
 
     this.willDrawAgainSoon_ = chrome.readingMode.requiresDistillation;
     const node = this.buildSubtree_(rootId);
-    // If there is not text or images in the node, do not prodeed. The empty
+    // If there is no text or images in the tree, do not proceed. The empty
     // state container will show instead.
     if (!node.textContent && this.imageNodeIdsToFetch_.size === 0) {
+      // Sometimes the controller thinks there will be content and redraws
+      // without showing the empty page, but we end up not actually having any
+      // content and also not showing the empty page sometimes. In this case,
+      // send that info back to the controller.
+      if (this.hasContent_) {
+        this.hasContent_ = false;
+        chrome.readingMode.onNoTextContent();
+      }
       return;
     }
 
