@@ -67,26 +67,12 @@ ZeroStateSuggestionsPageData::~ZeroStateSuggestionsPageData() = default;
 void ZeroStateSuggestionsPageData::FetchSuggestions(
     bool is_fre,
     GlicSuggestionsCallback callback) {
-  if (is_fre && cached_fre_suggestions_) {
-    std::move(callback).Run(*cached_fre_suggestions_);
-    return;
-  } else if (!is_fre && cached_non_fre_suggestions_) {
-    std::move(callback).Run(*cached_non_fre_suggestions_);
-    return;
-  }
-
-  // Request for page already in flight - just notify when it comes back.
-  if (suggestions_request_) {
-    suggestions_callbacks_.AddUnsafe(std::move(callback));
-    return;
-  }
-
   begin_time_ = base::TimeTicks::Now();
 
   suggestions_request_ = optimization_guide::proto::
       ZeroStateSuggestionsRequest::default_instance();
   suggestions_request_->set_is_fre(is_fre);
-  suggestions_callbacks_.AddUnsafe(std::move(callback));
+  suggestions_callback_ = std::move(callback);
   RequestSuggestionsIfComplete();
 }
 
@@ -119,7 +105,7 @@ void ZeroStateSuggestionsPageData::RequestSuggestionsIfComplete() {
   }
 
   if (!has_page_context) {
-    suggestions_callbacks_.Notify(std::nullopt);
+    std::move(suggestions_callback_).Run(std::nullopt);
     return;
   }
 
@@ -167,7 +153,7 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
                            "suggestions after %ld ms. Error: %d",
                            suggestions_duration.InMilliseconds(),
                            static_cast<int>(result.response.error().error())));
-    suggestions_callbacks_.Notify(std::nullopt);
+    std::move(suggestions_callback_).Run(std::nullopt);
     return;
   }
 
@@ -183,7 +169,7 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
           optimization_guide::proto::ZeroStateSuggestionsResponse>(
           result.response.value());
   if (!response) {
-    suggestions_callbacks_.Notify(std::nullopt);
+    std::move(suggestions_callback_).Run(std::nullopt);
     return;
   }
 
@@ -196,12 +182,7 @@ void ZeroStateSuggestionsPageData::OnModelExecutionResponse(
         base::StringPrintf("ZeroStateSuggestionsPageData: Suggestion %d: %s",
                            i + 1, response->suggestions(i).label()));
   }
-  if (is_fre) {
-    cached_fre_suggestions_ = suggestions;
-  } else {
-    cached_non_fre_suggestions_ = suggestions;
-  }
-  suggestions_callbacks_.Notify(suggestions);
+  std::move(suggestions_callback_).Run(suggestions);
 }
 
 PAGE_USER_DATA_KEY_IMPL(ZeroStateSuggestionsPageData);

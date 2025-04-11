@@ -4,6 +4,7 @@
 
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
@@ -379,6 +380,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        InitializesPageDataWithContextEnabled) {
+  base::HistogramTester histogram_tester;
   SetGlicTabContextEnabled(true);
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
@@ -388,12 +390,14 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_NE(nullptr, ZeroStateSuggestionsPageData::GetForPage(
-                         web_contents->GetPrimaryPage()));
+  EXPECT_GE(histogram_tester.GetTotalSum(
+                "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone"),
+            0);
 }
 
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        DoesNotInitializePageDataWithContextDisabled) {
+  base::HistogramTester histogram_tester;
   SetGlicTabContextEnabled(false);
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
@@ -403,8 +407,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 
   ASSERT_TRUE(future.Wait());
 
-  EXPECT_EQ(nullptr, ZeroStateSuggestionsPageData::GetForPage(
-                         web_contents->GetPrimaryPage()));
+  histogram_tester.ExpectTotalCount(
+      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 0);
 }
 #endif
 

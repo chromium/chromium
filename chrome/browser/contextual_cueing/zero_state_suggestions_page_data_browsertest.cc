@@ -209,121 +209,6 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, BasicFlow) {
 }
 
 IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
-                       HoldsOntoSuccessiveRequests) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
-      .WillOnce(Invoke(&mock_optimization_guide_keyed_service(),
-                       &MockOGKS::CaptureExecutionCallback));
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
-
-  auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-      web_contents->GetPrimaryPage());
-
-  // Set up two concurrent calls (simulates mouse down and then on load).
-  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
-  base::test::TestFuture<std::optional<std::vector<std::string>>> future2;
-  page_data->FetchSuggestions(/*is_fre=*/false, future2.GetCallback());
-
-  // Wait until page is extracted.
-  optimization_guide::RetryForHistogramUntilCountReached(
-      &histogram_tester,
-      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 1);
-
-  histogram_tester.ExpectUniqueSample(
-      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
-
-  // Fire capture execution callback.
-  optimization_guide::proto::ZeroStateSuggestionsResponse response;
-  response.add_suggestions()->set_label("suggestion 1");
-  response.add_suggestions()->set_label("suggestion 2");
-  response.add_suggestions()->set_label("suggestion 3");
-  mock_optimization_guide_keyed_service().RunExecuteCallbackWithResponse(
-      response);
-
-  // Both calls should be fulfilled using the same response.
-  ASSERT_TRUE(future.Wait());
-  ASSERT_TRUE(future2.Wait());
-
-  EXPECT_EQ(3u, future.Get().value().size());
-  EXPECT_EQ("suggestion 1", future.Get().value()[0]);
-  EXPECT_EQ("suggestion 2", future.Get().value()[1]);
-  EXPECT_EQ("suggestion 3", future.Get().value()[2]);
-
-  EXPECT_EQ(3u, future2.Get().value().size());
-  EXPECT_EQ("suggestion 1", future2.Get().value()[0]);
-  EXPECT_EQ("suggestion 2", future2.Get().value()[1]);
-  EXPECT_EQ("suggestion 3", future2.Get().value()[2]);
-}
-
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest, CacheBehavior) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/optimization_guide/zss_page.html")));
-
-  // Set up initial non-FRE flow.
-  {
-    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-    SetUpSuccessfulModelExecution();
-
-    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-        web_contents->GetPrimaryPage());
-    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_EQ(3u, future.Get().value().size());
-    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
-    EXPECT_EQ("suggestion 2", future.Get().value()[1]);
-    EXPECT_EQ("suggestion 3", future.Get().value()[2]);
-  }
-
-  testing::Mock::VerifyAndClearExpectations(
-      &mock_optimization_guide_keyed_service());
-
-  // Make sure model execution not called.
-  {
-    EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel).Times(0);
-
-    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-        web_contents->GetPrimaryPage());
-    page_data->FetchSuggestions(/*is_fre=*/false, future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_EQ(3u, future.Get().value().size());
-    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
-    EXPECT_EQ("suggestion 2", future.Get().value()[1]);
-    EXPECT_EQ("suggestion 3", future.Get().value()[2]);
-  }
-
-  testing::Mock::VerifyAndClearExpectations(
-      &mock_optimization_guide_keyed_service());
-
-  // Make sure model execution should be called again when `is_fre` is true.
-  {
-    SetUpSuccessfulModelExecution();
-
-    base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-
-    auto* page_data = ZeroStateSuggestionsPageData::GetOrCreateForPage(
-        web_contents->GetPrimaryPage());
-    page_data->FetchSuggestions(/*is_fre=*/true, future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-    EXPECT_EQ(1u, future.Get().value().size());
-    EXPECT_EQ("suggestion 1", future.Get().value()[0]);
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
                        CreateDataDoesNotFetchWithoutExplicitCall) {
   base::HistogramTester histogram_tester;
 
@@ -344,5 +229,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsPageDataBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", true, 1);
 }
+
+// TODO(409551389): redo caching tests once caching is fixed.
 
 }  // namespace contextual_cueing

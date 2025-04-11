@@ -31,9 +31,8 @@ class ZeroStateSuggestionsRequest;
 
 namespace contextual_cueing {
 
-using GlicSuggestionsCallbackList =
-    base::OnceCallbackList<void(std::optional<std::vector<std::string>>)>;
-using GlicSuggestionsCallback = GlicSuggestionsCallbackList::CallbackType;
+using GlicSuggestionsCallback =
+    base::OnceCallback<void(std::optional<std::vector<std::string>>)>;
 
 // Processes zero state suggestions for GLIC, scoped to the given page.
 class ZeroStateSuggestionsPageData
@@ -82,12 +81,9 @@ class ZeroStateSuggestionsPageData
   base::TimeTicks begin_time_;
   std::optional<optimization_guide::proto::ZeroStateSuggestionsRequest>
       suggestions_request_;
-  base::OnceCallbackList<void(std::optional<std::vector<std::string>>)>
-      suggestions_callbacks_;
+  GlicSuggestionsCallback suggestions_callback_;
 
-  // Cached suggestions by FRE state.
-  std::optional<std::vector<std::string>> cached_fre_suggestions_;
-  std::optional<std::vector<std::string>> cached_non_fre_suggestions_;
+  // TODO(409551389): rework caching logic; caching currently not working
 
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =
