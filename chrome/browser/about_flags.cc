@@ -11994,6 +11994,15 @@ const FeatureEntry kFeatureEntries[] = {
          kAutofillVcnEnrollStrikeExpiryTimeOptions,
          "AutofillVcnEnrollStrikeExpiryTime")},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"autofill-enable-show-save-card-securely-message",
+     flag_descriptions::kAutofillEnableShowSaveCardSecurelyMessageName,
+     flag_descriptions::kAutofillEnableShowSaveCardSecurelyMessageDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableShowSaveCardSecurelyMessage)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

@@ -452,6 +452,9 @@ extern const char kAutofillEnableSaveAndFillName[];
 extern const char kAutofillEnableSaveAndFillDescription[];
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kAutofillEnableShowSaveCardSecurelyMessageName[];
+extern const char kAutofillEnableShowSaveCardSecurelyMessageDescription[];
+
 extern const char kAutofillEnableSyncingOfPixBankAccountsName[];
 extern const char kAutofillEnableSyncingOfPixBankAccountsDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)

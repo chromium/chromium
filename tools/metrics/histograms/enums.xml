@@ -12726,6 +12726,8 @@ from previous Chrome versions.
   <int value="-601384286" label="disable-contextual-search"/>
   <int value="-600792432" label="WebVrAutopresentFromIntent:disabled"/>
   <int value="-600726805" label="DeprecateMenagerieAPI:disabled"/>
+  <int value="-600000411"
+      label="AutofillEnableShowSaveCardSecurelyMessage:enabled"/>
   <int value="-599932554" label="DoodlesOnLocalNtp:disabled"/>
   <int value="-599878733" label="ContextualTriggersSelectionHandles:disabled"/>
   <int value="-599005750" label="ScanningUI:disabled"/>
@@ -15463,6 +15465,8 @@ from previous Chrome versions.
   <int value="453427119" label="EcheSWADisableStunServer:enabled"/>
   <int value="453601558" label="SupportToolScreenshot:enabled"/>
   <int value="454106312" label="UsernameFirstFlowFilling:enabled"/>
+  <int value="454282924"
+      label="AutofillEnableShowSaveCardSecurelyMessage:disabled"/>
   <int value="454778715"
       label="ForceSafeSearchForUnauthenticatedSupervisedUsers:disabled"/>
   <int value="455140116" label="CCTIncognitoAvailableToThirdParty:disabled"/>

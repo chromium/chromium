@@ -756,6 +756,12 @@ const char kAutofillEnableSaveAndFillDescription[] =
     "with a single click when users don't have any cards saved in Autofill.";
 
 #if BUILDFLAG(IS_ANDROID)
+const char kAutofillEnableShowSaveCardSecurelyMessageName[] =
+    "Enable updated credit card upload UI messaging";
+const char kAutofillEnableShowSaveCardSecurelyMessageDescription[] =
+    "When enabled, credit card upload messaging will match what is "
+    "shown on Desktop.";
+
 const char kAutofillEnableSyncingOfPixBankAccountsName[] =
     "Sync Pix bank accounts from Google Payments";
 const char kAutofillEnableSyncingOfPixBankAccountsDescription[] =
