@@ -227,12 +227,8 @@ export class BookmarksCommandManagerElement extends
       case Command.DESELECT_ALL:
         return true;
       case Command.COPY:
-        return itemIds.size > 0;
       case Command.CUT:
-        return itemIds.size > 0 &&
-            !this.containsMatchingNode_(itemIds, function(node) {
-              return !canEditNode(state, node.id);
-            });
+        return itemIds.size > 0 && this.isCommandEnabled_(command, itemIds);
       case Command.PASTE:
         return state.search.term === '' &&
             canReorderChildren(state, state.selectedFolder);
@@ -277,6 +273,7 @@ export class BookmarksCommandManagerElement extends
     switch (command) {
       case Command.EDIT:
       case Command.DELETE:
+      case Command.CUT:
         return !this.containsMatchingNode_(itemIds, function(node) {
           return !canEditNode(state, node.id);
         });
@@ -295,6 +292,10 @@ export class BookmarksCommandManagerElement extends
         return this.canChangeList_();
       case Command.IMPORT:
         return this.globalCanEdit_;
+      case Command.COPY:
+        return !this.containsMatchingNode_(itemIds, function(node) {
+          return isRootNode(node.id);
+        });
       case Command.PASTE:
         return this.canPaste_;
       default:

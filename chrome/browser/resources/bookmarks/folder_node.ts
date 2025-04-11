@@ -19,7 +19,7 @@ import {getCss} from './folder_node.css.js';
 import {getHtml} from './folder_node.html.js';
 import {StoreClientMixinLit} from './store_client_mixin_lit.js';
 import type {BookmarkNode, BookmarksPageState} from './types.js';
-import {hasChildFolders, isShowingSearch} from './util.js';
+import {hasChildFolders, isRootNode, isShowingSearch} from './util.js';
 
 const BookmarksFolderNodeElementBase = StoreClientMixinLit(CrLitElement);
 
@@ -322,6 +322,10 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   protected onContextMenu_(e: MouseEvent) {
     e.preventDefault();
     this.selectFolder_();
+    // Disable the context menu for root nodes.
+    if (isRootNode(this.itemId)) {
+      return;
+    }
     BookmarksCommandManagerElement.getInstance().openCommandMenuAtPosition(
         e.clientX, e.clientY, MenuSource.TREE, new Set([this.itemId]));
   }
@@ -348,10 +352,14 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   }
 
   protected getFolderChildren_(): string[] {
-    return !this.item_?.children ?
-        [] :
-        this.item_.children.filter(
-            itemId => !this.getState().nodes[itemId]!.url);
+    const children = this.item_?.children;
+    const nodes = this.getState()?.nodes;
+    if (!Array.isArray(children) || !nodes) {
+      return [];
+    }
+    return children.filter(itemId => {
+      return !nodes[itemId]?.url;  // safely access .url only if node exists
+    });
   }
 
   protected isRootFolder_(): boolean {
