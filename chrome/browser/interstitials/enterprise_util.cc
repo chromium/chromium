@@ -12,6 +12,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
@@ -77,12 +78,29 @@ void MaybeTriggerSecurityInterstitialShownEvent(
     const std::string& reason,
     int net_error_code) {
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  extensions::SafeBrowsingPrivateEventRouter* event_router =
+  extensions::SafeBrowsingPrivateEventRouter* safe_browsing_event_router =
       GetSafeBrowsingEventRouter(web_contents);
-  if (!event_router)
+  if (!safe_browsing_event_router) {
     return;
-  event_router->OnSecurityInterstitialShown(page_url, reason, net_error_code);
-#endif
+  }
+
+  safe_browsing_event_router->OnSecurityInterstitialShown(page_url, reason,
+                                                          net_error_code);
+
+  content::BrowserContext* browser_context = web_contents->GetBrowserContext();
+  PrefService* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
+  enterprise_connectors::ReportingEventRouter* reporting_event_router =
+      GetReportingEventRouter(web_contents);
+
+  if (!reporting_event_router) {
+    return;
+  }
+
+  reporting_event_router->OnSecurityInterstitialShown(
+      page_url, reason, net_error_code,
+      prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled));
+
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 }
 
 void MaybeTriggerSecurityInterstitialProceededEvent(

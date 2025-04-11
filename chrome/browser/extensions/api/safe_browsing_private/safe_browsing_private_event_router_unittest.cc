@@ -168,6 +168,12 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnSecurityInterstitialShown(GURL("https://phishing.com/"), "PHISHING",
                                       0);
+    // TODO(mxlg): Move the tests related to the ReportingEventRouter to its own
+    // unit tests file.
+    enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+        profile_)
+        ->OnSecurityInterstitialShown(GURL("https://phishing.com/"), "PHISHING",
+                                      0, false);
   }
 
   void TriggerOnSecurityInterstitialProceededEvent() {

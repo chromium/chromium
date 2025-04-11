@@ -48,6 +48,12 @@ class ReportingEventRouter : public KeyedService {
                                        const std::string& reason,
                                        int net_error_code);
 
+  // Notifies listeners that the user saw a security interstitial.
+  void OnSecurityInterstitialShown(const GURL& url,
+                                   const std::string& reason,
+                                   int net_error_code,
+                                   bool proceed_anyway_disabled);
+
  private:
   raw_ptr<RealtimeReportingClientBase> reporting_client_;
 };

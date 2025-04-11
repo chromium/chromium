@@ -383,33 +383,6 @@ void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialShown(
         std::move(event_value));
     event_router_->BroadcastEvent(std::move(extension_event));
   }
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  std::optional<enterprise_connectors::ReportingSettings> settings =
-      reporting_client_->GetReportingSettings();
-  if (!settings.has_value() ||
-      settings->enabled_event_names.count(
-          enterprise_connectors::kKeyInterstitialEvent) == 0) {
-    return;
-  }
-
-  PrefService* prefs = Profile::FromBrowserContext(context_)->GetPrefs();
-  enterprise_connectors::EventResult event_result =
-      prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled)
-          ? enterprise_connectors::EventResult::BLOCKED
-          : enterprise_connectors::EventResult::WARNED;
-  base::Value::Dict event;
-  event.Set(kKeyUrl, params.url);
-  event.Set(kKeyReason, params.reason);
-  event.Set(kKeyNetErrorCode, net_error_code);
-  event.Set(kKeyClickedThrough, false);
-  event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(event_result));
-
-  reporting_client_->ReportRealtimeEvent(
-      enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
-      std::move(event));
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void SafeBrowsingPrivateEventRouter::OnSecurityInterstitialProceeded(

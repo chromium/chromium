@@ -5,10 +5,12 @@
 #include "components/enterprise/connectors/core/reporting_event_router.h"
 
 #include "base/containers/contains.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/url_matcher/url_matcher.h"
 
 namespace enterprise_connectors {
@@ -146,7 +148,6 @@ void ReportingEventRouter::OnUrlFilteringInterstitial(
       std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
 }
 
-// Notifies listeners that the user clicked-through a security interstitial.
 void ReportingEventRouter::OnSecurityInterstitialProceeded(
     const GURL& url,
     const std::string& reason,
@@ -158,7 +159,6 @@ void ReportingEventRouter::OnSecurityInterstitialProceeded(
           enterprise_connectors::kKeyInterstitialEvent) == 0) {
     return;
   }
-
   base::Value::Dict event;
   event.Set(kKeyUrl, url.spec());
   event.Set(kKeyReason, reason);
@@ -166,6 +166,35 @@ void ReportingEventRouter::OnSecurityInterstitialProceeded(
   event.Set(kKeyClickedThrough, true);
   event.Set(kKeyEventResult, enterprise_connectors::EventResultToString(
                                  enterprise_connectors::EventResult::BYPASSED));
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
+      std::move(event), base::Time::Now(), /*include_profile_user_name=*/true);
+}
+
+void ReportingEventRouter::OnSecurityInterstitialShown(
+    const GURL& url,
+    const std::string& reason,
+    int net_error_code,
+    bool proceed_anyway_disabled) {
+  std::optional<enterprise_connectors::ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyInterstitialEvent) == 0) {
+    return;
+  }
+
+  enterprise_connectors::EventResult event_result =
+      proceed_anyway_disabled ? enterprise_connectors::EventResult::BLOCKED
+                              : enterprise_connectors::EventResult::WARNED;
+
+  base::Value::Dict event;
+  event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyReason, reason);
+  event.Set(kKeyNetErrorCode, net_error_code);
+  event.Set(kKeyClickedThrough, false);
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(event_result));
 
   reporting_client_->ReportEventWithTimestampDeprecated(
       enterprise_connectors::kKeyInterstitialEvent, std::move(settings.value()),
