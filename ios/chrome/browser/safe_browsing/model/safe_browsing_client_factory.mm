@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/feature_list.h"
 #import "base/no_destructor.h"
 #import "components/enterprise/connectors/core/common.h"
 #import "components/safe_browsing/core/browser/realtime/chrome_enterprise_url_lookup_service.h"
@@ -13,6 +14,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/prerender/model/prerender_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/chrome_enterprise_url_lookup_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/hash_realtime_service_factory.h"
@@ -23,23 +25,15 @@
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
 #import "ios/web/public/browser_state.h"
 
-// TODO(crbug.com/406988559): Enable Enterprise Url filtering once
-// ManagementService is available on iOS.
-// Kill switch for disabling Enterprise Url filtering. Disables Enterprise Url
-// filtering, ignoring the EnterpriseRealTimeUrlCheckMode policy.
-BASE_FEATURE(kEnterpriseRealtimeUrlFilteringKillSwitch,
-             "EnterpriseRealtimeUrlFilteringKillSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 using safe_browsing::ChromeEnterpriseRealTimeUrlLookupServiceFactory;
 
 // Whether Enterprise Url Filtering is enabled for `profile`.
 bool IsEnterpriseUrlFilteringEnabled(ProfileIOS* profile) {
-  // Check kill switch first.
+  // Check flag first.
   if (!base::FeatureList::IsEnabled(
-          kEnterpriseRealtimeUrlFilteringKillSwitch)) {
+          enterprise_connectors::kIOSEnterpriseRealtimeUrlFiltering)) {
     return false;
   }
 

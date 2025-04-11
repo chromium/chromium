@@ -13,6 +13,7 @@ source_set("connectors") {
   ]
 
   deps = [
+    ":features",
     "//base",
     "//components/enterprise",
     "//components/enterprise/connectors/core",
@@ -64,6 +65,15 @@ source_set("util") {
     "//ios/web/common:user_agent",
     "//ios/web/public",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

@@ -7,14 +7,11 @@
 
 #import <memory>
 
-#import "base/feature_list.h"
 #import "base/no_destructor.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class ProfileIOS;
 class SafeBrowsingClient;
-
-BASE_DECLARE_FEATURE(kEnterpriseRealtimeUrlFilteringKillSwitch);
 
 // Singleton that owns all SafeBrowsingClients and associates them with
 // a profile.
