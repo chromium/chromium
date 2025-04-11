@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/switches.h"
 #include "ui/views/test/widget_activation_waiter.h"
@@ -41,6 +42,43 @@ using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 static constexpr char kClickFn[] = "el => el.click()";
 
 static constexpr float kFloatComparisonTolerance = 0.001f;
+
+class WidgetShowStateObserver : public views::WidgetObserver {
+ public:
+  WidgetShowStateObserver(Browser* browser, bool should_be_minimized)
+      : browser_(browser), should_be_minimized_(should_be_minimized) {
+    widget_observation_.Observe(browser->TopContainer()->GetWidget());
+  }
+
+  void Wait() {
+    if (browser_->IsMinimized() != should_be_minimized_) {
+      run_loop_.Run();
+    }
+  }
+
+  void OnWidgetShowStateChanged(views::Widget* widget) override {
+    if (browser_->IsMinimized() == should_be_minimized_) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
+  raw_ptr<Browser> browser_;
+  bool should_be_minimized_ = false;
+  base::RunLoop run_loop_;
+};
+
+void WaitForUnminimize(Browser* browser) {
+  WidgetShowStateObserver observer(browser, /*should_be_minimized=*/false);
+  observer.Wait();
+}
+
+void WaitForMinimize(Browser* browser) {
+  WidgetShowStateObserver observer(browser, /*should_be_minimized=*/true);
+  observer.Wait();
+}
 
 // Note: make sure to install this on the border before the animation starts.
 class TesterImpl : public GlicBorderView::Tester {
@@ -932,6 +970,59 @@ IN_PROC_BROWSER_TEST_F(GlicBorderViewWithoutHardwareAccelerationUiTest,
   EXPECT_NEAR(border->opacity_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_NEAR(border->emphasis_for_testing(), 0.f, kFloatComparisonTolerance);
   EXPECT_FALSE(border->IsShowing());
+}
+
+// Regression test for crbug.com/409649143. Ensure we clear the "start ramp down
+// state" if StopShowing is called immediately after starting the ramp down.
+#if BUILDFLAG(IS_LINUX)
+class GlicBorderViewPixelOutputUiTest : public GlicBorderViewUiTest {
+ public:
+  GlicBorderViewPixelOutputUiTest() = default;
+  ~GlicBorderViewPixelOutputUiTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // On linux, we don't get widget show state notifications on minimize unless
+    // we have this switch set (the window doesn't show without it).
+    command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
+    GlicBorderViewUiTest::SetUpCommandLine(command_line);
+  }
+};
+IN_PROC_BROWSER_TEST_F(GlicBorderViewPixelOutputUiTest, MinimizeRestore) {
+#else
+IN_PROC_BROWSER_TEST_F(GlicBorderViewUiTest, MinimizeRestore) {
+#endif
+  WaitForUnminimize(browser());
+  auto* border = browser()->window()->AsBrowserView()->glic_border();
+  ASSERT_TRUE(border);
+  EXPECT_FALSE(border->GetVisible());
+
+  TesterImpl tester(border);
+  StartBorderAnimation();
+  tester.WaitForAnimationStart();
+  EXPECT_TRUE(border->IsShowing());
+  EXPECT_TRUE(border->GetVisible());
+
+  // Initializes some timestamps.
+  tester.AdvanceTimeAndTickAnimation(base::TimeDelta());
+
+  tester.AdvanceTimeAndTickAnimation(base::Seconds(1.0));
+
+  // We should be showing something on the screen at 0.3s.
+  EXPECT_GT(border->opacity_for_testing(), 0.f);
+
+  // Create a second tester to wait for the start of the next animation.
+  TesterImpl tester2(border);
+
+  browser()->window()->Minimize();
+  WaitForMinimize(browser());
+  browser()->window()->Restore();
+
+  // We should show again upon restore.
+  tester2.WaitForAnimationStart();
+
+  tester2.AdvanceTimeAndTickAnimation(base::Seconds(1.5));
+
+  EXPECT_TRUE(border->IsShowing());
 }
 
 }  // namespace glic

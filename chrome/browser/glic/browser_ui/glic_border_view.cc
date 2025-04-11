@@ -550,6 +550,7 @@ void GlicBorderView::StopShowing() {
   first_emphasis_frame_ = base::TimeTicks{};
   last_emphasis_frame_ = base::TimeTicks{};
   first_ramp_down_frame_ = base::TimeTicks{};
+  record_first_ramp_down_frame_ = false;
   total_steady_time_ = base::Milliseconds(0);
   opacity_ = 0.f;
   emphasis_ = 0.f;
