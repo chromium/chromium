@@ -80,6 +80,7 @@ source_set("data_type_controller") {
   ]
 
   deps = [
+    ":features",
     "//base",
     "//components/signin/public/identity_manager",
     "//components/sync/base",

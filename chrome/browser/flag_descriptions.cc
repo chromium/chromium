@@ -1070,6 +1070,15 @@ const char kMediaSessionEnterPictureInPictureDescription[] =
 const char kCodeBasedRBDName[] = "Code-based RBD";
 const char kCodeBasedRBDDescription[] = "Enables the Code-based RBD.";
 
+const char kCollaborationAutomotiveName[] = "Collaboration Automotive";
+const char kCollaborationAutomotiveDescription[] =
+    "Enable the collaboration feature on automotive platforms.";
+
+const char kCollaborationEntrepriseV2Name[] = "Collaboration Entreprise V2";
+const char kCollaborationEntrepriseV2Description[] =
+    "Enables the collaboration feature for entreprise users within the same "
+    "domain.";
+
 const char kCollaborationMessagingName[] = "Collaboration Messaging";
 const char kCollaborationMessagingDescription[] =
     "Enables the messaging framework within the collaboration feature, "

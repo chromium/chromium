@@ -6,6 +6,7 @@
 
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "components/data_sharing/public/features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "ui/base/device_form_factor.h"
@@ -78,7 +79,9 @@ PreconditionState ManagedAccountPreconditionChecker::
 
   // TODO(crbug.com/405174548): Remove automotive check from the precondition
   // checker after adding collaboration service check.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE &&
+      !base::FeatureList::IsEnabled(
+          data_sharing::features::kCollaborationAutomotive)) {
     return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
   }
 

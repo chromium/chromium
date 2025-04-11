@@ -624,6 +624,12 @@ extern const char kDoubleBufferCompositingDescription[];
 extern const char kCodeBasedRBDName[];
 extern const char kCodeBasedRBDDescription[];
 
+extern const char kCollaborationAutomotiveName[];
+extern const char kCollaborationAutomotiveDescription[];
+
+extern const char kCollaborationEntrepriseV2Name[];
+extern const char kCollaborationEntrepriseV2Description[];
+
 extern const char kCollaborationMessagingName[];
 extern const char kCollaborationMessagingDescription[];
 

@@ -1541,6 +1541,16 @@
     "expiry_milestone": 126
   },
   {
+    "name": "collaboration-automotive",
+    "owners": ["haileywang@google.com", "//components/collaboration/OWNERS"],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "collaboration-entreprise-v2",
+    "owners": ["haileywang@google.com", "//components/collaboration/OWNERS"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "collaboration-messaging",
     "owners": [ "//components/collaboration/OWNERS", "nyquist@chromium.org", "shaktisahu@chromium.org" ],
     "expiry_milestone": 135

@@ -310,7 +310,9 @@ CollaborationStatus CollaborationServiceImpl::GetCollaborationStatus() {
   }
 
   // Disable for automotive users.
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE) {
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_AUTOMOTIVE &&
+      !base::FeatureList::IsEnabled(
+          data_sharing::features::kCollaborationAutomotive)) {
     return CollaborationStatus::kDisabled;
   }
 
