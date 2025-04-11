@@ -197,71 +197,72 @@ public class ReadAloudController
   }
 
   private static class ReadabilityInfo {
-    private final Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult>
-        mReadabilityInfoPerMode;
-    private final long mResponseTimestamp;
+      private final Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult> mReadabilityInfoPerMode;
+      private final long mResponseTimestamp;
 
-    /**
-     * Constructor.
-     *
-     * @param readabilityInfoPerMode Readability info per mode.
-     * @param responseTimestamp Timestamp when readability request responded.
-     */
-    ReadabilityInfo(
-        Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult>
-            readabilityInfoPerMode,
-        long responseTimestamp) {
-      mReadabilityInfoPerMode = readabilityInfoPerMode;
-      mResponseTimestamp = responseTimestamp;
-    }
+      /**
+       * Constructor.
+      *
+      * @param readabilityInfoPerMode Readability info per mode.
+      * @param responseTimestamp Timestamp when readability request responded.
+      */
+      ReadabilityInfo(
+          Map<PlaybackArgs.PlaybackMode, ReadAloudReadabilityHooks.ReadabilityResult>
+              readabilityInfoPerMode,
+          long responseTimestamp) {
+          mReadabilityInfoPerMode = readabilityInfoPerMode;
+          mResponseTimestamp = responseTimestamp;
+      }
 
-    static ReadabilityInfo entirelyUnsupported(long responseTimestamp) {
-      return new ReadabilityInfo(
-          ImmutableMap.of(
-              PlaybackArgs.PlaybackMode.CLASSIC,
-              new ReadAloudReadabilityHooks.ReadabilityResult(false, false),
-              PlaybackArgs.PlaybackMode.OVERVIEW,
-              new ReadAloudReadabilityHooks.ReadabilityResult(false, false)),
-          responseTimestamp);
-    }
+      static ReadabilityInfo entirelyUnsupported(long responseTimestamp) {
+          return new ReadabilityInfo(
+              ImmutableMap.of(
+                  PlaybackArgs.PlaybackMode.CLASSIC,
+                  new ReadAloudReadabilityHooks.ReadabilityResult(false, false),
+                  PlaybackArgs.PlaybackMode.OVERVIEW,
+                      new ReadAloudReadabilityHooks.ReadabilityResult(false, false)),
+                  responseTimestamp);
+      }
 
-    static ReadabilityInfo forTimepoints(boolean timepointsSupported, long responseTimestamp) {
-        return new ReadabilityInfo(
-          ImmutableMap.of(
-              PlaybackArgs.PlaybackMode.CLASSIC,
-              new ReadAloudReadabilityHooks.ReadabilityResult(true, timepointsSupported),
-              PlaybackArgs.PlaybackMode.OVERVIEW,
-              new ReadAloudReadabilityHooks.ReadabilityResult(true, timepointsSupported)),
-          responseTimestamp);
-    }
+      static ReadabilityInfo forTimepoints(boolean timepointsSupported, long responseTimestamp) {
+          return new ReadabilityInfo(
+            ImmutableMap.of(
+                PlaybackArgs.PlaybackMode.CLASSIC,
+                new ReadAloudReadabilityHooks.ReadabilityResult(true, timepointsSupported),
+                PlaybackArgs.PlaybackMode.OVERVIEW,
+                new ReadAloudReadabilityHooks.ReadabilityResult(true, timepointsSupported)),
+            responseTimestamp);
+      }
 
-    boolean isReadable() {
-      return isReadable(PlaybackArgs.PlaybackMode.CLASSIC);
-    }
+      boolean isReadable() {
+          // For audio overviews, we don't account for the language in the readability phase (we will check it during playback).
+          return isReadable(PlaybackArgs.PlaybackMode.CLASSIC)
+                  || (ReadAloudFeatures.isAudioOverviewsAllowed() && isReadable(PlaybackArgs.PlaybackMode.OVERVIEW));
+      }
 
-    boolean isReadable(PlaybackArgs.PlaybackMode mode) {
+      boolean isReadable(PlaybackArgs.PlaybackMode mode) {
       return getReadabilityResultForMode(mode).readable;
-    }
+      }
 
-    long getResponseTime() {
+      long getResponseTime() {
       return mResponseTimestamp;
-    }
+      }
 
-    boolean getTimepointsSupported() {
+      boolean getTimepointsSupported() {
       return getTimepointsSupported(PlaybackArgs.PlaybackMode.CLASSIC);
-    }
+      }
 
-    boolean getTimepointsSupported(PlaybackArgs.PlaybackMode mode) {
+      boolean getTimepointsSupported(PlaybackArgs.PlaybackMode mode) {
       return getReadabilityResultForMode(mode).supportsHighlighting;
-    }
+      }
 
-    private ReadAloudReadabilityHooks.ReadabilityResult getReadabilityResultForMode(
-        PlaybackArgs.PlaybackMode mode) {
+      private ReadAloudReadabilityHooks.ReadabilityResult getReadabilityResultForMode(
+          PlaybackArgs.PlaybackMode mode) {
       return mReadabilityInfoPerMode.getOrDefault(
           mode,
           new ReadAloudReadabilityHooks.ReadabilityResult(
               /* readable= */ false, /* supportsHighlighting= */ false));
-    }
+      }
   }
 
     // Information about a tab playback necessary for resuming later. Does not
@@ -1069,15 +1070,20 @@ public class ReadAloudController
 
         final String sanitizedUrl = stripUserData(tab.getUrl()).getSpec();
         final int sanitizedUrlHash = urlToHash(sanitizedUrl);
+        ReadabilityInfo readabilityInfo = getReadabilityInfoIfUnexpired(sanitizedUrlHash);
+        PlaybackMode playbackMode =
+                getPlaybackModeForNewPlayback(readabilityInfo, playbackLanguage);
         PlaybackArgs args =
                 new PlaybackArgs(
                         sanitizedUrl,
                         /* isUrl= */ true,
-                        isTranslated ? playbackLanguage : null,
+                        isTranslated && playbackMode != PlaybackMode.OVERVIEW
+                                ? playbackLanguage
+                                : null,
                         mPlaybackHooks.getPlaybackVoiceList(
                                 ReadAloudPrefs.getVoices(getPrefService())),
                         /* dateModifiedMsSinceEpoch= */ dateModified,
-                        /* playbackMode= */ getPlaybackModeForNewPlayback());
+                        /* playbackMode= */ playbackMode);
         Log.d(TAG, "Creating playback with args: %s", args);
 
         Promise<Playback> promise = createPlayback(args);
@@ -1086,7 +1092,7 @@ public class ReadAloudController
                     ReadAloudMetrics.recordIsTabPlaybackCreationSuccessful(true);
                     ReadAloudMetrics.recordTabCreationSuccess(entrypoint, Entrypoint.NUM_ENTRIES);
                     maybeSetUpHighlighter(playback.getMetadata());
-                    updatePlaybackModeSelectionEnabled();
+                    updatePlaybackModeSelectionEnabled(readabilityInfo, playbackLanguage);
                     updateVoiceMenu(
                             isTranslated
                                     ? playbackLanguage
@@ -1294,10 +1300,39 @@ public class ReadAloudController
                 /* clearPassword= */ true);
     }
 
-    private PlaybackMode getPlaybackModeForNewPlayback() {
-        // TODO(crbug.com/401256755): Implement with actual logic.
-        // Rely on user preference, readability, and page language.
-        return PlaybackMode.UNSPECIFIED;
+    private boolean isLanguageSupportedForOverview(String language) {
+        return language.equals("en");
+    }
+
+    private PlaybackMode getPlaybackModeForNewPlayback(ReadabilityInfo readabilityInfo, String webPageLanguage) {
+      if (!ReadAloudFeatures.isAudioOverviewsAllowed()) {
+          // AO feature is disabled, return CLASSIC.
+          return PlaybackMode.CLASSIC;
+      }
+      if (!isLanguageSupportedForOverview(webPageLanguage)) {
+        // Language unsupported for AO.
+        return PlaybackMode.CLASSIC;
+      }
+      if (readabilityInfo == null) {
+        // Unexpected, but just to make sure (also simplifies the next conditions).
+        return PlaybackMode.CLASSIC;
+      }
+      PlaybackMode preferredPlaybackMode = ReadAloudPrefs.getPlaybackMode(getPrefService());
+      if (preferredPlaybackMode == PlaybackMode.OVERVIEW || preferredPlaybackMode == PlaybackMode.UNSPECIFIED) {
+        // Preferred mode is either AO or unset (in which case we default to AO).
+        if (readabilityInfo.isReadable(PlaybackMode.OVERVIEW)) {
+            // Preferred mode is OVERVIEW and AO is supported.
+            return PlaybackMode.OVERVIEW;
+        }
+        // Preferred mode is OVERVIEW but is unsupported. Fallback to CLASSIC.
+        return PlaybackMode.CLASSIC;
+      }
+      // Preferred mode is CLASSIC.
+      if (readabilityInfo.isReadable(PlaybackMode.CLASSIC)) {
+          // Preferred mode is CLASSIC and supported.
+          return PlaybackMode.CLASSIC;
+        }
+      return PlaybackMode.OVERVIEW;
     }
 
     private String getLanguageForNewPlayback(Tab tab) {
@@ -1331,9 +1366,17 @@ public class ReadAloudController
         return language;
     }
 
-    private void updatePlaybackModeSelectionEnabled() {
-        // TODO(crbug.com/401256755): Implement with actual logic.
-        mPlaybackModeSelectionEnabled.set(false);
+    private void updatePlaybackModeSelectionEnabled(ReadabilityInfo readabilityInfo, String language) {
+      // We allow playback mode selection only if both modes are supported.
+      if (readabilityInfo == null) {
+          mPlaybackModeSelectionEnabled.set(false);
+          return;
+      }
+      boolean featureEnabled = ReadAloudFeatures.isAudioOverviewsAllowed();
+      boolean classicSupported = readabilityInfo.isReadable(PlaybackMode.CLASSIC);
+      boolean overviewSupported = readabilityInfo.isReadable(PlaybackMode.OVERVIEW);
+      boolean isLanguageSupported = isLanguageSupportedForOverview(language);
+      mPlaybackModeSelectionEnabled.set(featureEnabled && classicSupported && overviewSupported && isLanguageSupported);
     }
 
     private void updateVoiceMenu(@Nullable String language) {
