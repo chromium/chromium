@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/power/ml/user_activity_manager.h"
 
 #include <cmath>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -292,6 +293,10 @@ void UserActivityManager::UpdateAndGetSmartDimDecision(
     waiting_for_model_decision_ = true;
     SmartDimMlAgent::GetInstance()->RequestDimDecision(
         features_, std::move(request_callback));
+  } else {
+    // Smart Dim feature is unsupported or disabled by policy => the dim
+    // decision defaults to false (i.e. do not defer screen dim).
+    std::move(callback).Run(false);
   }
 
   waiting_for_final_action_ = true;
@@ -299,25 +304,38 @@ void UserActivityManager::UpdateAndGetSmartDimDecision(
 
 void UserActivityManager::HandleSmartDimDecision(
     base::OnceCallback<void(bool)> callback,
-    UserActivityEvent::ModelPrediction prediction) {
+    std::optional<UserActivityEvent::ModelPrediction> prediction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   waiting_for_model_decision_ = false;
+
+  if (!prediction.has_value()) {
+    // No decision from Smart Dim (e.g. it was canceled). Return default value
+    // (false means "allow dim") to the D-bus caller.
+    std::move(callback).Run(false);
+    return;
+  }
+
+  // Smart Dim model actually ran:
+
   const base::TimeDelta wait_time =
       base::TimeTicks::Now() - time_dim_decision_requested_;
   LogPowerMLSmartDimModelRequestComplete(wait_time);
   time_dim_decision_requested_ = base::TimeTicks();
+
   // Only defer the dim if the model predicts so and also if the dim was not
   // previously deferred.
-  if (prediction.response() == UserActivityEvent::ModelPrediction::NO_DIM &&
+  if (prediction->response() == UserActivityEvent::ModelPrediction::NO_DIM &&
       !dim_deferred_) {
     dim_deferred_ = true;
-    prediction.set_model_applied(true);
+    prediction->set_model_applied(true);
   } else {
     // Either model predicts dim or model fails, or it was previously dimmed.
+    // TODO(amoylan): Are the below in the wrong order?! dim_deferred_ has no
+    //                effect in the second line...
     dim_deferred_ = false;
-    prediction.set_model_applied(prediction.response() ==
-                                     UserActivityEvent::ModelPrediction::DIM &&
-                                 !dim_deferred_);
+    prediction->set_model_applied(prediction->response() ==
+                                      UserActivityEvent::ModelPrediction::DIM &&
+                                  !dim_deferred_);
   }
   model_prediction_ = prediction;
   std::move(callback).Run(dim_deferred_);
