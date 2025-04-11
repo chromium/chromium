@@ -7,9 +7,9 @@
 
 #include <optional>
 
-#include "chrome/browser/ui/tabs/split_tab_id.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 

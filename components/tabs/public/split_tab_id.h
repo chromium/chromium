@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_SPLIT_TAB_ID_H_
-#define CHROME_BROWSER_UI_TABS_SPLIT_TAB_ID_H_
+#ifndef COMPONENTS_TABS_PUBLIC_SPLIT_TAB_ID_H_
+#define COMPONENTS_TABS_PUBLIC_SPLIT_TAB_ID_H_
 
 #include <ostream>
 
@@ -18,4 +18,4 @@ using SplitTabIdHash = tab_groups::TokenIdHash<SplitTabId>;
 
 }  // namespace split_tabs
 
-#endif  // CHROME_BROWSER_UI_TABS_SPLIT_TAB_ID_H_
+#endif  // COMPONENTS_TABS_PUBLIC_SPLIT_TAB_ID_H_

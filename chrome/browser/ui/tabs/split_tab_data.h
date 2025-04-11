@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_SPLIT_TAB_DATA_H_
 
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
-#include "chrome/browser/ui/tabs/split_tab_id.h"
+#include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/range/range.h"
 

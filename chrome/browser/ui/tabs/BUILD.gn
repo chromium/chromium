@@ -17,19 +17,12 @@ source_set("tabs_public") {
   ]
   sources = [ "tab_network_state.cc" ]
   public_deps = [
-    ":split_tabs",
     "//base",
     "//chrome/common:buildflags",
     "//components/tab_groups:tab_groups",
     "//components/tabs:public",
   ]
   deps = [ "//content/public/browser" ]
-}
-
-source_set("split_tabs") {
-  sources = [ "split_tab_id.h" ]
-
-  deps = [ "//components/tab_groups" ]
 }
 
 # These enums should not need to depend on chrome/browser/ui. They have been
@@ -138,7 +131,6 @@ if (!is_android) {
     ]
 
     public_deps = [
-      ":split_tabs",
       ":tab_strip_model_observer",
       ":tabs",
       ":tabs_public",
@@ -277,7 +269,6 @@ if (!is_android) {
     ]
 
     public_deps = [
-      ":split_tabs",
       ":tab_enums",
       ":tab_group",
       ":tab_strip_model_observer",
