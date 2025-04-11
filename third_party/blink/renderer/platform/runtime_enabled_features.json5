@@ -5046,7 +5046,7 @@
     },
     {
       name: "WebCryptoEd25519",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "WebFontResizeLCP",
