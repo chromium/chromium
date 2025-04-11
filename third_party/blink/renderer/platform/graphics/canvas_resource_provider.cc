@@ -315,6 +315,10 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider,
   bool unused_resources_reclaim_timer_is_running_for_testing() const override {
     return unused_resources_reclaim_timer_.IsRunning();
   }
+  int NumInflightResourcesForTesting() const override {
+    return num_inflight_resources_;
+  }
+
   scoped_refptr<gpu::ClientSharedImage>
   GetBackingClientSharedImageForExternalWrite(
       gpu::SyncToken* internal_access_sync_token,

@@ -340,6 +340,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
   virtual bool unused_resources_reclaim_timer_is_running_for_testing() const {
     return false;
   }
+  virtual int NumInflightResourcesForTesting() const { return 0; }
+
   constexpr static base::TimeDelta kUnusedResourceExpirationTime =
       base::Seconds(5);
 

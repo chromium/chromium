@@ -179,8 +179,10 @@ using PageVisibilityState = ::blink::mojom::blink::PageVisibilityState;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
+using ::testing::IsNull;
 using ::testing::Message;
 using ::testing::Mock;
+using ::testing::NotNull;
 using ::testing::Optional;
 using ::testing::SaveArg;
 
@@ -250,16 +252,16 @@ void RunIdleTasks() {
 
 //============================================================================
 
-class CanvasRenderingContext2DTest : public ::testing::Test,
-                                     public PaintTestConfigurations {
+class CanvasRenderingContext2DTestBase : public ::testing::Test,
+                                         public PaintTestConfigurations {
  public:
-  CanvasRenderingContext2DTest();
+  CanvasRenderingContext2DTestBase();
   void SetUp() override;
   virtual bool AllowsAcceleration() { return false; }
 
-  virtual scoped_refptr<viz::TestContextProvider> CreateContextProvider() {
-    return viz::TestContextProvider::Create();
-  }
+  virtual void CreateContextProvider() = 0;
+  virtual void ConfigureContextProvider(
+      viz::TestContextProvider& context_provider) {}
 
   HTMLCanvasElement& CanvasElement() const { return *canvas_element_; }
   cc::PaintCanvas& Canvas() {
@@ -366,14 +368,35 @@ class CanvasRenderingContext2DTest : public ::testing::Test,
   base::test::ScopedFeatureList feature_list_;
 };
 
+class CanvasRenderingContext2DTest : public CanvasRenderingContext2DTestBase {
+ public:
+  void CreateContextProvider() override {
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
+    ConfigureContextProvider(*test_context_provider_);
+  }
+};
+
 INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
 
-CanvasRenderingContext2DTest::CanvasRenderingContext2DTest()
+class CanvasRenderingContext2DTestGLES2
+    : public CanvasRenderingContext2DTestBase {
+ public:
+  void CreateContextProvider() override {
+    test_context_provider_ = viz::TestContextProvider::Create();
+    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    ConfigureContextProvider(*test_context_provider_);
+  }
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestGLES2);
+
+CanvasRenderingContext2DTestBase::CanvasRenderingContext2DTestBase()
     : wrap_gradients_(MakeGarbageCollected<WrapGradients>()),
       opaque_bitmap_(gfx::Size(10, 10), kOpaqueBitmap),
       alpha_bitmap_(gfx::Size(10, 10), kTransparentBitmap) {}
 
-void CanvasRenderingContext2DTest::CreateContext(
+void CanvasRenderingContext2DTestBase::CreateContext(
     OpacityMode opacity_mode,
     LatencyMode latency_mode,
     CanvasContextCreationAttributesCore::WillReadFrequently
@@ -391,7 +414,7 @@ void CanvasRenderingContext2DTest::CreateContext(
   canvas->GetCanvasRenderingContext(canvas_type, attributes);
 }
 
-void CanvasRenderingContext2DTest::SetUp() {
+void CanvasRenderingContext2DTestBase::SetUp() {
   base::FieldTrialParams auto_flush_params;
   auto_flush_params["max_pinned_image_kb"] =
       base::NumberToString(kMaxPinnedImageKB);
@@ -400,8 +423,7 @@ void CanvasRenderingContext2DTest::SetUp() {
   feature_list_.InitAndEnableFeatureWithParameters(kCanvas2DAutoFlushParams,
                                                    auto_flush_params);
 
-  test_context_provider_ = CreateContextProvider();
-  InitializeSharedGpuContextGLES2(test_context_provider_.get());
+  CreateContextProvider();
   allow_accelerated_ =
       std::make_unique<ScopedAccelerated2dCanvasForTest>(AllowsAcceleration());
   web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
@@ -445,7 +467,7 @@ void CanvasRenderingContext2DTest::SetUp() {
           blink::scheduler::GetSingleThreadTaskRunnerForTesting()));
 }
 
-void CanvasRenderingContext2DTest::TearDown() {
+void CanvasRenderingContext2DTestBase::TearDown() {
   feature_list_.Reset();
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
@@ -706,7 +728,8 @@ TEST_P(CanvasRenderingContext2DTest, GetImageWithAccelerationDisabled) {
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 }
 
-TEST_P(CanvasRenderingContext2DTest, FallbackToSoftwareOnFailedTextureAlloc) {
+TEST_P(CanvasRenderingContext2DTestGLES2,
+       FallbackToSoftwareOnFailedTextureAlloc) {
   CreateContext(kNonOpaque);
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
 
@@ -1729,6 +1752,11 @@ class CanvasRenderingContext2DTestAccelerated
  protected:
   bool AllowsAcceleration() override { return true; }
 
+  void ConfigureContextProvider(
+      viz::TestContextProvider& context_provider) override {
+    context_provider.GetTestRasterInterface()->set_gpu_rasterization(true);
+  }
+
   void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
     for (int i = 0; i < 200; ++i) {
       auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
@@ -1808,7 +1836,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
   EXPECT_EQ(nullptr, CanvasElement().GetOrCreateCanvasResourceProvider());
 }
 
@@ -1831,7 +1859,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // When the context is lost we are not sure if we should still be producing
   // GL frames for the compositor or not, so fail to generate frames.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
   EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
 }
@@ -1840,7 +1868,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        FallbackToSoftwareIfContextLost) {
   CreateContext(kNonOpaque);
 
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
 
   ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider());
 
@@ -1859,7 +1887,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, GetImageAfterContextLoss) {
   EXPECT_TRUE(CanvasElement().IsResourceValid());
   EXPECT_TRUE(Context2D()->GetImage(FlushReason::kTesting));
 
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
 
   EXPECT_FALSE(Context2D()->GetImage(FlushReason::kTesting));
 }
@@ -1883,7 +1911,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Losing the context should result in the resource becoming invalid and the
   // host being unable to produce a TransferableResource from it.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
   EXPECT_FALSE(CanvasElement().IsResourceValid());
   EXPECT_FALSE(CanvasElement().PrepareTransferableResource(&resource,
                                                            &release_callback));
@@ -2347,7 +2375,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
   EXPECT_FALSE(handler.IsHibernating());
 
   // Simulate GPU context loss.
-  test_context_provider_->TestContextGL()->set_context_lost(true);
+  test_context_provider_->GetTestRasterInterface()->set_context_lost(true);
 
   // Verify that going to the background triggers hibernation asynchronously.
   {
@@ -2416,11 +2444,13 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        NoResourceRecyclingWhenPageHidden) {
   CreateContext(kNonOpaque);
 
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 0u);
+  EXPECT_THAT(CanvasElement().ResourceProvider(), IsNull());
 
   Context2D()->fillRect(3, 3, 1, 1);
 
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+  const CanvasResourceProvider* provider = CanvasElement().ResourceProvider();
+  ASSERT_THAT(provider, NotNull());
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 
   // Invoking PrepareTransferableResource() has a precondition that a CC layer
   // be present.
@@ -2438,7 +2468,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   // Note that the write did not in of itself trigger copy-on-write since
   // rasterization has not occurred yet.
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 
   // Emulate sending the canvas' resource to the display compositor, which
   // forces copy-on-write before rasterization as the display compositor has a
@@ -2446,24 +2476,24 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   ASSERT_TRUE(CanvasElement().PrepareTransferableResource(&resources[1],
                                                           &callbacks[1]));
   EXPECT_NE(resources[0].mailbox(), resources[1].mailbox());
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 2);
 
   // Emulate the display compositor releasing the first resource. The released
   // resource should be saved for recycling (i.e., it should not be dropped).
   std::move(callbacks[0]).Run(gpu::SyncToken(), false);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 2);
 
   // Move the page to the background. This should cause resource recycling to be
   // disabled and the previously-released resource to now be dropped.
   SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 
   // Emulate the display compositor releasing the second resource. The resource
   // should not be dropped because it's the current render target for the canvas
   // and so the canvas itself still has a reference on this resource. This
   // resource should be dropped only if the canvas is hibernated.
   std::move(callbacks[1]).Run(gpu::SyncToken(), false);
-  EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
+  EXPECT_EQ(provider->NumInflightResourcesForTesting(), 1);
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
@@ -2967,19 +2997,17 @@ class CanvasRenderingContext2DTestImageChromium
         features::kLowLatencyCanvas2dImageChromium);
   }
 
-  scoped_refptr<viz::TestContextProvider> CreateContextProvider() override {
-    auto context_provider = viz::TestContextProvider::Create();
-    auto* test_gl = context_provider->UnboundTestContextGL();
-    test_gl->set_max_texture_size(1024);
-    test_gl->set_supports_gpu_memory_buffer_format(gfx::BufferFormat::BGRA_8888,
-                                                   true);
+  void ConfigureContextProvider(
+      viz::TestContextProvider& context_provider) override {
+    auto* test_raster = context_provider.GetTestRasterInterface();
+    test_raster->set_max_texture_size(1024);
+    test_raster->set_supports_gpu_memory_buffer_format(
+        gfx::BufferFormat::BGRA_8888, true);
+    test_raster->set_gpu_rasterization(true);
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.supports_scanout_shared_images = true;
-    context_provider->SharedImageInterface()->SetCapabilities(
-        shared_image_caps);
-
-    return context_provider;
+    context_provider.SharedImageInterface()->SetCapabilities(shared_image_caps);
   }
 
  private:
@@ -3016,17 +3044,15 @@ class CanvasRenderingContext2DTestSwapChain
   CanvasRenderingContext2DTestSwapChain()
       : CanvasRenderingContext2DTestAccelerated() {}
 
-  scoped_refptr<viz::TestContextProvider> CreateContextProvider() override {
-    auto context_provider = viz::TestContextProvider::Create();
-    auto* test_gl = context_provider->UnboundTestContextGL();
-    test_gl->set_max_texture_size(1024);
+  void ConfigureContextProvider(
+      viz::TestContextProvider& context_provider) override {
+    auto* test_raster = context_provider.GetTestRasterInterface();
+    test_raster->set_max_texture_size(1024);
+    test_raster->set_gpu_rasterization(true);
 
     gpu::SharedImageCapabilities shared_image_caps;
     shared_image_caps.shared_image_swap_chain = true;
-    context_provider->SharedImageInterface()->SetCapabilities(
-        shared_image_caps);
-
-    return context_provider;
+    context_provider.SharedImageInterface()->SetCapabilities(shared_image_caps);
   }
 
  private:
