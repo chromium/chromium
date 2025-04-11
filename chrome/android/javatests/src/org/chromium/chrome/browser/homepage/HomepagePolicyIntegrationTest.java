@@ -25,6 +25,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -130,6 +131,7 @@ public class HomepagePolicyIntegrationTest {
     @Test
     @MediumTest
     @Feature({"Homepage"})
+    @DisabledTest(message = "crbug.com/410073820")
     public void testHomeButton() throws Exception {
         String anotherUrl = mTestServer.getURL(GOOGLE_HTML);
         new TabLoadObserver(mActivityTestRule.getActivity().getActivityTab())
