@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
@@ -223,6 +224,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     if (IsPageActionMigrated(PageActionIconType::kIntentPicker)) {
       intent_picker_view_page_action_controller_ =
           std::make_unique<IntentPickerViewPageActionController>(tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
+      file_system_access_page_action_controller_ =
+          std::make_unique<FileSystemAccessPageActionController>(tab);
     }
 
     if (IsPageActionMigrated(PageActionIconType::kZoom)) {

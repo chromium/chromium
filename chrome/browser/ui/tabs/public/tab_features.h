@@ -22,6 +22,7 @@ class ReadAnythingSidePanelController;
 class SidePanelRegistry;
 class TranslatePageActionController;
 class IntentPickerViewPageActionController;
+class FileSystemAccessPageActionController;
 
 namespace commerce {
 class CommerceUiTabHelper;
@@ -177,6 +178,11 @@ class TabFeatures {
     return intent_picker_view_page_action_controller_.get();
   }
 
+  FileSystemAccessPageActionController*
+  file_system_access_page_action_controller() {
+    return file_system_access_page_action_controller_.get();
+  }
+
   tab_groups::CollaborationMessagingTabData*
   collaboration_messaging_tab_data() {
     return collaboration_messaging_tab_data_.get();
@@ -273,6 +279,10 @@ class TabFeatures {
   // Responsible for managing the "Intent Picker" page action.
   std::unique_ptr<IntentPickerViewPageActionController>
       intent_picker_view_page_action_controller_;
+
+  // Responsible for managing the "File System Access" page action.
+  std::unique_ptr<FileSystemAccessPageActionController>
+      file_system_access_page_action_controller_;
 
   // Responsible for managing all page actions of a tab. Other controllers
   // interact with this to have their feature's page action shown.

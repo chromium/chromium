@@ -490,6 +490,8 @@
   E(kActionDeviceSystemTrayIconLast, IDC_DEVICE_SYSTEM_TRAY_ICON_LAST) \
   /*Shows the Intent Picker bubble */ \
   E(kActionShowIntentPicker) \
+  /*Shows the File System Access bubble */ \
+  E(kActionShowFileSystemAccess) \
   /*Toolbar pinning*/ \
   E(kActionPinActionToToolbar) \
   E(kActionUnpinActionFromToolbar)
