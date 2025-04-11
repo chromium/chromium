@@ -157,6 +157,54 @@ std::optional<int> ImpressionLimitService::GetImpressionCount(
   return std::nullopt;
 }
 
+void ImpressionLimitService::LogCardEngagement(
+    const GURL& url,
+    const std::string_view& pref_name) {
+  if (!GetAllowListedPrefs().contains(pref_name)) {
+    NOTREACHED() << pref_name
+                 << " must be registered with ImpressionLimitService";
+  }
+  std::string url_key = GetUrlKey(url).spec();
+  base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
+
+  const base::Value::List* impressions_data = impressions.FindList(url_key);
+  base::Value::List impressions_data_update;
+  if (impressions_data) {
+    // Impression count for card.
+    impressions_data_update.Append((*impressions_data)[0].Clone());
+    // Time of first impression.
+    impressions_data_update.Append((*impressions_data)[1].Clone());
+
+  } else {
+    // Impression count for card.
+    impressions_data_update.Append(1);
+    // Time of first impression.
+    impressions_data_update.Append(base::TimeToValue(base::Time::Now()));
+  }
+  // Whether card has been tapped.
+  impressions_data_update.Append(true);
+
+  impressions.Set(url_key, std::move(impressions_data_update));
+  pref_service_->SetDict(pref_name, std::move(impressions));
+}
+
+bool ImpressionLimitService::HasBeenEngagedWith(
+    const GURL& url,
+    const std::string_view& pref_name) {
+  if (!GetAllowListedPrefs().contains(pref_name)) {
+    NOTREACHED() << pref_name
+                 << " must be registered with ImpressionLimitService";
+  }
+  std::string url_key = GetUrlKey(url).spec();
+  const base::Value::Dict& impressions = pref_service_->GetDict(pref_name);
+
+  const base::Value::List* impressions_data = impressions.FindList(url_key);
+  if (impressions_data) {
+    return (*impressions_data)[2].GetBool();
+  }
+  return false;
+}
+
 void ImpressionLimitService::RemoveEntriesOlderThan30Days(
     const std::string_view& pref_name) {
   RemoveEntriesBeforeTime(pref_name, base::Time::Now() - base::Days(30));
@@ -173,11 +221,19 @@ void ImpressionLimitService::LogImpressionForURLAtTime(
 
   base::Value::List impressions_data_update;
   if (impressions_data) {
+    // Impression count for card.
     impressions_data_update.Append((*impressions_data)[0].GetInt() + 1);
+    // Time of first impression.
     impressions_data_update.Append((*impressions_data)[1].Clone());
+    // Whether card has been tapped.
+    impressions_data_update.Append((*impressions_data)[2].Clone());
   } else {
+    // Impression count for card.
     impressions_data_update.Append(1);
+    // Time of first impression.
     impressions_data_update.Append(base::TimeToValue(impression_time));
+    // Whether card has been tapped.
+    impressions_data_update.Append(false);
   }
   impressions.Set(url_key, std::move(impressions_data_update));
   pref_service_->SetDict(pref_name, std::move(impressions));

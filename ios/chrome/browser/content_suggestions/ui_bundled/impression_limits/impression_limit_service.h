@@ -52,6 +52,14 @@ class ImpressionLimitService : public bookmarks::BaseBookmarkModelObserver,
   std::optional<int> GetImpressionCount(const GURL& url,
                                         const std::string_view& pref_name);
 
+  // Logs magic stack engagement for a card generated using the 'url' in the
+  // preference called 'pref_name'.
+  void LogCardEngagement(const GURL& url, const std::string_view& pref_name);
+
+  // Returns whether a card generated using the 'url' in the preference called
+  // 'pref_name' has been engaged with.
+  bool HasBeenEngagedWith(const GURL& url, const std::string_view& pref_name);
+
   // Remove entries older than 30 days. This is to avoid the store growing in an
   // unbounded way.
   void RemoveEntriesOlderThan30Days(const std::string_view& pref_name);
