@@ -212,7 +212,7 @@ Status AdbImpl::SetCommandLineFile(const std::string& device_serial,
 Status AdbImpl::CheckAppInstalled(
     const std::string& device_serial, const std::string& package) {
   std::string response;
-  std::string command = "pm path " + package;
+  std::string command = "pm path --user cur " + package;
   Status status = ExecuteHostShellCommand(device_serial, command, &response);
   if (!status.IsOk())
     return status;
