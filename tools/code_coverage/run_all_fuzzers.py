@@ -432,6 +432,19 @@ def _run_corpus_in_chunks(target_details) -> bool:
                       f' rate ({failure_rate}) too high, stopping.')
       return False
 
+  # Sometimes, some state sensitive fuzzers spuriously fail when ran in batch,
+  # but almost always succeed when ran test cases by test case. For that
+  # reason, we limit the number of test cases to run to the limit of test cases
+  # the last strategy will run. This ensures this strategy performs at least
+  # similarly (but very often better) than the test case per test case
+  # strategy.
+  if sum(len(c) for c in failed_chunks) > INDIVIDUAL_TESTCASES_MAX_TO_TRY:
+    logging.warning(f'[{target}][chunk strategy] flaky fuzzer,'
+                    ' will shrink the number of test cases to retry')
+    failed_testcases = [e for chunk in failed_chunks for e in chunk]
+    failed_testcases = failed_testcases[:INDIVIDUAL_TESTCASES_MAX_TO_TRY]
+    failed_chunks = _split_corpus_files_into_chunks(failed_testcases)
+
   # We delay processing the failed chunk because we want to make sure the
   # strategy hasn't failed earlier. Note that we still rely on `_run_testcases`
   # to bail out early if the chunk contains too much test cases that runs into
