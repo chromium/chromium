@@ -295,10 +295,11 @@ void PinBackend::SetWithContext(const AccountId& account_id,
     return;
   }
   QuickUnlockStorage* storage = GetPrefsBackend(account_id);
-  CHECK(storage);
-  // There may be a pref value if resetting PIN and the device now supports
-  // cryptohome-based PIN.
-  storage->pin_storage_prefs()->RemovePin();
+  if (!storage) {
+    // There may be a pref value if resetting PIN and the device now supports
+    // cryptohome-based PIN.
+    storage->pin_storage_prefs()->RemovePin();
+  }
   cryptohome_backend_->SetPin(
       std::move(user_context), pin, std::nullopt,
       base::BindOnce(&PinBackend::OnAuthOperation, token, std::move(did_set)));
