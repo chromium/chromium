@@ -96,9 +96,11 @@ class TestSimulator : public InteractionTestUtil::Simulator {
     return result_;
   }
 
-  ActionResult SelectTab(TrackedElement* tab_collection,
-                         size_t index,
-                         InputType input_type) override {
+  ActionResult SelectTab(
+      TrackedElement* tab_collection,
+      size_t index,
+      InputType input_type,
+      std::optional<size_t> expected_index_after_selection) override {
     DoAction(ActionType::kSelectTab, tab_collection, input_type);
     return result_;
   }

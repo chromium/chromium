@@ -34,10 +34,12 @@ class MockInteractionSimulator : public InteractionTestUtil::Simulator {
                ActionResult(TrackedElement* element, InputType input_type));
   MOCK_METHOD2(DoDefaultAction,
                ActionResult(TrackedElement* element, InputType input_type));
-  MOCK_METHOD3(SelectTab,
-               ActionResult(TrackedElement* tab_collection,
-                            size_t index,
-                            InputType input_type));
+  MOCK_METHOD4(
+      SelectTab,
+      ActionResult(TrackedElement* tab_collection,
+                   size_t index,
+                   InputType input_type,
+                   std::optional<size_t> expected_index_after_selection));
   MOCK_METHOD3(SelectDropdownItem,
                ActionResult(TrackedElement* dropdown,
                             size_t index,
@@ -94,8 +96,9 @@ TEST(InteractionTestUtilTest, SelectTab) {
   InteractionTestUtil util;
   auto* const mock = util.AddSimulator(
       std::make_unique<testing::StrictMock<MockInteractionSimulator>>());
-  EXPECT_CALL(
-      *mock, SelectTab(&element, 1U, InteractionTestUtil::InputType::kDontCare))
+  EXPECT_CALL(*mock,
+              SelectTab(&element, 1U, InteractionTestUtil::InputType::kDontCare,
+                        std::optional<size_t>()))
       .WillOnce(testing::Return(ActionResult::kSucceeded));
   EXPECT_EQ(ActionResult::kSucceeded, util.SelectTab(&element, 1U));
 }
