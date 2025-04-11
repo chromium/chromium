@@ -112,12 +112,6 @@ namespace blink {
 constexpr char kDefaultFont[] = "10px sans-serif";
 const char BaseRenderingContext2D::kInheritString[] = "inherit";
 
-// After context lost, it waits |kTryRestoreContextInterval| before start the
-// restore the context. This wait needs to be long enough to avoid spamming the
-// GPU process with retry attempts and short enough to provide decent UX. It's
-// currently set to 500ms.
-const base::TimeDelta kTryRestoreContextInterval = base::Milliseconds(500);
-
 BaseRenderingContext2D::BaseRenderingContext2D(
     CanvasRenderingContextHost* canvas,
     const CanvasContextCreationAttributesCore& attrs,
@@ -266,8 +260,8 @@ void BaseRenderingContext2D::DispatchContextLostEvent(TimerBase*) {
   if (context_lost_mode_ == CanvasRenderingContext::kRealLostContext ||
       context_lost_mode_ == CanvasRenderingContext::kSyntheticLostContext) {
     try_restore_context_attempt_count_ = 0;
-    try_restore_context_event_timer_.StartRepeating(kTryRestoreContextInterval,
-                                                    FROM_HERE);
+    try_restore_context_event_timer_.StartRepeating(
+        try_restore_context_interval_, FROM_HERE);
   }
 }
 
@@ -314,11 +308,11 @@ void BaseRenderingContext2D::TryRestoreContextEvent(TimerBase* timer) {
 
   if (context_lost_mode_ == CanvasRenderingContext::kRealLostContext) {
     if (SharedGpuContext::IsGpuCompositingEnabled()) {
-      if (!SharedGpuContext::SharedImageInterfaceProvider()) {
+      if (!SharedGpuContext::ContextProviderWrapper()) {
         return;
       }
     } else {
-      if (!SharedGpuContext::ContextProviderWrapper()) {
+      if (!SharedGpuContext::SharedImageInterfaceProvider()) {
         return;
       }
     }

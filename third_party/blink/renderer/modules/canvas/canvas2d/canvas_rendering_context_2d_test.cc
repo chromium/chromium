@@ -37,6 +37,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
+#include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -62,6 +63,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_cssimagevalue_htmlcanvaselement_htmlimageelement_htmlvideoelement_imagebitmap_offscreencanvas_svgimageelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -92,12 +95,14 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/opacity_mode.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
@@ -184,6 +189,7 @@ using ::testing::Message;
 using ::testing::Mock;
 using ::testing::NotNull;
 using ::testing::Optional;
+using ::testing::Pointee;
 using ::testing::SaveArg;
 
 enum BitmapOpacity { kOpaqueBitmap, kTransparentBitmap };
@@ -236,6 +242,17 @@ scoped_refptr<Image> FakeImageSource::GetSourceImageForCanvas(
   return image_;
 }
 
+// Event listener that runs a callback when invoked.
+class CallbackEventListener : public NativeEventListener {
+ public:
+  explicit CallbackEventListener(base::RepeatingClosure callback)
+      : callback_(callback) {}
+  void Invoke(ExecutionContext*, Event*) override { callback_.Run(); }
+
+ private:
+  const base::RepeatingClosure callback_;
+};
+
 void SetDocumentVisibility(Document& document, PageVisibilityState visibility) {
   document.GetPage()->SetVisibilityState(visibility,
                                          /*is_initial_state=*/false);
@@ -259,7 +276,7 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
   void SetUp() override;
   virtual bool AllowsAcceleration() { return false; }
 
-  virtual void CreateContextProvider() = 0;
+  virtual void CreateContextProvider(SetIsContextLost set_context_lost) = 0;
   virtual void ConfigureContextProvider(
       viz::TestContextProvider& context_provider) {}
 
@@ -370,9 +387,10 @@ class CanvasRenderingContext2DTestBase : public ::testing::Test,
 
 class CanvasRenderingContext2DTest : public CanvasRenderingContext2DTestBase {
  public:
-  void CreateContextProvider() override {
+  void CreateContextProvider(SetIsContextLost set_context_lost) override {
     test_context_provider_ = viz::TestContextProvider::CreateRaster();
-    InitializeSharedGpuContextRaster(test_context_provider_.get());
+    InitializeSharedGpuContextRaster(test_context_provider_.get(),
+                                     /*cache=*/nullptr, set_context_lost);
     ConfigureContextProvider(*test_context_provider_);
   }
 };
@@ -382,9 +400,10 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTest);
 class CanvasRenderingContext2DTestGLES2
     : public CanvasRenderingContext2DTestBase {
  public:
-  void CreateContextProvider() override {
+  void CreateContextProvider(SetIsContextLost set_context_lost) override {
     test_context_provider_ = viz::TestContextProvider::Create();
-    InitializeSharedGpuContextGLES2(test_context_provider_.get());
+    InitializeSharedGpuContextGLES2(test_context_provider_.get(),
+                                    /*cache=*/nullptr, set_context_lost);
     ConfigureContextProvider(*test_context_provider_);
   }
 };
@@ -423,7 +442,9 @@ void CanvasRenderingContext2DTestBase::SetUp() {
   feature_list_.InitAndEnableFeatureWithParameters(kCanvas2DAutoFlushParams,
                                                    auto_flush_params);
 
-  CreateContextProvider();
+  // Create a `TestContextProvider` that automatically restores itself after a
+  // GPU context loss.
+  CreateContextProvider(SetIsContextLost::kSetToFalse);
   allow_accelerated_ =
       std::make_unique<ScopedAccelerated2dCanvasForTest>(AllowsAcceleration());
   web_view_helper_ = std::make_unique<frame_test_helpers::WebViewHelper>();
@@ -588,6 +609,12 @@ template <typename... Args>
 testing::Matcher<base::HistogramTester> OverdrawOpAre(Args... args) {
   return OverdrawOpAreMatcher(
       std::unordered_set<BaseRenderingContext2D::OverdrawOp>{args...});
+}
+
+// Matches an object (e.g. ContentResourceProvider) that has `IsValid()` ==
+// true.
+MATCHER(IsValid, "") {
+  return arg.IsValid();
 }
 
 TEST_P(CanvasRenderingContext2DTest, NoRecreationOfResourceProviderAfterDraw) {
@@ -1830,6 +1857,46 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ContextLostAndRestoredEventsAreEmittedAfterGPUContextLost) {
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_THAT(CanvasElement().ResourceProvider(), Pointee(IsValid()));
+
+  // Set a minimal restoration delay to make the test fast.
+  Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
+
+  // Lose the GPU context.
+  test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
+      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
+
+  // Wait for context to be lost.
+  {
+    EXPECT_FALSE(CanvasElement().IsContextLost());
+    base::RunLoop run_loop;
+    CanvasElement().addEventListener(
+        event_type_names::kContextlost,
+        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    EXPECT_THAT(CanvasElement().ResourceProvider(), IsNull());
+  }
+
+  // Wait for context to be restored.
+  {
+    EXPECT_TRUE(CanvasElement().IsContextLost());
+    base::RunLoop run_loop;
+    CanvasElement().addEventListener(
+        event_type_names::kContextrestored,
+        MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+    run_loop.Run();
+    EXPECT_FALSE(CanvasElement().IsContextLost());
+    EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+    EXPECT_THAT(CanvasElement().ResourceProvider(), Pointee(IsValid()));
+  }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
        GetResourceProviderAfterContextLoss) {
   CreateContext(kNonOpaque);
 
@@ -1866,6 +1933,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,
        FallbackToSoftwareIfContextLost) {
+  // Configure context provider to stay lost after context losses.
+  CreateContextProvider(SetIsContextLost::kNotModifyValue);
+
   CreateContext(kNonOpaque);
 
   test_context_provider_->GetTestRasterInterface()->set_context_lost(true);

@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_2d_color_params.h"
@@ -79,6 +80,13 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   // the context is unable to be restored after 4 attempts, we discard the
   // backing storage of the context and allocate a new one.
   static const unsigned kMaxTryRestoreContextAttempts = 4;
+
+  // After context lost, it waits `kTryRestoreContextInterval` before start the
+  // restore the context. This wait needs to be long enough to avoid spamming
+  // the GPU process with retry attempts and short enough to provide decent UX.
+  // It's currently set to 500ms.
+  static constexpr base::TimeDelta kTryRestoreContextInterval =
+      base::Milliseconds(500);
 
   BaseRenderingContext2D(const BaseRenderingContext2D&) = delete;
   BaseRenderingContext2D& operator=(const BaseRenderingContext2D&) = delete;
@@ -222,6 +230,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* c) const final;
   void Reset() override;
 
+  void SetTryRestoreContextIntervalForTesting(base::TimeDelta delay) {
+    try_restore_context_interval_ = delay;
+  }
+
   HeapTaskRunnerTimer<BaseRenderingContext2D>
       dispatch_context_lost_event_timer_;
   HeapTaskRunnerTimer<BaseRenderingContext2D>
@@ -309,6 +321,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   std::unique_ptr<CanvasResourceProvider> resource_provider_from_webgpu_access_;
   Canvas2DColorParams color_params_;
   bool need_dispatch_context_restored_ = false;
+  base::TimeDelta try_restore_context_interval_ = kTryRestoreContextInterval;
 };
 
 }  // namespace blink
