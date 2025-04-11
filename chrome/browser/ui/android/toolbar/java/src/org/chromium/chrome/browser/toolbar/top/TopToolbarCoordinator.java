@@ -63,7 +63,6 @@ import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 /** A coordinator for the top toolbar component. */
 public class TopToolbarCoordinator implements Toolbar {
@@ -135,8 +134,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param homepageEnabledSupplier Supplier of whether Home button is enabled.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
      * @param historyDelegate Delegate used to display navigation history.
-     * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
-     *     homepage is enabled.
      * @param offlineDownloader Triggers downloading an offline page.
      * @param initializeWithIncognitoColors Whether the toolbar should be initialized with incognito
      *     colors.
@@ -150,8 +147,6 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
      * @param onLongClickListener OnLongClickListener for the toolbar.
-     * @param reloadButtonCoordinator Component that encapsulates interactions with a reload button.
-     *     It only presents on tablet.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -169,7 +164,6 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Boolean> homepageEnabledSupplier,
             Supplier<ResourceManager> resourceManagerSupplier,
             HistoryDelegate historyDelegate,
-            BooleanSupplier partnerHomepageEnabledSupplier,
             OfflineDownloader offlineDownloader,
             boolean initializeWithIncognitoColors,
             ObservableSupplier<Integer> constraintsSupplier,
@@ -240,7 +234,6 @@ public class TopToolbarCoordinator implements Toolbar {
                 mMenuButtonCoordinator,
                 tabSwitcerButtonCoordinator,
                 historyDelegate,
-                partnerHomepageEnabledSupplier,
                 offlineDownloader,
                 userEducationHelper,
                 mTrackerSupplier,

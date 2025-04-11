@@ -28,7 +28,6 @@ import android.util.FloatProperty;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -74,6 +73,8 @@ import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordin
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
+import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
+import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -82,7 +83,6 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.LocalizationUtils;
@@ -99,9 +99,7 @@ import java.util.function.BooleanSupplier;
 
 /** Phone specific toolbar implementation. */
 public class ToolbarPhone extends ToolbarLayout
-        implements OnClickListener,
-                OmniboxSuggestionsDropdownScrollListener,
-                ToolbarDataProvider.Observer {
+        implements OmniboxSuggestionsDropdownScrollListener, ToolbarDataProvider.Observer {
     /** The amount of time transitioning from one theme color to another should take in ms. */
     public static final long THEME_COLOR_TRANSITION_DURATION = 250;
 
@@ -349,9 +347,8 @@ public class ToolbarPhone extends ToolbarLayout
             ToolbarTabController tabController,
             MenuButtonCoordinator menuButtonCoordinator,
             ToggleTabStackButtonCoordinator tabSwitcherButtonCoordinator,
-            NavigationPopup.HistoryDelegate historyDelegate,
-            BooleanSupplier partnerHomepageEnabledSupplier,
-            ToolbarTablet.OfflineDownloader offlineDownloader,
+            HistoryDelegate historyDelegate,
+            OfflineDownloader offlineDownloader,
             UserEducationHelper userEducationHelper,
             ObservableSupplier<Tracker> trackerSupplier,
             ToolbarProgressBar progressBar,
@@ -363,7 +360,6 @@ public class ToolbarPhone extends ToolbarLayout
                 menuButtonCoordinator,
                 tabSwitcherButtonCoordinator,
                 historyDelegate,
-                partnerHomepageEnabledSupplier,
                 offlineDownloader,
                 userEducationHelper,
                 trackerSupplier,
@@ -504,8 +500,6 @@ public class ToolbarPhone extends ToolbarLayout
     protected void onNativeLibraryReady() {
         super.onNativeLibraryReady();
 
-        mHomeButton.setOnClickListener(this);
-
         getTabSwitcherButtonCoordinator()
                 .getContainerView()
                 .setOnKeyListener(
@@ -571,21 +565,6 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         return super.onTouchEvent(ev);
-    }
-
-    @Override
-    public void onClick(View v) {
-        // Don't allow clicks while the omnibox is being focused.
-        if (mLocationBar != null && urlHasFocus()) {
-            return;
-        }
-        if (mHomeButton == v) {
-            recordHomeModuleClickedIfNTPVisible();
-            openHomepage();
-            if (mTrackerSupplier.hasValue() && mPartnerHomepageEnabledSupplier.getAsBoolean()) {
-                mTrackerSupplier.get().notifyEvent(EventConstants.PARTNER_HOME_PAGE_BUTTON_PRESSED);
-            }
-        }
     }
 
     @Override
@@ -2014,6 +1993,7 @@ public class ToolbarPhone extends ToolbarLayout
         updateLocationBarForNtp(mVisualState, urlHasFocus());
 
         getTabSwitcherButtonCoordinator().getContainerView().setClickable(!hasFocus);
+        mHomeButton.setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
     }
 
