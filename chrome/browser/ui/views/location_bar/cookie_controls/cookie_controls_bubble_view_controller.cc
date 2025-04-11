@@ -83,7 +83,7 @@ CookieControlsBubbleViewController::CookieControlsBubbleViewController(
       ax::mojom::Role::kAlert);
 }
 
-void CookieControlsBubbleViewController::OnUserClosedContentView() {
+void CookieControlsBubbleViewController::OnUserTriggeredReloadingAction() {
   if (!controller_->HasUserChangedCookieBlockingForSite()) {
     controller_observation_.Reset();
     bubble_view_->CloseWidget();
@@ -100,18 +100,18 @@ void CookieControlsBubbleViewController::OnUserClosedContentView() {
 }
 
 void CookieControlsBubbleViewController::SwitchToReloadingView() {
-  bubble_view_->SwitchToReloadingView();
-  bubble_view_->GetReloadingView()->GetViewAccessibility().AnnounceText(
-      l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,
-                                 GetSubjectUrlName(web_contents_.get())));
-  bubble_view_->GetReloadingView()->RequestFocus();
-
-  // Set a timeout for how long the reloading view is shown for.
+  if (!controller_->ShowActFeatures()) {
+    bubble_view_->SwitchToReloadingView();
+    bubble_view_->GetReloadingView()->GetViewAccessibility().AnnounceText(
+        l10n_util::GetStringFUTF16(IDS_COOKIE_CONTROLS_BUBBLE_RELOADING_LABEL,
+                                   GetSubjectUrlName(web_contents_.get())));
+    bubble_view_->GetReloadingView()->RequestFocus();
+  }
+  // Set a timeout for how long the reloading UI is shown for.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(
-          &CookieControlsBubbleViewController::OnReloadingViewTimeout,
-          weak_factory_.GetWeakPtr()),
+      base::BindOnce(&CookieControlsBubbleViewController::OnReloadingUiTimeout,
+                     weak_factory_.GetWeakPtr()),
       content_settings::features::kUserBypassUIReloadBubbleTimeout.Get());
 }
 
@@ -314,7 +314,7 @@ void CookieControlsBubbleViewController::
   CloseBubble();
 }
 
-void CookieControlsBubbleViewController::OnReloadingViewTimeout() {
+void CookieControlsBubbleViewController::OnReloadingUiTimeout() {
   base::RecordAction(
       base::UserMetricsAction("CookieControls.Bubble.ReloadingTimeout"));
   CloseBubble();
@@ -330,10 +330,11 @@ void CookieControlsBubbleViewController::CloseBubble() {
 }
 
 void CookieControlsBubbleViewController::SetCallbacks() {
-  on_user_closed_content_view_callback_ =
-      bubble_view_->RegisterOnUserClosedContentViewCallback(base::BindRepeating(
-          &CookieControlsBubbleViewController::OnUserClosedContentView,
-          base::Unretained(this)));
+  on_user_triggered_reloading_action_callback_ =
+      bubble_view_->RegisterOnUserTriggeredReloadingActionCallback(
+          base::BindRepeating(&CookieControlsBubbleViewController::
+                                  OnUserTriggeredReloadingAction,
+                              base::Unretained(this)));
 
   toggle_button_callback_ =
       bubble_view_->GetContentView()->RegisterToggleButtonPressedCallback(
@@ -360,10 +361,12 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
     base::RecordAction(base::UserMetricsAction(
         "CookieControls.Bubble.BlockThirdPartyCookies"));
   }
-  // We should only enter the reloading state in the Incognito ACT UI.
-  is_reloading_state_ = controller_->ShowActFeatures();
-
   controller_->SetUserChangedCookieBlockingForSite(true);
+  // We should only enter the reloading state in the Incognito ACT UI.
+  if (controller_->ShowActFeatures()) {
+    is_reloading_state_ = true;
+    OnUserTriggeredReloadingAction();
+  }
   // Set the toggle ON when protections are ON (cookies are blocked).
   controller_->OnCookieBlockingEnabledForSite(protections_on);
   bubble_view_->GetContentView()->NotifyAccessibilityEventDeprecated(

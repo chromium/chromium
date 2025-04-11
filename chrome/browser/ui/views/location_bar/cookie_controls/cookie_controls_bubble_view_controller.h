@@ -53,13 +53,13 @@ class CookieControlsBubbleViewController
   friend class CookieControlsBubbleViewBrowserTest;
 
   void SetCallbacks();
-  void OnUserClosedContentView();
+  void OnUserTriggeredReloadingAction();
   void OnToggleButtonPressed(bool toggled_on);
   void OnFeedbackButtonPressed();
 
   void OnFaviconFetched(const favicon_base::FaviconImageResult& result) const;
 
-  void OnReloadingViewTimeout();
+  void OnReloadingUiTimeout();
 
   void SwitchToReloadingView();
 
@@ -107,7 +107,7 @@ class CookieControlsBubbleViewController
   // Used for favicon loading tasks.
   base::CancelableTaskTracker cancelable_task_tracker_;
 
-  base::CallbackListSubscription on_user_closed_content_view_callback_;
+  base::CallbackListSubscription on_user_triggered_reloading_action_callback_;
   base::CallbackListSubscription toggle_button_callback_;
   base::CallbackListSubscription feedback_button_callback_;
   base::WeakPtr<content_settings::CookieControlsController> controller_;
