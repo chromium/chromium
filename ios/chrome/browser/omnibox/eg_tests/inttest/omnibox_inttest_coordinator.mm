@@ -53,7 +53,7 @@
                    isLensOverlay:YES];
 
   omniboxCoordinator.presenterDelegate = _viewController;
-  omniboxCoordinator.isSearchOnlyUI = YES;
+  omniboxCoordinator.searchOnlyUI = YES;
   [omniboxCoordinator start];
 
   auto fakeAutocompleteController =

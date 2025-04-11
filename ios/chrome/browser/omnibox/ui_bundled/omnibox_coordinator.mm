@@ -136,7 +136,7 @@
       GetOmniboxSuggestionIcon(OmniboxSuggestionIconType::kDefaultFavicon);
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
-  self.viewController.isSearchOnlyUI = self.isSearchOnlyUI;
+  self.viewController.searchOnlyUI = self.searchOnlyUI;
 
   BOOL isIncognito = self.profile->IsOffTheRecord();
   self.mediator = [[OmniboxMediator alloc]
@@ -275,8 +275,7 @@
 
 - (void)focusOmnibox {
   if (!self.keyboardAccessoryView &&
-      (!self.isSearchOnlyUI ||
-       experimental_flags::IsOmniboxDebuggingEnabled())) {
+      (!self.searchOnlyUI || experimental_flags::IsOmniboxDebuggingEnabled())) {
     TemplateURLService* templateURLService =
         ios::TemplateURLServiceFactory::GetForProfile(self.profile);
     self.keyboardAccessoryView = ConfigureAssistiveKeyboardViews(

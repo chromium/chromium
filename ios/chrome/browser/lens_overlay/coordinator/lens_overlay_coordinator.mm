@@ -1105,7 +1105,7 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
   // TODO(crbug.com/355179721): Add omnibox focus delegate.
   _omniboxCoordinator.presenterDelegate = _resultViewController;
-  _omniboxCoordinator.isSearchOnlyUI = YES;
+  _omniboxCoordinator.searchOnlyUI = YES;
   [_omniboxCoordinator start];
 
   [_omniboxCoordinator.managedViewController

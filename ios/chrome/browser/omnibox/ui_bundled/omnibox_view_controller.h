@@ -41,7 +41,7 @@
 @property(nonatomic, weak) id<OmniboxMutator> mutator;
 
 /// Whether the UI is configured for search-only mode.
-@property(nonatomic, assign) BOOL isSearchOnlyUI;
+@property(nonatomic, assign) BOOL searchOnlyUI;
 
 // The textfield used by this view controller.
 @property(nonatomic, readonly, strong) OmniboxTextFieldIOS* textField;

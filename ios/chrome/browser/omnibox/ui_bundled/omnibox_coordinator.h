@@ -50,7 +50,7 @@ class OmniboxClient;
 /// Controls the UI configuration of the omnibox to reflect search-only mode.
 /// Actual navigation limitations are managed by the `OmniboxClient`. Has to be
 /// configured before calling `start`. Defaults to `NO`.
-@property(nonatomic, assign) BOOL isSearchOnlyUI;
+@property(nonatomic, assign) BOOL searchOnlyUI;
 
 // The view controller managed by this coordinator. The parent of this
 // coordinator is expected to add it to the responder chain.

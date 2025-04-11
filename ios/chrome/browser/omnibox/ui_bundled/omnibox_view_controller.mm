@@ -665,7 +665,7 @@ using base::UserMetricsAction;
 
   if (self.view.thumbnailImage) {
     return l10n_util::GetNSString(IDS_IOS_OMNIBOX_PLACEHOLDER_IMAGE_SEARCH);
-  } else if (self.isSearchOnlyUI) {
+  } else if (self.searchOnlyUI) {
     return l10n_util::GetNSStringF(IDS_IOS_OMNIBOX_PLACEHOLDER_SEARCH_ONLY,
                                    self.searchProviderName);
   } else {
