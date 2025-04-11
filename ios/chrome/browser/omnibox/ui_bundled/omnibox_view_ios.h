@@ -109,8 +109,6 @@ class OmniboxViewIOS : public OmniboxView {
   // Called when autocomplete text is accepted. (e.g. tap on autocomplete text,
   // tap on left/right arrow key).
   void OnAcceptAutocomplete();
-  // Called when accepting current input / default suggestion.
-  void OnAccept();
 
   // OmniboxAutocompleteController interactions.
   void OnPopupDidScroll();

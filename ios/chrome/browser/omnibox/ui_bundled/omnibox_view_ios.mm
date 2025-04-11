@@ -405,23 +405,6 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
   OnBeforePossibleChange();
 }
 
-void OmniboxViewIOS::OnAccept() {
-  base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
-  base::RecordAction(UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
-
-  if (model()) {
-    // The omnibox edit model doesn't support accepting input with no text.
-    // Delegate the call to the client instead.
-    if (OmniboxClient* client = controller()->client();
-        client && !field_.text.length) {
-      client->OnThumbnailOnlyAccept();
-    } else {
-      model()->OpenSelection();
-    }
-  }
-  RevertAll();
-}
-
 void OmniboxViewIOS::WillPaste() {
   if (model()) {
     model()->OnPaste();

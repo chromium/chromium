@@ -7,6 +7,8 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/omnibox_view.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
@@ -115,8 +117,21 @@
 }
 
 - (void)acceptInput {
+  RecordAction(base::UserMetricsAction("MobileOmniboxUse"));
+  RecordAction(base::UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
+
+  if (_omniboxEditModel) {
+    // The omnibox edit model doesn't support accepting input with no text.
+    // Delegate the call to the client instead.
+    if (OmniboxClient* client = [self omniboxClient];
+        client && !self.textField.text.length) {
+      client->OnThumbnailOnlyAccept();
+    } else {
+      _omniboxEditModel->OpenSelection();
+    }
+  }
   if (_omniboxViewIOS) {
-    _omniboxViewIOS->OnAccept();
+    _omniboxViewIOS->RevertAll();
   }
 }
 
@@ -238,6 +253,12 @@
   [textModel exitPreEditState];
   [textModel setAdditionalText:nil];
   [textModel setText:previewText userTextLength:previewText.length];
+}
+
+#pragma mark - Private
+
+- (OmniboxClient*)omniboxClient {
+  return _omniboxController ? _omniboxController->client() : nullptr;
 }
 
 @end
