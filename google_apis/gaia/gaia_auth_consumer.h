@@ -26,9 +26,11 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaAuthConsumer {
                       bool is_under_advanced_protection,
                       bool is_bound_to_key);
     ClientOAuthResult(const ClientOAuthResult& other);
+    ClientOAuthResult& operator=(const ClientOAuthResult& other);
     ~ClientOAuthResult();
 
-    bool operator==(const ClientOAuthResult &b) const;
+    friend bool operator==(const ClientOAuthResult&,
+                           const ClientOAuthResult&) = default;
 
     // OAuth2 refresh token.  Used to mint new access tokens when needed.
     std::string refresh_token;

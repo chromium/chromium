@@ -20,12 +20,8 @@ GaiaAuthConsumer::ClientOAuthResult::ClientOAuthResult(
 
 GaiaAuthConsumer::ClientOAuthResult::ClientOAuthResult(
     const ClientOAuthResult& other) = default;
+GaiaAuthConsumer::ClientOAuthResult&
+GaiaAuthConsumer::ClientOAuthResult::operator=(const ClientOAuthResult& other) =
+    default;
 
 GaiaAuthConsumer::ClientOAuthResult::~ClientOAuthResult() = default;
-
-bool GaiaAuthConsumer::ClientOAuthResult::operator==(
-    const ClientOAuthResult &b) const {
-  return refresh_token == b.refresh_token &&
-      access_token == b.access_token &&
-      expires_in_secs == b.expires_in_secs;
-}

@@ -71,22 +71,6 @@ bool IsTransientError(GoogleServiceAuthError::State state) {
 }
 }  // namespace
 
-bool GoogleServiceAuthError::operator==(
-    const GoogleServiceAuthError& b) const {
-  return (state_ == b.state_) && (network_error_ == b.network_error_) &&
-         (error_message_ == b.error_message_) &&
-         (invalid_gaia_credentials_reason_ ==
-          b.invalid_gaia_credentials_reason_) &&
-         (scope_limited_unrecoverable_error_reason_ ==
-          b.scope_limited_unrecoverable_error_reason_) &&
-         (token_binding_challenge_ == b.token_binding_challenge_);
-}
-
-bool GoogleServiceAuthError::operator!=(
-    const GoogleServiceAuthError& b) const {
-  return !(*this == b);
-}
-
 GoogleServiceAuthError::GoogleServiceAuthError()
     : GoogleServiceAuthError(NONE) {}
 

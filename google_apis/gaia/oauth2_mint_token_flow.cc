@@ -252,11 +252,6 @@ std::string FindTokenBindingChallenge(
       .value_or(std::string());
 }
 
-bool AreCookiesEqual(const net::CanonicalCookie& lhs,
-                     const net::CanonicalCookie& rhs) {
-  return lhs.IsEquivalent(rhs);
-}
-
 void RecordApiCallMetrics(OAuth2MintTokenApiCallResult result,
                           std::optional<OAuth2Response> response) {
   // TODO(crbug.com/401211492): remove the "ApiCallResult" histogram in favor of
@@ -275,12 +270,6 @@ RemoteConsentResolutionData::RemoteConsentResolutionData(
     const RemoteConsentResolutionData& other) = default;
 RemoteConsentResolutionData& RemoteConsentResolutionData::operator=(
     const RemoteConsentResolutionData& other) = default;
-
-bool RemoteConsentResolutionData::operator==(
-    const RemoteConsentResolutionData& rhs) const {
-  return url == rhs.url &&
-         std::ranges::equal(cookies, rhs.cookies, &AreCookiesEqual);
-}
 
 OAuth2MintTokenFlow::Parameters::Parameters() = default;
 
