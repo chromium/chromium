@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -24,6 +25,7 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/test/mock_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -499,7 +501,11 @@ TEST_F(ContentDecodingInterceptorTest, OnTransferSizeUpdated) {
 // Verifies the behavior when the interceptor fails to create its internal Mojo
 // data pipe, simulating a resource exhaustion scenario.
 TEST_F(ContentDecodingInterceptorTest, CreateDataPipeFailure) {
-  ContentDecodingInterceptor::SetForceMojoCreateDataPipeFailureForTesting(true);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{network::features::kRendererSideContentDecoding,
+        {{"RendererSideContentDecodingForceMojoFailureForTesting", "true"}}}},
+      {});
 
   const std::string_view file_name = kBrotliTestFile;
   const std::vector<net::SourceStreamType> types = {
@@ -545,9 +551,6 @@ TEST_F(ContentDecodingInterceptorTest, CreateDataPipeFailure) {
   mojo::Receiver<network::mojom::URLLoaderClient> client_receiver(
       &client, std::move(endpoints->url_loader_client));
   run_loop.Run();
-
-  ContentDecodingInterceptor::SetForceMojoCreateDataPipeFailureForTesting(
-      false);
 }
 
 }  // namespace network

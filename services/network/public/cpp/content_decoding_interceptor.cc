@@ -233,10 +233,6 @@ class Interceptor : public network::mojom::URLLoaderClient,
 
 // static
 bool ContentDecodingInterceptor::
-    force_mojo_create_data_pipe_failure_for_testing_ = false;
-
-// static
-bool ContentDecodingInterceptor::
     is_network_serice_runnning_in_the_current_process_ = false;
 
 void ContentDecodingInterceptor::Intercept(
@@ -291,7 +287,7 @@ void ContentDecodingInterceptor::Intercept(
   std::move(swap_callback).Run(endpoints, pipe_consumer_handle);
 
   if (mojo_result != MOJO_RESULT_OK ||
-      force_mojo_create_data_pipe_failure_for_testing_) {
+      features::kRendererSideContentDecodingForceMojoFailureForTesting.Get()) {
     mojo::Remote<network::mojom::URLLoaderClient> client(
         std::move(url_loader_client));
     client->OnComplete(
@@ -348,7 +344,7 @@ void ContentDecodingInterceptor::InterceptOnNetworkService(
       "Network.ContentDecodingInterceptor.CreateDataPipe", mojo_result,
       MOJO_RESULT_SHOULD_WAIT + 1);
   if (mojo_result != MOJO_RESULT_OK ||
-      force_mojo_create_data_pipe_failure_for_testing_) {
+      features::kRendererSideContentDecodingForceMojoFailureForTesting.Get()) {
     mojo::PendingReceiver<network::mojom::URLLoaderClient> client_receiver;
     mojo::Remote<network::mojom::URLLoaderClient> client_remote(
         client_receiver.InitWithNewPipeAndPassRemote());
@@ -376,12 +372,6 @@ void ContentDecodingInterceptor::SetIsNetworkServiceRunningInTheCurrentProcess(
     bool value,
     SetIsNetworkServiceRunningInTheCurrentProcessKey) {
   is_network_serice_runnning_in_the_current_process_ = value;
-}
-
-// static
-void ContentDecodingInterceptor::SetForceMojoCreateDataPipeFailureForTesting(
-    bool value) {
-  force_mojo_create_data_pipe_failure_for_testing_ = value;
 }
 
 // static

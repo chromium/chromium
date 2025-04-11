@@ -112,11 +112,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
       network::mojom::URLLoaderClientEndpointsPtr& endpoints,
       mojo::ScopedDataPipeConsumerHandle& body);
 
-  // For testing purposes only. If set to true, the creation of the Mojo data
-  // pipe within this class's methods will be forced to fail, simulating an
-  // insufficient resources error (`net::ERR_INSUFFICIENT_RESOURCES`).
-  static void SetForceMojoCreateDataPipeFailureForTesting(bool value);
-
   // A capability class used as a key to restrict calls to
   // SetIsNetworkServiceRunningInTheCurrentProcess.
   class SetIsNetworkServiceRunningInTheCurrentProcessKey {
@@ -135,9 +130,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) ContentDecodingInterceptor {
   // Decoding is allowed in non-browser processes. In the browser process,
   // it's only allowed if the Network Service is also running in-process.
   static bool IsInContentDecodingAllowedProcess();
-
-  // Backing flag for the test utility above. Defined in the .cc file.
-  static bool force_mojo_create_data_pipe_failure_for_testing_;
 
   // Flag indicating if the network service is running in the current process.
   static bool is_network_serice_runnning_in_the_current_process_;
