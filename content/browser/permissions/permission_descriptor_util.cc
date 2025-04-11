@@ -139,12 +139,14 @@ content::PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::DISPLAY_CAPTURE);
     case blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS:
-      NOTREACHED();
+      return CreatePermissionDescriptor(
+          blink::mojom::PermissionName::TOP_LEVEL_STORAGE_ACCESS);
     case blink::PermissionType::CAPTURED_SURFACE_CONTROL:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::CAPTURED_SURFACE_CONTROL);
     case blink::PermissionType::SMART_CARD:
-      NOTREACHED();
+      return CreatePermissionDescriptor(
+          blink::mojom::PermissionName::SMART_CARD);
     case blink::PermissionType::WEB_PRINTING:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::WEB_PRINTING);
