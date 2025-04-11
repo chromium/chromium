@@ -666,25 +666,28 @@ suite('SettingsSectionTest', function() {
     assertFalse(isVisible($$(section, '#changePasswordManagerPinRow')));
   });
 
-  test('Change Password Manager PIN is available', async function() {
-    syncProxy.syncInfo = {
-      isEligibleForAccountStorage: false,
-      isSyncingPasswords: true,
-    };
-    passwordManager.data.isPasswordManagerPinAvailable = true;
+  test(
+      'Change Password Manager PIN is available for signed in',
+      async function() {
+        syncProxy.syncInfo = {
+          isEligibleForAccountStorage: true,
+          isSyncingPasswords: false,
+        };
+        passwordManager.data.isAccountStorageEnabled = true;
+        passwordManager.data.isPasswordManagerPinAvailable = true;
 
-    const section = document.createElement('settings-section');
-    document.body.appendChild(section);
-    await flushTasks();
+        const section = document.createElement('settings-section');
+        document.body.appendChild(section);
+        await flushTasks();
 
-    const changePasswordManagerPinRow =
-        $$(section, '#changePasswordManagerPinRow');
+        const changePasswordManagerPinRow =
+            $$(section, '#changePasswordManagerPinRow');
 
-    assertTrue(!!changePasswordManagerPinRow);
+        assertTrue(!!changePasswordManagerPinRow);
 
-    changePasswordManagerPinRow.click();
-    await passwordManager.whenCalled('changePasswordManagerPin');
-  });
+        changePasswordManagerPinRow.click();
+        await passwordManager.whenCalled('changePasswordManagerPin');
+      });
 
   test(
       'Change PIN and Disconnect Enclave rows hides with sync',
