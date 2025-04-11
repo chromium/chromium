@@ -2324,4 +2324,43 @@ TEST_F(ComputedStyleTest, HasEnvSafeAreaInsetBottom) {
   EXPECT_TRUE(StyleForElement("t6").HasEnvSafeAreaInsetBottom());
 }
 
+TEST_F(ComputedStyleTest, CursorInheritance) {
+  Document& document = GetDocument();
+  document.body()->setInnerHTML(R"HTML(
+    <style>
+      #parent {
+        cursor: pointer;
+      }
+      #child-no-inherit {
+        cursor: pointer;
+      }
+      #outer {
+      cursor: initial;
+    }
+    </style>
+    <div id="parent">
+      <div id="child-no-inherit"></div>
+      <div id="child-inherit"></div>
+    </div>
+    <div id="outer"></div>
+  )HTML");
+  document.View()->UpdateAllLifecyclePhasesForTest();
+
+  const auto& parent = StyleForElement("parent");
+  EXPECT_EQ(parent.Cursor(), ECursor::kPointer);
+  EXPECT_FALSE(parent.CursorIsInherited());
+
+  const auto& child_no_inherit = StyleForElement("child-no-inherit");
+  EXPECT_EQ(child_no_inherit.Cursor(), ECursor::kPointer);
+  EXPECT_FALSE(child_no_inherit.CursorIsInherited());
+
+  const auto& child_inherit = StyleForElement("child-inherit");
+  EXPECT_EQ(child_inherit.Cursor(), ECursor::kPointer);
+  EXPECT_TRUE(child_inherit.CursorIsInherited());
+
+  const auto& outer = StyleForElement("outer");
+  EXPECT_EQ(outer.Cursor(), ECursor::kAuto);
+  EXPECT_FALSE(outer.CursorIsInherited());
+}
+
 }  // namespace blink

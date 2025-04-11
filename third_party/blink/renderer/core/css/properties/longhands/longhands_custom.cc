@@ -3402,12 +3402,14 @@ void Cursor::ApplyInitial(StyleResolverState& state) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   builder.ClearCursorList();
   builder.SetCursor(ComputedStyleInitialValues::InitialCursor());
+  builder.SetCursorIsInherited(false);
 }
 
 void Cursor::ApplyInherit(StyleResolverState& state) const {
   ComputedStyleBuilder& builder = state.StyleBuilder();
   builder.SetCursor(state.ParentStyle()->Cursor());
   builder.SetCursorList(state.ParentStyle()->Cursors());
+  builder.SetCursorIsInherited(true);
 }
 
 void Cursor::ApplyValue(StyleResolverState& state,
@@ -3430,6 +3432,8 @@ void Cursor::ApplyValue(StyleResolverState& state,
   } else {
     builder.SetCursor(To<CSSIdentifierValue>(value).ConvertTo<ECursor>());
   }
+
+  builder.SetCursorIsInherited(false);
 }
 
 const CSSValue* Cx::ParseSingleValue(CSSParserTokenStream& stream,

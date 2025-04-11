@@ -3075,6 +3075,7 @@
       name: "cursor",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
+      independent: true,
       field_template: "keyword",
       keywords: [
         "auto", "default", "none", "context-menu", "help", "pointer",
