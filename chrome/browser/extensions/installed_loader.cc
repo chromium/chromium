@@ -24,6 +24,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/extension_allowlist.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/profile_util.h"
@@ -61,10 +62,6 @@
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_management.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -290,12 +287,9 @@ void LogHostPermissionsAccess(const Extension& extension,
 InstalledLoader::InstalledLoader(Profile* profile)
     : profile_(profile),
       extension_registry_(ExtensionRegistry::Get(profile_)),
-      extension_prefs_(ExtensionPrefs::Get(profile_)) {
-#if !BUILDFLAG(IS_ANDROID)
-  extension_management_ =
-      ExtensionManagementFactory::GetForBrowserContext(profile_);
-#endif
-}
+      extension_prefs_(ExtensionPrefs::Get(profile_)),
+      extension_management_(
+          ExtensionManagementFactory::GetForBrowserContext(profile_)) {}
 
 InstalledLoader::~InstalledLoader() = default;
 
@@ -1208,13 +1202,7 @@ void InstalledLoader::HandleCorruptExtension(const Extension& extension,
 }
 
 bool InstalledLoader::UpdatesFromWebstore(const Extension& extension) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android.
-  NOTIMPLEMENTED() << "UpdatesFromWebstore";
-  return true;
-#else
   return extension_management_->UpdatesFromWebstore(extension);
-#endif
 }
 
 }  // namespace extensions

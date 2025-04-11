@@ -29,6 +29,7 @@
 #include "chrome/browser/extensions/corrupted_extension_reinstaller.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/delayed_install_manager.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/external_install_manager.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
@@ -61,10 +62,6 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_management.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -1072,17 +1069,9 @@ std::set<ExtensionId> ExtensionUpdater::GetCorruptedExtensionIds() const {
 }
 
 GURL ExtensionUpdater::GetEffectiveUpdateURL(const Extension& extension) const {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/394876083): Use ExtensionManagement when it
-  // is ported to desktop Android.
-  // Only log once because this is called inside a loop.
-  NOTIMPLEMENTED_LOG_ONCE() << "GetEffectiveUpdateURL";
-  return ManifestURL::GetUpdateURL(&extension);
-#else
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   return extension_management->GetEffectiveUpdateURL(extension);
-#endif
 }
 
 ExtensionUpdater::ScopedSkipScheduledCheckForTest::

@@ -10,11 +10,8 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/chrome_extension_system_factory.h"
-#endif
 
 using content::BrowserContext;
 
@@ -49,14 +46,7 @@ ExtensionErrorControllerFactory::ExtensionErrorControllerFactory()
   DependsOn(ExtensionRegistryFactory::GetInstance());
   DependsOn(ExtensionPrefsFactory::GetInstance());
   DependsOn(PendingExtensionManagerFactory::GetInstance());
-  // TODO(crbug.com/394876083): `ExtensionSystem` is used by
-  // `ExtensionErrorController` to access `management_policy()`. Since
-  // `ManagementPolicy` is not supported on desktop android yet,
-  // `ExtensionSystem` is not used on desktop android. Port the following code
-  // when policy management is supported.
-#if !BUILDFLAG(IS_ANDROID)
-  DependsOn(ChromeExtensionSystemFactory::GetInstance());
-#endif
+  DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 
 ExtensionErrorControllerFactory::~ExtensionErrorControllerFactory() = default;

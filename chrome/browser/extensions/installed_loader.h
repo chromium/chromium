@@ -94,7 +94,6 @@ class InstalledLoader {
 
   // ExtensionManager pointer is cached for performance as we loop through
   // extensions.
-  // TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android.
   raw_ptr<ExtensionManagement> extension_management_ = nullptr;
 
   // Paths to invalid extension manifests, which should not be loaded.

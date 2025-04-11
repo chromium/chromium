@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/blocklist_check.h"
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_approval.h"
@@ -81,7 +82,6 @@
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_service.h"
 #endif
 
@@ -1261,27 +1261,15 @@ void CrxInstaller::OnBrowserTerminating() {
 }
 
 GURL CrxInstaller::GetEffectiveUpdateURL(const Extension& extension) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/394876083): Use ExtensionManagement when it
-  // is ported to desktop Android.
-  return ManifestURL::GetUpdateURL(&extension);
-#else
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   return extension_management->GetEffectiveUpdateURL(extension);
-#endif
 }
 
 bool CrxInstaller::UpdatesFromWebstore(const Extension& extension) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/394876083): Use ExtensionManagement when it
-  // is ported to desktop Android.
-  return true;
-#else
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   return extension_management->UpdatesFromWebstore(extension);
-#endif
 }
 
 }  // namespace extensions

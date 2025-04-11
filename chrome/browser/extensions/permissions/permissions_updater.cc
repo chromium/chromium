@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -43,10 +44,6 @@
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern_set.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/extensions/extension_management.h"
-#endif
 
 using content::RenderProcessHost;
 
@@ -440,11 +437,6 @@ void PermissionsUpdater::RevokeRuntimePermissions(
 
 void PermissionsUpdater::ApplyPolicyHostRestrictions(
     const Extension& extension) {
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/394876083): Port to desktop Android when ExtensionManagement
-  // is supported.
-  NOTIMPLEMENTED() << "ApplyPolicyHostRestrictions is not yet supported";
-#else
   ExtensionManagement* management =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
   if (management->UsesDefaultPolicyHostRestrictions(&extension)) {
@@ -454,7 +446,6 @@ void PermissionsUpdater::ApplyPolicyHostRestrictions(
                               management->GetPolicyBlockedHosts(&extension),
                               management->GetPolicyAllowedHosts(&extension));
   }
-#endif
 }
 
 void PermissionsUpdater::SetPolicyHostRestrictions(
