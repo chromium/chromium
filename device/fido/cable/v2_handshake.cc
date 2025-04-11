@@ -64,7 +64,7 @@ bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12> out_nonce) {
 
   auto [zeros, counter_span] = out_nonce.split_at<8>();
   std::ranges::fill(zeros, uint8_t{0});
-  counter_span.copy_from(base::numerics::U32ToBigEndian(counter));
+  counter_span.copy_from(base::U32ToBigEndian(counter));
   return true;
 }
 

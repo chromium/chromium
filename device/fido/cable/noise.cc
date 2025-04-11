@@ -115,7 +115,7 @@ std::vector<uint8_t> Noise::EncryptAndHash(
     base::span<const uint8_t> plaintext) {
   uint8_t nonce[12] = {};
   base::span(nonce).first<4u>().copy_from(
-      base::numerics::U32ToBigEndian(symmetric_nonce_));
+      base::U32ToBigEndian(symmetric_nonce_));
   symmetric_nonce_++;
 
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
@@ -129,7 +129,7 @@ std::optional<std::vector<uint8_t>> Noise::DecryptAndHash(
     base::span<const uint8_t> ciphertext) {
   uint8_t nonce[12] = {};
   base::span(nonce).first<4u>().copy_from(
-      base::numerics::U32ToBigEndian(symmetric_nonce_));
+      base::U32ToBigEndian(symmetric_nonce_));
   symmetric_nonce_++;
 
   crypto::Aead aead(crypto::Aead::AES_256_GCM);
