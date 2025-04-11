@@ -64,13 +64,13 @@ jobs:
       fail-fast: false
       matrix:
         # Should be in sync with `update_expectations` job.
-        kind: [chromedriver, mapper]
+        kind: [cd, node]
         head: [headless, headful]
         total_chunks: [6]
         this_chunk: [1, 2, 3, 4, 5, 6]
         exclude:
-          # Don't run headful mapper, as it takes too long.
-          - kind: mapper
+          # Don't run headful node, as it takes too long.
+          - kind: node
             head: headful
     steps:
       - name: Checkout
@@ -108,7 +108,7 @@ jobs:
           xvfb-run --auto-servernum
           npm run wpt -- "webdriver/tests/bidi/${{ github.event.inputs.tests }}"
         env:
-          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           HEADLESS: ${{ matrix.head!='headful' }}
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
@@ -116,12 +116,12 @@ jobs:
           VERBOSE: ${{ github.event.inputs.verbose }}
           WPT_REPORT: out/wptreport.${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}.json
       - name: Run WPT interop tests
-        if: ${{matrix.kind == 'chromedriver'}}
+        if: ${{matrix.kind == 'cd'}}
         run: >
           xvfb-run --auto-servernum
           npm run wpt -- "webdriver/tests/interop/${{ github.event.inputs.tests }}"
         env:
-          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           CHROMEDRIVER_LOG_NAME: 'chromedriver-interop'
           THIS_CHUNK: ${{ matrix.this_chunk }}
           TOTAL_CHUNKS: ${{ matrix.total_chunks }}
@@ -145,11 +145,11 @@ jobs:
     strategy:
       matrix:
         # Should be in sync with `wpt` job.
-        kind: [chromedriver, mapper]
+        kind: [cd, node]
         head: [headless, headful]
         exclude:
-          # Don't run headful mapper, as it takes too long.
-          - kind: mapper
+          # Don't run headful node, as it takes too long.
+          - kind: node
             head: headful
     runs-on: ubuntu-latest
     needs: [wpt-required]
@@ -189,7 +189,7 @@ jobs:
       - name: Update expectations
         timeout-minutes: 60
         env:
-          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           HEADLESS: ${{ matrix.head!='headful' }}
           # Do not run tests, only update expectations.
           RUN_TESTS: false
@@ -202,9 +202,9 @@ jobs:
           -name "wptreport.${{ matrix.kind }}-${{ matrix.head }}*.json"
           -exec npm run wpt -- --wpt-report {} \;
       - name: Update interop expectations
-        if: ${{ matrix.kind == 'chromedriver' }}
+        if: ${{ matrix.kind == 'cd' }}
         env:
-          CHROMEDRIVER: ${{ matrix.kind == 'chromedriver' }}
+          CHROMEDRIVER: ${{ matrix.kind == 'cd' }}
           HEADLESS: ${{ matrix.head!='headful' }}
           # Do not run tests, only update expectations.
           RUN_TESTS: false

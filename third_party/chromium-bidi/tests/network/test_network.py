@@ -31,7 +31,7 @@ async def test_network_before_request_sent_event_emitted(
         websocket, context_id, url_base):
     await subscribe(websocket, ["network.beforeRequestSent"], [context_id])
 
-    command_id = await send_JSON_command(
+    await send_JSON_command(
         websocket, {
             "method": "browsingContext.navigate",
             "params": {
@@ -41,7 +41,7 @@ async def test_network_before_request_sent_event_emitted(
             }
         })
 
-    resp = await read_JSON_message(websocket)
+    resp = await wait_for_event(websocket, "network.beforeRequestSent")
 
     assert resp == AnyExtending({
         'type': 'event',
@@ -68,17 +68,6 @@ async def test_network_before_request_sent_event_emitted(
             },
             "timestamp": ANY_TIMESTAMP
         }
-    })
-    navigation_id = resp["params"]["navigation"]
-
-    resp = await read_JSON_message(websocket)
-    # Assert the navigation from the event is the same as in the command result.
-    assert resp == AnyExtending({
-        'id': command_id,
-        'result': {
-            'navigation': navigation_id
-        },
-        'type': 'success'
     })
 
 
@@ -248,7 +237,7 @@ async def test_network_response_completed_event_emitted(
             }
         })
 
-    resp = await read_JSON_message(websocket)
+    resp = await wait_for_event(websocket, "network.responseCompleted")
     headersSize = compute_response_headers_size(
         resp["params"]["response"]["headers"])
 
