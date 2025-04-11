@@ -62,6 +62,7 @@
     <string name="share_state_default_text">Default</string>
     <string name="share_state_on_text">On</string>
     <string name="share_state_off_text">Off</string>
+    <string name="use_separate_task_text">Launch in a separate task</string>
     <string name="cct_type">CCT Type:</string>
     <string name="background_interact_text">Interact with Background App</string>
     <string name="side_sheet_max_button_text">Add Max Button(SideSheet only)</string>

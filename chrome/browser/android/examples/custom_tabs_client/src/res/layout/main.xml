@@ -726,5 +726,12 @@
             android:layout_height="wrap_content"
             android:checked = "false"
             android:text="@string/ephemeral_cct_text" />
+
+        <CheckBox
+            android:id="@+id/use_separate_task_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked = "false"
+            android:text="@string/use_separate_task_text" />
     </LinearLayout>
 </ScrollView>

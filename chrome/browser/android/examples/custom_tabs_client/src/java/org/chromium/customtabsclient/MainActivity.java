@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity
     private static final String SHARED_PREF_MAY_LAUNCH_BUTTON = "MayLaunchButton";
     private static final String SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON = "EngagementSignalsButton";
     private static final String SHARED_PREF_CUSTOM_SCHEME = "CustomScheme";
+    private static final String SHARED_PREF_USE_SEPARATE_TASK_BUTTON = "SeparateTaskButton";
     private static final String CCT_OPTION_REGULAR = "CCT";
     private static final String CCT_OPTION_PARTIAL = "Partial CCT";
     private static final String CCT_OPTION_INCOGNITO = "Incognito CCT";
@@ -197,6 +198,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mSearchInCctCheckbox;
     private CheckBox mSendToExternalAppCheckbox;
     private CheckBox mShareIdentityCheckbox;
+    private CheckBox mUseSeparateTaskCheckbox;
     private TextView mPcctBreakpointLabel;
     private SeekBar mPcctBreakpointSlider;
     private TextView mPcctInitialHeightLabel;
@@ -780,6 +782,9 @@ public class MainActivity extends AppCompatActivity
         mSendToExternalAppCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SEND_TO_EXTERNAL_APP, UNCHECKED) == CHECKED);
         mCustomScheme = mSharedPref.getString(SHARED_PREF_CUSTOM_SCHEME, "myscheme");
+        mUseSeparateTaskCheckbox = findViewById(R.id.use_separate_task_checkbox);
+        mUseSeparateTaskCheckbox.setChecked(
+                mSharedPref.getInt(SHARED_PREF_USE_SEPARATE_TASK_BUTTON, UNCHECKED) == CHECKED);
         EditText customSchemeEdit = (EditText) findViewById(R.id.custom_scheme);
         customSchemeEdit.setText(mCustomScheme, TextView.BufferType.NORMAL);
     }
@@ -1154,6 +1159,9 @@ public class MainActivity extends AppCompatActivity
                 builder.setSecondaryToolbarSwipeUpGesture(pi);
             }
             customTabsIntent = builder.build();
+            if (mUseSeparateTaskCheckbox.isChecked()) {
+                customTabsIntent.intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
             customTabsIntent.intent.putExtra(
                     "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
                     mCctType.equals(CCT_OPTION_INCOGNITO));
@@ -1214,6 +1222,9 @@ public class MainActivity extends AppCompatActivity
         editor.putInt(
                 SHARED_PREF_EPHEMERAL_BROWSING,
                 mEphemeralCctCheckbox.isChecked() ? CHECKED : UNCHECKED);
+        editor.putInt(
+                SHARED_PREF_USE_SEPARATE_TASK_BUTTON,
+                mUseSeparateTaskCheckbox.isChecked() ? CHECKED : UNCHECKED);
         editor.putInt(SHARED_PREF_DECORATION, decorationType);
         editor.apply();
     }
