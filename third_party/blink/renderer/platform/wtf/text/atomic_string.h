@@ -93,7 +93,6 @@ class WTF_EXPORT AtomicString {
   StringImpl* Impl() const { return string_.Impl(); }
 
   bool Is8Bit() const { return string_.Is8Bit(); }
-  const LChar* Characters8() const { return string_.Characters8(); }
   const UChar* Characters16() const { return string_.Characters16(); }
   wtf_size_t length() const { return string_.length(); }
   base::span<const LChar> Span8() const { return string_.Span8(); }

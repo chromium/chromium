@@ -717,18 +717,15 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     pseudo_type_map = std::begin(kPseudoTypeWithoutArgumentsMap);
     pseudo_type_map_end = std::end(kPseudoTypeWithoutArgumentsMap);
   }
-  const NameToPseudoStruct* match = std::lower_bound(
-      pseudo_type_map, pseudo_type_map_end, name,
-      [](const NameToPseudoStruct& entry, const AtomicString& name) -> bool {
-        DCHECK(name.Is8Bit());
-        DCHECK(entry.string);
-        // If strncmp returns 0, then either the keys are equal, or |name| sorts
-        // before |entry|.
-        return UNSAFE_TODO(
-                   strncmp(entry.string,
-                           reinterpret_cast<const char*>(name.Characters8()),
-                           name.length())) < 0;
-      });
+  DCHECK(name.Is8Bit());
+  std::string_view latin1_name = base::as_string_view(name.Span8());
+  const NameToPseudoStruct* match =
+      std::lower_bound(pseudo_type_map, pseudo_type_map_end, latin1_name,
+                       [](const NameToPseudoStruct& entry,
+                          const std::string_view& latin1_name) -> bool {
+                         DCHECK(entry.string);
+                         return std::string_view(entry.string) < latin1_name;
+                       });
   if (match == pseudo_type_map_end || match->string != name.GetString()) {
     return CSSSelector::kPseudoUnknown;
   }
