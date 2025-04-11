@@ -1936,6 +1936,28 @@ TEST_F(TabStripModelTest, AddToSplitInPinned) {
   EXPECT_TRUE(tabstrip.empty());
 }
 
+TEST_F(TabStripModelTest, AddToSplitInSelected) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create five tabs.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
+
+  tabstrip.ActivateTabAt(0);
+  tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0s 1s 2 3 4", GetTabStripStateString(tabstrip));
+  EXPECT_EQ(tabstrip.active_index(), 0);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(0));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
 TEST_F(TabStripModelTest, UnsplitOperation) {
   scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
   TestTabStripModelDelegate delegate;

@@ -3193,6 +3193,19 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
   split_tab_data_map_[split_id] =
       std::make_unique<split_tabs::SplitTabData>(this, split_id, tab_layout);
 
+  // Since the split contains the active tabs, all tabs in the split must be
+  // selected.
+  const ui::ListSelectionModel old_selection_model = selection_model();
+
+  for (auto split_tab : tabs_with_indices) {
+    selection_model_.AddIndexToSelection(split_tab.second);
+  }
+
+  TabStripSelectionChange selection(GetActiveTab(), old_selection_model);
+  selection.new_model = selection_model();
+  TabStripModelChange change;
+  OnChange(change, selection);
+
   for (TabStripModelObserver& observer : observers_) {
     observer.OnSplitTabCreated(
         tabs_with_indices, split_id,
