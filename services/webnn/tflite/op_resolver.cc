@@ -14,6 +14,10 @@
 #include "third_party/tflite/src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h"
 #endif
 
+#if BUILDFLAG(BUILD_TFLITE_WITH_OPENCL)
+#include "third_party/tflite/src/tensorflow/lite/delegates/gpu/delegate.h"
+#endif
+
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
 #include "third_party/tflite/src/tensorflow/lite/tflite_with_xnnpack_optional.h"
 #endif
@@ -312,6 +316,15 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options,
                 });
           });
     }
+  }
+#endif
+
+#if BUILDFLAG(BUILD_TFLITE_WITH_OPENCL)
+  if (options.device == mojom::CreateContextOptions::Device::kGpu) {
+    delegate_creators_.push_back([](TfLiteContext* context) {
+      return std::unique_ptr<TfLiteDelegate, void (*)(TfLiteDelegate*)>(
+          TfLiteGpuDelegateV2Create(nullptr), TfLiteGpuDelegateV2Delete);
+    });
   }
 #endif
 
