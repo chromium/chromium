@@ -265,17 +265,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes"
-    units="bytes" expires_after="2023-06-18">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    Records the size of Credential ID for secure-payment-confirmation method in
-    bytes.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.Show.TryShowOutcome"
     enum="PaymentRequestTryShowOutcome" expires_after="2025-09-28">
   <owner>smcgruer@chromium.org</owner>

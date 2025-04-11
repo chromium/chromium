@@ -189,7 +189,6 @@ source_set("unit_tests") {
     "payment_request_metrics_unittest.cc",
     "payment_shipping_option_unittest.cc",
     "payments_validators_unittest.cc",
-    "secure_payment_confirmation_credential_unittest.cc",
     "url_util_unittest.cc",
   ]
 

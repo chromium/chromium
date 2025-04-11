@@ -149,15 +149,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationAuthenticatorCreateTest,
   EXPECT_EQ("PublicKeyCredential", info.webidl_type);
   EXPECT_EQ("webauthn.create", info.type);
 
-  // Verify that the correct metrics are recorded.
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 1U);
-
-  // Check that we can create a second credential, and that the tracked metrics
-  // update.
+  // Check that we can create a second credential successfully.
   CreatePaymentCredential();
-  histogram_tester_.ExpectTotalCount(
-      "PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes", 2U);
 }
 
 // b.com cannot create a credential with RP = "a.com".
