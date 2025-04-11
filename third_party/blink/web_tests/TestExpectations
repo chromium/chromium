@@ -8912,7 +8912,7 @@ crbug.com/390162925 [ Win10.20h2 ] virtual/gpu-rasterization/images/png-suite/te
 crbug.com/383667702 [ Linux ] external/wpt/html/interaction/focus/the-autofocus-attribute/spin-by-blocking-style-sheet.html [ Failure ]
 
 # Gardener 2025-01-16
-crbug.com/40839871 [ Mac ] http/tests/inspector-protocol/network/cookies-protocol-test.js [ Skip Timeout ]
+crbug.com/40839871 http/tests/inspector-protocol/network/cookies-protocol-test.js [ Skip Timeout ]
 
 ## Flaky CSS WPT Tests on headless_shell_wpt:
 crbug.com/390162928 external/wpt/css/css-rhythm/block-step-size-establishes-block-formatting-context-list-item.html [ Failure Skip Timeout ]
