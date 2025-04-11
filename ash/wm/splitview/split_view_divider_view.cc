@@ -205,10 +205,10 @@ void SplitViewDividerView::OnGestureEvent(ui::GestureEvent* event) {
       divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
       break;
     case ui::EventType::kGestureEnd: {
+      auto weak_this = weak_ptr_factory_.GetWeakPtr();
       EndResizing(location, /*swap_windows=*/false);
-
-      // `EndResizing()` may set `divider_` to nullptr and causing crash.
-      if (divider_) {
+      // `EndResizing()` may delete the dividier view.
+      if (weak_this && divider_) {
         divider_->EnlargeOrShrinkDivider(/*should_enlarge=*/false);
       }
       break;
