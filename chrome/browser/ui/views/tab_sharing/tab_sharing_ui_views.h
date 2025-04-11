@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/image_model.h"
@@ -218,6 +219,7 @@ class TabSharingUIViews : public TabSharingUI,
 
   raw_ptr<content::WebContents, DanglingUntriaged> shared_tab_;
   std::unique_ptr<SameOriginObserver> shared_tab_origin_observer_;
+  const url_formatter::SchemeDisplay shared_tab_scheme_display_;
   std::u16string shared_tab_name_;
   std::unique_ptr<content::MediaStreamUI> tab_capture_indicator_ui_;
 

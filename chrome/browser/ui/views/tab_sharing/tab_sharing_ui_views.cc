@@ -38,7 +38,6 @@
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
-#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/desktop_media_id.h"
@@ -49,6 +48,7 @@
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/common/constants.h"
+#include "media/capture/capture_switches.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -83,14 +83,48 @@ BASE_FEATURE(kTabSharingBarReplace,
              "TabSharingBarReplace",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Omit http:// and https:// url-schemes for the shared tab in the
+// TabSharingInfoBar.
+// This flag only has an effect if:
+// - the TabCaptureInfobarLinks feature is enabled.
+BASE_FEATURE(kTabSharingBarOmitHttpAndHttps,
+             "TabSharingBarOmitHttpAndHttps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Omit cryptographic url-schemes for the shared tab in the TabSharingInfoBar.
+// This flag only has an effect if:
+// - the TabCaptureInfobarLinks feature is enabled, and
+// - the TabSharingBarOmitHttpAndHttps feature is disabled.
+BASE_FEATURE(kTabSharingBarOmitCryptographic,
+             "TabSharingBarOmitCryptographic",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_CHROMEOS)
 bool g_apply_dlp_for_all_users_for_testing_ = false;
 #endif
 
-std::u16string GetTabName(WebContents* tab) {
+url_formatter::SchemeDisplay GetSharedTabSchemeDisplay() {
+  if (!base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks)) {
+    return url_formatter::SchemeDisplay::SHOW;
+  }
+
+  if (base::FeatureList::IsEnabled(kTabSharingBarOmitHttpAndHttps)) {
+    return url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS;
+  }
+
+  if (base::FeatureList::IsEnabled(kTabSharingBarOmitCryptographic)) {
+    return url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC;
+  }
+
+  return url_formatter::SchemeDisplay::SHOW;
+}
+
+std::u16string GetSharedTabName(
+    WebContents* tab,
+    const url_formatter::SchemeDisplay scheme_display) {
   const std::u16string formatted_origin =
       url_formatter::FormatOriginForSecurityDisplay(
-          tab->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+          tab->GetPrimaryMainFrame()->GetLastCommittedOrigin(), scheme_display);
   return formatted_origin.empty() ? tab->GetTitle() : formatted_origin;
 }
 
@@ -193,6 +227,7 @@ TabSharingUIViews::TabSharingUIViews(
       shared_tab_(WebContents::FromRenderFrameHost(RenderFrameHost::FromID(
           media_id.web_contents_id.render_process_id,
           media_id.web_contents_id.main_render_frame_id))),
+      shared_tab_scheme_display_(GetSharedTabSchemeDisplay()),
       favicons_used_for_switch_to_tab_button_(
           favicons_used_for_switch_to_tab_button),
       app_preferred_current_tab_(app_preferred_current_tab),
@@ -201,7 +236,7 @@ TabSharingUIViews::TabSharingUIViews(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Observe(shared_tab_);
-  shared_tab_name_ = GetTabName(shared_tab_);
+  shared_tab_name_ = GetSharedTabName(shared_tab_, shared_tab_scheme_display_);
 
   if (capturer_restricted_to_same_origin_) {
     // base::Unretained is safe here because we own the origin observer, so it
@@ -378,7 +413,7 @@ void TabSharingUIViews::PrimaryPageChanged(content::Page& page) {
   if (!shared_tab_) {
     return;
   }
-  shared_tab_name_ = GetTabName(shared_tab_);
+  shared_tab_name_ = GetSharedTabName(shared_tab_, shared_tab_scheme_display_);
   for (const auto& infobars_entry : infobars_) {
     // Recreate infobars to reflect the new shared tab's hostname.
     if (infobars_entry.first != shared_tab_) {
