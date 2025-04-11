@@ -54,7 +54,12 @@ source_set("share") {
       "share_extension_sheet.h",
       "share_extension_sheet.mm",
     ]
-    deps += [ "//ios/chrome/common/ui/confirmation_alert" ]
+    deps += [
+      "//build:branding_buildflags",
+      "//ios/chrome/common/ui/confirmation_alert",
+      "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+      "//ios/chrome/share_extension/resources",
+    ]
   } else {
     sources += [
       "share_extension_view.h",

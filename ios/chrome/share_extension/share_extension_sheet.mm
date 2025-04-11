@@ -8,7 +8,9 @@
 
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
+#import "build/branding_buildflags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/share_extension/share_extension_delegate.h"
 
@@ -34,6 +36,12 @@ CGFloat const kSharedImageHeight = 181;
 
 // Custom radius for the half sheet presentation.
 CGFloat const kHalfSheetCornerRadius = 20;
+
+// The coefficient to multiply the title view font with to get the logo size.
+constexpr CGFloat kLogoTitleFontMultiplier = 1.25;
+
+// The spacing between the sheet's title and icon.
+CGFloat const kTitleViewSpacing = 3.0;
 
 // Custom detent identifier for when the bottom sheet is minimized.
 NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
@@ -68,7 +76,8 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
 
   self.customScrollViewBottomInsets = 0;
   self.customGradientViewHeight = 0;
-  self.titleView = [self configureSheetTitleLabel];
+
+  self.titleView = [self configureSheetTitleView];
 
   self.underTitleView = [self configureMainView];
   self.dismissBarButtonSystemItem = UIBarButtonSystemItemClose;
@@ -199,11 +208,34 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
       kCustomMinimizedDetentIdentifier;
 }
 
-- (UILabel*)configureSheetTitleLabel {
-  UILabel* titleLabel = [[UILabel alloc] init];
+- (UIView*)configureSheetTitleView {
+  BrandedNavigationItemTitleView* titleView =
+      [[BrandedNavigationItemTitleView alloc]
+          initWithFont:[UIFont systemFontOfSize:UIFont.labelFontSize]];
+  titleView.title = _appName;
+  UIImageSymbolConfiguration* titleViewIconConfiguration =
+      [UIImageSymbolConfiguration
+          configurationWithPointSize:UIFont.labelFontSize *
+                                     kLogoTitleFontMultiplier
+                              weight:UIImageSymbolWeightMedium
+                               scale:UIImageSymbolScaleMedium];
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  UIImage* titleViewSymbol = [UIImage imageNamed:@"multicolor_chromeball"
+                                        inBundle:nil
+                               withConfiguration:titleViewIconConfiguration];
+  titleView.imageLogo = [titleViewSymbol
+      imageByApplyingSymbolConfiguration:
+          [UIImageSymbolConfiguration configurationPreferringMulticolor]];
 
-  titleLabel.text = _appName;
-  return titleLabel;
+#else
+  titleView.imageLogo = [UIImage imageNamed:@"chrome_product"
+                                   inBundle:nil
+                          withConfiguration:titleViewIconConfiguration];
+#endif
+
+  titleView.titleLogoSpacing = kTitleViewSpacing;
+
+  return titleView;
 }
 
 - (UIView*)configureMainView {
