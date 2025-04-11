@@ -138,6 +138,7 @@ class CanvasResourceDispatcherTest
 
   MockCanvasResourceDispatcher* Dispatcher() { return dispatcher_.get(); }
 
+  void ResetDispatcher() { dispatcher_.reset(); }
   test::TaskEnvironment& TaskEnvironment() { return task_environment_; }
 
  private:
@@ -222,10 +223,11 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
   // Attempt to post kMaxUnreclaimedPlaceholderFrames+1 times
   auto frame1 = DispatchOneFrame();
   auto frame2 = DispatchOneFrame();
+  std::vector<scoped_refptr<CanvasResource>> other_frames;
   for (unsigned i = 0;
        i < CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames - 1;
        i++) {
-    DispatchOneFrame();
+    other_frames.push_back(DispatchOneFrame());
   }
   viz::ResourceId post_resource_id(
       CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames + 1);
@@ -237,7 +239,7 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
 
   // Attempt to post the 5th time. The latest unposted image will be replaced.
   post_resource_id = NextId(post_resource_id);
-  DispatchOneFrame();
+  other_frames.push_back(DispatchOneFrame());
   EXPECT_EQ(CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames,
             GetNumUnreclaimedFramesPosted());
   EXPECT_EQ(NextId(post_resource_id), PeekNextResourceId());
@@ -269,6 +271,11 @@ TEST_F(CanvasResourceDispatcherTest, PlaceholderBeingBlocked) {
   EXPECT_EQ(CanvasResourceDispatcher::kMaxUnreclaimedPlaceholderFrames - 1,
             GetNumUnreclaimedFramesPosted());
   Mock::VerifyAndClearExpectations(Dispatcher());
+
+  // The dispatcher requires all of its CanvasResources to be live when it is
+  // destroyed. Rather than bothering to reclaim all the resources in
+  // `other_resources`, just reset the dispatcher here.
+  ResetDispatcher();
 }
 
 TEST_F(CanvasResourceDispatcherTest, UsesRealOnBeginFrameWhenActive) {
