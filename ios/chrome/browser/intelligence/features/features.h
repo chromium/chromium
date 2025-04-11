@@ -22,14 +22,14 @@ bool IsPageActionMenuEnabled();
 extern const char kExplainGeminiEditMenuParams[];
 
 // Holds the position of Explain Gemini button in the EditMenu.
-enum class ExplainGeminiEditMenuPosition {
+enum class PositionForExplainGeminiEditMenu {
   kDisabled = 0,
-  kBeforeSearch = 1,
+  kAfterEdit = 1,
   kAfterSearch = 2,
 };
 
 // Returns the position of Explain Gemini in the EditMenu.
-ExplainGeminiEditMenuPosition ExplainGeminiEditMenuPositionParam();
+PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition();
 
 // Feature flag to enable Explain Gemini in Edit Menu.
 BASE_DECLARE_FEATURE(kExplainGeminiEditMenu);

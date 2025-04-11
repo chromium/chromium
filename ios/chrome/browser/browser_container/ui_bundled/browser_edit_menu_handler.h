@@ -9,6 +9,8 @@
 
 #import "ios/chrome/browser/browser_container/model/edit_menu_builder.h"
 
+// TODO(crbug.com/408229821): Reverse dependencies.
+@protocol ExplainWithGeminiDelegate;
 @protocol LinkToTextDelegate;
 @protocol PartialTranslateDelegate;
 @protocol SearchWithDelegate;
@@ -16,6 +18,10 @@
 // A handler for the Browser edit menu.
 // This class is in charge of customising the menu and executing the commands.
 @interface BrowserEditMenuHandler : NSObject <EditMenuBuilder>
+
+// The delegate to handle Explain With Gemini button selection.
+@property(nonatomic, weak) id<ExplainWithGeminiDelegate>
+    explainWithGeminiDelegate;
 
 // The delegate to handle link to text button selection.
 @property(nonatomic, weak) id<LinkToTextDelegate> linkToTextDelegate;

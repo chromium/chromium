@@ -12,7 +12,9 @@
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_container_view_controller.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/browser_edit_menu_handler.h"
 #import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_alert_delegate.h"
+#import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_mediator.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/link_to_text/model/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
@@ -64,6 +66,8 @@
   BrowserContainerMediator* _mediator;
   // The mediator used for the Link to Text feature.
   LinkToTextMediator* _linkToTextMediator;
+  // The mediator used for the Explain With Gemini feature.
+  ExplainWithGeminiMediator* _explainWithGeminiMediator;
 }
 
 #pragma mark - ChromeCoordinator
@@ -121,12 +125,27 @@
       [[SearchWithMediator alloc] initWithWebStateList:webStateList
                                     templateURLService:templateURLService
                                              incognito:incognito];
+
   id<ApplicationCommands> applicationCommandsHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
+
   _searchWithMediator.applicationCommandHandler = applicationCommandsHandler;
   self.browserEditMenuHandler.searchWithDelegate = _searchWithMediator;
 
+  if (ExplainGeminiEditMenuPosition() !=
+          PositionForExplainGeminiEditMenu::kDisabled &&
+      !incognito) {
+    _explainWithGeminiMediator =
+        [[ExplainWithGeminiMediator alloc] initWithWebStateList:webStateList];
+
+    _explainWithGeminiMediator.applicationCommandHandler =
+        applicationCommandsHandler;
+    self.browserEditMenuHandler.explainWithGeminiDelegate =
+        _explainWithGeminiMediator;
+  }
+
   [_webContentAreaOverlayContainerCoordinator start];
+
   self.viewController.webContentsOverlayContainerViewController =
       _webContentAreaOverlayContainerCoordinator.viewController;
   OverlayPresenter* overlayPresenter =

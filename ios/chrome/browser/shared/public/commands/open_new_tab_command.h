@@ -85,6 +85,9 @@ enum class OpenPosition {
 // Origin point of the action triggering this command.
 @property(nonatomic, assign) CGPoint originPoint;
 
+// Extra headers.
+@property(nonatomic, copy) NSDictionary<NSString*, NSString*>* extraHeaders;
+
 #pragma mark - ReadOnly properties
 
 // Whether this URL command requests opening in incognito or not.

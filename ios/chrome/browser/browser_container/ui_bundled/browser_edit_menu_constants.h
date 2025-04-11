@@ -11,6 +11,8 @@ namespace edit_menu {
 
 // The ID for the Chrome menu.
 extern NSString* const kBrowserEditMenuChromeMenuId;
+// The ID for the Chrome secondary menu used for Explain With Gemini.
+extern NSString* const kBrowserEditMenuSecondaryMenuId;
 
 }  // namespace edit_menu
 
