@@ -12,7 +12,6 @@
   <dimen name="educational_tip_module_content_image_radius">12dp</dimen>
   <dimen name="educational_tip_module_button_height">48dp</dimen>
   <dimen name="educational_tip_module_button_padding_start">14dp</dimen>
-  <dimen name="educational_tip_module_content_image_background_color_elevation">@dimen/default_elevation_2</dimen>
 
   <!-- Default browser promo card dimens -->
   <dimen name="default_browser_bottom_sheet_drag_handel_bar_height">4dp</dimen>

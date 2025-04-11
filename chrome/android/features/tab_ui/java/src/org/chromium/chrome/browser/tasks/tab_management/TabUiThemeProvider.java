@@ -13,7 +13,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
-import com.google.android.material.elevation.ElevationOverlayProvider;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
@@ -178,12 +177,8 @@ public class TabUiThemeProvider {
                 return ColorStateList.valueOf(
                         MaterialColors.compositeARGBWithAlpha(baseColor, alpha));
             } else {
-                float backgroundElevation =
-                        context.getResources().getDimension(R.dimen.default_elevation_4);
-                @ColorInt
-                int baseColor =
-                        new ElevationOverlayProvider(context)
-                                .compositeOverlayWithThemeSurfaceColorIfNeeded(backgroundElevation);
+
+                @ColorInt int baseColor = SemanticColorUtils.getColorSurfaceContainerHigh(context);
                 int alpha =
                         context.getResources()
                                 .getInteger(R.integer.tab_grid_hovered_card_background_color_alpha);

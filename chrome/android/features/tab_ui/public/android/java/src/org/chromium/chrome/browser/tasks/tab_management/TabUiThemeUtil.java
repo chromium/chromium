@@ -8,7 +8,6 @@ import android.content.Context;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -155,14 +154,10 @@ public class TabUiThemeUtil {
     }
 
     public static @ColorInt int getReorderBackgroundColor(Context context, boolean isIncognito) {
-        if (isIncognito) return context.getColor(R.color.default_bg_color_dark_elev_4_baseline);
-
-        @DimenRes
-        int elevationRes =
-                ColorUtils.inNightMode(context)
-                        ? R.dimen.default_elevation_4
-                        : R.dimen.default_elevation_1;
-        return ChromeColors.getSurfaceColor(context, elevationRes);
+        if (isIncognito) return context.getColor(R.color.gm3_baseline_surface_container_high_dark);
+        return ColorUtils.inNightMode(context)
+                ? SemanticColorUtils.getColorSurfaceContainerHigh(context)
+                : SemanticColorUtils.getColorSurfaceContainerLow(context);
     }
 
     /** Returns the color for the hovered tab container. */

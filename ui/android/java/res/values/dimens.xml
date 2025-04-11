@@ -87,12 +87,8 @@ found in the LICENSE file.
     <dimen name="default_elevation_1">1dp</dimen>
     <dimen name="default_elevation_2">3dp</dimen>
 
-    <dimen name="default_elevation_4">8dp</dimen>
-
     <!-- TODO(crbug.com/40782657): Remove once dynamic color is ready for all cards -->
     <dimen name="card_elevation">@dimen/default_elevation_1</dimen>
-
-    <dimen name="toast_elevation">@dimen/default_elevation_4</dimen>
 
     <!-- Arbitrary shadow length for elevation levels -->
     <dimen name="default_shadow_length_elev_2">6dp</dimen>

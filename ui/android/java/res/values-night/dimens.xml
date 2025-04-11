@@ -7,6 +7,4 @@ found in the LICENSE file.
 <resources>
     <!-- TODO(crbug.com/40782657): Remove once dynamic color is ready for all cards -->
     <dimen name="card_elevation">@dimen/default_elevation_2</dimen>
-
-    <dimen name="toast_elevation">@dimen/default_elevation_1</dimen>
 </resources>

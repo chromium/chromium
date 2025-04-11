@@ -46,8 +46,8 @@ found in the LICENSE file.
     <dimen name="circular_monogram_text_size">14dp</dimen>
     <dimen name="navigation_transitions_favicon_size">24dp</dimen>
 
-    <!-- Section tab dimensions -->
-    <dimen name="section_tab_selected_bg_elevation">@dimen/default_elevation_0</dimen>
+    <!-- Site settings zoom -->
+    <dimen name="site_settings_zoom_button_vertical_inset">@dimen/default_elevation_0</dimen>
 
     <!-- NewTabPage dimensions -->
     <dimen name="ntp_search_box_lateral_margin_narrow_window_tablet">16dp</dimen>

@@ -17,6 +17,4 @@ found in the LICENSE file.
     <!-- Single Tab module -->
     <dimen name="favicon_background_color_elevation">@dimen/default_elevation_2</dimen>
 
-    <!-- Tab Resumption module -->
-    <dimen name="tab_resumption_module_icon_background_color_elevation">@dimen/default_elevation_4</dimen>
 </resources>

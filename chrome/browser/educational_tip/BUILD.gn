@@ -54,6 +54,8 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color-night/educational_tip_module_content_image_background_color.xml",
+    "java/res/color/educational_tip_module_content_image_background_color.xml",
     "java/res/drawable/default_browser_promo_bottom_sheet_chrome_icon_background.xml",
     "java/res/drawable/default_browser_promo_bottom_sheet_circle_background.xml",
     "java/res/drawable/default_browser_promo_logo.xml",
@@ -65,7 +67,6 @@ android_resources("java_resources") {
     "java/res/layout/educational_tip_default_browser_bottom_sheet.xml",
     "java/res/layout/educational_tip_module_layout.xml",
     "java/res/values-night/colors.xml",
-    "java/res/values-night/dimens.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
   ]

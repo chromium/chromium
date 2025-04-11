@@ -38,6 +38,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
@@ -52,7 +53,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -472,8 +472,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     @VisibleForTesting
     boolean showToastForItem(CharSequence message, View view) {
         Context context = view.getContext();
-        final @ColorInt int backgroundColor =
-                ChromeColors.getSurfaceColor(context, R.dimen.toast_elevation);
+        final @ColorInt int backgroundColor = ContextCompat.getColor(context, R.color.toast_color);
         return new Toast.Builder(context)
                 .withText(message)
                 .withAnchoredView(view)
