@@ -2,6 +2,15 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("public") {
+  sources = [
+    "omnibox_metrics_helper.h",
+    "omnibox_metrics_helper.mm",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//components/omnibox/browser" ]
+}
+
 source_set("features") {
   sources = [
     "omnibox_ui_features.cc",

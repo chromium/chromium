@@ -45,8 +45,6 @@ source_set("omnibox_suggestion_icon_util") {
 # for why these two targets are separated.
 source_set("omnibox_util") {
   sources = [
-    "omnibox_metrics_helper.h",
-    "omnibox_metrics_helper.mm",
     "omnibox_text_field_delegate.h",
     "omnibox_util.h",
     "omnibox_util.mm",
@@ -160,6 +158,7 @@ source_set("omnibox_internal") {
     "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
     "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/public",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled/popup",
     "//ios/chrome/browser/omnibox/ui_bundled/popup:popup_ui_protocols",
