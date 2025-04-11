@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <memory>
 
+#include "components/viz/test/test_context_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -23,18 +24,48 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style_test_utils.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
+// Raster interface that always returns the same randomized image when read
+// back.
+class CanvasNoiseTestRasterInterface : public viz::TestRasterInterface {
+ public:
+  CanvasNoiseTestRasterInterface() { set_gpu_rasterization(true); }
+
+ private:
+  UNSAFE_BUFFER_USAGE bool ReadbackImagePixels(
+      const gpu::Mailbox& source_mailbox,
+      const SkImageInfo& dst_info,
+      GLuint dst_row_bytes,
+      int src_x,
+      int src_y,
+      int plane_index,
+      void* dst_pixels) override {
+    size_t size = dst_info.computeByteSize(dst_row_bytes);
+    uint8_t* data = static_cast<uint8_t*>(dst_pixels);
+    for (size_t i = 0; i < size; ++i) {
+      data[i] = (i % 4 == 3) ? 255 : i % 256;
+    }
+    return true;
+  }
+};
+
 class CanvasNoiseTest : public PageTestBase {
  public:
-  CanvasNoiseTest() : scoped_cpu_test_(true) {}
-
   void SetUp() override {
+    test_context_provider_ = viz::TestContextProvider::CreateRaster(
+        std::make_unique<CanvasNoiseTestRasterInterface>());
+    InitializeSharedGpuContextRaster(test_context_provider_.get());
+
     PageTestBase::SetUp();
+    GetDocument().GetSettings()->SetAcceleratedCompositingEnabled(true);
     NavigateTo(KURL("https://test.example"));
     SetHtmlInnerHTML("<body><canvas id='c' width='300' height='300'></body>");
     UpdateAllLifecyclePhasesForTest();
@@ -47,17 +78,16 @@ class CanvasNoiseTest : public PageTestBase {
     attributes.premultiplied_alpha = false;
     attributes.will_read_frequently =
         CanvasContextCreationAttributesCore::WillReadFrequently::kFalse;
-    auto* context = static_cast<CanvasRenderingContext2D*>(
-        canvas_element_->GetCanvasRenderingContext(/*canvas_type=*/"2d",
-                                                   attributes));
-    PutRandomPixels(context, canvas_element_->width(),
-                    canvas_element_->height());
+    canvas_element_->GetCanvasRenderingContext(/*canvas_type=*/"2d",
+                                               attributes);
+    canvas_element_->GetOrCreateCanvasResourceProvider();
     CanvasNoiseToken::Set(0x1234567890123456);
     EnableInterventions();
   }
 
   void TearDown() override {
     PageTestBase::TearDown();
+    SharedGpuContext::Reset();
     CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
   }
 
@@ -88,10 +118,7 @@ class CanvasNoiseTest : public PageTestBase {
         ->SetCanvasInterventionsForceEnabled();
   }
 
-  base::span<uint8_t> GetNoisedPixelsWithData(ImageData* original_data,
-                                              ExecutionContext* ec) {
-    NonThrowableExceptionState exception_state;
-    Context2D()->putImageData(original_data, 0, 0, exception_state);
+  base::span<uint8_t> GetNoisedPixels(ExecutionContext* ec) {
     scoped_refptr<StaticBitmapImage> snapshot =
         Context2D()->GetImage(FlushReason::kTesting);
     EXPECT_TRUE(CanvasInterventionsHelper::MaybeNoiseSnapshot(
@@ -129,24 +156,6 @@ class CanvasNoiseTest : public PageTestBase {
     }
     EXPECT_EQ(too_large_diffs, 0);
     return num_changed_pixel_values;
-  }
-
-  static void PutRandomPixels(BaseRenderingContext2D* context,
-                              size_t width,
-                              size_t height) {
-    size_t canvas_size = width * height * 4;
-    std::vector<uint8_t> data(canvas_size);
-    for (size_t i = 0; i < canvas_size; ++i) {
-      if (i % 4 == 3) {
-        data[i] = 255;
-        continue;
-      }
-      data[i] = i % 256;
-    }
-    NotShared<DOMUint8ClampedArray> data_u8(DOMUint8ClampedArray::Create(data));
-    NonThrowableExceptionState exception_state;
-    context->putImageData(ImageData::Create(data_u8, width, exception_state), 0,
-                          0, exception_state);
   }
 
   void ExpectInterventionHappened() {
@@ -194,9 +203,12 @@ class CanvasNoiseTest : public PageTestBase {
     Context2D()->fillRect(0, 0, 10, 10);
   }
 
+  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform>
+      accelerated_compositing_scope_;
+  ScopedAccelerated2dCanvasForTest accelerated_canvas_enabled_scope_ = true;
+  scoped_refptr<viz::TestContextProvider> test_context_provider_;
   std::unique_ptr<frame_test_helpers::WebViewHelper> web_view_helper_;
   Persistent<HTMLCanvasElement> canvas_element_;
-  ScopedCanvasInterventionsOnCpuForTestingForTest scoped_cpu_test_;
 };
 
 TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotNoiseWhenCanvasInterventionsEnabled) {
@@ -233,8 +245,7 @@ TEST_F(CanvasNoiseTest,
 }
 
 TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDoesNotNoiseForCpuCanvas) {
-  ScopedCanvasInterventionsOnCpuForTestingForTest scoped_cpu_test_(false);
-
+  CanvasElement().DisableAcceleration();
   auto* window = GetFrame().DomWindow();
   // Enable CanvasInterventions.
   window->GetRuntimeFeatureStateOverrideContext()
@@ -259,20 +270,15 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDifferentNoiseTokenNoiseDiffers) {
   DrawSomethingWithTrigger();
 
   // Save a copy of the image data to reset.
-  ImageData* copy_image_data = Context2D()->getImageData(
-      0, 0, CanvasElement().width(), CanvasElement().height(), exception_state);
-  base::span<uint8_t> original_noised_pixels =
-      GetNoisedPixelsWithData(copy_image_data, window);
+  base::span<uint8_t> original_noised_pixels = GetNoisedPixels(window);
 
   // Sanity check to ensure GetNoisedPixelsWithData performs the same noising
   // pattern without changing the noise token.
-  EXPECT_EQ(original_noised_pixels,
-            GetNoisedPixelsWithData(copy_image_data, window));
+  EXPECT_EQ(original_noised_pixels, GetNoisedPixels(window));
 
   // Now change the noise token.
   CanvasNoiseToken::Set(0xdeadbeef);
-  base::span<uint8_t> updated_noised_pixels =
-      GetNoisedPixelsWithData(copy_image_data, window);
+  base::span<uint8_t> updated_noised_pixels = GetNoisedPixels(window);
 
   EXPECT_NE(original_noised_pixels, updated_noised_pixels);
 }
@@ -360,7 +366,6 @@ TEST_F(CanvasNoiseTest, OffscreenCanvasNoise) {
               scope.GetExecutionContext(),
               CanvasRenderingContext::CanvasRenderingAPI::k2D,
               CanvasContextCreationAttributesCore()));
-  PutRandomPixels(context, host->width(), host->height());
   context->fillText("CanvasNoiseTest", 0, 0);
   EXPECT_TRUE(context->HasTriggerForIntervention());
   EXPECT_TRUE(context->ShouldTriggerIntervention());
@@ -404,8 +409,6 @@ TEST_F(CanvasNoiseTest, NoiseDiffersPerSite) {
   auto* diff_context = static_cast<CanvasRenderingContext2D*>(
       diff_canvas_element->GetCanvasRenderingContext(/*canvas_type=*/"2d",
                                                      attributes));
-  PutRandomPixels(diff_context, diff_canvas_element->width(),
-                  diff_canvas_element->height());
 
   diff_context->fillText("CanvasNoiseTest", 0, 0);
   // We're taking 2 canvases with different noise applied to them, so the max

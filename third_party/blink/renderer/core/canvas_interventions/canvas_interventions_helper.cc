@@ -53,8 +53,7 @@ bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
   if (!rendering_context->IsRenderingContext2D()) {
     return false;
   }
-  if (!(raster_mode == RasterMode::kGPU ||
-        RuntimeEnabledFeatures::CanvasInterventionsOnCpuForTestingEnabled())) {
+  if (raster_mode == RasterMode::kCPU) {
     return false;
   }
   return execution_context &&
