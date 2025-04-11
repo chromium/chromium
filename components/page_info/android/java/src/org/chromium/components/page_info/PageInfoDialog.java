@@ -22,10 +22,10 @@ import android.view.Window;
 import android.widget.LinearLayout;
 
 import androidx.annotation.GravityInt;
-import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -222,10 +222,7 @@ public class PageInfoDialog {
                             (int)
                                     context.getResources()
                                             .getDimension(R.dimen.page_info_popup_corners_radius);
-                    GradientDrawable background =
-                            (GradientDrawable)
-                                    AppCompatResources.getDrawable(
-                                            getContext(), R.drawable.page_info_bg);
+                    GradientDrawable background = new GradientDrawable();
                     float[] radii;
                     if (mDialogPosition == Gravity.TOP) {
                         radii =
@@ -256,6 +253,7 @@ public class PageInfoDialog {
                     }
 
                     background.setCornerRadii(radii);
+                    background.setColor(SemanticColorUtils.getColorSurface(getContext()));
                     setBackground(background);
                 }
             }
