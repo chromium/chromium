@@ -608,6 +608,43 @@ bool AUAudioInputStream::OpenVoiceProcessingAU() {
   return true;
 }
 
+void AUAudioInputStream::SetSystemAGC(bool enable) {
+  DVLOG(1) << __FUNCTION__ << " this " << this << " enable=" << enable;
+  UInt32 current_agc_setting;
+  UInt32 property_size = sizeof(current_agc_setting);
+  OSStatus result = AudioUnitGetProperty(
+      audio_unit_, kAUVoiceIOProperty_VoiceProcessingEnableAGC,
+      kAudioUnitScope_Global, AUElement::INPUT, &current_agc_setting,
+      &property_size);
+  if (result != noErr) {
+    HandleError(result);
+    LogMessageEverywhere(__FUNCTION__, "Error reading System AGC property");
+    return;
+  }
+
+  LogMessageEverywhere(__FUNCTION__,
+                       base::StringPrintf("Default System AGC property: %s",
+                                          current_agc_setting ? "On" : "Off"));
+
+  if (current_agc_setting != enable) {
+    UInt32 new_agc_setting = enable;
+    result = AudioUnitSetProperty(audio_unit_,
+                                  kAUVoiceIOProperty_VoiceProcessingEnableAGC,
+                                  kAudioUnitScope_Global, AUElement::INPUT,
+                                  &new_agc_setting, sizeof(new_agc_setting));
+
+    if (result != noErr) {
+      HandleError(result);
+      LogMessageEverywhere(__FUNCTION__, "Error setting System AGC property");
+      return;
+    }
+
+    LogMessageEverywhere(
+        __FUNCTION__, base::StringPrintf("Changed System AGC property to: %s",
+                                         new_agc_setting ? "On" : "Off"));
+  }
+}
+
 void AUAudioInputStream::Start(AudioInputCallback* callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DVLOG(1) << __FUNCTION__ << " this " << this;
@@ -651,6 +688,12 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
     return;
   }
   DCHECK(IsRunning()) << "Audio unit started OK but is not yet running";
+
+  // System AGC control only works with VoiceProcessingIO
+  if (use_voice_processing_) {
+    SetSystemAGC(input_params_.effects() &
+                 AudioParameters::AUTOMATIC_GAIN_CONTROL);
+  }
 
   // For UMA stat purposes, start a one-shot timer which detects when input
   // callbacks starts indicating if input audio recording starts as intended.
