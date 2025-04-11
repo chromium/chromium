@@ -18,9 +18,10 @@ import org.chromium.ui.base.DeviceFormFactor;
 /** The most visited tiles layout. */
 public class MostVisitedTilesLayout extends TilesLinearLayout {
 
-    private final int mTileViewWidth;
-    private Integer mInitialTileNum;
     private final boolean mIsTablet;
+    private final int mTileViewWidth;
+    private Integer mInitialTileCount;
+    private Integer mInitialChildCount;
     private final int mIntervalPaddingsTablet;
     private final int mEdgePaddingsTablet;
 
@@ -65,8 +66,9 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
     void updateEdgeMarginTablet(int totalWidth) {
         boolean isFullFilled =
                 totalWidth
-                                - mTileViewWidth * mInitialTileNum
-                                - mIntervalPaddingsTablet * (mInitialTileNum - 1)
+                                - mTileViewWidth * mInitialTileCount
+                                - getNonTileViewsTotalWidthPx()
+                                - mIntervalPaddingsTablet * (mInitialChildCount - 1)
                                 - 2 * mEdgePaddingsTablet
                         >= 0;
         if (!isFullFilled) {
@@ -77,19 +79,24 @@ public class MostVisitedTilesLayout extends TilesLinearLayout {
             return;
         }
 
-        int currentNum = getTileCount();
+        int tileCount = getTileCount();
+        int childCount = getChildCount();
         int edgeMargin =
                 (totalWidth
-                                - mTileViewWidth * currentNum
-                                - mIntervalPaddingsTablet * (currentNum - 1))
+                                - mTileViewWidth * tileCount
+                                - getNonTileViewsTotalWidthPx()
+                                - mIntervalPaddingsTablet * (childCount - 1))
                         / 2;
         setEdgeMargins(edgeMargin);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        if (mInitialTileNum == null) {
-            mInitialTileNum = getTileCount();
+        if (mInitialTileCount == null) {
+            mInitialTileCount = getTileCount();
+        }
+        if (mInitialChildCount == null) {
+            mInitialChildCount = getChildCount();
         }
         if (mIsTablet) {
             updateEdgeMarginTablet(widthMeasureSpec);
