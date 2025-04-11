@@ -126,21 +126,6 @@ credential_provider::UiExitCodes SigninUIError::credential_provider_exit_code()
 }
 #endif
 
-bool SigninUIError::operator==(const SigninUIError& other) const {
-  bool result = std::tie(type_, email_, message_, another_profile_path_) ==
-                std::tie(other.type_, other.email_, other.message_,
-                         other.another_profile_path_);
-#if BUILDFLAG(IS_WIN)
-  result = result && credential_provider_exit_code_ ==
-                         other.credential_provider_exit_code_;
-#endif
-  return result;
-}
-
-bool SigninUIError::operator!=(const SigninUIError& other) const {
-  return !(*this == other);
-}
-
 SigninUIError::SigninUIError(Type type,
                              const std::string& email,
                              const std::u16string& error_message)
