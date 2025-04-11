@@ -99,9 +99,9 @@ class OmniboxViewIOS;
 
 #pragma mark - Omnibox popup event
 
-/// Previews `suggestion` in the Omnibox. Called when a suggestion is
-/// highlighted in the popup.
-- (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion;
+/// Sets the currently previewed autocomplete suggestion.
+- (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion
+            isFirstUpdate:(BOOL)isFirstUpdate;
 
 @end
 

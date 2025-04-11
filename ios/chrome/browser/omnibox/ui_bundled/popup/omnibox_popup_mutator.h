@@ -44,6 +44,14 @@
     (NSUInteger)visibleSuggestionCount
     __attribute__((swift_name("requestResults(visibleSuggestionCount:)")));
 
+/// Notifies the mutator of the suggestion to preview.
+/// `suggestion` can be nil e.g. when there is no highlighting in the popup.
+/// `isFirstUpdate` flag is set when this is the first suggestion for a new set
+/// of results. This may be used to display the suggestion in a different way,
+/// e.g. as inline autocomplete.
+- (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion
+            isFirstUpdate:(BOOL)isFirstUpdate;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_MUTATOR_H_

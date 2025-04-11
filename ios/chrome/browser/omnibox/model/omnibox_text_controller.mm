@@ -13,6 +13,7 @@
 #import "components/omnibox/browser/omnibox_view.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
@@ -268,6 +269,23 @@
 
 #pragma mark - Omnibox popup event
 
+- (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion
+            isFirstUpdate:(BOOL)isFirstUpdate {
+  // On first update, don't set the preview text, as omnibox will automatically
+  // receive the suggestion as inline autocomplete through OmniboxViewIOS.
+  if (!isFirstUpdate) {
+    [self previewSuggestion:suggestion];
+  }
+
+  [self.delegate omniboxTextController:self
+                  didPreviewSuggestion:suggestion
+                         isFirstUpdate:isFirstUpdate];
+}
+
+#pragma mark - Private
+
+/// Previews `suggestion` in the Omnibox. Called when a suggestion is
+/// highlighted in the popup.
 - (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion {
   OmniboxTextFieldIOS* textModel = self.textField;
   NSAttributedString* previewText = suggestion.omniboxPreviewText;

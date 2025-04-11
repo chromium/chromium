@@ -7,8 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol AutocompleteSuggestion;
+@class OmniboxTextController;
+
 /// Delegate for events in omniboxTextController.
 @protocol OmniboxTextControllerDelegate <NSObject>
+
+/// Informs the delegate that an autocomplete suggestion is being previewed.
+- (void)omniboxTextController:(OmniboxTextController*)omniboxTextController
+         didPreviewSuggestion:(id<AutocompleteSuggestion>)suggestion
+                isFirstUpdate:(BOOL)isFirstUpdate;
 
 @end
 

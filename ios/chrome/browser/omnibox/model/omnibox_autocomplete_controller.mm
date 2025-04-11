@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_debugger_delegate.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_ios.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
@@ -252,6 +253,12 @@ using base::UserMetricsAction;
   [self.delegate omniboxAutocompleteController:self
                          didUpdateHasThumbnail:hasThumbnail];
   self.autocompleteResultWrapper.hasThumbnail = hasThumbnail;
+}
+
+- (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion
+            isFirstUpdate:(BOOL)isFirstUpdate {
+  [self.omniboxTextController previewSuggestion:suggestion
+                                  isFirstUpdate:isFirstUpdate];
 }
 
 #pragma mark - OmniboxAutocomplete event

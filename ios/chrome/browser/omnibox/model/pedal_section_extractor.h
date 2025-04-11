@@ -7,7 +7,6 @@
 
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
 
-@protocol PopupMatchPreviewDelegate;
 @class AutocompleteMatchFormatter;
 
 /// Delegate for PedalSectionExtractor.

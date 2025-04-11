@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_mutator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/omnibox_view_controller.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"
 
 class FaviconLoader;
 @protocol LensCommands;
@@ -29,8 +28,7 @@ class Tracker;
 // A mediator object that updates the omnibox according to the model changes.
 @interface OmniboxMediator : NSObject <OmniboxMutator,
                                        OmniboxTextControllerDelegate,
-                                       OmniboxViewControllerPasteDelegate,
-                                       PopupMatchPreviewDelegate>
+                                       OmniboxViewControllerPasteDelegate>
 
 - (instancetype)initWithIncognito:(BOOL)isIncognito
                           tracker:(feature_engagement::Tracker*)tracker

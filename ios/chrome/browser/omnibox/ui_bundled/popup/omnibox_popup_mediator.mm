@@ -298,6 +298,12 @@ const NSUInteger kMaxSuggestTileTypePosition = 15;
       requestSuggestionsWithVisibleSuggestionCount:visibleSuggestionCount];
 }
 
+- (void)previewSuggestion:(id<AutocompleteSuggestion>)suggestion
+            isFirstUpdate:(BOOL)isFirstUpdate {
+  [self.omniboxAutocompleteController previewSuggestion:suggestion
+                                          isFirstUpdate:isFirstUpdate];
+}
+
 #pragma mark OmniboxPopupMutator Private
 
 /// Logs selected tile index and type.

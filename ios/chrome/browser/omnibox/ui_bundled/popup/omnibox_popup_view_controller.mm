@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/content_providing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mutator.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/popup_match_preview_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_content_configuration.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/actions/omnibox_popup_actions_row_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/row/omnibox_popup_row_content_configuration.h"
@@ -364,9 +363,8 @@ const CGFloat kHeaderTopPadding = 16.0f;
   id<AutocompleteSuggestion> firstSuggestionOfPreselectedGroup =
       [self suggestionAtIndexPath:[NSIndexPath indexPathForRow:0
                                                      inSection:groupIndex]];
-  [self.matchPreviewDelegate
-      setPreviewSuggestion:firstSuggestionOfPreselectedGroup
-             isFirstUpdate:YES];
+  [self.mutator previewSuggestion:firstSuggestionOfPreselectedGroup
+                    isFirstUpdate:YES];
 }
 
 /// Set text alignment for popup cells.
@@ -605,7 +603,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
   id<AutocompleteSuggestion> suggestion =
       [self suggestionAtIndexPath:self.highlightedIndexPath];
   DCHECK(suggestion);
-  [self.matchPreviewDelegate setPreviewSuggestion:suggestion isFirstUpdate:NO];
+  [self.mutator previewSuggestion:suggestion isFirstUpdate:NO];
 }
 
 /// Whether the Return/Enter action can be performed.

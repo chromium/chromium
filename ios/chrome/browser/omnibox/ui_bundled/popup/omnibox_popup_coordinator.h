@@ -14,7 +14,6 @@ class AutocompleteController;
 @protocol OmniboxKeyboardDelegate;
 @protocol OmniboxPopupPresenterDelegate;
 class OmniboxPopupViewIOS;
-@protocol PopupMatchPreviewDelegate;
 @protocol ToolbarOmniboxConsumer;
 
 /// Coordinator for the Omnibox Popup.
@@ -44,9 +43,6 @@ class OmniboxPopupViewIOS;
 /// Object implementing OmniboxKeyboardDelegate in OmniboxPopupCoordinator.
 @property(nonatomic, weak, readonly) id<OmniboxKeyboardDelegate>
     KeyboardDelegate;
-/// Delegate for PopupMatchPreviewDelegate used in OmniboxPopupCoordinator.
-@property(nonatomic, weak) id<PopupMatchPreviewDelegate>
-    popupMatchPreviewDelegate;
 
 // Returns the toolbar omnibox consumer.
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer;

@@ -22,7 +22,6 @@ class LargeIconService;
 @class LayoutGuideCenter;
 @protocol OmniboxPopupMutator;
 @protocol ImageRetriever;
-@protocol PopupMatchPreviewDelegate;
 
 /// View controller used to display a list of omnibox autocomplete matches in
 /// the omnibox popup. It implements up/down arrow handling to highlight
@@ -39,7 +38,6 @@ class LargeIconService;
 
 @property(nonatomic, assign) BOOL incognito;
 @property(nonatomic, weak) id<OmniboxPopupMutator> mutator;
-@property(nonatomic, weak) id<PopupMatchPreviewDelegate> matchPreviewDelegate;
 @property(nonatomic, weak) id<ImageRetriever> imageRetriever;
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
 @property(nonatomic, assign) favicon::LargeIconService* largeIconService;

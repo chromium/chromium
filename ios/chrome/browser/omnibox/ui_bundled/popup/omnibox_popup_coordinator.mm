@@ -142,8 +142,6 @@
       LayoutGuideCenterForBrowser(self.browser);
 
   self.mediator.consumer = self.popupViewController;
-  self.popupViewController.matchPreviewDelegate =
-      self.popupMatchPreviewDelegate;
   self.mediator.carouselItemConsumer = self.popupViewController;
   self.mediator.allowIncognitoActions =
       !IsIncognitoModeDisabled(self.profile->GetPrefs());

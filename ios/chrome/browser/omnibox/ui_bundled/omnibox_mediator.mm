@@ -216,18 +216,11 @@ using base::UserMetricsAction;
 
 #pragma mark - OmniboxTextControllerDelegate
 
-#pragma mark - PopupMatchPreviewDelegate
-
-- (void)setPreviewSuggestion:(id<AutocompleteSuggestion>)suggestion
-               isFirstUpdate:(BOOL)isFirstUpdate {
+- (void)omniboxTextController:(OmniboxTextController*)omniboxTextController
+         didPreviewSuggestion:(id<AutocompleteSuggestion>)suggestion
+                isFirstUpdate:(BOOL)isFirstUpdate {
   // Updates the return key availability in case popup highlight changed.
   [self.consumer updateReturnKeyAvailability];
-
-  // On first update, don't set the preview text, as omnibox will automatically
-  // receive the suggestion as inline autocomplete through OmniboxViewIOS.
-  if (!isFirstUpdate) {
-    [self.omniboxTextController previewSuggestion:suggestion];
-  }
 
   // When no suggestion is previewed, just show the default image.
   if (!suggestion) {

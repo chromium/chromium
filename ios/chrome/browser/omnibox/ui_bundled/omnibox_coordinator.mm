@@ -340,7 +340,6 @@
       omniboxAutocompleteController:_omniboxAutocompleteController];
   coordinator.presenterDelegate = presenterDelegate;
 
-  coordinator.popupMatchPreviewDelegate = self.mediator;
   self.viewController.popupKeyboardDelegate = coordinator.KeyboardDelegate;
 
   _popupCoordinator = coordinator;
