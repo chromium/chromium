@@ -545,8 +545,7 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
   if (auto* host = GetCanvasRenderingContextHost()) {
     if (snapshot) {
       noised = CanvasInterventionsHelper::MaybeNoiseSnapshot(
-          host->RenderingContext(), GetTopExecutionContext(), snapshot,
-          host->GetRasterMode());
+          host->RenderingContext(), GetTopExecutionContext(), snapshot);
     }
   }
 

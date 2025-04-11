@@ -121,8 +121,8 @@ class CanvasNoiseTest : public PageTestBase {
   base::span<uint8_t> GetNoisedPixels(ExecutionContext* ec) {
     scoped_refptr<StaticBitmapImage> snapshot =
         Context2D()->GetImage(FlushReason::kTesting);
-    EXPECT_TRUE(CanvasInterventionsHelper::MaybeNoiseSnapshot(
-        Context2D(), ec, snapshot, RasterMode::kGPU));
+    EXPECT_TRUE(CanvasInterventionsHelper::MaybeNoiseSnapshot(Context2D(), ec,
+                                                              snapshot));
     return GetPixels(Context2D(), CanvasElement().width(),
                      CanvasElement().height());
   }
@@ -222,8 +222,8 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotNoiseWhenCanvasInterventionsEnabled) {
       Context2D()->GetImage(FlushReason::kTesting);
   scoped_refptr<StaticBitmapImage> snapshot_copy = snapshot;
 
-  EXPECT_TRUE(CanvasInterventionsHelper::MaybeNoiseSnapshot(
-      Context2D(), window, snapshot, RasterMode::kGPU));
+  EXPECT_TRUE(CanvasInterventionsHelper::MaybeNoiseSnapshot(Context2D(), window,
+                                                            snapshot));
   EXPECT_NE(snapshot_copy, snapshot);
 }
 
@@ -239,8 +239,8 @@ TEST_F(CanvasNoiseTest,
       Context2D()->GetImage(FlushReason::kTesting);
   scoped_refptr<StaticBitmapImage> snapshot_copy = snapshot;
 
-  EXPECT_FALSE(CanvasInterventionsHelper::MaybeNoiseSnapshot(
-      Context2D(), window, snapshot, RasterMode::kGPU));
+  EXPECT_FALSE(CanvasInterventionsHelper::MaybeNoiseSnapshot(Context2D(),
+                                                             window, snapshot));
   EXPECT_EQ(snapshot_copy, snapshot);
 }
 
@@ -256,8 +256,8 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDoesNotNoiseForCpuCanvas) {
       Context2D()->GetImage(FlushReason::kTesting);
   scoped_refptr<StaticBitmapImage> snapshot_copy = snapshot;
 
-  EXPECT_FALSE(CanvasInterventionsHelper::MaybeNoiseSnapshot(
-      Context2D(), window, snapshot, RasterMode::kCPU));
+  EXPECT_FALSE(CanvasInterventionsHelper::MaybeNoiseSnapshot(Context2D(),
+                                                             window, snapshot));
   EXPECT_EQ(snapshot_copy, snapshot);
 }
 

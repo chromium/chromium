@@ -25,8 +25,7 @@ class CORE_EXPORT CanvasInterventionsHelper {
   // inputted snapshot.
   static bool MaybeNoiseSnapshot(CanvasRenderingContext* rendering_context,
                                  ExecutionContext* execution_context,
-                                 scoped_refptr<StaticBitmapImage>& snapshot,
-                                 RasterMode raster_mode);
+                                 scoped_refptr<StaticBitmapImage>& snapshot);
 };
 
 }  // namespace blink

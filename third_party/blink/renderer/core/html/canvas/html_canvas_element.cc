@@ -1248,7 +1248,7 @@ String HTMLCanvasElement::ToDataURLInternal(const String& mime_type,
     bool noised = false;
     if (readback_type == ReadbackType::kWebExposed) {
       noised = CanvasInterventionsHelper::MaybeNoiseSnapshot(
-          context_, GetExecutionContext(), image_bitmap, GetRasterMode());
+          context_, GetExecutionContext(), image_bitmap);
     }
     std::unique_ptr<ImageDataBuffer> data_buffer =
         ImageDataBuffer::Create(image_bitmap);
@@ -1372,7 +1372,7 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
     auto intervention_type =
         CanvasInterventionsHelper::CanvasInterventionType::kNone;
     if (CanvasInterventionsHelper::MaybeNoiseSnapshot(
-            context_, GetExecutionContext(), image_bitmap, GetRasterMode())) {
+            context_, GetExecutionContext(), image_bitmap)) {
       intervention_type =
           CanvasInterventionsHelper::CanvasInterventionType::kNoise;
     }

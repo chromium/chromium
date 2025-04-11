@@ -42,7 +42,7 @@ namespace {
 //   4) the CanvasInterventions RuntimeEnabledFeature is force enabled for
 //      testing.
 bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
-                      RasterMode raster_mode,
+                      scoped_refptr<StaticBitmapImage>& snapshot,
                       ExecutionContext* execution_context) {
   if (!rendering_context) {
     return false;
@@ -53,7 +53,7 @@ bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
   if (!rendering_context->IsRenderingContext2D()) {
     return false;
   }
-  if (raster_mode == RasterMode::kCPU) {
+  if (!snapshot->IsTextureBacked()) {
     return false;
   }
   return execution_context &&
@@ -84,11 +84,10 @@ String GetDomainFromSecurityOrigin(const SecurityOrigin* security_origin) {
 bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
     CanvasRenderingContext* rendering_context,
     ExecutionContext* execution_context,
-    scoped_refptr<StaticBitmapImage>& snapshot,
-    RasterMode raster_mode) {
+    scoped_refptr<StaticBitmapImage>& snapshot) {
   CHECK(snapshot);
 
-  if (!ShouldApplyNoise(rendering_context, raster_mode, execution_context)) {
+  if (!ShouldApplyNoise(rendering_context, snapshot, execution_context)) {
     return false;
   }
 
