@@ -3729,6 +3729,68 @@
           3D render
         </message>
 
+        <!-- Sea Pen Sample Prompts -->
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_CHROME_SPHERES" desc="An example prompt that can be used to generate an image">
+          3D rendering of chrome spheres and sphere shapes on a background of chrome architectural elements. The composition is a modern minimalistic concept for advertising, branding or presentation with copy space. A large arch stands in front of an abstract background in the style of minimalism. Studio lighting. Closeup shot.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_GALAXY_WITH_SPACESHIP" desc="An example prompt that can be used to generate an image">
+          a beautiful cosmic nebula galaxy with a fast futuristic spaceship, blue, pink and purple hues
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_CAT_RIDING_UNICORN" desc="An example prompt that can be used to generate an image">
+          a cat playing a flying v while riding a unicorn, with a lightning bolt in the background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_ANIMATED_FLOWERS" desc="An example prompt that can be used to generate an image">
+          a close up of several white and yellow flowers against a purple background, a still from an animated film, a delicate pale pink flower with long petals and a green stem placed between two large yellow tulips against a blue sky with no leaves or foliage in pastel colors, a cinematic still shot with high resolution and very detailed intricate details, octane render with beautiful lighting, volumetric light and moody light.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_LILY_IN_RAIN" desc="An example prompt that can be used to generate an image">
+          a closeup of an intricate, dew-covered pond lily in the rain. The focus is on the delicate petals and light-reflecting water droplets, capturing their soft pastel colors against a blue background. Shot from eye level using natural light
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_DALMATION" desc="An example prompt that can be used to generate an image">
+          a dalmatian dog in front of a pink background in a full body dynamic pose, shot with high resolution photography hyper realistic stock background with color grading
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_DELOREAN" desc="An example prompt that can be used to generate an image">
+          a Delorean with neon lights driving through the galaxy with stars whizzing by
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_BLACK_MOTORCYCLE" desc="An example prompt that can be used to generate an image">
+          a futuristic motorcycle made of black paper with neon lights dark background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_SPACESHIP_OVER_CITY" desc="An example prompt that can be used to generate an image">
+          A huge spaceship floats over the city, which is illuminated by many lights. The entire scene has an oil painting style and presents dark tones. It creates a mysterious atmosphere with futuristic sci-fi elements. This artwork was created using C4D software and OC renderer to highlight high resolution and high details. There were also some urban buildings in close range, adding a depth of field effect. The scene is rendered in the style of an oil painting, presenting dark tones and creating a mysterious atmosphere with futuristic sci-fi elements.
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_CAT_ON_WINDOWSILL" desc="An example prompt that can be used to generate an image">
+          a Japanese animation illustration of a cat sitting on a windowsill watching the rain in the afternoon
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_BIOLUMINESCENT_BEACH" desc="An example prompt that can be used to generate an image">
+          a long exposure photo of a bioluminescent beach at sunset with stars in the sky, beautiful pastel colors, 4k
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_BLACK_SAND_DUNES" desc="An example prompt that can be used to generate an image">
+          a minimal professional photo of glittery black sand dunes with dramatic shadows
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_TREE_MADE_OF_STARS" desc="An example prompt that can be used to generate an image">
+          a photo of a glowing tree made of stars with a beautiful night sky and galaxy in the background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_MOON_OVER_LAKE" desc="An example prompt that can be used to generate an image">
+          a photograph of a moon over a lake with falling cherry blossom leaves, 4k
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_MARBLE_ARCH" desc="An example prompt that can be used to generate an image">
+          a piece of white organza floating in the middle, above a white marble arch with a cream background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_STEAMPUNK_SPACESHIP" desc="An example prompt that can be used to generate an image">
+          a steampunk space ship flying through a sand storm
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_WHITE_TIGER" desc="An example prompt that can be used to generate an image">
+          a surreal white tiger with gold eyes and gold stripes sitting on a white sand dune
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_ANIME_PATH_OVERLOOKING_OCEAN" desc="An example prompt that can be used to generate an image">
+          anime path overlooking the ocean with falling cherry blossom leaves
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_PAPAVER_RHEA_STEMS" desc="An example prompt that can be used to generate an image">
+          minimal still life of a few Papaver rhea stems in a glass vase on a black background
+        </message>
+        <message name="IDS_SEA_PEN_FREEFORM_SAMPLE_METEOR_SHOWER" desc="An example prompt that can be used to generate an image">
+          photo of a night sky with a meteor shower and a few trees in the foreground, with purple and pink hues
+        </message>
+
         <!-- Sea Pen Templates (AUTOGENERATED - contact assistive-eng@google.com before editing) -->
         <!-- Wallpaper template glowscapes -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_GLOWSCAPES" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_GLOWSCAPES.">

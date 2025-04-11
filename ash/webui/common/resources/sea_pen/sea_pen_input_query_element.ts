@@ -27,7 +27,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {parseHtmlSubset} from 'chrome://resources/js/parse_html_subset.js';
 import {beforeNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {QUERY} from './constants.js';
+import {QUERY, SEA_PEN_SAMPLES} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
 import type {SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
 import {MantaStatusCode, MAXIMUM_GET_SEA_PEN_THUMBNAILS_TEXT_BYTES} from './sea_pen.mojom-webui.js';
@@ -41,7 +41,6 @@ import {SeaPenRecentImageDeleteEvent} from './sea_pen_recent_wallpapers_element.
 import {SeaPenSampleSelectedEvent} from './sea_pen_samples_element.js';
 import {WithSeaPenStore} from './sea_pen_store.js';
 import type {SeaPenSuggestionSelectedEvent} from './sea_pen_suggestions_element.js';
-import {SEA_PEN_SAMPLES} from './sea_pen_untranslated_constants.js';
 import {isSelectionEvent} from './sea_pen_utils.js';
 
 export interface SeaPenInputQueryElement {

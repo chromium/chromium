@@ -22,9 +22,9 @@ import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11
 import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {afterNextRender, Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {SEA_PEN_SUGGESTIONS} from './constants.js';
 import {logSuggestionClicked, logSuggestionShuffleClicked} from './sea_pen_metrics_logger.js';
 import {getTemplate} from './sea_pen_suggestions_element.html.js';
-import {SEA_PEN_SUGGESTIONS} from './sea_pen_untranslated_constants.js';
 import {IronAnnounceEvent, isArrayEqual, isNonEmptyArray, shuffle} from './sea_pen_utils.js';
 
 const seaPenSuggestionSelectedEvent = 'sea-pen-suggestion-selected';

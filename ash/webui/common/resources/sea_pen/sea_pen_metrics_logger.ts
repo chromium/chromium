@@ -5,10 +5,9 @@
 import {assert} from 'chrome://resources/js/assert.js';
 
 import type {Query} from './constants.js';
-import {FreeformTab, QUERY} from './constants.js';
+import {FreeformTab, QUERY, SeaPenSamplePromptId} from './constants.js';
 import type {SeaPenTemplateId} from './sea_pen_generated.mojom-webui.js';
 import {SeaPenPaths} from './sea_pen_router_element.js';
-import {SeaPenSamplePromptId} from './sea_pen_untranslated_constants.js';
 import {isPersonalizationApp} from './sea_pen_utils.js';
 
 const WALLPAPER_FREEFORM = 999;
