@@ -40,6 +40,7 @@
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "storage/browser/blob/blob_data_builder.h"
@@ -736,21 +737,43 @@ class ServiceWorkerMainResourceLoaderTest : public testing::Test {
       const network::mojom::URLResponseHead& expected_info) {
     bool expect_service_worker_timing =
         expected_info.was_fetched_via_service_worker;
-    if (expected_info.service_worker_router_info &&
-        (expected_info.service_worker_router_info->actual_source_type ==
-         network::mojom::ServiceWorkerRouterSourceType::kCache)) {
-      expect_service_worker_timing = false;
+    network::mojom::IPAddressSpace expected_client_address_space =
+        expected_info.was_fetched_via_service_worker
+            ? network::mojom::IPAddressSpace::kPrivate
+            : network::mojom::IPAddressSpace::kUnknown;
+    if (expected_info.service_worker_router_info) {
+      if (expected_info.service_worker_router_info->actual_source_type ==
+          network::mojom::ServiceWorkerRouterSourceType::kCache) {
+        // If the actual router source is Cache, we don't expect service worker
+        // timing info.
+        expect_service_worker_timing = false;
+      }
+      if (expected_info.service_worker_router_info->matched_source_type ==
+              network::mojom::ServiceWorkerRouterSourceType::
+                  kRaceNetworkAndFetchEvent &&
+          expected_info.service_worker_router_info->actual_source_type ==
+              network::mojom::ServiceWorkerRouterSourceType::kNetwork) {
+        // If the matched router source is race and the actual source is
+        // network, we don't expect service worker timing info.
+        // `expected_client_address_space` is `kUnknown` as well since this is
+        // not override in the ServiceWorkerMainResourceLoader for now.
+        //
+        // TODO(crbug.com/408309960): Update this to handle the response as if
+        // it comes from the fetch event so that every information is propagated
+        // correctly.
+        expect_service_worker_timing = false;
+        expected_client_address_space =
+            network::mojom::IPAddressSpace::kUnknown;
+      }
     }
+
     EXPECT_EQ(expected_info.was_fetched_via_service_worker,
               info.was_fetched_via_service_worker);
     EXPECT_EQ(expected_info.url_list_via_service_worker,
               info.url_list_via_service_worker);
     EXPECT_EQ(expected_info.response_type, info.response_type);
     EXPECT_EQ(expected_info.response_time, info.response_time);
-    EXPECT_EQ(info.client_address_space,
-              expected_info.was_fetched_via_service_worker
-                  ? network::mojom::IPAddressSpace::kPrivate
-                  : network::mojom::IPAddressSpace::kUnknown);
+    EXPECT_EQ(info.client_address_space, expected_client_address_space);
     EXPECT_EQ(!info.load_timing.service_worker_start_time.is_null(),
               expect_service_worker_timing);
     EXPECT_EQ(!info.load_timing.service_worker_ready_time.is_null(),
@@ -1563,7 +1586,7 @@ TEST_F(ServiceWorkerMainResourceLoaderTest, StaticRoutingRaceNetworkWin) {
   EXPECT_FALSE(info->load_timing.receive_headers_start.is_null());
   EXPECT_FALSE(info->load_timing.receive_headers_end.is_null());
   auto expected_info = CreateResponseInfoFromServiceWorker();
-  expected_info->was_fetched_via_service_worker = false;
+  expected_info->was_fetched_via_service_worker = true;
   auto expected_router_info = CreateExpectedMatchingServiceWorkerRouterInfo(
       network::mojom::ServiceWorkerRouterSourceType::kRaceNetworkAndFetchEvent);
   expected_router_info->actual_source_type =
