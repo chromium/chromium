@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.mandatory_reauth;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.PaymentsUiClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -16,6 +17,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
  * Creates the model, and the view, and connects them. It also executes the commands from the native
  * controller.
  */
+@NullMarked
 class MandatoryReauthOptInBottomSheetCoordinator
         implements MandatoryReauthOptInBottomSheetComponent {
     private final BottomSheetController mController;
