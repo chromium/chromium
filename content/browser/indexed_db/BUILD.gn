@@ -38,6 +38,7 @@ source_set("indexed_db") {
     "indexed_db_value.h",
     "instance/active_blob_registry.cc",
     "instance/active_blob_registry.h",
+    "instance/backing_store.h",
     "instance/backing_store_pre_close_task_queue.cc",
     "instance/backing_store_pre_close_task_queue.h",
     "instance/bucket_context.cc",

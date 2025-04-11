@@ -53,6 +53,11 @@ class QuotaManagerProxy;
 
 namespace content::indexed_db {
 
+namespace level_db {
+class BackingStore;
+class BackingStoreTest;
+}  // namespace level_db
+
 class BackingStore;
 class BackingStorePreCloseTaskQueue;
 class BucketContextHandle;
@@ -307,7 +312,7 @@ class CONTENT_EXPORT BucketContext
 
  private:
   friend BucketContextHandle;
-  friend class BackingStoreTest;
+  friend class level_db::BackingStoreTest;
   friend class DatabaseTest;
   friend class IndexedDBTest;
   friend class TransactionTest;
@@ -384,6 +389,14 @@ class CONTENT_EXPORT BucketContext
 
   // Records one tick of Metadata during a metadata recording session.
   void RecordInternalsSnapshot();
+
+  // This only exists to ease the transition to a swappable backing store. It
+  // should be removed.
+  level_db::BackingStore* leveldb_backing_store() {
+    return reinterpret_cast<level_db::BackingStore*>(backing_store_.get());
+  }
+
+  bool in_memory() const { return data_path_.empty(); }
 
   SEQUENCE_CHECKER(sequence_checker_);
 

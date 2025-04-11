@@ -74,6 +74,7 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/instance/active_blob_registry.h"
+#include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
 #include "content/browser/indexed_db/instance/bucket_context_handle.h"
 #include "content/browser/indexed_db/instance/connection.h"
@@ -283,7 +284,7 @@ void BucketContext::ForceClose(bool doom) {
     }
     databases_.clear();
     if (has_blobs_outstanding_) {
-      backing_store_->active_blob_registry()->ForceShutdown();
+      leveldb_backing_store()->active_blob_registry()->ForceShutdown();
       has_blobs_outstanding_ = false;
     }
 
@@ -352,7 +353,7 @@ BucketContext::StopMetadataRecording() {
 }
 
 int64_t BucketContext::GetInMemorySize() {
-  return backing_store_ ? backing_store_->GetInMemorySize() : 0;
+  return backing_store_ ? leveldb_backing_store()->GetInMemorySize() : 0;
 }
 
 void BucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {
@@ -757,7 +758,7 @@ storage::mojom::IdbBucketMetadataPtr BucketContext::FillInMetadata(
     storage::mojom::IdbBucketMetadataPtr info) {
   // TODO(jsbell): Sort by name?
   std::vector<storage::mojom::IdbDatabaseMetadataPtr> database_list;
-  if (backing_store_ && backing_store_->in_memory()) {
+  if (backing_store_ && in_memory()) {
     info->size = GetInMemorySize();
   }
   for (const auto& [name, db] : databases_) {
@@ -783,21 +784,12 @@ BucketContext* BucketContext::GetReferenceForTesting() {
 }
 
 void BucketContext::CompactBackingStoreForTesting() {
-  // Compact the first db's backing store since all the db's are in the same
-  // backing store.
-  for (const auto& [name, db] : databases_) {
-    // The check should always be true, but is necessary to suppress a clang
-    // warning about unreachable loop increment.
-    if (db->backing_store()) {
-      db->backing_store()->Compact();
-      break;
-    }
-  }
+  leveldb_backing_store()->Compact();
 }
 
 void BucketContext::WriteToIndexedDBForTesting(const std::string& key,
                                                const std::string& value) {
-  backing_store_->WriteToIndexedDBForTesting(key, value);  // IN-TEST
+  leveldb_backing_store()->WriteToIndexedDBForTesting(key, value);  // IN-TEST
   ForceClose(/*doom=*/true);
 }
 
@@ -840,7 +832,7 @@ bool BucketContext::CanClose() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_GE(open_handles_, 0);
   return !has_blobs_outstanding_ && open_handles_ <= 0 &&
-         (!backing_store_ || is_doomed_ || !backing_store_->in_memory());
+         (!backing_store_ || is_doomed_ || !in_memory());
 }
 
 void BucketContext::MaybeStartClosing() {
@@ -894,7 +886,7 @@ void BucketContext::StartPreCloseTasks() {
       weak_factory_.GetWeakPtr()));
 
   std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
-      tasks = backing_store_->GetPreCloseTasks();
+      tasks = leveldb_backing_store()->GetPreCloseTasks();
 
   if (!tasks.empty()) {
     pre_close_task_queue_ = std::make_unique<BackingStorePreCloseTaskQueue>(
@@ -902,8 +894,8 @@ void BucketContext::StartPreCloseTasks() {
         base::Seconds(kRunningPreCloseTasksMaxRunPeriodSeconds),
         std::make_unique<base::OneShotTimer>());
     pre_close_task_queue_->Start(
-        base::BindOnce(&BackingStore::GetCompleteMetadata,
-                       base::Unretained(backing_store_.get())));
+        base::BindOnce(&level_db::BackingStore::GetCompleteMetadata,
+                       base::Unretained(leveldb_backing_store())));
   }
 }
 
@@ -952,8 +944,8 @@ void BucketContext::HandleBackingStoreCorruption(const DatabaseError& error) {
   std::string sanitized_message = base::UTF16ToUTF8(error.message());
   base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                      data_path_.AsUTF8Unsafe(), "...");
-  BackingStore::RecordCorruptionInfo(data_path_, bucket_locator(),
-                                     sanitized_message);
+  level_db::BackingStore::RecordCorruptionInfo(data_path_, bucket_locator(),
+                                               sanitized_message);
 
   const base::FilePath file_path =
       data_path_.Append(GetLevelDBFileName(bucket_locator()));
@@ -966,7 +958,7 @@ void BucketContext::HandleBackingStoreCorruption(const DatabaseError& error) {
   //       so our corruption info file will remain.
   //       The blob directory will be deleted when the database is recreated
   //       the next time it is opened.
-  Status s = BackingStore::DestroyDatabase(file_path);
+  Status s = level_db::BackingStore::DestroyDatabase(file_path);
   DLOG_IF(ERROR, !s.ok()) << "Unable to delete backing store: " << s.ToString();
 }
 
@@ -1004,7 +996,7 @@ bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
   }
   // This pointer is used to match the pointer used in
   // TransactionalLevelDBDatabase::OnMemoryDump.
-  leveldb::DB* db = backing_store()->db()->db();
+  leveldb::DB* db = leveldb_backing_store()->db()->db();
   auto* db_dump = pmd->CreateAllocatorDump(
       base::StringPrintf("site_storage/index_db/in_flight_0x%" PRIXPTR,
                          reinterpret_cast<uintptr_t>(db)));
@@ -1020,11 +1012,10 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
     return {};
   }
 
-  const bool in_memory = data_path_.empty();
   base::FilePath blob_path;
   base::FilePath database_path;
   Status status = Status::OK();
-  if (!in_memory) {
+  if (!in_memory()) {
     std::tie(database_path, blob_path, status) =
         CreateDatabaseDirectories(data_path_, bucket_locator());
     if (!status.ok()) {
@@ -1047,9 +1038,9 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
   for (int i = 0; i < kNumOpenTries; ++i) {
     const bool is_first_attempt = i == 0;
     std::tie(backing_store, status, data_loss_info, disk_full) =
-        BackingStore::OpenAndVerify(*this, data_path_, database_path, blob_path,
-                                    lock_manager.get(), is_first_attempt,
-                                    create_if_missing);
+        level_db::BackingStore::OpenAndVerify(
+            *this, data_path_, database_path, blob_path, lock_manager.get(),
+            is_first_attempt, create_if_missing);
     if (is_first_attempt) [[likely]] {
       first_try_status = status;
     }
@@ -1072,8 +1063,8 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
       LOG(ERROR) << "Got corruption for "
                  << bucket_locator().storage_key.GetDebugString() << ", "
                  << sanitized_message;
-      BackingStore::RecordCorruptionInfo(data_path_, bucket_locator(),
-                                         sanitized_message);
+      level_db::BackingStore::RecordCorruptionInfo(data_path_, bucket_locator(),
+                                                   sanitized_message);
     }
   }
 
@@ -1113,15 +1104,15 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
                      bucket_locator());
     return {status, CreateDefaultError(), data_loss_info};
   }
-  backing_store->db()->scopes()->StartRecoveryAndCleanupTasks();
 
-  if (!in_memory) {
+  if (!in_memory()) {
     ReportOpenStatus(INDEXED_DB_BACKING_STORE_OPEN_SUCCESS, bucket_locator());
   }
 
   lock_manager_ = std::move(lock_manager);
   backing_store_ = std::move(backing_store);
-  backing_store_->set_bucket_context(this);
+  leveldb_backing_store()->db()->scopes()->StartRecoveryAndCleanupTasks();
+  leveldb_backing_store()->set_bucket_context(this);
   delegate().on_files_written.Run(/*flushed=*/true);
   return {Status::OK(), DatabaseError(), data_loss_info};
 }
@@ -1131,8 +1122,8 @@ void BucketContext::ResetBackingStore() {
   weak_factory_.InvalidateWeakPtrs();
 
   if (backing_store_) {
-    if (backing_store_->IsBlobCleanupPending()) {
-      backing_store_->ForceRunBlobCleanup();
+    if (leveldb_backing_store()->IsBlobCleanupPending()) {
+      leveldb_backing_store()->ForceRunBlobCleanup();
     }
 
     const auto start = base::TimeTicks::Now();

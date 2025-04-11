@@ -30,7 +30,7 @@ class Cursor : public blink::mojom::IDBCursor {
  public:
   // Creates a new self-owned instance and binds to `pending_remote`.
   static Cursor* CreateAndBind(
-      std::unique_ptr<BackingStore::Cursor> cursor,
+      std::unique_ptr<level_db::BackingStore::Cursor> cursor,
       indexed_db::CursorType cursor_type,
       blink::mojom::IDBTaskType task_type,
       base::WeakPtr<Transaction> transaction,
@@ -64,7 +64,7 @@ class Cursor : public blink::mojom::IDBCursor {
   void Close();
 
  private:
-  Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
+  Cursor(std::unique_ptr<level_db::BackingStore::Cursor> cursor,
          indexed_db::CursorType cursor_type,
          blink::mojom::IDBTaskType task_type,
          base::WeakPtr<Transaction> transaction);
@@ -89,9 +89,9 @@ class Cursor : public blink::mojom::IDBCursor {
   base::WeakPtr<Transaction> transaction_;
 
   // Must be destroyed before transaction_.
-  std::unique_ptr<BackingStore::Cursor> cursor_;
+  std::unique_ptr<level_db::BackingStore::Cursor> cursor_;
   // Must be destroyed before transaction_.
-  std::unique_ptr<BackingStore::Cursor> saved_cursor_;
+  std::unique_ptr<level_db::BackingStore::Cursor> saved_cursor_;
 
   bool closed_ = false;
 

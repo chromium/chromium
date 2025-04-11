@@ -8,4 +8,33 @@
 # sequence-agnostic.
 include_rules = [
   "-content/browser/indexed_db/indexed_db_context_impl.h",
+  # Don't directly depend on LevelDB code (even transitively).
+  "-content/browser/indexed_db/instance/leveldb",
 ]
+
+# TODO(crbug.com/40273263): remove most of these exceptions, either by
+# introducing new abstractions or by moving relevant files into the leveldb
+# subdirectory.
+specific_include_rules = {
+  "active_blob_registry.cc": [
+    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
+  ],
+  "bucket_context\\..*": [
+    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
+  ],
+  "cursor.h": [
+    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
+  ],
+  "database.*": [
+    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
+  ],
+  "fake_transaction.h": [
+    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
+  ],
+  "index_writer\\..*": [
+    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
+  ],
+  "leveldb_cleanup_on_io_error_unittest.cc": [
+    "+content/browser/indexed_db/instance/leveldb/backing_store.h",
+  ],
+}

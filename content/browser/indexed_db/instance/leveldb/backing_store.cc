@@ -73,7 +73,7 @@ using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyRange;
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 
 // An RAII helper to ensure that "DidCommitTransaction" is called
 // during this class's destruction.
@@ -1096,22 +1096,6 @@ BackingStore::BackingStore(
 
 BackingStore::~BackingStore() = default;
 
-BackingStore::RecordIdentifier::RecordIdentifier(std::string primary_key,
-                                                 int64_t version)
-    : primary_key_(std::move(primary_key)), version_(version) {
-  DCHECK(!primary_key_.empty());
-}
-
-BackingStore::RecordIdentifier::RecordIdentifier() = default;
-
-BackingStore::RecordIdentifier::~RecordIdentifier() = default;
-
-void BackingStore::RecordIdentifier::Reset(std::string primary_key,
-                                           int64_t version) {
-  primary_key_ = std::move(primary_key);
-  version_ = version;
-}
-
 constexpr const int BackingStore::kMaxJournalCleanRequests;
 constexpr const base::TimeDelta BackingStore::kMaxJournalCleaningWindowTime;
 constexpr const base::TimeDelta BackingStore::kInitialJournalCleaningWindowTime;
@@ -1450,7 +1434,7 @@ Status BackingStore::ValidateBlobFiles() {
   return Status::OK();
 }
 
-std::unique_ptr<BackingStore::Transaction> BackingStore::CreateTransaction(
+std::unique_ptr<Transaction::Delegate> BackingStore::CreateTransaction(
     blink::mojom::IDBTransactionDurability durability,
     blink::mojom::IDBTransactionMode mode) {
   level_db_cleanup_scheduler_.OnTransactionStart();
@@ -4724,4 +4708,4 @@ void BackingStore::Transaction::PutExternalObjects(
   record->SetExternalObjects(external_objects);
 }
 
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db

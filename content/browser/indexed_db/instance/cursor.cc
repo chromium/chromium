@@ -49,7 +49,7 @@ DatabaseError CreateError(blink::mojom::IDBException code,
 
 // static
 Cursor* Cursor::CreateAndBind(
-    std::unique_ptr<BackingStore::Cursor> cursor,
+    std::unique_ptr<level_db::BackingStore::Cursor> cursor,
     indexed_db::CursorType cursor_type,
     blink::mojom::IDBTaskType task_type,
     base::WeakPtr<Transaction> transaction,
@@ -62,7 +62,7 @@ Cursor* Cursor::CreateAndBind(
   return instance_ptr;
 }
 
-Cursor::Cursor(std::unique_ptr<BackingStore::Cursor> cursor,
+Cursor::Cursor(std::unique_ptr<level_db::BackingStore::Cursor> cursor,
                indexed_db::CursorType cursor_type,
                blink::mojom::IDBTaskType task_type,
                base::WeakPtr<Transaction> transaction)
@@ -187,8 +187,9 @@ Status Cursor::ContinueOperation(
     Transaction* /*transaction*/) {
   TRACE_EVENT0("IndexedDB", "Cursor::ContinueOperation");
   Status s = Status::OK();
-  if (!cursor_ || !cursor_->Continue(key.get(), primary_key.get(),
-                                     BackingStore::Cursor::SEEK, &s)) {
+  if (!cursor_ ||
+      !cursor_->Continue(key.get(), primary_key.get(),
+                         level_db::BackingStore::Cursor::SEEK, &s)) {
     cursor_.reset();
     if (s.ok()) {
       // This happens if we reach the end of the iterator and can't continue.

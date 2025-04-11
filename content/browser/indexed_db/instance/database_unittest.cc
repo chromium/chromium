@@ -668,7 +668,9 @@ class DatabaseOperationTest : public DatabaseTest {
         transaction_id, /*scope=*/std::set<int64_t>(),
         std::make_unique<FakeTransaction>(
             commit_success_, blink::mojom::IDBTransactionMode::VersionChange,
-            bucket_context_->backing_store()->AsWeakPtr()));
+            reinterpret_cast<level_db::BackingStore*>(
+                bucket_context_->backing_store())
+                ->AsWeakPtr()));
 
     std::vector<PartitionedLockManager::PartitionedLockRequest> lock_requests =
         {{GetDatabaseLockId(db_->metadata().name),

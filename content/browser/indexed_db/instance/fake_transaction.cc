@@ -17,16 +17,14 @@
 
 namespace content::indexed_db {
 
-FakeTransaction::FakeTransaction(Status result)
-    : FakeTransaction(result,
-                      blink::mojom::IDBTransactionMode::ReadWrite,
-                      nullptr) {}
-FakeTransaction::FakeTransaction(Status result,
-                                 blink::mojom::IDBTransactionMode mode,
-                                 base::WeakPtr<BackingStore> backing_store)
-    : BackingStore::Transaction(backing_store,
-                                blink::mojom::IDBTransactionDurability::Relaxed,
-                                mode),
+FakeTransaction::FakeTransaction(
+    Status result,
+    blink::mojom::IDBTransactionMode mode,
+    base::WeakPtr<level_db::BackingStore> backing_store)
+    : level_db::BackingStore::Transaction(
+          backing_store,
+          blink::mojom::IDBTransactionDurability::Relaxed,
+          mode),
       result_(result) {}
 Status FakeTransaction::CommitPhaseOne(BlobWriteCallback callback) {
   return std::move(callback).Run(

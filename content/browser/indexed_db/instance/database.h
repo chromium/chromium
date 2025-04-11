@@ -301,6 +301,8 @@ class CONTENT_EXPORT Database {
   class OpenRequest;
   class DeleteRequest;
 
+  level_db::BackingStore* leveldb_backing_store();
+
   Status OpenInternal();
 
   // This class informs its result sink of an error if a `GetAllOperation` is

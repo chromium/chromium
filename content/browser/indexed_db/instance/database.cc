@@ -37,6 +37,7 @@
 #include "content/browser/indexed_db/instance/database_callbacks.h"
 #include "content/browser/indexed_db/instance/factory_client.h"
 #include "content/browser/indexed_db/instance/index_writer.h"
+#include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/lock_request_data.h"
 #include "content/browser/indexed_db/instance/pending_connection.h"
 #include "content/browser/indexed_db/instance/transaction.h"
@@ -65,7 +66,7 @@ namespace {
 blink::mojom::IDBReturnValuePtr ExtractReturnValueFromCursorValue(
     BucketContext& bucket_context,
     const IndexedDBObjectStoreMetadata& object_store_metadata,
-    BackingStore::Cursor& cursor) {
+    level_db::BackingStore::Cursor& cursor) {
   IndexedDBReturnValue idb_return_value;
   idb_return_value.swap(*cursor.value());
 
@@ -157,6 +158,11 @@ Database::~Database() = default;
 
 BackingStore* Database::backing_store() {
   return bucket_context_->backing_store();
+}
+
+level_db::BackingStore* Database::leveldb_backing_store() {
+  return reinterpret_cast<level_db::BackingStore*>(
+      bucket_context_->backing_store());
 }
 
 PartitionedLockManager& Database::lock_manager() {
@@ -714,29 +720,30 @@ Status Database::GetOperation(int64_t object_store_id,
   const IndexedDBKey* key;
 
   Status s = Status::OK();
-  std::unique_ptr<BackingStore::Cursor> backing_store_cursor;
+  std::unique_ptr<level_db::BackingStore::Cursor> backing_store_cursor;
   if (key_range->IsOnlyKey()) {
     key = &key_range->lower();
   } else {
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // ObjectStore Retrieval Operation
       if (cursor_type == CursorType::kKeyOnly) {
-        backing_store_cursor = backing_store()->OpenObjectStoreKeyCursor(
-            transaction->BackingStoreTransaction(), id(), object_store_id,
-            *key_range, blink::mojom::IDBCursorDirection::Next, &s);
+        backing_store_cursor =
+            leveldb_backing_store()->OpenObjectStoreKeyCursor(
+                transaction->BackingStoreTransaction(), id(), object_store_id,
+                *key_range, blink::mojom::IDBCursorDirection::Next, &s);
       } else {
-        backing_store_cursor = backing_store()->OpenObjectStoreCursor(
+        backing_store_cursor = leveldb_backing_store()->OpenObjectStoreCursor(
             transaction->BackingStoreTransaction(), id(), object_store_id,
             *key_range, blink::mojom::IDBCursorDirection::Next, &s);
       }
     } else if (cursor_type == CursorType::kKeyOnly) {
       // Index Value Retrieval Operation
-      backing_store_cursor = backing_store()->OpenIndexKeyCursor(
+      backing_store_cursor = leveldb_backing_store()->OpenIndexKeyCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
           index_id, *key_range, blink::mojom::IDBCursorDirection::Next, &s);
     } else {
       // Index Referenced Value Retrieval Operation
-      backing_store_cursor = backing_store()->OpenIndexCursor(
+      backing_store_cursor = leveldb_backing_store()->OpenIndexCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
           index_id, *key_range, blink::mojom::IDBCursorDirection::Next, &s);
     }
@@ -945,18 +952,18 @@ Status Database::GetAllOperation(
       metadata_.object_stores[object_store_id];
 
   Status s = Status::OK();
-  std::unique_ptr<BackingStore::Cursor> cursor;
+  std::unique_ptr<level_db::BackingStore::Cursor> cursor;
 
   if (result_type == blink::mojom::IDBGetAllResultType::Keys) {
     // Retrieving keys
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // Object Store: Key Retrieval Operation
-      cursor = backing_store()->OpenObjectStoreKeyCursor(
+      cursor = leveldb_backing_store()->OpenObjectStoreKeyCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
           *key_range, direction, &s);
     } else {
       // Index Value: (Primary Key) Retrieval Operation
-      cursor = backing_store()->OpenIndexKeyCursor(
+      cursor = leveldb_backing_store()->OpenIndexKeyCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
           index_id, *key_range, direction, &s);
     }
@@ -964,12 +971,12 @@ Status Database::GetAllOperation(
     // Retrieving values
     if (index_id == IndexedDBIndexMetadata::kInvalidId) {
       // Object Store: Value Retrieval Operation
-      cursor = backing_store()->OpenObjectStoreCursor(
+      cursor = leveldb_backing_store()->OpenObjectStoreCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
           *key_range, direction, &s);
     } else {
       // Object Store: Referenced Value Retrieval Operation
-      cursor = backing_store()->OpenIndexCursor(
+      cursor = leveldb_backing_store()->OpenIndexCursor(
           transaction->BackingStoreTransaction(), id(), object_store_id,
           index_id, *key_range, direction, &s);
     }
@@ -1288,26 +1295,26 @@ Status Database::OpenCursorOperation(
   }
 
   Status s;
-  std::unique_ptr<BackingStore::Cursor> backing_store_cursor;
+  std::unique_ptr<level_db::BackingStore::Cursor> backing_store_cursor;
   if (params->index_id == IndexedDBIndexMetadata::kInvalidId) {
     if (params->cursor_type == CursorType::kKeyOnly) {
       DCHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
-      backing_store_cursor = backing_store()->OpenObjectStoreKeyCursor(
+      backing_store_cursor = leveldb_backing_store()->OpenObjectStoreKeyCursor(
           transaction->BackingStoreTransaction(), id(), params->object_store_id,
           *params->key_range, params->direction, &s);
     } else {
-      backing_store_cursor = backing_store()->OpenObjectStoreCursor(
+      backing_store_cursor = leveldb_backing_store()->OpenObjectStoreCursor(
           transaction->BackingStoreTransaction(), id(), params->object_store_id,
           *params->key_range, params->direction, &s);
     }
   } else {
     DCHECK_EQ(params->task_type, blink::mojom::IDBTaskType::Normal);
     if (params->cursor_type == CursorType::kKeyOnly) {
-      backing_store_cursor = backing_store()->OpenIndexKeyCursor(
+      backing_store_cursor = leveldb_backing_store()->OpenIndexKeyCursor(
           transaction->BackingStoreTransaction(), id(), params->object_store_id,
           params->index_id, *params->key_range, params->direction, &s);
     } else {
-      backing_store_cursor = backing_store()->OpenIndexCursor(
+      backing_store_cursor = leveldb_backing_store()->OpenIndexCursor(
           transaction->BackingStoreTransaction(), id(), params->object_store_id,
           params->index_id, *params->key_range, params->direction, &s);
     }
@@ -1365,15 +1372,14 @@ Status Database::CountOperation(
   }
 
   uint32_t count = 0;
-  std::unique_ptr<BackingStore::Cursor> backing_store_cursor;
-
+  std::unique_ptr<level_db::BackingStore::Cursor> backing_store_cursor;
   Status s = Status::OK();
   if (index_id == IndexedDBIndexMetadata::kInvalidId) {
-    backing_store_cursor = backing_store()->OpenObjectStoreKeyCursor(
+    backing_store_cursor = leveldb_backing_store()->OpenObjectStoreKeyCursor(
         transaction->BackingStoreTransaction(), id(), object_store_id,
         *key_range, blink::mojom::IDBCursorDirection::Next, &s);
   } else {
-    backing_store_cursor = backing_store()->OpenIndexKeyCursor(
+    backing_store_cursor = leveldb_backing_store()->OpenIndexKeyCursor(
         transaction->BackingStoreTransaction(), id(), object_store_id, index_id,
         *key_range, blink::mojom::IDBCursorDirection::Next, &s);
   }

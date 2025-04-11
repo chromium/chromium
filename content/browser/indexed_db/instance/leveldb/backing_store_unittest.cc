@@ -66,7 +66,7 @@ using blink::IndexedDBObjectStoreMetadata;
 using blink::StorageKey;
 using url::Origin;
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 
 struct BlobWrite {
   BlobWrite() = default;
@@ -255,7 +255,8 @@ class BackingStoreTest : public testing::Test {
     std::tie(std::ignore, std::ignore, data_loss_info_) =
         bucket_context_->InitBackingStoreIfNeeded(/*create_if_missing=*/true);
 
-    backing_store_ = bucket_context_->backing_store();
+    backing_store_ =
+        reinterpret_cast<BackingStore*>(bucket_context_->backing_store());
   }
 
   std::vector<PartitionedLock> CreateDummyLock() {
@@ -2144,4 +2145,4 @@ TEST_F(BackingStoreTestForCleanupScheduler,
                   .GetRunningStateForTesting()
                   .has_value());
 }
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db

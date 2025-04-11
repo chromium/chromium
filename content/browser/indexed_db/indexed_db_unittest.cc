@@ -1883,10 +1883,14 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
   }
 }
 
+namespace level_db {
+
 TEST_P(IndexedDBTest, TombstoneSweeperTiming) {
   // Open a connection.
   BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  BackingStore* backing_store = bucket_context_handle->backing_store();
+  level_db::BackingStore* backing_store =
+      reinterpret_cast<level_db::BackingStore*>(
+          bucket_context_handle->backing_store());
   EXPECT_FALSE(backing_store->ShouldRunTombstoneSweeper());
 
   // Move the clock to run the tasks in the next close sequence.
@@ -1909,7 +1913,9 @@ TEST_P(IndexedDBTest, TombstoneSweeperTiming) {
 TEST_P(IndexedDBTest, CompactionTaskTiming) {
   // Open a connection.
   BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  BackingStore* backing_store = bucket_context_handle->backing_store();
+  level_db::BackingStore* backing_store =
+      reinterpret_cast<level_db::BackingStore*>(
+          bucket_context_handle->backing_store());
   EXPECT_FALSE(backing_store->ShouldRunCompaction());
 
   // Move the clock to run the tasks in the next close sequence.
@@ -1930,13 +1936,17 @@ TEST_P(IndexedDBTest, CompactionTaskTiming) {
   EXPECT_TRUE(backing_store->ShouldRunCompaction());
 }
 
+}  // namespace level_db
+
 TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
   SetUpInMemoryContext();
 
   BucketContextHandle bucket_context_handle = CreateBucketHandle();
   BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
 
-  EXPECT_TRUE(bucket_context_handle->backing_store()->in_memory());
+  EXPECT_TRUE(reinterpret_cast<level_db::BackingStore*>(
+                  bucket_context_handle->backing_store())
+                  ->in_memory());
   BucketContext* bucket_context = bucket_context_handle.bucket_context();
   bucket_context_handle.Release();
   RunPostedTasks();
