@@ -1323,7 +1323,11 @@ android_library("chrome_test_java_org.chromium.chrome.browser.collaboration") {
 
   deps = [
     ":chrome_test_java_helper",
+    "//chrome/android:chrome_all_java",
+    "//chrome/browser/data_sharing:factory_java",
+    "//chrome/browser/data_sharing:internal_library_java",
     "//components/data_sharing/internal:internal_java",
+    "//components/data_sharing/internal:native_test_helper_java",
     "//components/data_sharing/public:public_java",
   ]
 }

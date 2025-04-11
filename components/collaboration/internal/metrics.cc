@@ -218,14 +218,14 @@ std::string_view CollaborationServiceShareOrManageEntryPointToString(
 }
 
 std::string CreateJoinEventLogString(CollaborationServiceJoinEvent event) {
-  return base::StringPrintf("Join Flow Event\n  Event: %s\n",
+  return base::StringPrintf("Join Flow Event: %s",
                             CollaborationServiceJoinEventToString(event));
 }
 
 std::string CreateShareOrManageEventLogString(
     CollaborationServiceShareOrManageEvent event) {
   return base::StringPrintf(
-      "Share or Manage Flow Event\n  Event: %s\n",
+      "Share or Manage Flow: %s",
       CollaborationServiceShareOrManageEventToString(event));
 }
 

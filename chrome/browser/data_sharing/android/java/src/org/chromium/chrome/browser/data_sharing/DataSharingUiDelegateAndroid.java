@@ -27,13 +27,19 @@ import org.chromium.url.GURL;
  * Implementation of {@link DataSharingUIDelegate} that implements some methods while delegating
  * some to the internal delegate.
  */
-class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
+public class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
 
     private final @Nullable DataSharingUIDelegate mInternalDelegate;
+
+    private static @Nullable DataSharingUIDelegate sDelegateForTesting;
 
     DataSharingUiDelegateAndroid(Profile profile) {
         DataSharingImplFactory factory =
                 ServiceLoaderUtil.maybeCreate(DataSharingImplFactory.class);
+        if (sDelegateForTesting != null) {
+            mInternalDelegate = sDelegateForTesting;
+            return;
+        }
         if (factory != null) {
             mInternalDelegate = factory.createUiDelegate(profile);
         } else {
@@ -98,5 +104,10 @@ class DataSharingUiDelegateAndroid implements DataSharingUIDelegate {
         Intent invitation_intent =
                 DataSharingNotificationManager.createInvitationIntent(context, url);
         IntentUtils.safeStartActivity(context, invitation_intent);
+    }
+
+    /* Sets UI delegate for testing, to be used when native needs a new delegate. */
+    public static void setForTesting(DataSharingUIDelegate delegate) {
+        sDelegateForTesting = delegate;
     }
 }

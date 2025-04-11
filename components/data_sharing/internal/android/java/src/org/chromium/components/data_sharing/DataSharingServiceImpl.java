@@ -148,9 +148,17 @@ public class DataSharingServiceImpl implements DataSharingService {
         return mLogger;
     }
 
+    /* Sets a test preview data to return for all preview requests. */
+    public void setSharedEntitiesPreviewForTesting(String groupId) {
+        DataSharingServiceImplJni.get().setSharedEntitiesPreviewForTesting(mNativePtr, groupId);
+    }
+
     private static @Nullable SharedDataPreviewOrFailureOutcome sSharedEntitiesPreviewForTesting;
 
-    /** Sets a test preview data to return for all preview requests. */
+    /**
+     * TODO(ssid): Deprecate this method. Sets a test preview data to return for all preview
+     * requests.
+     */
     public static void setSharedEntitiesPreviewForTesting(
             SharedDataPreviewOrFailureOutcome preview) {
         sSharedEntitiesPreviewForTesting = preview;
@@ -226,5 +234,8 @@ public class DataSharingServiceImpl implements DataSharingService {
         void log(long nativeDataSharingServiceAndroid, int source, String message);
 
         GURL getDataSharingUrlForTesting(String groupId, String accessToken);
+
+        void setSharedEntitiesPreviewForTesting(
+                long nativeDataSharingServiceAndroid, String groupId);
     }
 }

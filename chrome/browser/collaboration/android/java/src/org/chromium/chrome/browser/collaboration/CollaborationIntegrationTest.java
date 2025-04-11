@@ -24,9 +24,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingUiDelegateAndroid;
+import org.chromium.chrome.browser.data_sharing.FakeDataSharingUIDelegateImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -36,12 +40,16 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.data_sharing.DataSharingSDKDelegateBridge;
+import org.chromium.components.data_sharing.DataSharingSDKDelegateTestImpl;
 import org.chromium.components.data_sharing.DataSharingServiceImpl;
 import org.chromium.components.data_sharing.GroupToken;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Instrumentation tests for {@link CollaborationService}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -55,17 +63,33 @@ import org.chromium.ui.test.util.GmsCoreVersionRestriction;
     GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02
 })
 public class CollaborationIntegrationTest {
+
+    private static final long WAIT_TIMEOUT_MS = 1000L;
+    private static final String TEST_COLLABORATION_ID = "collaboration_id";
+
     @Rule(order = 0)
     public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule(order = 1)
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
+    private FakeDataSharingUIDelegateImpl mDataSharingUIDelegate;
+    private DataSharingSDKDelegateTestImpl mDataSharingSDKDelegate;
+
     private Profile mProfile;
     private String mUrl;
 
+    public CollaborationIntegrationTest() {
+        DataSharingUiDelegateAndroid.setForTesting(mDataSharingUIDelegate);
+        DataSharingSDKDelegateBridge.setForTesting(mDataSharingSDKDelegate);
+    }
+
     @Before
     public void setUp() {
+        mDataSharingUIDelegate = new FakeDataSharingUIDelegateImpl();
+        mDataSharingSDKDelegate = new DataSharingSDKDelegateTestImpl();
+        DataSharingUiDelegateAndroid.setForTesting(mDataSharingUIDelegate);
+        DataSharingSDKDelegateBridge.setForTesting(mDataSharingSDKDelegate);
         mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
@@ -76,8 +100,20 @@ public class CollaborationIntegrationTest {
                 });
         mUrl =
                 DataSharingServiceImpl.getDataSharingUrlForTesting(
-                                new GroupToken("collaboration_id", "access_token"))
+                                new GroupToken(TEST_COLLABORATION_ID, "access_token"))
                         .getSpec();
+    }
+
+    /* Sets up preview data for the group ID. */
+    private void setFakePreviewData() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    DataSharingServiceImpl service =
+                            (DataSharingServiceImpl)
+                                    DataSharingServiceFactory.getForProfile(
+                                            mActivityTestRule.getProfile(false));
+                    service.setSharedEntitiesPreviewForTesting(TEST_COLLABORATION_ID);
+                });
     }
 
     @Test
@@ -133,5 +169,38 @@ public class CollaborationIntegrationTest {
 
         // The user is signed out.
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
+    }
+
+    @Test
+    @MediumTest
+    public void testDataSharingUrlInterceptionShowsJoin() {
+        mActivityTestRule.loadUrlInNewTab(mUrl);
+
+        final AtomicBoolean joinCalled = new AtomicBoolean();
+        mDataSharingUIDelegate.setShowJoinFlowRunnable(() -> joinCalled.set(true));
+        setFakePreviewData();
+
+        // Verify that the fullscreen sign-in promo is shown and accept.
+        onViewWaiting(withText(R.string.collaboration_signin_description))
+                .check(matches(isDisplayed()));
+        final String continueAsText =
+                mActivityTestRule
+                        .getActivity()
+                        .getString(
+                                R.string.sync_promo_continue_as,
+                                TestAccounts.ACCOUNT1.getGivenName());
+        onView(withText(continueAsText)).perform(click());
+
+        // Verify that the history opt-in dialog is shown and accept.
+        onViewWaiting(withText(R.string.collaboration_sync_description))
+                .check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.button_primary)).perform(click());
+
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    return joinCalled.get();
+                },
+                WAIT_TIMEOUT_MS,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 }
