@@ -32,21 +32,27 @@
 
 @end
 
-@implementation FullscreenSigninCoordinator
+@implementation FullscreenSigninCoordinator {
+  ChangeProfileContinuationProvider _changeProfileContinuationProvider;
+}
 
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                            screenProvider:(ScreenProvider*)screenProvider
-                              contextStyle:(SigninContextStyle)contextStyle
-                               accessPoint:
-                                   (signin_metrics::AccessPoint)accessPoint {
+- (instancetype)
+           initWithBaseViewController:(UIViewController*)viewController
+                              browser:(Browser*)browser
+                       screenProvider:(ScreenProvider*)screenProvider
+                         contextStyle:(SigninContextStyle)contextStyle
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
+                                          changeProfileContinuationProvider {
   DCHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                               contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
+    CHECK(changeProfileContinuationProvider);
     _screenProvider = screenProvider;
+    _changeProfileContinuationProvider = changeProfileContinuationProvider;
   }
   return self;
 }
@@ -120,13 +126,14 @@
   switch (type) {
     case kSignIn:
       return [[FullscreenSigninScreenCoordinator alloc]
-          initWithBaseNavigationController:self.navigationController
-                                   browser:self.browser
-                                  delegate:self
-                              contextStyle:self.contextStyle
-                               accessPoint:self.accessPoint
-                               promoAction:signin_metrics::PromoAction::
-                                               PROMO_ACTION_NO_SIGNIN_PROMO];
+           initWithBaseNavigationController:self.navigationController
+                                    browser:self.browser
+                                   delegate:self
+                               contextStyle:self.contextStyle
+                                accessPoint:self.accessPoint
+                                promoAction:signin_metrics::PromoAction::
+                                                PROMO_ACTION_NO_SIGNIN_PROMO
+          changeProfileContinuationProvider:_changeProfileContinuationProvider];
     case kHistorySync:
     case kDefaultBrowserPromo:
     case kChoice:

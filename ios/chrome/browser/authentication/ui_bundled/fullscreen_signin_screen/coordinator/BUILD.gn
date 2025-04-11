@@ -17,6 +17,7 @@ source_set("coordinator") {
     "//components/signin/public/identity_manager/objc",
     "//components/sync/service",
     "//components/web_resource",
+    "//ios/chrome/app:change_profile_continuation",
     "//ios/chrome/browser/authentication/ui_bundled:continuation",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
     "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:request_helper",

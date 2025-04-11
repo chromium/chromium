@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 
 @class AuthenticationFlow;
 class AuthenticationService;
@@ -55,15 +56,18 @@ class SyncService;
 // `prefService` user pref.
 // `syncService` sync service.
 - (instancetype)
-    initWithAccountManagerService:
-        (ChromeAccountManagerService*)accountManagerService
-            authenticationService:(AuthenticationService*)authenticationService
-                  identityManager:(signin::IdentityManager*)identityManager
-                 localPrefService:(PrefService*)localPrefService
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint
-                      promoAction:(signin_metrics::PromoAction)promoAction
+        initWithAccountManagerService:
+            (ChromeAccountManagerService*)accountManagerService
+                authenticationService:
+                    (AuthenticationService*)authenticationService
+                      identityManager:(signin::IdentityManager*)identityManager
+                     localPrefService:(PrefService*)localPrefService
+                          prefService:(PrefService*)prefService
+                          syncService:(syncer::SyncService*)syncService
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                          promoAction:(signin_metrics::PromoAction)promoAction
+    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
+                                          changeProfileContinuationProvider
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

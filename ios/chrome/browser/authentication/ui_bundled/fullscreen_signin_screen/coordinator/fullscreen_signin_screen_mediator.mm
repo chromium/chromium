@@ -17,6 +17,7 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_request_helper.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile_continuation_provider.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/coordinator/fullscreen_signin_screen_mediator_delegate.h"
@@ -77,20 +78,26 @@ enum class SigninScreenState {
       _identityManagerObserver;
   // State of the sign-in screen.
   SigninScreenState _screenState;
+  ChangeProfileContinuationProvider _changeProfileContinuationProvider;
 }
 
 - (instancetype)
-    initWithAccountManagerService:
-        (ChromeAccountManagerService*)accountManagerService
-            authenticationService:(AuthenticationService*)authenticationService
-                  identityManager:(signin::IdentityManager*)identityManager
-                 localPrefService:(PrefService*)localPrefService
-                      prefService:(PrefService*)prefService
-                      syncService:(syncer::SyncService*)syncService
-                      accessPoint:(signin_metrics::AccessPoint)accessPoint
-                      promoAction:(signin_metrics::PromoAction)promoAction {
+        initWithAccountManagerService:
+            (ChromeAccountManagerService*)accountManagerService
+                authenticationService:
+                    (AuthenticationService*)authenticationService
+                      identityManager:(signin::IdentityManager*)identityManager
+                     localPrefService:(PrefService*)localPrefService
+                          prefService:(PrefService*)prefService
+                          syncService:(syncer::SyncService*)syncService
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                          promoAction:(signin_metrics::PromoAction)promoAction
+    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
+                                          changeProfileContinuationProvider {
   self = [super init];
   if (self) {
+    CHECK(changeProfileContinuationProvider);
+    _changeProfileContinuationProvider = changeProfileContinuationProvider;
     CHECK(accountManagerService);
     CHECK(authenticationService);
     CHECK(identityManager);
@@ -309,8 +316,7 @@ enum class SigninScreenState {
 }
 
 - (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
-  // TODO(crbug.com/375605572) Sends an actual continuation.
-  return DoNothingContinuation();
+  return _changeProfileContinuationProvider.Run();
 }
 
 #pragma mark - Private

@@ -72,21 +72,25 @@
   SigninContextStyle _contextStyle;
   signin_metrics::AccessPoint _accessPoint;
   signin_metrics::PromoAction _promoAction;
+  ChangeProfileContinuationProvider _changeProfileContinuationProvider;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)
-    initWithBaseNavigationController:
-        (UINavigationController*)navigationController
-                             browser:(Browser*)browser
-                            delegate:(id<FirstRunScreenDelegate>)delegate
-                        contextStyle:(SigninContextStyle)contextStyle
-                         accessPoint:(signin_metrics::AccessPoint)accessPoint
-                         promoAction:(signin_metrics::PromoAction)promoAction {
+     initWithBaseNavigationController:
+         (UINavigationController*)navigationController
+                              browser:(Browser*)browser
+                             delegate:(id<FirstRunScreenDelegate>)delegate
+                         contextStyle:(SigninContextStyle)contextStyle
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+                          promoAction:(signin_metrics::PromoAction)promoAction
+    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
+                                          changeProfileContinuationProvider {
   self = [super initWithBaseViewController:navigationController
                                    browser:browser];
   if (self) {
+    CHECK(changeProfileContinuationProvider);
     _baseNavigationController = navigationController;
     _delegate = delegate;
     _UMAReportingUserChoice = kDefaultMetricsReportingCheckboxValue;
@@ -94,6 +98,7 @@
     _accessPoint = accessPoint;
     _promoAction = promoAction;
     _baseNavigationController.presentationController.delegate = self;
+    _changeProfileContinuationProvider = changeProfileContinuationProvider;
   }
   return self;
 }
@@ -127,14 +132,15 @@
   PrefService* prefService = profile->GetPrefs();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   self.mediator = [[FullscreenSigninScreenMediator alloc]
-      initWithAccountManagerService:self.accountManagerService
-              authenticationService:self.authenticationService
-                    identityManager:identityManager
-                   localPrefService:localPrefService
-                        prefService:prefService
-                        syncService:syncService
-                        accessPoint:_accessPoint
-                        promoAction:_promoAction];
+          initWithAccountManagerService:self.accountManagerService
+                  authenticationService:self.authenticationService
+                        identityManager:identityManager
+                       localPrefService:localPrefService
+                            prefService:prefService
+                            syncService:syncService
+                            accessPoint:_accessPoint
+                            promoAction:_promoAction
+      changeProfileContinuationProvider:_changeProfileContinuationProvider];
   self.mediator.consumer = self.viewController;
   self.mediator.delegate = self;
   if (self.mediator.ignoreDismissGesture) {

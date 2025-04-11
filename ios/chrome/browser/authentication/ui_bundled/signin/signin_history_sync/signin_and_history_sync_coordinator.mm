@@ -188,13 +188,17 @@ enum class SignInHistorySyncStep {
     createPresentStepChildCoordinator {
   switch (_currentStep) {
     case SignInHistorySyncStep::kFullscreenSignin: {
+      // TODO(crbug.com/375605572) Sends an actual continuation.
       SigninCoordinator<InterruptibleChromeCoordinator>* coordinator =
           [[FullscreenSigninCoordinator alloc]
-              initWithBaseViewController:self.baseViewController
-                                 browser:self.browser
-                          screenProvider:[[SigninScreenProvider alloc] init]
-                            contextStyle:self.contextStyle
-                             accessPoint:self.accessPoint];
+                     initWithBaseViewController:self.baseViewController
+                                        browser:self.browser
+                                 screenProvider:[[SigninScreenProvider alloc]
+                                                    init]
+                                   contextStyle:self.contextStyle
+                                    accessPoint:self.accessPoint
+              changeProfileContinuationProvider:
+                  DoNothingContinuationProvider()];
       __weak __typeof(self) weakSelf = self;
       coordinator.signinCompletion =
           ^(SigninCoordinatorResult result, id<SystemIdentity>) {

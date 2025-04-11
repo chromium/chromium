@@ -2160,8 +2160,9 @@ using UserFeedbackDataCallback =
           fullscreenSigninCoordinatorWithBaseViewController:baseViewController
                                                     browser:mainBrowser
                                                contextStyle:command.contextStyle
-                                                accessPoint:command
-                                                                .accessPoint];
+                                                accessPoint:command.accessPoint
+                          changeProfileContinuationProvider:
+                              command.changeProfileContinuationProvider];
       break;
     case AuthenticationOperation::kInstantSignin:
       self.signinCoordinator = [SigninCoordinator

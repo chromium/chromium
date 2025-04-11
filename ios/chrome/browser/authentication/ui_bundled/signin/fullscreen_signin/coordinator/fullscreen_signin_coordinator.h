@@ -19,12 +19,14 @@
 // Initiate the coordinator.
 // `browser` used for authentication. It must not be off the record (incognito).
 // `screenProvider` helps decide which screen to show.
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                                   browser:(Browser*)browser
-                            screenProvider:(ScreenProvider*)screenProvider
-                              contextStyle:(SigninContextStyle)contextStyle
-                               accessPoint:
-                                   (signin_metrics::AccessPoint)accessPoint
+- (instancetype)
+           initWithBaseViewController:(UIViewController*)viewController
+                              browser:(Browser*)browser
+                       screenProvider:(ScreenProvider*)screenProvider
+                         contextStyle:(SigninContextStyle)contextStyle
+                          accessPoint:(signin_metrics::AccessPoint)accessPoint
+    changeProfileContinuationProvider:(const ChangeProfileContinuationProvider&)
+                                          changeProfileContinuationProvider
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

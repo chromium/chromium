@@ -91,7 +91,10 @@ class PrefRegistrySyncable;
                                              (SigninContextStyle)contextStyle
                                           accessPoint:
                                               (signin_metrics::AccessPoint)
-                                                  accessPoint;
+                                                  accessPoint
+                    changeProfileContinuationProvider:
+                        (const ChangeProfileContinuationProvider&)
+                            changeProfileContinuationProvider;
 
 // Returns a coordinator for upgrade sign-in workflow.
 // `viewController` presents the sign-in.

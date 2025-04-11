@@ -86,13 +86,18 @@ using signin_metrics::PromoAction;
                                              (SigninContextStyle)contextStyle
                                           accessPoint:
                                               (signin_metrics::AccessPoint)
-                                                  accessPoint {
+                                                  accessPoint
+                    changeProfileContinuationProvider:
+                        (const ChangeProfileContinuationProvider&)
+                            changeProfileContinuationProvider {
+  CHECK(changeProfileContinuationProvider);
   return [[FullscreenSigninCoordinator alloc]
-      initWithBaseViewController:viewController
-                         browser:browser
-                  screenProvider:[[SigninScreenProvider alloc] init]
-                    contextStyle:contextStyle
-                     accessPoint:accessPoint];
+             initWithBaseViewController:viewController
+                                browser:browser
+                         screenProvider:[[SigninScreenProvider alloc] init]
+                           contextStyle:contextStyle
+                            accessPoint:accessPoint
+      changeProfileContinuationProvider:changeProfileContinuationProvider];
 }
 
 + (SigninCoordinator<InterruptibleChromeCoordinator>*)
