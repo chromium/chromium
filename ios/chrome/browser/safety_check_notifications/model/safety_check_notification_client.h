@@ -43,6 +43,7 @@ class SafetyCheckNotificationClient
   ~SafetyCheckNotificationClient() override;
 
   // `PushNotificationClient` overrides.
+  bool CanHandleNotification(UNNotification* notification) override;
   bool HandleNotificationInteraction(
       UNNotificationResponse* notification_response) override;
   std::optional<UIBackgroundFetchResult> HandleNotificationReception(

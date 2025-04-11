@@ -17,6 +17,12 @@ ReminderNotificationClient::ReminderNotificationClient(
 
 ReminderNotificationClient::~ReminderNotificationClient() = default;
 
+bool ReminderNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  // TODO(crbug.com/390432325): Handle reminder notification interactions.
+  return false;
+}
+
 bool ReminderNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

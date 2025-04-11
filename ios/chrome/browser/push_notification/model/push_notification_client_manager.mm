@@ -231,3 +231,25 @@ void PushNotificationClientManager::AddAppWidePushNotificationClients() {
     AddPushNotificationClient(std::move(client));
   }
 }
+
+PushNotificationClient* PushNotificationClientManager::GetClientForNotification(
+    UNNotification* notification) {
+  std::optional<PushNotificationClientId> clientId = [PushNotificationUtil
+      mapToPushNotificationClientIdFromUserInfo:notification.request.content
+                                                    .userInfo];
+  if (clientId.has_value()) {
+    auto it = clients_.find(clientId.value());
+    if (it != clients_.end()) {
+      return it->second.get();
+    }
+  } else {
+    // Safety until all clients have incorporated the appropriate ids into their
+    // payload.
+    for (auto& it : clients_) {
+      if (it.second->CanHandleNotification(notification)) {
+        return it.second.get();
+      }
+    }
+  }
+  return nullptr;
+}

@@ -89,6 +89,13 @@ CommercePushNotificationClient::ParseHintNotificationPayload(
   return hint_notification_payload;
 }
 
+bool CommercePushNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  NSDictionary* user_info = notification.request.content.userInfo;
+  return ParseHintNotificationPayload(
+             [user_info objectForKey:kSerializedPayloadKey]) != nullptr;
+}
+
 bool CommercePushNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* notification_response) {
   NSDictionary* user_info =

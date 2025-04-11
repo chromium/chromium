@@ -11,6 +11,11 @@ TestPushNotificationClient::TestPushNotificationClient(size_t client_id)
                              PushNotificationClientScope::kPerProfile) {}
 TestPushNotificationClient::~TestPushNotificationClient() = default;
 
+bool TestPushNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  return can_handle_notification_;
+}
+
 bool TestPushNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* notification) {
   has_notification_received_interaction_ = true;
@@ -44,4 +49,9 @@ void TestPushNotificationClient::OnSceneActiveForegroundBrowserReady() {
 
 bool TestPushNotificationClient::IsBrowserReady() {
   return is_browser_ready_;
+}
+
+void TestPushNotificationClient::SetCanHandleNotification(
+    bool can_handle_notification) {
+  can_handle_notification_ = can_handle_notification;
 }

@@ -74,6 +74,11 @@ class PushNotificationClientManager {
   // during application startup.
   void RegisterActionableNotifications();
 
+  // Returns the client that can handle events related to the given
+  // `notification`.
+  PushNotificationClient* GetClientForNotification(
+      UNNotification* notification);
+
   // This function returns a list of `PushNotificationClientId` for the features
   // that support push notifications.
   static std::vector<PushNotificationClientId> GetClients();

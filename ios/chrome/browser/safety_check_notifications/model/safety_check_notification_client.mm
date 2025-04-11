@@ -154,6 +154,11 @@ SafetyCheckNotificationClient::SafetyCheckNotificationClient(
 
 SafetyCheckNotificationClient::~SafetyCheckNotificationClient() = default;
 
+bool SafetyCheckNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  return ParseSafetyCheckNotificationType(notification.request).has_value();
+}
+
 bool SafetyCheckNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

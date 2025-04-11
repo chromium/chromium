@@ -146,10 +146,15 @@ TipsNotificationClient::TipsNotificationClient()
 
 TipsNotificationClient::~TipsNotificationClient() = default;
 
+bool TipsNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  return IsTipsNotification(notification.request);
+}
+
 bool TipsNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!IsTipsNotification(response.notification.request)) {
+  if (!CanHandleNotification(response.notification)) {
     return false;
   }
 

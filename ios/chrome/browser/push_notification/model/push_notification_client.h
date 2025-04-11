@@ -38,6 +38,9 @@ class PushNotificationClient {
                          PushNotificationClientScope scope);
   virtual ~PushNotificationClient() = 0;
 
+  // Returns true if this client can handle the given `notification`.
+  virtual bool CanHandleNotification(UNNotification* notification) = 0;
+
   // When the user interacts with a push notification, this function is called
   // to route the user to the appropriate destination. Returns `true` if the
   // interaction was handled or `false` if it is not relevant to this client.

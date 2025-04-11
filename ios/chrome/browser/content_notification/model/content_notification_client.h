@@ -17,6 +17,7 @@ class ContentNotificationClient : public PushNotificationClient {
   ~ContentNotificationClient() override;
 
   // Override PushNotificationClient::
+  bool CanHandleNotification(UNNotification* notification) override;
   bool HandleNotificationInteraction(UNNotificationResponse* response) override;
   std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* payload) override;

@@ -20,6 +20,7 @@ class SendTabPushNotificationClient : public PushNotificationClient {
   ~SendTabPushNotificationClient() override;
 
   // Override PushNotificationClient.
+  bool CanHandleNotification(UNNotification* notification) override;
   bool HandleNotificationInteraction(UNNotificationResponse* response) override;
   std::optional<UIBackgroundFetchResult> HandleNotificationReception(
       NSDictionary<NSString*, id>* notification) override;

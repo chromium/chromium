@@ -22,12 +22,17 @@ ContentNotificationClient::ContentNotificationClient()
 
 ContentNotificationClient::~ContentNotificationClient() = default;
 
+bool ContentNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  return [notification.request.content.categoryIdentifier
+      isEqualToString:kContentNotificationFeedbackCategoryIdentifier];
+}
+
 bool ContentNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   // Need to check if it is a content notification first to avoid conflicts with
   // other clients.
-  if (![response.notification.request.content.categoryIdentifier
-          isEqualToString:kContentNotificationFeedbackCategoryIdentifier]) {
+  if (!CanHandleNotification(response.notification)) {
     return false;
   }
 
