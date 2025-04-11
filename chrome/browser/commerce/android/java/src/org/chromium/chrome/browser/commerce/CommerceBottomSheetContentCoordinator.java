@@ -11,6 +11,7 @@ import android.os.Looper;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,7 +42,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
 
     private List<CommerceBottomSheetContentProvider> mContentProviders = new ArrayList<>();
     private final CommerceBottomSheetContentMediator mMediator;
-    private RecyclerView mContenRecyclerView;
+    private RecyclerView mContentRecyclerView;
     private View mCommerceBottomSheetContentContainer;
     private ModelList mModelList;
     private @Nullable Long mSheetOpenTimeMs;
@@ -58,7 +59,15 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
         mModelList = new ModelList();
 
         mScrimManagerSupplier = scrimSupplier;
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
+        SimpleRecyclerViewAdapter adapter =
+                new SimpleRecyclerViewAdapter(mModelList) {
+                    @Override
+                    public void onViewRecycled(ViewHolder holder) {
+                        super.onViewRecycled(holder);
+                        ((ViewGroup) holder.itemView.findViewById(R.id.content_view_container))
+                                .removeAllViews();
+                    }
+                };
         adapter.registerType(
                 0,
                 new LayoutViewBuilder(R.layout.commerce_bottom_sheet_content_item_container),
@@ -68,11 +77,11 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                 LayoutInflater.from(context)
                         .inflate(
                                 R.layout.commerce_bottom_sheet_content_container, /* root= */ null);
-        mContenRecyclerView =
+        mContentRecyclerView =
                 mCommerceBottomSheetContentContainer.findViewById(
                         R.id.commerce_content_recycler_view);
-        mContenRecyclerView.setAdapter(adapter);
-        mContenRecyclerView.addItemDecoration(
+        mContentRecyclerView.setAdapter(adapter);
+        mContentRecyclerView.addItemDecoration(
                 new ItemDecoration() {
                     @Override
                     public void getItemOffsets(
@@ -96,13 +105,13 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                             mSheetOpenTimeMs = SystemClock.elapsedRealtime();
                         }
                         if (newState == SheetState.FULL) {
-                            mContenRecyclerView.suppressLayout(false);
+                            mContentRecyclerView.setNestedScrollingEnabled(true);
                             if (mScrimModel != null && !mMediator.isContentWrappingContent()) {
                                 mScrimModel = bottomSheetController.createScrimParams();
                                 mScrimManagerSupplier.get().showScrim(mScrimModel);
                             }
                         } else if (newState == SheetState.HALF) {
-                            mContenRecyclerView.suppressLayout(true);
+                            mContentRecyclerView.setNestedScrollingEnabled(false);
                         } else if (newState == SheetState.HIDDEN) {
                             if (mSheetOpenTimeMs != null) {
                                 Long durationMs = SystemClock.elapsedRealtime() - mSheetOpenTimeMs;
@@ -161,7 +170,7 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
     }
 
     public RecyclerView getRecyclerViewForTesting() {
-        return mContenRecyclerView;
+        return mContentRecyclerView;
     }
 
     public ModelList getModelListForTesting() {
