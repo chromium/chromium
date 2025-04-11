@@ -281,18 +281,6 @@ source_set("tflite_kernel_common_headers") {
   visibility = [ ":*" ]
 }
 
-config("tflite_litert_config") {
-  cflags = [
-    "-Wno-ignored-qualifiers",
-    "-Wno-macro-redefined",
-    "-Wno-mismatched-tags",
-  ]
-
-  if (build_tflite_with_xnnpack) {
-    defines = [ "XNNPACK_ENABLE_SUBGRAPH_RESHAPING" ]
-  }
-}
-
 tflite_litert_sources = [
   "src/tensorflow/lite/experimental/genai/external_kvcache.cc",
   "src/tensorflow/lite/experimental/genai/genai_ops.cc",
@@ -307,12 +295,7 @@ tflite_litert_deps = [
   ":tflite_kernel_common_headers",
   ":tflite_kernel_internals",
   ":tflite_public_headers",
-  "//third_party/abseil-cpp:absl",
   "//third_party/flatbuffers",
-  "//third_party/fp16",
-  "//third_party/gemmlowp",
-  "//third_party/neon_2_sse",
-  "//third_party/ruy",
 ]
 
 source_set("tflite_litert") {
@@ -324,7 +307,6 @@ source_set("tflite_litert") {
   configs += [
     ":tflite_config",
     ":tflite_flags",
-    ":tflite_litert_config",
   ]
 }
 
@@ -337,7 +319,6 @@ source_set("tflite_litert_standalone") {
   configs += [
     ":tflite_config",
     ":tflite_flags",
-    ":tflite_litert_config",
   ]
 }
 
@@ -464,6 +445,12 @@ source_set("tflite_kernel_internals") {
     "src/tensorflow/lite/kernels/internal/utils/sparsity_format_converter.h",
   ]
 
+  public_deps = [
+    "//third_party/gemmlowp",
+    "//third_party/neon_2_sse",
+    "//third_party/ruy",
+  ]
+
   deps = [
     ":fft2d_deps",
     ":tflite_kernel_common_headers",
@@ -472,9 +459,6 @@ source_set("tflite_kernel_internals") {
     "//third_party/farmhash",
     "//third_party/flatbuffers",
     "//third_party/fp16",
-    "//third_party/gemmlowp",
-    "//third_party/neon_2_sse",
-    "//third_party/ruy",
   ]
 
   configs += [
