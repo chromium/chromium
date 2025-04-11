@@ -5,7 +5,7 @@
 #include "base/feature_list.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_jni/FeatureList_jni.h"
+#include "base/features_jni/FeatureList_jni.h"
 
 namespace base {
 namespace android {

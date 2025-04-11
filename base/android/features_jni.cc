@@ -7,7 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_jni/Features_jni.h"
+#include "base/features_jni/Features_jni.h"
 
 namespace base {
 namespace android {

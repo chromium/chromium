@@ -15,7 +15,7 @@
 #include "base/notreached.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_jni/FeatureMap_jni.h"
+#include "base/features_jni/FeatureMap_jni.h"
 
 namespace base::android {
 

@@ -1259,17 +1259,25 @@ component("base") {
       ":base_jni",
       ":base_shared_preferences_jni",
       ":build_info_jni",
+      ":bundle_utils_jni",
       ":callback_jni",
       ":content_uri_utils_jni",
+      ":features_jni",
+      ":file_utils_jni",
       ":jank_tracker_jni",
       ":memory_jni",
       ":metrics_jni",
+      ":path_utils_jni",
       ":process_launcher_jni",
       ":sys_utils_jni",
       ":tasks_jni",
       "//third_party/ashmem",
       "//third_party/cpu_features:ndk_compat",
     ]
+
+    if (use_clang_profiling) {
+      deps += [ ":clang_profiler_jni" ]
+    }
 
     # Needs to be a public config so that dependent targets link against it as
     # well when doing a component build.
@@ -4420,30 +4428,18 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
-      "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/CpuFeatures.java",
       "android/java/src/org/chromium/base/EventLog.java",
-      "android/java/src/org/chromium/base/FeatureList.java",
-      "android/java/src/org/chromium/base/FeatureMap.java",
-      "android/java/src/org/chromium/base/Features.java",
       "android/java/src/org/chromium/base/FieldTrialList.java",
-      "android/java/src/org/chromium/base/FileUtils.java",
       "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
       "android/java/src/org/chromium/base/InputHintChecker.java",
       "android/java/src/org/chromium/base/JavaHandlerThread.java",
       "android/java/src/org/chromium/base/LocaleUtils.java",
       "android/java/src/org/chromium/base/PathService.java",
-      "android/java/src/org/chromium/base/PathUtils.java",
       "android/java/src/org/chromium/base/PowerMonitor.java",
       "android/java/src/org/chromium/base/RadioUtils.java",
       "android/java/src/org/chromium/base/TimezoneUtils.java",
     ]
-
-    if (use_clang_profiling) {
-      sources += [
-        "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
-      ]
-    }
 
     public_deps = [
       ":android_runtime_jni_headers",
@@ -4483,6 +4479,54 @@ if (is_android) {
 
   generate_jni("process_launcher_jni") {
     sources = [ "android/java/src/org/chromium/base/process_launcher/ChildProcessService.java" ]
+  }
+
+  generate_jni("clang_profiler_jni") {
+    sources = [
+      "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
+    ]
+  }
+
+  android_library("clang_profiler_java") {
+    if (use_clang_profiling) {
+      srcjar_deps = [ ":clang_profiler_jni" ]
+      sources = [
+        "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
+      ]
+    } else {
+      sources = [ "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java" ]
+    }
+    deps = [ "//third_party/jni_zero:jni_zero_java" ]
+  }
+
+  generate_jni("path_utils_jni") {
+    sources = [ "android/java/src/org/chromium/base/PathUtils.java" ]
+  }
+
+  android_library("path_utils_java") {
+    srcjar_deps = [ ":path_utils_jni" ]
+    sources = [ "android/java/src/org/chromium/base/PathUtils.java" ]
+    deps = [
+      ":log_java",
+      ":tasks_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("file_utils_jni") {
+    sources = [ "android/java/src/org/chromium/base/FileUtils.java" ]
+  }
+
+  android_library("file_utils_java") {
+    srcjar_deps = [ ":file_utils_jni" ]
+    sources = [ "android/java/src/org/chromium/base/FileUtils.java" ]
+    deps = [
+      ":file_provider_utils_java",
+      ":log_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
   }
 
   android_library("process_launcher_java") {
@@ -4534,28 +4578,17 @@ if (is_android) {
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
       "android/java/src/org/chromium/base/BinderCallsListener.java",
-      "android/java/src/org/chromium/base/BundleUtils.java",
       "android/java/src/org/chromium/base/CallbackController.java",
       "android/java/src/org/chromium/base/CancelableRunnable.java",
       "android/java/src/org/chromium/base/CollectionUtil.java",
-      "android/java/src/org/chromium/base/CommandLineInitUtil.java",
       "android/java/src/org/chromium/base/CpuFeatures.java",
       "android/java/src/org/chromium/base/DiscardableReferencePool.java",
       "android/java/src/org/chromium/base/EventLog.java",
-      "android/java/src/org/chromium/base/FeatureList.java",
-      "android/java/src/org/chromium/base/FeatureMap.java",
-      "android/java/src/org/chromium/base/FeatureOverrides.java",
-      "android/java/src/org/chromium/base/FeatureParam.java",
-      "android/java/src/org/chromium/base/Features.java",
       "android/java/src/org/chromium/base/FieldTrialList.java",
-      "android/java/src/org/chromium/base/FileProviderUtils.java",
-      "android/java/src/org/chromium/base/FileUtils.java",
-      "android/java/src/org/chromium/base/Flag.java",
       "android/java/src/org/chromium/base/ImportantFileWriterAndroid.java",
       "android/java/src/org/chromium/base/InputHintChecker.java",
       "android/java/src/org/chromium/base/IntStringCallback.java",
       "android/java/src/org/chromium/base/IntentUtils.java",
-      "android/java/src/org/chromium/base/JNIUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
       "android/java/src/org/chromium/base/JavaHandlerThread.java",
       "android/java/src/org/chromium/base/JniAndroid.java",
@@ -4564,13 +4597,8 @@ if (is_android) {
       "android/java/src/org/chromium/base/JniRepeatingCallback.java",
       "android/java/src/org/chromium/base/LocaleUtils.java",
       "android/java/src/org/chromium/base/MathUtils.java",
-      "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
-      "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
-      "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
-      "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
       "android/java/src/org/chromium/base/PackageManagerUtils.java",
       "android/java/src/org/chromium/base/PathService.java",
-      "android/java/src/org/chromium/base/PathUtils.java",
       "android/java/src/org/chromium/base/PiiElider.java",
       "android/java/src/org/chromium/base/PostNativeFlag.java",
       "android/java/src/org/chromium/base/PowerMonitor.java",
@@ -4584,16 +4612,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/UserData.java",
       "android/java/src/org/chromium/base/UserDataHost.java",
       "android/java/src/org/chromium/base/ValueChangedCallback.java",
-      "android/java/src/org/chromium/base/WrappedClassLoader.java",
     ]
-
-    if (use_clang_profiling) {
-      sources += [
-        "test/android/javatests/src/org/chromium/base/test/ClangProfiler.java",
-      ]
-    } else {
-      sources += [ "test/android/javatests/src/stub/org/chromium/base/test/ClangProfiler.java" ]
-    }
 
     resources_package = "org.chromium.base"
 
@@ -4613,14 +4632,22 @@ if (is_android) {
       ":base_minimal_jni_java",
       ":base_switches_java",
       ":build_info_java",
+      ":bundle_utils_java",
       ":callback_java",
+      ":clang_profiler_java",
+      ":command_line_init_utils_java",
       ":command_line_java",
+      ":features_java",
+      ":file_provider_utils_java",
+      ":file_utils_java",
       ":jank_tracker_java",
+      ":jni_utils_java",
       ":library_loader_java",
       ":lifetime_java",
       ":log_java",
       ":memory_java",
       ":metrics_java",
+      ":path_utils_java",
       ":promise_java",
       ":resetters_java",
       ":stream_util_java",
@@ -4629,7 +4656,9 @@ if (is_android) {
       ":tasks_java",
       ":time_utils_java",
       ":unowned_user_data_java",
+      ":wrapped_class_loader_java",
     ]
+
     if (!is_cronet_build) {
       proguard_configs += [
         "android/proguard/chromium_apk.flags",
@@ -4652,6 +4681,79 @@ if (is_android) {
   android_library("metrics_ScopedSysTraceEvent_java") {
     sources = [
       "android/java/src/org/chromium/base/metrics/ScopedSysTraceEvent.java",
+    ]
+  }
+
+  android_library("command_line_init_utils_java") {
+    sources = [ "android/java/src/org/chromium/base/CommandLineInitUtil.java" ]
+    deps = [
+      ":build_info_java",
+      ":command_line_java",
+      ":supplier_java",
+      ":tasks_java",
+    ]
+  }
+  android_library("file_provider_utils_java") {
+    sources = [ "android/java/src/org/chromium/base/FileProviderUtils.java" ]
+  }
+  generate_jni("features_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/FeatureList.java",
+      "android/java/src/org/chromium/base/FeatureMap.java",
+      "android/java/src/org/chromium/base/Features.java",
+    ]
+  }
+  android_library("features_java") {
+    srcjar_deps = [ ":features_jni" ]
+    sources = [
+      "android/java/src/org/chromium/base/FeatureList.java",
+      "android/java/src/org/chromium/base/FeatureMap.java",
+      "android/java/src/org/chromium/base/FeatureOverrides.java",
+      "android/java/src/org/chromium/base/FeatureParam.java",
+      "android/java/src/org/chromium/base/Features.java",
+      "android/java/src/org/chromium/base/Flag.java",
+      "android/java/src/org/chromium/base/MutableBooleanParamWithSafeDefault.java",
+      "android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java",
+      "android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java",
+      "android/java/src/org/chromium/base/MutableParamWithSafeDefault.java",
+    ]
+    deps = [
+      ":library_loader_java",
+      ":resetters_java",
+      "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  android_library("wrapped_class_loader_java") {
+    sources = [ "android/java/src/org/chromium/base/WrappedClassLoader.java" ]
+  }
+
+  generate_jni("bundle_utils_jni") {
+    sources = [ "android/java/src/org/chromium/base/BundleUtils.java" ]
+  }
+  android_library("bundle_utils_java") {
+    srcjar_deps = [ ":bundle_utils_jni" ]
+    sources = [ "android/java/src/org/chromium/base/BundleUtils.java" ]
+    deps = [
+      ":log_java",
+      ":metrics_java",
+      ":resetters_java",
+      ":tasks_java",
+      ":wrapped_class_loader_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  android_library("jni_utils_java") {
+    sources = [ "android/java/src/org/chromium/base/JNIUtils.java" ]
+    deps = [
+      ":bundle_utils_java",
+      ":log_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 
