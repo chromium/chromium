@@ -2901,10 +2901,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 }
 
 class CanvasRenderingContext2DTestAcceleratedMultipleDisables
-    : public CanvasRenderingContext2DTest {
+    : public CanvasRenderingContext2DTestAccelerated {
  protected:
-  bool AllowsAcceleration() override { return true; }
-
   void CreateAlotOfCanvasesWithAccelerationExplicitlyDisabled() {
     for (int i = 0; i < 100; ++i) {
       auto* canvas = MakeGarbageCollected<HTMLCanvasElement>(GetDocument());
@@ -2917,9 +2915,6 @@ class CanvasRenderingContext2DTestAcceleratedMultipleDisables
       canvas->DisableAcceleration();
     }
   }
-
- private:
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform_;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(
