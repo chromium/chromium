@@ -851,8 +851,6 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
     return false;
   }
 
-  auto* ri = shared_context_wrapper->ContextProvider().RasterInterface();
-
   if (!GetContextProviderWeakPtr()) {
     return false;
   }
@@ -947,7 +945,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
 
   webgpu->DissociateMailbox(reservation.id, reservation.generation);
   webgpu->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-  ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  resource_provider->EndExternalWrite(sync_token);
 
   return true;
 }
