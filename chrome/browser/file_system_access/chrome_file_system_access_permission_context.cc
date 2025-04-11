@@ -393,7 +393,7 @@ bool ShouldBlockAccessToPath(
     const base::FilePath& path,
     HandleType handle_type,
     std::vector<ChromeFileSystemAccessPermissionContext::BlockPathRule> rules,
-    const std::vector<ChromeFileSystemAccessPermissionContext::BlockedPath>&
+    std::vector<ChromeFileSystemAccessPermissionContext::BlockedPath>
         blocked_paths,
     const base::FilePath& profile_path) {
   DCHECK(!path.empty());
@@ -1871,7 +1871,7 @@ void ChromeFileSystemAccessPermissionContext::CheckPathAgainstBlocklist(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ShouldBlockAccessToPath, path_info.path, handle_type,
-                     extra_rules, std::cref(blocked_paths_),
+                     extra_rules, blocked_paths_,
                      profile_path_override_.value_or(profile_->GetPath())),
       std::move(callback));
 }
