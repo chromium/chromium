@@ -24,7 +24,12 @@ BASE_FEATURE(kGenericSensorExtraClasses,
 // changes.
 BASE_FEATURE(kSerialPortConnected,
              "SerialPortConnected",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if !BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // !BUILDFLAG(IS_ANDROID)
+);
 
 // This feature allows to dynamically introduce an additional list of devices
 // blocked by WebUSB via a Finch parameter. This parameter should be specified
