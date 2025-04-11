@@ -60,7 +60,7 @@ def CheckPackage(input_api, output_api):
     return []
 
 
-def CheckUnittests(input_api, output_api):
+def CheckUnittestsOnCommit(input_api, output_api):
     return input_api.RunTests(
         input_api.canned_checks.GetUnitTestsRecursively(
             input_api,
