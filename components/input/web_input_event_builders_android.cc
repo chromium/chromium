@@ -130,8 +130,12 @@ WebMouseEvent WebMouseEventBuilder::Build(
   int button = action_button;
   // For events other than MouseDown/Up, action_button is not defined. So we are
   // determining |button| value from |modifiers| as is done in other platforms.
-  if (type != WebInputEvent::Type::kMouseDown &&
-      type != WebInputEvent::Type::kMouseUp) {
+  if ((type != WebInputEvent::Type::kMouseDown &&
+       type != WebInputEvent::Type::kMouseUp) ||
+      // TODO(crbug.com/409639106): Also on MouseDown/Up events with undefined button since
+      // MotionEvent.obtain used to simlulate inputs events in tests does not set the button
+      // correctly.
+      button == 0) {
     if (modifiers & ui::EF_LEFT_MOUSE_BUTTON)
       button = ui::MotionEvent::BUTTON_PRIMARY;
     else if (modifiers & ui::EF_MIDDLE_MOUSE_BUTTON)
