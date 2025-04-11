@@ -115,8 +115,11 @@ class PrefRegistrySyncable;
         (UIViewController*)viewController
                                         browser:(Browser*)browser
                                    contextStyle:(SigninContextStyle)contextStyle
-                                    accessPoint:(signin_metrics::AccessPoint)
-                                                    accessPoint;
+                                    accessPoint:
+                                        (signin_metrics::AccessPoint)accessPoint
+                           continuationProvider:
+                               (const ChangeProfileContinuationProvider&)
+                                   continuationProvider;
 
 // Returns a coordinator for re-authentication workflow. This should only be
 // called when the primary account is available.
@@ -135,7 +138,10 @@ class PrefRegistrySyncable;
                                                       accessPoint
                                               promoAction:
                                                   (signin_metrics::PromoAction)
-                                                      promoAction;
+                                                      promoAction
+                                     continuationProvider:
+                                         (const ChangeProfileContinuationProvider&)
+                                             continuationProvider;
 
 // Returns a coordinator for re-authentication workflow. This should only be
 // called when there is no primary account.
@@ -154,7 +160,10 @@ class PrefRegistrySyncable;
                                                      accessPoint
                                              promoAction:
                                                  (signin_metrics::PromoAction)
-                                                     promoAction;
+                                                     promoAction
+                                    continuationProvider:
+                                        (const ChangeProfileContinuationProvider&)
+                                            continuationProvider;
 
 // Returns a coordinator for re-authentication workflow for Trusted
 // Vault for the primary identity. This is done with TrustedVaultService.

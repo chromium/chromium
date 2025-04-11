@@ -35,6 +35,8 @@
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
                   signinIntent:(AddAccountSigninIntent)signinIntent
+          continuationProvider:
+              (const ChangeProfileContinuationProvider&)continuationProvider
     NS_DESIGNATED_INITIALIZER;
 
 @end

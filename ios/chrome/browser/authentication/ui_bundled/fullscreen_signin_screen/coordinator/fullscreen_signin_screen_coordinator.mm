@@ -207,7 +207,9 @@
       addAccountCoordinatorWithBaseViewController:self.viewController
                                           browser:self.browser
                                      contextStyle:_contextStyle
-                                      accessPoint:_accessPoint];
+                                      accessPoint:_accessPoint
+                             continuationProvider:
+                                 _changeProfileContinuationProvider];
   __weak __typeof(self) weakSelf = self;
   self.addAccountSigninCoordinator.signinCompletion =
       ^(SigninCoordinatorResult signinResult,

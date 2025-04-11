@@ -2123,8 +2123,11 @@ using UserFeedbackDataCallback =
 
                                                     accessPoint:command
                                                                     .accessPoint
-                                                    promoAction:
-                                                        command.promoAction];
+                                                    promoAction:command
+                                                                    .promoAction
+                                           continuationProvider:
+                                               command
+                                                   .changeProfileContinuationProvider];
       break;
     case AuthenticationOperation::kResignin:
       self.signinCoordinator = [SigninCoordinator
@@ -2135,8 +2138,11 @@ using UserFeedbackDataCallback =
                                                                    .contextStyle
                                                    accessPoint:command
                                                                    .accessPoint
-                                                   promoAction:
-                                                       command.promoAction];
+                                                   promoAction:command
+                                                                   .promoAction
+                                          continuationProvider:
+                                              command
+                                                  .changeProfileContinuationProvider];
       break;
     case AuthenticationOperation::kSigninOnly:
       self.signinCoordinator = [SigninCoordinator
@@ -2153,7 +2159,9 @@ using UserFeedbackDataCallback =
           addAccountCoordinatorWithBaseViewController:baseViewController
                                               browser:mainBrowser
                                          contextStyle:command.contextStyle
-                                          accessPoint:command.accessPoint];
+                                          accessPoint:command.accessPoint
+                                 continuationProvider:
+                                     command.changeProfileContinuationProvider];
       break;
     case AuthenticationOperation::kForcedSigninAndSync:
       self.signinCoordinator = [SigninCoordinator

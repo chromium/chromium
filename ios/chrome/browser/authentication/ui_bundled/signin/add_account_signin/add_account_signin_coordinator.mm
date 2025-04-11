@@ -65,6 +65,7 @@ using signin_metrics::PromoAction;
   raw_ptr<signin::IdentityManager> _identityManager;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<syncer::SyncService> _syncService;
+  ChangeProfileContinuationProvider _continuationProvider;
 }
 
 #pragma mark - Public
@@ -74,13 +75,17 @@ using signin_metrics::PromoAction;
                               contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:(AccessPoint)accessPoint
                                promoAction:(PromoAction)promoAction
-                              signinIntent:
-                                  (AddAccountSigninIntent)signinIntent {
+                              signinIntent:(AddAccountSigninIntent)signinIntent
+                      continuationProvider:
+                          (const ChangeProfileContinuationProvider&)
+                              continuationProvider {
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                               contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
+    CHECK(continuationProvider);
+    _continuationProvider = continuationProvider;
     _signinIntent = signinIntent;
     _promoAction = promoAction;
   }
@@ -310,7 +315,6 @@ using signin_metrics::PromoAction;
     (id<SystemIdentity>)identity {
   // The new UIViewController is presented on top of the currently displayed
   // view controller.
-  // TODO(crbug.com/375605572) Sends an actual continuation.
   self.postSigninManagerCoordinator = [SigninCoordinator
       instantSigninCoordinatorWithBaseViewController:self.baseViewController
                                              browser:self.browser
@@ -318,8 +322,7 @@ using signin_metrics::PromoAction;
                                         contextStyle:self.contextStyle
                                          accessPoint:self.accessPoint
                                          promoAction:self.promoAction
-                                continuationProvider:
-                                    DoNothingContinuationProvider()];
+                                continuationProvider:_continuationProvider];
 
   __weak AddAccountSigninCoordinator* weakSelf = self;
   self.postSigninManagerCoordinator.signinCompletion = ^(

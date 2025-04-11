@@ -21,6 +21,7 @@
 #import "ios/chrome/app/change_profile_commands.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
+#import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/account_menu/account_menu_mediator_delegate.h"
@@ -395,7 +396,9 @@
                                                     browser:self.browser
                                                contextStyle:self.contextStyle
                                                 accessPoint:accessPoint
-                                                promoAction:promoAction];
+                                                promoAction:promoAction
+                                       continuationProvider:
+                                           DoNothingContinuationProvider()];
   [self startSigninCoordinatorWithCompletion:nil];
 }
 
@@ -457,7 +460,9 @@
       addAccountCoordinatorWithBaseViewController:baseViewController
                                           browser:self.browser
                                      contextStyle:self.contextStyle
-                                      accessPoint:self.accessPoint];
+                                      accessPoint:self.accessPoint
+                             continuationProvider:
+                                 DoNothingContinuationProvider()];
   [self startSigninCoordinatorWithCompletion:completion];
 }
 
