@@ -17,7 +17,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
@@ -38,7 +37,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
     private @NonNull RadioButtonWithDescription mAddToBookmarksButton;
     private @NonNull RadioButtonWithDescription mReadAloudButton;
     private @NonNull RadioButtonWithDescription mPageSummaryButton;
-    private @NonNull RadioButtonWithDescription mOpenInBrowserButton;
     private @AdaptiveToolbarButtonVariant int mSelected;
     private @AdaptiveToolbarButtonVariant int mAutoButtonCaption;
     private @Nullable AdaptiveToolbarStatePredictor mStatePredictor;
@@ -77,9 +75,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_read_aloud);
         mPageSummaryButton =
                 (RadioButtonWithDescription) holder.findViewById(R.id.adaptive_option_page_summary);
-        mOpenInBrowserButton =
-                (RadioButtonWithDescription)
-                        holder.findViewById(R.id.adaptive_option_open_in_browser);
 
         mInitRadioButtonRunnable.run();
         RecordUserAction.record("Mobile.AdaptiveToolbarButton.SettingsPage.Opened");
@@ -151,7 +146,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
         updateVoiceButtonVisibility();
         updateReadAloudButtonVisibility();
         updatePageSummaryButtonVisibility();
-        updateOpenInBrowserButtonVisibility();
         mButtonsInitialized = true;
     }
 
@@ -174,8 +168,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
             mSelected = AdaptiveToolbarButtonVariant.READ_ALOUD;
         } else if (mPageSummaryButton.isChecked()) {
             mSelected = AdaptiveToolbarButtonVariant.PAGE_SUMMARY;
-        } else if (mOpenInBrowserButton.isChecked()) {
-            mSelected = AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER;
         } else {
             assert false : "No matching setting found.";
         }
@@ -216,8 +208,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
                 return mReadAloudButton;
             case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
                 return mPageSummaryButton;
-            case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
-                return mOpenInBrowserButton;
         }
         return null;
     }
@@ -280,11 +270,6 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
 
     private void updatePageSummaryButtonVisibility() {
         updateButtonVisibility(mPageSummaryButton, mCanUsePageSummary);
-    }
-
-    private void updateOpenInBrowserButtonVisibility() {
-        boolean show = ChromeFeatureList.sCctAdaptiveButtonEnableOpenInBrowser.getValue();
-        updateButtonVisibility(mOpenInBrowserButton, show);
     }
 
     /**
