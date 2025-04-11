@@ -166,6 +166,9 @@ void LogFormFilledWithBnplVcn(std::string_view issuer_id);
 // Logs that a form was submitted with the BNPL issuer VCN.
 void LogFormSubmittedWithBnplVcn(std::string_view issuer_id);
 
+// Logs that the BNPL issuer selection dialog was shown.
+void LogBnplSelectionDialogShown();
+
 }  // namespace autofill::autofill_metrics
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_PAYMENTS_BNPL_METRICS_H_

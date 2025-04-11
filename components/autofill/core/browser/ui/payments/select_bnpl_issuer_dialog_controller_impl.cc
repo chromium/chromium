@@ -40,6 +40,7 @@ void SelectBnplIssuerDialogControllerImpl::ShowDialog(
   cancel_callback_ = std::move(cancel_callback);
 
   dialog_view_ = std::move(create_and_show_dialog_callback).Run();
+  autofill_metrics::LogBnplSelectionDialogShown();
 }
 
 void SelectBnplIssuerDialogControllerImpl::OnIssuerSelected(BnplIssuer issuer) {

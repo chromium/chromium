@@ -251,6 +251,15 @@ TEST_P(BnplMetricsTest, LogBnplTosDialogResult_CancelButtonClicked) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(BnplMetricsTest, LogBnplSelectionDialogShown) {
+  base::HistogramTester histogram_tester;
+
+  LogBnplSelectionDialogShown();
+  histogram_tester.ExpectUniqueSample("Autofill.Bnpl.SelectionDialogShown",
+                                      /*sample=*/true,
+                                      /*expected_bucket_count=*/1);
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          BnplMetricsTest,
                          testing::Values(kBnplAffirmIssuerId,

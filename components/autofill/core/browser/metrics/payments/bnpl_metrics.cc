@@ -137,4 +137,9 @@ void LogFormSubmittedWithBnplVcn(std::string_view issuer_id) {
   }
 }
 
+void LogBnplSelectionDialogShown() {
+  base::UmaHistogramBoolean("Autofill.Bnpl.SelectionDialogShown",
+                            /*sample=*/true);
+}
+
 }  // namespace autofill::autofill_metrics

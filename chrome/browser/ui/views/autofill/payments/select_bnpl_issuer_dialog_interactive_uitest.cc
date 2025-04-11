@@ -95,6 +95,25 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest, InvokeUi) {
                      /*baseline_cl=*/"6397923")));
 }
 
+IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
+                       InvokeUi_BnplSelectionDialogShownLogged) {
+  base::HistogramTester histogram_tester;
+
+  RunTestSequence(
+      InvokeUiAndWaitForShow(
+          {GetTestBnplIssuerContext(kBnplAffirmIssuerId,
+                                    BnplIssuerEligibilityForPage::kIsEligible),
+           GetTestBnplIssuerContext(
+               kBnplZipIssuerId,
+               BnplIssuerEligibilityForPage::
+                   kNotEligibleIssuerDoesNotSupportMerchant)}),
+      InSameContext(Steps(Check([&histogram_tester]() {
+        return histogram_tester.GetBucketCount(
+                   "Autofill.Bnpl.SelectionDialogShown",
+                   /*sample=*/true) == 1;
+      }))));
+}
+
 // Ensures the throbber is shown after selecting an eligible BNPL issuer.
 IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
                        EligibleBnplIssuerSelected) {
