@@ -9,9 +9,9 @@ example_value: 7
 features:
   dynamic_refresh: true
   per_profile: false
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:137-
+- chrome_os:137-
 label: Time period (days)
 owners:
 - nicolaso@chromium.org
