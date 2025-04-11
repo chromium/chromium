@@ -40,9 +40,6 @@ public class WebAppHeaderLayoutMediatorTest {
 
     private WebAppHeaderLayoutMediator mMediator;
     private PropertyModel mModel;
-
-    // test properties
-
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
 
     @Before

@@ -5,6 +5,8 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  resources_package = "org.chromium.chrome.browser.web_app_header"
+
   sources = [
     "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayout.java",
     "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayoutCoordinator.java",
@@ -14,8 +16,10 @@ android_library("java") {
   ]
 
   deps = [
+    ":java_resources",
     "//base:base_java",
     "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/ui/android/toolbar:java",
     "//components/browser_ui/desktop_windowing/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public/mojom:mojom_platform_java",
@@ -23,17 +27,44 @@ android_library("java") {
   ]
 }
 
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/web_app_header_layout.xml",
+    "java/res/values-sw600dp/dimens.xml",
+    "java/res/values/dimens.xml",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/android/toolbar:java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
+    "//ui/android:ui_java_resources",
+  ]
+}
+
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayoutMediatorTest.java" ]
+  resources_package = "org.chromium.chrome.browser.web_app_header"
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayoutCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/ui/web_app_header/WebAppHeaderLayoutMediatorTest.java",
+  ]
 
   deps = [
     ":java",
+    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/browser_ui/desktop_windowing/android:java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }

@@ -32,8 +32,8 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
      * @param model model that encapsulates UI state for the view
      * @param desktopWindowStateManager desktop window state manager that provides updates on window
      *     state
-     * @param webAppHeaderMinHeightFromResources minimal height from resources that web app header
-     *     must take
+     * @param webAppHeaderMinHeightFromResources minimal height from resources in px that web app
+     *     header must take
      */
     public WebAppHeaderLayoutMediator(
             PropertyModel model,
