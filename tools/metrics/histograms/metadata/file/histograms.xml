@@ -629,17 +629,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.GoogleDrive.BulkPinning.QueueSize" units="count"
-    expires_after="2025-05-21">
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    The maximum number of files that can be concurrently downloaded by the
-    bulk-pinning manager. This is recorded every time the bulk-pinning manager
-    starts pinning files, after having enumerated all the files to pin.
-  </summary>
-</histogram>
-
 <histogram
     name="FileBrowser.GoogleDrive.BulkPinning.StateWhenCacheVolumeRemoved"
     enum="BooleanEnabled" expires_after="2025-07-01">
@@ -1628,7 +1617,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Trash.DirectorySetupFailed"
-    enum="FileManagerTrashDirectorySetupFailedStep" expires_after="2025-05-21">
+    enum="FileManagerTrashDirectorySetupFailedStep" expires_after="2026-04-07">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1647,7 +1636,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Trash.RestoreFailedNoParent"
-    enum="RestoreFailedNoParentType" expires_after="2025-05-21">
+    enum="RestoreFailedNoParentType" expires_after="2026-04-07">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
