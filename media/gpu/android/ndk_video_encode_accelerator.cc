@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/android/ndk_video_encode_accelerator.h"
 
 #include <optional>
@@ -797,10 +792,8 @@ void NdkVideoEncodeAccelerator::FeedInput() {
     }
   }
 
-  size_t capacity = 0;
-  uint8_t* buffer_ptr =
-      AMediaCodec_getInputBuffer(media_codec_->codec(), buffer_idx, &capacity);
-  if (!buffer_ptr) {
+  auto mc_input_buffer = GetInputBuffer(buffer_idx);
+  if (mc_input_buffer.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                        "Can't obtain input buffer from media codec"});
     return;
@@ -809,49 +802,52 @@ void NdkVideoEncodeAccelerator::FeedInput() {
   const auto visible_size =
       aligned_size_.value_or(frame->visible_rect().size());
 
-  uint8_t* dst_y = buffer_ptr;
   const int dst_stride_y = input_buffer_stride_;
-  const int uv_plane_offset =
-      input_buffer_yplane_height_ * input_buffer_stride_;
-  uint8_t* dst_uv = buffer_ptr + uv_plane_offset;
   const int dst_stride_uv = input_buffer_stride_;
-
   const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
       PIXEL_FORMAT_NV12, VideoFrame::Plane::kUV, visible_size);
-  const size_t queued_size =
-      // size of Y-plane plus padding till UV-plane
-      uv_plane_offset +
+
+  const size_t y_plane_len = input_buffer_yplane_height_ * input_buffer_stride_;
+  const size_t uv_plane_len =
       // size of all UV-plane lines but the last one
       (uv_plane_size.height() - 1) * dst_stride_uv +
       // size of the very last line in UV-plane (it's not padded to full stride)
       uv_plane_size.width() * 2;
 
-  if (queued_size > capacity) {
-    NotifyErrorStatus({EncoderStatus::Codes::kInvalidInputFrame,
-                       base::StringPrintf("Frame doesn't fit into the input "
-                                          "buffer. queued_size: %zu capacity: "
-                                          "%zu",
-                                          queued_size, capacity)});
+  const size_t queued_size = y_plane_len + uv_plane_len;
+
+  if (queued_size > mc_input_buffer.size()) {
+    NotifyErrorStatus(
+        {EncoderStatus::Codes::kInvalidInputFrame,
+         base::StringPrintf("Frame doesn't fit into the input "
+                            "buffer. queued_size: %zu capacity: "
+                            "%zu",
+                            queued_size, mc_input_buffer.size())});
     return;
   }
 
+  auto dst_y = mc_input_buffer.first(y_plane_len);
+  auto dst_uv = mc_input_buffer.subspan(y_plane_len, uv_plane_len);
+
   bool converted = false;
   if (frame->format() == PIXEL_FORMAT_I420) {
-    converted = !libyuv::I420ToNV12(
-        frame->visible_data(VideoFrame::Plane::kY),
-        frame->stride(VideoFrame::Plane::kY),
-        frame->visible_data(VideoFrame::Plane::kU),
-        frame->stride(VideoFrame::Plane::kU),
-        frame->visible_data(VideoFrame::Plane::kV),
-        frame->stride(VideoFrame::Plane::kV), dst_y, dst_stride_y, dst_uv,
-        dst_stride_uv, visible_size.width(), visible_size.height());
+    converted =
+        !libyuv::I420ToNV12(frame->visible_data(VideoFrame::Plane::kY),
+                            frame->stride(VideoFrame::Plane::kY),
+                            frame->visible_data(VideoFrame::Plane::kU),
+                            frame->stride(VideoFrame::Plane::kU),
+                            frame->visible_data(VideoFrame::Plane::kV),
+                            frame->stride(VideoFrame::Plane::kV), dst_y.data(),
+                            dst_stride_y, dst_uv.data(), dst_stride_uv,
+                            visible_size.width(), visible_size.height());
   } else if (frame->format() == PIXEL_FORMAT_NV12) {
-    converted = !libyuv::NV12Copy(frame->visible_data(VideoFrame::Plane::kY),
-                                  frame->stride(VideoFrame::Plane::kY),
-                                  frame->visible_data(VideoFrame::Plane::kUV),
-                                  frame->stride(VideoFrame::Plane::kUV), dst_y,
-                                  dst_stride_y, dst_uv, dst_stride_uv,
-                                  visible_size.width(), visible_size.height());
+    converted =
+        !libyuv::NV12Copy(frame->visible_data(VideoFrame::Plane::kY),
+                          frame->stride(VideoFrame::Plane::kY),
+                          frame->visible_data(VideoFrame::Plane::kUV),
+                          frame->stride(VideoFrame::Plane::kUV), dst_y.data(),
+                          dst_stride_y, dst_uv.data(), dst_stride_uv,
+                          visible_size.width(), visible_size.height());
   } else {
     NotifyErrorStatus({EncoderStatus::Codes::kUnsupportedFrameFormat,
                        "Unexpected frame format: " +
@@ -940,29 +936,27 @@ bool NdkVideoEncodeAccelerator::DrainConfig() {
   // We already have the info we need from `output_buffer`
   std::ignore = media_codec_->TakeOutput();
 
-  size_t capacity = 0;
-  uint8_t* buf_data = AMediaCodec_getOutputBuffer(
-      media_codec_->codec(), output_buffer.buffer_index, &capacity);
-
-  if (!buf_data) {
+  auto out_buffer_data = GetOutputBuffer(output_buffer.buffer_index);
+  if (out_buffer_data.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "Can't obtain output buffer from media codec"});
     return false;
   }
 
-  if (mc_buffer_info.offset + mc_buffer_size > capacity) {
-    NotifyErrorStatus(
-        {EncoderStatus::Codes::kEncoderFailedEncode,
-         base::StringPrintf("Invalid output buffer layout."
-                            "offset: %d size: %zu capacity: %zu",
-                            mc_buffer_info.offset, mc_buffer_size, capacity)});
+  if (mc_buffer_info.offset + mc_buffer_size > out_buffer_data.size()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                       base::StringPrintf("Invalid output buffer layout."
+                                          "offset: %d size: %zu capacity: %zu",
+                                          mc_buffer_info.offset, mc_buffer_size,
+                                          out_buffer_data.size())});
     return false;
   }
 
   if (ProfileNeedsConfigDataInBitstream(config_.output_profile)) {
     config_data_.resize(mc_buffer_size);
-    memcpy(config_data_.data(), buf_data + mc_buffer_info.offset,
-           mc_buffer_size);
+    base::span(config_data_)
+        .copy_from(out_buffer_data.subspan(
+            static_cast<size_t>(mc_buffer_info.offset), mc_buffer_size));
   }
   AMediaCodec_releaseOutputBuffer(media_codec_->codec(),
                                   output_buffer.buffer_index, false);
@@ -1021,22 +1015,19 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     return;
   }
 
-  size_t capacity = 0;
-  uint8_t* buf_data = AMediaCodec_getOutputBuffer(
-      media_codec_->codec(), output_buffer.buffer_index, &capacity);
-
-  if (!buf_data) {
+  auto out_buffer_data = GetOutputBuffer(output_buffer.buffer_index);
+  if (out_buffer_data.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "Can't obtain output buffer from media codec"});
     return;
   }
 
-  if (mc_buffer_info.offset + mc_buffer_size > capacity) {
-    NotifyErrorStatus(
-        {EncoderStatus::Codes::kEncoderFailedEncode,
-         base::StringPrintf("Invalid output buffer layout."
-                            "offset: %d size: %zu capacity: %zu",
-                            mc_buffer_info.offset, mc_buffer_size, capacity)});
+  if (mc_buffer_info.offset + mc_buffer_size > out_buffer_data.size()) {
+    NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
+                       base::StringPrintf("Invalid output buffer layout."
+                                          "offset: %d size: %zu capacity: %zu",
+                                          mc_buffer_info.offset, mc_buffer_size,
+                                          out_buffer_data.size())});
     return;
   }
 
@@ -1049,12 +1040,13 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     return;
   }
 
-  uint8_t* output_dst = mapping.GetMemoryAs<uint8_t>();
+  auto output_dst = mapping.GetMemoryAsSpan<uint8_t>();
   if (config_size > 0) {
-    memcpy(output_dst, config_data_.data(), config_size);
-    output_dst += config_size;
+    output_dst.copy_prefix_from(config_data_);
+    output_dst = output_dst.subspan(config_size);
   }
-  memcpy(output_dst, buf_data, mc_buffer_size);
+  output_dst.copy_prefix_from(out_buffer_data.subspan(
+      static_cast<size_t>(mc_buffer_info.offset), mc_buffer_size));
 
   auto timestamp = RetrieveRealTimestamp(
       base::Microseconds(mc_buffer_info.presentationTimeUs));
@@ -1074,7 +1066,7 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     }
 
     TemporalScalabilityIdExtractor::BitstreamMetadata bits_md;
-    if (!svc_parser_->ParseChunk(base::span(output_dst, mc_buffer_size),
+    if (!svc_parser_->ParseChunk(output_dst.subspan(mc_buffer_size),
                                  input_since_keyframe_count_, bits_md)) {
       NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                          "Parse bitstream failed"});
@@ -1212,6 +1204,22 @@ void NdkVideoEncodeAccelerator::SetEncoderColorSpace() {
   }
 
   DVLOG(1) << "Set color space to: " << encoder_color_space_->ToString();
+}
+
+base::span<uint8_t> NdkVideoEncodeAccelerator::GetInputBuffer(size_t idx) {
+  size_t capacity = 0;
+  uint8_t* buf_data =
+      AMediaCodec_getInputBuffer(media_codec_->codec(), idx, &capacity);
+  // SAFETY: `AMediaCodec_getInputBuffer` returns buffer size as the out param.
+  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity));
+}
+
+base::span<uint8_t> NdkVideoEncodeAccelerator::GetOutputBuffer(size_t idx) {
+  size_t capacity = 0;
+  // SAFETY: `AMediaCodec_getOutputBuffer` returns buffer size as the out param.
+  uint8_t* buf_data =
+      AMediaCodec_getOutputBuffer(media_codec_->codec(), idx, &capacity);
+  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity));
 }
 
 }  // namespace media
