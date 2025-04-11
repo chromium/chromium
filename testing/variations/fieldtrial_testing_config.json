@@ -20608,6 +20608,16 @@
             ],
             "experiments": [
                 {
+                    "name": "Latency250",
+                    "params": {
+                        "latency": "0.25",
+                        "mode": "frames"
+                    },
+                    "enable_features": [
+                        "ResamplingScrollEventsExperimentalPrediction"
+                    ]
+                },
+                {
                     "name": "Latency375",
                     "params": {
                         "latency": "0.375",
