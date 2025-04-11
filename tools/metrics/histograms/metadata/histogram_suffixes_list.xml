@@ -22,13 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram_suffixes_list>
 
-<histogram_suffixes name="AccessorySheetType" separator=".">
-  <suffix name="Addresses" label="Address suggestions."/>
-  <suffix name="CreditCards" label="Payment suggestions."/>
-  <suffix name="Passwords" label="Password suggestions and generation."/>
-  <affected-histogram name="KeyboardAccessory.AccessorySheetTriggered"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AdapterDecision" separator="." ordering="prefix,2">
   <suffix name="BrightnessChange" label=""/>
   <suffix name="NoBrightnessChange" label=""/>
@@ -449,20 +442,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="AC2" label="The auto-correct level is 2"/>
   <affected-histogram name="InputMethod.Commit.Index.FR"/>
   <affected-histogram name="InputMethod.Commit.Index.US"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="LeakDetectionDialogType" separator=".">
-  <suffix name="Change" label="The user is asked to change their password"/>
-  <suffix name="ChangeAutomatically"
-      label="The user is asked to let Chrome automatically change their
-             password for the current site."/>
-  <suffix name="Checkup"
-      label="The user is asked to visit the Password Checkup"/>
-  <suffix name="CheckupAndChange"
-      label="The user is asked to visit the Password Checkup and change their
-             password"/>
-  <affected-histogram
-      name="PasswordManager.LeakDetection.DialogDismissalReason"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="NavigationFrameType" separator=".">
@@ -887,20 +866,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="PasswordAccountStorageUsageLevel" separator=".">
-  <suffix name="NotUsingAccountStorage"
-      label="The user is not using the account-scoped password storage.
-             Either they're not signed in, or they haven't opted in to the
-             account storage."/>
-  <suffix name="Syncing"
-      label="The user has enabled Sync, so the account-scoped password
-             storage is not being used."/>
-  <suffix name="UsingAccountStorage"
-      label="The user is signed in and has opted in to the account storage."/>
-  <affected-histogram name="PasswordManager.FillingAssistance"/>
-  <affected-histogram name="PasswordManager.SavedPasswordIsGenerated"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="PasswordProtectionTriggerForAnyPasswordEntry"
     separator=".">
   <suffix name="AnyPasswordEntry"
@@ -1049,17 +1014,6 @@ chromium-metrics-reviews@google.com.
              matches a primary account password but no current signed-in
              account is found."/>
   <affected-histogram name="PasswordProtection.Verdict"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="PasswordSecurityOrigin" separator=".">
-  <suffix name="InsecureOrigin"
-      label="The recording took place on an insecure origin."/>
-  <suffix name="MixedForm"
-      label="The recording took place on a secure origin, but the form action
-             was an insecure origin."/>
-  <suffix name="SecureOrigin"
-      label="The recording took place on a secure origin."/>
-  <affected-histogram name="PasswordManager.FillingAssistance"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PowerConsumptionTimes" separator=".">

@@ -53,6 +53,19 @@ chromium-metrics-reviews@google.com.
   <variant name="UpdateLogin"/>
 </variants>
 
+<variants name="PasswordAccountStorageUsageLevel">
+  <variant name=""/>
+  <variant name=".NotUsingAccountStorage"
+      summary="The user is not using the account-scoped password storage.
+               Either they're not signed in, or they haven't opted in to the
+               account storage."/>
+  <variant name=".Syncing"
+      summary="The user has enabled Sync, so the account-scoped password
+               storage is not being used."/>
+  <variant name=".UsingAccountStorage"
+      summary="The user is signed in and has opted in to the account storage."/>
+</variants>
+
 <variants name="PasswordCheckupOperation">
   <variant name="GetBreachedCredentialsCount"
       summary="get breached credentials count"/>
@@ -178,7 +191,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="KeyboardAccessory.AccessorySheetTriggered"
+<histogram name="KeyboardAccessory.AccessorySheetTriggered{AccessorySheetType}"
     enum="AccessorySheetTrigger" expires_after="2025-08-10">
   <owner>friedrichh@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
@@ -186,7 +199,14 @@ chromium-metrics-reviews@google.com.
     Android only. Records how often the bottom sheet was opened or closed by a
     user and the overall count of closures. Closing buckets may be logged up to
     one time per trigger. There are suffixes for each specific sheet type.
+    {AccessorySheetType}
   </summary>
+  <token key="AccessorySheetType">
+    <variant name=""/>
+    <variant name=".Addresses" summary="Address suggestions."/>
+    <variant name=".CreditCards" summary="Payment suggestions."/>
+    <variant name=".Passwords" summary="Password suggestions and generation."/>
+  </token>
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessoryToggleClicked"
@@ -1580,7 +1600,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.FillingAssistance"
+<histogram name="PasswordManager.FillingAssistanceForSingleUsername"
+    enum="SingleUsernameFillingAssistance" expires_after="2025-09-14">
+  <owner>vincb@google.com</owner>
+  <owner>eic@google.com</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the user experience with regards to username filling in the single
+    username form in username first flows (UFF).
+
+    Recorded for every single username field the user has filled (automatically
+    or manually), when the form is submitted and the corresponding form manager
+    is destroyed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.FillingAssistance{PasswordAccountStorageUsageLevelOrSecurityOrigin}"
     enum="PasswordManagerFillingAssistance" expires_after="2025-09-28">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
@@ -1601,22 +1637,18 @@ chromium-metrics-reviews@google.com.
     form has neither user input nor autofilled data in password fields. This
     might indicate third-party password manager use, or might be a
     measurement/submission classification error.
+    {PasswordAccountStorageUsageLevelOrSecurityOrigin}
   </summary>
-</histogram>
-
-<histogram name="PasswordManager.FillingAssistanceForSingleUsername"
-    enum="SingleUsernameFillingAssistance" expires_after="2025-09-14">
-  <owner>vincb@google.com</owner>
-  <owner>eic@google.com</owner>
-  <owner>bling-transactions@google.com</owner>
-  <summary>
-    Records the user experience with regards to username filling in the single
-    username form in username first flows (UFF).
-
-    Recorded for every single username field the user has filled (automatically
-    or manually), when the form is submitted and the corresponding form manager
-    is destroyed.
-  </summary>
+  <token key="PasswordAccountStorageUsageLevelOrSecurityOrigin"
+      variants="PasswordAccountStorageUsageLevel">
+    <variant name=".InsecureOrigin"
+        summary="The recording took place on an insecure origin."/>
+    <variant name=".MixedForm"
+        summary="The recording took place on a secure origin, but the form
+                 action was an insecure origin."/>
+    <variant name=".SecureOrigin"
+        summary="The recording took place on a secure origin."/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.FillingAutomationRate" units="%"
@@ -2071,15 +2103,29 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>Result of analyzing a single leak response.</summary>
 </histogram>
 
-<histogram name="PasswordManager.LeakDetection.DialogDismissalReason"
+<histogram
+    name="PasswordManager.LeakDetection.DialogDismissalReason{DialogType}"
     enum="PasswordLeakDetectionDialogDismissalReason"
     expires_after="2025-08-31">
   <owner>vsemeniuk@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Reason of the dismissal of the leak detection dialog. Recorded when a leaked
-    credential is detected and the dialog is shown.
+    credential is detected and the dialog is shown. {DialogType}
   </summary>
+  <token key="DialogType">
+    <variant name=""/>
+    <variant name=".Change"
+        summary="The user is asked to change their password"/>
+    <variant name=".ChangeAutomatically"
+        summary="The user is asked to let Chrome automatically change their
+                 password for the current site."/>
+    <variant name=".Checkup"
+        summary="The user is asked to visit the Password Checkup"/>
+    <variant name=".CheckupAndChange"
+        summary="The user is asked to visit the Password Checkup and change
+                 their password"/>
+  </token>
 </histogram>
 
 <histogram name="PasswordManager.LeakDetection.Error"
@@ -3862,13 +3908,14 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
-<histogram name="PasswordManager.SavedPasswordIsGenerated"
+<histogram
+    name="PasswordManager.SavedPasswordIsGenerated{PasswordAccountStorageUsageLevel}"
     enum="BooleanSavedPasswordIsGenerated" expires_after="2025-09-28">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     For a saved password, whether the password was generated by Chrome or typed
-    manually by the user.
+    manually by the user. {PasswordAccountStorageUsageLevel}
   </summary>
 </histogram>
 
