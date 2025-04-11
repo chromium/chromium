@@ -4,17 +4,36 @@
 
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 namespace ash {
 
 BrowserDelegateImpl::BrowserDelegateImpl(Browser* browser)
-    : browser_(browser) {}
+    : browser_(CHECK_DEREF(browser)) {}
 
 BrowserDelegateImpl::~BrowserDelegateImpl() = default;
 
+Browser& BrowserDelegateImpl::GetBrowser() const {
+  return browser_.get();
+}
+
 SessionID BrowserDelegateImpl::GetSessionID() const {
   return browser_->session_id();
+}
+
+content::WebContents* BrowserDelegateImpl::GetActiveWebContents() const {
+  return browser_->tab_strip_model()->GetActiveWebContents();
+}
+
+aura::Window* BrowserDelegateImpl::GetNativeWindow() const {
+  return browser_->window()->GetNativeWindow();
+}
+
+void BrowserDelegateImpl::Show() {
+  return browser_->window()->Show();
 }
 
 }  // namespace ash

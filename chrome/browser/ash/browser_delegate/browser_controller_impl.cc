@@ -27,6 +27,20 @@ BrowserControllerImpl::BrowserControllerImpl() {
 
 BrowserControllerImpl::~BrowserControllerImpl() = default;
 
+BrowserDelegate* BrowserControllerImpl::GetDelegate(Browser* browser) {
+  if (browser == nullptr) {
+    return nullptr;
+  }
+
+  auto it = browsers_.find(browser);
+  if (it == browsers_.end()) {
+    it = browsers_
+             .insert({browser, std::make_unique<BrowserDelegateImpl>(browser)})
+             .first;
+  }
+  return it->second.get();
+}
+
 BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
     user_manager::User& user,
     const GURL& url,
@@ -58,21 +72,7 @@ BrowserDelegate* BrowserControllerImpl::NewTabWithPostData(
   }
 
   Navigate(&navigate_params);
-  return GetBrowserDelegate(navigate_params.browser);
-}
-
-BrowserDelegate* BrowserControllerImpl::GetBrowserDelegate(Browser* browser) {
-  if (browser == nullptr) {
-    return nullptr;
-  }
-
-  auto it = browsers_.find(browser);
-  if (it == browsers_.end()) {
-    it = browsers_
-             .insert({browser, std::make_unique<BrowserDelegateImpl>(browser)})
-             .first;
-  }
-  return it->second.get();
+  return GetDelegate(navigate_params.browser);
 }
 
 void BrowserControllerImpl::OnBrowserRemoved(Browser* browser) {

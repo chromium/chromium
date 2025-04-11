@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 
+class Browser;
 class GURL;
 
 namespace user_manager {
@@ -24,6 +25,13 @@ class BrowserDelegate;
 class BrowserController {
  public:
   static BrowserController* GetInstance();
+
+  // Returns the corresponding delegate, possibly creating it first.
+  // Returns nullptr for a nullptr input.
+  // NOTE: This function is here only temporarily to facilitate transitioning
+  // code from Browser to BrowserDelegate incrementally. See also
+  // BrowserDelegate::GetBrowser.
+  virtual BrowserDelegate* GetDelegate(Browser* browser) = 0;
 
   // Makes a POST request in a new tab in the last active tabbed browser. If no
   // such browser exists, a new one is created. Returns nullptr if the creation

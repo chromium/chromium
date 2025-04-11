@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_ASH_BROWSER_DELEGATE_BROWSER_DELEGATE_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 
 class Browser;
@@ -18,10 +18,14 @@ class BrowserDelegateImpl : public BrowserDelegate {
   virtual ~BrowserDelegateImpl();
 
   // BrowserDelegate:
+  Browser& GetBrowser() const override;
   SessionID GetSessionID() const override;
+  content::WebContents* GetActiveWebContents() const override;
+  aura::Window* GetNativeWindow() const override;
+  void Show() override;
 
  private:
-  raw_ptr<Browser> const browser_;
+  const raw_ref<Browser> browser_;
 };
 
 }  // namespace ash

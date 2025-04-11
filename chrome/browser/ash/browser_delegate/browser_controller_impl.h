@@ -27,6 +27,7 @@ class BrowserControllerImpl : public BrowserController,
   ~BrowserControllerImpl() override;
 
   // BrowserController:
+  BrowserDelegate* GetDelegate(Browser* browser) override;
   BrowserDelegate* NewTabWithPostData(user_manager::User& user,
                                       const GURL& url,
                                       base::span<const uint8_t> post_data,

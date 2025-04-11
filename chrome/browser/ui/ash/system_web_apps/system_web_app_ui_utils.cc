@@ -13,6 +13,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -260,8 +262,9 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   // Place new windows on the specified display.
   display::ScopedDisplayForNewWindows scoped_display(params.display_id);
 
-  Browser* browser =
-      system_app->LaunchAndNavigateSystemWebApp(profile, provider, url, params);
+  BrowserDelegate* browser = BrowserController::GetInstance()->GetDelegate(
+      system_app->LaunchAndNavigateSystemWebApp(profile, provider, url,
+                                                params));
   if (!browser) {
     return nullptr;
   }
@@ -275,19 +278,18 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   //
   // Since users can't configure SWA launch behavior, we don't report these
   // metrics to avoid skewing web app metrics.
-  web_app::UpdateLaunchStats(browser->tab_strip_model()->GetActiveWebContents(),
-                             params.app_id, url);
+  web_app::UpdateLaunchStats(browser->GetActiveWebContents(), params.app_id,
+                             url);
 
   // LaunchSystemWebAppImpl may be called with a profile associated with an
   // inactive (background) desktop (e.g. when multiple users are logged in).
   // Here we move the newly created browser window (or the existing one on the
   // inactive desktop) to the current active (visible) desktop, so the user
   // always sees the launched app.
-  multi_user_util::MoveWindowToCurrentDesktop(
-      browser->window()->GetNativeWindow());
+  multi_user_util::MoveWindowToCurrentDesktop(browser->GetNativeWindow());
 
-  browser->window()->Show();
-  return browser;
+  browser->Show();
+  return &browser->GetBrowser();
 }
 
 Browser* FindSystemWebAppBrowser(Profile* profile,
