@@ -124,6 +124,14 @@ class CORE_EXPORT FetchLaterUtil {
                            PolicyDeferredFetch);
   FRIEND_TEST_ALL_PREFIXES(ToReservedDeferredFetchQuotaTest,
                            PolicyDeferredFetchMinimal);
+  FRIEND_TEST_ALL_PREFIXES(GetReservedDeferredFetchQuotaTest,
+                           IsTopLevelControlFrame);
+  FRIEND_TEST_ALL_PREFIXES(
+      GetReservedDeferredFetchQuotaTest,
+      IsNonTopLevelFrameWithOwnerDeferredFetchPolicyDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      GetReservedDeferredFetchQuotaTest,
+      IsNonTopLevelCrossOriginFrameWithOwnerDeferredFetchPolicyMinimal);
 
   // Returns the length of `url` without any fragment parts.
   static uint64_t GetUrlLengthWithoutFragment(const KURL& url);

@@ -766,6 +766,70 @@ TEST_F(ShouldClearDeferredFetchPolicyTest, MultipleLevelFrames) {
   EXPECT_FALSE(FetchLaterUtil::ShouldClearDeferredFetchPolicy(frame_d));
 }
 
+class GetReservedDeferredFetchQuotaTest : public DeferredFetchPolicyTestBase {
+ protected:
+  // This helper method obtains the available deferred-fetch quota for the
+  // `source_frame` when making a request to `url` from `source_frame`.
+  [[nodiscard]] uint64_t GetAvailableQuota(Frame* source_frame,
+                                           const KURL& url) {
+    return FetchLaterUtil::GetAvailableDeferredFetchQuota(source_frame, url);
+  }
+};
+
+// The input control frame is a top-level frame. The quota is
+// `The default of 640 kibibytes, decremented by quota reserved for
+// deferred-fetch-minimal`.
+TEST_F(GetReservedDeferredFetchQuotaTest, IsTopLevelControlFrame) {
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  NavigateTo(kMainUrl, "");
+
+  EXPECT_EQ(FetchLaterUtil::GetReservedDeferredFetchQuota(GetMainFrame()),
+            kMaxScheduledDeferredBytes - kQuotaReservedForDeferredFetchMinimal);
+}
+
+// The input frame is a non top-level frame where its owner frame has its
+// deferred-fetch policy cleared.
+// This test case should not happen in practice, as normally the input should be
+// a control frame, i.e. the same-origin ancestor frame of `frame_a`.
+TEST_F(GetReservedDeferredFetchQuotaTest,
+       IsNonTopLevelFrameWithOwnerDeferredFetchPolicyDisabled) {
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  // The structure of the document:
+  // root -> frame_a (same-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kMainUrl + "frame-a.html";
+
+  NavigateTo(root_url, RenderWithIframes({frame_a_url}), {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  // `GetContainerDeferredFetchPolicyOnNavigation()` should have been executed
+  // when iframe A is loaded, which sets the policy to `kDeferredFetch`. After
+  // that, `ShouldClearDeferredFetchPolicy()` leads A to clear its policy.
+  // Hence, the final value is `kDisabled.
+  EXPECT_EQ(frame_a->Owner()->GetFramePolicy().deferred_fetch_policy,
+            mojom::blink::DeferredFetchPolicy::kDisabled);
+  EXPECT_EQ(FetchLaterUtil::GetReservedDeferredFetchQuota(frame_a), 0);
+}
+
+// The input frame is a non top-level frame where its owner frame has its
+// deferred-fetch policy set to `kDeferredFetchMinimal`.
+TEST_F(GetReservedDeferredFetchQuotaTest,
+       IsNonTopLevelCrossOriginFrameWithOwnerDeferredFetchPolicyMinimal) {
+  auto new_request_url = KURL(kMainUrl + "test.html");
+  // The structure of the document:
+  // root -> frame_a (cross-origin)
+  String root_url = kMainUrl;
+  String frame_a_url = kCrossSubdomainUrl + "frame-a.html";
+
+  NavigateTo(root_url, RenderWithIframes({frame_a_url}), {{frame_a_url, ""}});
+
+  auto* root = GetMainFrame();
+  auto* frame_a = root->Tree().FirstChild();
+  EXPECT_EQ(FetchLaterUtil::GetReservedDeferredFetchQuota(frame_a),
+            kMinimalReservedDeferredFetchQuota);
+}
+
 class GetAvailableDeferredFetchQuotaTest : public DeferredFetchPolicyTestBase {
  protected:
   // This helper method obtains the available deferred-fetch quota for the
