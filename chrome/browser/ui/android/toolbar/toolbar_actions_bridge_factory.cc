@@ -33,8 +33,6 @@ ToolbarActionsBridgeFactory::ToolbarActionsBridgeFactory()
           "ToolbarActionsBridge",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(ExtensionActionManager::GetFactory());
