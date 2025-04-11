@@ -127,6 +127,7 @@ public class PriceHistoryBottomSheetContentRenderTest {
         doReturn(mMockProfile).when(mMockTab).getProfile();
         doReturn(PRODUCT_TITLE).when(mMockTab).getTitle();
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
+        doReturn(true).when(mMockShoppingService).isPriceInsightsEligible();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
