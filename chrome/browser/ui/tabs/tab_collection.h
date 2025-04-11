@@ -59,7 +59,7 @@ class TabCollection {
   // subcollections. Prefer using the result of this function instead of looping
   // over an index and using GetTabAtIndexRecursive, as this function will only
   // do one pass over the subcollections.
-  std::list<TabModel*> GetTabsRecursive() const;
+  std::vector<TabModel*> GetTabsRecursive() const;
 
   // Non-recursively get the index of a collection.
   std::optional<size_t> GetIndexOfCollection(TabCollection* collection) const;
@@ -134,6 +134,10 @@ class TabCollection {
   base::PassKey<TabCollection> GetPassKey() const {
     return base::PassKey<TabCollection>();
   }
+
+  // Helper function for GetTabsRecursive that uses std::list, in order to take
+  // advantage of constant-time concatenation.
+  std::list<TabModel*> GetTabsRecursiveAsList() const;
 
   // Total number of tabs in the collection.
   size_t recursive_tab_count_ = 0;

@@ -162,11 +162,11 @@ std::unique_ptr<TabGroupTabCollection> TabStripCollection::RemoveGroup(
 }
 
 TabGroupTabCollection* TabStripCollection::GetTabGroupCollection(
-    tab_groups::TabGroupId group_id_) {
-  if (!group_mapping_.contains(group_id_)) {
+    tab_groups::TabGroupId group_id) {
+  if (!group_mapping_.contains(group_id)) {
     return nullptr;
   }
-  return group_mapping_.at(group_id_);
+  return group_mapping_.at(group_id);
 }
 
 void TabStripCollection::MoveTabGroupTo(const tab_groups::TabGroupId& group,
@@ -222,10 +222,6 @@ std::unique_ptr<TabCollection> TabStripCollection::MaybeRemoveCollection(
     TabCollection* collection) {
   CHECK(collection);
   return nullptr;
-}
-
-size_t TabStripCollection::TotalTabCount() const {
-  return TabCountRecursive();
 }
 
 void TabStripCollection::CreateTabGroup(

@@ -276,11 +276,11 @@ void TabStripModel::RemoveObserver(TabStripModelObserver* observer) {
 }
 
 int TabStripModel::count() const {
-  return contents_data_->TotalTabCount();
+  return contents_data_->TabCountRecursive();
 }
 
 bool TabStripModel::empty() const {
-  return contents_data_->TotalTabCount() == 0;
+  return contents_data_->TabCountRecursive() == 0;
 }
 
 bool TabStripModel::ContainsIndex(int index) const {
@@ -914,8 +914,9 @@ WebContents* TabStripModel::GetWebContentsAt(int index) const {
 }
 
 int TabStripModel::GetIndexOfWebContents(const WebContents* contents) const {
-  for (int i = 0; i < GetTabCount(); ++i) {
-    if (GetTabAtIndex(i)->GetContents() == contents) {
+  std::vector<tabs::TabModel*> tabs = contents_data_->GetTabsRecursive();
+  for (size_t i = 0; i < tabs.size(); i++) {
+    if (tabs[i]->GetContents() == contents) {
       return i;
     }
   }
@@ -956,8 +957,9 @@ void TabStripModel::CloseAllTabs() {
   closing_all_ = true;
   std::vector<content::WebContents*> closing_tabs;
   closing_tabs.reserve(count());
-  for (int i = count() - 1; i >= 0; --i) {
-    closing_tabs.push_back(GetWebContentsAt(i));
+  for (std::vector<tabs::TabModel*> tabs = contents_data_->GetTabsRecursive();
+       tabs::TabModel* tab : base::Reversed(tabs)) {
+    closing_tabs.push_back(tab->GetContents());
   }
   CloseTabs(closing_tabs, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
 }
@@ -997,8 +999,7 @@ void TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
 }
 
 bool TabStripModel::TabsNeedLoadingUI() const {
-  for (int i = 0; i < GetTabCount(); i++) {
-    const tabs::TabInterface* const tab = GetTabAtIndex(i);
+  for (tabs::TabInterface* tab : contents_data_->GetTabsRecursive()) {
     if (tab->GetContents()->ShouldShowLoadingUI()) {
       return true;
     }
@@ -1820,7 +1821,7 @@ std::u16string TabStripModel::GetTitleAt(int index) const {
 }
 
 int TabStripModel::GetTabCount() const {
-  return contents_data_->TotalTabCount();
+  return contents_data_->TabCountRecursive();
 }
 
 // Context menu functions.
@@ -2608,8 +2609,8 @@ std::optional<int> TabStripModel::GetNextExpandedActiveTab(
 }
 
 void TabStripModel::ForgetAllOpeners() {
-  for (int i = 0; i < GetTabCount(); ++i) {
-    GetTabModelAtIndex(i)->set_opener(nullptr);
+  for (tabs::TabModel* tab : contents_data_->GetTabsRecursive()) {
+    tab->set_opener(nullptr);
   }
 }
 
@@ -3243,8 +3244,7 @@ void TabStripModel::AddToNewGroupImpl(
   }
 
   DCHECK([&]() {
-    for (int i = 0; i < GetTabCount(); ++i) {
-      const tabs::TabInterface* const tab = GetTabAtIndex(i);
+    for (tabs::TabModel* tab : contents_data_->GetTabsRecursive()) {
       if (tab->GetGroup() == new_group) {
         return false;
       }
@@ -3915,8 +3915,7 @@ void TabStripModel::FixOpeners(int index) {
   tabs::TabModel* old_tab = GetTabModelAtIndex(index);
   tabs::TabInterface* new_opener = old_tab ? old_tab->opener() : nullptr;
 
-  for (int i = 0; i < GetTabCount(); i++) {
-    tabs::TabModel* tab = GetTabModelAtIndex(i);
+  for (tabs::TabModel* tab : contents_data_->GetTabsRecursive()) {
     if (tab->opener() != old_tab) {
       continue;
     }
@@ -3928,8 +3927,7 @@ void TabStripModel::FixOpeners(int index) {
   // Sanity check that none of the tabs' openers refer |old_tab| or
   // themselves.
   DCHECK([&]() {
-    for (int i = 0; i < GetTabCount(); ++i) {
-      const tabs::TabModel* const tab = GetTabModelAtIndex(i);
+    for (tabs::TabModel* tab : contents_data_->GetTabsRecursive()) {
       if (tab->opener() == old_tab || tab->opener() == tab) {
         return false;
       }

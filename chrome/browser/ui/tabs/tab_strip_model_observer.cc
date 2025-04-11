@@ -193,15 +193,13 @@ const TabGroupChange::CreateChange* TabGroupChange::GetCreateChange() const {
 std::vector<tabs::TabModel*> TabGroupChange::CreateChange::GetDetachedTabs()
     const {
   CHECK(detached_group_);
-  std::list tabs = detached_group_->GetTabsRecursive();
-  return std::vector<tabs::TabModel*>{tabs.begin(), tabs.end()};
+  return detached_group_->GetTabsRecursive();
 }
 
 std::vector<tabs::TabModel*> TabGroupChange::CloseChange::GetDetachedTabs()
     const {
   CHECK(detached_group_);
-  std::list tabs = detached_group_->GetTabsRecursive();
-  return std::vector<tabs::TabModel*>{tabs.begin(), tabs.end()};
+  return detached_group_->GetTabsRecursive();
 }
 
 const TabGroupChange::CloseChange* TabGroupChange::GetCloseChange() const {

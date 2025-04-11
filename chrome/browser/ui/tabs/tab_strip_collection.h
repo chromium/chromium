@@ -51,7 +51,6 @@ class TabStripCollection : public TabCollection {
                          size_t destination_index,
                          std::optional<tab_groups::TabGroupId> new_group_id,
                          bool new_pinned_state);
-  size_t TotalTabCount() const;
 
   // Removes the tab present at a recursive index in the collection and
   // returns the unique_ptr to the tab model. If there is no tab present
@@ -86,8 +85,7 @@ class TabStripCollection : public TabCollection {
       int index);
   std::unique_ptr<TabGroupTabCollection> RemoveGroup(
       TabGroupTabCollection* group);
-  TabGroupTabCollection* GetTabGroupCollection(
-      tab_groups::TabGroupId group_id_);
+  TabGroupTabCollection* GetTabGroupCollection(tab_groups::TabGroupId group_id);
 
   void MoveTabGroupTo(const tab_groups::TabGroupId& group, int to_index);
 

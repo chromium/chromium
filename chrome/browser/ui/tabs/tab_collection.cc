@@ -91,22 +91,9 @@ TabModel* TabCollection::GetTabAtIndexRecursive(size_t index) const {
   NOTREACHED();
 }
 
-std::list<TabModel*> TabCollection::GetTabsRecursive() const {
-  const auto& children = impl_->GetChildren();
-  std::list<TabModel*> tab_models;
-
-  for (const auto& child : children) {
-    if (std::holds_alternative<std::unique_ptr<TabModel>>(child)) {
-      TabModel* tab = std::get<std::unique_ptr<TabModel>>(child).get();
-      tab_models.push_back(tab);
-    } else {
-      std::list<TabModel*> tabs_to_insert =
-          std::get<std::unique_ptr<TabCollection>>(child)->GetTabsRecursive();
-      tab_models.splice(tab_models.end(), tabs_to_insert);
-    }
-  }
-
-  return tab_models;
+std::vector<TabModel*> TabCollection::GetTabsRecursive() const {
+  std::list<TabModel*> tab_models = GetTabsRecursiveAsList();
+  return std::vector<TabModel*>{tab_models.begin(), tab_models.end()};
 }
 
 std::optional<size_t> TabCollection::GetIndexOfCollection(
@@ -211,6 +198,25 @@ void TabCollection::OnReparented(TabCollection* new_parent) {
   for (auto tab : GetTabsRecursive()) {
     tab->OnAncestorChanged(GetPassKey());
   }
+}
+
+std::list<TabModel*> TabCollection::GetTabsRecursiveAsList() const {
+  const auto& children = impl_->GetChildren();
+  std::list<TabModel*> tab_models;
+
+  for (const auto& child : children) {
+    if (std::holds_alternative<std::unique_ptr<TabModel>>(child)) {
+      TabModel* tab = std::get<std::unique_ptr<TabModel>>(child).get();
+      tab_models.push_back(tab);
+    } else {
+      std::list<TabModel*> tabs_to_insert =
+          std::get<std::unique_ptr<TabCollection>>(child)
+              ->GetTabsRecursiveAsList();
+      tab_models.splice(tab_models.end(), tabs_to_insert);
+    }
+  }
+
+  return tab_models;
 }
 
 }  // namespace tabs
