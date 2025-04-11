@@ -35,14 +35,13 @@ KioskIwaLauncher::~KioskIwaLauncher() = default;
 
 void KioskIwaLauncher::Initialize() {
   KioskWebAppLauncherBase::Initialize();
-
+  KioskIwaManager::Get()->StartObservingAppUpdate(profile(), account_id());
   CHECK_DEREF(profile()->GetExtensionSpecialStoragePolicy())
       .AddOriginWithUnlimitedStorage(iwa_data().origin());
 }
 
 void KioskIwaLauncher::ContinueWithNetworkReady() {
   KioskWebAppLauncherBase::ContinueWithNetworkReady();
-  KioskIwaManager::Get()->StartObservingAppUpdate(profile(), account_id());
 
   if (IsIsolatedWebAppInstalled()) {
     NotifyAppPrepared();
