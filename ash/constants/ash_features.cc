@@ -2729,6 +2729,12 @@ BASE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
              "ShimlessRMA3pDiagnosticsAllowPermissionPolicy",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables the skip option of hardware validation on Shimless RMA
+// landing page.
+BASE_FEATURE(kShimlessRMAHardwareValidationSkip,
+             "ShimlessRMAHardwareValidationSkip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, system shortcuts will utilize state machiens instead of
 // keeping track of entire history of keys pressed.
 BASE_FEATURE(kShortcutStateMachines,
@@ -4497,6 +4503,10 @@ bool IsShimlessRMA3pDiagnosticsDevModeEnabled() {
 bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled() {
   return base::FeatureList::IsEnabled(
       kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
+}
+
+bool IsShimlessRMAHardwareValidationSkipEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMAHardwareValidationSkip);
 }
 
 bool IsShowSharingUserInLauncherContinueSectionEnabled() {

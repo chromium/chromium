@@ -4252,6 +4252,9 @@ extern const char kShelfAutoHideSeparationDescription[];
 extern const char kShimlessRMAOsUpdateName[];
 extern const char kShimlessRMAOsUpdateDescription[];
 
+extern const char kShimlessRMAHardwareValidationSkipName[];
+extern const char kShimlessRMAHardwareValidationSkipDescription[];
+
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
 

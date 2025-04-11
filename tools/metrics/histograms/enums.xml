@@ -11510,6 +11510,7 @@ from previous Chrome versions.
   <int value="-1075156797" label="enable-brotli"/>
   <int value="-1075089382" label="enable-physical-web"/>
   <int value="-1074257709" label="ScalableAppList:enabled"/>
+  <int value="-1074254048" label="ShimlessRMAHardwareValidationSkip:disabled"/>
   <int value="-1074107607" label="data-reduction-proxy-experiment"/>
   <int value="-1073479583" label="ShowArcFilesApp:disabled"/>
   <int value="-1073388569" label="TerminalDev:enabled"/>
@@ -15470,6 +15471,7 @@ from previous Chrome versions.
   <int value="456908798" label="WebViewSupervisedUserSiteBlock:enabled"/>
   <int value="457265823" label="NtpWideModules:enabled"/>
   <int value="457301531" label="SiteIsolationForGuests:disabled"/>
+  <int value="457364142" label="ShimlessRMAHardwareValidationSkip:enabled"/>
   <int value="457881889" label="enable-autoplay-muted-videos"/>
   <int value="458410433" label="disable-views-rect-based-targeting"/>
   <int value="459538570" label="CrosMallManaged:enabled"/>

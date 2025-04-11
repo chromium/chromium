@@ -7207,6 +7207,11 @@ const char kShimlessRMAOsUpdateName[] = "Enable OS updates in shimless RMA";
 const char kShimlessRMAOsUpdateDescription[] =
     "Turns on OS updating in Shimless RMA";
 
+const char kShimlessRMAHardwareValidationSkipName[] =
+    "Enable Hardware Validation Skip in Shimless RMA";
+const char kShimlessRMAHardwareValidationSkipDescription[] =
+    "Turns on Hardware Validation Skip in Shimless RMA";
+
 const char kSchedulerConfigurationName[] = "Scheduler Configuration";
 const char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";
