@@ -165,9 +165,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.PaymentDetailsUpdateService.Bind"
-    enum="Boolean" expires_after="2025-03-03">
+    enum="Boolean" expires_after="2025-09-03">
   <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an Android app binds to Chrome's service for updating payment
     details, e.g., when an Android payment app supports the feature of dynamic
@@ -175,14 +175,17 @@ chromium-metrics-reviews@google.com.
 
     All service connections are recorded, even if there are no ongoing payment
     flows.
+
+    Warning: this histogram was expired from 2025-03-03 to ~2025-04-11; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangePaymentMethod"
-    enum="Boolean" expires_after="2025-03-03">
+    enum="Boolean" expires_after="2025-09-03">
   <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an invoked Android payment app sends updated payment method
     details to the merchant website that invoked the PaymentRequest API for this
@@ -193,14 +196,17 @@ chromium-metrics-reviews@google.com.
 
     The metric is recorded even if the invoked Android payment app sends an
     invalid payment method data bundle.
+
+    Warning: this histogram was expired from 2025-03-03 to ~2025-04-11; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingAddress"
-    enum="Boolean" expires_after="2025-03-03">
+    enum="Boolean" expires_after="2025-09-03">
   <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an Android payment app sends updated shipping address to the
     merchant website that invoked the PaymentRequest API for this app.
@@ -210,14 +216,17 @@ chromium-metrics-reviews@google.com.
 
     The metric is recorded even if the invoked Android payment app sends an
     invalid shipping address.
+
+    Warning: this histogram was expired from 2025-03-03 to ~2025-04-11; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="PaymentRequest.PaymentDetailsUpdateService.ChangeShippingOption"
-    enum="Boolean" expires_after="2025-03-03">
+    enum="Boolean" expires_after="2025-09-03">
   <owner>rouslan@chromium.org</owner>
-  <owner>chrome-payments-team@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
   <summary>
     Recorded when an Android payment app sends updated shipping option (e.g.,
     &quot;standard&quot; or &quot;express&quot;) to the merchant website that
@@ -228,6 +237,9 @@ chromium-metrics-reviews@google.com.
 
     The metric is recorded even if the invoked Android payment app sends an
     invalid shipping option.
+
+    Warning: this histogram was expired from 2025-03-03 to ~2025-04-11; data may
+    be missing.
   </summary>
 </histogram>
 
