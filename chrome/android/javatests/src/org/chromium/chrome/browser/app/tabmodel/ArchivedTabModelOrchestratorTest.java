@@ -76,7 +76,10 @@ import java.util.concurrent.TimeUnit;
     ChromeFeatureList.ANDROID_TAB_DECLUTTER,
     ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
 })
-@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE)
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_ALL_BUT_ACTIVE,
+    ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_TAB_GROUPS
+})
 public class ArchivedTabModelOrchestratorTest {
     private static final String TEST_PATH = "/chrome/test/data/android/about.html";
     private static final String TEST_PATH_2 = "/chrome/test/data/android/google.html";

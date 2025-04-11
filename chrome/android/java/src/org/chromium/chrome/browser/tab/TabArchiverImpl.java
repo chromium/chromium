@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY;
 import static org.chromium.chrome.browser.tab.Tab.INVALID_TIMESTAMP;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
@@ -113,6 +114,11 @@ public class TabArchiverImpl implements TabArchiver {
         TabGroupModelFilter regularTabGroupModelFilter =
                 selectorToArchive.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
         TabModel model = regularTabGroupModelFilter.getTabModel();
+
+        if (!isUserActive(model)) {
+            broadcastDeclutterComplete();
+            return;
+        }
 
         // Get the tabs to archive, which moves them to the archived TabModel.
         List<Tab> tabsToArchive = getTabsToArchive(regularTabGroupModelFilter);
@@ -561,6 +567,36 @@ public class TabArchiverImpl implements TabArchiver {
         for (Observer obs : mObservers) {
             PostTask.postTask(TaskTraits.UI_DEFAULT, obs::onAutodeletePassCompleted);
         }
+    }
+
+    // Determine if the user was active during the declutter inactivity period by checking all tabs
+    // in the tab model to see if the youngest tab is outside of that threshold.
+    private boolean isUserActive(TabModel model) {
+        if (!ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) return true;
+
+        long lastActiveTabTimestamp = 0L;
+        for (int i = 0; i < model.getCount(); i++) {
+            Tab tab = model.getTabAt(i);
+            // Skip the active tab or any tab navigated to during the sync db synchronization delay
+            // when making last active determinations for user inactivity.
+            long preSyncDelayBaseline =
+                    mClock.currentTimeMillis() - LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY;
+            long tabLastNavigationTimestamp = tab.getLastNavigationCommittedTimestampMillis();
+            if (TabModelUtils.getCurrentTabId(model) == tab.getId()
+                    || tabLastNavigationTimestamp > preSyncDelayBaseline) {
+                continue;
+            }
+            lastActiveTabTimestamp = Math.max(lastActiveTabTimestamp, tabLastNavigationTimestamp);
+        }
+
+        // If the last active tab's navigation timestamp is within the target hours (they exceed
+        // the inactivity grace period provided by delta hours), do not perform a declutter pass
+        // as the user is considered inactive.
+        if (isTimestampWithinTargetHours(
+                lastActiveTabTimestamp, mTabArchiveSettings.getArchiveTimeDeltaHours())) {
+            return false;
+        }
+        return true;
     }
 
     // Testing-specific methods.

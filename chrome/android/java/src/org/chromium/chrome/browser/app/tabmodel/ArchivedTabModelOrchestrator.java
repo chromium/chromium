@@ -64,6 +64,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implements Destroyable {
     public static final String ARCHIVED_TAB_SELECTOR_UNIQUE_TAG = "archived";
+    // Time delay on running declutter passes to allow the local sync db and remote sync service to
+    // synchronize, ensuring local {@link SavedTabGroup}s have the most up-to-date information.
+    public static final long LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY = 5000;
 
     /** Observer for the ArchivedTabModelOrchestrator class. */
     public interface Observer {
