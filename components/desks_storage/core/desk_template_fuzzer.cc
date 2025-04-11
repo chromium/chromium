@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/json/json_string_value_serializer.h"
+#include <optional>
+#include <string_view>
+
+#include "base/json/json_reader.h"
+#include "base/types/span.h"
 #include "components/account_id/account_id.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
 #include "components/desks_storage/core/desk_template_util.h"
@@ -17,13 +21,9 @@ namespace desks_storage {
 // equivalency between the various formats.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // parse string into value.
-  std::string str = std::string(reinterpret_cast<const char*>(data), size);
-  std::string error_message;
-  int error_code;
-  std::unique_ptr<base::Value> desk_template_value =
-      JSONStringValueDeserializer(str).Deserialize(&error_code, &error_message);
-
-  if (desk_template_value == nullptr) {
+  std::string_view str = base::as_string_view(base::span(data, size));
+  std::optional<base::Value> desk_template_value = base::JSONReader::Read(str);
+  if (!desk_template_value.has_value()) {
     return 0;
   }
 

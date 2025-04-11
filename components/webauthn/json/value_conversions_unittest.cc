@@ -15,6 +15,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -295,11 +296,9 @@ TEST(WebAuthenticationJSONConversionTest,
   "type": "public-key"
 })";
 
-  JSONStringValueDeserializer deserializer(kJson);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  ASSERT_TRUE(value) << deserialize_error;
+  base::JSONReader::Result value =
+      base::JSONReader::ReadAndReturnValueWithError(kJson);
+  ASSERT_TRUE(value.has_value()) << value.error().ToString();
 
   auto [response, error] = MakeCredentialResponseFromValue(*value);
   ASSERT_TRUE(response) << error;
@@ -380,11 +379,9 @@ TEST(WebAuthenticationJSONConversionTest,
       "publicKeyAlgorithm":-1},
       "clientExtensionResults":{"credProps":{"rk":true}}})";
 
-  JSONStringValueDeserializer deserializer(kJson);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  ASSERT_TRUE(value) << deserialize_error;
+  base::JSONReader::Result value =
+      base::JSONReader::ReadAndReturnValueWithError(kJson);
+  ASSERT_TRUE(value.has_value()) << value.error().ToString();
 
   {
     auto [response, error] = MakeCredentialResponseFromValue(*value);
@@ -410,11 +407,9 @@ TEST(WebAuthenticationJSONConversionTest,
       "publicKeyAlgorithm":-1},
       "clientExtensionResults":{"credProps":{"rk":true}}})";
 
-  JSONStringValueDeserializer deserializer(kJson);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  ASSERT_TRUE(value) << deserialize_error;
+  base::JSONReader::Result value =
+      base::JSONReader::ReadAndReturnValueWithError(kJson);
+  ASSERT_TRUE(value.has_value()) << value.error().ToString();
 
   {
     auto [response, error] = MakeCredentialResponseFromValue(*value);
@@ -469,11 +464,9 @@ TEST(WebAuthenticationJSONConversionTest,
   "type": "public-key"
 })";
 
-  JSONStringValueDeserializer deserializer(kJson);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  ASSERT_TRUE(value) << deserialize_error;
+  base::JSONReader::Result value =
+      base::JSONReader::ReadAndReturnValueWithError(kJson);
+  ASSERT_TRUE(value.has_value()) << value.error().ToString();
 
   auto [response, error] = GetAssertionResponseFromValue(*value);
   ASSERT_TRUE(response) << error;
@@ -574,11 +567,9 @@ TEST(WebAuthenticationJSONConversionTest,
   "type": "public-key"
 })";
 
-  JSONStringValueDeserializer deserializer(kJsonWithNull);
-  std::string deserialize_error;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &deserialize_error);
-  ASSERT_TRUE(value) << deserialize_error;
+  base::JSONReader::Result value =
+      base::JSONReader::ReadAndReturnValueWithError(kJsonWithNull);
+  ASSERT_TRUE(value.has_value()) << value.error().ToString();
 
   {
     // Should fail because of null authenticatorAttachment.

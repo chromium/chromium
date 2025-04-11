@@ -26,7 +26,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -58,23 +58,12 @@ namespace {
 // registered for WebView, 512 bytes should be able to hold about 10 entries.
 constexpr size_t kComponentsKeySize = 512;
 
-std::optional<base::Value::Dict> ReadJsonFile(const std::string& file_content) {
-  JSONStringValueDeserializer deserializer(file_content);
-  std::string error;
-  std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
-  if (root && root->is_dict()) {
-    return std::move(*root).TakeDict();
-  }
-
-  return std::nullopt;
-}
-
 std::optional<base::Value::Dict> ReadJsonFileFromFd(int fd) {
   std::string content;
   base::ScopedFILE file_stream(
       base::FileToFILE(base::File(std::move(fd)), "r"));
   return base::ReadStreamToString(file_stream.get(), &content)
-             ? ReadJsonFile(content)
+             ? base::JSONReader::ReadDict(content)
              : std::nullopt;
 }
 
