@@ -7,3 +7,7 @@
 ShareKitService::ShareKitService() = default;
 
 ShareKitService::~ShareKitService() = default;
+
+UIView* ShareKitService::FacePileView(ShareKitFacePileConfiguration* config) {
+  return nil;
+}

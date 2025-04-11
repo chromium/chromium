@@ -30,6 +30,9 @@ class ChromiumShareKitService final : public ShareKitService {
   UIViewController* FacePile(ShareKitFacePileConfiguration* config) override {
     return nil;
   }
+  UIView* FacePileView(ShareKitFacePileConfiguration* config) override {
+    return nil;
+  }
   void ReadGroups(ShareKitReadGroupsConfiguration* config) override {}
   void ReadGroupWithToken(
       ShareKitReadGroupWithTokenConfiguration* config) override {}
