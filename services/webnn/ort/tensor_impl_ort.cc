@@ -58,7 +58,12 @@ TensorImplOrt::Create(
       GetOrtApi()->GetTensorMutableData(tensor.get(), &ort_tensor_raw_data)));
   CHECK(ort_tensor_raw_data);
   size_t tensor_size = tensor_info->descriptor.PackedByteLength();
-  std::memset(ort_tensor_raw_data, 0, tensor_size);
+  // SAFETY: ORT guarantees that it has allocated enough memory to
+  // store tensor.
+  std::ranges::fill(
+      UNSAFE_BUFFERS(
+          base::span(static_cast<uint8_t*>(ort_tensor_raw_data), tensor_size)),
+      0);
 
   auto buffer_content = std::make_unique<BufferContentOrt>(std::move(tensor));
   auto buffer_state =
