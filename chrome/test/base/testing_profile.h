@@ -515,7 +515,7 @@ class TestingProfile : public Profile {
 
   base::FilePath last_selected_directory_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   scoped_refptr<ExtensionSpecialStoragePolicy>
       extension_special_storage_policy_;
 #endif

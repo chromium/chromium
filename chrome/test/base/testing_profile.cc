@@ -108,10 +108,13 @@
 #include "services/service_manager/public/cpp/service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#include "chrome/browser/extensions/extension_special_storage_policy.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/chrome_extension_system_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
@@ -718,7 +721,7 @@ void TestingProfile::SetExtensionSpecialStoragePolicy(
 
 ExtensionSpecialStoragePolicy*
 TestingProfile::GetExtensionSpecialStoragePolicy() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (!extension_special_storage_policy_.get()) {
     extension_special_storage_policy_ =
         base::MakeRefCounted<ExtensionSpecialStoragePolicy>(nullptr);

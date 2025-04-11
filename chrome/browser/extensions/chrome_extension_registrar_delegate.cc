@@ -106,8 +106,8 @@ void ChromeExtensionRegistrarDelegate::Init(ExtensionRegistrar* registrar) {
 }
 
 void ChromeExtensionRegistrarDelegate::Shutdown() {
-  // Avoid dangling pointers. The Profile outlives this object but some other
-  // classes don't.
+  // Avoid dangling pointers.
+  profile_ = nullptr;
   extension_prefs_ = nullptr;
   system_ = nullptr;
   registry_ = nullptr;

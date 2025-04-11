@@ -8857,6 +8857,7 @@ test("unit_tests") {
     sources += [
       "../browser/extensions/api/webstore_private/extension_install_status_unittest.cc",
       "../browser/extensions/corrupted_extension_reinstaller_unittest.cc",
+      "../browser/extensions/cws_info_service_unittest.cc",
       "../browser/extensions/extension_install_prompt_unittest.cc",
       "../browser/extensions/extension_management_unittest.cc",
       "../browser/extensions/external_policy_loader_unittest.cc",
@@ -8904,6 +8905,7 @@ test("unit_tests") {
       "../common/extensions/permissions/settings_override_permission_unittest.cc",
     ]
     deps += [
+      "//chrome/browser/extensions:cws_item_service_proto",
       "//chrome/browser/extensions:test_support",
       "//components/crx_file",
     ]
@@ -9025,7 +9027,6 @@ test("unit_tests") {
       "../browser/extensions/component_loader_unittest.cc",
       "../browser/extensions/context_menu_matcher_unittest.cc",
       "../browser/extensions/convert_user_script_unittest.cc",
-      "../browser/extensions/cws_info_service_unittest.cc",
       "../browser/extensions/error_console/error_console_unittest.cc",
       "../browser/extensions/event_router_forwarder_unittest.cc",
       "../browser/extensions/extension_action_icon_factory_unittest.cc",
@@ -9205,7 +9206,6 @@ test("unit_tests") {
     ]
 
     deps += [
-      "//chrome/browser/extensions:cws_item_service_proto",
       "//chrome/browser/extensions/api/cookies:helpers",
       "//chrome/browser/ui/global_error:test_support",
       "//chrome/browser/ui/web_applications:unit_tests",
