@@ -195,6 +195,7 @@ BASE_DECLARE_FEATURE(kSkipIsolatedSplitPreload);
 BASE_DECLARE_FEATURE(kSmallerTabStripTitleLimit);
 BASE_DECLARE_FEATURE(kScrollToTLDOptimization);
 BASE_DECLARE_FEATURE(kSuppressToolbarCapturesAtGestureEnd);
+BASE_DECLARE_FEATURE(kSwapNewTabAndNewTabInGroupAndroid);
 BASE_DECLARE_FEATURE(kTabGroupEntryPointsAndroid);
 BASE_DECLARE_FEATURE(kTabGroupParityBottomSheetAndroid);
 BASE_DECLARE_FEATURE(kToolbarPhoneCleanup);

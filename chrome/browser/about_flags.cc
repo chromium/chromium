@@ -10521,6 +10521,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabGroupSyncDisableNetworkLayerDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(tab_groups::kTabGroupSyncDisableNetworkLayer)},
 
+    {"swap-new-tab-and-new-tab-in-group-android",
+     flag_descriptions::kSwapNewTabAndNewTabInGroupAndroidName,
+     flag_descriptions::kSwapNewTabAndNewTabInGroupAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kSwapNewTabAndNewTabInGroupAndroid)},
+
     {"history-pane-android", flag_descriptions::kHistoryPaneAndroidName,
      flag_descriptions::kHistoryPaneAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kHistoryPaneAndroid)},

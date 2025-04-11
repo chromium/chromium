@@ -2925,6 +2925,9 @@ extern const char kStrictSiteIsolationDescription[];
 extern const char kSupportMultipleServerRequestsForPixPaymentsName[];
 extern const char kSupportMultipleServerRequestsForPixPaymentsDescription[];
 
+extern const char kSwapNewTabAndNewTabInGroupAndroidName[];
+extern const char kSwapNewTabAndNewTabInGroupAndroidDescription[];
+
 extern const char kCrossDeviceTabPaneAndroidName[];
 extern const char kCrossDeviceTabPaneAndroidDescription[];
 

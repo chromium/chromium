@@ -341,8 +341,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     && !isEmptyUrl(mParams.getUrl())
                     && UrlUtilities.isAcceptedScheme(mParams.getUrl())) {
                 if (mMode == ContextMenuMode.NORMAL) {
-                    linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP));
-                    linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
+                    if (ChromeFeatureList.sSwapNewTabAndNewTabInGroupAndroid.isEnabled()) {
+                        linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
+                        linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP));
+                    } else {
+                        linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB_IN_GROUP));
+                        linkGroup.add(createListItem(Item.OPEN_IN_NEW_TAB));
+                    }
                     if (!mItemDelegate.isIncognito() && mItemDelegate.isIncognitoSupported()) {
                         linkGroup.add(createListItem(Item.OPEN_IN_INCOGNITO_TAB));
                     }

@@ -4967,6 +4967,12 @@ const char kSupportMultipleServerRequestsForPixPaymentsDescription[] =
     "When enabled, the network interface with Google Payments supports "
     "handling multiple concurrent requests for Pix flows.";
 
+const char kSwapNewTabAndNewTabInGroupAndroidName[] =
+    "Swap new tab and new tab in group order";
+const char kSwapNewTabAndNewTabInGroupAndroidDescription[] =
+    "When enabled swaps the open in new tab and open in new tab in group menu "
+    "items.";
+
 const char kCrossDeviceTabPaneAndroidName[] = "Cross Device Tab Pane Android";
 const char kCrossDeviceTabPaneAndroidDescription[] =
     "Enables showing a new pane in the hub that displays the pre-existing "

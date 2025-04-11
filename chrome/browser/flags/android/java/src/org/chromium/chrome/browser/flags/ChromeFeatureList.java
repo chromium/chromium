@@ -546,6 +546,8 @@ public abstract class ChromeFeatureList {
     public static final String SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END =
             "SuppressToolbarCapturesAtGestureEnd";
     public static final String ENABLE_BATCH_UPLOAD_FROM_SETTINGS = "EnableBatchUploadFromSettings";
+    public static final String SWAP_NEW_TAB_AND_NEW_TAB_IN_GROUP_ANDROID =
+            "SwapNewTabAndNewTabInGroupAndroid";
     public static final String SYNC_ENABLE_PASSWORDS_SYNC_ERROR_MESSAGE_ALTERNATIVE =
             "SyncEnablePasswordsSyncErrorMessageAlternative";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
@@ -1035,6 +1037,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SHOW_NEW_TAB_ANIMATIONS, false);
     public static final MutableFlagWithSafeDefault sSuppressToolbarCapturesAtGestureEnd =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES_AT_GESTURE_END, false);
+    public static final MutableFlagWithSafeDefault sSwapNewTabAndNewTabInGroupAndroid =
+            newMutableFlagWithSafeDefault(SWAP_NEW_TAB_AND_NEW_TAB_IN_GROUP_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabGroupEntryPointsAndroid =
             newMutableFlagWithSafeDefault(TAB_GROUP_ENTRY_POINTS_ANDROID, false);
     public static final MutableFlagWithSafeDefault sTabGroupParityBottomSheetAndroid =

@@ -8793,6 +8793,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "swap-new-tab-and-new-tab-in-group-android",
+    "owners": [ "ckitagawa@google.com", "clank-tab-dev@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "sync-autofill-wallet-credential-data",
     "owners": [ "koulvipul@google.com", "treib@chromium.org", "payments-autofill-team@google.com" ],
     "expiry_milestone": 140

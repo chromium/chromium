@@ -343,6 +343,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSkipIsolatedSplitPreload,
     &kSmallerTabStripTitleLimit,
     &kSuppressToolbarCapturesAtGestureEnd,
+    &kSwapNewTabAndNewTabInGroupAndroid,
     &kTabGroupEntryPointsAndroid,
     &kTabGroupParityBottomSheetAndroid,
     &kToolbarPhoneCleanup,
@@ -1135,6 +1136,10 @@ BASE_FEATURE(kSmallerTabStripTitleLimit,
 
 BASE_FEATURE(kSuppressToolbarCapturesAtGestureEnd,
              "SuppressToolbarCapturesAtGestureEnd",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSwapNewTabAndNewTabInGroupAndroid,
+             "SwapNewTabAndNewTabInGroupAndroid",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupEntryPointsAndroid,

@@ -8983,6 +8983,7 @@ from previous Chrome versions.
   <int value="-2038165391"
       label="AckOnSurfaceActivationWhenInteractive:enabled"/>
   <int value="-2038132420" label="OmniboxCacheSuggestionResources:enabled"/>
+  <int value="-2037921452" label="SwapNewTabAndNewTabInGroupAndroid:enabled"/>
   <int value="-2037390759"
       label="IncognitoBrandConsistencyForAndroid:disabled"/>
   <int value="-2037280696" label="EcheSWASendStartSignaling:disabled"/>
@@ -16853,6 +16854,7 @@ from previous Chrome versions.
   <int value="1006080779" label="ForcePreferredIntervalForVideo:disabled"/>
   <int value="1006280999" label="CrOSLateBootArcVmmSwap:enabled"/>
   <int value="1006608931" label="ArcEnableUnifiedAudioFocus:disabled"/>
+  <int value="1007269704" label="SwapNewTabAndNewTabInGroupAndroid:disabled"/>
   <int value="1007444341" label="enable-prefixed-encrypted-media"/>
   <int value="1008809847" label="PrivacySandboxInternalsDevUI:disabled"/>
   <int value="1009252543" label="BlinkExtension:disabled"/>
