@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
@@ -31,8 +32,12 @@
 #include "components/optimization_guide/core/model_info.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "feature_keys.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
@@ -72,7 +77,8 @@ class ModelController {
 // want to load duplicate models (would consume excessive amounts of memory), at
 // most one instance of OnDeviceModelServiceController is created.
 class OnDeviceModelServiceController
-    : public base::RefCounted<OnDeviceModelServiceController> {
+    : public base::RefCounted<OnDeviceModelServiceController>,
+      public mojom::ModelBroker {
  public:
   OnDeviceModelServiceController(
       std::unique_ptr<OnDeviceModelAccessController> access_controller,
@@ -141,8 +147,12 @@ class OnDeviceModelServiceController
   OnDeviceModelAdaptationMetadata* GetFeatureMetadata(
       ModelBasedCapabilityKey feature);
 
+  void BindBroker(mojo::PendingReceiver<mojom::ModelBroker> receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
  protected:
-  virtual ~OnDeviceModelServiceController();
+  ~OnDeviceModelServiceController() override;
 
   std::optional<base::FilePath> language_detection_model_path() const {
     return safety_client_.language_detection_model_path();
@@ -153,6 +163,60 @@ class OnDeviceModelServiceController
   }
 
  private:
+  // A set of (references to) compatible, versioned dependencies that implement
+  // a ModelBasedCapability.
+  // e.g. "You can summarize with this model by building the prompt this way."
+  class Solution : public mojom::ModelSolution {
+   public:
+    Solution(ModelBasedCapabilityKey feature,
+             scoped_refptr<const OnDeviceModelFeatureAdapter> adapter,
+             base::WeakPtr<ModelController> model_controller,
+             std::unique_ptr<SafetyChecker> safety_checker,
+             base::SafeRef<OnDeviceModelServiceController> controller);
+    Solution(Solution&&);
+    ~Solution() override;
+    Solution& operator=(Solution&&);
+
+    // Whether all of the dependencies are still available.
+    bool IsValid();
+
+    // Creates a config describing this solution;
+    mojom::ModelSolutionConfigPtr MakeConfig();
+
+    const scoped_refptr<const OnDeviceModelFeatureAdapter>& adapter() const {
+      return adapter_;
+    }
+    const base::WeakPtr<ModelController>& model_controller() const {
+      return model_controller_;
+    }
+    const SafetyChecker& safety_checker() const { return *safety_checker_; }
+
+   private:
+    // mojom::ModelSolution
+    void CreateSession(
+        mojo::PendingReceiver<on_device_model::mojom::Session> pending,
+        on_device_model::mojom::SessionParamsPtr params) override;
+    void CreateTextSafetySession(
+        mojo::PendingReceiver<on_device_model::mojom::TextSafetySession>
+            pending) override;
+    void ReportHealthyCompletion() override;
+
+    // What this is a solution for.
+    ModelBasedCapabilityKey feature_;
+    // Describes how to implement this capability with these dependencies.
+    scoped_refptr<const OnDeviceModelFeatureAdapter> adapter_;
+    // The language model the adapter config is for.
+    base::WeakPtr<ModelController> model_controller_;
+    // A safety config and model that satisfy the adapter's requirements.
+    std::unique_ptr<SafetyChecker> safety_checker_;
+    // The controller that owns this.
+    base::SafeRef<OnDeviceModelServiceController> controller_;
+  };
+
+  using MaybeSolution =
+      base::expected<Solution, OnDeviceModelEligibilityReason>;
+
+  // Manages assets and loading of a particular base model and it's adaptations.
   class BaseModelController final : public ModelController {
    public:
     explicit BaseModelController(
@@ -225,6 +289,7 @@ class OnDeviceModelServiceController
     base::WeakPtrFactory<BaseModelController> weak_ptr_factory_{this};
   };
 
+  // Implements OnDeviceOptions::Client for Sessions created by this object.
   class OnDeviceModelClient final : public OnDeviceOptions::Client {
    public:
     OnDeviceModelClient(
@@ -244,6 +309,39 @@ class OnDeviceModelServiceController
     base::WeakPtr<OnDeviceModelServiceController> controller_;
     base::WeakPtr<ModelController> model_controller_;
   };
+
+  // Keeps subscribers updated with the current solution.
+  class SolutionProvider final {
+   public:
+    explicit SolutionProvider(
+        ModelBasedCapabilityKey feature,
+        base::SafeRef<OnDeviceModelServiceController> controller);
+    ~SolutionProvider();
+
+    void AddSubscriber(mojo::PendingRemote<mojom::ModelSubscriber> pending);
+    void AddObserver(OnDeviceModelAvailabilityObserver* observer);
+    void RemoveObserver(OnDeviceModelAvailabilityObserver* observer);
+
+    void Update(MaybeSolution solution);
+
+    MaybeSolution& solution() { return solution_; }
+
+   private:
+    void UpdateSubscribers();
+    void UpdateSubscriber(mojom::ModelSubscriber& client);
+    void UpdateObservers();
+
+    ModelBasedCapabilityKey feature_;
+    base::SafeRef<OnDeviceModelServiceController> controller_;
+
+    mojo::RemoteSet<mojom::ModelSubscriber> subscribers_;
+    base::ObserverList<OnDeviceModelAvailabilityObserver> observers_;
+
+    MaybeSolution solution_ =
+        base::unexpected(OnDeviceModelEligibilityReason::kUnknown);
+    mojo::ReceiverSet<mojom::ModelSolution> receivers_;
+  };
+  friend class SolutionProvider;
   friend class OnDeviceModelAdaptationController;
   friend class OnDeviceModelClient;
   friend class base::RefCounted<OnDeviceModelServiceController>;
@@ -251,11 +349,21 @@ class OnDeviceModelServiceController
   // Called when the service disconnects unexpectedly.
   void OnServiceDisconnected(on_device_model::ServiceDisconnectReason reason);
 
+  // Constructs a solution using the currently available dependencies.
+  MaybeSolution GetSolution(ModelBasedCapabilityKey feature);
+
+  // Get (or construct) the solution provider for the feature.
+  SolutionProvider& GetSolutionProvider(ModelBasedCapabilityKey feature);
+
   // Called to update model availability for all features.
-  void NotifyModelAvailabilityChanges();
+  void UpdateSolutionProviders();
 
   // Called to update the model availability changes for `feature`.
-  void NotifyModelAvailabilityChange(ModelBasedCapabilityKey feature);
+  void UpdateSolutionProvider(ModelBasedCapabilityKey feature);
+
+  // mojom::ModelBroker:
+  void Subscribe(mojom::ModelSubscriptionOptionsPtr opts,
+                 mojo::PendingRemote<mojom::ModelSubscriber> client) override;
 
   // This may be null in the destructor, otherwise non-null.
   std::unique_ptr<OnDeviceModelAccessController> access_controller_;
@@ -272,13 +380,13 @@ class OnDeviceModelServiceController
   base::flat_map<ModelBasedCapabilityKey, OnDeviceModelAdaptationMetadata>
       model_adaptation_metadata_;
 
-  std::map<ModelBasedCapabilityKey,
-           base::ObserverList<OnDeviceModelAvailabilityObserver>>
-      model_availability_change_observers_;
+  std::map<ModelBasedCapabilityKey, SolutionProvider> solution_providers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   std::optional<BaseModelController> base_model_controller_;
+
+  mojo::ReceiverSet<mojom::ModelBroker> receivers_;
 
   // Used to get `weak_ptr_` to self.
   base::WeakPtrFactory<OnDeviceModelServiceController> weak_ptr_factory_{this};

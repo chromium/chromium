@@ -11,6 +11,7 @@
 
 #include "base/notreached.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 
 namespace optimization_guide {
 
@@ -155,6 +156,50 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
       return ModelBasedCapabilityKey::kHistorySearch;
     case UserVisibleFeatureKey::kPasswordChangeSubmission:
       return ModelBasedCapabilityKey::kPasswordChangeSubmission;
+  }
+}
+
+inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
+    mojom::ModelBasedCapabilityKey key) {
+  switch (key) {
+    case mojom::ModelBasedCapabilityKey::kCompose:
+      return ModelBasedCapabilityKey::kCompose;
+    case mojom::ModelBasedCapabilityKey::kTabOrganization:
+      return ModelBasedCapabilityKey::kTabOrganization;
+    case mojom::ModelBasedCapabilityKey::kWallpaperSearch:
+      return ModelBasedCapabilityKey::kWallpaperSearch;
+    case mojom::ModelBasedCapabilityKey::kTest:
+      return ModelBasedCapabilityKey::kTest;
+    case mojom::ModelBasedCapabilityKey::kTextSafety:
+      return ModelBasedCapabilityKey::kTextSafety;
+    case mojom::ModelBasedCapabilityKey::kPromptApi:
+      return ModelBasedCapabilityKey::kPromptApi;
+    case mojom::ModelBasedCapabilityKey::kHistorySearch:
+      return ModelBasedCapabilityKey::kHistorySearch;
+    case mojom::ModelBasedCapabilityKey::kFormsClassifications:
+      return ModelBasedCapabilityKey::kFormsClassifications;
+    case mojom::ModelBasedCapabilityKey::kFormsPredictions:
+      return ModelBasedCapabilityKey::kFormsPredictions;
+    case mojom::ModelBasedCapabilityKey::kFormsAnnotations:
+      return ModelBasedCapabilityKey::kFormsAnnotations;
+    case mojom::ModelBasedCapabilityKey::kSummarize:
+      return ModelBasedCapabilityKey::kSummarize;
+    case mojom::ModelBasedCapabilityKey::kHistoryQueryIntent:
+      return ModelBasedCapabilityKey::kHistoryQueryIntent;
+    case mojom::ModelBasedCapabilityKey::kBlingPrototyping:
+      return ModelBasedCapabilityKey::kBlingPrototyping;
+    case mojom::ModelBasedCapabilityKey::kPasswordChangeSubmission:
+      return ModelBasedCapabilityKey::kPasswordChangeSubmission;
+    case mojom::ModelBasedCapabilityKey::kScamDetection:
+      return ModelBasedCapabilityKey::kScamDetection;
+    case mojom::ModelBasedCapabilityKey::kPermissionsAi:
+      return ModelBasedCapabilityKey::kPermissionsAi;
+    case mojom::ModelBasedCapabilityKey::kWritingAssistanceApi:
+      return ModelBasedCapabilityKey::kWritingAssistanceApi;
+    case mojom::ModelBasedCapabilityKey::kEnhancedCalendar:
+      return ModelBasedCapabilityKey::kEnhancedCalendar;
+    case mojom::ModelBasedCapabilityKey::kZeroStateSuggestions:
+      return ModelBasedCapabilityKey::kZeroStateSuggestions;
   }
 }
 

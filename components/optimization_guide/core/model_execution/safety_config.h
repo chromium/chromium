@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SAFETY_CONFIG_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_SAFETY_CONFIG_H_
 
+#include <cstddef>
 #include <optional>
 #include <string>
 
@@ -92,6 +93,10 @@ class SafetyConfig final {
   // Whether this config waits until a unsafe response is complete before
   // canceling.
   bool OnlyCancelUnsafeResponseOnComplete() const;
+
+  const std::optional<proto::FeatureTextSafetyConfiguration>& proto() const {
+    return proto_;
+  }
 
  private:
   // Whether the text is in a language not supported by the safety classifier,

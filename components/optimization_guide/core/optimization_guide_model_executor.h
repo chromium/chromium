@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
 #include "services/on_device_model/public/cpp/capabilities.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
@@ -190,6 +191,10 @@ enum class OnDeviceModelEligibilityReason {
 
 std::ostream& operator<<(std::ostream& out,
                          const OnDeviceModelEligibilityReason& val);
+
+// Simplify an eligibility reason to an availability state.
+std::optional<mojom::ModelUnavailableReason> AvailabilityFromEligibilityReason(
+    OnDeviceModelEligibilityReason);
 
 // Observer that is notified when the on-device model availability changes for
 // the on-device eligible features.

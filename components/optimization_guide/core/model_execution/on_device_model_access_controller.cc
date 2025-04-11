@@ -99,7 +99,7 @@ void OnDeviceModelAccessController::OnResponseCompleted() {
   next_attempt_time_after_crash_ = base::Time::Now();
 }
 
-void OnDeviceModelAccessController::OnDisconnectedFromRemote() {
+base::Time OnDeviceModelAccessController::OnDisconnectedFromRemote() {
   int crash_count = pref_service_->GetInteger(kOnDeviceModelCrashCount) + 1;
   pref_service_->SetInteger(kOnDeviceModelCrashCount, crash_count);
   // If the model will be disabled because of crash count, use exponential
@@ -108,6 +108,7 @@ void OnDeviceModelAccessController::OnDisconnectedFromRemote() {
       crash_count, features::GetOnDeviceModelCrashCountBeforeDisable(),
       features::GetOnDeviceModelCrashBackoffBaseTime(),
       features::GetOnDeviceModelMaxCrashBackoffTime());
+  return next_attempt_time_after_crash_;
 }
 
 void OnDeviceModelAccessController::OnGpuBlocked() {

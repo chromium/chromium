@@ -68,6 +68,10 @@ class OnDeviceModelFeatureAdapter final
 
   const TokenLimits& GetTokenLimits() const;
 
+  const proto::OnDeviceModelExecutionFeatureConfig& config() const {
+    return config_;
+  }
+
  private:
   friend class base::RefCounted<OnDeviceModelFeatureAdapter>;
   ~OnDeviceModelFeatureAdapter();
