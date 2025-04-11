@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_delegate.h"
 #include "components/autofill_ai/core/browser/autofill_ai_client.h"
+#include "components/autofill_ai/core/browser/autofill_ai_import_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -104,38 +105,42 @@ SaveOrUpdateAutofillAiDataControllerImpl::GetUpdatedAttributesDetails() const {
   std::vector<EntityAttributeUpdateDetails> details;
 
   auto get_attribute_update_type = [&](const autofill::AttributeInstance&
-                                           new_entity_attribute_instance) {
+                                           new_entity_attribute) {
     if (!old_entity_) {
       return kNewEntityAttributeAdded;
     }
 
     base::optional_ref<const autofill::AttributeInstance> old_entity_attribute =
-        old_entity_->attribute(new_entity_attribute_instance.type());
+        old_entity_->attribute(new_entity_attribute.type());
     if (!old_entity_attribute) {
       return kNewEntityAttributeAdded;
     }
 
-    return std::ranges::all_of(
-               new_entity_attribute_instance.GetSupportedTypes(),
-               [&](autofill::FieldType type) {
-                 return old_entity_attribute->GetInfo(
-                            type, app_locale_,
-                            /*format_string=*/std::nullopt) ==
-                        new_entity_attribute_instance.GetInfo(
-                            type, app_locale_, /*format_string=*/std::nullopt);
-               })
+    return std::ranges::all_of(new_entity_attribute.GetSupportedTypes(),
+                               [&](autofill::FieldType type) {
+                                 return old_entity_attribute->GetInfo(
+                                            type, app_locale_,
+                                            /*format_string=*/std::nullopt) ==
+                                        new_entity_attribute.GetInfo(
+                                            type, app_locale_,
+                                            /*format_string=*/std::nullopt);
+                               })
                ? kNewEntityAttributeUnchanged
                : kNewEntityAttributeUpdated;
   };
 
-  for (const autofill::AttributeInstance& attribute_instance :
+  for (const autofill::AttributeInstance& attribute :
        new_entity_->attributes()) {
     EntityAttributeUpdateType update_type =
-        get_attribute_update_type(attribute_instance);
-    std::u16string attribute_value =
-        attribute_instance.GetCompleteInfo(app_locale_);
+        get_attribute_update_type(attribute);
+    std::u16string attribute_value;
+    if (std::optional<std::u16string> date = MaybeGetLocalizedDate(attribute)) {
+      attribute_value = *std::move(date);
+    } else {
+      attribute_value = attribute.GetCompleteInfo(app_locale_);
+    }
     if (!attribute_value.empty()) {
-      details.emplace_back(attribute_instance.type().GetNameForI18n(),
+      details.emplace_back(attribute.type().GetNameForI18n(),
                            std::move(attribute_value), update_type);
     }
   }

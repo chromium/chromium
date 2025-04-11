@@ -35,6 +35,7 @@ using ::autofill::EntityType;
 using ::autofill::FieldType;
 using ::autofill::FormControlType;
 using ::testing::ElementsAre;
+using ::testing::Optional;
 using ::testing::Property;
 using ::testing::UnorderedElementsAre;
 using enum autofill::AttributeTypeName;
@@ -162,6 +163,30 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromSelect) {
                   UnorderedElementsAre(
                       CreateAttribute(kPassportNumber, "123"),
                       CreateAttribute(kPassportIssueDate, "2025-12-24")))));
+}
+
+TEST_F(AutofillAiImportUtilsTest, MaybeGetLocalizedDate) {
+  using enum AttributeTypeName;
+  EntityInstance entity =
+      autofill::test::GetPassportEntityInstance({.expiry_date = u"2025-12-30"});
+  {
+    AttributeInstance a =
+        entity.attribute(AttributeType(kPassportExpirationDate)).value();
+    auto optional = [](std::u16string s) { return Optional(s); };
+    base::i18n::SetICUDefaultLocale("en_US");
+    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"Dec 30, 2025"));
+    base::i18n::SetICUDefaultLocale("en_GB");
+    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30 Dec 2025"));
+    base::i18n::SetICUDefaultLocale("de_DE");
+    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30. Dez. 2025"));
+    base::i18n::SetICUDefaultLocale("fr_FR");
+    EXPECT_THAT(MaybeGetLocalizedDate(a), optional(u"30 déc. 2025"));
+  }
+  {
+    AttributeInstance a =
+        entity.attribute(AttributeType(kPassportName)).value();
+    EXPECT_EQ(MaybeGetLocalizedDate(a), std::nullopt);
+  }
 }
 
 }  // namespace
