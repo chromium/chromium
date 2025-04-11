@@ -34,11 +34,17 @@ PATH=$PATH:"${TEMPDIR}"
 OUTDIR="${TEMPDIR}/out"
 OUTFILE="${OUTDIR}/register_flags.txt"
 
+LIBRARY_BRAND_DEFAULTS_TARGET="${HOME}/Library/Google/Google Chrome Brand"
+LIBRARY_BRAND_FILE="${LIBRARY_BRAND_DEFAULTS_TARGET}.plist"
+
 echo "using tempdir ${TEMPDIR}"
 
 # Clean up the temp directory
 function cleanup_tempdir() {
   chmod u+w "${TEMPDIR}"
+  if [ -n "${DEST}" ] ; then
+    chmod u+w "${DEST}"
+  fi
   rm -rf "${TEMPDIR}"
 }
 
@@ -48,15 +54,14 @@ function cleanup_tempdir() {
 # Arg1: expected error code
 function fail_installer() {
   echo $1
-  "${INSTALLER}" "${TEMPDIR}" >& /dev/null
+  "${INSTALLER}" "${TEMPDIR}" > "${OUTDIR}/keystone_install.out" \
+      2> "${OUTDIR}/keystone_install.err"
   RETURN=$?
   if [ $RETURN -eq 0 ]; then
     echo "  Did not fail (which is a failure)" >& 2
-    cleanup_tempdir
     exit 1
   elif [[ $RETURN -ne $2 ]]; then
     echo "  Failed with unexpected return code ${RETURN} rather than $2" >& 2
-    cleanup_tempdir
     exit 1
   else
     echo "  Successfully failed with return code ${RETURN}"
@@ -68,11 +73,11 @@ function fail_installer() {
 # Arg0: string to print
 function pass_installer() {
   echo $1
-  "${INSTALLER}" "${TEMPDIR}" >& /dev/null
+  "${INSTALLER}" "${TEMPDIR}" > "${OUTDIR}/keystone_install.out" \
+      2> "${OUTDIR}/keystone_install.err"
   RETURN=$?
   if [ $RETURN -ne 0 ]; then
     echo "  FAILED; returned $RETURN but should have worked" >& 2
-    cleanup_tempdir
     exit 1
   else
     echo "  Succeeded"
@@ -80,11 +85,15 @@ function pass_installer() {
   assert_one_registration_call
 }
 
-function prepare_fake_ksadmin() {
+function reset_outdir() {
   if [ -e "${OUTDIR}" ] ; then
    rm -rf "${OUTDIR}"
   fi
   mkdir "${OUTDIR}"
+}
+
+function prepare_fake_ksadmin() {
+  reset_outdir
   cat >"${TEMPDIR}"/ksadmin <<EOF
 #!/bin/bash
 if [ "\${1}" = "--ksadmin-version" ] ; then
@@ -209,13 +218,33 @@ function make_basic_src_and_dest() {
   make_new_dest
 }
 
-function make_old_brand_code() {
-  defaults write "$HOME/Library/Google/Google Chrome Brand" "KSBrandID" \
-                            -string "GCCM"
+function set_library_brand() {
+  defaults write "${LIBRARY_BRAND_DEFAULTS_TARGET}" "KSBrandID" -string "${1}"
 }
 
-function remove_old_brand_code() {
-  rm "$HOME/Library/Google/Google Chrome Brand.plist"
+function remove_library_brand() {
+  rm "${LIBRARY_BRAND_FILE}"
+}
+
+# Reads an item out of a plist file, forcing the defaults utility to read off
+# the disk instead of using cached data from cfprefsd. Only use this for
+# reading from actual plists.
+function plist_read() {
+  __CFPREFERENCES_AVOID_DAEMON=1 defaults read "${@}" 2> /dev/null
+}
+
+function assert_library_brand_registered() {
+  assert_brand_file_registered
+  if [ ! -e "${LIBRARY_BRAND_FILE}" ] ; then
+    echo "  FAILED. No brand file at ${LIBRARY_BRAND_FILE}"
+    exit 1
+  fi
+  local got_brand="$(plist_read \
+      "${LIBRARY_BRAND_DEFAULTS_TARGET}" "KSBrandID")"
+  if [ "${got_brand}" != "${1}" ] ; then
+    echo "  FAILED. Wanted brand \"${1}\", got brand \"${got_brand}.\""
+    exit 1
+  fi
 }
 
 function assert_registration() {
@@ -226,18 +255,20 @@ function assert_registration() {
 
 function assert_brand_file_registered() {
   assert_registration_flags \
-      "--brand-path" "${HOME}/Library/Google/Google Chrome Brand.plist" \
+      "--brand-path" "${LIBRARY_BRAND_FILE}" \
       "--brand-key" "KSBrandID"
 }
 
+reset_outdir
 fail_installer "No source anything" 2
 
 mkdir "${TEMPDIR}"/"${APPNAME_STABLE}"
 fail_installer "No source bundle" 2
 
 make_basic_src_and_dest
-chmod ugo-w "${TEMPDIR}"
+chmod ugo-w "${DEST}"
 fail_installer "Writable dest directory" 9
+chmod ugo+w "${DEST}"
 
 make_basic_src_and_dest
 fail_installer "Was no KSUpdateURL in dest after copy" 9
@@ -255,14 +286,14 @@ defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
 pass_installer "New-style Stable"
 assert_registration
 
-make_old_brand_code
+set_library_brand "TEST"
 make_basic_src_and_dest
 defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
     KSUpdateURL "http://foobar"
 pass_installer "Old brand code Stable"
 assert_registration
-assert_brand_file_registered
-remove_old_brand_code
+assert_library_brand_registered "TEST"
+remove_library_brand
 
 make_src "${APPNAME_CANARY}"
 make_new_dest
