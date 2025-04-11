@@ -275,7 +275,19 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mActivityTabModelOrchestrators.add(orchestrator);
         if (ChromeFeatureList.sAndroidTabDeclutter.isEnabled()
                 && mTabArchiveSettings.getArchiveEnabled()) {
-            doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator));
+            // To account for the local tab group sync database synchronizing with the sync service
+            // on startup, a delay must be included when initiating a declutter pass that involves
+            // archiving tab groups. Unfortunately, there is no particular synchronization step that
+            // can be waited on, so the indicated delay is the best that can be done.
+            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()) {
+                // TODO(crbug.com/410035913): Find a better step to wait on rather than a set delay.
+                PostTask.postDelayedTask(
+                        TaskTraits.UI_DEFAULT,
+                        () -> doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator)),
+                        LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY);
+            } else {
+                doDeclutterPassAndScheduleNext(new WeakReference<>(orchestrator));
+            }
         } else {
             rescueArchivedTabs(orchestrator);
         }

@@ -579,6 +579,7 @@ public class TabArchiverImpl implements TabArchiver {
             Tab tab = model.getTabAt(i);
             // Skip the active tab or any tab navigated to during the sync db synchronization delay
             // when making last active determinations for user inactivity.
+            // TODO(crbug.com/410035913): Update this logic when the delay dependency is removed.
             long preSyncDelayBaseline =
                     mClock.currentTimeMillis() - LOCAL_SYNC_DB_SYNCHRONIZATION_DELAY;
             long tabLastNavigationTimestamp = tab.getLastNavigationCommittedTimestampMillis();
