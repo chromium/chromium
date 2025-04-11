@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/webrtc/api/video_codecs/video_codec.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
+#include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 

@@ -49,6 +49,7 @@
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
 #include "third_party/webrtc/common_video/include/video_frame_buffer.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
+#include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
 #if BUILDFLAG(RTC_USE_H265)
