@@ -87,6 +87,14 @@ export class SettingsIbanListEntryElement extends
   }
 
   /**
+   * This function returns a string that can be used in a srcset to scale
+   * the provided `url` based on the user's screen resolution.
+   */
+  private getScaledSrcSet_(url: string): string {
+    return `${url} 1x, ${url}@2x 2x`;
+  }
+
+  /**
    * Opens the IBAN action menu.
    */
   private onDotsMenuClick_() {
