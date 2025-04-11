@@ -198,7 +198,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kPrivateNetworkAccessRespectPreflightResults);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrivateNetworkAccessSendPreflights);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kOriginKeyedProcessesByDefault);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEvent);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEventOnInvalidation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPushSubscriptionChangeEventOnResubscribe);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kQueueNavigationsWhileWaitingForCommit);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReduceSubresourceResponseStartedIPC);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -350,6 +351,7 @@ CONTENT_EXPORT extern const base::FeatureParam<std::string>
 
 CONTENT_EXPORT bool IsVideoCaptureServiceEnabledForOutOfProcess();
 CONTENT_EXPORT bool IsVideoCaptureServiceEnabledForBrowserProcess();
+CONTENT_EXPORT bool IsPushSubscriptionChangeEventEnabled();
 
 }  // namespace features
 

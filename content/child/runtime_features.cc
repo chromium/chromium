@@ -254,8 +254,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnablePaymentApp, raw_ref(features::kServiceWorkerPaymentApps)},
           {wf::EnablePeriodicBackgroundSync,
            raw_ref(features::kPeriodicBackgroundSync)},
-          {wf::EnablePushMessagingSubscriptionChange,
-           raw_ref(features::kPushSubscriptionChangeEvent)},
           {wf::EnableSecurePaymentConfirmation,
            raw_ref(features::kSecurePaymentConfirmation)},
           {wf::EnableSecurePaymentConfirmationDebug,
@@ -317,6 +315,10 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
   for (const auto& mapping : blinkFeatureToBaseFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         *mapping.chromium_feature, mapping.option, mapping.feature_enabler);
+  }
+
+  if (features::IsPushSubscriptionChangeEventEnabled()) {
+    wf::EnablePushMessagingSubscriptionChange(true);
   }
 
   // TODO(crbug.com/40571563): Cleanup the inconsistency between custom WRF

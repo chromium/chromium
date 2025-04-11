@@ -2813,7 +2813,7 @@ class PushSubscriptionChangeEventTest : public PushMessagingBrowserTestBase {
  public:
   PushSubscriptionChangeEventTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kPushSubscriptionChangeEvent,
+        {features::kPushSubscriptionChangeEventOnInvalidation,
          features::kPushSubscriptionWithExpirationTime},
         {});
   }

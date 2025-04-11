@@ -823,8 +823,15 @@ BASE_FEATURE(kOriginKeyedProcessesByDefault,
 // Fires the `pushsubscriptionchange` event defined here:
 // https://w3c.github.io/push-api/#the-pushsubscriptionchange-event
 // for subscription refreshes, revoked permissions or subscription losses
-BASE_FEATURE(kPushSubscriptionChangeEvent,
-             "PushSubscriptionChangeEvent",
+BASE_FEATURE(kPushSubscriptionChangeEventOnInvalidation,
+             "PushSubscriptionChangeEventOnInvalidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Fires the `pushsubscriptionchange` event defined here:
+// https://w3c.github.io/push-api/#the-pushsubscriptionchange-event
+// upon manual resubscription to previously unsubscribed notifications.
+BASE_FEATURE(kPushSubscriptionChangeEventOnResubscribe,
+             "PushSubscriptionChangeEventOnResubscribe",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, queues navigations instead of cancelling the previous
@@ -1484,6 +1491,13 @@ bool IsVideoCaptureServiceEnabledForOutOfProcess() {
 bool IsVideoCaptureServiceEnabledForBrowserProcess() {
   return GetVideoCaptureServiceConfiguration() ==
          VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
+}
+
+bool IsPushSubscriptionChangeEventEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kPushSubscriptionChangeEventOnInvalidation) ||
+         base::FeatureList::IsEnabled(
+             features::kPushSubscriptionChangeEventOnResubscribe);
 }
 
 }  // namespace features

@@ -437,7 +437,7 @@ TEST_F(PushMessagingServiceTest, MAYBE_RemoveExpiredSubscriptions) {
   scoped_feature_list_.InitWithFeatures(
       /* enabled features */
       {features::kPushSubscriptionWithExpirationTime,
-       features::kPushSubscriptionChangeEvent},
+       features::kPushSubscriptionChangeEventOnInvalidation},
       /* disabled features */
       {});
 

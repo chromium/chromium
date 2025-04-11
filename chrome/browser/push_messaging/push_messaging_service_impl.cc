@@ -243,7 +243,8 @@ void PushMessagingServiceImpl::UnexpectedChange(
                      weak_factory_.GetWeakPtr(), identifier, reason,
                      base::BindOnce(&UnregisterCallbackToClosure,
                                     std::move(completed_closure)));
-  if (base::FeatureList::IsEnabled(features::kPushSubscriptionChangeEvent)) {
+  if (base::FeatureList::IsEnabled(
+          features::kPushSubscriptionChangeEventOnInvalidation)) {
     // Find old subscription and fire a `pushsubscriptionchange` event
     GetPushSubscriptionFromAppIdentifier(
         identifier,
@@ -1541,11 +1542,10 @@ void PushMessagingServiceImpl::FirePushSubscriptionChange(
     base::OnceClosure completed_closure,
     blink::mojom::PushSubscriptionPtr new_subscription,
     blink::mojom::PushSubscriptionPtr old_subscription) {
+  CHECK(features::IsPushSubscriptionChangeEventEnabled());
+
   // Ensure |completed_closure| is run after this function
   base::ScopedClosureRunner scoped_closure(std::move(completed_closure));
-
-  if (!base::FeatureList::IsEnabled(features::kPushSubscriptionChangeEvent))
-    return;
 
   if (app_identifier.is_null()) {
     FirePushSubscriptionChangeCallback(
@@ -1607,9 +1607,10 @@ void PushMessagingServiceImpl::OnAppTerminating() {
 
 void PushMessagingServiceImpl::OnSubscriptionInvalidation(
     const std::string& app_id) {
-  DCHECK(base::FeatureList::IsEnabled(features::kPushSubscriptionChangeEvent))
+  CHECK(base::FeatureList::IsEnabled(
+      features::kPushSubscriptionChangeEventOnInvalidation))
       << "It is not allowed to call this method when "
-         "features::kPushSubscriptionChangeEvent is disabled.";
+         "features::kPushSubscriptionChangeEventOnInvalidation is disabled.";
   PushMessagingAppIdentifier old_app_identifier =
       PushMessagingAppIdentifier::FindByAppId(profile_, app_id);
   if (old_app_identifier.is_null())
@@ -1624,6 +1625,9 @@ void PushMessagingServiceImpl::OnSubscriptionInvalidation(
 void PushMessagingServiceImpl::GetOldSubscription(
     PushMessagingAppIdentifier old_app_identifier,
     const std::string& sender_id) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kPushSubscriptionChangeEventOnInvalidation));
+
   GetPushSubscriptionFromAppIdentifier(
       old_app_identifier,
       base::BindOnce(&PushMessagingServiceImpl::StartRefresh,
@@ -1635,6 +1639,9 @@ void PushMessagingServiceImpl::StartRefresh(
     PushMessagingAppIdentifier old_app_identifier,
     const std::string& sender_id,
     blink::mojom::PushSubscriptionPtr old_subscription) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kPushSubscriptionChangeEventOnInvalidation));
+
   // Generate a new app_identifier with the same information, but a different
   // app_id. Expiration time will be overwritten by DoSubscribe, if the flag
   // features::kPushSubscriptionWithExpiration time is enabled
@@ -1710,6 +1717,9 @@ void PushMessagingServiceImpl::DidUpdateSubscription(
     const std::vector<uint8_t>& p256dh,
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kPushSubscriptionChangeEventOnInvalidation));
+
   // TODO(crbug.com/40146635): Currently, if |status| is unsuccessful, the old
   // subscription remains in SW database and preferences and the refresh is
   // aborted. Instead, one should abort the refresh and retry to refresh
