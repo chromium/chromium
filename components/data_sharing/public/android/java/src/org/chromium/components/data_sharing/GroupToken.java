@@ -8,6 +8,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Information about a member of a group. */
 @JNINamespace("data_sharing")
@@ -17,7 +18,7 @@ public class GroupToken {
     public final String groupId;
 
     public final String collaborationId;
-    public final String accessToken;
+    public final @Nullable String accessToken;
 
     /**
      * Constructor for a {@link GroupToken} object.
@@ -25,7 +26,7 @@ public class GroupToken {
      * @param collaborationId The sharing ID associated with the group.
      * @param accessToken The access token associated with the group.
      */
-    public GroupToken(String collaborationId, String accessToken) {
+    public GroupToken(String collaborationId, @Nullable String accessToken) {
         this.groupId = collaborationId;
         this.collaborationId = collaborationId;
         this.accessToken = accessToken;

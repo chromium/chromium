@@ -53,7 +53,7 @@ public class DataSharingRuntimeDataConfig {
         private boolean mRuntimeDataSet;
 
         /** Session ID to set the preview to, given when showXFlow API is called */
-        public Builder setSessionId(String sessionId) {
+        public Builder setSessionId(@Nullable String sessionId) {
             this.mSessionId = sessionId;
             return this;
         }

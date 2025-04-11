@@ -67,7 +67,8 @@ public interface DataSharingUIDelegate {
      * @param sessionId The session ID returned by the showFlow() calls.
      * @param runtimeData The runtime data to update the flow with.
      */
-    default void updateRuntimeData(String sessionId, DataSharingRuntimeDataConfig runtimeData) {}
+    default void updateRuntimeData(
+            @Nullable String sessionId, DataSharingRuntimeDataConfig runtimeData) {}
 
     /**
      * Method to destroy UI flow based on `sessionId`.

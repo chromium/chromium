@@ -8,9 +8,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** An interface to handle actions related to tab groups. */
+@NullMarked
 public interface DataSharingTabGroupsDelegate {
     /**
      * Open the tab group dialog of the given tab group id.

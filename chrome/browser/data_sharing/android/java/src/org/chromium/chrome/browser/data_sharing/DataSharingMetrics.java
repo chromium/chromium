@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.data_sharing;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Record data sharing flow metrics. */
+@NullMarked
 public class DataSharingMetrics {
     // These values are persisted to logs. Entries should not be renumbered and numeric values
     // should never be reused.

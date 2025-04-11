@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.data_sharing.ui.recent_activity.RecentActivityActionHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -14,12 +18,13 @@ import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 /** Implementation for {@code RecentActivityActionHandler}. */
+@NullMarked
 public class RecentActivityActionHandlerImpl implements RecentActivityActionHandler {
-    private final TabGroupSyncService mTabGroupSyncService;
+    private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final TabModelSelector mTabModelSelector;
     private final DataSharingTabGroupsDelegate mDataSharingTabGroupsDelegate;
     private final String mCollaborationId;
-    private final String mSyncTabGroupId;
+    private final @Nullable String mSyncTabGroupId;
     private final Runnable mManageSharingCallback;
 
     /**
@@ -63,6 +68,7 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
                 mTabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(/* isIncognito= */ false);
+        assumeNonNull(tabGroupModelFilter);
         int rootId = tabGroupModelFilter.getRootIdFromTabGroupId(savedTabGroup.localId.tabGroupId);
         assert rootId != Tab.INVALID_TAB_ID;
 
@@ -85,7 +91,9 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
         mManageSharingCallback.run();
     }
 
-    private SavedTabGroup getSavedTabGroup() {
+    private @Nullable SavedTabGroup getSavedTabGroup() {
+        assumeNonNull(mTabGroupSyncService);
+        assumeNonNull(mSyncTabGroupId);
         return mTabGroupSyncService.getGroup(mSyncTabGroupId);
     }
 }

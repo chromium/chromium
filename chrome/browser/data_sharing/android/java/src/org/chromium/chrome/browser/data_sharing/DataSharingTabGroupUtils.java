@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Token;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
@@ -38,6 +40,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Utilities related to tab groups in data sharing. */
+@NullMarked
 public class DataSharingTabGroupUtils {
     @IntDef({
         TabPresence.IN_WINDOW,
@@ -80,8 +83,8 @@ public class DataSharingTabGroupUtils {
      * @return lists of the local tab group IDs that would have collaborations or sync data
      *     destroyed.
      */
-    public static @NonNull GroupsPendingDestroy getSyncedGroupsDestroyedByTabRemoval(
-            @NonNull TabModel tabModel, @Nullable List<Tab> tabsToRemove) {
+    public static GroupsPendingDestroy getSyncedGroupsDestroyedByTabRemoval(
+            TabModel tabModel, @Nullable List<Tab> tabsToRemove) {
         GroupsPendingDestroy destroyedGroups = new GroupsPendingDestroy();
 
         // Collaborations are not possible in incognito branded mode.
@@ -89,9 +92,8 @@ public class DataSharingTabGroupUtils {
             return destroyedGroups;
         }
 
-        @Nullable
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(tabModel.getProfile());
+        @Nullable TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(assumeNonNull(tabModel.getProfile()));
         if (tabGroupSyncService == null || !tabGroupSyncService.isObservingLocalChanges()) {
             return destroyedGroups;
         }
@@ -102,6 +104,7 @@ public class DataSharingTabGroupUtils {
 
         for (String syncId : syncIds) {
             SavedTabGroup group = tabGroupSyncService.getGroup(syncId);
+            assumeNonNull(group);
 
             // Tab groups without a local representation won't have local tabs that are being
             // removed and can be skipped.
@@ -128,13 +131,12 @@ public class DataSharingTabGroupUtils {
      * @return lists of the local tab group IDs that would have collaborations or sync data
      *     destroyed.
      */
-    public static @NonNull GroupsPendingDestroy getSyncedGroupsDestroyedByTabClosure(
-            @NonNull TabModel tabModel, @NonNull TabClosureParams closureParams) {
+    public static GroupsPendingDestroy getSyncedGroupsDestroyedByTabClosure(
+            TabModel tabModel, TabClosureParams closureParams) {
         // If tab groups are being hidden then they cannot be destroyed.
         if (closureParams.hideTabGroups) return new GroupsPendingDestroy();
 
-        @Nullable
-        List<Tab> tabsToClose =
+        @Nullable List<Tab> tabsToClose =
                 closureParams.isAllTabs
                         ? TabModelUtils.convertTabListToListOfTabs(tabModel)
                         : closureParams.tabs;
@@ -149,7 +151,7 @@ public class DataSharingTabGroupUtils {
      * @param localTabGroupIds The list of tab group IDs to add tabs to.
      * @return A list of tabs that were created.
      */
-    public static @NonNull List<Tab> createPlaceholderTabInGroups(
+    public static List<Tab> createPlaceholderTabInGroups(
             TabModel tabModel, @Nullable List<LocalTabGroupId> localTabGroupIds) {
         // This functionality is not supported in incognito mode.
         if (localTabGroupIds == null
@@ -164,7 +166,7 @@ public class DataSharingTabGroupUtils {
         }
         HashMap<Token, Tab> parentTabMap = new HashMap<>();
         for (int i = 0; i < tabModel.getCount(); i++) {
-            Tab tab = tabModel.getTabAt(i);
+            Tab tab = tabModel.getTabAtChecked(i);
             @Nullable Token tabGroupId = tab.getTabGroupId();
 
             // The parent tab should be the last tab in the tab group. Tab groups are contiguous.
@@ -242,6 +244,7 @@ public class DataSharingTabGroupUtils {
         TabList tabList = tabModel.getComprehensiveModel();
         for (int i = 0; i < tabList.getCount(); i++) {
             Tab tab = tabList.getTabAt(i);
+            assumeNonNull(tab);
             if (tab.getId() == tabId) {
                 return tab.isClosing() ? TabPresence.IN_WINDOW_CLOSING : TabPresence.IN_WINDOW;
             }
@@ -261,10 +264,11 @@ public class DataSharingTabGroupUtils {
      * @param tabGroupSyncService The sync service to get tab group data form.
      * @return The {@link SavedTabGroup} from sync service.
      */
-    public static SavedTabGroup getTabGroupForCollabIdFromSync(
+    public @Nullable static SavedTabGroup getTabGroupForCollabIdFromSync(
             String collaborationId, TabGroupSyncService tabGroupSyncService) {
         for (String syncGroupId : tabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(syncGroupId);
+            assumeNonNull(savedTabGroup);
             assert !savedTabGroup.savedTabs.isEmpty();
             if (savedTabGroup.collaborationId != null
                     && savedTabGroup.collaborationId.equals(collaborationId)) {
@@ -280,8 +284,7 @@ public class DataSharingTabGroupUtils {
      * @param tabGroupSyncService The sync service to get tab group data form.
      * @return The title of the tab group.
      */
-    @Nullable
-    public static String getTabGroupTitle(
+    public static @Nullable String getTabGroupTitle(
             Context context, String collaborationId, TabGroupSyncService tabGroupSyncService) {
         SavedTabGroup tabGroup =
                 getTabGroupForCollabIdFromSync(collaborationId, tabGroupSyncService);
