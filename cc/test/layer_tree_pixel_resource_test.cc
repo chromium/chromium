@@ -55,8 +55,6 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
   int max_bytes_per_copy_operation = 1024 * 1024;
   int max_staging_buffer_usage_in_bytes = 32 * 1024 * 1024;
 
-  RasterCapabilities raster_caps;
-
   switch (raster_type()) {
     case TestRasterType::kBitmap:
       EXPECT_FALSE(compositor_context_provider);
@@ -70,10 +68,9 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       EXPECT_TRUE(worker_context_provider);
       EXPECT_FALSE(use_software_renderer());
 
-      raster_caps.use_gpu_rasterization = true;
       return std::make_unique<GpuRasterBufferProvider>(
           compositor_context_provider, worker_context_provider,
-          raster_caps.tile_overlay_candidate, gfx::Size(),
+          /*is_overlay_candidate=*/false, gfx::Size(),
           host_impl->GetRasterQueryQueueForTesting());
     case TestRasterType::kZeroCopy:
       EXPECT_TRUE(compositor_context_provider);
@@ -91,7 +88,7 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
           task_runner, compositor_context_provider, worker_context_provider,
           max_bytes_per_copy_operation, false,
           max_staging_buffer_usage_in_bytes,
-          raster_caps.tile_overlay_candidate);
+          /*is_overlay_candidate=*/false);
   }
 }
 

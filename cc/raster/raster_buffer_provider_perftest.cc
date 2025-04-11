@@ -366,12 +366,9 @@ class RasterBufferProviderPerfTest
     pending_raster_queries_ =
         std::make_unique<RasterQueryQueue>(worker_context_provider_.get());
 
-    RasterCapabilities raster_caps;
-
     switch (GetParam()) {
       case RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY:
         Create3dResourceProvider();
-        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
                 compositor_context_provider_.get()->SharedImageInterface(),
@@ -379,19 +376,17 @@ class RasterBufferProviderPerfTest
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
-        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             task_runner_.get(), compositor_context_provider_.get(),
             worker_context_provider_.get(), std::numeric_limits<int>::max(),
             false, std::numeric_limits<int>::max(),
-            raster_caps.tile_overlay_candidate);
+            /*is_overlay_candidate=*/false);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
-        raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
             compositor_context_provider_.get(), worker_context_provider_.get(),
-            raster_caps.tile_overlay_candidate, gfx::Size(),
+            /*is_overlay_candidate=*/false, gfx::Size(),
             pending_raster_queries_.get());
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
