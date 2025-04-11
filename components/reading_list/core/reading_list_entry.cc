@@ -5,9 +5,7 @@
 #include "components/reading_list/core/reading_list_entry.h"
 
 #include <memory>
-#include <optional>
 
-#include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -413,8 +411,9 @@ scoped_refptr<ReadingListEntry> ReadingListEntry::FromReadingListLocal(
 
   std::unique_ptr<net::BackoffEntry> backoff;
   if (pb_entry.has_backoff()) {
-    std::optional<base::Value> value =
-        base::JSONReader::Read(pb_entry.backoff());
+    JSONStringValueDeserializer deserializer(pb_entry.backoff());
+    std::unique_ptr<base::Value> value(
+        deserializer.Deserialize(nullptr, nullptr));
     if (value) {
       DCHECK(value->is_list());
       backoff = net::BackoffEntrySerializer::DeserializeFromList(

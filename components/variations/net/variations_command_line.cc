@@ -9,13 +9,10 @@
 
 #include "components/variations/net/variations_command_line.h"
 
-#include <optional>
-
 #include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/escape.h"
@@ -285,8 +282,13 @@ std::optional<VariationsCommandLine> VariationsCommandLine::ReadFromFile(
 
 std::optional<VariationsCommandLine> VariationsCommandLine::ReadFromString(
     const std::string& serialized_json) {
-  std::optional<base::Value::Dict> dict =
-      base::JSONReader::ReadDict(serialized_json);
+  JSONStringValueDeserializer deserializer(serialized_json);
+  std::unique_ptr<base::Value> value = deserializer.Deserialize(
+      /*error_code=*/nullptr, /*error_message=*/nullptr);
+  if (!value) {
+    return std::nullopt;
+  }
+  base::Value::Dict* dict = value->GetIfDict();
   if (!dict) {
     return std::nullopt;
   }

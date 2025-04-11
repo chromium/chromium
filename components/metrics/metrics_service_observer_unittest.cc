@@ -4,11 +4,9 @@
 
 #include "components/metrics/metrics_service_observer.h"
 
-#include <optional>
-
 #include "base/base64.h"
 #include "base/callback_list.h"
-#include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -511,7 +509,9 @@ TEST_P(MetricsServiceObserverExportTest, ExportLogsAsJson) {
   ASSERT_TRUE(logs_observer.ExportLogsAsJson(include_log_proto_data, &json));
 
   // Parse the JSON string and convert it to a base::Value.
-  std::optional<base::Value> logs_value = base::JSONReader::Read(json);
+  JSONStringValueDeserializer deserializer(json);
+  std::unique_ptr<base::Value> logs_value = deserializer.Deserialize(
+      /*error_code=*/nullptr, /*error_message=*/nullptr);
   ASSERT_TRUE(logs_value);
 
   // Verify that the base::Value created from the JSON reflects what we expect:

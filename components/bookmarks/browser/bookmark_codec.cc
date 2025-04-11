@@ -8,13 +8,12 @@
 
 #include <algorithm>
 #include <memory>
-#include <optional>
 #include <string_view>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
-#include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -430,25 +429,26 @@ bool BookmarkCodec::DecodeMetaInfo(const base::Value::Dict& value,
   if (!meta_info)
     return true;
 
+  std::unique_ptr<base::Value> deserialized_holder;
+
   // Meta info used to be stored as a serialized dictionary, so attempt to
   // parse the value as one.
-  if (const std::string* meta_info_str = meta_info->GetIfString()) {
-    std::optional<base::Value::Dict> meta_info_dict =
-        base::JSONReader::ReadDict(*meta_info_str);
-    if (!meta_info_dict) {
+  const std::string* meta_info_str = meta_info->GetIfString();
+  if (meta_info_str) {
+    JSONStringValueDeserializer deserializer(*meta_info_str);
+    deserialized_holder = deserializer.Deserialize(nullptr, nullptr);
+    if (!deserialized_holder)
       return false;
-    }
-
-    DecodeMetaInfoHelper(*meta_info_dict, std::string(), meta_info_map);
-    return true;
+    meta_info = deserialized_holder.get();
   }
+  // meta_info is now either the kMetaInfo node, or the deserialized node if it
+  // was stored as a string. Either way it should now be a (possibly nested)
+  // dictionary of meta info values.
+  if (!meta_info->is_dict())
+    return false;
+  DecodeMetaInfoHelper(meta_info->GetDict(), std::string(), meta_info_map);
 
-  if (const base::Value::Dict* meta_info_dict = meta_info->GetIfDict()) {
-    DecodeMetaInfoHelper(*meta_info_dict, std::string(), meta_info_map);
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 void BookmarkCodec::DecodeMetaInfoHelper(

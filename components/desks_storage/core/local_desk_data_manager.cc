@@ -16,7 +16,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
@@ -74,13 +73,15 @@ desk_template_conversion::ParseSavedDeskResult ReadFileToTemplate(
         desk_template_conversion::SavedDeskParseError::kFileNotExist);
   }
 
-  base::JSONReader::Result desk_template_value =
-      base::JSONReader::ReadAndReturnValueWithError(value_string);
+  std::string error_message;
+  int error_code;
+  std::unique_ptr<base::Value> desk_template_value =
+      JSONStringValueDeserializer(value_string)
+          .Deserialize(&error_code, &error_message);
 
-  if (!desk_template_value.has_value()) {
-    DVLOG(1)
-        << "Fail to deserialize json value from string with error message: "
-        << desk_template_value.error().ToString();
+  if (!desk_template_value) {
+    DVLOG(1) << "Fail to deserialize json value from string with error code: "
+             << error_code << " and error message: " << error_message;
     return base::unexpected(
         desk_template_conversion::SavedDeskParseError::kInvalidJson);
   }

@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -180,13 +179,16 @@ void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
   if (preferred_apps_string.empty()) {
     preferred_apps_list_.Init();
   } else {
-    base::JSONReader::Result preferred_apps_value =
-        base::JSONReader::ReadAndReturnValueWithError(preferred_apps_string);
+    std::string json_string;
+    JSONStringValueDeserializer deserializer(preferred_apps_string);
+    int error_code;
+    std::string error_message;
+    auto preferred_apps_value =
+        deserializer.Deserialize(&error_code, &error_message);
 
-    if (!preferred_apps_value.has_value()) {
-      DVLOG(0)
-          << "Fail to deserialize json value from string with error message: "
-          << preferred_apps_value.error().ToString();
+    if (!preferred_apps_value) {
+      DVLOG(0) << "Fail to deserialize json value from string with error code: "
+               << error_code << " and error message: " << error_message;
       preferred_apps_list_.Init();
     } else {
       preferred_apps_upgraded = IsUpgradedForSharing(*preferred_apps_value);
