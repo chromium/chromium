@@ -121,6 +121,8 @@ struct Layer {
   int32 effect_tree_index;
   int32 scroll_tree_index;
 
+  bool should_check_backface_visibility;
+
   // Extra properties that are specific to a layerImpl type.
   LayerExtra? layer_extra;
 };

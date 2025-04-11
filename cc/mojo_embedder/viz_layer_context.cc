@@ -530,6 +530,8 @@ void SerializeLayer(LayerImpl& layer,
   wire.clip_tree_index = layer.clip_tree_index();
   wire.effect_tree_index = layer.effect_tree_index();
   wire.scroll_tree_index = layer.scroll_tree_index();
+  wire.should_check_backface_visibility =
+      layer.should_check_backface_visibility();
   switch (layer.GetLayerType()) {
     case mojom::LayerType::kMirror: {
       auto mirror_layer_extra = viz::mojom::MirrorLayerExtra::New();
