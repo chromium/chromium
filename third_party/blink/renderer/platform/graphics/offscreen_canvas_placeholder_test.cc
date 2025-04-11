@@ -39,7 +39,7 @@ class MockCanvasResourceDispatcher : public CanvasResourceDispatcher {
             placeholder_id,
             /*canvas_size=*/{kWidth, kHeight}) {}
 
-  MOCK_METHOD2(ReclaimResource,
+  MOCK_METHOD2(OnPlaceholderReleasedResource,
                void(viz::ResourceId, scoped_refptr<CanvasResource>&&));
 };
 
@@ -129,26 +129,27 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameSentBack) {
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
   CreateDispatcher();
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(_, _)).Times(0);
   DrawSomething();
   viz::ResourceId frame1_id = PeekNextResourceId();
   CanvasResource* frame1_raw_ptr = DispatchOneFrame();
   EXPECT_TRUE(frame1_raw_ptr->HasOneRef());
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(_, _)).Times(0);
   // Run task that propagates the frame to the placeholder canvas.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), nullptr);
   platform->RunUntilIdle();
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame1_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(_, _)).Times(0);
   DrawSomething();
   CanvasResource* frame2_raw_ptr = DispatchOneFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(frame1_id, _)).Times(1);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(frame1_id, _))
+      .Times(1);
   // Propagate second frame to the placeholder, causing frame 1 to be
   // reclaimed.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame1_raw_ptr);
@@ -163,14 +164,14 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
   ScopedTestingPlatformSupport<TestingPlatformSupport> platform;
   CreateDispatcher();
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(_, _)).Times(0);
   DrawSomething();
   viz::ResourceId frame1_id = PeekNextResourceId();
   CanvasResource* frame1_raw_ptr = DispatchOneFrame();
   EXPECT_TRUE(frame1_raw_ptr->HasOneRef());
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(_, _)).Times(0);
   // Run task that propagates the frame to the placeholder canvas.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), nullptr);
   platform->RunUntilIdle();
@@ -179,12 +180,12 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
       placeholder()->OffscreenCanvasFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(_, _)).Times(0);
   DrawSomething();
   CanvasResource* frame2_raw_ptr = DispatchOneFrame();
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(_, _)).Times(0);
   // Propagate second frame to the placeholder.  First frame will not be
   // reclaimed due to extra_ref.
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame1_raw_ptr);
@@ -192,11 +193,12 @@ TEST_F(OffscreenCanvasPlaceholderTest, OldFrameNotReclaimedUntilUnref) {
   EXPECT_EQ(placeholder()->OffscreenCanvasFrame().get(), frame2_raw_ptr);
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(_, _)).Times(0);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(_, _)).Times(0);
   extra_ref = nullptr;  // Deref cause resource to be reclaimed asynchronously.
   Mock::VerifyAndClearExpectations(dispatcher());
 
-  EXPECT_CALL(*(dispatcher()), ReclaimResource(frame1_id, _)).Times(1);
+  EXPECT_CALL(*(dispatcher()), OnPlaceholderReleasedResource(frame1_id, _))
+      .Times(1);
   // Run pending task to complete the reclaim.
   platform->RunUntilIdle();
   Mock::VerifyAndClearExpectations(dispatcher());

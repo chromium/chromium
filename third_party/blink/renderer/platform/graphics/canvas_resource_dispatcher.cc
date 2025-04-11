@@ -145,7 +145,7 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
       // `agent_group_scheduler_compositor_task_runner_` may be null if this
       // was created from a SharedWorker.
       !agent_group_scheduler_compositor_task_runner_) {
-    ReclaimResourceInternal(resource_id, std::move(canvas_resource));
+    ReclaimPlaceholderResource(resource_id, std::move(canvas_resource));
     return;
   }
 
@@ -158,8 +158,8 @@ void CanvasResourceDispatcher::PostImageToPlaceholderIfNotBlocked(
     DCHECK(num_unreclaimed_frames_posted_ == kMaxUnreclaimedPlaceholderFrames);
     if (latest_unposted_image_) {
       // The previous unposted resource becomes obsolete now.
-      ReclaimResourceInternal(latest_unposted_resource_id_,
-                              std::move(latest_unposted_image_));
+      ReclaimPlaceholderResource(latest_unposted_resource_id_,
+                                 std::move(latest_unposted_image_));
     }
 
     latest_unposted_image_ = std::move(canvas_resource);
@@ -445,10 +445,10 @@ void CanvasResourceDispatcher::ReclaimResources(
   }
 }
 
-void CanvasResourceDispatcher::ReclaimResource(
+void CanvasResourceDispatcher::OnPlaceholderReleasedResource(
     viz::ResourceId resource_id,
     scoped_refptr<CanvasResource>&& canvas_resource) {
-  ReclaimResourceInternal(resource_id, std::move(canvas_resource));
+  ReclaimPlaceholderResource(resource_id, std::move(canvas_resource));
 
   num_unreclaimed_frames_posted_--;
 
@@ -499,7 +499,7 @@ void CanvasResourceDispatcher::SetPlaceholderCanvasDispatcher(
   }
 }
 
-void CanvasResourceDispatcher::ReclaimResourceInternal(
+void CanvasResourceDispatcher::ReclaimPlaceholderResource(
     viz::ResourceId resource_id,
     scoped_refptr<CanvasResource>&& canvas_resource) {
   auto it = resources_.find(resource_id);
