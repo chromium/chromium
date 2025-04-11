@@ -578,6 +578,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Distant tab resumption tile"/>
   <int value="10" label="Price Tracking Promo tile"/>
   <int value="11" label="Tips tile"/>
+  <int value="12" label="ShopCard tile"/>
 </enum>
 
 <enum name="IOSHomeCustomizationEntrypoint">

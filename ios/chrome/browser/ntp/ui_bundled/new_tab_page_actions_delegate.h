@@ -41,6 +41,9 @@
 // The Tips module was tapped.
 - (void)tipsOpened;
 
+// The ShopCard module was tapped.
+- (void)shopCardOpened;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_ACTIONS_DELEGATE_H_

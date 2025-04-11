@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
@@ -308,6 +309,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 }
 
 - (void)openShopCardItem:(ShopCardItem*)item {
+  [self.NTPActionsDelegate shopCardOpened];
   [self.shopCardActionDelegate openURL:item.shopCardData.productURL];
   [self.delegate removeShopCard];
 }

@@ -1430,6 +1430,12 @@
   [self dismissCustomizationMenu];
 }
 
+- (void)shopCardOpened {
+  RecordMagicStackClick(ContentSuggestionsModuleType::kShopCard,
+                        [self isStartSurface]);
+  RecordHomeAction(IOSHomeActionType::kShopCard, [self isStartSurface]);
+}
+
 #pragma mark - OverscrollActionsControllerDelegate
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
