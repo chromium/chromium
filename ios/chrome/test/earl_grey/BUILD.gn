@@ -246,6 +246,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/tips_notifications/model:utils",
     "//ios/chrome/browser/toolbar/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/toolbar/ui_bundled:ui",
+    "//ios/chrome/browser/toolbar/ui_bundled/buttons:constants",
     "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
     "//ios/chrome/browser/translate/model:eg_app_support+eg2",
     "//ios/chrome/browser/unified_consent/model",

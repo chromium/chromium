@@ -198,6 +198,9 @@ id<GREYMatcher> TabShareButton();
 // `[ChromeEarlGrey  showTabSwitcher]` or `[ChromeEarlGreyUI openTabGrid]`.
 id<GREYMatcher> ShowTabsButton();
 
+// Returns a matcher for the blue dot on the show tabs button.
+id<GREYMatcher> BlueDotOnShowTabsButton();
+
 // Returns a matcher for Add to reading list button.
 id<GREYMatcher> AddToReadingListButton();
 

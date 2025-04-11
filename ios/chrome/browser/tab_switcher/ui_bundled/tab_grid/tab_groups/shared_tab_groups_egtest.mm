@@ -37,6 +37,7 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::AddTabToGroupSubMenuButton;
+using chrome_test_util::BlueDotOnShowTabsButton;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::CreateTabGroupCreateButton;
@@ -1170,6 +1171,75 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   // Verify that the activity label on the group cell disappears.
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       TabGroupActivityLabelOnGroupCellAtIndex(0)];
+}
+
+// Tests that the badge on the tab switcher appears when a shared group is
+// updated and disappears when a user visits the updated page.
+- (void)testTabSwitcherBadge {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Add a new tab.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
+      performAction:grey_tap()];
+
+  // Add a tab to the shared group by a member in the shared group.
+  [TabGroupAppInterface addSharedTabToGroupAtIndex:0];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the badge on the tab switcher outside the group is visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:BlueDotOnShowTabsButton()];
+  [[EarlGrey selectElementWithMatcher:BlueDotOnShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Go back to the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open a first tab and wait until loading is completed.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Verify that the badge on the tab switcher inside the group is visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:BlueDotOnShowTabsButton()];
+  [[EarlGrey selectElementWithMatcher:BlueDotOnShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Go back to the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Open the tab added by a member in the shared group.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
+      performAction:grey_tap()];
+
+  // Verify that the badge on the tab switcher inside the group disappears.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:BlueDotOnShowTabsButton()];
+
+  // Go back to the tab grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Leave from the group view.
+  [[EarlGrey selectElementWithMatcher:TabGroupBackButton()]
+      performAction:grey_tap()];
+
+  // Open a tab outside the group.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(1)]
+      performAction:grey_tap()];
+
+  // Verify that the badge on the tab switcher outside the group disappears.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:BlueDotOnShowTabsButton()];
 }
 
 @end

@@ -181,6 +181,9 @@
 // Matcher for show tabs button.
 + (id<GREYMatcher>)showTabsButton;
 
+// Returns a matcher for the blue dot on the show tabs button.
++ (id<GREYMatcher>)blueDotOnShowTabsButton;
+
 // Matcher for Add to reading list button.
 + (id<GREYMatcher>)addToReadingListButton;
 
