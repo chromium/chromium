@@ -9,6 +9,15 @@ manifest("google_xkb_manifest") {
   output_file = "$root_gen_dir/chrome/browser/resources/chromeos/input_method/google_xkb_manifest.json"
 }
 
+manifest("google_xkb_manifest_v3") {
+  input_file = "google_xkb_manifest.json.jinja2"
+  output_file = "$root_gen_dir/chrome/browser/resources/chromeos/input_method/google_xkb_manifest_v3.json"
+  is_manifest_v3 = true
+}
+
 group("resources") {
-  public_deps = [ ":google_xkb_manifest" ]
+  public_deps = [
+    ":google_xkb_manifest",
+    ":google_xkb_manifest_v3",
+  ]
 }
