@@ -1796,7 +1796,6 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Required as long as infobars exist. -->
 
   <owner>rkaplow@chromium.org</owner>
-  <owner>src/components/infobars/OWNERS</owner>
   <summary>
     Records how many times a particular infobar was shown to the user. On
     Android, the infobar may be partially hidden due to stacking. On desktop, a

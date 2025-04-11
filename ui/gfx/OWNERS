@@ -13,8 +13,6 @@ per-file platform_font*=etienneb@chromium.org
 per-file platform_font*=robliao@chromium.org
 
 # Color utils.
-per-file color_palette.h=pkasting@chromium.org
-per-file color_utils*=pkasting@chromium.org
 per-file color_conversions*=fserb@chromium.org
 per-file color_conversions*=ccameron@chromium.org
 per-file color_conversions*=aaronhk@chromium.org

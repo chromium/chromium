@@ -1,4 +1,3 @@
-pkasting@chromium.org
 tluk@chromium.org
 
 per-file *.mojom=set noparent
