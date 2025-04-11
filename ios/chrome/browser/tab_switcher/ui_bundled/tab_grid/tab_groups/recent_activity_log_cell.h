@@ -21,7 +21,7 @@
 // The cell detail text.
 @property(nonatomic, readonly, strong) UILabel* descriptionLabel;
 
-// Unique identifier for the cell. Can be `nil`.
+// Unique identifier for the cell.
 @property(nonatomic, readonly) NSString* uniqueIdentifier;
 
 @end

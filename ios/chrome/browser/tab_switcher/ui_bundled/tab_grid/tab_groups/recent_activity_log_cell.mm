@@ -97,7 +97,7 @@
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  _uniqueIdentifier = nil;
+  _uniqueIdentifier = [[NSUUID UUID] UUIDString];
   _titleLabel.text = nil;
   _descriptionLabel.text = nil;
   _faviconContainerView = nil;

@@ -210,8 +210,11 @@ const int kMaxNumberOfLogs = 5;
 
   for (auto& log : _messagingService->GetActivityLog(params)) {
     RecentActivityLogItem* item = [[RecentActivityLogItem alloc] init];
-    item.faviconURL =
-        GURL(log.activity_metadata.tab_metadata.value().last_known_url.value());
+    if (log.show_favicon && log.activity_metadata.tab_metadata.has_value() &&
+        log.activity_metadata.tab_metadata.value().last_known_url.has_value()) {
+      item.faviconURL = GURL(
+          log.activity_metadata.tab_metadata.value().last_known_url.value());
+    }
     item.title = base::SysUTF16ToNSString(log.title_text);
     item.actionDescription = base::SysUTF16ToNSString(log.description_text);
     item.elapsedTime = base::SysUTF16ToNSString(log.time_delta_text);
