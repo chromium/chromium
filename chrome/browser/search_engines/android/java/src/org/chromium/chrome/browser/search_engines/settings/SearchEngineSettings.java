@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.regional_capabilities.RegionalCapabilitiesSer
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 
 /**
@@ -108,5 +109,10 @@ public class SearchEngineSettings extends ListFragment
 
     public void overrideSearchEngineAdapterForTesting(SearchEngineAdapter searchEngineAdapter) {
         mSearchEngineAdapter = searchEngineAdapter;
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

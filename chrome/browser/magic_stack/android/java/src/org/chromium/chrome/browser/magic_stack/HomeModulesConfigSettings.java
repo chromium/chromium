@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 
 import java.util.List;
 
@@ -67,5 +68,10 @@ public class HomeModulesConfigSettings extends ChromeBaseSettingsFragment {
 
     boolean isHomeModulesConfigSettingsEmptyForTesting() {
         return getPreferenceScreen().getPreferenceCount() == 0;
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }
