@@ -35,6 +35,7 @@ source_set("unit_tests") {
     ":two_screens_signin",
     "//base/test:test_support",
     "//components/sync/base:features",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
     "//ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui",
     "//ios/chrome/browser/authentication/ui_bundled/history_sync:ui",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",

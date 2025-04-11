@@ -1761,7 +1761,9 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
                                                               .viewController
                                                   browser:browser
                                              contextStyle:SigninContextStyle::
-                                                              kDefault];
+                                                              kDefault
+                        changeProfileContinuationProvider:
+                            DoNothingContinuationProvider()];
   [self startSigninCoordinatorWithCompletion:dismissalCompletion];
 }
 

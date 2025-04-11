@@ -51,6 +51,8 @@ using base::UserMetricsAction;
 
   // The signin logger for the upgrade screen.
   UpgradeSigninLogger* _upgradeSigninLogger;
+
+  ChangeProfileContinuationProvider _continuationProvider;
 }
 
 - (instancetype)
@@ -58,13 +60,17 @@ using base::UserMetricsAction;
                        browser:(Browser*)browser
                   contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
-                   promoAction:(signin_metrics::PromoAction)promoAction {
+                   promoAction:(signin_metrics::PromoAction)promoAction
+          continuationProvider:
+              (const ChangeProfileContinuationProvider&)continuationProvider {
   DCHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                               contextStyle:contextStyle
                                accessPoint:accessPoint];
   if (self) {
+    CHECK(continuationProvider);
+    _continuationProvider = continuationProvider;
     // This coordinator should not be used in the FRE.
     CHECK_NE(accessPoint, signin_metrics::AccessPoint::kStartPage);
     _promoAction = promoAction;
@@ -160,7 +166,6 @@ using base::UserMetricsAction;
 - (ChromeCoordinator*)createChildCoordinatorWithScreenType:(ScreenType)type {
   switch (type) {
     case kSignIn:
-      // TODO(crbug.com/375605572) Sends an actual continuation.
       return [[FullscreenSigninScreenCoordinator alloc]
            initWithBaseNavigationController:_navigationController
                                     browser:self.browser
@@ -168,7 +173,7 @@ using base::UserMetricsAction;
                                contextStyle:self.contextStyle
                                 accessPoint:self.accessPoint
                                 promoAction:_promoAction
-          changeProfileContinuationProvider:DoNothingContinuationProvider()];
+          changeProfileContinuationProvider:_continuationProvider];
     case kHistorySync:
       return [[HistorySyncCoordinator alloc]
           initWithBaseNavigationController:_navigationController

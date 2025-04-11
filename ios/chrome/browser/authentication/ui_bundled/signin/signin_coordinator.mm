@@ -104,8 +104,12 @@ using signin_metrics::PromoAction;
     upgradeSigninPromoCoordinatorWithBaseViewController:
         (UIViewController*)viewController
                                                 browser:(Browser*)browser
-                                           contextStyle:(SigninContextStyle)
-                                                            contextStyle {
+                                           contextStyle:
+                                               (SigninContextStyle)contextStyle
+                      changeProfileContinuationProvider:
+                          (const ChangeProfileContinuationProvider&)
+                              changeProfileContinuationProvider {
+  CHECK(changeProfileContinuationProvider);
   AccessPoint accessPoint = AccessPoint::kSigninPromo;
   PromoAction promoAction = PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   return [[TwoScreensSigninCoordinator alloc]
@@ -113,7 +117,8 @@ using signin_metrics::PromoAction;
                          browser:browser
                     contextStyle:contextStyle
                      accessPoint:accessPoint
-                     promoAction:promoAction];
+                     promoAction:promoAction
+            continuationProvider:changeProfileContinuationProvider];
 }
 
 + (SigninCoordinator<InterruptibleChromeCoordinator>*)

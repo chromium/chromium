@@ -104,7 +104,10 @@ class PrefRegistrySyncable;
         (UIViewController*)viewController
                                                 browser:(Browser*)browser
                                            contextStyle:
-                                               (SigninContextStyle)contextStyle;
+                                               (SigninContextStyle)contextStyle
+                      changeProfileContinuationProvider:
+                          (const ChangeProfileContinuationProvider&)
+                              changeProfileContinuationProvider;
 
 // Returns a coordinator to add an account.
 // `viewController` presents the sign-in.

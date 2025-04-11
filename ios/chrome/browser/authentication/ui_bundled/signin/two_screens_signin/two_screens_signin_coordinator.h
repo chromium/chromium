@@ -29,6 +29,8 @@ enum class PromoAction : int;
                   contextStyle:(SigninContextStyle)contextStyle
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
+          continuationProvider:
+              (const ChangeProfileContinuationProvider&)continuationProvider
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

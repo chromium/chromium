@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
 #import "ios/chrome/browser/authentication/ui_bundled/fullscreen_signin_screen/ui/fullscreen_signin_screen_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_view_controller.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
@@ -74,7 +75,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
                       contextStyle:SigninContextStyle::kDefault
                        accessPoint:signin_metrics::AccessPoint::kSettings
                        promoAction:signin_metrics::PromoAction::
-                                       PROMO_ACTION_NO_SIGNIN_PROMO];
+                                       PROMO_ACTION_NO_SIGNIN_PROMO
+              continuationProvider:NotReachedContinuationProvider()];
     coordinator_.signinCompletion = ^(
         SigninCoordinatorResult signinResult,
         id<SystemIdentity> signinCompletionIdentity) {
