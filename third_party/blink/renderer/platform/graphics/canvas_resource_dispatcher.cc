@@ -41,9 +41,10 @@ namespace blink {
 struct CanvasResourceDispatcher::FrameResource {
   FrameResource() = default;
   ~FrameResource() {
-    if (canvas_resource && release_callback) {
+    if (canvas_resource_from_placeholder && release_callback) {
       std::move(release_callback)
-          .Run(std::move(canvas_resource), sync_token, is_lost);
+          .Run(std::move(canvas_resource_from_placeholder), sync_token,
+               is_lost);
     }
   }
 
@@ -53,13 +54,13 @@ struct CanvasResourceDispatcher::FrameResource {
   // reclaim it.
   bool spare_lock = true;
 
-  // The 'canvas_resource' field is not set at construction time: It gets set
-  // when the placeholder canvas returns it. This makes it simpler to write
-  // DCHECKs that detect potential concurrency issues by checking
-  // RefCounted::HasOneRef() in critical places. This also allows
-  // OffscreenCanvasPlaceholder to detect when to return a resource by using
-  // CanvasResource::SetLastUnrefCallback.
-  scoped_refptr<CanvasResource> canvas_resource;
+  // The 'canvas_resource_from_placeholder' field is set when the placeholder
+  // canvas returns it (or if we were not able to post it to the placeholder in
+  // the first place). This makes it simpler to write DCHECKs that detect
+  // potential concurrency issues by checking RefCounted::HasOneRef() in
+  // critical places. This also allows OffscreenCanvasPlaceholder to detect when
+  // to return a resource by using CanvasResource::SetLastUnrefCallback.
+  scoped_refptr<CanvasResource> canvas_resource_from_placeholder;
   CanvasResource::ReleaseCallback release_callback;
   gpu::SyncToken sync_token;
   bool is_lost = false;
@@ -503,7 +504,7 @@ void CanvasResourceDispatcher::ReclaimResourceInternal(
     scoped_refptr<CanvasResource>&& canvas_resource) {
   auto it = resources_.find(resource_id);
   if (it != resources_.end()) {
-    it->value->canvas_resource = std::move(canvas_resource);
+    it->value->canvas_resource_from_placeholder = std::move(canvas_resource);
     ReclaimResourceInternal(it);
   }
 }
@@ -514,7 +515,7 @@ void CanvasResourceDispatcher::ReclaimResourceInternal(
     it->value->spare_lock = false;
     return;
   }
-  DCHECK(it->value->canvas_resource);
+  DCHECK(it->value->canvas_resource_from_placeholder);
   resources_.erase(it);
 }
 
