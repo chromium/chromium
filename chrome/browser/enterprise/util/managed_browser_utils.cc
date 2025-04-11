@@ -18,7 +18,6 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -223,10 +222,10 @@ void SetUserAcceptedAccountManagement(Profile* profile, bool accepted) {
       profile_manager->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile->GetPath());
   if (entry) {
-    entry->SetUserAcceptedAccountManagement(accepted);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    entry->SetEnterpriseProfileLabel(GetEnterpriseLabel(profile));
+    SetEnterpriseProfileLabel(profile);
 #endif
+    entry->SetUserAcceptedAccountManagement(accepted);
   }
 }
 
@@ -239,6 +238,25 @@ bool UserAcceptedAccountManagement(Profile* profile) {
           ->GetProfileAttributesStorage()
           .GetProfileAttributesWithPath(profile->GetPath());
   return entry && entry->UserAcceptedAccountManagement();
+}
+
+void SetEnterpriseProfileLabel(Profile* profile) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager) {
+    // Can be null in tests.
+    return;
+  }
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!entry) {
+    return;
+  }
+  std::string label = IsEnterpriseBadgingEnabledForToolbar(profile)
+                          ? profile->GetPrefs()->GetString(
+                                prefs::kEnterpriseCustomLabelForProfile)
+                          : std::string();
+  entry->SetEnterpriseProfileLabel(base::UTF8ToUTF16(label));
 }
 
 bool ProfileCanBeManaged(Profile* profile) {
@@ -269,10 +287,7 @@ bool IsEnterpriseBadgingEnabledForToolbar(Profile* profile) {
 }
 
 bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
-  if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
-    return false;
-  }
-  if (!UserAcceptedAccountManagement(profile) && !profile->IsChild()) {
+  if (!CanShowEnterpriseProfileUI(profile) && !profile->IsChild()) {
     return false;
   }
   if (base::FeatureList::IsEnabled(
@@ -293,10 +308,7 @@ bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
 }
 
 bool CanShowEnterpriseBadgingForAvatar(Profile* profile) {
-  if (profile->IsGuestSession() || profile->IsOffTheRecord()) {
-    return false;
-  }
-  if (!UserAcceptedAccountManagement(profile)) {
+  if (!CanShowEnterpriseProfileUI(profile)) {
     return false;
   }
   if (!IsEnterpriseBadgingEnabledForToolbar(profile)) {
@@ -314,6 +326,18 @@ bool CanShowEnterpriseBadgingForAvatar(Profile* profile) {
   return !profile->GetPrefs()
               ->GetString(prefs::kEnterpriseCustomLabelForProfile)
               .empty();
+}
+
+bool CanShowEnterpriseProfileUI(Profile* profile) {
+  if (profile->IsOffTheRecord()) {
+    return false;
+  }
+  if (!UserAcceptedAccountManagement(profile) ||
+      !policy::ManagementServiceFactory::GetForProfile(profile)
+           ->IsAccountManaged()) {
+    return false;
+  }
+  return true;
 }
 
 bool IsKnownConsumerDomain(const std::string& email_domain) {

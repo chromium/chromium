@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -103,7 +105,7 @@ const ProfilePickerTestParam kTestParams[] = {
      .use_multiple_profiles = true,
      .has_supervised_user = true,
      .show_kite_for_supervised_users = true},
-    {.pixel_test_param = {.test_suffix = "ManagedProfileHasWorkLabel"},
+    {.pixel_test_param = {.test_suffix = "ManagedProfileHasCustomWorkLabel"},
      .use_multiple_profiles = true,
      .is_enterprise_badging_enabled = true},
 #endif
@@ -258,6 +260,16 @@ class ProfilePickerUIPixelTest
           ProfileStatus::kSignedIn,
           /*is_glic_version=*/true, browser()->profile()->GetPath());
     }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    if (GetParam().is_enterprise_badging_enabled) {
+      policy::ScopedManagementServiceOverrideForTesting platform_management(
+          policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+          policy::EnterpriseManagementAuthority::CLOUD);
+      browser()->profile()->GetPrefs()->SetString(
+          prefs::kEnterpriseCustomLabelForProfile, "Work");
+    }
+#endif
 
     if (GetParam().use_multiple_profiles) {
       // In Glic mode, if `use_multiple_profiles` is set,

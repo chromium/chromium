@@ -1140,7 +1140,7 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
           std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
               policy::ManagementServiceFactory::GetForProfile(
                   browser()->profile()),
-              policy::EnterpriseManagementAuthority::COMPUTER_LOCAL);
+              policy::EnterpriseManagementAuthority::CLOUD);
   RunTest();
 }
 

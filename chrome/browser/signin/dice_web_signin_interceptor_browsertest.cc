@@ -1743,7 +1743,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(new_profile->GetPath());
   ASSERT_TRUE(entry);
-  EXPECT_EQ("Work", base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  EXPECT_EQ("example.com", base::UTF16ToUTF8(entry->GetLocalProfileName()));
   // Check the profile color.
   EXPECT_TRUE(ThemeServiceFactory::GetForProfile(new_profile)
                   ->GetUserColor()
@@ -1988,7 +1988,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   ProfileAttributesEntry* entry =
       storage.GetProfileAttributesWithPath(new_profile->GetPath());
   ASSERT_TRUE(entry);
-  EXPECT_EQ("Work", base::UTF16ToUTF8(entry->GetLocalProfileName()));
+  EXPECT_EQ("example.com", base::UTF16ToUTF8(entry->GetLocalProfileName()));
   // Check the profile color.
   EXPECT_TRUE(ThemeServiceFactory::GetForProfile(new_profile)
                   ->GetUserColor()
