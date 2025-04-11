@@ -442,8 +442,9 @@ def check_test_lists(port):
 
 def run_checks(host, options):
     if host.filesystem.getcwd().startswith('/google/cog/cloud'):
-        _log.info('Skipping run_checks for cog workspace')
-        return 0
+        _log.warning('Skipping run_checks for cog workspace')
+        # Return 2 to indicate a warning and make it explicit this test is getting skipped.
+        return 2
     finder = PathFinder(host.filesystem)
     # Add all extra expectation files to be linted.
     options.additional_expectations.extend([
