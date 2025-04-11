@@ -130,3 +130,31 @@ TEST_F(PushMessagingUnsubscribedEntryTest,
   EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()),
               UnorderedPointwise(EntryEquals(), {entry_1}));
 }
+
+TEST_F(PushMessagingUnsubscribedEntryTest, Delete) {
+  ASSERT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()), IsEmpty());
+
+  GURL origin_1("https://example.test");
+  GURL origin_2("https://example2.test");
+  PushMessagingUnsubscribedEntry entry_1 =
+      PushMessagingUnsubscribedEntry(origin_1, 1);
+  PushMessagingUnsubscribedEntry entry_2 =
+      PushMessagingUnsubscribedEntry(origin_2, 2);
+  entry_1.PersistToPrefs(profile());
+  entry_2.PersistToPrefs(profile());
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()),
+              UnorderedPointwise(EntryEquals(), {entry_1, entry_2}));
+
+  PushMessagingUnsubscribedEntry(origin_1, 1).DeleteFromPrefs(profile());
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()),
+              UnorderedPointwise(EntryEquals(), {entry_2}));
+
+  // Deleting a non-existing entry is a no-opt.
+  PushMessagingUnsubscribedEntry(origin_1, 1).DeleteFromPrefs(profile());
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()),
+              UnorderedPointwise(EntryEquals(), {entry_2}));
+
+  // Deleting a non-existing entry is a no-opt.
+  PushMessagingUnsubscribedEntry(origin_2, 2).DeleteFromPrefs(profile());
+  EXPECT_THAT(PushMessagingUnsubscribedEntry::GetAll(profile()), IsEmpty());
+}

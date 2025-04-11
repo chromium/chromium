@@ -7925,6 +7925,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PushMessaging.NumUnsubscribedEntries" units="count"
+    expires_after="2026-04-11">
+  <owner>peter@chromium.org</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <summary>
+    When processing a content setting change for notifications, this counts the
+    number of unsubscribed entries which are currently stored (and need to be
+    iterated upon).
+  </summary>
+</histogram>
+
 <histogram name="PushMessaging.RegistrationStatus"
     enum="PushRegistrationStatus" expires_after="2024-02-04">
   <owner>peter@chromium.org</owner>

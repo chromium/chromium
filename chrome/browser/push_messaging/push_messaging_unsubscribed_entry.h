@@ -30,6 +30,7 @@ class PushMessagingUnsubscribedEntry {
                                  int64_t service_worker_registration_id);
 
   void PersistToPrefs(Profile* profile) const;
+  void DeleteFromPrefs(Profile* profile) const;
 
   GURL origin() const { return origin_; }
   int64_t service_worker_registration_id() const {

@@ -106,6 +106,18 @@ void PushMessagingUnsubscribedEntry::PersistToPrefs(Profile* profile) const {
   list.Append(pref_value);
 }
 
+void PushMessagingUnsubscribedEntry::DeleteFromPrefs(Profile* profile) const {
+  DCheckValid();
+  ScopedListPrefUpdate update(profile->GetPrefs(),
+                              prefs::kPushMessagingUnsubscribedEntriesList);
+  base::Value::List& list = update.Get();
+  std::string pref_value =
+      MakePrefValue(origin_, service_worker_registration_id_);
+  list.EraseIf([&pref_value](const base::Value& entry) {
+    return !entry.is_string() || entry.GetString() == pref_value;
+  });
+}
+
 void PushMessagingUnsubscribedEntry::DCheckValid() const {
 #if DCHECK_IS_ON()
   DCHECK_GE(service_worker_registration_id_, 0);

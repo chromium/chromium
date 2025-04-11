@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -249,7 +250,8 @@ void PushMessagingServiceImpl::UnexpectedChange(
     // Find old subscription and fire a `pushsubscriptionchange` event
     GetPushSubscriptionFromAppIdentifier(
         identifier,
-        base::BindOnce(&PushMessagingServiceImpl::FirePushSubscriptionChange,
+        base::BindOnce(&PushMessagingServiceImpl::
+                           FirePushSubscriptionChangeForAppIdentifier,
                        weak_factory_.GetWeakPtr(), identifier,
                        std::move(unsubscribe_closure),
                        nullptr /* new_subscription */));
@@ -1123,6 +1125,9 @@ void PushMessagingServiceImpl::DidSubscribeWithEncryptionInfo(
   }
 
   app_identifier.PersistToPrefs(profile_);
+  PushMessagingUnsubscribedEntry(
+      app_identifier.origin(), app_identifier.service_worker_registration_id())
+      .DeleteFromPrefs(profile_);
 
   IncreasePushSubscriptionCount(1, false /* is_pending */);
 
@@ -1455,14 +1460,20 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
   DCHECK(primary_pattern.IsValid());
-  if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS))
+  if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
+  }
 
   std::vector<PushMessagingAppIdentifier> all_app_identifiers =
       PushMessagingAppIdentifier::GetAll(profile_);
 
+  std::vector<PushMessagingUnsubscribedEntry> unsubscribed_entries;
+  if (base::FeatureList::IsEnabled(
+          features::kPushSubscriptionChangeEventOnResubscribe)) {
+    unsubscribed_entries = PushMessagingUnsubscribedEntry::GetAll(profile_);
+  }
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      all_app_identifiers.size(),
+      all_app_identifiers.size() + unsubscribed_entries.size(),
       content_setting_changed_callback_for_testing_.is_null()
           ? base::DoNothing()
           : content_setting_changed_callback_for_testing_);
@@ -1491,6 +1502,30 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
     UnexpectedChange(app_identifier,
                      blink::mojom::PushUnregistrationReason::PERMISSION_REVOKED,
                      barrier_closure);
+  }
+
+  base::UmaHistogramCounts1000("PushMessaging.NumUnsubscribedEntries",
+                               unsubscribed_entries.size());
+
+  for (const PushMessagingUnsubscribedEntry& unsubscribed_entry :
+       unsubscribed_entries) {
+    if (!primary_pattern.Matches(unsubscribed_entry.origin())) {
+      barrier_closure.Run();
+      continue;
+    }
+
+    bool user_visible =
+        !base::Contains(origins_requesting_user_visible_requirement_bypass,
+                        unsubscribed_entry.origin());
+
+    if (!IsPermissionSet(unsubscribed_entry.origin(), user_visible)) {
+      barrier_closure.Run();
+      continue;
+    }
+    FirePushSubscriptionChange(
+        unsubscribed_entry.origin(),
+        unsubscribed_entry.service_worker_registration_id(), barrier_closure,
+        nullptr, nullptr);
   }
 }
 
@@ -1572,7 +1607,8 @@ void PushMessagingServiceImpl::GetPushSubscriptionFromAppIdentifierEnd(
 }
 
 void PushMessagingServiceImpl::FirePushSubscriptionChange(
-    const PushMessagingAppIdentifier& app_identifier,
+    const GURL& origin,
+    int64_t service_worker_registration_id,
     base::OnceClosure completed_closure,
     blink::mojom::PushSubscriptionPtr new_subscription,
     blink::mojom::PushSubscriptionPtr old_subscription) {
@@ -1581,23 +1617,25 @@ void PushMessagingServiceImpl::FirePushSubscriptionChange(
   // Ensure |completed_closure| is run after this function
   base::ScopedClosureRunner scoped_closure(std::move(completed_closure));
 
+  profile_->FirePushSubscriptionChangeEvent(
+      origin, service_worker_registration_id, std::move(new_subscription),
+      std::move(old_subscription), base::DoNothing());
+}
+
+void PushMessagingServiceImpl::FirePushSubscriptionChangeForAppIdentifier(
+    const PushMessagingAppIdentifier& app_identifier,
+    base::OnceClosure completed_closure,
+    blink::mojom::PushSubscriptionPtr new_subscription,
+    blink::mojom::PushSubscriptionPtr old_subscription) {
   if (app_identifier.is_null()) {
-    FirePushSubscriptionChangeCallback(
-        app_identifier, blink::mojom::PushEventStatus::UNKNOWN_APP_ID);
+    std::move(completed_closure).Run();
     return;
   }
 
-  profile_->FirePushSubscriptionChangeEvent(
+  FirePushSubscriptionChange(
       app_identifier.origin(), app_identifier.service_worker_registration_id(),
-      std::move(new_subscription), std::move(old_subscription),
-      base::BindOnce(
-          &PushMessagingServiceImpl::FirePushSubscriptionChangeCallback,
-          weak_factory_.GetWeakPtr(), app_identifier));
-}
-
-void PushMessagingServiceImpl::FirePushSubscriptionChangeCallback(
-    const PushMessagingAppIdentifier& app_identifier,
-    blink::mojom::PushEventStatus status) {
+      std::move(completed_closure), std::move(new_subscription),
+      std::move(old_subscription));
 }
 
 void PushMessagingServiceImpl::DidGetSenderIdUnexpectedUnsubscribe(
@@ -1775,7 +1813,7 @@ void PushMessagingServiceImpl::DidUpdateSubscription(
           ? std::move(invalidation_callback_for_testing_)
           : base::DoNothing();
 
-  FirePushSubscriptionChange(
+  FirePushSubscriptionChangeForAppIdentifier(
       new_app_identifier, std::move(callback),
       blink::mojom::PushSubscription::New(
           endpoint, expiration_time, push_messaging::MakeOptions(sender_id),
