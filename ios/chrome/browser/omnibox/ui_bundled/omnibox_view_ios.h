@@ -102,8 +102,6 @@ class OmniboxViewIOS : public OmniboxView {
   // Called after the Omnibox text field changes. `processing_user_input` holds
   // whether the change was user-initiated or programmatic.
   void OnDidChange(bool processing_user_input);
-  // Clear the Omnibox text.
-  void ClearText();
   // Called when the Omnibox text field should paste.
   void WillPaste();
   // Called when the backspace button is pressed in the Omnibox text field.
@@ -125,8 +123,6 @@ class OmniboxViewIOS : public OmniboxView {
 
   // Updates the appearance of popup to have proper text alignment.
   void UpdatePopupAppearance();
-
-  void OnClear();
 
   // Hide keyboard only.  Used when omnibox popups grab focus but editing isn't
   // complete.

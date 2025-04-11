@@ -422,11 +422,6 @@ void OmniboxViewIOS::OnAccept() {
   RevertAll();
 }
 
-void OmniboxViewIOS::OnClear() {
-  [field_ clearAutocompleteText];
-  [field_ exitPreEditState];
-}
-
 void OmniboxViewIOS::WillPaste() {
   if (model()) {
     model()->OnPaste();
@@ -478,25 +473,6 @@ void OmniboxViewIOS::OnDeleteBackward() {
 void OmniboxViewIOS::OnAcceptAutocomplete() {
   current_selection_ = [field_ selectedNSRange];
   OnDidChange(/*processing_user_event=*/true);
-}
-
-void OmniboxViewIOS::ClearText() {
-  // Ensure omnibox is first responder. This will bring up the keyboard so the
-  // user can start typing a new query.
-  if (![field_ isFirstResponder]) {
-    [field_ becomeFirstResponder];
-  }
-  if (field_.text.length != 0) {
-    // Remove the text in the omnibox.
-    // Calling -[UITextField setText:] does not trigger
-    // -[id<UITextFieldDelegate> textDidChange] so it must be called explicitly.
-    OnClear();
-    [field_ setText:@""];
-    OnDidChange(YES);
-  }
-  // Calling OnDidChange() can trigger a scroll event, which removes focus from
-  // the omnibox.
-  [field_ becomeFirstResponder];
 }
 
 void OmniboxViewIOS::EndEditing() {
