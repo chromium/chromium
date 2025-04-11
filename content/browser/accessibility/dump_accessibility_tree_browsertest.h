@@ -68,12 +68,6 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     RunTypedTest<kHtml>(file_path, ui::kAXModeOnScreen);
   }
 
-  void RunAriaTestMinusHtmlMode(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kAria>(file_path,
-                        ui::kAXModeComplete);  // & ~ui::AXMode::kHTML);
-  }
-
-
   // TODO(accessibility): Replace all tests using RunPopoverHintTest to just
   // RunHtmlTest when Popover hints and interest targets are enabled by default.
   void RunPopoverHintTest(const base::FilePath::CharType* file_path) {

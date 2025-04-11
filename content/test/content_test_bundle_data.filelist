@@ -1484,6 +1484,7 @@ data/accessibility/aria/aria-rowheader-expected-mac.txt
 data/accessibility/aria/aria-rowheader-expected-win.txt
 data/accessibility/aria/aria-rowheader.html
 data/accessibility/aria/aria-rowtext-expected-auralinux.txt
+data/accessibility/aria/aria-rowtext-expected-blink.txt
 data/accessibility/aria/aria-rowtext-expected-win.txt
 data/accessibility/aria/aria-rowtext.html
 data/accessibility/aria/aria-scrollbar-expected-android-assist-data.txt
