@@ -1819,6 +1819,10 @@ inline constexpr char kUsageStatsEnabled[] = "usage_stats_reporting.enabled";
 inline constexpr char kPushMessagingAppIdentifierMap[] =
     "gcm.push_messaging_application_id_map";
 
+// List of push messaging unsubscribed entries.
+inline constexpr char kPushMessagingUnsubscribedEntriesList[] =
+    "gcm.push_messaging_unsubscribed_entries_list";
+
 // A string like "com.chrome.macosx" that should be used as the GCM category
 // when an app_id is sent as a subtype instead of as a category.
 inline constexpr char kGCMProductCategoryForSubtypes[] =

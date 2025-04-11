@@ -67,6 +67,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
+#include "chrome/browser/push_messaging/push_messaging_unsubscribed_entry.h"
 #include "chrome/browser/rlz/chrome_rlz_tracker_delegate.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
@@ -1918,6 +1919,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ProfileNetworkContextService::RegisterProfilePrefs(registry);
   custom_handlers::ProtocolHandlerRegistry::RegisterProfilePrefs(registry);
   PushMessagingAppIdentifier::RegisterProfilePrefs(registry);
+  PushMessagingUnsubscribedEntry::RegisterProfilePrefs(registry);
   QuietNotificationPermissionUiState::RegisterProfilePrefs(registry);
   regional_capabilities::prefs::RegisterProfilePrefs(registry);
   RegisterBrowserUserPrefs(registry);

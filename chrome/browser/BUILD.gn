@@ -1344,6 +1344,8 @@ static_library("browser") {
     "push_messaging/push_messaging_service_factory.h",
     "push_messaging/push_messaging_service_impl.cc",
     "push_messaging/push_messaging_service_impl.h",
+    "push_messaging/push_messaging_unsubscribed_entry.cc",
+    "push_messaging/push_messaging_unsubscribed_entry.h",
     "push_messaging/push_messaging_utils.cc",
     "push_messaging/push_messaging_utils.h",
     "reduce_accept_language/reduce_accept_language_factory.cc",
