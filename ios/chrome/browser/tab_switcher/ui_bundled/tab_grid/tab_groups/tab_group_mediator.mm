@@ -791,6 +791,10 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
         numOfTabsAdded++;
         break;
       }
+      case collaboration::messaging::CollaborationEvent::TAB_UPDATED: {
+        numOfTabsAdded++;
+        break;
+      }
       case collaboration::messaging::CollaborationEvent::TAB_REMOVED:
         numOfTabsRemoved++;
         break;
