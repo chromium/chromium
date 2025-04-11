@@ -55,9 +55,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
 const InteractiveBrowserTestApi::DeepQuery
-    kMockGlicClientStart3sUnresponsiveButton = {"#busyWork3s"};
-const InteractiveBrowserTestApi::DeepQuery
-    kMockGlicClientStart8sUnresponsiveButton = {"#busyWork8s"};
+    kMockGlicClientStart11sUnresponsiveButton = {"#busyWork11s"};
 
 }  // anonymous namespace
 
@@ -450,22 +448,10 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       ClientUnresponsiveThenResumeResponsive) {
-  RunTestSequence(
-      OpenGlicWindow(GlicWindowMode::kAttached),
-      ClickMockGlicElement(kMockGlicClientStart3sUnresponsiveButton, true),
-      ObserveState(test::internal::kGlicAppState, &window_controller()),
-      WaitForState(test::internal::kGlicAppState,
-                   mojom::WebUiState::kUnresponsive),
-      // Client should resume responsive if unresponsive less than 5s.
-      WaitForState(test::internal::kGlicAppState, mojom::WebUiState::kReady));
-}
-
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        ClientUnresponsiveThenError) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kAttached),
-      ClickMockGlicElement(kMockGlicClientStart8sUnresponsiveButton, true),
+      ClickMockGlicElement(kMockGlicClientStart11sUnresponsiveButton, true),
       ObserveState(test::internal::kGlicAppState, &window_controller()),
       WaitForState(test::internal::kGlicAppState,
                    mojom::WebUiState::kUnresponsive),

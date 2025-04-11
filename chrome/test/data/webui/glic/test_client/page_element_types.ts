@@ -85,8 +85,8 @@ export interface PageElementTypes {
   groupName: HTMLInputElement;
   setExperimentStatus: HTMLSpanElement;
   testClipboardSave: HTMLButtonElement;
-  busyWork3s: HTMLButtonElement;
-  busyWork8s: HTMLButtonElement;
+  busyWork5s: HTMLButtonElement;
+  busyWork11s: HTMLButtonElement;
   contentSizingTest: HTMLElement;
   enableTestSizingMode: HTMLButtonElement;
   disableTestSizingMode: HTMLButtonElement;

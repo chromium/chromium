@@ -144,12 +144,12 @@ function busyWork(workTimeMs: number) {
   }
 }
 
-$.busyWork3s.addEventListener('click', () => {
-  busyWork(3000);
+$.busyWork5s.addEventListener('click', () => {
+  busyWork(5000);
 });
 
-$.busyWork8s.addEventListener('click', () => {
-  busyWork(8000);
+$.busyWork11s.addEventListener('click', () => {
+  busyWork(11000);
 });
 
 window.addEventListener('load', () => {

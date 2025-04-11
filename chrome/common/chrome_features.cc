@@ -391,7 +391,7 @@ BASE_FEATURE(kGlicClientResponsivenessCheck,
 // in milliseconds.
 const base::FeatureParam<int> kGlicClientResponsivenessCheckIntervalMs{
     &kGlicClientResponsivenessCheck,
-    "glic-client-responsiveness-check-interval-ms", 1000};
+    "glic-client-responsiveness-check-interval-ms", 5000};
 // Maximum time to wait for glicWebClientCheckResponsive response during a
 // responsiveness check before flagging the web client as unresponsive.
 const base::FeatureParam<int> kGlicClientResponsivenessCheckTimeoutMs{
