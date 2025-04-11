@@ -7,6 +7,7 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -41,6 +42,8 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using collaboration::CollaborationServiceShareOrManageEntryPoint;
 
 @interface TabGroupIndicatorCoordinator () <
     CreateOrEditTabGroupCoordinatorDelegate,
@@ -230,7 +233,9 @@
                          anchorPoint:anchorPoint];
 }
 
-- (void)shareOrManageTabGroup:(const TabGroup*)tabGroup {
+- (void)shareOrManageTabGroup:(const TabGroup*)tabGroup
+                   entryPoint:
+                       (CollaborationServiceShareOrManageEntryPoint)entryPoint {
   Browser* browser = self.browser;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(
@@ -245,8 +250,7 @@
           browser, self.baseViewController,
           TabGroupServiceFactory::GetForProfile(self.profile));
   collaborationService->StartShareOrManageFlow(
-      std::move(delegate), tabGroup->tab_group_id(),
-      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

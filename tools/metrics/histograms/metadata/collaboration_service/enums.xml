@@ -102,6 +102,14 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="TabGroupItemMenuShare"/>
   <int value="9" label="AndroidShareSheetExtra"/>
   <int value="10" label="DialogToolbarButton"/>
+  <int value="11" label="iOSTabGroupIndicatorShare"/>
+  <int value="12" label="iOSTabGroupIndicatorManage"/>
+  <int value="13" label="iOSTabGridShare"/>
+  <int value="14" label="iOSTabGridManage"/>
+  <int value="15" label="iOSTabStripShare"/>
+  <int value="16" label="iOSTabStripManage"/>
+  <int value="17" label="iOSTabGroupViewShare"/>
+  <int value="18" label="iOSTabGroupViewManage"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/collaboration/public/collaboration_flow_entry_point.h:CollaborationServiceShareOrManageEntryPoint) -->

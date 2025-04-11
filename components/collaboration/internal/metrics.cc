@@ -196,6 +196,24 @@ std::string_view CollaborationServiceShareOrManageEntryPointToString(
       return "AndroidShareSheetExtra";
     case CollaborationServiceShareOrManageEntryPoint::kDialogToolbarButton:
       return "DialogToolbarButton";
+    case CollaborationServiceShareOrManageEntryPoint::
+        kiOSTabGroupIndicatorShare:
+      return "iOSTabGroupIndicatorShare";
+    case CollaborationServiceShareOrManageEntryPoint::
+        kiOSTabGroupIndicatorManage:
+      return "iOSTabGroupIndicatorManage";
+    case CollaborationServiceShareOrManageEntryPoint::kiOSTabGridShare:
+      return "iOSTabGridShare";
+    case CollaborationServiceShareOrManageEntryPoint::kiOSTabGridManage:
+      return "iOSTabGridManage";
+    case CollaborationServiceShareOrManageEntryPoint::kiOSTabStripShare:
+      return "iOSTabStripShare";
+    case CollaborationServiceShareOrManageEntryPoint::kiOSTabStripManage:
+      return "iOSTabStripManage";
+    case CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewShare:
+      return "iOSTabGroupViewShare";
+    case CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewManage:
+      return "iOSTabGroupViewManage";
   }
 }
 

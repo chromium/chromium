@@ -9,6 +9,7 @@
 #import "base/check_op.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/tab_groups/tab_group_visual_data.h"
@@ -51,6 +52,8 @@
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+using collaboration::CollaborationServiceShareOrManageEntryPoint;
 
 @interface TabStripCoordinator () <CreateOrEditTabGroupCoordinatorDelegate,
                                    TabStripCommands>
@@ -329,11 +332,15 @@
 }
 
 - (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
-  [self showShareOrManageForGroup:group];
+  [self showShareOrManageForGroup:group
+                       entryPoint:CollaborationServiceShareOrManageEntryPoint::
+                                      kiOSTabStripManage];
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
-  [self showShareOrManageForGroup:group];
+  [self showShareOrManageForGroup:group
+                       entryPoint:CollaborationServiceShareOrManageEntryPoint::
+                                      kiOSTabStripShare];
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {
@@ -438,7 +445,9 @@
 
 // Shows the "share" or "manage" screen for the `group`. The choice is
 // automatically made based on whether the group is already shared or not.
-- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group {
+- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group
+                       entryPoint:(CollaborationServiceShareOrManageEntryPoint)
+                                      entryPoint {
   Browser* browser = self.browser;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(
@@ -454,8 +463,7 @@
           browser, self.baseViewController,
           TabGroupServiceFactory::GetForProfile(self.profile));
   collaborationService->StartShareOrManageFlow(
-      std::move(delegate), tabGroup->tab_group_id(),
-      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }
 
 @end

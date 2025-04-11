@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/bookmarks/browser/bookmark_model.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -137,6 +138,8 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+using collaboration::CollaborationServiceShareOrManageEntryPoint;
 
 namespace {
 
@@ -809,7 +812,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 // Shows the "share" or "manage" screen for the `group`. The choice is
 // automatically made based on whether the group is already shared or not.
-- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group {
+- (void)showShareOrManageForGroup:(base::WeakPtr<const TabGroup>)group
+                       entryPoint:(CollaborationServiceShareOrManageEntryPoint)
+                                      entryPoint {
   Browser* browser = self.regularBrowser;
   collaboration::CollaborationService* collaborationService =
       collaboration::CollaborationServiceFactory::GetForProfile(
@@ -825,8 +830,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
           browser, self.baseViewController,
           TabGroupServiceFactory::GetForProfile(browser->GetProfile()));
   collaborationService->StartShareOrManageFlow(
-      std::move(delegate), tabGroup->tab_group_id(),
-      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+      std::move(delegate), tabGroup->tab_group_id(), entryPoint);
 }
 
 #pragma mark - ChromeCoordinator
@@ -1622,11 +1626,15 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
-  [self showShareOrManageForGroup:group];
+  [self showShareOrManageForGroup:group
+                       entryPoint:CollaborationServiceShareOrManageEntryPoint::
+                                      kiOSTabGridManage];
 }
 
 - (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
-  [self showShareOrManageForGroup:group];
+  [self showShareOrManageForGroup:group
+                       entryPoint:CollaborationServiceShareOrManageEntryPoint::
+                                      kiOSTabGridShare];
 }
 
 - (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {

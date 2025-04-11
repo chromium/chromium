@@ -8,6 +8,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/collaboration/public/collaboration_flow_entry_point.h"
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/data_sharing/public/group_data.h"
@@ -47,6 +48,8 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_confirmation_coordinator.h"
 #import "ios/web/public/web_state_id.h"
 #import "ui/base/device_form_factor.h"
+
+using collaboration::CollaborationServiceShareOrManageEntryPoint;
 
 namespace {
 constexpr CGFloat kTabGroupPresentationDuration = 0.3;
@@ -414,9 +417,14 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
       std::make_unique<collaboration::IOSCollaborationControllerDelegate>(
           browser, self.baseViewController,
           TabGroupServiceFactory::GetForProfile(self.profile));
+  tab_groups::TabGroupSyncService* tabGroupSyncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(self.profile);
+  CollaborationServiceShareOrManageEntryPoint entryPoint =
+      tab_groups::utils::IsTabGroupShared(_tabGroup, tabGroupSyncService)
+          ? CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewManage
+          : CollaborationServiceShareOrManageEntryPoint::kiOSTabGroupViewShare;
   collaborationService->StartShareOrManageFlow(
-      std::move(delegate), _tabGroup->tab_group_id(),
-      collaboration::CollaborationServiceShareOrManageEntryPoint::kUnknown);
+      std::move(delegate), _tabGroup->tab_group_id(), entryPoint);
 }
 
 #pragma mark - SharedTabGroupUserEducationCoordinatorDelegate
