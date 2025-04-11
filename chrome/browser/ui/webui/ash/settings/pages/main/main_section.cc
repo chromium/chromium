@@ -10,6 +10,7 @@
 #include "ash/constants/personalization_entry_point.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
@@ -185,7 +186,8 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   // Add app-wide feature flags
   html_source->AddString("chromeRefresh2023Attribute", "chrome-refresh-2023");
 
-  auto* user = BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
+  const auto& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile()));
   html_source->AddBoolean("isGuest", IsGuestModeActive(user));
   html_source->AddBoolean("isKioskModeActive", IsKioskModeActive(user));
   html_source->AddBoolean("isKioskOldA11ySettingsRedirectionEnabled",

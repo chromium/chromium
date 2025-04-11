@@ -14,23 +14,19 @@ class User;
 namespace ash::settings {
 
 // Determines if it's a guest user.
-// Do not pass nullptr.
-bool IsGuestModeActive(const user_manager::User* user);
+bool IsGuestModeActive(const user_manager::User& user);
 
 // Determines if it's a child user.
-// Do not pass nullptr.
-bool IsChildUser(const user_manager::User* user);
+bool IsChildUser(const user_manager::User& user);
 
 // Determines whether powerwash is allowed for this user. Powerwash is disabled
 // for guest users, child users, and managed users.
-// Do not pass nullptr.
-bool IsPowerwashAllowed(const user_manager::User* user);
+bool IsPowerwashAllowed(const user_manager::User& user);
 
 // Determines whether Sanitize is allowed for the user. Managed users, guest
 // users, and child users cannot use the sanitize feature. Also Sanitize is
 // initially only enabled through a flag.
-// Do not pass nullptr.
-bool IsSanitizeAllowed(const user_manager::User* user);
+bool IsSanitizeAllowed(const user_manager::User& user);
 
 // Determines whether the Parental Controls section of People settings should be
 // shown for `profile`.
@@ -50,12 +46,10 @@ bool IsPerAppLanguageEnabled(const Profile* profile);
 bool ShouldShowGraduationAppSetting(Profile* profile);
 
 // Determines if the kiosk mode is active for the user.
-// Do not pass nullptr.
-bool IsKioskModeActive(const user_manager::User* user);
+bool IsKioskModeActive(const user_manager::User& user);
 
 // Determines if kiosk troubleshooting tools are enabled for this user.
-// Do not pass nullptr.
-bool IsKioskOldA11ySettingsRedirectionEnabled(const user_manager::User* user);
+bool IsKioskOldA11ySettingsRedirectionEnabled(const user_manager::User& user);
 
 }  // namespace ash::settings
 
