@@ -1210,6 +1210,8 @@ UIImage* DefaultFavicon() {
   _blueDotView.layer.borderWidth = kBlueDotStrokeWidth;
   _blueDotView.layer.borderColor = TabStripHelper.cellBackgroundColor.CGColor;
   _blueDotView.backgroundColor = [UIColor colorNamed:kBlue600Color];
+  _blueDotView.accessibilityIdentifier =
+      TabStripTabItemConstants.blueDotAccessibilityIdentifier;
   [_accessibilityContainerView addSubview:_blueDotView];
 
   [NSLayoutConstraint activateConstraints:@[

@@ -559,6 +559,14 @@ id<GREYMatcher> TabStripCellAtIndex(unsigned int index);
 // Returns a matcher for the group cell at `index` in the tab strip.
 id<GREYMatcher> TabStripGroupCellAtIndex(unsigned int index);
 
+// Returns a matcher for the blue dot view on the cell at `index` in the tab
+// strip.
+id<GREYMatcher> BlueDotOnTabStripCellAtIndex(unsigned int index);
+
+// Returns a matcher for the notification dot view on the group cell at `index`
+// in the tab strip.
+id<GREYMatcher> NotificationDotOnTabStripGroupCellAtIndex(unsigned int index);
+
 // Returns a matcher for the group cell at `index` in the tab groups panel.
 id<GREYMatcher> TabGroupsPanelCellAtIndex(unsigned int index);
 

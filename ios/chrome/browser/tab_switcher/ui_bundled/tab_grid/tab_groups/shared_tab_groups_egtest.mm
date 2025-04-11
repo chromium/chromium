@@ -38,6 +38,7 @@
 
 using chrome_test_util::AddTabToGroupSubMenuButton;
 using chrome_test_util::BlueDotOnShowTabsButton;
+using chrome_test_util::BlueDotOnTabStripCellAtIndex;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::CreateTabGroupCreateButton;
@@ -54,6 +55,7 @@ using chrome_test_util::LeaveSharedGroupConfirmationButton;
 using chrome_test_util::ManageGroupButton;
 using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::NavigationBarSaveButton;
+using chrome_test_util::NotificationDotOnTabStripGroupCellAtIndex;
 using chrome_test_util::OpenTabGroupAtIndex;
 using chrome_test_util::RecentActivityButton;
 using chrome_test_util::ShareGroupButton;
@@ -70,6 +72,8 @@ using chrome_test_util::TabGroupCreationView;
 using chrome_test_util::TabGroupOverflowMenuButton;
 using chrome_test_util::TabGroupRecentActivityCellAtIndex;
 using chrome_test_util::TabGroupViewTitle;
+using chrome_test_util::TabStripCellAtIndex;
+using chrome_test_util::TabStripGroupCellAtIndex;
 using chrome_test_util::WindowWithNumber;
 using data_sharing::features::kDataSharingFeature;
 using data_sharing::features::kDataSharingJoinOnly;
@@ -1240,6 +1244,91 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
   // Verify that the badge on the tab switcher outside the group disappears.
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:BlueDotOnShowTabsButton()];
+}
+
+// Tests that the activity indicators (blue dot and notification dot) on the tab
+// strip are updated when a shared group is updated.
+- (void)testActivityIndicatorsOnTabStrip {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
+  if ([ChromeEarlGrey isCompactWidth]) {
+    EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
+  }
+
+  AddSharedGroup(/*owner=*/YES);
+  [ChromeEarlGrey waitForMainTabCount:1];
+
+  // Open the group view.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open a first tab and wait until loading is completed.
+  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Add a tab to the shared group by a member in the shared group.
+  [TabGroupAppInterface addSharedTabToGroupAtIndex:0];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Verify that the second tab is added.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabStripCellAtIndex(2)];
+  [[EarlGrey selectElementWithMatcher:TabStripCellAtIndex(2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that the blue dot on the tab strip cell is visible, but the
+  // notification dot on the group cell is not visible.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:BlueDotOnTabStripCellAtIndex(2)];
+  [[EarlGrey selectElementWithMatcher:BlueDotOnTabStripCellAtIndex(2)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey
+      selectElementWithMatcher:NotificationDotOnTabStripGroupCellAtIndex(0)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Verify that the badge on the show tabs button is also visible.
+  [[EarlGrey selectElementWithMatcher:BlueDotOnShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Collapse the group.
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Verify that the notification dot on the tab strip group cell is visible,
+  // but the blue dot on the tab cell is not visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      NotificationDotOnTabStripGroupCellAtIndex(0)];
+  [[EarlGrey
+      selectElementWithMatcher:NotificationDotOnTabStripGroupCellAtIndex(0)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:BlueDotOnTabStripCellAtIndex(2)]
+      assertWithMatcher:grey_notVisible()];
+
+  // Expand the group.
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Open the tab added by a member in the shared group.
+  [[EarlGrey selectElementWithMatcher:TabStripCellAtIndex(2)]
+      performAction:grey_tap()];
+
+  // Verify that the blue dot on the tab strip cell disappears.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:BlueDotOnTabStripCellAtIndex(2)];
+
+  // Verify that the badge on the show tabs button also disappears.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:BlueDotOnShowTabsButton()];
+
+  // Collapse the group.
+  [[EarlGrey selectElementWithMatcher:TabStripGroupCellAtIndex(0)]
+      performAction:grey_tap()];
+
+  // Verify that the notification dot on the tab strip group cell disappears.
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
+                      NotificationDotOnTabStripGroupCellAtIndex(0)];
 }
 
 @end

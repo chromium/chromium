@@ -683,6 +683,15 @@ id<GREYMatcher> TabStripGroupCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabStripGroupCellAtIndex:index];
 }
 
+id<GREYMatcher> BlueDotOnTabStripCellAtIndex(unsigned int index) {
+  return [ChromeMatchersAppInterface blueDotOnTabStripCellAtIndex:index];
+}
+
+id<GREYMatcher> NotificationDotOnTabStripGroupCellAtIndex(unsigned int index) {
+  return [ChromeMatchersAppInterface
+      notificationDotOnTabStripGroupCellAtIndex:index];
+}
+
 id<GREYMatcher> TabGroupsPanelCellAtIndex(unsigned int index) {
   return [ChromeMatchersAppInterface tabGroupsPanelCellAtIndex:index];
 }

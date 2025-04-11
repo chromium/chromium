@@ -98,7 +98,7 @@ NSString* IdentifierForStripCellAtIndex(unsigned int index) {
 NSString* IdentifierForStripGroupCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u",
                                     TabStripCollectionViewConstants
-                                        .tabStripTabCellPrefixIdentifier,
+                                        .tabStripGroupCellPrefixIdentifier,
                                     index];
 }
 
@@ -1173,6 +1173,24 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)tabStripGroupCellAtIndex:(unsigned int)index {
   return grey_allOf(
       grey_accessibilityID(IdentifierForStripGroupCellAtIndex(index)),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)blueDotOnTabStripCellAtIndex:(unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(
+          TabStripTabItemConstants.blueDotAccessibilityIdentifier),
+      grey_ancestor(grey_accessibilityID(IdentifierForStripCellAtIndex(index))),
+      grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)notificationDotOnTabStripGroupCellAtIndex:
+    (unsigned int)index {
+  return grey_allOf(
+      grey_accessibilityID(
+          TabStripGroupItemConstants.notificationDotAccessibilityIdentifier),
+      grey_ancestor(
+          grey_accessibilityID(IdentifierForStripGroupCellAtIndex(index))),
       grey_sufficientlyVisible(), nil);
 }
 
