@@ -227,17 +227,18 @@ public class TabArchiverImpl implements TabArchiver {
         Set<Token> archivedTabGroupIds = new HashSet<>();
         // Add tabs to the archived tab model first to prevent tab loss if the operation is aborted.
         for (Tab tab : tabs) {
+            // Do not add tabs that are part of tab groups to the archived tab model.
+            @Nullable Token tabGroupId = tab.getTabGroupId();
+            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
+                    && tabGroupId != null) {
+                archivedTabGroupIds.add(tabGroupId);
+                continue;
+            }
+
             TabState tabState = prepareTabState(tab);
             Tab archivedTab =
                     mArchivedTabCreator.createFrozenTab(tabState, tab.getId(), INVALID_TAB_INDEX);
             archivedTabs.add(archivedTab);
-
-            @Nullable Token tabGroupId = tab.getTabGroupId();
-            if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
-                    && tabGroupId != null
-                    && !archivedTabGroupIds.contains(tabGroupId)) {
-                archivedTabGroupIds.add(tabGroupId);
-            }
         }
 
         if (ChromeFeatureList.sAndroidTabDeclutterArchiveTabGroups.isEnabled()
