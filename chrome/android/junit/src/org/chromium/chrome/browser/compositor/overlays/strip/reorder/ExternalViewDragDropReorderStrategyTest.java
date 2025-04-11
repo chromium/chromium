@@ -81,8 +81,8 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                         mTabGroupModelFilter,
                         mContainerView,
                         mGroupIdToHideSupplier,
-                        mTabWidthSupplier);
-        when(mTabWidthSupplier.get()).thenReturn((float) TAB_WIDTH);
+                        mTabWidthSupplier,
+                        mLastReorderScrollTimeSupplier);
         setupStripViews();
         setupDragDropState(/* isGroupDrag= */ false, /* isGroupShared= */ false);
     }

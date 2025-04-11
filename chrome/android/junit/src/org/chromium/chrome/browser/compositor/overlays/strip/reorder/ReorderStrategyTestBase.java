@@ -56,6 +56,7 @@ public class ReorderStrategyTestBase {
     @Mock protected TabModel mModel;
     @Mock protected ReorderDelegate mReorderDelegate;
     @Mock protected Supplier<Float> mTabWidthSupplier;
+    @Mock protected Supplier<Long> mLastReorderScrollTimeSupplier;
     @Mock protected TabUngrouper mTabUnGrouper;
     @Spy protected AnimationHost mAnimationHost = new TestAnimationHost();
 
@@ -74,6 +75,8 @@ public class ReorderStrategyTestBase {
         mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
         when(mModel.getTabById(INTERACTING_VIEW_ID)).thenReturn(mTabForInteractingView);
         when(mTabForInteractingView.getId()).thenReturn(INTERACTING_VIEW_ID);
+        when(mTabWidthSupplier.get()).thenReturn((float) TAB_WIDTH);
+        when(mLastReorderScrollTimeSupplier.get()).thenReturn(0L);
     }
 
     protected StripLayoutGroupTitle buildGroupTitle(

@@ -63,6 +63,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             View containerView,
             ObservableSupplierImpl<Integer> groupIdToHideSupplier,
             Supplier<Float> tabWidthSupplier,
+            Supplier<Long> lastReorderScrollTimeSupplier,
             @NonNull TabDragSource tabDragSource,
             @NonNull ActionConfirmationManager actionConfirmationManager,
             ReorderStrategy tabStrategy,
@@ -76,7 +77,8 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                 tabGroupModelFilter,
                 containerView,
                 groupIdToHideSupplier,
-                tabWidthSupplier);
+                tabWidthSupplier,
+                lastReorderScrollTimeSupplier);
         mTabDragSource = tabDragSource;
         mActionConfirmationManager = actionConfirmationManager;
         mTabSubStrategy = new TabReorderSubStrategy(tabStrategy);

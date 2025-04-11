@@ -66,6 +66,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         mContainerView,
                         mGroupIdToHideSupplier,
                         mTabWidthSupplier,
+                        mLastReorderScrollTimeSupplier,
                         mTabDragSource,
                         mActionConfirmationManager,
                         mTabStrategy,

@@ -47,7 +47,8 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
             TabGroupModelFilter tabGroupModelFilter,
             View containerView,
             ObservableSupplierImpl<Integer> groupIdToHideSupplier,
-            Supplier<Float> tabWidthSupplier) {
+            Supplier<Float> tabWidthSupplier,
+            Supplier<Long> lastReorderScrollTimeSupplier) {
         super(
                 reorderDelegate,
                 stripUpdateDelegate,
@@ -57,7 +58,8 @@ public class ExternalViewDragDropReorderStrategy extends ReorderStrategyBase {
                 tabGroupModelFilter,
                 containerView,
                 groupIdToHideSupplier,
-                tabWidthSupplier);
+                tabWidthSupplier,
+                lastReorderScrollTimeSupplier);
     }
 
     /** Initiate reorder when external view is dragged onto strip. */
