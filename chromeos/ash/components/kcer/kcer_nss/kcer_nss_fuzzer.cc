@@ -478,6 +478,11 @@ void CertGenerator::GenerateCert() {
     while (GetBool()) {
       ip_addresses.push_back(GetIpAddress());
     }
+    if (dns_names.empty() && ip_addresses.empty()) {
+      // `cert_builder_` will fail if both `dns_names` and `ip_addresses` are
+      // empty, add an extra DNS name to prevent that.
+      dns_names.push_back("dns_name" + GetString());
+    }
     cert_builder_->SetSubjectAltNames(dns_names, ip_addresses);
   }
   if (GetBool()) {
