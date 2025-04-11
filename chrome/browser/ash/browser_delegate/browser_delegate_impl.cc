@@ -32,6 +32,10 @@ aura::Window* BrowserDelegateImpl::GetNativeWindow() const {
   return browser_->window()->GetNativeWindow();
 }
 
+bool BrowserDelegateImpl::IsClosing() const {
+  return browser_->IsBrowserClosing();
+}
+
 void BrowserDelegateImpl::Show() {
   return browser_->window()->Show();
 }

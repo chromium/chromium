@@ -15,6 +15,8 @@
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/ash/boca/on_task/locked_session_window_tracker_factory.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_session_window_tracker.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -116,14 +118,15 @@ SessionID OnTaskSystemWebAppManagerImpl::GetActiveSystemWebAppWindowID() {
 
   // TODO (b/354007279): Filter out SWA window instances that are not managed by
   // OnTask (for instance, those manually spawned by consumers).
-  Browser* const browser =
-      FindSystemWebAppBrowser(profile_, SystemWebAppType::BOCA);
+  BrowserDelegate* const browser =
+      BrowserController::GetInstance()->GetDelegate(
+          FindSystemWebAppBrowser(profile_, SystemWebAppType::BOCA));
   // Verify that there is no browser instance and that there is no scheduled
   // task to delete the browser instance following window close.
-  if (!browser || browser->IsBrowserClosing()) {
+  if (!browser || browser->IsClosing()) {
     return SessionID::InvalidValue();
   }
-  return browser->session_id();
+  return browser->GetSessionID();
 }
 
 void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(

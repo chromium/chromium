@@ -40,6 +40,9 @@ class BrowserDelegate {
   // closed.
   virtual aura::Window* GetNativeWindow() const = 0;
 
+  // Returns whether the browser is in the process of being closed and deleted.
+  virtual bool IsClosing() const = 0;
+
   // Shows the browser window, or activates it if it's already visible.
   virtual void Show() = 0;
 
