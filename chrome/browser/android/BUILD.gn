@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 source_set("tabs_public") {
-  public = [ "tab_features_android.h" ]
+  public = [ "tab_features.h" ]
 
   public_deps = [ "//base" ]
 
@@ -11,7 +11,7 @@ source_set("tabs_public") {
 }
 
 source_set("tabs_impl") {
-  sources = [ "tab_features_android.cc" ]
+  sources = [ "tab_features.cc" ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [

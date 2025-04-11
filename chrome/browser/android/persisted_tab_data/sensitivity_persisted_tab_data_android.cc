@@ -38,7 +38,7 @@ void SensitivityPersistedTabDataAndroid::From(
     TabAndroid* tab_android,
     PersistedTabDataAndroid::FromCallback from_callback) {
   PersistedTabDataAndroid::From(
-      tab_android->GetWeakPtr(),
+      tab_android->GetTabAndroidWeakPtr(),
       SensitivityPersistedTabDataAndroid::UserDataKey(),
       base::BindOnce([](TabAndroid* tab_android)
                          -> std::unique_ptr<PersistedTabDataAndroid> {

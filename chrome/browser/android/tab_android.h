@@ -21,11 +21,14 @@
 #include "chrome/browser/tab/web_contents_state.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/token_id.h"
+#include "components/tabs/public/split_tab_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "tab_android_data_provider.h"
 
 class GURL;
 class Profile;
-class TabFeaturesAndroid;
 
 namespace cc::slim {
 class Layer;
@@ -40,7 +43,12 @@ class DevToolsAgentHost;
 class WebContents;
 }  // namespace content
 
-class TabAndroid : public TabAndroidDataProvider,
+namespace tabs {
+class TabFeatures;
+}  // namespace tabs
+
+class TabAndroid : public tabs::TabInterface,
+                   public TabAndroidDataProvider,
                    public base::SupportsUserData {
  public:
   class Observer : public base::CheckedObserver {
@@ -197,9 +205,42 @@ class TabAndroid : public TabAndroidDataProvider,
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
 
-  base::WeakPtr<TabAndroid> GetWeakPtr();
+  base::WeakPtr<TabAndroid> GetTabAndroidWeakPtr();
 
-  TabFeaturesAndroid* tab_features() { return tab_features_.get(); }
+  // TabInterface overrides:
+  base::WeakPtr<tabs::TabInterface> GetWeakPtr() override;
+  content::WebContents* GetContents() const override;
+  void Close() override;
+  base::CallbackListSubscription RegisterWillDiscardContents(
+      WillDiscardContentsCallback callback) override;
+  bool IsActivated() const override;
+  base::CallbackListSubscription RegisterDidActivate(
+      DidActivateCallback callback) override;
+  base::CallbackListSubscription RegisterWillDeactivate(
+      WillDeactivateCallback callback) override;
+  bool IsVisible() const override;
+  base::CallbackListSubscription RegisterDidBecomeVisible(
+      DidBecomeVisibleCallback callback) override;
+  base::CallbackListSubscription RegisterWillBecomeHidden(
+      WillBecomeHiddenCallback callback) override;
+  base::CallbackListSubscription RegisterWillDetach(
+      WillDetach callback) override;
+  base::CallbackListSubscription RegisterDidInsert(
+      DidInsertCallback callback) override;
+  base::CallbackListSubscription RegisterPinnedStateChanged(
+      PinnedStateChangedCallback callback) override;
+  base::CallbackListSubscription RegisterGroupChanged(
+      GroupChangedCallback callback) override;
+  bool CanShowModalUI() const override;
+  std::unique_ptr<tabs::ScopedTabModalUI> ShowModalUI() override;
+  base::CallbackListSubscription RegisterModalUIChanged(
+      TabInterfaceCallback callback) override;
+  bool IsInNormalWindow() const override;
+  tabs::TabFeatures* GetTabFeatures() override;
+  bool IsPinned() const override;
+  bool IsSplit() const override;
+  std::optional<tab_groups::TabGroupId> GetGroup() const override;
+  std::optional<split_tabs::SplitTabId> GetSplit() const override;
 
  private:
   // This constructor bypassing JVM setup is for CreateForTesting only.
@@ -220,7 +261,7 @@ class TabAndroid : public TabAndroidDataProvider,
   std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
 
   // Holds tab-scoped state. Constructed after tab_helpers.
-  std::unique_ptr<TabFeaturesAndroid> tab_features_;
+  std::unique_ptr<tabs::TabFeatures> tab_features_;
 
   base::ObserverList<Observer> observers_;
 

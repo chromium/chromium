@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/tab_features_android.h"
+#include "chrome/browser/android/tab_features.h"
 
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
@@ -10,8 +10,9 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/metrics/content/dwa_web_contents_observer.h"
 
-TabFeaturesAndroid::TabFeaturesAndroid(content::WebContents* web_contents,
-                                       Profile* profile) {
+namespace tabs {
+
+TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   sync_sessions_router_ =
       std::make_unique<sync_sessions::SyncSessionsRouterTabHelper>(
           web_contents,
@@ -24,4 +25,6 @@ TabFeaturesAndroid::TabFeaturesAndroid(content::WebContents* web_contents,
       std::make_unique<metrics::DwaWebContentsObserver>(web_contents);
 }
 
-TabFeaturesAndroid::~TabFeaturesAndroid() = default;
+TabFeatures::~TabFeatures() = default;
+
+}  // namespace tabs

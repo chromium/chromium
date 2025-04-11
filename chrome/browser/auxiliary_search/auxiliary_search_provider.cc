@@ -289,7 +289,8 @@ void AuxiliarySearchProvider::GetNonSensitiveTabsInternal(
 
   for (const auto& tab : all_tabs) {
     SensitivityPersistedTabDataAndroid::From(
-        tab, base::BindOnce(&FilterNonSensitiveSearchableTab, tab->GetWeakPtr())
+        tab, base::BindOnce(&FilterNonSensitiveSearchableTab,
+                            tab->GetTabAndroidWeakPtr())
                  .Then(barrier_cb));
   }
 }
