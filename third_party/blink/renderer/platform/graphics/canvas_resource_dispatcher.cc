@@ -39,12 +39,21 @@ constexpr base::TimeDelta kSyntheticFrameDelay = base::Hertz(60);
 namespace blink {
 
 struct CanvasResourceDispatcher::FrameResource {
-  FrameResource() = default;
+  FrameResource(CanvasResource* resource) : raw_canvas_resource(resource) {}
   ~FrameResource() {
     if (canvas_resource_from_placeholder && release_callback) {
+      // Clear the raw pointer to avoid it dangling, as the resource will be
+      // destroyed in the callback invoked just below.
+      raw_canvas_resource = nullptr;
       std::move(release_callback)
           .Run(std::move(canvas_resource_from_placeholder), sync_token,
                is_lost);
+    } else {
+      // `release_callback` will never be invoked (and can't safely be, as it
+      // can only be invoked on the creating thread but the creating thread
+      // might be going away at this point). Inform the CanvasResource so that
+      // it can drop any resources that are bound to the creating thread.
+      raw_canvas_resource->DropFrameResources();
     }
   }
 
@@ -53,6 +62,13 @@ struct CanvasResourceDispatcher::FrameResource {
   // both the compositor and the placeholder canvas before it is safe to
   // reclaim it.
   bool spare_lock = true;
+
+  // This non-owning reference to the CanvasResource associated with this frame
+  // is set for the lifetime of this instance. Note that the owning ref is the
+  // one that the placeholder is holding (which will be returned to
+  // this instance to be stored in `canvas_resource_from_placeholder` once the
+  // placeholder canvas is done with it).
+  raw_ptr<CanvasResource> raw_canvas_resource;
 
   // The 'canvas_resource_from_placeholder' field is set when the placeholder
   // canvas returns it (or if we were not able to post it to the placeholder in
@@ -277,7 +293,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
               /*fast_rounded_corner=*/false);
 
   viz::TransferableResource resource;
-  auto frame_resource = std::make_unique<FrameResource>();
+  auto frame_resource = std::make_unique<FrameResource>(canvas_resource.get());
 
   // This property will be overridden by the embedding SurfaceLayer, so this
   // value will have no effect.
