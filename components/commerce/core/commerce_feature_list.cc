@@ -371,6 +371,7 @@ extern const char kShopCardArm2[] = "arm_2";
 extern const char kShopCardArm3[] = "arm_3";
 extern const char kShopCardArm4[] = "arm_4";
 extern const char kShopCardFrontPosition[] = "shop_card_front";
+extern const char kShopCardMaxImpressions[] = "max_impressions";
 
 const char kProductSpecificationsSetValidForClusteringTimeParam[] =
     "set-valid-for-clustering-time";

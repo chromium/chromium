@@ -7,6 +7,7 @@
 #import <optional>
 
 #import "base/memory/raw_ptr.h"
+#import "base/metrics/field_trial_params.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -45,6 +46,12 @@ namespace {
 
 bool IsShopCardImpressionLimitsEnabled() {
   return base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits);
+}
+
+int GetImpressionLimit() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      commerce::kShopCard, commerce::kShopCardMaxImpressions,
+      kShopCardMaxImpressions);
 }
 
 }  // namespace
@@ -384,7 +391,7 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
   }
   std::optional<int> count = _impressionLimitService->GetImpressionCount(
       url, shop_card_prefs::kShopCardPriceDropUrlImpressions);
-  return count.has_value() && count.value() >= kShopCardMaxImpressions;
+  return count.has_value() && count.value() >= GetImpressionLimit();
 }
 
 - (BOOL)hasBeenOpened:(const GURL&)url {

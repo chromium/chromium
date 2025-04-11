@@ -5,6 +5,7 @@
 #include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
 
 #include "base/location.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -331,4 +332,60 @@ TEST_F(ImpressionLimitServiceTest, TestUnubscribe) {
   count = service()->GetImpressionCount(GURL(kGurl2), kImpressionsPref);
   EXPECT_TRUE(count.has_value());
   EXPECT_EQ(1, count.value());
+}
+
+// Long URLs are clipped at 1024 characters. Check a URL exceeding
+// the maximum length is stored under the same key as the first
+// 1024 characters of the same URL.
+TEST_F(ImpressionLimitServiceTest, TestLongUrl) {
+  std::string long_url = "https://www.example.com/";
+  for (int i = 0; i < 1000; i++) {
+    long_url += "abcdefghi/";
+  }
+  LogImpressionForURLAtTime(GURL(long_url), kImpressionsPref, kYesterday);
+  // First 1024 characters of URL should be logged under same key.
+  std::string shortened_long_url = long_url.substr(0, 1024);
+  EXPECT_TRUE(long_url.size() > shortened_long_url.size());
+  LogImpressionForURLAtTime(GURL(shortened_long_url), kImpressionsPref, kNow);
+
+  std::optional<int> count =
+      service()->GetImpressionCount(GURL(long_url), kImpressionsPref);
+  EXPECT_TRUE(count.has_value());
+  EXPECT_EQ(2, count.value());
+}
+
+// Test if we exceed 10 entries, we remove the oldest (in any
+// preference).
+TEST_F(ImpressionLimitServiceTest, TestMaximumEntries) {
+  // Add 10 entries
+  for (int i = 1; i <= 10; i++) {
+    LogImpressionForURLAtTime(
+        GURL(base::StringPrintf("https://www.example.com/%d/", i)),
+        kImpressionsPref, kNow + base::Hours(i));
+  }
+  // Check the 10 entries
+  for (int i = 1; i <= 10; i++) {
+    std::optional<int> count = service()->GetImpressionCount(
+        GURL(base::StringPrintf("https://www.example.com/%d/", i)),
+        kImpressionsPref);
+    EXPECT_TRUE(count.has_value());
+    EXPECT_EQ(1, count.value());
+  }
+  // Add 11th entry
+  LogImpressionForURLAtTime(
+      GURL(base::StringPrintf("https://www.example.com/%d/", 11)),
+      kImpressionsPref, kNow + base::Hours(11));
+  for (int i = 1; i <= 11; i++) {
+    std::optional<int> count = service()->GetImpressionCount(
+        GURL(base::StringPrintf("https://www.example.com/%d/", i)),
+        kImpressionsPref);
+    // First entry (oldest) should have been removed)
+    if (i == 1) {
+      EXPECT_FALSE(count.has_value());
+    } else {
+      // All other entries, including the one just added should be there.
+      EXPECT_TRUE(count.has_value());
+      EXPECT_EQ(1, count.value());
+    }
+  }
 }
