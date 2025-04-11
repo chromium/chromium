@@ -596,31 +596,6 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
-  if (!defined(android_proto_runtime)) {
-    java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
-      jar_path = "cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite-4.28.0.jar"
-      output_name = "com_google_protobuf_protobuf_javalite"
-      supports_android = true
-      requires_android = true
-      enable_bytecode_checks = false
-
-      # Target is swapped out when internal code is enabled.
-      # Please depend on //third_party/android_deps:protobuf_lite_runtime_java instead.
-      visibility = [ "//third_party/android_deps:*" ]
-
-      # Prebuilt protos in the runtime library.
-      # If you want to use these protos, you should create a proto_java_library
-      # target for them. See crbug.com/1103399 for discussion.
-      jar_excluded_patterns = [
-        "com/google/protobuf/Any*",
-        "com/google/protobuf/Duration*",
-        "com/google/protobuf/FieldMask*",
-        "com/google/protobuf/Timestamp*",
-      ]
-    }
-  }
-
-  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   java_prebuilt("com_googlecode_java_diff_utils_diffutils_java") {
     jar_path =
         "cipd/libs/com_googlecode_java_diff_utils_diffutils/diffutils-1.3.0.jar"

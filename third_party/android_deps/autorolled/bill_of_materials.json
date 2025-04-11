@@ -580,6 +580,11 @@
         "version": "2.9.0-SNAPSHOT"
     },
     {
+        "name": "lifecycle-livedata-ktx",
+        "group": "androidx.lifecycle",
+        "version": "2.9.0-SNAPSHOT"
+    },
+    {
         "name": "lifecycle-process",
         "group": "androidx.lifecycle",
         "version": "2.9.0-SNAPSHOT"
@@ -763,6 +768,36 @@
         "name": "navigation-runtime-android",
         "group": "androidx.navigation",
         "version": "2.9.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-common",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-common-android",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-common-ktx",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-compose",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-compose-android",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
+    },
+    {
+        "name": "paging-runtime",
+        "group": "androidx.paging",
+        "version": "3.4.0-SNAPSHOT"
     },
     {
         "name": "palette",
@@ -1392,7 +1427,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.28.0"
+        "version": "4.30.2"
     },
     {
         "name": "protobuf-lite",
