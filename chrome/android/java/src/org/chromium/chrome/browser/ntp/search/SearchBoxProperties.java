@@ -19,7 +19,6 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** The properties required to build the fake search box on new tab page. */
 interface SearchBoxProperties {
     WritableFloatPropertyKey ALPHA = new WritableFloatPropertyKey();
-    WritableObjectPropertyKey<Drawable> BACKGROUND = new WritableObjectPropertyKey<>();
     WritableBooleanPropertyKey VISIBILITY = new WritableBooleanPropertyKey();
     WritableBooleanPropertyKey VOICE_SEARCH_VISIBILITY = new WritableBooleanPropertyKey();
     WritableObjectPropertyKey<Drawable> VOICE_SEARCH_DRAWABLE = new WritableObjectPropertyKey<>();
@@ -47,7 +46,6 @@ interface SearchBoxProperties {
     PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ALPHA,
-                BACKGROUND,
                 VISIBILITY,
                 VOICE_SEARCH_VISIBILITY,
                 VOICE_SEARCH_DRAWABLE,

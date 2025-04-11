@@ -1750,12 +1750,6 @@ public class ToolbarManager
         }
 
         @Override
-        public void setSearchBoxBackground(Drawable drawable) {
-            assert getNewTabPageForCurrentTab() != null;
-            getNewTabPageForCurrentTab().setSearchBoxBackground(drawable);
-        }
-
-        @Override
         public void setSearchBoxAlpha(float alpha) {
             assert getNewTabPageForCurrentTab() != null;
             getNewTabPageForCurrentTab().setSearchBoxAlpha(alpha);

@@ -12,7 +12,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -899,15 +898,6 @@ public class NewTabPage
      */
     public void setSearchProviderLogoAlpha(float alpha) {
         mNewTabPageLayout.setSearchProviderLogoAlpha(alpha);
-    }
-
-    /**
-     * Set the search box background drawable.
-     *
-     * @param drawable The search box background.
-     */
-    public void setSearchBoxBackground(Drawable drawable) {
-        mNewTabPageLayout.setSearchBoxBackground(drawable);
     }
 
     /**
