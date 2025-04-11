@@ -9,6 +9,7 @@
 
 @class ConsistencyDefaultAccountCoordinator;
 @protocol ConsistencyLayoutDelegate;
+enum class SigninContextStyle;
 @protocol SystemIdentity;
 
 namespace signin_metrics {
@@ -41,6 +42,7 @@ enum class AccessPoint : int;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
                                    browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
                                accessPoint:
                                    (signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;

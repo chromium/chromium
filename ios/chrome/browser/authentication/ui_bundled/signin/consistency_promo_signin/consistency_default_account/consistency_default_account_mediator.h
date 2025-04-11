@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace signin_metrics {
 enum class AccessPoint;
 }  // namespace signin_metrics
@@ -19,9 +23,7 @@ class ChromeAccountManagerService;
 @class ConsistencyDefaultAccountMediator;
 @protocol ConsistencyDefaultAccountConsumer;
 @protocol SystemIdentity;
-namespace signin {
-class IdentityManager;
-}  // namespace signin
+enum class SigninContextStyle;
 
 // Mediator for ConsistencyDefaultAccountCoordinator.
 @interface ConsistencyDefaultAccountMediator : NSObject
@@ -31,6 +33,7 @@ class IdentityManager;
     initWithIdentityManager:(signin::IdentityManager*)identityManager
       accountManagerService:(ChromeAccountManagerService*)accountManagerService
                 syncService:(syncer::SyncService*)syncService
+               contextStyle:(SigninContextStyle)contextStyle
                 accessPoint:(signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 

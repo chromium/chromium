@@ -158,6 +158,7 @@
   self.defaultAccountCoordinator = [[ConsistencyDefaultAccountCoordinator alloc]
       initWithBaseViewController:self.navigationController
                          browser:self.browser
+                    contextStyle:self.contextStyle
                      accessPoint:self.accessPoint];
   self.defaultAccountCoordinator.delegate = self;
   self.defaultAccountCoordinator.layoutDelegate = self;

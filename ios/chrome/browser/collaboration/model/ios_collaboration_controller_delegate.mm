@@ -196,10 +196,12 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
 
   AccessPoint access_point;
   SigninContextStyle context_style;
+  BOOL fullScreenPromo = NO;
   switch (flow_type) {
     case FlowType::kJoin:
       access_point = AccessPoint::kCollaborationJoinTabGroup;
       context_style = SigninContextStyle::kCollaborationJoinTabGroup;
+      fullScreenPromo = YES;
       break;
     case FlowType::kShareOrManage:
       access_point = AccessPoint::kCollaborationShareTabGroup;
@@ -220,7 +222,7 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
              completion:completion_block];
 
   command.optionalHistorySync = NO;
-  command.fullScreenPromo = YES;
+  command.fullScreenPromo = fullScreenPromo;
   command.contextStyle = context_style;
 
   [application_handler showSignin:command

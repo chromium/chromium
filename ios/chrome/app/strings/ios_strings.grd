@@ -6079,6 +6079,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNIN_BUTTON_TEXT" desc="Button that the user can press if they want to sign-in.">
         Sign in
       </message>
+      <message name="IDS_IOS_SIGNIN_GROUP_COLLABORATION_HALF_SHEET_SUBTITLE" desc="Subtitle displayed to the user when they attempt to share a shared group while being signed out.">
+        You’ll get to share, join, and collaborate in tab groups
+      </message>
       <message name="IDS_IOS_SIGNIN_GROUP_COLLABORATION_TITLE" desc="Title displayed to the user when they attempt to access a shared group while being signed out.">
         Collaborate in tab groups
       </message>

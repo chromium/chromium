@@ -74,6 +74,7 @@ class ConsistencyPromoSigninCoordinatorTest : public PlatformTest {
                   initWithBaseViewController:
                       consistency_sheet_navigation_controller_mock_
                                      browser:browser_.get()
+                                contextStyle:SigninContextStyle::kDefault
                                  accessPoint:access_point_])
         .andReturn(consistency_default_account_coordinator_mock_);
     OCMExpect([consistency_default_account_coordinator_mock_
