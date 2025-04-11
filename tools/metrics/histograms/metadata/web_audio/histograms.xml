@@ -241,6 +241,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAudio.AudioDestination.OutputDeviceStatus"
+    enum="OutputDeviceStatus" expires_after="2025-10-03">
+  <owner>mjwilson@chromium.org</owner>
+  <owner>hongchan@chromium.org</owner>
+  <owner>src/third_party/blink/renderer/modules/webaudio/OWNERS</owner>
+  <summary>
+    Records the status of the selected audio output device at the time a sink is
+    created. This helps understand the reliability and availability of output
+    devices.
+  </summary>
+</histogram>
+
 <histogram name="WebAudio.AudioDestination.{ModeTag}.FIFODelay{LatencyTag}"
     units="ms" expires_after="2025-10-05">
   <owner>mjwilson@chromium.org</owner>
