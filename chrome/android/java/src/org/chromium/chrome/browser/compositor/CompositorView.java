@@ -292,9 +292,10 @@ public class CompositorView extends FrameLayout
             mScreenStateReceiver.shutDown();
         }
         if (mNativeCompositorView != 0) {
-            CompositorViewJni.get().destroy(mNativeCompositorView, CompositorView.this);
+            var nativeCompositorView = mNativeCompositorView;
+            mNativeCompositorView = 0;
+            CompositorViewJni.get().destroy(nativeCompositorView, CompositorView.this);
         }
-        mNativeCompositorView = 0;
     }
 
     /**
