@@ -141,7 +141,11 @@ interface NativeWidgetNSWindow {
 
   // Create the NSView to be the content view for the window. Use |ns_view_id|
   // to look up this NSView in other functions (e.g, to specify a parent view).
-  CreateContentView(uint64 ns_view_id, gfx.mojom.Rect bounds);
+  // If `corner_radius` is set, the content view clips sublayers to a rounded
+  // corner mask of the given radius.
+  CreateContentView(uint64 ns_view_id,
+                    gfx.mojom.Rect bounds,
+                    int32? corner_radius);
 
   // Destroy the content NSView for this window. Note that the window will
   // become blank once this has been called.
