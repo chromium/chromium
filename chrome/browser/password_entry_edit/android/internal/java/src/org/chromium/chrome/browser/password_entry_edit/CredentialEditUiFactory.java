@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.password_entry_edit;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Use {@link #create()} to instantiate a {@link CredentialEditCoordinator}. */
+@NullMarked
 public class CredentialEditUiFactory {
     /**
      * The factory used to create components that connect to the {@link CredentialEditFragmentView}
