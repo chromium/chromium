@@ -25,7 +25,6 @@ class AXPlatformNodeIOSDelegate {
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeIOS
     : public AXPlatformNodeBase {
  public:
-  ~AXPlatformNodeIOS() override;
   AXPlatformNodeIOS(const AXPlatformNodeIOS&) = delete;
   AXPlatformNodeIOS& operator=(const AXPlatformNodeIOS&) = delete;
 
@@ -33,16 +32,17 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeIOS
   AXPlatformNodeIOSDelegate* GetIOSDelegate() const;
 
   // AXPlatformNode.
-  void Init(AXPlatformNodeDelegate* delegate) override;
+  void Init(AXPlatformNodeDelegate& delegate) override;
   void Destroy() override;
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
 
  protected:
   AXPlatformNodeIOS();
+  ~AXPlatformNodeIOS() override;
 
  private:
   friend AXPlatformNode::Pointer AXPlatformNode::Create(
-      AXPlatformNodeDelegate* delegate);
+      AXPlatformNodeDelegate& delegate);
 
   // Creates a new wrapper node.
   void CreateNativeWrapper();

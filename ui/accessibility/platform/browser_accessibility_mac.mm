@@ -204,7 +204,7 @@ AXPlatformNode* BrowserAccessibilityMac::GetAXPlatformNode() const {
 
 void BrowserAccessibilityMac::CreatePlatformNodes() {
   DCHECK(!platform_node_);
-  platform_node_ = AXPlatformNode::Create(this);
+  platform_node_ = AXPlatformNode::Create(*this);
   CreateNativeWrapper();
 }
 

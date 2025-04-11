@@ -227,11 +227,11 @@ TEST_F(AccessibilityBridgeFuchsiaTest, DeleteRoot) {
 TEST_F(AccessibilityBridgeFuchsiaTest, HitTest) {
   auto root_delegate = std::make_unique<FakeAXPlatformNodeDelegate>();
   AXPlatformNode::Pointer root_platform_node =
-      AXPlatformNode::Create(root_delegate.get());
+      AXPlatformNode::Create(*root_delegate);
 
   auto child_delegate = std::make_unique<FakeAXPlatformNodeDelegate>();
   AXPlatformNode::Pointer child_platform_node =
-      AXPlatformNode::Create(child_delegate.get());
+      AXPlatformNode::Create(*child_delegate);
 
   // Set the platform node as the root, so that the accessibility bridge
   // dispatches the hit test request to it.
@@ -283,7 +283,7 @@ TEST_F(AccessibilityBridgeFuchsiaTest, HitTest) {
 TEST_F(AccessibilityBridgeFuchsiaTest, HitTestReturnsRoot) {
   auto root_delegate = std::make_unique<FakeAXPlatformNodeDelegate>();
   AXPlatformNode::Pointer root_platform_node =
-      AXPlatformNode::Create(root_delegate.get());
+      AXPlatformNode::Create(*root_delegate);
 
   // Set the platform node as the root, so that the accessibility bridge
   // dispatches the hit test request to it.
@@ -327,7 +327,7 @@ TEST_F(AccessibilityBridgeFuchsiaTest, HitTestReturnsRoot) {
 TEST_F(AccessibilityBridgeFuchsiaTest, HitTestReturnsEmptyResult) {
   auto root_delegate = std::make_unique<FakeAXPlatformNodeDelegate>();
   AXPlatformNode::Pointer root_platform_node =
-      AXPlatformNode::Create(root_delegate.get());
+      AXPlatformNode::Create(*root_delegate);
 
   // Set the platform node as the root, so that the accessibility bridge
   // dispatches the hit test request to it.
@@ -368,7 +368,7 @@ TEST_F(AccessibilityBridgeFuchsiaTest, HitTestReturnsEmptyResult) {
 TEST_F(AccessibilityBridgeFuchsiaTest, PerformActionOnRoot) {
   auto root_delegate = std::make_unique<FakeAXPlatformNodeDelegate>();
   AXPlatformNode::Pointer root_platform_node =
-      AXPlatformNode::Create(root_delegate.get());
+      AXPlatformNode::Create(*root_delegate);
 
   // Set the platform node as the root, so that the accessibility bridge
   // dispatches the hit test request to it.
@@ -391,8 +391,7 @@ TEST_F(AccessibilityBridgeFuchsiaTest, ScrollToMakeVisible) {
   data.relative_bounds.bounds = gfx::RectF(
       /*x_min=*/1.f, /*y_min=*/2.f, /*width=*/3.f, /*height=*/4.f);
   delegate->SetData(data);
-  AXPlatformNode::Pointer platform_node =
-      AXPlatformNode::Create(delegate.get());
+  AXPlatformNode::Pointer platform_node = AXPlatformNode::Create(*delegate);
   ASSERT_TRUE(platform_node);
 
   // Request a SHOW_ON_SCREEN action.

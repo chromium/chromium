@@ -19,7 +19,7 @@ BrowserAccessibilityFuchsia::BrowserAccessibilityFuchsia(
     BrowserAccessibilityManager* manager,
     AXNode* node)
     : BrowserAccessibility(manager, node),
-      platform_node_(AXPlatformNode::Create(this)) {}
+      platform_node_(AXPlatformNode::Create(*this)) {}
 
 AccessibilityBridgeFuchsia*
 BrowserAccessibilityFuchsia::GetAccessibilityBridge() const {

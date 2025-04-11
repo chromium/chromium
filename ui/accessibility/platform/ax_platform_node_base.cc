@@ -140,7 +140,7 @@ const std::string AXPlatformNodeBase::kAriaActionsPrefix = "custom";
 #if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY) && !BUILDFLAG(IS_FUCHSIA)
 // static
 AXPlatformNode::Pointer AXPlatformNode::Create(
-    AXPlatformNodeDelegate* delegate) {
+    AXPlatformNodeDelegate& delegate) {
   AXPlatformNodeBase* node = new AXPlatformNodeBase();
   node->Init(delegate);
   return Pointer(node);
@@ -175,8 +175,8 @@ AXPlatformNodeBase::AXPlatformNodeBase() = default;
 
 AXPlatformNodeBase::~AXPlatformNodeBase() = default;
 
-void AXPlatformNodeBase::Init(AXPlatformNodeDelegate* delegate) {
-  delegate_ = delegate;
+void AXPlatformNodeBase::Init(AXPlatformNodeDelegate& delegate) {
+  delegate_ = &delegate;
 
   // This must be called after assigning our delegate.
   GetUniqueIdMap()[GetUniqueId()] = this;
@@ -473,7 +473,6 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetActiveDescendant() const {
 
 void AXPlatformNodeBase::Destroy() {
   GetUniqueIdMap().erase(GetUniqueId());
-  AXPlatformNode::Destroy();
   delegate_ = nullptr;
   Dispose();
 }

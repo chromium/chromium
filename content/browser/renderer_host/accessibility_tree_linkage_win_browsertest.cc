@@ -37,7 +37,7 @@ class AccessibilityTreeLinkageWinBrowserTest
     if (GetParam().is_uia_enabled) {
       scoped_feature_list_.InitAndEnableFeature(::features::kUiaProvider);
     }
-    dummy_ax_platform_node_ = ui::AXPlatformNode::Create(&dummy_ax_node_);
+    dummy_ax_platform_node_ = ui::AXPlatformNode::Create(dummy_ax_node_);
   }
 
   AccessibilityTreeLinkageWinBrowserTest(

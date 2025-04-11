@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
 
   // Create an appropriate platform-specific instance. The delegate owns the
   // AXPlatformNode instance (or manages its lifecycle in some other way).
-  static Pointer Create(AXPlatformNodeDelegate* delegate);
+  static Pointer Create(AXPlatformNodeDelegate& delegate);
 
   // Cast a gfx::NativeViewAccessible to an AXPlatformNode if it is one,
   // or return nullptr if it's not an instance of this class.
@@ -55,7 +55,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // Return the AXPlatformNode at the root of the tree for a native window.
   static AXPlatformNode* FromNativeWindow(gfx::NativeWindow native_window);
 
-  virtual ~AXPlatformNode() = default;
   AXPlatformNode(const AXPlatformNode&) = delete;
   AXPlatformNode& operator=(const AXPlatformNode&) = delete;
 
@@ -124,6 +123,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
 
  protected:
   AXPlatformNode() = default;
+  virtual ~AXPlatformNode() = default;
 
   // Associates a node delegate object to the platform node.
   // Keep it protected. Only AXPlatformNode::Create should be calling this.
@@ -132,11 +132,11 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   // (AXPlatformNodeWin) relies on CComObject::CreateInstance() in order to
   // create a platform node instance, and it doesn't allow to pass arguments to
   // the constructor.
-  virtual void Init(AXPlatformNodeDelegate* delegate) = 0;
+  virtual void Init(AXPlatformNodeDelegate& delegate) = 0;
 
   // Call Destroy rather than deleting this, because the subclass may
   // use reference counting.
-  virtual void Destroy() {}
+  virtual void Destroy() = 0;
 
  private:
   static bool allow_ax_mode_changes_;

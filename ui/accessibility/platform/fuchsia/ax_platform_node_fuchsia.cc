@@ -8,11 +8,9 @@ namespace ui {
 
 AXPlatformNodeFuchsia::AXPlatformNodeFuchsia() = default;
 
-AXPlatformNodeFuchsia::~AXPlatformNodeFuchsia() = default;
-
 // static
 AXPlatformNode::Pointer AXPlatformNode::Create(
-    AXPlatformNodeDelegate* delegate) {
+    AXPlatformNodeDelegate& delegate) {
   AXPlatformNodeFuchsia* node = new AXPlatformNodeFuchsia();
   node->Init(delegate);
   return Pointer(node);

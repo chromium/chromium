@@ -37,7 +37,7 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
   COM_INTERFACE_ENTRY_CHAIN(AXPlatformNodeWin)
   END_COM_MAP()
 
-  static Pointer Create(AXFragmentRootWin* delegate) {
+  static Pointer Create(AXFragmentRootWin& delegate) {
     // Make sure ATL is initialized in this module.
     win::CreateATLModuleIfNeeded();
 
@@ -322,7 +322,7 @@ AXFragmentRootWin::AXFragmentRootWin(gfx::AcceleratedWidget widget,
                                      AXFragmentRootDelegateWin* delegate)
     : widget_(widget),
       delegate_(delegate),
-      platform_node_(AXFragmentRootPlatformNodeWin::Create(this)) {
+      platform_node_(AXFragmentRootPlatformNodeWin::Create(*this)) {
   AXFragmentRootMapWin::GetInstance().AddFragmentRoot(widget, this);
 }
 

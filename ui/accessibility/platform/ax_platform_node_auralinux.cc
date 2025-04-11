@@ -2563,7 +2563,7 @@ void AXPlatformNodeAuraLinux::DestroyAtkObjects() {
 
 // static
 AXPlatformNode::Pointer AXPlatformNode::Create(
-    AXPlatformNodeDelegate* delegate) {
+    AXPlatformNodeDelegate& delegate) {
   AXPlatformNodeAuraLinux* node = new AXPlatformNodeAuraLinux();
   node->Init(delegate);
   return Pointer(node);
@@ -3304,7 +3304,7 @@ void AXPlatformNodeAuraLinux::Destroy() {
   AXPlatformNodeBase::Destroy();
 }
 
-void AXPlatformNodeAuraLinux::Init(AXPlatformNodeDelegate* delegate) {
+void AXPlatformNodeAuraLinux::Init(AXPlatformNodeDelegate& delegate) {
   // Initialize ATK.
   AXPlatformNodeBase::Init(delegate);
 

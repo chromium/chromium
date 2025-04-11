@@ -80,7 +80,7 @@ class MyButtonAXPlatformNodeDelegate
 Then to construct the accessible object, you could just write this:
 ```C++
 MyButtonAXPlatformNodeDelegate delegate;
-AXPlatformNode* accessible = AXPlatformNode::Create(&delegate);
+AXPlatformNode* accessible = AXPlatformNode::Create(delegate);
 ```
 
 ## Events

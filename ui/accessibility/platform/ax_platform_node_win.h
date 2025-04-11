@@ -489,8 +489,6 @@ class COMPONENT_EXPORT(AX_PLATFORM)
     COM_INTERFACE_ENTRY(IServiceProvider)
   END_COM_MAP()
 
-  ~AXPlatformNodeWin() override;
-
   // AXPlatformNode overrides.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
@@ -1242,9 +1240,10 @@ class COMPONENT_EXPORT(AX_PLATFORM)
 
  protected:
   AXPlatformNodeWin();
+  ~AXPlatformNodeWin() override;
 
   // AXPlatformNode overrides.
-  void Init(AXPlatformNodeDelegate* delegate) override;
+  void Init(AXPlatformNodeDelegate& delegate) override;
 
   // This is hard-coded; all products based on the Chromium engine will have the
   // same framework name, so that assistive technology can detect any
@@ -1601,7 +1600,7 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   gfx::Range active_composition_range_;
 
   friend AXPlatformNode::Pointer AXPlatformNode::Create(
-      AXPlatformNodeDelegate* delegate);
+      AXPlatformNodeDelegate& delegate);
 };
 
 }  // namespace ui

@@ -17,8 +17,7 @@
 namespace ui {
 
 AXSystemCaretWin::AXSystemCaretWin(gfx::AcceleratedWidget event_target)
-    : event_target_(event_target),
-      caret_(AXPlatformNode::Create(this)) {
+    : event_target_(event_target), caret_(AXPlatformNode::Create(*this)) {
   // The caret object is not part of the accessibility tree and so doesn't need
   // a node ID. A globally unique ID is used when firing Win events, retrieved
   // via |unique_id|.

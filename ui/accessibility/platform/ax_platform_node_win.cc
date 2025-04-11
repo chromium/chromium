@@ -383,7 +383,7 @@ WinAccessibilityAPIUsageScopedUIAEventsNotifier::
 
 // static
 AXPlatformNode::Pointer AXPlatformNode::Create(
-    AXPlatformNodeDelegate* delegate) {
+    AXPlatformNodeDelegate& delegate) {
   // Make sure ATL is initialized in this module.
   win::CreateATLModuleIfNeeded();
 
@@ -423,7 +423,7 @@ AXPlatformNodeWin::~AXPlatformNodeWin() {
   --g_ghost_node_count_;
 }
 
-void AXPlatformNodeWin::Init(AXPlatformNodeDelegate* delegate) {
+void AXPlatformNodeWin::Init(AXPlatformNodeDelegate& delegate) {
   static base::NoDestructor<AXPlatformNodeWinMemoryDumpProvider> dump_provider(
       g_dormant_node_count_, g_live_node_count_, g_ghost_node_count_);
 

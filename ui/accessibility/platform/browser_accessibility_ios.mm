@@ -143,7 +143,7 @@ float BrowserAccessibilityIOS::GetDeviceScaleFactor() const {
 
 void BrowserAccessibilityIOS::CreatePlatformNode() {
   CHECK(!platform_node_);
-  platform_node_ = AXPlatformNode::Create(this);
+  platform_node_ = AXPlatformNode::Create(*this);
   platform_node()->SetIOSDelegate(this);
 }
 

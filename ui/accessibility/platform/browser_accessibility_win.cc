@@ -27,7 +27,7 @@ BrowserAccessibilityWin::BrowserAccessibilityWin(
   HRESULT hr =
       CComObject<BrowserAccessibilityComWin>::CreateInstance(&instance);
   DCHECK(SUCCEEDED(hr));
-  instance->Init(this);
+  instance->Init(*this);
   instance->AddRef();
   browser_accessibility_com_.reset(instance);
 }
