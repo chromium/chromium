@@ -178,6 +178,8 @@ class CrosUsbNotificationDelegate
              const std::optional<std::u16string>& reply) override {
     disposition_ = CrosUsbNotificationClosed::kUnknown;
     if (button_index && *button_index < static_cast<int>(vm_names_.size())) {
+      LOG(WARNING)
+          << "Share USB device with [some guest] notification was clicked";
       if (vm_names_[*button_index] == crostini::kCrostiniDefaultVmName) {
         // When multi-container is enabled, show the settings page instead of
         // directly attaching the device to the VM. Otherwise, the device is
@@ -209,6 +211,8 @@ class CrosUsbNotificationDelegate
     disposition_ = CrosUsbNotificationClosed::kConnectToLinux;
     CrosUsbDetector* detector = CrosUsbDetector::Get();
     if (detector) {
+      LOG(WARNING)
+          << "Handling guest connection, will attach USB device to guest";
       detector->AttachUsbDeviceToGuest(guest_id, guid_, base::DoNothing());
       return;
     }
@@ -716,6 +720,10 @@ void CrosUsbDetector::OnDeviceChecked(
   const std::string* device = persistent_passthrough_devices.FindString(
       UsbDeviceIdentifier(device_info));
 
+  LOG(WARNING) << "Checking for persistence of USB device ["
+               << UsbDeviceIdentifier(device_info) << "], "
+               << (device == nullptr ? "not persisted" : "persisted");
+
   new_device.info = std::move(device_info);
   auto result = usb_devices_.emplace(guid, std::move(new_device));
 
@@ -731,6 +739,8 @@ void CrosUsbDetector::OnDeviceChecked(
     std::optional<guest_os::GuestId> guest_id =
         guest_os::Deserialize(device_ref);
     if (guest_id.has_value()) {
+      LOG(WARNING) << "Persisted USB device has valid guestId: "
+                   << guest_id->Serialize() << ", will attach";
       AttachUsbDeviceToGuest(guest_id.value(), guid, base::DoNothing());
       return;
     }
@@ -793,6 +803,8 @@ void CrosUsbDetector::ConnectSharedDevicesOnVmStartup(
     if (device.shared_guest_id.has_value() &&
         device.shared_guest_id->vm_name == vm_name) {
       VLOG(1) << "Connecting " << device.label << " to " << vm_name;
+      LOG(WARNING) << "Connecting " << device.label << "to " << vm_name
+                   << " on vm startup";
       // Clear any older guest_port setting.
       device.guest_port = std::nullopt;
       AttachUsbDeviceToGuest(*device.shared_guest_id, device.info->guid,
@@ -957,12 +969,14 @@ void CrosUsbDetector::OnUnmountFilesystems(
 
   // Detach first if device is attached elsewhere
   if (device.guest_port.has_value()) {
+    LOG(WARNING) << "Device was attached already, detaching before attaching.";
     DetachUsbDeviceFromVm(device.shared_guest_id->vm_name, guid,
                           base::BindOnce(&CrosUsbDetector::AttachAfterDetach,
                                          weak_ptr_factory_.GetWeakPtr(),
                                          guest_id, guid, std::move(callback)));
   } else {
     // The device isn't attached.
+    LOG(WARNING) << "Device was available (not attached to vm).";
     AttachAfterDetach(guest_id, guid, std::move(callback),
                       /*detach_success=*/true);
   }
@@ -996,6 +1010,7 @@ void CrosUsbDetector::AttachAfterDetach(
   auto claim_it = devices_claimed_.find(guid);
   if (claim_it != devices_claimed_.end()) {
     if (claim_it->second.device_file.is_valid()) {
+      LOG(WARNING) << "Device was already claimed.";
       // We take a dup here which will be closed if DoVmAttach fails.
       base::ScopedFD device_fd(dup(claim_it->second.device_file.get()));
       DoVmAttach(guest_id, device.info.Clone(), std::move(device_fd),
@@ -1020,6 +1035,7 @@ void CrosUsbDetector::AttachAfterDetach(
   devices_claimed_[guid].lifeline_file = std::move(write_end);
 
   // Open a file descriptor to pass to CrostiniManager & Concierge.
+  LOG(WARNING) << "Opening fd for device.";
   device_manager_->OpenFileDescriptor(
       guid, kAllInterfacesMask, mojo::PlatformHandle(std::move(read_end)),
       base::BindOnce(&CrosUsbDetector::OnAttachUsbDeviceOpened,
@@ -1108,6 +1124,9 @@ void CrosUsbDetector::OnUsbDeviceAttachFinished(
         prefs, guest_os::prefs::kGuestOsUSBPersistentPassthroughDevices);
     base::Value::Dict& devices = update.Get();
     std::string device_identifier = UsbDeviceIdentifier(device_info);
+    LOG(WARNING) << "After successful connection of " << device_identifier
+                 << "to " << guest_id.Serialize()
+                 << ", it is being added to persistency dictionary.";
     // there are 3 possible scenarios here:
     // 1 - device was not in list. in this case we definitely want to add it.
     // 2 - device was in list for a different guest. in this case we want to
