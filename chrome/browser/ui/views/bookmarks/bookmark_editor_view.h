@@ -186,17 +186,17 @@ class BookmarkEditorView : public BookmarkEditor,
   // Recursively adds newly created folders and sets the title of nodes to
   // match the user edited title.
   //
-  // bb_node gives the BookmarkNode the edits are to be applied to, with b_node
-  // the source of the edits.
+  // target_node gives the BookmarkNode the edits are to be applied to, with
+  // source_node the source of the edits.
   //
-  // If b_node == parent_b_node, parent_bb_node is set to bb_node. This is
-  // used to determine the new BookmarkNode parent based on the EditorNode
-  // parent.
+  // If source_node == parent_source_node, parent_target_node is set to
+  // target_node. This is used to determine the new BookmarkNode parent based on
+  // the EditorNode parent.
   void ApplyNameChangesAndCreateNewFolders(
-      const bookmarks::BookmarkNode* bb_node,
-      BookmarkEditorView::EditorNode* b_node,
-      BookmarkEditorView::EditorNode* parent_b_node,
-      const bookmarks::BookmarkNode** parent_bb_node);
+      const bookmarks::BookmarkNode* target_node,
+      BookmarkEditorView::EditorNode* source_node,
+      BookmarkEditorView::EditorNode* parent_source_node,
+      const bookmarks::BookmarkNode** parent_target_node);
 
   // Returns the current url the user has input.
   GURL GetInputURL() const;
