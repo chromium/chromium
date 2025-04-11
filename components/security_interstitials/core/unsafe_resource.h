@@ -81,6 +81,8 @@ struct UnsafeResource {
   GURL referrer_url;
   std::vector<GURL> redirect_urls;
   safe_browsing::SBThreatType threat_type;
+  safe_browsing::ThreatSubtype threat_subtype =
+      safe_browsing::ThreatSubtype::UNKNOWN;
   safe_browsing::ThreatMetadata threat_metadata;
   safe_browsing::RTLookupResponse rt_lookup_response;
   // A callback to deliver the |UrlCheckResult| back to the creator of the

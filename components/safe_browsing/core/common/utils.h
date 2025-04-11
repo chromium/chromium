@@ -110,6 +110,10 @@ bool ErrorIsRetriable(int net_error, int http_error);
 std::string GetExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource);
 
+// We populate a parallel set of metrics to differentiate some threat subtypes.
+std::string GetExtraExtraMetricsSuffix(
+    security_interstitials::UnsafeResource unsafe_resource);
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_UTILS_H_

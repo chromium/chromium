@@ -41,6 +41,7 @@
 #include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
@@ -133,6 +134,10 @@ MATCHER_P(PartiallyEqualVerdict, other, "") {
   return (other.url() == arg->url() &&
           other.client_score() == arg->client_score() &&
           other.is_phishing() == arg->is_phishing());
+}
+
+MATCHER_P(HasScamThreatSubtype, other, "") {
+  return (other.threat_subtype == arg.threat_subtype);
 }
 
 // Test that the callback is nullptr when the verdict is not phishing.
@@ -2476,11 +2481,16 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   // blocking page to pop up on a non-phishy response with the scam experiment
   // verdict because the feature is now enabled despite the is_phishy field is
   // false.
-  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(1);
+  UnsafeResource resource;
+  resource.threat_subtype = ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1;
+  EXPECT_CALL(*ui_manager_.get(),
+              DisplayBlockingPage(HasScamThreatSubtype(resource)))
+      .Times(1);
 
-  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
-                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
-                        /*did_match_high_confidence_allowlist=*/false);
+  PhishingDetectionDone(
+      /*is_phishing=*/false, /*client_score=*/0.0f,
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+      /*did_match_high_confidence_allowlist=*/false);
 
   VerifyExpectedCalls();
   VerifyGeneralScamDetectionHistograms(
@@ -2730,11 +2740,16 @@ TEST_F(
       /*returned_is_phishing=*/false,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
+
+  UnsafeResource resource;
+  resource.threat_subtype = ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2;
   // We do expect the blocking page to pop up on a non-phishy response with the
   // scam experiment verdict because
   // kClientSideDetectionShowLlamaScamVerdictWarning is now enabled despite the
   // is_phishy field is false.
-  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(1);
+  EXPECT_CALL(*ui_manager_.get(),
+              DisplayBlockingPage(HasScamThreatSubtype(resource)))
+      .Times(1);
 
   // Although the phishing detection done is set to TRIGGER_MODELS, it will
   // eventually switch to FORCE_REQUEST because the verdict cache manager
@@ -2842,8 +2857,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  base::HistogramTester histogram_tester;
-
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection},
               {kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
@@ -2881,8 +2894,6 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
     GTEST_SKIP();
   }
 
-  base::HistogramTester histogram_tester;
-
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
                kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
@@ -2897,9 +2908,14 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       /*returned_intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
 
+  UnsafeResource resource;
+  resource.threat_subtype =
+      ThreatSubtype::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT;
   // Because the callback responds with the catch all enforcement verdict, we
   // WILL show a warning.
-  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(1);
+  EXPECT_CALL(*ui_manager_.get(),
+              DisplayBlockingPage(HasScamThreatSubtype(resource)))
+      .Times(1);
 
   PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
                         ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,

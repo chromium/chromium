@@ -178,11 +178,18 @@ void MetricsHelper::RecordUserDecision(Decision decision) {
 void MetricsHelper::RecordUserDecisionToMetrics(
     Decision decision,
     const std::string& histogram_name) {
-  // Record the decision, and additionally |with extra_suffix|.
+  // Record the decision, and additionally |with extra_suffix|. If the
+  // |extra_suffix| is "from_client_side_detection", add an additional
+  // |subtype_suffix| if not empty.
   RecordSingleDecisionToMetrics(decision, histogram_name);
   if (!settings_.extra_suffix.empty()) {
     RecordSingleDecisionToMetrics(
         decision, histogram_name + "." + settings_.extra_suffix);
+    if (!settings_.extra_extra_suffix.empty()) {
+      RecordSingleDecisionToMetrics(decision, histogram_name + "." +
+                                                  settings_.extra_suffix + "." +
+                                                  settings_.extra_extra_suffix);
+    }
   }
   std::string has_page_shown_suffix =
       settings_.blocked_page_shown_timestamp.has_value() ? "after_page_shown"
@@ -198,6 +205,11 @@ void MetricsHelper::RecordUserInteraction(Interaction interaction) {
   if (!settings_.extra_suffix.empty()) {
     RecordSingleInteractionToMetrics(
         interaction, histogram_name + "." + settings_.extra_suffix);
+    if (!settings_.extra_extra_suffix.empty()) {
+      RecordSingleInteractionToMetrics(
+          interaction, histogram_name + "." + settings_.extra_suffix + "." +
+                           settings_.extra_extra_suffix);
+    }
   }
   std::string has_page_shown_suffix =
       settings_.blocked_page_shown_timestamp.has_value() ? "after_page_shown"
@@ -224,6 +236,11 @@ void MetricsHelper::RecordInterstitialShowDelay() {
   if (!settings_.extra_suffix.empty()) {
     base::UmaHistogramTimes(histogram_name + "." + settings_.extra_suffix,
                             delay);
+    if (!settings_.extra_extra_suffix.empty()) {
+      base::UmaHistogramTimes(histogram_name + "." + settings_.extra_suffix +
+                                  "." + settings_.extra_extra_suffix,
+                              delay);
+    }
   }
 }
 

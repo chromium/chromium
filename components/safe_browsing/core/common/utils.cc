@@ -208,4 +208,20 @@ std::string GetExtraMetricsSuffix(
   NOTREACHED();
 }
 
+std::string GetExtraExtraMetricsSuffix(
+    security_interstitials::UnsafeResource unsafe_resource) {
+  switch (unsafe_resource.threat_subtype) {
+    case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1:
+      return "scam_experiment_verdict_1";
+    case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2:
+      return "scam_experiment_verdict_2";
+    case safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT:
+      return "scam_experiment_catch_all";
+    case safe_browsing::ThreatSubtype::UNKNOWN:
+      return "";
+  }
+  // Subtype is not always set.
+  return "";
+}
+
 }  // namespace safe_browsing

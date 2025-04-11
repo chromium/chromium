@@ -178,12 +178,7 @@ void RecordPreClassificationCheckResultWithAndWithoutSuffix(
       result, PreClassificationCheckResult::NO_CLASSIFY_MAX);
 }
 
-bool ShouldShowWarning(bool is_phishing,
-                       std::optional<IntelligentScanVerdict> verdict) {
-  if (is_phishing) {
-    return true;
-  }
-
+bool ShouldShowScamWarning(std::optional<IntelligentScanVerdict> verdict) {
   if (!verdict.has_value() ||
       *verdict ==
           IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_UNSPECIFIED ||
@@ -203,6 +198,22 @@ bool ShouldShowWarning(bool is_phishing,
                kClientSideDetectionShowLlamaScamVerdictWarning)) &&
           *verdict ==
               IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+}
+
+safe_browsing::ThreatSubtype GetThreatSubtype(
+    IntelligentScanVerdict intelligent_scan_verdict) {
+  switch (intelligent_scan_verdict) {
+    case IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1:
+      return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1;
+    case IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2:
+      return safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2;
+    case IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT:
+      return safe_browsing::ThreatSubtype::
+          SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT;
+    default:
+      NOTREACHED();
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -1314,11 +1325,14 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
                                   IntelligentScanVerdict_MAX + 1);
   }
 
+  bool should_show_scam_warning =
+      ShouldShowScamWarning(intelligent_scan_verdict);
+
   // We will only show the warning if |is_phishing| is true, or while the
   // feature is enabled, the intelligent scan verdict matches the corresponding
   // feature. When a feature is cleaned up, remove the feature enabled check
   // alongside the corresponding IntelligentScanVerdict.
-  if (ShouldShowWarning(is_phishing, intelligent_scan_verdict)) {
+  if (is_phishing || should_show_scam_warning) {
     if (!is_from_cache && did_match_high_confidence_allowlist.has_value()) {
       base::UmaHistogramBoolean(
           "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
@@ -1342,6 +1356,11 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
           SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
       resource.threat_source =
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
+      // When we present a scam warning, we want to add separate interstitial
+      // metrics to track specifics.
+      if (should_show_scam_warning) {
+        resource.threat_subtype = GetThreatSubtype(*intelligent_scan_verdict);
+      }
       resource.rfh_locator = security_interstitials::UnsafeResourceLocator::
           CreateForRenderFrameToken(
               primary_main_frame_id.child_id,

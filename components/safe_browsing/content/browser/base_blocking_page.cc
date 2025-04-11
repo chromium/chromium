@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 
+#include <cstddef>
 #include <memory>
 
 #include "base/feature_list.h"
@@ -235,6 +236,19 @@ BaseBlockingPage::GetReportingInfo(
       GetMetricPrefix(unsafe_resources, interstitial_reason);
   CHECK_GE(unsafe_resources.size(), 1u);
   reporting_info.extra_suffix = GetExtraMetricsSuffix(unsafe_resources[0]);
+  // When the subtype expands to more threat_source and the CHECK below is hit,
+  // define new histograms in xml file to represent the change.
+  if (unsafe_resources[0].threat_source ==
+      ThreatSource::CLIENT_SIDE_DETECTION) {
+    reporting_info.extra_extra_suffix =
+        GetExtraExtraMetricsSuffix(unsafe_resources[0]);
+  }
+
+  if (unsafe_resources[0].threat_subtype !=
+      safe_browsing::ThreatSubtype::UNKNOWN) {
+    CHECK_EQ(unsafe_resources[0].threat_source,
+             ThreatSource::CLIENT_SIDE_DETECTION);
+  }
   reporting_info.blocked_page_shown_timestamp = blocked_page_shown_timestamp;
   return reporting_info;
 }
