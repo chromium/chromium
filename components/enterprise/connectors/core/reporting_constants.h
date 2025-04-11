@@ -150,6 +150,8 @@ inline constexpr char kKeyAction[] = "action";
 inline constexpr char kKeyHasWatermarking[] = "hasWatermarking";
 inline constexpr char kKeyReason[] = "reason";
 inline constexpr char kKeyNetErrorCode[] = "netErrorCode";
+inline constexpr char kKeyUserName[] = "userName";
+inline constexpr char kKeyIsPhishingUrl[] = "isPhishingUrl";
 
 }  // namespace enterprise_connectors
 

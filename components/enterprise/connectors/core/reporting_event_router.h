@@ -38,6 +38,16 @@ class ReportingEventRouter : public KeyedService {
       const std::string& trigger,
       const std::vector<std::pair<GURL, std::u16string>>& identities);
 
+  // Notifies listeners that the user reused a protected password.
+  // - `url` is the URL where the password was reused
+  // - `user_name` is the user associated with the reused password
+  // - `is_phising_url` is whether the URL is thought to be a phishing one
+  // - `warning_shown` is whether a warning dialog was shown to the user
+  void OnPasswordReuse(const GURL& url,
+                       const std::string& user_name,
+                       bool is_phishing_url,
+                       bool warning_shown);
+
   void OnUrlFilteringInterstitial(
       const GURL& url,
       const std::string& threat_type,

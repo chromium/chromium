@@ -120,6 +120,33 @@ void ReportingEventRouter::OnPasswordBreach(
       base::Time::Now(), /*include_profile_user_name=*/true);
 }
 
+void ReportingEventRouter::OnPasswordReuse(const GURL& url,
+                                           const std::string& user_name,
+                                           bool is_phishing_url,
+                                           bool warning_shown) {
+  std::optional<enterprise_connectors::ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(
+          enterprise_connectors::kKeyPasswordReuseEvent) == 0) {
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(kKeyUrl, url.spec());
+  event.Set(kKeyUserName, user_name);
+  event.Set(kKeyIsPhishingUrl, is_phishing_url);
+  event.Set(kKeyEventResult,
+            enterprise_connectors::EventResultToString(
+                warning_shown ? enterprise_connectors::EventResult::WARNED
+                              : enterprise_connectors::EventResult::ALLOWED));
+
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      enterprise_connectors::kKeyPasswordReuseEvent,
+      std::move(settings.value()), std::move(event), base::Time::Now(),
+      /*include_profile_user_name=*/true);
+}
+
 void ReportingEventRouter::OnUrlFilteringInterstitial(
     const GURL& url,
     const std::string& threat_type,

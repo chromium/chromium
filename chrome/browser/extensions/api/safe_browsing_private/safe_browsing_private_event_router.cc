@@ -236,29 +236,6 @@ void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordReuseDetected(
         std::move(event_value));
     event_router_->BroadcastEvent(std::move(extension_event));
   }
-
-#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  std::optional<enterprise_connectors::ReportingSettings> settings =
-      reporting_client_->GetReportingSettings();
-  if (!settings.has_value() ||
-      settings->enabled_event_names.count(
-          enterprise_connectors::kKeyPasswordReuseEvent) == 0) {
-    return;
-  }
-
-  base::Value::Dict event;
-  event.Set(kKeyUrl, params.url);
-  event.Set(kKeyUserName, params.user_name);
-  event.Set(kKeyIsPhishingUrl, params.is_phishing_url);
-  event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(
-                warning_shown ? enterprise_connectors::EventResult::WARNED
-                              : enterprise_connectors::EventResult::ALLOWED));
-
-  reporting_client_->ReportRealtimeEvent(
-      enterprise_connectors::kKeyPasswordReuseEvent,
-      std::move(settings.value()), std::move(event));
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
 
 void SafeBrowsingPrivateEventRouter::OnPolicySpecifiedPasswordChanged(

@@ -148,6 +148,13 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
         ->OnPolicySpecifiedPasswordReuseDetected(
             GURL("https://phishing.com/"), "user_name_1",
             /*is_phishing_url*/ true, warning_shown);
+
+    // TODO(mxlg): Move the tests related to the ReportingEventRouter to its own
+    // unit tests file.
+    enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+        profile_)
+        ->OnPasswordReuse(GURL("https://phishing.com/"), "user_name_1",
+                          /*is_phishing_url*/ true, warning_shown);
   }
 
   void TriggerOnPolicySpecifiedPasswordChangedEvent() {
