@@ -1054,10 +1054,14 @@ void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
   url::RawCanonOutputT<char> output;
   url::Parsed new_parsed;
 
-  StringUTF8Adaptor utf8(string_);
-  bool replacements_valid =
-      url::ReplaceComponents(utf8.data(), utf8.size(), parsed_, replacements,
-                             nullptr, &output, &new_parsed);
+  bool replacements_valid;
+  {
+    StringUTF8Adaptor utf8(string_);
+    replacements_valid =
+        url::ReplaceComponents(utf8.data(), utf8.size(), parsed_, replacements,
+                               nullptr, &output, &new_parsed);
+    // `utf8` should be destructed before replacing `string_`.
+  }
   if (replacements_valid || !preserve_validity) {
     is_valid_ = replacements_valid;
     parsed_ = new_parsed;
