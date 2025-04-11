@@ -26,6 +26,7 @@
 #include "android_webview/browser/aw_http_auth_handler.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
+#include "android_webview/browser/aw_web_contents_delegate.h"
 #include "android_webview/browser/aw_web_contents_view_delegate.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
@@ -102,6 +103,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -652,7 +654,11 @@ void AwContentBrowserClient::OverrideWebPreferences(
   if (aw_settings) {
     aw_settings->PopulateWebPreferences(web_prefs);
   }
-  web_prefs->modal_context_menu = false;
+
+  AwWebContentsDelegate* delegate =
+      static_cast<AwWebContentsDelegate*>(web_contents->GetDelegate());
+  web_prefs->modal_context_menu =
+      (delegate) ? delegate->isModalContextMenu() : false;
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

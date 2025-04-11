@@ -56,6 +56,9 @@ public abstract class AwWebContentsDelegate extends WebContentsDelegateAndroid {
     @CalledByNative
     public abstract void loadingStateChanged();
 
+    @CalledByNative
+    protected abstract boolean isPopupSupported();
+
     @NativeMethods
     interface Natives {
         // Call in response to a prior runFileChooser call.
