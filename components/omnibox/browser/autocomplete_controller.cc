@@ -1590,19 +1590,26 @@ bool AutocompleteController::CheckWhetherDefaultMatchChanged(
         internal_result_.default_match()->associated_keyword->keyword;
   }
   // We've gotten async results. Send notification that the default match
-  // updated if fill_into_edit, associated_keyword, or keyword differ.  (The
-  // second can change if we've just started Chrome and the keyword database
-  // finishes loading while processing this request.  The third can change
-  // if we swapped from interpreting the input as a search--which gets
-  // labeled with the default search provider's keyword--to a URL.)
-  // We don't check the URL as that may change for the default match
-  // even though the fill into edit hasn't changed (see SearchProvider
-  // for one case of this).
+  // updated if:
+  //   * fill_into_edit differs.
+  //   * icon_url differs.
+  //   * associated_keyword differs.
+  //     This can change when Chrome starts and the keyword database
+  //     finishes loading while processing this request.
+  //   * keyword differs.
+  //     This can change if the interpretation of the input switches
+  //     between a search, which gets labeled with the default search
+  //     provider's keyword, to a URL.
+  // The URL is NOT checked for changes because it might be updated for the
+  // default match even if fill_into_edit remains the same (see SearchProvider
+  // for an example).
   const bool notify_default_match =
       (last_default_match.has_value() != default_is_valid) ||
       (last_default_match &&
        ((internal_result_.default_match()->fill_into_edit !=
          last_default_match->fill_into_edit) ||
+        (internal_result_.default_match()->icon_url !=
+         last_default_match->icon_url) ||
         (default_associated_keyword != last_default_associated_keyword) ||
         (internal_result_.default_match()->keyword !=
          last_default_match->keyword)));

@@ -81,8 +81,8 @@ class BrowserProxy {
         this.handleNewAutocompleteResponse.bind(this));
     this.callbackRouter_.handleNewAutocompleteQuery.addListener(
         this.handleNewAutocompleteQuery.bind(this));
-    this.callbackRouter_.handleAnswerImageData.addListener(
-        omniboxOutput.updateAnswerImage.bind(omniboxOutput));
+    this.callbackRouter_.handleAnswerIconImageData.addListener(
+        omniboxOutput.updateAnswerIconImage.bind(omniboxOutput));
 
     this.handler_ = OmniboxPageHandler.getRemote();
     this.handler_.setClientPage(

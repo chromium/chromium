@@ -99,9 +99,9 @@ export class OmniboxOutput extends OmniboxElement {
     this.updateFilterHighlights();
   }
 
-  updateAnswerImage(
+  updateAnswerIconImage(
       _controllerType: AutocompleteControllerType, url: string, data: string) {
-    this.outputMatches.forEach(match => match.updateAnswerImage(url, data));
+    this.outputMatches.forEach(match => match.updateAnswerIconImage(url, data));
   }
 
   private updateDisplay() {
@@ -321,7 +321,7 @@ class OutputResultsTable extends HTMLTableSectionElement {
 
 /** Helps track and render a single match. */
 class OutputMatch extends HTMLTableRowElement {
-  private contentsAndDescription: OutputAnswerProperty;
+  private imageAndIcon: OutputImageAndIconProperty;
 
   constructor(match: AutocompleteMatch) {
     super();
@@ -334,15 +334,20 @@ class OutputMatch extends HTMLTableRowElement {
       const property = column.create(match);
       property.classList.add(column.cellClassName);
       this.appendChild(property);
-      if (property instanceof OutputAnswerProperty) {
-        this.contentsAndDescription = property;
+      if (property instanceof OutputImageAndIconProperty) {
+        this.imageAndIcon = property;
       }
     });
   }
 
-  updateAnswerImage(url: string, data: string) {
-    if (this.contentsAndDescription.image === url) {
-      this.contentsAndDescription.setAnswerImageData(data);
+  updateAnswerIconImage(url: string, data: string) {
+    if (this.imageAndIcon) {
+      if (this.imageAndIcon.imageUrl.href.endsWith(url)) {
+        this.imageAndIcon.setAnswerImageData(data);
+      }
+      if (this.imageAndIcon.iconUrl.href.endsWith(url)) {
+        this.imageAndIcon.setAnswerIconData(data);
+      }
     }
   }
 
@@ -447,19 +452,43 @@ class OutputOverlappingPairProperty extends OutputPairProperty {
   }
 }
 
-class OutputAnswerProperty extends FlexWrappingOutputProperty {
-  readonly image: string;
+class OutputImageAndIconProperty extends FlexWrappingOutputProperty {
+  readonly iconUrl: HTMLAnchorElement;
+  private readonly iconElement: HTMLImageElement;
+  readonly imageUrl: HTMLAnchorElement;
   private readonly imageElement: HTMLImageElement;
 
+  constructor(iconUrl: string, imageUrl: string) {
+    super([iconUrl, imageUrl].join('.'));
+
+    this.iconUrl = createEl('a', this.container, ['pair-item', 'icon-url']);
+    this.iconUrl.href = iconUrl;
+    this.iconUrl.title = 'Icon URL: ' + iconUrl;
+    this.iconUrl.target = '_blank';
+    this.iconElement = createEl('img', this.iconUrl, ['icon-image']);
+
+    this.imageUrl = createEl('a', this.container, ['pair-item', 'image-url']);
+    this.imageUrl.href = imageUrl;
+    this.imageUrl.title = 'Image URL: ' + imageUrl;
+    this.imageUrl.target = '_blank';
+    this.imageElement = createEl('img', this.imageUrl, ['image-image']);
+  }
+
+  setAnswerIconData(iconData: string) {
+    this.iconElement.src = iconData;
+  }
+
+  setAnswerImageData(imageData: string) {
+    this.imageElement.src = imageData;
+  }
+}
+
+class OutputAnswerProperty extends FlexWrappingOutputProperty {
   constructor(
-      image: string, contents: string, description: string, answer: string,
+      contents: string, description: string, answer: string,
       contentsClassification: ACMatchClassification[],
       descriptionClassification: ACMatchClassification[]) {
-    super([image, contents, description, answer].join('.'));
-
-    this.image = image;
-
-    this.imageElement = createEl('img', this.container, ['pair-item']);
+    super([contents, description, answer].join('.'));
 
     const contentsDiv =
         createEl('div', this.container, ['pair-item', 'contents']);
@@ -472,12 +501,6 @@ class OutputAnswerProperty extends FlexWrappingOutputProperty {
         descriptionDiv, description, descriptionClassification);
 
     createEl('div', this.container, ['pair-item', 'answer'], answer);
-    createEl('a', this.container, ['pair-item', 'image-url'], image).href =
-        image;
-  }
-
-  setAnswerImageData(imageData: string) {
-    this.imageElement.src = imageData;
   }
 
   private static renderClassifiedText(
@@ -672,14 +695,18 @@ const COLUMNS: Column[] = [
       'Relevance\nThe result score. Higher is more relevant.',
       match => new OutputTextProperty(String(match.relevance))),
   new Column(
+      ['Icon', 'Image'], '', 'image-and-icon', true,
+      'Icon & Image\nClickable icon and image associated with the result.',
+      match => new OutputImageAndIconProperty(match.icon, match.image)),
+  new Column(
       ['Contents', 'Description', 'Answer'], '', 'contents-and-description',
       true,
       'Contents & Description & Answer\nURL classifications are styled ' +
           'blue.\nMATCH classifications are styled bold.\nDIM ' +
           'classifications are styled with a gray background.',
       match => new OutputAnswerProperty(
-          match.image, match.contents, match.description, match.answer,
-          match.contentsClass, match.descriptionClass)),
+          match.contents, match.description, match.answer, match.contentsClass,
+          match.descriptionClass)),
   new Column(
       ['sw'], '', 'swap-contents-and-description', false,
       'Swap Contents and Description',
@@ -781,6 +808,9 @@ customElements.define(
     'output-pair-property', OutputPairProperty, {extends: 'td'});
 customElements.define(
     'output-overlapping-pair-property', OutputOverlappingPairProperty,
+    {extends: 'td'});
+customElements.define(
+    'output-image-and-icon-property', OutputImageAndIconProperty,
     {extends: 'td'});
 customElements.define(
     'output-answer-property', OutputAnswerProperty, {extends: 'td'});
