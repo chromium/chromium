@@ -7426,20 +7426,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.ShouldInterceptRequest.IsRequestIntercepted"
-    enum="Boolean" expires_after="2024-06-13">
-  <owner>ntfschr@chromium.org</owner>
+    enum="Boolean" expires_after="2026-04-01">
+  <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Whether the network request was intercepted by the embedder of Android
     WebView. Intercepted requests are requests for which the
     shouldInterceptRequest() callback returned a non-null response. This is
     logged each time the shouldInterceptRequest() callback API is invoked by
-    WebView, which corresponds to every network request.
+    WebView.
+
+    Not all requests will result in the callback being invoked, and thus the
+    histogram will not be emitted in these cases. Some non-exhaustive edge cases
+    include post-redirect requests not invoking the callback, and callbacks
+    being triggered by non-network requests, such as data URIs. Note also that
+    the callback invocation will be skipped if the embedding application has not
+    implemented the callback and the
+    &quot;WebViewShortCircuitShouldInterceptRequest&quot; feature is enabled.
 
     This histogram was added in M116. Prior milestones logged
     &quot;Android.WebView.ShouldInterceptRequest.InterceptionType2&quot;,
     however that histogram further broke down the &quot;intercepted ==
     true&quot; case by which URL scheme was used for the URL.
+
+    Warning: this histogram was expired from 2024-06-13 to 2025-04-14; data may
+    be missing.
   </summary>
 </histogram>
 
