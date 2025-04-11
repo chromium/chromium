@@ -47,7 +47,7 @@ class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
   void copyBufferToBuffer(DawnObject<wgpu::Buffer>* source,
                           DawnObject<wgpu::Buffer>* destination,
                           ExceptionState& exception_state) {
-    if (!RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled()) {
+    if (!RuntimeEnabledFeatures::WebGPUCopyBufferToBufferOverloadEnabled()) {
       exception_state.ThrowTypeError("Offsets and size are required.");
       return;
     }
@@ -57,7 +57,7 @@ class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
                           DawnObject<wgpu::Buffer>* destination,
                           uint64_t size,
                           ExceptionState& exception_state) {
-    if (!RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled()) {
+    if (!RuntimeEnabledFeatures::WebGPUCopyBufferToBufferOverloadEnabled()) {
       exception_state.ThrowTypeError("Offsets are required.");
       return;
     }
@@ -68,7 +68,7 @@ class GPUCommandEncoder : public DawnObject<wgpu::CommandEncoder> {
                           DawnObject<wgpu::Buffer>* destination,
                           uint64_t destination_offset,
                           ExceptionState& exception_state) {
-    if (!RuntimeEnabledFeatures::WebGPUExperimentalFeaturesEnabled()) {
+    if (!RuntimeEnabledFeatures::WebGPUCopyBufferToBufferOverloadEnabled()) {
       exception_state.ThrowTypeError("Size is required.");
       return;
     }
