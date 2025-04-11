@@ -22,90 +22,21 @@ using testing::IsEmpty;
 using enum privacy_sandbox::NoticeType;
 using enum privacy_sandbox::SurfaceType;
 
-BASE_FEATURE(kTestFeatureA, "TestFeatureA", base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Test Consent ID, with arbitrary NoticeType and SurfaceType.
-constexpr NoticeId kTestConsentId = {PrivacySandboxNotice::kTopicsConsentNotice,
-                                     kClankBrApp};
-
-// Helper function to create Notice/Consent objects easily in tests
-template <typename T>
-std::unique_ptr<Notice> Make(NoticeId notice_id) {
-  return std::make_unique<T>(notice_id);
-}
-
+// TODO(crbug.com/392612108): Add a test library util class that implements
+// these, so these can be reused with browsertests later.
 class PrivacySandboxNoticeCatalogTest : public testing::Test {
  protected:
   NoticeCatalogImpl catalog_;
 };
 
-TEST_F(PrivacySandboxNoticeCatalogTest, InitialState) {
-  EXPECT_THAT(catalog_.GetNoticeApis(), IsEmpty());
-  EXPECT_THAT(catalog_.GetNoticeMap(), IsEmpty());
-  EXPECT_FALSE(catalog_.IsPopulated());
-}
-
-TEST_F(PrivacySandboxNoticeCatalogTest, IsPopulated) {
-  EXPECT_FALSE(catalog_.IsPopulated());
-  catalog_.Populate();
-  EXPECT_TRUE(catalog_.IsPopulated());
-  EXPECT_DEATH(catalog_.Populate(), "");
-}
-
-TEST_F(PrivacySandboxNoticeCatalogTest, RegisterAndRetrieveNewApi) {
-  NoticeApi* api1 = catalog_.RegisterAndRetrieveNewApi();
-  EXPECT_NE(api1, nullptr);
-  EXPECT_EQ(catalog_.GetNoticeApis().size(), 1u);
-  EXPECT_EQ(catalog_.GetNoticeApis()[0].get(), api1);
-
-  NoticeApi* api2 = catalog_.RegisterAndRetrieveNewApi();
-  EXPECT_NE(api2, nullptr);
-  EXPECT_NE(api1, api2);
-  EXPECT_EQ(catalog_.GetNoticeApis().size(), 2u);
-  EXPECT_EQ(catalog_.GetNoticeApis()[1].get(), api2);
-}
-
-TEST_F(PrivacySandboxNoticeCatalogTest, RegisterAndRetrieveNewNotice) {
-  NoticeApi* target_api = catalog_.RegisterAndRetrieveNewApi();
-  NoticeApi* prereq_api = catalog_.RegisterAndRetrieveNewApi();
-
-  Notice* consent_notice =
-      catalog_.RegisterAndRetrieveNewNotice(&Make<Consent>, kTestConsentId);
-
-  ASSERT_NE(consent_notice, nullptr);
-  EXPECT_EQ(consent_notice->GetNoticeId(), kTestConsentId);
-  EXPECT_EQ(consent_notice->GetNoticeType(), kConsent);
-  EXPECT_EQ(catalog_.GetNoticeMap().size(), 1u);
-  ASSERT_TRUE(catalog_.GetNoticeMap().contains(kTestConsentId));
-  EXPECT_EQ(catalog_.GetNoticeMap().at(kTestConsentId).get(), consent_notice);
-
-  consent_notice->SetFeature(&kTestFeatureA)
-      ->SetTargetApis({target_api})
-      ->SetPreReqApis({prereq_api});
-
-  EXPECT_EQ(consent_notice->GetFeature(), &kTestFeatureA);
-  EXPECT_THAT(consent_notice->GetTargetApis(), ElementsAre(target_api));
-  EXPECT_THAT(consent_notice->GetPreReqApis(), ElementsAre(prereq_api));
-  EXPECT_THAT(target_api->GetLinkedNotices(), Contains(consent_notice));
-}
-
-// TODO(crbug.com/392612108): Add a test library util class that implements
-// these, so these can be reused with browsertests later.
-class PrivacySandboxNoticeCatalogPopulateTest : public testing::Test {
- protected:
-  void SetUp() override { catalog_.Populate(); }
-
-  NoticeCatalogImpl catalog_;
-};
-
 // Test that Populate actually registers APIs and Notices.
-TEST_F(PrivacySandboxNoticeCatalogPopulateTest, PopulatesCatalog) {
+TEST_F(PrivacySandboxNoticeCatalogTest, PopulatesCatalog) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
   EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
 }
 
 // No duplicate Notices (same pair of Name and surface).
-TEST_F(PrivacySandboxNoticeCatalogPopulateTest, NoDuplicateNoticeIds) {
+TEST_F(PrivacySandboxNoticeCatalogTest, NoDuplicateNoticeIds) {
   EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
 
   std::set<Notice*> notice_pointers;
@@ -117,8 +48,7 @@ TEST_F(PrivacySandboxNoticeCatalogPopulateTest, NoDuplicateNoticeIds) {
 }
 
 // All notices must point to a unique Feature.
-TEST_F(PrivacySandboxNoticeCatalogPopulateTest,
-       UniqueFeaturesPerNoticeInstance) {
+TEST_F(PrivacySandboxNoticeCatalogTest, UniqueFeaturesPerNoticeInstance) {
   EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
 
   std::set<const base::Feature*> features_seen;
@@ -131,8 +61,7 @@ TEST_F(PrivacySandboxNoticeCatalogPopulateTest,
 }
 
 // All notices have a unique storage name.
-TEST_F(PrivacySandboxNoticeCatalogPopulateTest,
-       UniqueStorageNamePerNoticeInstance) {
+TEST_F(PrivacySandboxNoticeCatalogTest, UniqueStorageNamePerNoticeInstance) {
   EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
 
   std::set<std::string> storage_names;
@@ -143,7 +72,7 @@ TEST_F(PrivacySandboxNoticeCatalogPopulateTest,
 }
 
 // All notices must map to at least one target API.
-TEST_F(PrivacySandboxNoticeCatalogPopulateTest, AllNoticesTargetAtLeastOneApi) {
+TEST_F(PrivacySandboxNoticeCatalogTest, AllNoticesTargetAtLeastOneApi) {
   EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
 
   for (const auto& [notice_id, notice] : catalog_.GetNoticeMap()) {
@@ -153,8 +82,7 @@ TEST_F(PrivacySandboxNoticeCatalogPopulateTest, AllNoticesTargetAtLeastOneApi) {
 }
 
 // All APIs must be covered by at least one Notice.
-TEST_F(PrivacySandboxNoticeCatalogPopulateTest,
-       AllApisAreTargetedByAtLeastOneNotice) {
+TEST_F(PrivacySandboxNoticeCatalogTest, AllApisAreTargetedByAtLeastOneNotice) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
 
   for (const auto& api : catalog_.GetNoticeApis()) {
@@ -164,7 +92,7 @@ TEST_F(PrivacySandboxNoticeCatalogPopulateTest,
 }
 
 // All registered APIs must have unique pointers.
-TEST_F(PrivacySandboxNoticeCatalogPopulateTest, UniqueApiInstances) {
+TEST_F(PrivacySandboxNoticeCatalogTest, UniqueApiInstances) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
 
   std::set<NoticeApi*> api_pointers;
@@ -177,7 +105,7 @@ TEST_F(PrivacySandboxNoticeCatalogPopulateTest, UniqueApiInstances) {
 
 // All APIs listed as Targets for any Notice must be present in the main list of
 // registered APIs.
-TEST_F(PrivacySandboxNoticeCatalogPopulateTest, TargetApisAreValid) {
+TEST_F(PrivacySandboxNoticeCatalogTest, TargetApisAreValid) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
   EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
 
@@ -199,7 +127,7 @@ TEST_F(PrivacySandboxNoticeCatalogPopulateTest, TargetApisAreValid) {
 
 // All pre-requisite APIs listed for any Notice must be present in the main list
 // of registered APIs.
-TEST_F(PrivacySandboxNoticeCatalogPopulateTest, PrerequisiteApisAreValid) {
+TEST_F(PrivacySandboxNoticeCatalogTest, PrerequisiteApisAreValid) {
   EXPECT_THAT(catalog_.GetNoticeApis(), Not(IsEmpty()));
   EXPECT_THAT(catalog_.GetNoticeMap(), Not(IsEmpty()));
 
@@ -221,7 +149,7 @@ TEST_F(PrivacySandboxNoticeCatalogPopulateTest, PrerequisiteApisAreValid) {
 }
 
 class PrivacySandboxNoticeCatalogPopulateAllNoticesTest
-    : public PrivacySandboxNoticeCatalogPopulateTest,
+    : public PrivacySandboxNoticeCatalogTest,
       public testing::WithParamInterface<int> {};
 
 TEST_P(PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
@@ -244,7 +172,7 @@ TEST_P(PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(
-  PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
+    PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
     PrivacySandboxNoticeCatalogPopulateAllNoticesTest,
     testing::Range(static_cast<int>(PrivacySandboxNotice::kMinValue),
                    static_cast<int>(PrivacySandboxNotice::kMaxValue) + 1));

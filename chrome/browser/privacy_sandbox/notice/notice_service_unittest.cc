@@ -45,19 +45,6 @@ std::unique_ptr<Notice> MakeNotice(NoticeId id) {
   return std::make_unique<Notice>(id);
 }
 
-TEST(PrivacySandboxNoticeServiceCatalogNotReadyTest, Crashes) {
-  auto catalog = std::make_unique<MockNoticeCatalog>();
-  auto mock_catalog = catalog.get();
-  EXPECT_CALL(*mock_catalog, IsPopulated()).WillRepeatedly(Return(false));
-  EXPECT_DEATH(std::make_unique<PrivacySandboxNoticeService>(
-                   IdentityTestEnvironmentProfileAdaptor::
-                       CreateProfileForIdentityTestEnvironment()
-                           .get(),
-                   std::move(catalog), std::make_unique<MockNoticeStorage>()),
-               "");
-  Mock::VerifyAndClearExpectations(mock_catalog);
-}
-
 class PrivacySandboxNoticeServiceTest : public Test {
  public:
   PrivacySandboxNoticeServiceTest()
@@ -69,8 +56,6 @@ class PrivacySandboxNoticeServiceTest : public Test {
     mock_storage_ = storage.get();
     auto catalog = std::make_unique<MockNoticeCatalog>();
     mock_catalog_ = catalog.get();
-
-    EXPECT_CALL(*mock_catalog_, IsPopulated()).WillRepeatedly(Return(true));
 
     notice_service_ = std::make_unique<PrivacySandboxNoticeService>(
         profile_.get(), std::move(catalog), std::move(storage));

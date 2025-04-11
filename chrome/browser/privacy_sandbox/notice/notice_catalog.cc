@@ -24,7 +24,9 @@ std::unique_ptr<Notice> Make(NoticeId id) {
 
 }  // namespace
 
-NoticeCatalogImpl::NoticeCatalogImpl() = default;
+NoticeCatalogImpl::NoticeCatalogImpl() {
+  Populate();
+}
 NoticeCatalogImpl::~NoticeCatalogImpl() = default;
 
 NoticeApi* NoticeCatalogImpl::RegisterAndRetrieveNewApi() {
@@ -57,19 +59,12 @@ void NoticeCatalogImpl::RegisterNoticeGroup(
   }
 }
 
-bool NoticeCatalogImpl::IsPopulated() {
-  return is_populated_;
-}
-
 const NoticeMap& NoticeCatalogImpl::GetNoticeMap() {
   return notices_;
 }
 
 void NoticeCatalogImpl::Populate() {
   // TODO(crbug.com/392612108): Add all eligibility and result callbacks.
-
-  CHECK(!is_populated_) << "Catalog already populated.";
-  is_populated_ = true;
 
   // Define APIs.
   NoticeApi* topics = RegisterAndRetrieveNewApi();

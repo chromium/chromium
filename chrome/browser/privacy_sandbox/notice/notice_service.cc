@@ -24,7 +24,6 @@ PrivacySandboxNoticeService::PrivacySandboxNoticeService(
   CHECK(profile_);
   CHECK(notice_storage_);
   CHECK(catalog_);
-  CHECK(catalog_->IsPopulated());
 
 #if !BUILDFLAG(IS_ANDROID)
   desktop_view_manager_ = std::make_unique<DesktopViewManager>(this);

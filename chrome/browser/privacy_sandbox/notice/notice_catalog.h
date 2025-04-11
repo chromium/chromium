@@ -19,12 +19,6 @@ class NoticeCatalog {
   // Accessors.
   virtual const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() = 0;
   virtual const NoticeMap& GetNoticeMap() = 0;
-
-  // Populates the catalog with all the notices and their requirements.
-  virtual void Populate() = 0;
-
-  // Returns whether the catalog has been populated.
-  virtual bool IsPopulated() = 0;
 };
 
 class NoticeCatalogImpl : public NoticeCatalog {
@@ -35,17 +29,15 @@ class NoticeCatalogImpl : public NoticeCatalog {
   const std::vector<std::unique_ptr<NoticeApi>>& GetNoticeApis() override;
   const NoticeMap& GetNoticeMap() override;
 
-  void Populate() override;
-
-  bool IsPopulated() override;
-
+ private:
+  // Registers a new API and returns a pointer to it.
   NoticeApi* RegisterAndRetrieveNewApi();
 
+  // Registers a new notice and returns a pointer to it.
   Notice* RegisterAndRetrieveNewNotice(
       std::unique_ptr<Notice> (*notice_creator)(NoticeId),
       NoticeId notice_id);
 
- private:
   // Registers a group of notices with the same requirements to be shown (for
   // ex. Topics can have TopicsClankBrApp, TopicsDesktop and TopicsClankCCT)
   void RegisterNoticeGroup(
@@ -54,9 +46,11 @@ class NoticeCatalogImpl : public NoticeCatalog {
       std::vector<NoticeApi*>&& target_apis,
       std::vector<NoticeApi*>&& pre_req_apis = {});
 
+  // Populates the catalog with all the notices and their requirements.
+  void Populate();
+
   std::vector<std::unique_ptr<NoticeApi>> apis_;
   NoticeMap notices_;
-  bool is_populated_ = false;
 };
 
 }  // namespace privacy_sandbox
