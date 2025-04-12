@@ -29,9 +29,11 @@ AccountWidgetUpdater::AccountWidgetUpdater(
 AccountWidgetUpdater::~AccountWidgetUpdater() = default;
 
 void AccountWidgetUpdater::OnIdentityListChanged() {
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&AccountWidgetUpdater::UpdateLoadedAccounts,
                                 weak_ptr_factory_.GetWeakPtr()));
+#endif
 }
 
 void AccountWidgetUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
