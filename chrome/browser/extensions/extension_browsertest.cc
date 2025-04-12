@@ -216,7 +216,10 @@ const Extension* ExtensionBrowserTest::InstallExtensionWithUIAutoConfirm(
     std::optional<int> expected_change) {
   return InstallOrUpdateExtension(
       std::string(), path, InstallUIType::kAutoConfirm,
-      std::move(expected_change), GetActiveWebContents(), Extension::NO_FLAGS);
+      std::move(expected_change), mojom::ManifestLocation::kInternal,
+      GetActiveWebContents(), Extension::NO_FLAGS,
+      /*install_immediately=*/true,
+      /*grant_permissions=*/false);
 }
 
 const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
@@ -226,41 +229,6 @@ const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
       std::string(), path, InstallUIType::kAutoConfirm,
       std::move(expected_change), ManifestLocation::kInternal,
       GetActiveWebContents(), Extension::FROM_WEBSTORE, true, false);
-}
-
-const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    InstallUIType ui_type,
-    std::optional<int> expected_change) {
-  return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  ManifestLocation::kInternal,
-                                  GetActiveWebContents(), Extension::NO_FLAGS,
-                                  true, false);
-}
-
-const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    InstallUIType ui_type,
-    std::optional<int> expected_change,
-    content::WebContents* active_web_contents,
-    Extension::InitFromValueFlags creation_flags) {
-  return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  ManifestLocation::kInternal,
-                                  active_web_contents, creation_flags, true,
-                                  false);
-}
-
-const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    InstallUIType ui_type,
-    std::optional<int> expected_change,
-    ManifestLocation install_source) {
-  return InstallOrUpdateExtension(id, path, ui_type, std::move(expected_change),
-                                  install_source, GetActiveWebContents(),
-                                  Extension::NO_FLAGS, true, false);
 }
 
 const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(

@@ -93,7 +93,11 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
   const Extension* InstallExtension(const base::FilePath& path,
                                     std::optional<int> expected_change) {
     return InstallOrUpdateExtension(std::string(), path, InstallUIType::kNone,
-                                    std::move(expected_change));
+                                    std::move(expected_change),
+                                    mojom::ManifestLocation::kInternal,
+                                    GetActiveWebContents(), Extension::NO_FLAGS,
+                                    /*install_immediately=*/true,
+                                    /*grant_permissions=*/false);
   }
 
   // Same as above, but an install source other than
@@ -102,7 +106,10 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
                                     std::optional<int> expected_change,
                                     mojom::ManifestLocation install_source) {
     return InstallOrUpdateExtension(std::string(), path, InstallUIType::kNone,
-                                    std::move(expected_change), install_source);
+                                    std::move(expected_change), install_source,
+                                    GetActiveWebContents(), Extension::NO_FLAGS,
+                                    /*install_immediately=*/true,
+                                    /*grant_permissions=*/false);
   }
 
   // Installs an extension and grants it the permissions it requests.
@@ -128,7 +135,11 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
                                    const base::FilePath& path,
                                    std::optional<int> expected_change) {
     return InstallOrUpdateExtension(id, path, InstallUIType::kNone,
-                                    std::move(expected_change));
+                                    std::move(expected_change),
+                                    mojom::ManifestLocation::kInternal,
+                                    GetActiveWebContents(), Extension::NO_FLAGS,
+                                    /*install_immediately=*/true,
+                                    /*grant_permissions=*/false);
   }
 
   // Same as UpdateExtension but waits for the extension to be idle first.
@@ -154,7 +165,10 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
   // Begins install process but simulates a user cancel.
   const Extension* StartInstallButCancel(const base::FilePath& path) {
     return InstallOrUpdateExtension(std::string(), path, InstallUIType::kCancel,
-                                    0);
+                                    0, mojom::ManifestLocation::kInternal,
+                                    GetActiveWebContents(), Extension::NO_FLAGS,
+                                    /*install_immediately=*/true,
+                                    /*grant_permissions=*/false);
   }
 
   // Wait for the number of visible page actions to change to |count|.
@@ -185,23 +199,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
     kAutoConfirm,
   };
 
-  const Extension* InstallOrUpdateExtension(const extensions::ExtensionId& id,
-                                            const base::FilePath& path,
-                                            InstallUIType ui_type,
-                                            std::optional<int> expected_change);
-  const Extension* InstallOrUpdateExtension(
-      const extensions::ExtensionId& id,
-      const base::FilePath& path,
-      InstallUIType ui_type,
-      std::optional<int> expected_change,
-      content::WebContents* active_web_contents,
-      Extension::InitFromValueFlags creation_flags);
-  const Extension* InstallOrUpdateExtension(
-      const extensions::ExtensionId& id,
-      const base::FilePath& path,
-      InstallUIType ui_type,
-      std::optional<int> expected_change,
-      mojom::ManifestLocation install_source);
   const Extension* InstallOrUpdateExtension(
       const extensions::ExtensionId& id,
       const base::FilePath& path,
