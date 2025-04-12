@@ -355,7 +355,9 @@ public class PageInfoController
                 };
 
         mDialog = dialog;
-        dialog.show();
+        if (mNativePageInfoController != 0) {
+            dialog.show();
+        }
     }
 
     private void destroy() {
