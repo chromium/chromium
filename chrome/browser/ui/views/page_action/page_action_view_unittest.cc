@@ -178,6 +178,8 @@ class PageActionViewTest : public ChromeViewsTestBase {
     ON_CALL(mock_model_, GetShowSuggestionChip()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetShouldAnimateChip()).WillByDefault(Return(false));
     ON_CALL(mock_model_, GetText()).WillByDefault(ReturnRef(mock_string_));
+    ON_CALL(mock_model_, GetAccessibleName())
+        .WillByDefault(ReturnRef(mock_string_));
     ON_CALL(mock_model_, GetTooltipText())
         .WillByDefault(ReturnRef(mock_string_));
     ON_CALL(mock_model_, GetImage()).WillByDefault(ReturnRef(mock_image_));
@@ -508,6 +510,8 @@ class PageActionViewAnimationTest : public PageActionViewTest {
         .WillRepeatedly(Return(showing));
     EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
     EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+    EXPECT_CALL(*model(), GetAccessibleName())
+        .WillRepeatedly(ReturnRef(kTestText));
     page_action_view()->OnPageActionModelChanged(*model());
 
     ASSERT_FALSE(page_action_view()->is_animating_label());

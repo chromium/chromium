@@ -127,6 +127,12 @@ const std::u16string& PageActionModel::GetText() const {
   return override_text_.has_value() ? override_text_.value() : text_;
 }
 
+const std::u16string& PageActionModel::GetAccessibleName() const {
+  return override_accessible_name_.has_value()
+             ? override_accessible_name_.value()
+             : text_;
+}
+
 const std::u16string& PageActionModel::GetTooltipText() const {
   return override_tooltip_.has_value() ? override_tooltip_.value() : tooltip_;
 }
@@ -142,6 +148,16 @@ void PageActionModel::SetOverrideText(
     return;
   }
   override_text_ = override_text;
+  NotifyChange();
+}
+
+void PageActionModel::SetOverrideAccessibleName(
+    base::PassKey<PageActionController>,
+    const std::optional<std::u16string>& override_accessible_name) {
+  if (override_accessible_name_ == override_accessible_name) {
+    return;
+  }
+  override_accessible_name_ = override_accessible_name;
   NotifyChange();
 }
 

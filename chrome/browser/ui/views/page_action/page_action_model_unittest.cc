@@ -20,6 +20,8 @@ using ::actions::ActionItem;
 const std::u16string kOverrideText = u"Override";
 const std::u16string kTestText = u"Test";
 const std::u16string kTooltipText = u"Tooltip";
+const std::u16string kDefaultText = u"DefaultName";
+const std::u16string kOverrideName = u"OverrideName";
 const ui::ImageModel kTestImage =
     ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(/*size=*/16));
 
@@ -161,6 +163,25 @@ TEST_F(PageActionModelTest, ShouldHidePageAction) {
 
   model_.SetShouldHidePageAction(PassKey(), false);
   EXPECT_TRUE(model_.GetVisible());
+}
+
+TEST_F(PageActionModelTest, OverrideAccessibleName) {
+  // Set the default accessible name through SetActionItemProperties.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetActionItemProperties(
+      PassKey(), ActionItem::Builder().SetText(kDefaultText).Build().get());
+
+  EXPECT_EQ(model_.GetAccessibleName(), kDefaultText);
+
+  // Set the override name — should notify and change value.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideAccessibleName(PassKey(), kOverrideName);
+  EXPECT_EQ(model_.GetAccessibleName(), kOverrideName);
+
+  // Clear the override — should notify and fallback to default.
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetOverrideAccessibleName(PassKey(), std::nullopt);
+  EXPECT_EQ(model_.GetAccessibleName(), kDefaultText);
 }
 
 }  // namespace

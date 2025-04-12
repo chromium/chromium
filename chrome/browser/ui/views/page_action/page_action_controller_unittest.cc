@@ -50,6 +50,7 @@ static const PageActionPropertiesMap kTestProperties =
                             }};
 
 const std::u16string kText = u"Text";
+const std::u16string kAccessibleName = u"Accessible Name";
 const std::u16string kOverrideText = u"Override Text";
 const std::u16string kOverrideOne = u"Override One";
 const std::u16string kOverrideTwo = u"Override Two";
@@ -417,6 +418,23 @@ TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
               SetOverrideText(_, std::optional<std::u16string>(std::nullopt)))
       .Times(1);
   controller().ClearOverrideText(0);
+}
+
+TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideAccessibleName) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId});
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetOverrideAccessibleName(
+                  _, std::optional<std::u16string>(kAccessibleName)))
+      .Times(1);
+
+  controller().OverrideAccessibleName(kFirstActionItemId, kAccessibleName);
+
+  EXPECT_CALL(
+      models().Get(kFirstActionItemId),
+      SetOverrideAccessibleName(_, std::optional<std::u16string>(std::nullopt)))
+      .Times(1);
+  controller().ClearOverrideAccessibleName(kFirstActionItemId);
 }
 
 TEST_F(PageActionControllerMockModelTest, TabActivation) {

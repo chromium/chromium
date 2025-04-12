@@ -22,6 +22,7 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(bool, GetShowSuggestionChip, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnimateChip, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetText, (), (const, override));
+  MOCK_METHOD(const std::u16string&, GetAccessibleName, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetTooltipText, (), (const, override));
   MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
   MOCK_METHOD(bool, GetActionItemIsShowingBubble, (), (const, override));
@@ -62,6 +63,11 @@ class MockPageActionModel : public PageActionModelInterface {
               SetOverrideText,
               (base::PassKey<PageActionController>,
                const std::optional<std::u16string>& text),
+              (override));
+  MOCK_METHOD(void,
+              SetOverrideAccessibleName,
+              (base::PassKey<PageActionController>,
+               const std::optional<std::u16string>& override_accessible_name),
               (override));
   MOCK_METHOD(void,
               SetOverrideImage,

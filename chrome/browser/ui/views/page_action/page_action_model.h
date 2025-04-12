@@ -50,6 +50,9 @@ class PageActionModelInterface {
   virtual void SetOverrideText(
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_text) = 0;
+  virtual void SetOverrideAccessibleName(
+      base::PassKey<PageActionController>,
+      const std::optional<std::u16string>& override_accessible_name) = 0;
   virtual void SetOverrideImage(
       base::PassKey<PageActionController>,
       const std::optional<ui::ImageModel>& override_image) = 0;
@@ -65,6 +68,7 @@ class PageActionModelInterface {
   virtual const ui::ImageModel& GetImage() const = 0;
   virtual const std::u16string& GetText() const = 0;
   virtual const std::u16string& GetTooltipText() const = 0;
+  virtual const std::u16string& GetAccessibleName() const = 0;
   virtual bool GetActionItemIsShowingBubble() const = 0;
 };
 
@@ -98,6 +102,10 @@ class PageActionModel : public PageActionModelInterface {
       base::PassKey<PageActionController>,
       const std::optional<std::u16string>& override_text) override;
 
+  void SetOverrideAccessibleName(
+      base::PassKey<PageActionController>,
+      const std::optional<std::u16string>& override_accessible_name) override;
+
   void SetOverrideImage(
       base::PassKey<PageActionController>,
       const std::optional<ui::ImageModel>& override_image) override;
@@ -116,6 +124,7 @@ class PageActionModel : public PageActionModelInterface {
 
   const ui::ImageModel& GetImage() const override;
   const std::u16string& GetText() const override;
+  const std::u16string& GetAccessibleName() const override;
   const std::u16string& GetTooltipText() const override;
   bool GetActionItemIsShowingBubble() const override;
 
@@ -154,6 +163,10 @@ class PageActionModel : public PageActionModelInterface {
 
   // When set, it will always take precedence over `text_`.
   std::optional<std::u16string> override_text_;
+
+  // When set, it will always take precedence over `text_` because by default
+  // `text_` will be used.
+  std::optional<std::u16string> override_accessible_name_;
 
   // Tracks whether we should forcibly hide the page action (e.g., Omnibox is
   // getting updated).

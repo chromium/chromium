@@ -77,6 +77,12 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
                     const std::u16string& override_text);
   void ClearOverrideText(actions::ActionId action_id);
 
+  // By default, the text is used as the accessible name. However, features may
+  // need a different text.
+  void OverrideAccessibleName(actions::ActionId action_id,
+                              const std::u16string& override_accessible_name);
+  void ClearOverrideAccessibleName(actions::ActionId action_id);
+
   // By default, the page action will have an image which can be shared in the
   // other places that rely on the same action item. However, features can
   // provide a custom image to use for the page action for a specific context

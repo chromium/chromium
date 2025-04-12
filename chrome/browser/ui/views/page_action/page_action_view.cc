@@ -85,7 +85,7 @@ void PageActionView::OnPageActionModelChanged(
     const PageActionModelInterface& model) {
   SetEnabled(model.GetVisible());
   SetVisible(model.GetVisible());
-  SetText(model.GetText());
+  SetLabel(model.GetText(), model.GetAccessibleName());
   SetTooltipText(model.GetTooltipText());
   UpdateIconImage();
 

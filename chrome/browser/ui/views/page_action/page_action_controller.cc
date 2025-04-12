@@ -103,6 +103,19 @@ void PageActionController::ClearOverrideText(actions::ActionId action_id) {
       PassKey(), /*override_text=*/std::nullopt);
 }
 
+void PageActionController::OverrideAccessibleName(
+    actions::ActionId action_id,
+    const std::u16string& override_accessible_name) {
+  FindPageActionModel(action_id).SetOverrideAccessibleName(
+      PassKey(), /*override_accessible_name=*/override_accessible_name);
+}
+
+void PageActionController::ClearOverrideAccessibleName(
+    actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetOverrideAccessibleName(
+      PassKey(), /*override_accessible_name=*/std::nullopt);
+}
+
 void PageActionController::OverrideImage(actions::ActionId action_id,
                                          const ui::ImageModel& override_image) {
   FindPageActionModel(action_id).SetOverrideImage(PassKey(), override_image);
