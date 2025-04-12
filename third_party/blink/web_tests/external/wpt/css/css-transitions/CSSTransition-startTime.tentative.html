@@ -52,9 +52,6 @@ promise_test(async t => {
     'A CSS transition added in a later frame has a later start time');
 }, 'The start time of transitions is based on when they are generated');
 
-/*
-// This test has been disabled because it's not stable in Firefox.
-// See https://github.com/web-platform-tests/wpt/issues/51881
 test(t => {
   const div = addDiv(t, {
     style: 'margin-left: 100px; transition: margin-left 100s linear 100s',
@@ -72,7 +69,6 @@ test(t => {
     'Check setting of startTime actually works'
   );
 }, 'The start time of a transition can be set');
-*/
 
 promise_test(async t => {
   const div = addDiv(t, {
