@@ -226,4 +226,24 @@ chrome.test.runTests([
 
     chrome.test.succeed();
   },
+
+  async function testDispatchUpdateTextBox() {
+    const whenUpdateEvent = eventToPromise('update-text-box', manager);
+    mockPlugin.dispatchEvent(new MessageEvent('message', {
+      data: {
+        type: 'updateTextAnnotTextBoxRect',
+        height: 50,
+        locationX: 150,
+        locationY: 250,
+        width: 200,
+      },
+      origin: '*',
+    }));
+    const event = await whenUpdateEvent;
+    chrome.test.assertEq(50, event.detail.height);
+    chrome.test.assertEq(150, event.detail.locationX);
+    chrome.test.assertEq(250, event.detail.locationY);
+    chrome.test.assertEq(200, event.detail.width);
+    chrome.test.succeed();
+  },
 ]);

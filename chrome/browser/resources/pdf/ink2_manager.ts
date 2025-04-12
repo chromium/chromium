@@ -7,7 +7,15 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 import type {AnnotationBrush, AnnotationText, Color, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle} from './constants.js';
-import {PluginController} from './controller.js';
+import type {MessageData} from './controller.js';
+import {PluginController, PluginControllerEventType} from './controller.js';
+
+export interface TextBoxUpdate {
+  height: number;
+  locationX: number;
+  locationY: number;
+  width: number;
+}
 
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
@@ -26,6 +34,21 @@ export class Ink2Manager extends EventTarget {
   private brushResolver_: PromiseResolver<void>|null = null;
   private fontsResolver_: PromiseResolver<string[]>|null = null;
   private pluginController_: PluginController = PluginController.getInstance();
+
+  constructor() {
+    super();
+    this.pluginController_.getEventTarget().addEventListener(
+        PluginControllerEventType.PLUGIN_MESSAGE,
+        (e: Event) => this.handlePluginMessage_(e as CustomEvent<MessageData>));
+  }
+
+  private handlePluginMessage_(e: CustomEvent<MessageData>) {
+    const data = e.detail;
+    if (data.type.toString() === 'updateTextAnnotTextBoxRect') {
+      const detail = data as unknown as TextBoxUpdate;
+      this.dispatchEvent(new CustomEvent('update-text-box', {detail}));
+    }
+  }
 
   isInitializationStarted(): boolean {
     return this.brushResolver_ !== null;

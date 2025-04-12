@@ -64,7 +64,11 @@ import {AnnotationMode} from './constants.js';
   </div>
   <div id="main">
     <div id="scroller">
-      <div id="sizer"></div>
+      <div id="sizer">
+      </div>
+      <if expr="enable_pdf_ink2">
+        <ink-text-box></ink-text-box>
+      </if>
       <div id="content"></div>
     </div>
     <div id="content-focus-rectangle" ?hidden="${!this.documentHasFocus_}">

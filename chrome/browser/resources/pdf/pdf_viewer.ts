@@ -13,6 +13,7 @@ import './elements/viewer_ink_host.js';
 // </if>
 import './elements/viewer_password_dialog.js';
 // <if expr="enable_pdf_ink2">
+import './elements/ink_text_box.js';
 import './elements/viewer_bottom_toolbar.js';
 import './elements/viewer_side_panel.js';
 import './elements/viewer_text_bottom_toolbar.js';
@@ -1016,6 +1017,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             new CustomEvent<Ink2ThumbnailData>(
                 PluginControllerEventType.UPDATE_INK_THUMBNAIL,
                 {detail: thumbnailData}));
+        return;
+      case 'updateTextAnnotTextBoxRect':
+        // Handled by Ink2Manager.
         return;
         // </if>
     }
