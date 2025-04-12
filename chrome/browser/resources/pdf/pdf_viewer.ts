@@ -233,7 +233,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   beepCount: number = 0;
-  protected accessor annotationMode_: AnnotationMode = AnnotationMode.NONE;
+  protected accessor annotationMode_: AnnotationMode = AnnotationMode.OFF;
   protected accessor attachments_: Attachment[] = [];
   protected accessor bookmarks_: Bookmark[] = [];
   private accessor canSerializeDocument_: boolean = false;
@@ -275,7 +275,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private accessor pdfUseShowSaveFilePicker_: boolean = false;
   private pluginController_: PluginController = PluginController.getInstance();
   // <if expr="enable_pdf_ink2">
-  private restoreAnnotationMode_: AnnotationMode = AnnotationMode.NONE;
+  private restoreAnnotationMode_: AnnotationMode = AnnotationMode.OFF;
   // </if>
   // <if expr="enable_ink or enable_pdf_ink2">
   private showBeforeUnloadDialog_: boolean = false;
@@ -335,7 +335,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       this.useSidePanelForInk_ = mediaQuery.matches;
       // If we are in DRAW or TEXT annotation mode, record opening the
       // UI that's opened by making the window narrower/wider.
-      if (this.annotationMode_ !== AnnotationMode.NONE) {
+      if (this.annotationMode_ !== AnnotationMode.OFF) {
         record(
             this.useSidePanelForInk_ ? UserAction.OPEN_INK2_SIDE_PANEL :
                                        UserAction.OPEN_INK2_BOTTOM_TOOLBAR);
@@ -546,7 +546,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case AnnotationMode.TEXT:
         record(UserAction.EXIT_INK2_TEXT_ANNOTATION_MODE);
         break;
-      case AnnotationMode.NONE:
+      case AnnotationMode.OFF:
         break;
       default:
         assertNotReached();
@@ -560,7 +560,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       case AnnotationMode.TEXT:
         record(UserAction.ENTER_INK2_TEXT_ANNOTATION_MODE);
         break;
-      case AnnotationMode.NONE:
+      case AnnotationMode.OFF:
         break;
       default:
         assertNotReached();
@@ -578,12 +578,12 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     // <if expr="enable_pdf_ink2">
     if (this.pdfInk2Enabled_) {
-      if (this.annotationMode_ === AnnotationMode.NONE) {
+      if (this.annotationMode_ === AnnotationMode.OFF) {
         record(
             this.useSidePanelForInk_ ? UserAction.OPEN_INK2_SIDE_PANEL :
                                        UserAction.OPEN_INK2_BOTTOM_TOOLBAR);
       }
-      if (this.restoreAnnotationMode_ === AnnotationMode.NONE) {
+      if (this.restoreAnnotationMode_ === AnnotationMode.OFF) {
         this.recordEnterExitAnnotationModeMetrics_(newAnnotationMode);
       }
       this.pluginController_.setAnnotationMode(newAnnotationMode);
@@ -634,7 +634,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       assert(this.currentController === this.inkController_);
       // TODO(dstockwell): set ink read-only, begin transition
       this.updateProgress(0);
-      this.annotationMode_ = AnnotationMode.NONE;
+      this.annotationMode_ = AnnotationMode.OFF;
       // This runs separately to allow other consumers of `loaded` to queue
       // up after this task.
       this.loaded!.then(() => {
@@ -654,11 +654,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   // <if expr="enable_ink">
   /** Exits annotation mode if active. */
   private async exitAnnotationMode_(): Promise<void> {
-    if (this.$.toolbar.annotationMode === AnnotationMode.NONE) {
+    if (this.$.toolbar.annotationMode === AnnotationMode.OFF) {
       return;
     }
-    this.$.toolbar.setAnnotationMode(AnnotationMode.NONE);
-    this.annotationMode_ = AnnotationMode.NONE;
+    this.$.toolbar.setAnnotationMode(AnnotationMode.OFF);
+    this.annotationMode_ = AnnotationMode.OFF;
     await this.restoreSidenav_();
     await this.loaded;
   }
@@ -672,11 +672,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   private async enterPresentationMode_(): Promise<void> {
     // <if expr="enable_pdf_ink2">
     // Exit annotation mode if it was enabled.
-    if (this.pdfInk2Enabled_ && this.annotationMode_ !== AnnotationMode.NONE) {
+    if (this.pdfInk2Enabled_ && this.annotationMode_ !== AnnotationMode.OFF) {
       this.restoreAnnotationMode_ = this.annotationMode_;
-      this.$.toolbar.setAnnotationMode(AnnotationMode.NONE);
+      this.$.toolbar.setAnnotationMode(AnnotationMode.OFF);
     }
-    assert(this.annotationMode_ === AnnotationMode.NONE);
+    assert(this.annotationMode_ === AnnotationMode.OFF);
     // </if>
 
     const scroller = this.$.scroller;
@@ -716,10 +716,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // <if expr="enable_pdf_ink2">
     // Enter annotation mode again if it was enabled before entering
     // Presentation mode.
-    if (this.restoreAnnotationMode_ !== AnnotationMode.NONE) {
+    if (this.restoreAnnotationMode_ !== AnnotationMode.OFF) {
       this.$.toolbar.setAnnotationMode(this.restoreAnnotationMode_);
-      assert(this.annotationMode_ !== AnnotationMode.NONE);
-      this.restoreAnnotationMode_ = AnnotationMode.NONE;
+      assert(this.annotationMode_ !== AnnotationMode.OFF);
+      this.restoreAnnotationMode_ = AnnotationMode.OFF;
     }
     // </if>
   }
@@ -1322,7 +1322,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // For Ink, request type original in annotation mode --> need to exit
     // annotation mode before saving. See https://crbug.com/919364.
     let shouldExitAnnotationMode =
-        this.annotationMode_ !== AnnotationMode.NONE &&
+        this.annotationMode_ !== AnnotationMode.OFF &&
         requestType === SaveRequestType.ORIGINAL;
 
     // Ink2 overrides Ink, and Ink2 does not need to exit annotation mode.
@@ -1334,7 +1334,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
 
     if (shouldExitAnnotationMode) {
       await this.exitAnnotationMode_();
-      assert(this.annotationMode_ === AnnotationMode.NONE);
+      assert(this.annotationMode_ === AnnotationMode.OFF);
     }
     // </if> enable_ink
 
@@ -1512,7 +1512,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
    * @returns Whether the PDF viewer has Ink2 enabled and is in annotation mode.
    */
   private inInk2AnnotationMode_(): boolean {
-    return this.pdfInk2Enabled_ && this.annotationMode_ !== AnnotationMode.NONE;
+    return this.pdfInk2Enabled_ && this.annotationMode_ !== AnnotationMode.OFF;
   }
   // </if>
 

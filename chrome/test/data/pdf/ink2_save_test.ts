@@ -136,9 +136,9 @@ chrome.test.runTests([
     mockPlugin.clearMessages();
     mockMetricsPrivate.reset();
 
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     const downloadControls = getDownloadControls();
     downloadControls.$.menu.close();
@@ -153,7 +153,7 @@ chrome.test.runTests([
   // while in annotation mode, after an undo operation, clicking the download
   // button will save the PDF as original.
   async function testSaveOriginalAfterUndo() {
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     mockPlugin.clearMessages();
     mockMetricsPrivate.reset();

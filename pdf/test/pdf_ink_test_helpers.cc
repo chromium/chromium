@@ -49,7 +49,7 @@ base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
 base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable) {
   base::Value::Dict message;
   message.Set("type", "setAnnotationMode");
-  message.Set("mode", enable ? "draw" : "none");
+  message.Set("mode", enable ? "draw" : "off");
   return message;
 }
 

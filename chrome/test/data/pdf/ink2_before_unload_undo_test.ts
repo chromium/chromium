@@ -15,7 +15,7 @@ chrome.test.runTests([
 
     const toolbar = document.body.querySelector('pdf-viewer')!.$.toolbar;
 
-    chrome.test.assertEq(AnnotationMode.NONE, toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, toolbar.annotationMode);
 
     toolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();

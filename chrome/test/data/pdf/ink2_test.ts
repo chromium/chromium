@@ -36,16 +36,16 @@ chrome.test.runTests([
     loadTimeData.overrideValues({'pdfTextAnnotationsEnabled': false});
     viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.ENTER_INK2_ANNOTATION_MODE, 1);
 
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_ANNOTATION_MODE, 1);
     chrome.test.succeed();
   },
@@ -82,7 +82,7 @@ chrome.test.runTests([
     // Initial state, no metrics recorded.
     assertMetrics(
         {ink2: {enter: 0, exit: 0}, text: {enter: 0, exit: 0}, sidepanel: 0});
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     // NONE -> TEXT
     viewerToolbar.setAnnotationMode(AnnotationMode.TEXT);
@@ -92,9 +92,9 @@ chrome.test.runTests([
         {ink2: {enter: 0, exit: 0}, text: {enter: 1, exit: 0}, sidepanel: 1});
 
     // TEXT -> NONE
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 0, exit: 0}, text: {enter: 1, exit: 1}, sidepanel: 1});
 
@@ -122,9 +122,9 @@ chrome.test.runTests([
         {ink2: {enter: 2, exit: 1}, text: {enter: 2, exit: 2}, sidepanel: 2});
 
     // DRAW -> NONE
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     assertMetrics(
         {ink2: {enter: 2, exit: 2}, text: {enter: 2, exit: 2}, sidepanel: 2});
 
@@ -143,7 +143,7 @@ chrome.test.runTests([
     viewerToolbar.strings = Object.assign({}, viewerToolbar.strings);
     await microtasksFinished();
 
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
 
     viewerToolbar.setAnnotationMode(AnnotationMode.DRAW);
     await microtasksFinished();
@@ -155,12 +155,12 @@ chrome.test.runTests([
     chrome.test.assertEq(AnnotationMode.DRAW, viewerToolbar.annotationMode);
     chrome.test.assertTrue(isVisible(sidePanel));
 
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
     mockMetricsPrivate.assertCount(UserAction.EXIT_INK2_ANNOTATION_MODE, 1);
 
     // The side panel should be hidden when annotation mode is disabled.
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     chrome.test.assertFalse(isVisible(sidePanel));
 
     chrome.test.succeed();
@@ -180,7 +180,7 @@ chrome.test.runTests([
     const textPanelQuery = 'viewer-text-side-panel';
 
     // Panels are not in the DOM in NONE annotation mode.
-    chrome.test.assertEq(AnnotationMode.NONE, viewerToolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewerToolbar.annotationMode);
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));
 
@@ -201,7 +201,7 @@ chrome.test.runTests([
     chrome.test.assertFalse(isVisible(textPanel));
 
     // Both removed from the DOM again when annotation mode is disabled.
-    viewerToolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewerToolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(textPanelQuery));
     chrome.test.assertFalse(!!viewer.shadowRoot.querySelector(drawPanelQuery));

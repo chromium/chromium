@@ -61,7 +61,7 @@ chrome.test.runTests([
     // No toolbars initially.
     const drawToolbarQuery = 'viewer-bottom-toolbar';
     const textToolbarQuery = 'viewer-text-bottom-toolbar';
-    chrome.test.assertEq(AnnotationMode.NONE, viewer.$.toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewer.$.toolbar.annotationMode);
     chrome.test.assertFalse(
         !!viewer.shadowRoot.querySelector(drawToolbarQuery));
     chrome.test.assertFalse(
@@ -90,9 +90,9 @@ chrome.test.runTests([
     mockMetricsPrivate.assertCount(UserAction.OPEN_INK2_BOTTOM_TOOLBAR, 1);
 
     // No annotation mode removes both toolbars from the DOM.
-    viewer.$.toolbar.setAnnotationMode(AnnotationMode.NONE);
+    viewer.$.toolbar.setAnnotationMode(AnnotationMode.OFF);
     await microtasksFinished();
-    chrome.test.assertEq(AnnotationMode.NONE, viewer.$.toolbar.annotationMode);
+    chrome.test.assertEq(AnnotationMode.OFF, viewer.$.toolbar.annotationMode);
     chrome.test.assertFalse(
         !!viewer.shadowRoot.querySelector(drawToolbarQuery));
     chrome.test.assertFalse(

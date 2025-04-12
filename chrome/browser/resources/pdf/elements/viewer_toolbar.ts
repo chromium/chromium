@@ -152,7 +152,7 @@ export class ViewerToolbarElement extends CrLitElement {
   // <if expr="enable_ink or enable_pdf_ink2">
   // Reactive properties common to ink and ink2
   accessor annotationAvailable: boolean = false;
-  accessor annotationMode: AnnotationMode = AnnotationMode.NONE;
+  accessor annotationMode: AnnotationMode = AnnotationMode.OFF;
   // </if>
 
   // <if expr="enable_ink">
@@ -317,7 +317,7 @@ export class ViewerToolbarElement extends CrLitElement {
     // <if expr="enable_ink">
     if (!this.displayAnnotations_ &&
         this.annotationMode === AnnotationMode.DRAW) {
-      this.setAnnotationMode(AnnotationMode.NONE);
+      this.setAnnotationMode(AnnotationMode.OFF);
     }
     // </if>
   }
@@ -443,7 +443,7 @@ export class ViewerToolbarElement extends CrLitElement {
   protected onDialogClose_() {
     // The dialog should only show if we are not in annotation mode and the
     // user wants to transition to drawing annotations.
-    assert(this.annotationMode === AnnotationMode.NONE);
+    assert(this.annotationMode === AnnotationMode.OFF);
     const confirmed =
         this.shadowRoot.querySelector(
                            'viewer-annotations-mode-dialog')!.wasConfirmed();
@@ -463,7 +463,7 @@ export class ViewerToolbarElement extends CrLitElement {
 
   protected onAnnotationClick_() {
     const newAnnotationMode = this.annotationMode === AnnotationMode.DRAW ?
-        AnnotationMode.NONE :
+        AnnotationMode.OFF :
         AnnotationMode.DRAW;
 
     // <if expr="enable_pdf_ink2">
@@ -494,7 +494,7 @@ export class ViewerToolbarElement extends CrLitElement {
     }
     // </if> enable_pdf_ink2
 
-    if (annotationMode !== AnnotationMode.NONE && !this.displayAnnotations_) {
+    if (annotationMode !== AnnotationMode.OFF && !this.displayAnnotations_) {
       this.toggleDisplayAnnotations_();
     }
   }
@@ -503,7 +503,7 @@ export class ViewerToolbarElement extends CrLitElement {
   // <if expr="enable_pdf_ink2">
   protected onTextAnnotationClick_() {
     this.setAnnotationMode(
-        this.annotationMode === AnnotationMode.TEXT ? AnnotationMode.NONE :
+        this.annotationMode === AnnotationMode.TEXT ? AnnotationMode.OFF :
                                                       AnnotationMode.TEXT);
   }
 
@@ -599,7 +599,7 @@ export class ViewerToolbarElement extends CrLitElement {
    */
   protected presentationModeAvailable_(): boolean {
     // <if expr="enable_ink">
-    return this.annotationMode === AnnotationMode.NONE && !this.embeddedViewer;
+    return this.annotationMode === AnnotationMode.OFF && !this.embeddedViewer;
     // </if>
     // <if expr="not enable_ink">
     return !this.embeddedViewer;
