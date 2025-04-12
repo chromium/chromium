@@ -17,6 +17,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -547,6 +548,39 @@ TEST_F(GeolocationProviderTest, AddCallbackWhenSystemPermissionDenied) {
   // provider is not started.
   EXPECT_EQ(future.Take()->get_error(), error_result_->get_error());
   EXPECT_FALSE(ProvidersStarted());
+}
+
+TEST_F(GeolocationProviderTest, AddCallbackOnPermissionGrantAfterDenied) {
+  SetFakeLocationProviderManager();
+
+  // Initially set system permission to denied, then grant it.
+  SetSystemPermission(LocationSystemPermissionStatus::kDenied);
+  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
+
+  base::MockCallback<GeolocationProviderImpl::LocationUpdateCallback>
+      mock_callback;
+
+  // Expect that the observer should NOT be notified with permission denied
+  // error because the cached |result_| should has been cleared when system
+  // permission state changed from kDenied to kAllowed.
+  EXPECT_CALL(mock_callback, Run).Times(0);
+  base::CallbackListSubscription subscription =
+      provider()->AddLocationUpdateCallback(mock_callback.Get(),
+                                            /*enable_high_accuracy=*/true);
+  base::RunLoop().RunUntilIdle();
+
+  // Expect that the observer is notified now when location update is simulated.
+  // TestFuture<mojom::GeopositionResultPtr> future;
+  TestFuture<mojom::GeopositionResultPtr> future;
+  EXPECT_CALL(mock_callback, Run)
+      .WillOnce([&](const mojom::GeopositionResult& result) {
+        future.SetValue(result.Clone());
+      });
+
+  //  Now simulate a location update and expect that position result to be
+  //  equal.
+  SendMockLocation(*position_result1_);
+  EXPECT_EQ(future.Get()->get_position(), position_result1_->get_position());
 }
 
 TEST_F(GeolocationProviderTest,

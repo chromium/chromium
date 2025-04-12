@@ -470,6 +470,12 @@ void GeolocationProviderImpl::OnSystemPermissionUpdated(
     if (!high_accuracy_callbacks_.empty() || !low_accuracy_callbacks_.empty()) {
       DoStartProvidersOnGeolocationThread();
     }
+    if (system_permission_status_ == LocationSystemPermissionStatus::kDenied) {
+      // If the system permission was previously denied and is now granted,
+      // clear the cached `result_`. This prevents a stale error result from
+      // being delivered to the first new callback registered after the grant.
+      result_.reset();
+    }
   } else if (new_status == LocationSystemPermissionStatus::kDenied) {
     GEOLOCATION_LOG(DEBUG) << "New system permission state is kDenied";
     NotifyClientsSystemPermissionDenied();
