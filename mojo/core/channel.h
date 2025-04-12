@@ -66,7 +66,7 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   struct Message;
 
   using MessagePtr = std::unique_ptr<Message>;
-  using AlignedBuffer = std::unique_ptr<char>;
+  using AlignedBuffer = std::unique_ptr<char[]>;
 
   // A message to be written to a channel.
   struct MOJO_SYSTEM_IMPL_EXPORT Message {
