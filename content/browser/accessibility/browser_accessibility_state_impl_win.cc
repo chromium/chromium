@@ -435,15 +435,26 @@ void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
   awaiting_known_assistive_tech_computation_ = false;
 
   // Older versions of JAWS are known to not work well with text fields when we
-  // expose the native UIA provider. Disable it when we detect a JAWS version
-  // older than 2025.
+  // expose the native UIA provider. Disable it when we detect an older version
+  // version of JAWS. JAWS fixed the issue in versions:
+  //   * 2022.2402.1+
+  //   * 2023.2402.1+
+  //   * 2024.2312.99+
+  //   * 2025+
   if (base::FeatureList::IsEnabled(kDisableUiaProviderWhenJawsIsRunning) &&
       ui::AXPlatform::GetInstance().IsUiaProviderEnabled()) {
     for (const auto& info : at_infos) {
-      if (info.tech == AccessibilityTarget::kJaws && info.version.has_value() &&
-          info.version->IsLowerThan({2025, 0, 0, 0})) {
-        ui::AXPlatform::GetInstance().DisableActiveUiaProvider();
-        break;
+      if (info.tech == AccessibilityTarget::kJaws && info.version.has_value()) {
+        if (info.version->IsLowerThan(ModuleVersion{2022, 0, 0, 0}) ||
+            (info.version->major == 2022 &&
+             info.version->IsLowerThan(ModuleVersion{2022, 2402, 1, 0})) ||
+            (info.version->major == 2023 &&
+             info.version->IsLowerThan(ModuleVersion{2023, 2402, 1, 0})) ||
+            (info.version->major == 2024 &&
+             info.version->IsLowerThan(ModuleVersion{2024, 2312, 99, 0}))) {
+          ui::AXPlatform::GetInstance().DisableActiveUiaProvider();
+          break;
+        }
       }
     }
   }
