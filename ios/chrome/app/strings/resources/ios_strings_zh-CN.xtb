@@ -521,7 +521,7 @@
 <translation id="3140825265190223781">已保存的密码和通行密钥</translation>
 <translation id="3143515551205905069">取消同步</translation>
 <translation id="3144126448740580210">完成</translation>
-<translation id="314837624430314508">及时了解最新资讯、价格跟踪动态等。</translation>
+<translation id="314837624430314508">及时了解最新资讯、跟踪的价格变化等。</translation>
 <translation id="3157387275655328056">添加到阅读清单</translation>
 <translation id="315778507796115851">历史记录</translation>
 <translation id="31652791196570636">关闭</translation>
@@ -581,7 +581,7 @@
 <translation id="3469117812148449995">密码保存选项</translation>
 <translation id="3474048842645761983">{COUNT,plural, =1{涉及 {COUNT} 个网站或应用}other{涉及 {COUNT} 个网站和应用}}</translation>
 <translation id="3474624961160222204">以<ph name="NAME" />的身份继续</translation>
-<translation id="3476450923187944815">访问其他应用的密码。</translation>
+<translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
 <translation id="3488501490964659223">标签页已关闭，而且浏览数据已被删除。您已退出账号</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />推荐内容</translation>
 <translation id="3504377992102007712">设置</translation>
@@ -1543,7 +1543,7 @@
 <translation id="7512075701202892785">您喜爱的浏览器现已登陆 iPad</translation>
 <translation id="7512909159512473473">输入口令…</translation>
 <translation id="7514365320538308">下载</translation>
-<translation id="7524055474074101597">获取您为各种应用保存的密码和其他信息。</translation>
+<translation id="7524055474074101597">在不同应用中使用保存的密码和其他信息。</translation>
 <translation id="75362970626182391">新标签页分组</translation>
 <translation id="7537586195939242955">抱歉，目前无法将您的票证添加到 Passbook。</translation>
 <translation id="754655535278952384">上次检查时间：<ph name="TIME" /></translation>
