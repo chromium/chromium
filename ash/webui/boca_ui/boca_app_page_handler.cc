@@ -524,6 +524,7 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
   auto* session =
       BocaAppClient::Get()->GetSessionManager()->GetCurrentSession();
   if (!session || session->session_state() != ::boca::Session::ACTIVE) {
+    VLOG(1) << "[Boca] session inactive, skipping captions update";
     std::move(callback).Run(std::nullopt);
     return;
   }
@@ -533,12 +534,17 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
           config->session_caption_enabled &&
       GetSessionConfigSafe(session).captions_config().translations_enabled() ==
           config->session_translation_enabled) {
+    VLOG(1) << "[Boca] no config change, skipping captions update. Captions "
+               "enabled: "
+            << config->session_caption_enabled
+            << ", translation enabled: " << config->session_translation_enabled;
     std::move(callback).Run(std::nullopt);
     return;
   }
 
   // Skip caption initialization when disabling captions.
   if (!config->session_caption_enabled) {
+    VLOG(1) << "[Boca] captions disabled, skipping init session captions";
     UpdateCaptionConfigInternal(std::move(config), std::move(callback),
                                 /*can_proceed=*/true);
     return;
@@ -827,6 +833,8 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
         result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.has_value()) {
+    VLOG(1) << "[Boca] captions update session request failed with code "
+            << result.error();
     std::move(callback).Run(mojom::UpdateSessionError::kHTTPError);
     // Update failed. Fallback to the most recent in-memory session.
     if (auto* session =
@@ -839,6 +847,14 @@ void BocaAppHandler::OnUpdatedCaptionConfig(
     return;
   }
   std::move(callback).Run(std::nullopt);
+  VLOG(1) << "[Boca] captions update session result, captions enabled: "
+          << GetSessionConfigSafe(result.value().get())
+                 .captions_config()
+                 .captions_enabled()
+          << ", translation enabled: "
+          << GetSessionConfigSafe(result.value().get())
+                 .captions_config()
+                 .translations_enabled();
   // Trigger a session reload from session response.
   BocaAppClient::Get()->GetSessionManager()->UpdateCurrentSession(
       std::move(result.value()), /*dispatch_event=*/true);
@@ -925,6 +941,7 @@ void BocaAppHandler::UpdateCaptionConfigInternal(
         GetSessionConfigSafe(session).on_task_config());
   }
   request->set_on_task_config(std::move(latest_ontask_config_));
+  VLOG(1) << "[Boca] sending update session request for captions";
   session_client_impl_->UpdateSession(std::move(request));
 }
 }  // namespace ash::boca

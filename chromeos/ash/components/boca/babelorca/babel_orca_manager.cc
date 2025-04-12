@@ -170,6 +170,7 @@ bool BabelOrcaManager::IsCaptioningAvailable() {
 void BabelOrcaManager::SigninToTachyonAndRespond(
     base::OnceCallback<void(bool)> on_response_cb) {
   if (registrar_.GetTachyonToken()) {
+    VLOG(1) << "[BabelOrca] already has tachyon token";
     std::move(on_response_cb).Run(true);
     return;
   }
@@ -178,6 +179,7 @@ void BabelOrcaManager::SigninToTachyonAndRespond(
         babelorca::prefs::kTachyonClientUuid,
         base::Uuid::GenerateRandomV4().AsLowercaseString());
   }
+  VLOG(1) << "[BabelOrca] tachyon signin";
   registrar_.Register(
       pref_service_->GetString(babelorca::prefs::kTachyonClientUuid),
       base::BindOnce(std::move(on_response_cb)));
