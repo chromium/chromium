@@ -65,7 +65,7 @@ class TestObserver : public RemoteSuggestionsService::Observer {
       const std::unique_ptr<std::string>& response_body) override {
     ASSERT_EQ(request_id_, request_id);
     response_received_ = true;
-    response_body_ = *response_body;
+    response_body_ = response_body ? *response_body : "";
   }
 
  private:
@@ -109,7 +109,7 @@ class RemoteSuggestionsServiceTest : public testing::Test {
   void OnRequestCompleted(const network::SimpleURLLoader* source,
                           const int response_code,
                           std::unique_ptr<std::string> response_body) {
-    response_body_ = *response_body;
+    response_body_ = response_body ? *response_body : "";
   }
 
   TemplateURLService& template_url_service() {
@@ -280,6 +280,50 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
 
   base::RunLoop().RunUntilIdle();
 
+  // Verify the observer got notified of request completion.
+  ASSERT_EQ(observer.url().spec(), kRequestUrl);
+  ASSERT_TRUE(observer.response_received());
+  ASSERT_EQ(observer.response_body(), kResponseBody);
+
+  // Verify the service client got notified of request completion.
+  ASSERT_EQ(response_body(), kResponseBody);
+}
+
+TEST_F(RemoteSuggestionsServiceTest, ResponseTimeHistograms) {
+  base::HistogramTester histogram_tester;
+
+  TemplateURLData template_url_data;
+  template_url_data.suggestions_url = "https://www.example.com/suggest";
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
+          std::make_unique<TemplateURL>(template_url_data)));
+
+  RemoteSuggestionsService service(
+      /*document_suggestions_service_=*/nullptr,
+      /*enterprise_search_aggregator_suggestions_service_*/ nullptr,
+      GetUrlLoaderFactory());
+  TestObserver observer(&service);
+
+  // Add a mock response.
+  const std::string kRequestUrl = "https://www.example.com/suggest";
+  const std::string kResponseBody = "example response";
+  test_url_loader_factory_.AddResponse(kRequestUrl, kResponseBody);
+
+  // Start the request.
+  auto loader = service.StartZeroPrefixSuggestionsRequest(
+      RemoteRequestType::kZeroSuggest, /*is_off_the_record=*/false,
+      template_url_service().GetDefaultSearchProvider(),
+      TemplateURLRef::SearchTermsArgs(),
+      template_url_service().search_terms_data(),
+      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestCompleted,
+                     base::Unretained(this)));
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify request histogram was recorded.
+  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent", 1);
+  histogram_tester.ExpectBucketCount("Omnibox.SuggestRequestsSent", 3, 1);
+
   // Verify response histograms were recorded.
   histogram_tester.ExpectTotalCount(
       "Omnibox.SuggestRequestsSent.HttpResponseCode", 1);
@@ -294,13 +338,60 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
   histogram_tester.ExpectTotalCount(
       "Omnibox.SuggestRequestsSent.ResponseTime.ZeroSuggest.Successful", 1);
 
-  // Verify the observer got notified of request completion.
-  ASSERT_EQ(observer.url().spec(), kRequestUrl);
-  ASSERT_TRUE(observer.response_received());
-  ASSERT_EQ(observer.response_body(), kResponseBody);
+  // Verify slicing by INVALID_SPEC is not recorded.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.INVALID_SPEC", 0);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.INVALID_SPEC.ZeroSuggest."
+      "Successful",
+      0);
 
-  // Verify the service client got notified of request completion.
-  ASSERT_EQ(response_body(), kResponseBody);
+  // Try a new request with a different response code and a page classification.
+  test_url_loader_factory_.ClearResponses();
+  test_url_loader_factory_.AddResponse(kRequestUrl, kResponseBody,
+                                       net::HTTP_NOT_FOUND);
+  auto search_terms_args = TemplateURLRef::SearchTermsArgs();
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  loader = service.StartZeroPrefixSuggestionsRequest(
+      RemoteRequestType::kZeroSuggest, /*is_off_the_record=*/false,
+      template_url_service().GetDefaultSearchProvider(), search_terms_args,
+      template_url_service().search_terms_data(),
+      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestCompleted,
+                     base::Unretained(this)));
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify request histogram was recorded.
+  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent", 2);
+  histogram_tester.ExpectBucketCount("Omnibox.SuggestRequestsSent", 3, 2);
+
+  // Verify response histograms were recorded.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode", 2);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.HttpResponseCode.ZeroSuggest", 2);
+  histogram_tester.ExpectTotalCount("Omnibox.SuggestRequestsSent.ResponseTime",
+                                    2);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.ZeroSuggest", 2);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.Successful", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.Failed", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.ZeroSuggest.Successful", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.ZeroSuggest.Failed", 1);
+
+  // Verify slicing by page classification is recorded.
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.CONTEXTUAL_SEARCHBOX", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SuggestRequestsSent.ResponseTime.CONTEXTUAL_SEARCHBOX."
+      "ZeroSuggest."
+      "Failed",
+      1);
 }
 
 TEST_F(RemoteSuggestionsServiceTest, Delegate) {

@@ -263,12 +263,14 @@ class RemoteSuggestionsService : public KeyedService {
                              const std::string& request_body);
   // Called when the transfer is done. Notifies `observers_` and calls
   // `completion_callback` passing the response to the caller.
-  void OnRequestCompleted(const base::UnguessableToken& request_id,
-                          RemoteRequestType request_type,
-                          base::ElapsedTimer request_timer,
-                          CompletionCallback completion_callback,
-                          const network::SimpleURLLoader* source,
-                          std::unique_ptr<std::string> response_body);
+  void OnRequestCompleted(
+      const base::UnguessableToken& request_id,
+      RemoteRequestType request_type,
+      base::ElapsedTimer request_timer,
+      metrics::OmniboxEventProto::PageClassification page_classification,
+      CompletionCallback completion_callback,
+      const network::SimpleURLLoader* source,
+      std::unique_ptr<std::string> response_body);
 
   // May be nullptr in OTR profiles. Otherwise guaranteed to outlive this due to
   // the factories' dependency.
