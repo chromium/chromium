@@ -639,8 +639,7 @@ void FetchPoliciesDone(
     int result) {
   if (result != kErrorOk) {
     LOG(ERROR) << "FetchPolicies failed: " << result;
-    std::move(callback).Run(UpdateService::Result::kFetchPoliciesFailed);
-    return;
+    // Ignore policy fetch failures and fall through.
   }
 
   std::move(fetch_policies_done).Run(std::move(callback));
