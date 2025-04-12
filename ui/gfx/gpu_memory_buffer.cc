@@ -69,6 +69,14 @@ DXGIHandle DXGIHandle::Clone() const {
   return handle;
 }
 
+DXGIHandle DXGIHandle::CloneWithRegion(
+    base::UnsafeSharedMemoryRegion region) const {
+  DXGIHandle handle = Clone();
+  DCHECK(!handle.region_.IsValid());
+  handle.region_ = std::move(region);
+  return handle;
+}
+
 base::win::ScopedHandle DXGIHandle::TakeBufferHandle() {
   DCHECK(buffer_handle_.is_valid());
   return std::move(buffer_handle_);
@@ -76,6 +84,19 @@ base::win::ScopedHandle DXGIHandle::TakeBufferHandle() {
 #endif  // BUILDFLAG(IS_WIN)
 
 GpuMemoryBufferHandle::GpuMemoryBufferHandle() = default;
+
+GpuMemoryBufferHandle::GpuMemoryBufferHandle(
+    base::UnsafeSharedMemoryRegion region)
+    : type(GpuMemoryBufferType::SHARED_MEMORY_BUFFER),
+      region_(std::move(region)) {}
+
+#if BUILDFLAG(IS_WIN)
+GpuMemoryBufferHandle::GpuMemoryBufferHandle(DXGIHandle handle)
+    : type(GpuMemoryBufferType::DXGI_SHARED_HANDLE),
+      dxgi_handle_(std::move(handle)) {
+  CHECK(dxgi_handle_.IsValid());
+}
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 GpuMemoryBufferHandle::GpuMemoryBufferHandle(

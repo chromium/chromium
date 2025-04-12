@@ -259,9 +259,7 @@ class MediaFoundationRendererClientTest
   }
 
   void InitializeFramePool() {
-    gfx::GpuMemoryBufferHandle gpu_handle;
-    gpu_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-    gpu_handle.set_dxgi_handle(gfx::DXGIHandle::CreateFakeForTest());
+    gfx::GpuMemoryBufferHandle gpu_handle(gfx::DXGIHandle::CreateFakeForTest());
 
     auto frame_info = media::mojom::FrameTextureInfo::New();
     frame_info->token = base::UnguessableToken::Create();

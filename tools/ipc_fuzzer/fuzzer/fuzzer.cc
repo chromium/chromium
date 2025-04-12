@@ -761,24 +761,22 @@ struct FuzzTraits<gfx::GpuMemoryBufferHandle> {
     auto buffer_type = static_cast<gfx::GpuMemoryBufferType>(type);
     switch (buffer_type) {
       case gfx::SHARED_MEMORY_BUFFER: {
-        p->type = buffer_type;
         base::UnsafeSharedMemoryRegion region;
         if (!FuzzParam(&region, fuzzer)) {
           return false;
         }
-        p->set_region(std::move(region));
+        *p = gfx::GpuMemoryBufferHandle(std::move(region));
         break;
       }
 #if BUILDFLAG(IS_WIN)
       case gfx::DXGI_SHARED_HANDLE: {
-        p->type = buffer_type;
+        gfx::DXGIHandle dxgi_handle = gfx::DXGIHandle::CreateFakeForTest();
         base::UnsafeSharedMemoryRegion region;
         if (!FuzzParam(&region, fuzzer)) {
           return false;
         }
-        gfx::DXGIHandle dxgi_handle = gfx::DXGIHandle::CreateFakeForTest();
-        dxgi_handle.set_region(std::move(region));
-        p->set_dxgi_handle(std::move(dxgi_handle));
+        *p = gfx::GpuMemoryBufferHandle(
+            dxgi_handle.CloneWithRegion(std::move(region)));
         break;
       }
 #endif

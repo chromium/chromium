@@ -122,8 +122,6 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
                                 std::move(dimensions));
   }
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::DXGI_SHARED_HANDLE;
   base::win::ScopedHandle scoped_handle =
       CreateNV12Texture(d3d_device_.Get(), dimensions);
   if (!scoped_handle.IsValid()) {
@@ -135,7 +133,7 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
     return false;
   }
 
-  gmb_handle.set_dxgi_handle(std::move(dxgi_handle));
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(dxgi_handle));
   return CreateBufferInternal(std::move(gmb_handle), std::move(dimensions));
 }
 
@@ -230,9 +228,7 @@ GpuMemoryBufferTrackerWin::GetGpuMemoryBufferHandle() {
   if (IsD3DDeviceChanged()) {
     return gfx::GpuMemoryBufferHandle();
   }
-  auto handle = buffer_->CloneHandle();
-  handle.set_region(region_.Duplicate());
-  return handle;
+  return buffer_->CloneHandleWithRegion(region_.Duplicate());
 }
 
 VideoCaptureBufferType GpuMemoryBufferTrackerWin::GetBufferType() {

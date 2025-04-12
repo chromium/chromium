@@ -472,7 +472,8 @@ class WinGpuMemoryBufferHandleHolder : public BufferHandleHolder {
       ui::ContextFactory* context_factory)
       : context_factory_(context_factory),
         gmb_holder_(std::move(buffer_handle), context_factory),
-        sh_mem_holder_(gmb_holder_.GetGpuMemoryBufferHandle().region()),
+        sh_mem_holder_(
+            gmb_holder_.GetGpuMemoryBufferHandle().dxgi_handle().region()),
         require_mapped_frame_callback_(
             std::move(require_mapped_frame_callback)) {
     CHECK_EQ(gmb_holder_.GetGpuMemoryBufferHandle().type,

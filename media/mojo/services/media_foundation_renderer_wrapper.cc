@@ -209,10 +209,8 @@ void MediaFoundationRendererWrapper::OnFramePoolInitialized(
   auto pool_params = media::mojom::FramePoolInitializationParameters::New();
   for (auto& texture : frame_textures) {
     auto frame_info = media::mojom::FrameTextureInfo::New();
-    gfx::GpuMemoryBufferHandle gpu_handle;
-
-    gpu_handle.type = gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE;
-    gpu_handle.set_dxgi_handle(gfx::DXGIHandle(std::move(texture.dxgi_handle)));
+    gfx::GpuMemoryBufferHandle gpu_handle(
+        gfx::DXGIHandle(std::move(texture.dxgi_handle)));
 
     frame_info->token = texture.token;
     frame_info->texture_handle = std::move(gpu_handle);

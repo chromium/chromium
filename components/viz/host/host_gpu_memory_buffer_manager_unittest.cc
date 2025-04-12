@@ -117,9 +117,8 @@ class TestGpuService : public mojom::GpuService {
       // size. However, as we don't have the requested format or size here,
       // simply set hardcoded parameter values that ensure that this creation
       // will succeed for the formats and sizes used in these tests.
-      handle.type = gfx::SHARED_MEMORY_BUFFER;
       constexpr size_t kBufferSizeBytes = 6144;
-      handle.set_region(
+      handle = gfx::GpuMemoryBufferHandle(
           base::UnsafeSharedMemoryRegion::Create(kBufferSizeBytes));
     }
     handle.id = req.id;
