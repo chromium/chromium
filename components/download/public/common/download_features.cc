@@ -18,6 +18,20 @@ BASE_FEATURE(kParallelDownloading,
 #endif
 );
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+BASE_FEATURE(kBackoffInDownloading,
+             "BackoffInDownloading",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+bool IsBackoffInDownloadingEnabled() {
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(kBackoffInDownloading);
+#endif
+}
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kSmartSuggestionForLargeDownloads,
              "SmartSuggestionForLargeDownloads",

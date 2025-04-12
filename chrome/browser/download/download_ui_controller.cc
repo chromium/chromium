@@ -48,6 +48,11 @@
 #include "chrome/browser/download/notification/download_notification_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#include "components/download/public/common/desktop/desktop_auto_resumption_handler.h"
+#include "components/download/public/common/download_features.h"
+#endif
+
 namespace {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -101,6 +106,15 @@ class DownloadBubbleUIControllerDelegate
 
 void DownloadBubbleUIControllerDelegate::OnNewDownloadReady(
     download::DownloadItem* item) {
+  // Here the item will be surfaced to the bubble UI and should
+  // subject to the auto resumption logic.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  if (download::features::IsBackoffInDownloadingEnabled()) {
+    auto* handler = download::DesktopAutoResumptionHandler::Get();
+    item->RemoveObserver(handler);
+    item->AddObserver(handler);
+  }
+#endif
   if (!DownloadItemModel(item).ShouldShowInBubble())
     return;
   // crx downloads are handled by the DownloadBubbleUpdateService.
