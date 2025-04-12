@@ -49,7 +49,8 @@ public class CustomTabAppMenuHelper {
                     CustomTabsUiType.READER_MODE,
                     CustomTabsUiType.MINIMAL_UI_WEBAPP,
                     CustomTabsUiType.OFFLINE_PAGE,
-                    CustomTabsUiType.AUTH_TAB -> false;
+                    CustomTabsUiType.AUTH_TAB,
+                    CustomTabsUiType.POPUP -> false;
             default -> true;
         };
     }

@@ -49,7 +49,8 @@ public abstract class BrowserServicesIntentDataProvider {
         CustomTabsUiType.MINIMAL_UI_WEBAPP,
         CustomTabsUiType.OFFLINE_PAGE,
         CustomTabsUiType.AUTH_TAB,
-        CustomTabsUiType.NETWORK_BOUND_TAB
+        CustomTabsUiType.NETWORK_BOUND_TAB,
+        CustomTabsUiType.POPUP
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsUiType {
@@ -62,6 +63,7 @@ public abstract class BrowserServicesIntentDataProvider {
         int READ_LATER = 6;
         int AUTH_TAB = 7;
         int NETWORK_BOUND_TAB = 8;
+        int POPUP = 9;
     }
 
     // The type of Disclosure for TWAs to use.

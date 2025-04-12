@@ -203,6 +203,13 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItemVisible = false;
                 addToHomeScreenVisible = false;
                 requestDesktopSiteVisible = true;
+            } else if (mUiType == CustomTabsUiType.POPUP) {
+                openInChromeItemVisible = false;
+                bookmarkItemVisible = false;
+                downloadItemVisible = false;
+                addToHomeScreenVisible = false;
+                requestDesktopSiteVisible = false;
+                tryAddingReadAloud = false;
             }
 
             if (!FirstRunStatus.getFirstRunFlowComplete()) {

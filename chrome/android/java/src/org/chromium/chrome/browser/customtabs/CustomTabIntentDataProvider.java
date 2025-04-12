@@ -25,8 +25,8 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_EN
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_WIDTH_PX;
-import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_NETWORK;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
 import static androidx.browser.trusted.LaunchHandlerClientMode.FOCUS_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_EXISTING;
 import static androidx.browser.trusted.LaunchHandlerClientMode.NAVIGATE_NEW;
@@ -453,6 +453,11 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 : roundedCornersPosition;
     }
 
+    private static boolean getIsCloseButtonEnabled(Intent intent, int uiType) {
+        return IntentUtils.safeGetBooleanExtra(intent, EXTRA_CLOSE_BUTTON_ENABLED, true)
+                && uiType != CustomTabsUiType.POPUP;
+    }
+
     /**
      * Extracts the name that identifies the embedding app from the referrer.
      *
@@ -520,8 +525,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                 IntentUtils.safeGetBooleanExtra(
                         intent, EXTRA_ACTIVITY_SCROLL_CONTENT_RESIZE, false);
 
-        mIsCloseButtonEnabled =
-                IntentUtils.safeGetBooleanExtra(intent, EXTRA_CLOSE_BUTTON_ENABLED, true);
+        mIsCloseButtonEnabled = getIsCloseButtonEnabled(intent, mUiType);
         if (mIsCloseButtonEnabled) {
             // TODO(crbug.com/393437143): Potentially reuse the close button code from Auth Tab.
             Bitmap bitmap =
@@ -876,6 +880,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         usingInteractiveOmnibox
                                 ? CustomTabsIntent.SHARE_STATE_OFF
                                 : CustomTabsIntent.SHARE_STATE_DEFAULT);
+        if (mUiType == CustomTabsUiType.POPUP) {
+            shareState = CustomTabsIntent.SHARE_STATE_OFF;
+        }
         if (shareState == CustomTabsIntent.SHARE_STATE_DEFAULT) {
             if (mToolbarButtons.isEmpty()) {
                 mToolbarButtons.add(

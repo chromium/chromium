@@ -130,4 +130,44 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
         assertFalse(isMenuVisible(menu, R.id.universal_install));
         assertFalse(isMenuVisible(menu, R.id.open_in_browser_id));
     }
+
+    @Test
+    public void popupMenuItemVisibility() {
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        var delegate =
+                new CustomTabAppMenuPropertiesDelegate(
+                        context,
+                        mActivityTabProvider,
+                        mMultiWindowModeStateDispatcher,
+                        mTabModelSelector,
+                        mToolbarManager,
+                        mDecorView,
+                        mBookmarkModelSupplier,
+                        mVerifier,
+                        CustomTabsUiType.POPUP,
+                        /* menuEntries= */ new ArrayList<String>(),
+                        /* isOpenedByChrome= */ true,
+                        /* showShare= */ true,
+                        /* showStar= */ true,
+                        /* showDownload= */ true,
+                        /* isIncognitoBranded= */ false,
+                        /* isOffTheRecord= */ false,
+                        /* isStartIconMenu= */ true,
+                        mReadAloudControllerSupplier,
+                        /* hasClientPackage= */ false);
+        Menu menu = createMenu(context, delegate.getAppMenuLayoutId());
+        delegate.prepareMenu(menu, null);
+
+        assertTrue(isMenuVisible(menu, R.id.find_in_page_id));
+
+        // Verify the following 6 menu items are hidden.
+        assertFalse(isMenuVisible(menu, R.id.open_in_browser_id));
+        assertFalse(isMenuVisible(menu, R.id.bookmark_this_page_id));
+        assertFalse(isMenuVisible(menu, R.id.offline_page_id));
+        assertFalse(isMenuVisible(menu, R.id.universal_install));
+        assertFalse(isMenuVisible(menu, R.id.request_desktop_site_row_menu_id));
+        assertFalse(isMenuVisible(menu, R.id.readaloud_menu_id));
+    }
 }
