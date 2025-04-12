@@ -32,7 +32,7 @@ export class CatalogAttributesRow extends PolymerElement {
     };
   }
 
-  priceInsightsInfo: PriceInsightsInfo;
+  declare priceInsightsInfo: PriceInsightsInfo;
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
 
