@@ -518,7 +518,7 @@
 <translation id="3140825265190223781">كلمات المرور ومفاتيح المرور المحفوظة</translation>
 <translation id="3143515551205905069">إلغاء المزامنة</translation>
 <translation id="3144126448740580210">تم</translation>
-<translation id="314837624430314508">يمكنك متابعة آخر الأخبار وتغيّرات الأسعار وغير ذلك.</translation>
+<translation id="314837624430314508">احصل على آخر الأخبار وتغيّرات الأسعار وغيرها أولاً بأوّل.</translation>
 <translation id="3157387275655328056">الإضافة إلى قائمة القراءة</translation>
 <translation id="315778507796115851">السجلّ</translation>
 <translation id="31652791196570636">إغلاق</translation>
@@ -1194,7 +1194,7 @@
 <translation id="6059103953801602038">‏تم حفظ المواقع الإلكترونية التي تُتابعها في حسابك على Google. ويمكنك إدارة هذه المواقع الإلكترونية من خلال إعدادات ميزة "اقتراحات".</translation>
 <translation id="6059830886158432458">يمكنك التحكُّم بقصصك ونشاطك هنا.</translation>
 <translation id="6066301408025741299">انقر للإلغاء.</translation>
-<translation id="6074656473835429958">الحصول على إشعارات</translation>
+<translation id="6074656473835429958">فعِّل الإشعارات</translation>
 <translation id="607620096698446287">تعذر تحميل <ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="6077126322656614846">الوصول إلى الكاميرا مسموح به.</translation>
 <translation id="6084848228346514841">اختيار علامات التبويب</translation>
@@ -1354,7 +1354,7 @@
 <translation id="6634432609054530164">أوقفت مؤسستك "وضع التصفُّح المتخفي".</translation>
 <translation id="6638511529934826365">تصغير/تكبير النص…</translation>
 <translation id="6640268266988685324">فتح علامة التبويب</translation>
-<translation id="6641465290890659327">مشاركة نسخة من كلمة المرور</translation>
+<translation id="6641465290890659327">شارِك نسخة من كلمة مرورك</translation>
 <translation id="6642362222295953972">التبديل إلى علامة تبويب حالية</translation>
 <translation id="6644512095122093795">اقتراح حفظ كلمات المرور</translation>
 <translation id="664573288952458293">شبكة علامات التبويب العادية</translation>
@@ -1384,7 +1384,7 @@
 <translation id="6713676799463473249">تاريخ آخر تعديل: <ph name="LAST_MODIFICATION_DATE" /></translation>
 <translation id="6722623263381062480">علامات التبويب المُستلمَة</translation>
 <translation id="6723740634201835758">‏في حسابك على Google</translation>
-<translation id="672735642903863329">يمكنك الوصول إلى إشاراتك المرجعية وكلمات مرورك وغيرها على جميع أجهزتك</translation>
+<translation id="672735642903863329">سترافقك إشاراتك المرجعية وكلمات مرورك وغيرها على جميع أجهزتك</translation>
 <translation id="6729493062119577923">سجلّ نشاط مجموعة علامات التبويب المشترَكة</translation>
 <translation id="6732087373923685049">الكاميرا</translation>
 <translation id="6746338529702829275">مراجعة بيانات حسابك</translation>
