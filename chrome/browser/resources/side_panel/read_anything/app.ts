@@ -345,6 +345,12 @@ export class AppElement extends AppElementBase {
 
   speechSynthesisLanguage: string;
 
+  // With minor page changes, we redistill or redraw sometimes and end up losing
+  // our reading position if read aloud has started. This keeps track of the
+  // last position so we can check if it's still in the new page.
+  private lastReadingId_: number|null = null;
+  private lastReadingOffset_: number|null = null;
+
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
@@ -724,6 +730,12 @@ export class AppElement extends AppElementBase {
       this.logger_.logSpeechStopSource(
           chrome.readingMode.unexpectedUpdateContentStopSource);
     }
+    const hadSpeechBeenTriggered =
+        this.speechPlayingState.hasSpeechBeenTriggered;
+    const hadWordBoundaries =
+        this.wordBoundaryState.mode === WordBoundaryMode.BOUNDARY_DETECTED;
+    const previousWordBoundaryState = {...this.wordBoundaryState};
+
     this.speech_.cancel();
     this.clearReadAloudState();
     const container = this.$.container;
@@ -769,6 +781,42 @@ export class AppElement extends AppElementBase {
     this.hasContent_ = true;
     container.appendChild(node);
     this.updateImages_();
+
+    // If the previous reading position still exists and we haven't reached the
+    // end of speech, keep that spot.
+    if (hadSpeechBeenTriggered) {
+      this.setPreviousReadingPositionIfExists_(
+          hadWordBoundaries, previousWordBoundaryState);
+    }
+  }
+
+  private setPreviousReadingPositionIfExists_(
+      hadWordBoundaries: boolean,
+      previousWordBoundaryState: WordBoundaryState) {
+    if (this.lastReadingId_ === null || this.lastReadingOffset_ === null) {
+      return;
+    }
+
+    if (this.domNodeToAxNodeIdMap_.keyFrom(this.lastReadingId_)) {
+      this.speechPlayingState = {
+        ...this.speechPlayingState,
+        hasSpeechBeenTriggered: true,
+      };
+      this.movePlaybackToNode_(this.lastReadingId_, this.lastReadingOffset_);
+      // If there were word boundaries before the content was updated and we can
+      // restore the reading position, restore the word boundary state so that
+      // we can restore the specific word we stopped on.
+      if (hadWordBoundaries) {
+        this.wordBoundaryState = {...previousWordBoundaryState};
+      }
+      // Since we're setting the reading position after a content update when
+      // we're paused, redraw the highlight after moving the traversal state to
+      // the right spot above.
+      this.highlightCurrentGranularity(chrome.readingMode.getCurrentText());
+    } else {
+      this.lastReadingId_ = null;
+      this.lastReadingOffset_ = null;
+    }
   }
 
   async onImageDownloaded(nodeId: number) {
@@ -1698,7 +1746,9 @@ export class AppElement extends AppElementBase {
         chrome.readingMode.getCurrentTextEndIndex(nodeId) > offset;
     while (hasCurrentText && !startOfSelectionIsInCurrentText) {
       this.highlightCurrentGranularity(
-          currentTextIds, /*scrollIntoView=*/ false);
+          currentTextIds, /*scrollIntoView=*/ false,
+          /*shouldUpdateSentenceHighlight=*/ true,
+          /*shouldSetLastReadingPos=*/ false);
       chrome.readingMode.movePositionToNextGranularity();
       currentTextIds = chrome.readingMode.getCurrentText();
       hasCurrentText = currentTextIds.length > 0;
@@ -1778,7 +1828,13 @@ export class AppElement extends AppElementBase {
   // Highlights or rehighlights the current granularity, sentence or word.
   highlightCurrentGranularity(
       axNodeIds: number[], scrollIntoView: boolean = true,
-      shouldUpdateSentenceHighlight: boolean = true) {
+      shouldUpdateSentenceHighlight: boolean = true,
+      shouldSetLastReadingPos: boolean = true) {
+    if (shouldSetLastReadingPos && axNodeIds.length && axNodeIds[0]) {
+      this.lastReadingId_ = axNodeIds[0];
+      this.lastReadingOffset_ =
+          chrome.readingMode.getCurrentTextStartIndex(this.lastReadingId_);
+    }
     const highlightGranularity = this.getEffectiveHighlightingGranularity_();
     switch (highlightGranularity) {
       case chrome.readingMode.noHighlighting:

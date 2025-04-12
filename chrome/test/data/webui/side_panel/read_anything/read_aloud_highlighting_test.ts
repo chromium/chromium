@@ -4,7 +4,7 @@
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {playFromSelectionTimeout, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {PauseActionSource, playFromSelectionTimeout, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome-untrusted://webui-test/mock_timer.js';
 
@@ -129,6 +129,51 @@ suite('ReadAloudHighlight', () => {
 
     assertEquals(sentence2, currentHighlight!.textContent);
     assertEquals(sentence1, previousHighlight!.textContent);
+  });
+
+  test('on update content after pause, keeps reading position', () => {
+    app.playSpeech();
+    emitNextGranularity();
+    app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+
+    app.updateContent();
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    const previousHighlight =
+        app.$.container.querySelector('.previous-read-highlight');
+
+    assertEquals(sentence2, currentHighlight?.textContent, 'current');
+    assertEquals(sentence1, previousHighlight?.textContent, 'previous');
+  });
+
+  test('on new page after pause, ignores reading position', () => {
+    const newTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2],
+        },
+        {
+          id: 2,
+          role: 'staticText',
+          name: sentence1,
+        },
+      ],
+    };
+    app.playSpeech();
+    emitNextGranularity();
+    app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+
+    chrome.readingMode.setContentForTesting(newTree, [2]);
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    const previousHighlight =
+        app.$.container.querySelector('.previous-read-highlight');
+    assertFalse(!!currentHighlight);
+    assertFalse(!!previousHighlight);
   });
 
   suite('on finish speaking', () => {
