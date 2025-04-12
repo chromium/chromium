@@ -5988,6 +5988,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5186381005592669696">Toetatud rakenduste kuvakeele kohandamine</translation>
 <translation id="5186788525428341874">Selle pääsuvõtme abil saate eri seadmetes kiiremini sisse logida. See salvestatakse konto <ph name="ACCOUNT_NAME" /> Google’i paroolihaldurisse.</translation>
 <translation id="5187641678926990264">&amp;Installi leht rakendusena...</translation>
+<translation id="5187671830619031922">Lisa vaheleht poolitatud vaatesse</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Jagas <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Asukoha kasutamine. Lubage asukohale juurdepääsu loaga ChromeOS-i ja Androidi rakendustel, veebisaitidel ning teenustel teie seadme asukohta kasutada. Asukohatäpsus pakub Androidi rakenduste ja teenuste jaoks täpsemat asukohta. Selleks töötleb Google regulaarselt teavet seadme andurite ja teie seadme juhtmeta signaalide kohta, et juhtmeta signaalide asukohti ühiselt tuvastada. Neid kasutatakse teie isikut tuvastamata asukohatäpsuse ja asukohapõhiste teenuste parandamiseks ning Google’i teenuste täiustamiseks, pakkumiseks ja haldamiseks, lähtudes Google’i ning kolmandate osapoolte õigustatud huvidest, et kasutajate vajadusi rahuldada. <ph name="BEGIN_LINK1" />Lisateave asukoha kasutamise kohta<ph name="END_LINK1" /></translation>
@@ -6335,6 +6336,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5436492226391861498">Puhverserveri tunneli ootamine...</translation>
 <translation id="5436510242972373446">Otsi <ph name="SITE_NAME" />-st:</translation>
 <translation id="5438014818441491616">Akna (<ph name="WINDOW_SIDE" />) laius on nüüd <ph name="WINDOW_SIZE_PERCENT" />, paani (<ph name="PANE_SIDE" />) laius on nüüd <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">&amp;Laienduste leidmine</translation>
 <translation id="5440425659852470030">Sule külgpaneel</translation>
 <translation id="544083962418256601">Loo otseteid ...</translation>
 <translation id="5441133529460183413">Veebirakendus installiti Chrome'i brauserist</translation>
@@ -11093,6 +11095,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="8827125715368568315">Blokeeritud on <ph name="PERMISSION" /> ja veel <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Kinnita laiendus</translation>
 <translation id="8828933418460119530">DNS-nimi</translation>
+<translation id="8829979393064090868">Lisa vaheleht poolitatud vaatesse</translation>
 <translation id="883062543841130884">Asendused</translation>
 <translation id="8830779999439981481">Taaskäivitatakse värskenduste rakendamiseks</translation>
 <translation id="8830796635868321089">Värskenduste kontrollimine puhverserveri praeguste seadetega ebaõnnestus. Korrigeerige <ph name="PROXY_SETTINGS_LINK_START" />puhverserveri seadeid<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

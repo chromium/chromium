@@ -259,6 +259,7 @@
 <translation id="22091350895006575">පරිශීලක නාමය එක් කරන්න</translation>
 <translation id="221494669172414749">පැතිකඩ අගුලක් නොමැතිව Chrome විවෘත කිරීම ඔබේ සුරකින ලද මුරපද සහ ගෙවීම් ක්‍රම මෝටර් රථයෙන් ඉවත් කරනු ඇත. පැතිකඩ අගුලක් භාවිතා කිරීම මෙම දත්ත සුරක්ෂිතව තබා ගනී.</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ලෙස දිගටම කර ගෙන යන්න</translation>
+<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> පටිති සමූහයට නව ක්‍රියාකාරකමක් ඇත</translation>
 <translation id="2230777942707397948">හිස් කවුළුව</translation>
 <translation id="223356358902285214">වෙබ් සහ යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="2234827758954819389">පෞද්ගලිකත්ව මාර්ගෝපදේශය</translation>
@@ -893,7 +894,6 @@
 <translation id="5114895953710637392">යෙදුම් පෙරහන් පත්‍රය වසා ඇත.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> දක්වා</translation>
 <translation id="5116239826668864748">පණිවිඩ, ලේඛන සහ වෙනත් යෙදුම්වල සබැඳි තට්ටු කරන ඕනෑම වේලාවක ඔබට Chrome භාවිත කළ හැක</translation>
-<translation id="5118713593561876160">රුචිකත්ව</translation>
 <translation id="5122378528687922675">ඔබට උදව් අවශ්‍ය නම්, ඔබේ දෙමාපියන්ගෙන් විමසන්න (<ph name="PARENT_NAME_1" /> හෝ <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">අප්‍රකට පටිත්ත</translation>
 <translation id="5139940364318403933">Google Drive භාවිතා කරන ආකාරය ඉගෙන ගන්න</translation>

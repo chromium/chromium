@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" />-hljóð</translation>
 <translation id="1116694919640316211">Upplýsingar</translation>
 <translation id="1118572504348554005">Við kunnum að deila ábendingum sem eru sendar inn í gegnum þetta eyðublað með samstarfsaðilum okkar til að leita úrræða við villum og öðrum vandamálum sem þú tilkynnir okkur um. Ekki láta viðkvæmar upplýsingar á borð við aðgangsorð fylgja með.</translation>
+<translation id="1118596190635569417">Færa þessa valmynd til hægri</translation>
 <translation id="1119403468619527527">Of fá orð til að einfalda</translation>
 <translation id="1119447706177454957">Innri villa</translation>
 <translation id="1124772482545689468">Notandi</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">Sendu ábendingu eða lýstu vandamálinu. Gættu þess að ekkert sé persónulegt, viðkvæmt eða trúnaðarmál.</translation>
 <translation id="1923388006036088459">Áherslulitir</translation>
 <translation id="1926611810597212636">einhyrningur</translation>
+<translation id="1944321879609775960">Endurræstu <ph name="DEVICE_TYPE" /> til að búa til samantekt</translation>
 <translation id="1945403655450283000">Upptökutæki</translation>
 <translation id="1947737735496445907">Prentað</translation>
 <translation id="1951012854035635156">Hjálpari</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Senda ábendingaskýrslu</translation>
 <translation id="2407209115954268704">Staða SIM-láss</translation>
+<translation id="240798792848608143">Endurræstu <ph name="DEVICE_TYPE" /> til að fá textauppskrift á <ph name="LANGUAGE_NAME" /></translation>
 <translation id="241419523391571119">Opnaðu lokið aftur til að prófa</translation>
 <translation id="2414660853550118611">Um veggfóður</translation>
 <translation id="2414886740292270097">Dökkt</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">Skannar síðu <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Innskráningarsíða greind</translation>
 <translation id="3160172848211257835">Senda <ph name="BEGIN_LINK1" />upplýsingar um kerfi og forrit<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />mæligildi<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Endurræstu <ph name="DEVICE_TYPE" /> til að búa til samantekt og titil</translation>
 <translation id="3170673040743561620">Settu skjalið á skannann</translation>
 <translation id="3174321110679064523">Veggfóður, frá dögun til rökkurs</translation>
 <translation id="3178532070248519384">framúrstefnustíl</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">Skipta um veggfóður</translation>
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
 <translation id="3606583719724308068">Langur biðtími eftir HTTPS-vefsvæðum</translation>
+<translation id="3614639364827854748">Færa þessa valmynd til vinstri</translation>
 <translation id="361575905210396100">Takk fyrir ábendinguna</translation>
 <translation id="3621072146987826699">fílar</translation>
 <translation id="3628462041319107639">Sæki líkan textauppskriftar …</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">Ekki keyra</translation>
 <translation id="4378551569595875038">Tengist...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Endurræstu <ph name="DEVICE_TYPE" /> til að búa til titil á upptökuna þína</translation>
 <translation id="4394049700291259645">Slökkva</translation>
 <translation id="439429847087949098">Endurræsir <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">sérsníða lyklaborð</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967">Þú verður skráð(ur) út kl. <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Flýtilykill ekki í boði. Ýttu á nýjan flýtilykil með því að nota breytilykil (ctrl, alt, shift eða <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Litur viðmóts</translation>
+<translation id="4501302804999678844">Endurræstu <ph name="DEVICE_TYPE" /> til að búa til textauppskrift</translation>
 <translation id="4503223151711056411">Ör til vinstri</translation>
 <translation id="4503441351962730761">nútímastíl</translation>
 <translation id="4507392511610824664">auka birtustig</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">lýsa lyklaborð</translation>
 <translation id="4771923071974529837">á morgun</translation>
 <translation id="4773299976671772492">Stöðvað</translation>
+<translation id="4777310452073659583">Endurræstu <ph name="DEVICE_TYPE" /> til að fá textauppskrift</translation>
 <translation id="4778082030331381943">ametýst</translation>
 <translation id="4782311465517282004">Fáðu skilgreiningar, þýðingar eða umreikninga mæligilda þegar þú hægrismellir eða heldur texta inni</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> mynd</translation>
@@ -1696,11 +1704,13 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8655295600908251630">Rás</translation>
 <translation id="8655828773034788261">Deila vefslóð:</translation>
 <translation id="8660881923941176839">pund</translation>
+<translation id="8669187096858652220">Smella til að sýna flipa</translation>
 <translation id="8670574982334489519">hægri</translation>
 <translation id="8675354002693747642">PSK-lykill</translation>
 <translation id="8677859815076891398">Engin albúm. Búðu til albúm í <ph name="LINK_BEGIN" />Google-myndum<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Settu <ph name="DEVICE_NAME" /> aftur inn til að halda uppfærsluferlinu áfram</translation>
+<translation id="8699053192961439771">Smella til að fela flipa sjálfkrafa</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Notaðu ör til vinstri eða ör til hægri til að stjórna þessum eiginleika.</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>

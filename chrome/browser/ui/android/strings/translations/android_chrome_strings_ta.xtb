@@ -259,6 +259,7 @@
 <translation id="22091350895006575">பயனர்பெயரைச் சேருங்கள்</translation>
 <translation id="221494669172414749">சுயவிவரப் பூட்டு இல்லாமல் Chromeமைத் திறந்தால் நீங்கள் காரில் சேமித்துள்ள கடவுச்சொற்களும் பேமெண்ட் முறைகளும் அகற்றப்படும். சுயவிவரப் பூட்டைப் பயன்படுத்தினால் இந்தத் தரவு பாதுகாப்பாக இருக்கும்.</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> ஆகத் தொடர்க</translation>
+<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> பக்கக் குழுவில் புதிய செயல்பாடு</translation>
 <translation id="2230777942707397948">காலியான சாளரம்</translation>
 <translation id="223356358902285214">இணையம் மற்றும் ஆப்ஸ் செயல்பாடு</translation>
 <translation id="2234827758954819389">தனியுரிமை வழிகாட்டி</translation>
@@ -893,7 +894,6 @@
 <translation id="5114895953710637392">ஆப்ஸ் ஃபில்டர் தாள் மூடப்பட்டது.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> இல்</translation>
 <translation id="5116239826668864748">எப்போது வேண்டுமானாலும் மெசேஜ்கள், ஆவணங்கள் மற்றும் பிற ஆப்ஸில் உள்ள இணைப்புகளைத் தட்டி அவற்றை Chromeமில் திறக்கலாம்.</translation>
-<translation id="5118713593561876160">ஆர்வங்கள்</translation>
 <translation id="5122378528687922675">உங்களுக்கு உதவி தேவைப்பட்டால் பெற்றோரிடம் (<ph name="PARENT_NAME_1" /> அல்லது <ph name="PARENT_NAME_2" />) கேளுங்கள்</translation>
 <translation id="5123685120097942451">மறைநிலைத் தாவல்</translation>
 <translation id="5139940364318403933">Google இயக்ககத்தை எப்படிப் பயன்படுத்துவது என்பதை அறிக</translation>

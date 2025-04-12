@@ -492,6 +492,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1822995137827688764">Zhvillimi i pronave</translation>
 <translation id="1824402189105105503">Ruli i tetë</translation>
 <translation id="1826516787628120939">Po kontrollon</translation>
+<translation id="1832730227369924598">Sinkronizimi i tavolinës së punës</translation>
 <translation id="1834452765064623979">Ndërtimi dhe mirëmbajtja</translation>
 <translation id="1838374766361614909">Fshi kërkimin</translation>
 <translation id="1839331950812095887">disa fjalë për të përmbledhur mendimet e tua</translation>
@@ -829,6 +830,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2413155254802890957">I vjetër</translation>
 <translation id="2413528052993050574">Ky server nuk mund të dëshmonte se është  <ph name="DOMAIN" />; certifikata e tij e sigurisë mund të jetë e revokuar. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="2414886740292270097">E errët</translation>
+<translation id="2418292431699242678">Administratori yt aktivizon sinkronizimin e sa më poshtë mes seancave të mëparshme dhe aktuale në çdo pajisje me ChromeOS:</translation>
 <translation id="2429716554270894715">Pëlhurë (rezistente ndaj ujit)</translation>
 <translation id="2436186046335138073">Të lejohet <ph name="HANDLER_HOSTNAME" /> të hapë të gjitha lidhjet <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Arte me fibra dhe tekstile</translation>
@@ -1160,6 +1162,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3037177537145227281">Çmimi po monitorohet</translation>
 <translation id="3037605927509011580">Ndërprerje aksidentale!</translation>
 <translation id="3039406992698062762">Udhëtime familjare</translation>
+<translation id="3040636468789770340">Kukit (gjendja si i identifikuar në uebsajtet e vizituara së fundi)</translation>
 <translation id="3041176923638368519">Shiko kushtet për përfitimet për kartat</translation>
 <translation id="3041612393474885105">Informacioni i certifikatës</translation>
 <translation id="3045769629416806687">Sporte ekstreme</translation>
@@ -1670,6 +1673,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3869939189466884821">Skedarët e tu lokalë do të fshihen pas <ph name="MINUTES" /> minutash</translation>
 <translation id="3872834068356954457">Shkenca</translation>
 <translation id="3875783148670536197">Më trego mënyrën</translation>
+<translation id="387681220560687945">Dritaret (sistemimi dhe organizimi i dritareve dhe skedave)</translation>
 <translation id="3879748587602334249">Menaxheri i shkarkimeve</translation>
 <translation id="3880456882942693779">Arte dhe zbavitje</translation>
 <translation id="3880589673277376494">Interneti dhe telekomunikacioni</translation>
@@ -4746,6 +4750,7 @@ Detaje shtesë:
 <translation id="950736567201356821">Tri shpime lart</translation>
 <translation id="950926967802086924">Çelësi i kalimit • Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="955429569736351433">VR-ja u lejua</translation>
+<translation id="955627189349169688">Mund të tërhiqesh nga kjo politikë në <ph name="BEGIN_LINK" />cilësimet e "Sinkronizimit të Chrome"<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">E verdhë 2</translation>
 <translation id="961663415146723894">Lidhje poshtë</translation>
 <translation id="961856697154696964">Fshi të dhënat e shfletimit</translation>

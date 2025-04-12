@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">சொத்து மேலாண்மை</translation>
 <translation id="1824402189105105503">ரோல் 8</translation>
 <translation id="1826516787628120939">சரிபார்க்கிறது</translation>
+<translation id="1832730227369924598">டெஸ்க் ஒத்திசைவு</translation>
 <translation id="1834452765064623979">கட்டுமானம் மற்றும் பராமரிப்பு</translation>
 <translation id="1838374766361614909">தேடலை அழி</translation>
 <translation id="1839331950812095887">உங்கள் எண்ணங்களைத் தெரிவிக்கும் சில வார்த்தைகள்</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">பழைய முகவரி</translation>
 <translation id="2413528052993050574">இது <ph name="DOMAIN" /> தான் என்பதை இந்தச் சேவையகம் உறுதிப்படுத்தவில்லை; இதன் பாதுகாப்புச் சான்றிதழ் திரும்பப்பெறப்பட்டிருக்கலாம். இது தவறான உள்ளமைவால் ஏற்பட்டிருக்கலாம் அல்லது தீங்கிழைப்பவர் உங்கள் இணைப்பில் குறுக்கிட்டிருக்கலாம்.</translation>
 <translation id="2414886740292270097">அடர்</translation>
+<translation id="2418292431699242678">எல்லா ChromeOS சாதனங்களிலும் உங்களின் முந்தைய மற்றும் தற்போதைய அமர்வுகளுக்கு இடையே பின்வருபவை ஒத்திசைக்கப்பட வேண்டும் என்பதற்காக அவற்றை உங்கள் நிர்வாகி ஆன் செய்துள்ளார்:</translation>
 <translation id="2429716554270894715">நீர் புகாத ஃபேப்ரிக்</translation>
 <translation id="2436186046335138073">எல்லா <ph name="PROTOCOL" /> இணைப்புகளையும் திறக்க, <ph name="HANDLER_HOSTNAME" /> ஐ அனுமதிக்கவா?</translation>
 <translation id="2436976580469434549">ஃபைபர் மற்றும் டெக்ஸ்டைல் சார்ந்த கலைகள்</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">விலையைக் கண்காணிக்கிறது</translation>
 <translation id="3037605927509011580">அச்சச்சோ!</translation>
 <translation id="3039406992698062762">குடும்பப் பயணம்</translation>
+<translation id="3040636468789770340">குக்கீகள் (சமீபத்தில் பார்த்த இணையதளங்களில் உள்நுழைந்திருக்கும் நிலை)</translation>
 <translation id="3041176923638368519">கார்டு பலன் தொடர்பான விதிமுறைகளைக் காட்டு</translation>
 <translation id="3041612393474885105">சான்றிதழ் தகவல்</translation>
 <translation id="3045769629416806687">அபாயகரமான விளையாட்டுகள்</translation>
@@ -1666,6 +1669,7 @@
 <translation id="3869939189466884821">உங்கள் சாதனத்தில் உள்ள ஃபைல்கள் இன்னும் <ph name="MINUTES" /> நிமிடங்களில் நீக்கப்படும்</translation>
 <translation id="3872834068356954457">அறிவியல்</translation>
 <translation id="3875783148670536197">எப்படி எனக் காட்டு</translation>
+<translation id="387681220560687945">சாளரங்கள் (சாளரங்கள் மற்றும் பக்கங்களின் ஒழுங்கமைவும் ஒருங்கிணைப்பும்)</translation>
 <translation id="3879748587602334249">பதிவிறக்க நிர்வாகி</translation>
 <translation id="3880456882942693779">கலை மற்றும் பொழுதுபோக்கு</translation>
 <translation id="3880589673277376494">இணையம் மற்றும் தொலைத்தொடர்பு</translation>
@@ -4744,6 +4748,7 @@
 <translation id="950736567201356821">டிரிப்பில் பஞ்ச் டாப்</translation>
 <translation id="950926967802086924">கடவுச்சாவி • Google Password Manager</translation>
 <translation id="955429569736351433">VR அனுமதிக்கப்பட்டது</translation>
+<translation id="955627189349169688">இந்தக் கொள்கை வேண்டாம் என்று <ph name="BEGIN_LINK" />Chrome ஒத்திசைவு அமைப்புகளில்<ph name="END_LINK" /> தேர்வுசெய்யலாம்.</translation>
 <translation id="95721182352849470">மஞ்சள் 2</translation>
 <translation id="961663415146723894">பைண்டு பாட்டம்</translation>
 <translation id="961856697154696964">உலாவிய தரவை நீக்கு</translation>

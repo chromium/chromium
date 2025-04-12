@@ -259,6 +259,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="22091350895006575">Přidat uživatelské jméno</translation>
 <translation id="221494669172414749">Otevřením Chromu bez zámku profilu odstraníte z auta uložená hesla a platební metody. Použití zámku profilu zajišťuje, aby tato data byla v bezpečí.</translation>
 <translation id="2227444325776770048">Pokračovat jako uživatel <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230288123399603508">Ve skupině karet <ph name="TAB_GROUP_TITLE" /> došlo k nové aktivitě</translation>
 <translation id="2230777942707397948">Prázdné okno</translation>
 <translation id="223356358902285214">Aktivita na webu a v aplikacích</translation>
 <translation id="2234827758954819389">Průvodce ochranou soukromí</translation>
@@ -893,7 +894,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5114895953710637392">Panel filtrování podle aplikace je zavřený.</translation>
 <translation id="5115811374190515607">do: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Chrome můžete použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích</translation>
-<translation id="5118713593561876160">Zájmy</translation>
 <translation id="5122378528687922675">Pokud potřebuješ pomoc, požádej rodiče (<ph name="PARENT_NAME_1" /> nebo <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Anonymní karta</translation>
 <translation id="5139940364318403933">Naučte se používat Disk Google</translation>

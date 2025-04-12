@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">Audio <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Tentang</translation>
 <translation id="1118572504348554005">Kami mungkin membagikan masukan yang dikirim melalui formulir ini kepada partner kami untuk memecahkan masalah bug dan masalah lain yang Anda laporkan kepada kami. Jangan sertakan informasi sensitif seperti sandi.</translation>
+<translation id="1118596190635569417">Pindahkan menu ini ke kanan</translation>
 <translation id="1119403468619527527">Terlalu sedikit kata untuk disederhanakan</translation>
 <translation id="1119447706177454957">Kesalahan internal</translation>
 <translation id="1124772482545689468">Pengguna</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">Sampaikan masukan atau jelaskan masalah Anda. Pastikan untuk tidak menyertakan informasi apa pun yang bersifat pribadi, sensitif, atau rahasia.</translation>
 <translation id="1923388006036088459">Warna aksen</translation>
 <translation id="1926611810597212636">unicorn</translation>
+<translation id="1944321879609775960">Untuk membuat ringkasan, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Perekam Suara</translation>
 <translation id="1947737735496445907">Tercetak</translation>
 <translation id="1951012854035635156">Asisten</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Kirim Laporan Masukan</translation>
 <translation id="2407209115954268704">Status Kunci SIM</translation>
+<translation id="240798792848608143">Untuk mendapatkan transkrip dalam bahasa <ph name="LANGUAGE_NAME" />, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Buka kembali penutup untuk menguji</translation>
 <translation id="2414660853550118611">Tentang wallpaper</translation>
 <translation id="2414886740292270097">Gelap</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">Memindai halaman <ph name="PAGE_NUMBER" /> ...</translation>
 <translation id="315738237743207937">Captive portal terdeteksi</translation>
 <translation id="3160172848211257835">Kirim <ph name="BEGIN_LINK1" />info aplikasi &amp; sistem<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />metrik<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Untuk membuat ringkasan dan judul, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">Letakkan dokumen Anda pada pemindai</translation>
 <translation id="3174321110679064523">Wallpaper Fajar ke petang</translation>
 <translation id="3178532070248519384">avant-garde</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">Ubah wallpaper</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3606583719724308068">Latensi tinggi untuk situs HTTPS</translation>
+<translation id="3614639364827854748">Pindahkan menu ini ke kiri</translation>
 <translation id="361575905210396100">Terima kasih atas masukan Anda</translation>
 <translation id="3621072146987826699">gajah</translation>
 <translation id="3628462041319107639">Mendownload model transkripsi…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">Tidak Berjalan</translation>
 <translation id="4378551569595875038">Menghubungkan...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Untuk membuat judul rekaman, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">Nonaktifkan</translation>
 <translation id="439429847087949098">Memulai ulang <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">sesuaikan keyboard</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967">Anda akan logout pada <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Pintasan tidak tersedia. Tekan pintasan baru menggunakan tombol pengubah (ctrl, alt, shift, atau <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Warna antarmuka</translation>
+<translation id="4501302804999678844">Untuk membuat transkrip, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">Panah kiri</translation>
 <translation id="4503441351962730761">seni modern</translation>
 <translation id="4507392511610824664">tingkatkan kecerahan</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">cerahkan keyboard</translation>
 <translation id="4771923071974529837">besok</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
+<translation id="4777310452073659583">Untuk mendapatkan transkrip, mulai ulang <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametis</translation>
 <translation id="4782311465517282004">Dapatkan definisi, terjemahan, atau konversi unit saat Anda mengklik kanan atau menyentuh lama teks</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
@@ -1696,11 +1704,13 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655828773034788261">Bagikan URL:</translation>
 <translation id="8660881923941176839">pound</translation>
+<translation id="8669187096858652220">Klik untuk menampilkan tab</translation>
 <translation id="8670574982334489519">kanan</translation>
 <translation id="8675354002693747642">Pre-shared key</translation>
 <translation id="8677859815076891398">Tidak ada album. Buat album di <ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Colokkan kembali kabel USB <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
+<translation id="8699053192961439771">Klik untuk menyembunyikan tab secara otomatis</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="871560550817059752">Gagal - Tinta habis</translation>

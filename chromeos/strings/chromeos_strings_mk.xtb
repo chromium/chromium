@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">Аудио на <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Информации</translation>
 <translation id="1118572504348554005">Можно е да ги споделиме повратните информации споделени со нас преку формуларов со нашите партнери за отстранувањето грешки и решавањето на другите проблеми што ни ги пријавувате. Не опфаќајте чувствителни податоци како лозинки.</translation>
+<translation id="1118596190635569417">Премести го мениво на десната страна</translation>
 <translation id="1119403468619527527">Премалку зборови за да се поедностави</translation>
 <translation id="1119447706177454957">Внатрешна грешка</translation>
 <translation id="1124772482545689468">Корисник</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">Споделете ги вашите повратни информации или опишете го проблемот. Погрижете се да не наведувате лични, чувствителни или доверливи податоци.</translation>
 <translation id="1923388006036088459">Бои за истакнување</translation>
 <translation id="1926611810597212636">еднорог</translation>
+<translation id="1944321879609775960">За да создадете резиме, рестартирајте го вашиот уред <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Диктафон</translation>
 <translation id="1947737735496445907">Отпечатено</translation>
 <translation id="1951012854035635156">Помошник</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Испрати извештај со повратни информации</translation>
 <translation id="2407209115954268704">Статус на заклучување на SIM-картичката</translation>
+<translation id="240798792848608143">За да добиете транскрипција на <ph name="LANGUAGE_NAME" />, рестартирајте го вашиот уред <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Отворете го капакот повторно за да тестирате</translation>
 <translation id="2414660853550118611">За тапетот</translation>
 <translation id="2414886740292270097">Темна</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">Се скенира страницата <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Откриен е портал за проверка</translation>
 <translation id="3160172848211257835">Испрати <ph name="BEGIN_LINK1" />податоци за системот и апликациите<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />метрика<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">За да создадете резиме и наслов, рестартирајте го вашиот уред <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">Ставете го документот на скенерот</translation>
 <translation id="3174321110679064523">Тапет Dawn to dark</translation>
 <translation id="3178532070248519384">авангарда</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">Менување тапет</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е обезбедена со слаб протокол WEP 802.1x</translation>
 <translation id="3606583719724308068">Висока латенција кон веб-сајтовите со HTTPS</translation>
+<translation id="3614639364827854748">Премести го мениво на левата страна</translation>
 <translation id="361575905210396100">Фала за повратните информации</translation>
 <translation id="3621072146987826699">слонови</translation>
 <translation id="3628462041319107639">Се презема моделот за транскрипции…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">Не е извршена</translation>
 <translation id="4378551569595875038">Се поврзува…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">За да создадете наслови за вашата снимка, рестартирајте го вашиот уред <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">Оневозможи</translation>
 <translation id="439429847087949098">Се рестартира <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">приспособување на тастатурата</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967">Ќе се одјавите во <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Кратенката не е достапна. Притиснете нова кратенка со копче модификатор (Ctrl, Alt, Shift или <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Боја на интерфејсот</translation>
+<translation id="4501302804999678844">За да создадете транскрипција, рестартирајте го вашиот уред <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">Стрелка налево</translation>
 <translation id="4503441351962730761">модерна уметност</translation>
 <translation id="4507392511610824664">зголемување на осветленоста</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">осветлување на тастатурата</translation>
 <translation id="4771923071974529837">утре</translation>
 <translation id="4773299976671772492">Сопрено</translation>
+<translation id="4777310452073659583">За да добиете транскрипција, рестартирајте го вашиот уред <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">аметист</translation>
 <translation id="4782311465517282004">Добивајте дефиниции, преводи или конверзија на вредности кога ќе кликнете со десно копче или ќе допрете и задржите текст</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> фотографија</translation>
@@ -1696,11 +1704,13 @@
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Сподели URL:</translation>
 <translation id="8660881923941176839">фунти</translation>
+<translation id="8669187096858652220">Кликнете за да се прикажат картичките</translation>
 <translation id="8670574982334489519">оддесно</translation>
 <translation id="8675354002693747642">Претходно споделен клуч</translation>
 <translation id="8677859815076891398">Нема албуми. Создајте албум во <ph name="LINK_BEGIN" />Фотографии на Google<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">рамен</translation>
 <translation id="8689520252402395106">Вметнете го USB-кабелот на <ph name="DEVICE_NAME" /> повторно за да продолжите со процесот на ажурирање</translation>
+<translation id="8699053192961439771">Кликнете за да се скријат картичките автоматски</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Користете го копчето со стрелка налево или со стрелка надесно за да управувате со функцијава.</translation>
 <translation id="8712637175834984815">Сфатив</translation>
 <translation id="871560550817059752">Неуспешно - нема мастило</translation>

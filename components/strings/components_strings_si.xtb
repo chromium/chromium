@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">දේපළ දියුණුව</translation>
 <translation id="1824402189105105503">Eighth Roll</translation>
 <translation id="1826516787628120939">පරීක්ෂා කරමින්</translation>
+<translation id="1832730227369924598">මේස සමමුහුර්තකරණය</translation>
 <translation id="1834452765064623979">ඉදිකිරීම් සහ නඩත්තු</translation>
 <translation id="1838374766361614909">සෙවීම හිස් කරන්න</translation>
 <translation id="1839331950812095887">ඔබේ සිතුවිලි සාරාංශ කරන වචන කිහිපයක්</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">පැරණි</translation>
 <translation id="2413528052993050574">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය අහෝසි කර තිබිය හැකිය. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="2414886740292270097">අඳුරු</translation>
+<translation id="2418292431699242678">ඔබේ පරිපාලක ඕනෑම ChromeOS උපාංගයක ඔබේ පෙර සහ වත්මන් සැසි අතර සමමුහුර්ත කිරීමට පහත සඳහන් දෑ සබල කරයි:</translation>
 <translation id="2429716554270894715">රෙදි (ජල ප්‍රතිරෝධී)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> හට සියලු <ph name="PROTOCOL" /> සබැඳීන් විවෘත කිරීමට ඉඩ දෙන්නද?</translation>
 <translation id="2436976580469434549">තන්තු සහ රෙදිපිළි කලාව</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">මිල හඹා යාම</translation>
 <translation id="3037605927509011580">අනේ, අපොයි!</translation>
 <translation id="3039406992698062762">පවුලේ සංචාර</translation>
+<translation id="3040636468789770340">කුකීස් (ඔබ මෑතක දී පිවිසි වෙබ් අඩවිවල පුරනය වී ඇති තත්වය)</translation>
 <translation id="3041176923638368519">කාඩ්පත් ප්‍රතිලාභ නියම බලන්න</translation>
 <translation id="3041612393474885105">සහතික තොරතුරු</translation>
 <translation id="3045769629416806687">අවදානම් ක්‍රීඩා</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">ඔබගේ දේශීය ගොනු මිනිත්තු <ph name="MINUTES" /> කින් මකා දැමෙනු ඇත</translation>
 <translation id="3872834068356954457">විද්‍යාව</translation>
 <translation id="3875783148670536197">කෙසේද කියා මට පෙන්වන්න</translation>
+<translation id="387681220560687945">කවුළු (කවුළු සහ පටිති සැකසීම සහ සංවිධානය කිරීම)</translation>
 <translation id="3879748587602334249">බාගැනීමේ කළමනාකරු</translation>
 <translation id="3880456882942693779">කලා සහ විනෝදාස්වාද</translation>
 <translation id="3880589673277376494">අන්තර්ජාලය සහ ටෙලිකොම්</translation>
@@ -4746,6 +4750,7 @@
 <translation id="950736567201356821">ඉහළ තුන් වරක් අනින්න</translation>
 <translation id="950926967802086924">මුරයතුර • Google මුරපද කළමනාකරු</translation>
 <translation id="955429569736351433">VR ඉඩ දී ඇත</translation>
+<translation id="955627189349169688">ඔබට <ph name="BEGIN_LINK" />Chrome සමමුහුර්තකරණ සැකසීම්<ph name="END_LINK" /> තුළ මෙම ප්‍රතිපත්තියෙන් ඉවත් විය හැක.</translation>
 <translation id="95721182352849470">කහ 2</translation>
 <translation id="961663415146723894">පහළ බඳින්න</translation>
 <translation id="961856697154696964">බ්‍රවුස් කිරීමේ දත්ත මකන්න</translation>

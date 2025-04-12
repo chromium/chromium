@@ -250,6 +250,7 @@
 <translation id="1915960750806557358">Chia sẻ phản hồi hoặc mô tả vấn đề của bạn. Hãy nhớ đừng nhập thông tin mang tính cá nhân, nhạy cảm hoặc thông tin mật.</translation>
 <translation id="1923388006036088459">Màu nhấn</translation>
 <translation id="1926611810597212636">kỳ lân</translation>
+<translation id="1944321879609775960">Để tạo bản tóm tắt, hãy khởi động lại <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Máy ghi âm</translation>
 <translation id="1947737735496445907">Đã in</translation>
 <translation id="1951012854035635156">Trợ lý</translation>
@@ -347,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Gửi báo cáo phản hồi</translation>
 <translation id="2407209115954268704">Trạng thái khóa SIM</translation>
+<translation id="240798792848608143">Để nhận bản chép lời bằng <ph name="LANGUAGE_NAME" />, hãy khởi động lại <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Mở lại nắp thiết bị để kiểm tra</translation>
 <translation id="2414660853550118611">Giới thiệu về hình nền</translation>
 <translation id="2414886740292270097">Tối</translation>
@@ -482,6 +484,7 @@
 <translation id="3156846309055100599">Đang quét trang <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Đã phát hiện thấy trang xác thực</translation>
 <translation id="3160172848211257835">Gửi <ph name="BEGIN_LINK1" />thông tin về hệ thống và ứng dụng<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />các chỉ số<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Để tạo nội dung tóm tắt và tiêu đề, hãy khởi động lại <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">Đặt tài liệu của bạn lên máy quét</translation>
 <translation id="3174321110679064523">Hình nền Sáng đến tối</translation>
 <translation id="3178532070248519384">phong cách avant-garde</translation>
@@ -753,6 +756,7 @@
 <translation id="4378373042927530923">Không chạy</translation>
 <translation id="4378551569595875038">Đang kết nối…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Để tạo tiêu đề cho bản ghi, hãy khởi động lại <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">Vô hiệu hóa</translation>
 <translation id="439429847087949098">Đang khởi động lại <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">tuỳ chỉnh bàn phím</translation>
@@ -781,6 +785,7 @@
 <translation id="4486524074141928967">Bạn sẽ bị đăng xuất lúc <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Không có phím tắt này. Nhấn một phím tắt mới dùng phím bổ trợ (ctrl, alt, shift hoặc <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Màu giao diện</translation>
+<translation id="4501302804999678844">Để tạo bản chép lời, hãy khởi động lại <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">Mũi tên trái</translation>
 <translation id="4503441351962730761">nghệ thuật hiện đại</translation>
 <translation id="4507392511610824664">tăng độ sáng</translation>
@@ -833,6 +838,7 @@
 <translation id="4771607256327216405">làm sáng bàn phím</translation>
 <translation id="4771923071974529837">ngày mai</translation>
 <translation id="4773299976671772492">Đã dừng</translation>
+<translation id="4777310452073659583">Để nhận bản chép lời, hãy khởi động lại <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">đá thạch anh tím</translation>
 <translation id="4782311465517282004">Xem định nghĩa, bản dịch hoặc kết quả chuyển đổi đơn vị bằng cách nhấp chuột phải hoặc chạm và giữ văn bản</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ảnh</translation>

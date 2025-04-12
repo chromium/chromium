@@ -492,6 +492,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="1822995137827688764">Vývoj nehnuteľností</translation>
 <translation id="1824402189105105503">Ôsmy kotúč</translation>
 <translation id="1826516787628120939">Kontroluje sa</translation>
+<translation id="1832730227369924598">Synchronizácia v počítači</translation>
 <translation id="1834452765064623979">Výstavba a údržba</translation>
 <translation id="1838374766361614909">Vymazať vyhľadávanie</translation>
 <translation id="1839331950812095887">pár slov, ktoré zhrnujú vaše myšlienky</translation>
@@ -829,6 +830,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2413155254802890957">Staré</translation>
 <translation id="2413528052993050574">Server nedokáže overiť, či ide o doménu <ph name="DOMAIN" />, jej bezpečnostný certifikát bol zrejme zrušený. Môže to byť spôsobené nesprávnou konfiguráciou alebo tým, že vaše pripojenie zachytil útočník.</translation>
 <translation id="2414886740292270097">Tmavý režim</translation>
+<translation id="2418292431699242678">Správca umožňuje synchronizovať medzi predchádzajúcimi a aktuálnymi reláciami v ľubovoľnom zariadení ChromeOS toto:</translation>
 <translation id="2429716554270894715">Látka (vodotesná)</translation>
 <translation id="2436186046335138073">Chcete povoliť obslužnému programu <ph name="HANDLER_HOSTNAME" /> otvárať všetky odkazy protokolu <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Tkáčske a textilné umenie</translation>
@@ -1160,6 +1162,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3037177537145227281">Cenu sledujete</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
 <translation id="3039406992698062762">Rodinné cestovanie</translation>
+<translation id="3040636468789770340">Súbory cookie (stav prihlásenia na nedávno navštívených weboch)</translation>
 <translation id="3041176923638368519">Zobraziť zmluvné podmienky výhod karty</translation>
 <translation id="3041612393474885105">Informácie o certifikáte</translation>
 <translation id="3045769629416806687">Extrémne športy</translation>
@@ -1666,6 +1669,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3869939189466884821">Vaše miestne súbory budú odstránené o <ph name="MINUTES" /> min</translation>
 <translation id="3872834068356954457">Veda</translation>
 <translation id="3875783148670536197">Ukázať postup</translation>
+<translation id="387681220560687945">Okná (usporiadanie okien a kariet)</translation>
 <translation id="3879748587602334249">Správca sťahovania</translation>
 <translation id="3880456882942693779">Umenie a zábava</translation>
 <translation id="3880589673277376494">Internet a telekomunikácie</translation>
@@ -4743,6 +4747,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="950736567201356821">Tri dierky hore</translation>
 <translation id="950926967802086924">Prístupový kľúč • Správca hesiel Google</translation>
 <translation id="955429569736351433">Režim VR je povolený</translation>
+<translation id="955627189349169688">Z tohto pravidla sa môžete odhlásiť v <ph name="BEGIN_LINK" />nastaveniach synchronizácie Chromu<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Žltá č. 2</translation>
 <translation id="961663415146723894">Zviazať dolu</translation>
 <translation id="961856697154696964">Odstrániť dáta prehliadania</translation>

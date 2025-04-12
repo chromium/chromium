@@ -5979,6 +5979,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5186381005592669696">Personalizo gjuhën e ekranit për aplikacionet e mbështetura</translation>
 <translation id="5186788525428341874">Mund ta përdorësh këtë çelës kalimi për t'u identifikuar më shpejt në pajisjet e tua. Ai do të ruhet te "Menaxheri i fjalëkalimeve i Google" për <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalo faqen si aplikacion...</translation>
+<translation id="5187671830619031922">Shto skedën në pamjen e ndarë</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Ndarë nga <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Përdor vendndodhjen. Lejo që aplikacionet, uebsajtet dhe shërbimet e ChromeOS dhe Android që kanë lejen për vendndodhjen të përdorin vendndodhjen e pajisjes sate. "Saktësia e vendndodhjes" ofron vendndodhje më të saktë për shërbimet dhe aplikacionet për Android. Për ta bërë këtë, Google përpunon në mënyrë periodike informacionet për sensorët e pajisjes dhe sinjalet wireless nga pajisja jote për të mbledhur vendndodhjet e sinjaleve wireless. Këto përdoren pa të të identifikuar ty për të përmirësuar saktësinë e vendndodhjes dhe shërbimet bazuar te vendndodhja, si dhe për të përmirësuar, ofruar dhe mirëmbajtur shërbimet e Google bazuar në interesat legjitimë të Google dhe të palëve të treta për t'u shërbyer nevojave të përdoruesve. <ph name="BEGIN_LINK1" />Mëso më shumë rreth përdorimit të vendndodhjes<ph name="END_LINK1" /></translation>
@@ -6325,6 +6326,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5436492226391861498">Po pret për tunelin ndërmjetës...</translation>
 <translation id="5436510242972373446">Kërko në <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">Dritarja <ph name="WINDOW_SIDE" /> tani është <ph name="WINDOW_SIZE_PERCENT" /> e gjerë, paneli <ph name="PANE_SIDE" /> tani është <ph name="PANE_SIZE_PERCENT" /> i gjerë.</translation>
+<translation id="5438060324827306856">Gjej &amp;shtesat</translation>
 <translation id="5440425659852470030">Mbyll panelin anësor</translation>
 <translation id="544083962418256601">Krijo shkurtore...</translation>
 <translation id="5441133529460183413">Aplikacioni i uebit u instalua nga shfletuesi i Chrome</translation>
@@ -11080,6 +11082,7 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="8827125715368568315">Të bllokuara: <ph name="PERMISSION" /> dhe <ph name="COUNT" /> të tjera</translation>
 <translation id="8827289157496676362">Gozhdo shtesën</translation>
 <translation id="8828933418460119530">Emri i DNS-së</translation>
+<translation id="8829979393064090868">Shto skedën në pamjen e ndarë</translation>
 <translation id="883062543841130884">Zëvendësimet</translation>
 <translation id="8830779999439981481">Po riniset për të zbatuar përditësimet</translation>
 <translation id="8830796635868321089">Kontrolli i përditësimit dështoi gjatë përdorimit të cilësimeve të përfaqësuesit aktual. Rregullo <ph name="PROXY_SETTINGS_LINK_START" />cilësimet e përfaqësuesit<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

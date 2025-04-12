@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">Audio: <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Información</translation>
 <translation id="1118572504348554005">Es posible que compartamos con nuestros partners los comentarios enviados a través de este formulario para solucionar errores y otros problemas que nos comuniques. No incluyas información sensible, como contraseñas.</translation>
+<translation id="1118596190635569417">Mover este menú a la derecha</translation>
 <translation id="1119403468619527527">No hay suficientes palabras para simplificar</translation>
 <translation id="1119447706177454957">Error interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
@@ -576,6 +577,7 @@
 <translation id="3604713164406837697">Cambiar fondo de pantalla</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3606583719724308068">Latencia alta a sitios web HTTPS</translation>
+<translation id="3614639364827854748">Mover este menú a la izquierda</translation>
 <translation id="361575905210396100">Gracias por tus comentarios</translation>
 <translation id="3621072146987826699">elefantes</translation>
 <translation id="3628462041319107639">Descargando modelo de transcripción…</translation>
@@ -1702,11 +1704,13 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Compartir URL:</translation>
 <translation id="8660881923941176839">libras</translation>
+<translation id="8669187096858652220">Haz clic para mostrar las pestañas</translation>
 <translation id="8670574982334489519">derecha</translation>
 <translation id="8675354002693747642">Clave precompartida</translation>
 <translation id="8677859815076891398">No hay álbumes. Crea un álbum en <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Vuelve a insertar el cable USB de tu <ph name="DEVICE_NAME" /> para continuar con el proceso de actualización</translation>
+<translation id="8699053192961439771">Haz clic para ocultar las pestañas automáticamente</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Usa las teclas de flecha izquierda y derecha para gestionar esta función.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="871560550817059752">No se ha podido imprimir - Sin tinta</translation>

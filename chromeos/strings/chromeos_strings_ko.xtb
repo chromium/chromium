@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> 오디오</translation>
 <translation id="1116694919640316211">정보</translation>
 <translation id="1118572504348554005">신고된 버그 및 기타 문제를 해결하기 위해 이 양식을 통해 제출된 의견을 파트너와 공유할 수 있습니다. 비밀번호와 같은 민감한 정보는 포함하지 마세요.</translation>
+<translation id="1118596190635569417">이 메뉴를 오른쪽으로 이동</translation>
 <translation id="1119403468619527527">단어가 너무 적어 간결하게 바꿀 수 없습니다.</translation>
 <translation id="1119447706177454957">내부 오류</translation>
 <translation id="1124772482545689468">사용자</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">의견을 공유하거나 문제를 설명해 주세요. 개인 정보, 민감한 정보 또는 기밀 정보는 포함하지 마세요.</translation>
 <translation id="1923388006036088459">강조 색상</translation>
 <translation id="1926611810597212636">유니콘</translation>
+<translation id="1944321879609775960">요약을 만들려면 <ph name="DEVICE_TYPE" /> 기기를 다시 시작하세요.</translation>
 <translation id="1945403655450283000">녹음기</translation>
 <translation id="1947737735496445907">인쇄됨</translation>
 <translation id="1951012854035635156">어시스턴트</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">의견 보고서 보내기</translation>
 <translation id="2407209115954268704">SIM 잠금 상태</translation>
+<translation id="240798792848608143"><ph name="LANGUAGE_NAME" /> 스크립트를 보려면 <ph name="DEVICE_TYPE" /> 기기를 다시 시작하세요.</translation>
 <translation id="241419523391571119">테스트하려면 덮개를 다시 엽니다.</translation>
 <translation id="2414660853550118611">배경화면 정보</translation>
 <translation id="2414886740292270097">어둡게</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />페이지 스캔 중…</translation>
 <translation id="315738237743207937">종속 포털 감지됨</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />시스템 및 앱 정보<ph name="END_LINK1" />와 <ph name="BEGIN_LINK2" />통계<ph name="END_LINK2" /> 전송</translation>
+<translation id="3161556797767210144">요약 및 제목을 만들려면 <ph name="DEVICE_TYPE" /> 기기를 다시 시작하세요.</translation>
 <translation id="3170673040743561620">스캐너에 문서를 올리세요.</translation>
 <translation id="3174321110679064523">새벽부터 밤까지 배경화면</translation>
 <translation id="3178532070248519384">아방가르드</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">배경화면 변경</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
 <translation id="3606583719724308068">HTTPS 웹사이트 연결의 지연 시간이 깁니다.</translation>
+<translation id="3614639364827854748">이 메뉴를 왼쪽으로 이동</translation>
 <translation id="361575905210396100">의견을 보내 주셔서 감사합니다</translation>
 <translation id="3621072146987826699">코끼리</translation>
 <translation id="3628462041319107639">스크립트 작성 모델 다운로드 중…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4378551569595875038">연결 중...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">녹화 파일의 제목을 만들려면 <ph name="DEVICE_TYPE" /> 기기를 다시 시작하세요.</translation>
 <translation id="4394049700291259645">사용 중지</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> 다시 시작 중</translation>
 <translation id="4395835743215824109">키보드 맞춤설정</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967"><ph name="TIME" />에 로그아웃됩니다</translation>
 <translation id="4500722292849917410">단축키를 사용할 수 없습니다. 특수키(Ctrl, Alt, Shift 또는 <ph name="META_KEY" />)를 사용하여 새 단축키를 누르세요.</translation>
 <translation id="4500966230243561393">인터페이스 색상</translation>
+<translation id="4501302804999678844">스크립트를 만들려면 <ph name="DEVICE_TYPE" /> 기기를 다시 시작하세요.</translation>
 <translation id="4503223151711056411">왼쪽 화살표</translation>
 <translation id="4503441351962730761">현대 미술</translation>
 <translation id="4507392511610824664">밝기를 높입니다</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">키보드 밝게</translation>
 <translation id="4771923071974529837">내일</translation>
 <translation id="4773299976671772492">중지됨</translation>
+<translation id="4777310452073659583">스크립트를 확인하려면 <ph name="DEVICE_TYPE" /> 기기를 다시 시작하세요.</translation>
 <translation id="4778082030331381943">자수정</translation>
 <translation id="4782311465517282004">텍스트를 마우스 오른쪽 버튼으로 클릭하거나 길게 터치하여 정의 또는 번역을 확인하거나 단위를 변환합니다</translation>
 <translation id="4791000909649665275">사진 <ph name="NUMBER" />장</translation>
@@ -1696,11 +1704,13 @@
 <translation id="8655295600908251630">채널</translation>
 <translation id="8655828773034788261">공유 URL:</translation>
 <translation id="8660881923941176839">파운드</translation>
+<translation id="8669187096858652220">클릭하여 탭 표시</translation>
 <translation id="8670574982334489519">오른쪽</translation>
 <translation id="8675354002693747642">사전 공유 키:</translation>
 <translation id="8677859815076891398">앨범이 없습니다. <ph name="LINK_BEGIN" />Google 포토<ph name="LINK_END" />에서 앨범을 만드세요.</translation>
 <translation id="8682949824227998083">라면</translation>
 <translation id="8689520252402395106">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에 USB 케이블을 다시 꽂으세요.</translation>
+<translation id="8699053192961439771">클릭하여 탭 자동 숨기기</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 이 기능을 관리하려면 왼쪽 또는 오른쪽 화살표 키를 사용하세요.</translation>
 <translation id="8712637175834984815">확인</translation>
 <translation id="871560550817059752">실패 - 잉크 없음</translation>

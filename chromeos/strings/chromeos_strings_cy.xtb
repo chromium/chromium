@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">Sain <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Ynghylch</translation>
 <translation id="1118572504348554005">Mae’n bosib y byddwn yn rhannu adborth a gyflwynir drwy’r ffurflen hon gyda’n partneriaid i ddatrys problemau bygiau a materion eraill yr ydych yn rhoi gwybod i ni amdanynt. Peidiwch â chynnwys gwybodaeth sensitif fel cyfrineiriau.</translation>
+<translation id="1118596190635569417">Symud y ddewislen hon i'r dde</translation>
 <translation id="1119403468619527527">Rhy ychydig o eiriau i'w symleiddio</translation>
 <translation id="1119447706177454957">Gwall mewnol</translation>
 <translation id="1124772482545689468">Defnyddiwr</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">Rhannwch eich adborth neu disgrifiwch eich problem. Gwnewch yn siŵr nad ydych yn cynnwys unrhyw beth sy'n bersonol, yn sensitif neu'n gyfrinachol.</translation>
 <translation id="1923388006036088459">Lliwiau acen</translation>
 <translation id="1926611810597212636">uncorn</translation>
+<translation id="1944321879609775960">I greu crynodeb, ailgychwynnwch eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Recordydd</translation>
 <translation id="1947737735496445907">Argraffwyd</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Cyfreithiol</translation>
 <translation id="2391082728065870591">Anfon Adroddiad Adborth</translation>
 <translation id="2407209115954268704">Statws Cloi SIM</translation>
+<translation id="240798792848608143">I gael trawsgrifiad yn <ph name="LANGUAGE_NAME" />, ailgychwynnwch eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Ailagorwch y caead i brofi</translation>
 <translation id="2414660853550118611">Ynglŷn â phapur wal</translation>
 <translation id="2414886740292270097">Tywyll</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">Wrthi'n sganio tudalen <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Mae porth caeth wedi'i ganfod</translation>
 <translation id="3160172848211257835">Anfon <ph name="BEGIN_LINK1" />gwybodaeth system ac ap<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />metrigau<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">I greu crynodeb a theitl, ailgychwynnwch eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">Rhowch eich dogfen ar y sganiwr</translation>
 <translation id="3174321110679064523">Papur wal o wawr i dywyll</translation>
 <translation id="3178532070248519384">avant-garde</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">Newid y papur wal</translation>
 <translation id="360565022852130722">Diogelir y rhwydwaith Wi-Fi gyda'r protocol gwan WEP 802.1x</translation>
 <translation id="3606583719724308068">Cuddni uchel i wefannau HTTPS</translation>
+<translation id="3614639364827854748">Symud y ddewislen hon i'r chwith</translation>
 <translation id="361575905210396100">Diolch am eich adborth</translation>
 <translation id="3621072146987826699">eliffantod</translation>
 <translation id="3628462041319107639">Wrthi'n lawrlwytho'r model trawsgrifio…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">Ni Redwyd</translation>
 <translation id="4378551569595875038">Yn cysylltu...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">I greu teitlau ar gyfer eich recordiad, ailgychwynwch eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">Analluogi</translation>
 <translation id="439429847087949098">Wrthi'n ailgychwyn <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">addasu bysellfwrdd</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967">Byddwch yn cael eich allgofnodi yn <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Nid yw'r llwybr byr ar gael. Pwyswch lwybr byr newydd gan ddefnyddio bysell addasydd (ctrl, alt, shift, neu <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Lliw rhyngwyneb</translation>
+<translation id="4501302804999678844">I greu trawsgrifiad, ailgychwynnwch eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">Saeth chwith</translation>
 <translation id="4503441351962730761">celf fodern</translation>
 <translation id="4507392511610824664">disgleirdeb i fyny</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">goleuo bysellfwrdd</translation>
 <translation id="4771923071974529837">yfory</translation>
 <translation id="4773299976671772492">Wedi stopio</translation>
+<translation id="4777310452073659583">I gael trawsgrifiad, ailgychwynwch eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">amethyst</translation>
 <translation id="4782311465517282004">Cael diffiniadau, cyfieithiadau, neu drosiadau uned pan fyddwch yn de-glicio neu'n cyffwrdd a dal testun</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> llun</translation>
@@ -1696,11 +1704,13 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8655295600908251630">Sianel</translation>
 <translation id="8655828773034788261">Rhannu URL:</translation>
 <translation id="8660881923941176839">pwysau</translation>
+<translation id="8669187096858652220">Clicio i ddangos tabiau</translation>
 <translation id="8670574982334489519">dde</translation>
 <translation id="8675354002693747642">Allwedd a rannwyd ymlaen llaw</translation>
 <translation id="8677859815076891398">Dim albymau. Creu albwm yn <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Ailosodwch y cebl USB <ph name="DEVICE_NAME" /> i barhau â'r broses ddiweddaru</translation>
+<translation id="8699053192961439771">Clicio i awtoguddio tabiau</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Defnyddiwch y bysellau saeth Chwith neu Dde i reoli'r nodwedd hon.</translation>
 <translation id="8712637175834984815">Iawn</translation>
 <translation id="871560550817059752">Wedi methu - Allan o inc</translation>

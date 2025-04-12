@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> ഓഡിയോ</translation>
 <translation id="1116694919640316211">വിവരം</translation>
 <translation id="1118572504348554005">ബഗുകളും നിങ്ങൾ ഞങ്ങൾക്ക് റിപ്പോർട്ട് ചെയ്യുന്ന മറ്റ് പ്രശ്‌നങ്ങളും പരിഹരിക്കാൻ, ഈ ഫോമിലൂടെ സമർപ്പിക്കുന്ന ഫീഡ്ബാക്ക് ഞങ്ങളുടെ പങ്കാളികളുമായി ഞങ്ങൾ പങ്കിട്ടേക്കാം. പാസ്‌വേഡുകൾ പോലുള്ള, സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ട വിവരങ്ങൾ ഉൾപ്പെടുത്തരുത്.</translation>
+<translation id="1118596190635569417">ഈ മെനു വലത്തേക്ക് നീക്കുക</translation>
 <translation id="1119403468619527527">ലളിതമാക്കാൻ കുറച്ച് വാക്കുകളേയുള്ളൂ</translation>
 <translation id="1119447706177454957">ആന്തരിക പിശക്</translation>
 <translation id="1124772482545689468">ഉപയോക്താവ്</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">നിങ്ങളുടെ ഫീഡ്ബാക്ക് പങ്കിടുക അല്ലെങ്കിൽ പ്രശ്നം വിവരിക്കുക. വ്യക്തിപരമോ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ രഹസ്യാത്മകമോ ആയ കാര്യങ്ങളൊന്നും ഉൾപ്പെടുത്തുന്നില്ലെന്ന് ഉറപ്പാക്കുക.</translation>
 <translation id="1923388006036088459">ആക്സന്റ് നിറങ്ങൾ</translation>
 <translation id="1926611810597212636">യൂണികോൺ</translation>
+<translation id="1944321879609775960">സംഗ്രഹം സൃഷ്ടിക്കാൻ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">നിയമപരം</translation>
 <translation id="2391082728065870591">ഫീഡ്‌ബാക്ക് റിപ്പോർട്ട് അയയ്‌ക്കുക</translation>
 <translation id="2407209115954268704">സിം ലോക്ക് നില</translation>
+<translation id="240798792848608143"><ph name="LANGUAGE_NAME" /> ഭാഷയിൽ ട്രാൻസ്‌ക്രിപ്റ്റ് ലഭിക്കാൻ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="241419523391571119">പരീക്ഷിച്ച് നോക്കാൻ ലിഡ് വീണ്ടും തുറക്കുക</translation>
 <translation id="2414660853550118611">വാൾപേപ്പറിനെ കുറിച്ച്</translation>
 <translation id="2414886740292270097">ഇരുണ്ടത്</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു...</translation>
 <translation id="315738237743207937">ക്യാപ്റ്റീവ് പോർട്ടൽ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />സിസ്റ്റവും ആപ്പും സംബന്ധിച്ച വിവരങ്ങൾ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />മെട്രിക്കുകൾ<ph name="END_LINK2" /> എന്നിവ അയയ്ക്കുക</translation>
+<translation id="3161556797767210144">സംഗ്രഹവും ടൈറ്റിലും സൃഷ്ടിക്കാൻ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="3170673040743561620">നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്ക്കുക</translation>
 <translation id="3174321110679064523">'ഉദയം മുതൽ അസ്തമയം വരെ' വാൾപേപ്പർ</translation>
 <translation id="3178532070248519384">അവന്റ്-ഗാർഡ്</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">വാൾപേപ്പർ മാറ്റുക</translation>
 <translation id="360565022852130722">ദുർബലമായ WEP 802.1x പ്രോട്ടോക്കോൾ ഉപയോഗിച്ചാണ് വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമാക്കിയിരിക്കുന്നത്</translation>
 <translation id="3606583719724308068">HTTPS വെബ്‌സൈറ്റുകളിലേക്ക് കണക്റ്റ് ചെയ്യാൻ ഉയർന്ന പ്രതികരണ സമയം</translation>
+<translation id="3614639364827854748">ഈ മെനു ഇടത്തേക്ക് നീക്കുക</translation>
 <translation id="361575905210396100">നിങ്ങളുടെ ഫീഡ്ബാക്കിന് നന്ദി</translation>
 <translation id="3621072146987826699">ആനകൾ</translation>
 <translation id="3628462041319107639">ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">റൺ ചെയ്‌തിട്ടില്ല</translation>
 <translation id="4378551569595875038">കണക്റ്റിംഗ്...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">റെക്കോർഡിംഗുകൾക്കായി ടൈറ്റിലുകൾ സൃഷ്ടിക്കാൻ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="4394049700291259645">അപ്രാപ്‌തമാക്കുക</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> റീസ്റ്റാർട്ട് ചെയ്യുന്നു</translation>
 <translation id="4395835743215824109">കീബോർഡ് ഇഷ്‌ടാനുസൃതമാക്കൽ</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967"><ph name="TIME" />-ന് നിങ്ങൾ സൈൻ ഔട്ട് ആകും</translation>
 <translation id="4500722292849917410">കുറുക്കുവഴി ലഭ്യമല്ല. മോഡിഫയർ കീ (ctrl, alt, shift അല്ലെങ്കിൽ <ph name="META_KEY" />) ഉപയോഗിച്ച് പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4500966230243561393">ഇന്റര്‍ഫേസ് നിറം</translation>
+<translation id="4501302804999678844">ട്രാൻസ്‌ക്രിപ്റ്റ് സൃഷ്ടിക്കാൻ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="4503223151711056411">ഇടത്തേയ്‌ക്കുള്ള അമ്പടയാളം</translation>
 <translation id="4503441351962730761">മോഡേൺ ആർട്ട്</translation>
 <translation id="4507392511610824664">തെളിച്ചം കൂട്ടുക</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">കീബോർഡ് തെളിച്ചമുള്ളതാക്കുക</translation>
 <translation id="4771923071974529837">നാളെ</translation>
 <translation id="4773299976671772492">അവസാനിപ്പിച്ചു</translation>
+<translation id="4777310452073659583">ട്രാൻസ്‌ക്രിപ്റ്റ് നേടാൻ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="4778082030331381943">അമെതിസ്റ്റ്</translation>
 <translation id="4782311465517282004">നിങ്ങൾ വലത്-ക്ലിക്ക് ചെയ്യുമ്പോഴോ ടെക്സ്റ്റിൽ സ്‌പർശിച്ച് പിടിക്കുമ്പോഴോ നിർവചനങ്ങളോ വിവർത്തനങ്ങളോ യൂണിറ്റ് കൺവേർഷനുകളോ നേടുക</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ഫോട്ടോ</translation>
@@ -1696,11 +1704,13 @@
 <translation id="8655295600908251630">ചാനല്‍</translation>
 <translation id="8655828773034788261">URL പങ്കിടുക:</translation>
 <translation id="8660881923941176839">പൗണ്ട്</translation>
+<translation id="8669187096858652220">ടാബുകൾ കാണിക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8670574982334489519">വലതുവശം</translation>
 <translation id="8675354002693747642">മുമ്പേ പങ്കിട്ട കീ</translation>
 <translation id="8677859815076891398">ആൽബങ്ങളൊന്നുമില്ല. <ph name="LINK_BEGIN" />Google Photos-ൽ<ph name="LINK_END" /> ആൽബം സൃഷ്‌ടിക്കുക.</translation>
 <translation id="8682949824227998083">രാമെൻ</translation>
 <translation id="8689520252402395106">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> എന്നതിന്റെ USB കേബിൾ വീണ്ടും ഇൻസേർട്ട് ചെയ്യുക</translation>
+<translation id="8699053192961439771">ടാബുകൾ സ്വയമേവ മറയ്ക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ഈ ഫീച്ചർ മാനേജ് ചെയ്യാൻ ഇടത്തേയ്‌ക്കോ വലത്തേയ്‌ക്കോ ഉള്ള അമ്പടയാളം ഉപയോഗിക്കുക.</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="871560550817059752">പ്രിന്റ് ചെയ്യാനായില്ല - മഷിയില്ല</translation>

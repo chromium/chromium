@@ -492,6 +492,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1822995137827688764">Eiendomsontwikkeling</translation>
 <translation id="1824402189105105503">Agste rol</translation>
 <translation id="1826516787628120939">Gaan tans na</translation>
+<translation id="1832730227369924598">Lessenaarsinkronisering</translation>
 <translation id="1834452765064623979">Konstruksie en instandhouding</translation>
 <translation id="1838374766361614909">Vee soektog uit</translation>
 <translation id="1839331950812095887">’n paar woorde wat jou gedagtes opsom</translation>
@@ -829,6 +830,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2413155254802890957">Oud</translation>
 <translation id="2413528052993050574">Hierdie bediener kon nie bewys dat dit <ph name="DOMAIN" /> is nie; sy sekuriteitsertifikaat is dalk herroep. Dit kan veroorsaak word deur 'n wanopstelling of 'n aanvaller wat jou verbinding onderskep.</translation>
 <translation id="2414886740292270097">Donker</translation>
+<translation id="2418292431699242678">Jou administrateur laat die volgende tussen jou vorige en huidige sessies op enige ChromeOS-toestel sinkroniseer:</translation>
 <translation id="2429716554270894715">Tekstiel (waterdig)</translation>
 <translation id="2436186046335138073">Laat <ph name="HANDLER_HOSTNAME" /> toe om alle <ph name="PROTOCOL" />-skakels oop te maak?</translation>
 <translation id="2436976580469434549">Vesel- en tekstielkuns</translation>
@@ -1160,6 +1162,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3037177537145227281">Spoor tans prys na</translation>
 <translation id="3037605927509011580">O, mapstieks!</translation>
 <translation id="3039406992698062762">Gesinsreise</translation>
+<translation id="3040636468789770340">Webkoekies (aangemelde toestand op webwerwe wat jy onlangs besoek het)</translation>
 <translation id="3041176923638368519">Sien bepalings vir kaartvoordele</translation>
 <translation id="3041612393474885105">Sertifikaatinligting</translation>
 <translation id="3045769629416806687">Adrenaliensport</translation>
@@ -1670,6 +1673,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3869939189466884821">Jou plaaslike lêers sal oor <ph name="MINUTES" /> minute uitgevee word</translation>
 <translation id="3872834068356954457">Wetenskap</translation>
 <translation id="3875783148670536197">Wys my hoe</translation>
+<translation id="387681220560687945">Vensters (rangskikking en organisasie van vensters en oortjies)</translation>
 <translation id="3879748587602334249">Aflaaibestuurder</translation>
 <translation id="3880456882942693779">Kuns en vermaak</translation>
 <translation id="3880589673277376494">Internet en telekom</translation>
@@ -4747,6 +4751,7 @@ Bykomende besonderhede:
 <translation id="950736567201356821">Tripelpons bo</translation>
 <translation id="950926967802086924">Toegangsleutel • Google Wagwoordbestuurder</translation>
 <translation id="955429569736351433">VR word toegelaat</translation>
+<translation id="955627189349169688">Jy kan in <ph name="BEGIN_LINK" />Chrome-sinkroniseringinstellings<ph name="END_LINK" /> aan hierdie beleid onttrek.</translation>
 <translation id="95721182352849470">Geel 2</translation>
 <translation id="961663415146723894">Gebind onder</translation>
 <translation id="961856697154696964">Vee blaaierdata uit</translation>

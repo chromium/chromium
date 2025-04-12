@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">Àudio del <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">Informació</translation>
 <translation id="1118572504348554005">És possible que compartim amb els nostres partners els comentaris que enviïs a través d'aquest formulari per resoldre els errors i altres problemes de què ens informis. No incloguis informació sensible, com ara contrasenyes.</translation>
+<translation id="1118596190635569417">Mou aquest menú cap a la dreta</translation>
 <translation id="1119403468619527527">Hi ha massa poques paraules per simplificar-les</translation>
 <translation id="1119447706177454957">Error intern</translation>
 <translation id="1124772482545689468">Usuari</translation>
@@ -576,6 +577,7 @@
 <translation id="3604713164406837697">Canvia el fons de pantalla</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3606583719724308068">Latència alta als llocs web HTTPS</translation>
+<translation id="3614639364827854748">Mou aquest menú cap a l'esquerra</translation>
 <translation id="361575905210396100">Gràcies pels teus suggeriments</translation>
 <translation id="3621072146987826699">elefants</translation>
 <translation id="3628462041319107639">S'està baixant el model de transcripció…</translation>
@@ -1702,11 +1704,13 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Comparteix l'URL:</translation>
 <translation id="8660881923941176839">lliures</translation>
+<translation id="8669187096858652220">Fes clic per mostrar les pestanyes</translation>
 <translation id="8670574982334489519">dret</translation>
 <translation id="8675354002693747642">Clau precompartida</translation>
 <translation id="8677859815076891398">No hi ha cap àlbum. Crea'n un a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Torna a connectar el cable USB del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
+<translation id="8699053192961439771">Fes clic per amagar automàticament les pestanyes</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>

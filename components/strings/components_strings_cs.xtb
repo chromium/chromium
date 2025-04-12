@@ -492,6 +492,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1822995137827688764">Investiční činnost v oboru realit</translation>
 <translation id="1824402189105105503">Osmá role</translation>
 <translation id="1826516787628120939">Probíhá kontrola</translation>
+<translation id="1832730227369924598">Synchronizace plochy</translation>
 <translation id="1834452765064623979">Stavby a údržba</translation>
 <translation id="1838374766361614909">Vymazat vyhledávání</translation>
 <translation id="1839331950812095887">pár slov, která shrnují vaše myšlenky</translation>
@@ -829,6 +830,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2413155254802890957">Stará</translation>
 <translation id="2413528052993050574">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát byl zřejmě zrušen. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="2414886740292270097">Tmavá</translation>
+<translation id="2418292431699242678">Administrátor povoluje synchronizaci následujících položek mezi předchozími a aktuálními relacemi na libovolném zařízení ChromeOS:</translation>
 <translation id="2429716554270894715">Textilie (voděodolná)</translation>
 <translation id="2436186046335138073">Chcete obslužnému nástroji <ph name="HANDLER_HOSTNAME" /> povolit otevírat všechny odkazy s protokolem <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Umění využívající vlákna a textilie</translation>
@@ -1160,6 +1162,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3037177537145227281">Cena sledována</translation>
 <translation id="3037605927509011580">Aj, chyba!</translation>
 <translation id="3039406992698062762">Rodinné cestování</translation>
+<translation id="3040636468789770340">Soubory cookie (stav přihlášení na nedávno navštívených webech)</translation>
 <translation id="3041176923638368519">Viz podmínky výhod karty</translation>
 <translation id="3041612393474885105">Informace o certifikátu</translation>
 <translation id="3045769629416806687">Extrémní sporty</translation>
@@ -1666,6 +1669,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3869939189466884821">Vaše místní soubory budou za <ph name="MINUTES" /> min smazány</translation>
 <translation id="3872834068356954457">Věda</translation>
 <translation id="3875783148670536197">Ukázat postup</translation>
+<translation id="387681220560687945">Okna (uspořádání oken a karet)</translation>
 <translation id="3879748587602334249">Správce stahování</translation>
 <translation id="3880456882942693779">Umění a zábava</translation>
 <translation id="3880589673277376494">Internet a telekomunikace</translation>
@@ -4742,6 +4746,7 @@ Další podrobnosti:
 <translation id="950736567201356821">Tři díry nahoře</translation>
 <translation id="950926967802086924">Přístupový klíč • Správce hesel Google</translation>
 <translation id="955429569736351433">VR povolena</translation>
+<translation id="955627189349169688">S této zásady se v <ph name="BEGIN_LINK" />nastavení synchronizace Chromu<ph name="END_LINK" /> můžete odhlásit.</translation>
 <translation id="95721182352849470">Žlutá 2</translation>
 <translation id="961663415146723894">Vazba dole</translation>
 <translation id="961856697154696964">Vymazat údaje o prohlížení</translation>

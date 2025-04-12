@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" />-lyd</translation>
 <translation id="1116694919640316211">Om</translation>
 <translation id="1118572504348554005">Vi deler muligvis feedback, der indsendes via denne formular, med vores partnere for at finde og rette fejl samt løse andre problemer, du rapporterer til os. Medtag ikke følsomme oplysninger som f.eks. adgangskoder.</translation>
+<translation id="1118596190635569417">Flyt denne menu til højre</translation>
 <translation id="1119403468619527527">For få ord til at forenkle</translation>
 <translation id="1119447706177454957">Intern fejl</translation>
 <translation id="1124772482545689468">Bruger</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">Del din feedback, eller beskriv dit problem. Sørg for ikke at medtage personlige, følsomme eller fortrolige oplysninger.</translation>
 <translation id="1923388006036088459">Kontrastfarver</translation>
 <translation id="1926611810597212636">enhjørning</translation>
+<translation id="1944321879609775960">Genstart <ph name="DEVICE_TYPE" /> for at oprette en opsummering</translation>
 <translation id="1945403655450283000">Lydoptager</translation>
 <translation id="1947737735496445907">Udskrevet</translation>
 <translation id="1951012854035635156">Assistent</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Send feedbackrapport</translation>
 <translation id="2407209115954268704">Status for SIM-lås</translation>
+<translation id="240798792848608143">Genstart <ph name="DEVICE_TYPE" />, hvis du vil have en transskription på <ph name="LANGUAGE_NAME" /></translation>
 <translation id="241419523391571119">Åbn skærmen igen for at teste</translation>
 <translation id="2414660853550118611">Om baggrunden</translation>
 <translation id="2414886740292270097">Mørk</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">Scanner side <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">Der blev registreret en loginportal</translation>
 <translation id="3160172848211257835">Send <ph name="BEGIN_LINK1" />system- og appoplysninger<ph name="END_LINK1" /> samt <ph name="BEGIN_LINK2" />metrics<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Genstart <ph name="DEVICE_TYPE" /> for at oprette en opsummering og en titel</translation>
 <translation id="3170673040743561620">Placer dit dokument i scanneren</translation>
 <translation id="3174321110679064523">Baggrunden Daggry til mørkets frembrud</translation>
 <translation id="3178532070248519384">avantgarde</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">Skift baggrund</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3606583719724308068">Stor forsinkelse til HTTPS-websites</translation>
+<translation id="3614639364827854748">Flyt denne menu til venstre</translation>
 <translation id="361575905210396100">Tak for din feedback</translation>
 <translation id="3621072146987826699">elefanter</translation>
 <translation id="3628462041319107639">Transskriptionsmodellen downloades…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">Kørte ikke</translation>
 <translation id="4378551569595875038">Tilslutter...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Genstart <ph name="DEVICE_TYPE" /> for at oprette titler til din optagelse</translation>
 <translation id="4394049700291259645">Deaktiver</translation>
 <translation id="439429847087949098">Genstarter <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">tilpas tastatur</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967">Du logges ud kl. <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Genvejen er ikke tilgængelig. Tryk en ny genvej ved hjælp af en ændringstast (Ctrl, Alt, Shift eller <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Grænsefladefarve</translation>
+<translation id="4501302804999678844">Genstart <ph name="DEVICE_TYPE" /> for at oprette en transskription</translation>
 <translation id="4503223151711056411">Venstrepil</translation>
 <translation id="4503441351962730761">moderne kunst</translation>
 <translation id="4507392511610824664">lysstyrke op</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">skru op for tastaturlys</translation>
 <translation id="4771923071974529837">i morgen</translation>
 <translation id="4773299976671772492">Stoppet</translation>
+<translation id="4777310452073659583">Genstart <ph name="DEVICE_TYPE" /> for at få en transskription</translation>
 <translation id="4778082030331381943">ametyst</translation>
 <translation id="4782311465517282004">Få definitioner, oversættelser eller enhedsomregninger, når du højreklikker på eller holder tekst nede</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> billede</translation>
@@ -1696,11 +1704,13 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Del webadresse:</translation>
 <translation id="8660881923941176839">pund</translation>
+<translation id="8669187096858652220">Klik for at se faner</translation>
 <translation id="8670574982334489519">højre</translation>
 <translation id="8675354002693747642">Forhåndsdelt nøgle:</translation>
 <translation id="8677859815076891398">Der er ingen album. Opret et album i <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Sæt USB-kablet i <ph name="DEVICE_NAME" /> igen for at fortsætte opdateringsprocessen</translation>
+<translation id="8699053192961439771">Klik for at skjule faner automatisk</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tryk på venstre- eller højrepil for at bruge denne funktion.</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>

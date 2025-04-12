@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> sesi</translation>
 <translation id="1116694919640316211">Hakkında</translation>
 <translation id="1118572504348554005">Bize bildirdiğiniz hataları ve diğer sorunları gidermek için bu form üzerinden gönderilen geri bildirimleri iş ortaklarımızla paylaşabiliriz. Şifreler gibi hassas bilgileri eklemeyin.</translation>
+<translation id="1118596190635569417">Bu menüyü sağa taşı</translation>
 <translation id="1119403468619527527">Sadeleştirilecek çok az kelime var</translation>
 <translation id="1119447706177454957">Dahili hata</translation>
 <translation id="1124772482545689468">Kullanıcı</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">Geri bildiriminizi paylaşın veya sorununuzu açıklayın. Kişisel, hassas veya gizli bilgiler eklemeyin.</translation>
 <translation id="1923388006036088459">Vurgu renkleri</translation>
 <translation id="1926611810597212636">tek boynuzlu at</translation>
+<translation id="1944321879609775960">Özet oluşturmak için <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın</translation>
 <translation id="1945403655450283000">Kaydedici</translation>
 <translation id="1947737735496445907">Yazdırıldı</translation>
 <translation id="1951012854035635156">Asistan</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Geri Bildirim Raporu Gönder</translation>
 <translation id="2407209115954268704">SIM Kilitleme Durumu</translation>
+<translation id="240798792848608143">Transkripti <ph name="LANGUAGE_NAME" /> almak için <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın</translation>
 <translation id="241419523391571119">Test etmek için kapağı tekrar açın</translation>
 <translation id="2414660853550118611">Duvar kağıdı hakkında</translation>
 <translation id="2414886740292270097">Koyu</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599"><ph name="PAGE_NUMBER" />. sayfa taranıyor...</translation>
 <translation id="315738237743207937">Giriş portalı algılandı</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />Sistem ve uygulama bilgileri<ph name="END_LINK1" /> ile <ph name="BEGIN_LINK2" />metrikleri<ph name="END_LINK2" /> gönder</translation>
+<translation id="3161556797767210144">Özet ve başlık oluşturmak için <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın</translation>
 <translation id="3170673040743561620">Dokümanınızı tarayıcıya yerleştirin</translation>
 <translation id="3174321110679064523">Şafaktan geceye duvar kağıdı</translation>
 <translation id="3178532070248519384">avangart</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">Duvar kağıdını değiştir</translation>
 <translation id="360565022852130722">Kablosuz ağ, zayıf bir protokol olan WEP 802.1x ile güvenlik altına alınmış</translation>
 <translation id="3606583719724308068">HTTPS web sitelerinde yüksek gecikme süresi</translation>
+<translation id="3614639364827854748">Bu menüyü sola taşı</translation>
 <translation id="361575905210396100">Geri bildiriminiz için teşekkürler</translation>
 <translation id="3621072146987826699">filler</translation>
 <translation id="3628462041319107639">Metne dönüştürme modeli indiriliyor…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
 <translation id="4378551569595875038">Bağlanıyor...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Kaydınızla ilgili başlık oluşturmak için <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın</translation>
 <translation id="4394049700291259645">Devre dışı bırak</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> yeniden başlatılıyor</translation>
 <translation id="4395835743215824109">klavyeyi özelleştir</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967"><ph name="TIME" /> itibarıyla oturumunuz kapatılacak</translation>
 <translation id="4500722292849917410">Kısayol kullanılamıyor. Değiştirici tuş (ctrl, alt, üst karakter veya <ph name="META_KEY" />) kullanarak yeni bir kısayola basın.</translation>
 <translation id="4500966230243561393">Arayüz rengi</translation>
+<translation id="4501302804999678844">Transkript oluşturmak için <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın</translation>
 <translation id="4503223151711056411">Sol ok</translation>
 <translation id="4503441351962730761">modern sanat</translation>
 <translation id="4507392511610824664">parlaklığı artır</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">klavye parlaklığını artır</translation>
 <translation id="4771923071974529837">yarın</translation>
 <translation id="4773299976671772492">Durduruldu</translation>
+<translation id="4777310452073659583">Transkript almak için <ph name="DEVICE_TYPE" /> cihazınızı yeniden başlatın</translation>
 <translation id="4778082030331381943">ametist</translation>
 <translation id="4782311465517282004">Metni sağ tıkladığınızda veya dokunup basılı tuttuğunuzda tanımını veya çevirisini görün ya da birim dönüştürmesi alın</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotoğraf</translation>
@@ -1696,11 +1704,13 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL'yi paylaş:</translation>
 <translation id="8660881923941176839">libre</translation>
+<translation id="8669187096858652220">Sekmeleri göstermek için tıkla</translation>
 <translation id="8670574982334489519">sağ</translation>
 <translation id="8675354002693747642">Önceden paylaşılan anahtar</translation>
 <translation id="8677859815076891398">Albüm yok. <ph name="LINK_BEGIN" />Google Fotoğraflar<ph name="LINK_END" />'da albüm oluşturun.</translation>
 <translation id="8682949824227998083">japon eriştesi</translation>
 <translation id="8689520252402395106">Güncelleme işlemine devam etmek için <ph name="DEVICE_NAME" /> USB kablosunu tekrar takın</translation>
+<translation id="8699053192961439771">Sekmeleri otomatik olarak gizlemek için tıkla</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu özelliği yönetmek için sol veya sağ ok tuşlarını kullanın.</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="871560550817059752">İşlem başarısız - Mürekkep yok</translation>

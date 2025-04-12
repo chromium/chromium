@@ -5983,6 +5983,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5186381005592669696">Personalizează limba de afișare pentru aplicațiile compatibile</translation>
 <translation id="5186788525428341874">Poți folosi această cheie de acces ca să te conectezi mai rapid pe toate dispozitivele tale. Ea se va salva în Managerul de parole Google pentru <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalează pagina ca aplicație...</translation>
+<translation id="5187671830619031922">Adaugă o filă la afișarea împărțită</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Distribuită de <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Folosește locația. Permite aplicațiilor, site-urilor și serviciilor ChromeOS și Android cu permisiune pentru locație să folosească locația acestui dispozitiv. Precizia locației afișează locația mai precisă pentru aplicațiile și serviciile Android. În acest scop, Google prelucrează periodic informații despre senzorii și semnalele wireless de la dispozitivul tău, pentru a obține locația semnalelor wireless prin crowdsourcing. Acestea se folosesc fără a te identifica, pentru a îmbunătăți precizia locației și serviciile bazate pe locație și pentru a îmbunătăți, a oferi și a întreține serviciile Google în scopul intereselor legitime ale companiei Google și ale terților de a deservi nevoile utilizatorilor. <ph name="BEGIN_LINK1" />Află mai multe despre folosirea locației<ph name="END_LINK1" /></translation>
@@ -11091,6 +11092,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8827125715368568315">Permisiuni blocate: <ph name="PERMISSION" /> și încă <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Fixează extensia</translation>
 <translation id="8828933418460119530">Nume DNS</translation>
+<translation id="8829979393064090868">Adaugă o filă la afișarea împărțită</translation>
 <translation id="883062543841130884">Înlocuiri</translation>
 <translation id="8830779999439981481">Se repornește pentru aplicarea actualizărilor</translation>
 <translation id="8830796635868321089">Căutarea actualizărilor utilizând setările de proxy actuale nu a reușit. Ajustați <ph name="PROXY_SETTINGS_LINK_START" />setările de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

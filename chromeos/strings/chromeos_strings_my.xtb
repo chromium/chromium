@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> အသံ</translation>
 <translation id="1116694919640316211">အကြောင်း</translation>
 <translation id="1118572504348554005">သင်အကြောင်းကြားသော ချွတ်ယွင်းမှုနှင့် အခြားပြဿနာများကို ရှာဖွေဖြေရှင်းရန် ဤဖောင်ဖြင့် ပေးပို့ထားသည့် အကြံပြုချက်ကို ကျွန်ုပ်တို့ပါတနာများနှင့် မျှဝေနိုင်ပါသည်။ စကားဝှက်ကဲ့သို့ သတိထားရမည့် အချက်အလက်များ မထည့်ပါနှင့်။</translation>
+<translation id="1118596190635569417">ဤမီနူးကို ညာဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="1119403468619527527">ရှင်းလင်းအောင်လုပ်ရန် စကားလုံး နည်းလွန်းသည်</translation>
 <translation id="1119447706177454957">အတွင်းပိုင်း အမှား။</translation>
 <translation id="1124772482545689468">အသုံးပြုသူ</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">သင့်အကြံပြုချက်ကို မျှဝေပါ (သို့) သင့်ပြဿနာကို ဖော်ပြပါ။ ကိုယ်ရေးကိုယ်တာ၊ သတိထားရမည့် (သို့) လျှို့ဝှက်ထားရှိသော မည်သည့်အရာကိုမျှ ထည့်မထားကြောင်း သေချာပါစေ။</translation>
 <translation id="1923388006036088459">အထူးပြုအရောင်များ</translation>
 <translation id="1926611810597212636">သိင်္ဂဿမြင်း</translation>
+<translation id="1944321879609775960">အကျဉ်းချုပ်ပြုလုပ်ရန် သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">ပုံနှိပ်ထုတ်ပြီးပြီ</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">တုံ့ပြန်ချက် အစီရင်ခံစာ ပို့ရန်</translation>
 <translation id="2407209115954268704">ဆင်းမ်ကတ်လော့ခ် အခြေအနေ</translation>
+<translation id="240798792848608143">စာသားမှတ်တမ်းကို <ph name="LANGUAGE_NAME" /> ဖြင့် ရယူရန် သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ</translation>
 <translation id="241419523391571119">စမ်းသပ်ရန် အဖုံးပြန်ဖွင့်ပါ</translation>
 <translation id="2414660853550118611">နောက်ခံအကြောင်း</translation>
 <translation id="2414886740292270097">အမှောင်</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">စာမျက်နှာ <ph name="PAGE_NUMBER" /> ကို စကင်ဖတ်နေသည်…</translation>
 <translation id="315738237743207937">စတင်ဝင်ရန်စာမျက်နှာကို တွေ့ရှိသည်</translation>
 <translation id="3160172848211257835"><ph name="BEGIN_LINK1" />စနစ်နှင့် အက်ပ်အချက်အလက်<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />မက်ထရစ်များ<ph name="END_LINK2" /> ပို့ရန်</translation>
+<translation id="3161556797767210144">အကျဉ်းချုပ်ပြုလုပ်ပြီး ခေါင်းစဉ်တပ်ရန် သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ</translation>
 <translation id="3170673040743561620">စာရွက်စာတမ်းကို စကင်နာပေါ်တင်ပါ</translation>
 <translation id="3174321110679064523">မိုးသောက်ချိန်မှ မှောင်မိုက်ချိန်အထိ နောက်ခံ</translation>
 <translation id="3178532070248519384">အတွေးအမြင်သစ် အနုပညာ</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">နောက်ခံပုံ ပြောင်းရန်</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3606583719724308068">HTTPS ဝဘ်ဆိုက်များသို့ တုံ့ပြန်ချိန်မြင့်သည်</translation>
+<translation id="3614639364827854748">ဤမီနူးကို ဘယ်ဘက်သို့ ရွှေ့ရန်</translation>
 <translation id="361575905210396100">သင့်အကြံပြုချက်အတွက် ကျေးဇူးတင်ပါသည်</translation>
 <translation id="3621072146987826699">ဆင်</translation>
 <translation id="3628462041319107639">စာသားမှတ်တမ်း မော်ဒယ် ဒေါင်းလုဒ်လုပ်နေသည်…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">မလုပ်ဆောင်ပါ</translation>
 <translation id="4378551569595875038">ချိတ်ဆက်ရန်...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">အသံဖမ်းချက်အတွက် ခေါင်းစဉ်တပ်ရန် သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ</translation>
 <translation id="4394049700291259645">ပိတ်ထားရန်</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> ပြန်စနေသည်</translation>
 <translation id="4395835743215824109">ကီးဘုတ် စိတ်ကြိုက်ပြင်ရန်</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967"><ph name="TIME" /> တွင် သင် ထွက်သွားပါမည်</translation>
 <translation id="4500722292849917410">ဖြတ်လမ်းလင့်ခ် မရနိုင်ပါ။ မွမ်းမံခလုတ် (Ctrl၊ Alt၊ Shift သို့မဟုတ် <ph name="META_KEY" />) ဖြင့် ဖြတ်လမ်းလင့်ခ်အသစ်ကို နှိပ်ပါ။</translation>
 <translation id="4500966230243561393">အင်တာဖေ့စ် အရောင်</translation>
+<translation id="4501302804999678844">စာသားမှတ်တမ်းပြုလုပ်ရန် သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ</translation>
 <translation id="4503223151711056411">ဘယ်ညွှန်မြား</translation>
 <translation id="4503441351962730761">ခေတ်ပေါ်အနုပညာ</translation>
 <translation id="4507392511610824664">တောက်ပမှု တိုးရန်</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">ကီးဘုတ် လင်းသွားခြင်း</translation>
 <translation id="4771923071974529837">မနက်ဖြန်</translation>
 <translation id="4773299976671772492">ဆိုင်းငံ့ထား</translation>
+<translation id="4777310452073659583">စာသားမှတ်တမ်းရယူရန် သင့် <ph name="DEVICE_TYPE" /> ကို ပြန်စပါ</translation>
 <translation id="4778082030331381943">ကျောက်ခရမ်းပွင့်</translation>
 <translation id="4782311465517282004">ညာဘက်ခလုတ်ကို နှိပ်ချိန် (သို့) စာသားကိုတို့ထိ၍ ဖိထားချိန်တွင် အဓိပ္ပာယ်ဖွင့်ဆိုချက်၊ ဘာသာပြန်ဆိုချက် (သို့) ယူနစ်ပြောင်းလဲချက်များကို ရယူနိုင်သည်</translation>
 <translation id="4791000909649665275">ဓာတ်ပုံ <ph name="NUMBER" /> ပုံ</translation>
@@ -1696,11 +1704,13 @@
 <translation id="8655295600908251630">လိုင်း</translation>
 <translation id="8655828773034788261">URL မျှဝေရန်-</translation>
 <translation id="8660881923941176839">ပေါင်</translation>
+<translation id="8669187096858652220">တဘ်များကို ပြရန် နှိပ်ပါ</translation>
 <translation id="8670574982334489519">ညာ</translation>
 <translation id="8675354002693747642">ကြိုတင်မျှဝေထားသည့် ကီး</translation>
 <translation id="8677859815076891398">အယ်လ်ဘမ် မရှိပါ။ <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> တွင် အယ်လ်ဘမ်တစ်ခု ပြုလုပ်ပါ။</translation>
 <translation id="8682949824227998083">ရာမန်ခေါက်ဆွဲ</translation>
 <translation id="8689520252402395106">အပ်ဒိတ်လုပ်ငန်းစဉ် ရှေ့ဆက်ရန် <ph name="DEVICE_NAME" /> USB ကြိုးကို ပြန်ထည့်ပါ</translation>
+<translation id="8699053192961439771">တဘ်များကို အလိုအလျောက်ဖျောက်ရန် နှိပ်ပါ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ဤဝန်ဆောင်မှုကို စီမံရန် ဘယ် သို့မဟုတ် ညာညွှန်မြားခလုတ်များ အသုံးပြုပါ။</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="871560550817059752">မအောင်မြင်ပါ - မင်ကုန်နေသည်</translation>

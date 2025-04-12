@@ -492,6 +492,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="1822995137827688764">Kinnisvaraarendus</translation>
 <translation id="1824402189105105503">Kaheksas rull</translation>
 <translation id="1826516787628120939">Kontrollimine</translation>
+<translation id="1832730227369924598">Töölaua sünkroonimine</translation>
 <translation id="1834452765064623979">Ehitus ja hooldus</translation>
 <translation id="1838374766361614909">Otsingu kustutamine</translation>
 <translation id="1839331950812095887">paar sõna, mis võtavad teie mõtted kokku</translation>
@@ -829,6 +830,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2413155254802890957">Vana</translation>
 <translation id="2413528052993050574">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, selle turvasertifikaat võib olla tühistatud. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="2414886740292270097">Tume</translation>
+<translation id="2418292431699242678">Teie administraator lubab mistahes ChromeOS-i seadmes eelmise ja praeguse seansi vahel sünkroonida järgmised andmed.</translation>
 <translation id="2429716554270894715">Kangas (veekindel)</translation>
 <translation id="2436186046335138073">Kas lubada kasutajal <ph name="HANDLER_HOSTNAME" /> avada kõik protokolli <ph name="PROTOCOL" /> lingid?</translation>
 <translation id="2436976580469434549">Kiud- ja tekstiilikunst</translation>
@@ -1160,6 +1162,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3037177537145227281">Jälgite hinda</translation>
 <translation id="3037605927509011580">Ups, ebaõnn!</translation>
 <translation id="3039406992698062762">Perereisid</translation>
+<translation id="3040636468789770340">Küpsised (sisselogitud olek teie hiljuti külastatud veebisaitidel)</translation>
 <translation id="3041176923638368519">Kuva kaardi hüvede tingimused</translation>
 <translation id="3041612393474885105">Sertifikaadi andmed</translation>
 <translation id="3045769629416806687">Ekstreemsport</translation>
@@ -1670,6 +1673,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3869939189466884821">Teie kohalikud failid kustutatakse <ph name="MINUTES" /> minuti pärast</translation>
 <translation id="3872834068356954457">Teadus</translation>
 <translation id="3875783148670536197">Kuva juhised</translation>
+<translation id="387681220560687945">Windows (akende ja vahekaartide paigutus ja korrastamine)</translation>
 <translation id="3879748587602334249">Allalaadimishaldur</translation>
 <translation id="3880456882942693779">Kunst ja meelelahutus</translation>
 <translation id="3880589673277376494">Internet ja telekommunikatsioon</translation>
@@ -4748,6 +4752,7 @@ Lisateave:
 <translation id="950736567201356821">Kolm auku ülal</translation>
 <translation id="950926967802086924">Pääsuvõti • Google'i paroolihaldur</translation>
 <translation id="955429569736351433">VR on lubatud</translation>
+<translation id="955627189349169688">Saate sellest reeglist loobuda <ph name="BEGIN_LINK" />Chrome'i sünkroonimisseadetes<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Kollane 2</translation>
 <translation id="961663415146723894">Köide all</translation>
 <translation id="961856697154696964">Sirvimisandmete kustutamine</translation>

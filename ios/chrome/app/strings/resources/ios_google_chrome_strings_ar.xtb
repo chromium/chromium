@@ -49,7 +49,7 @@
 <translation id="1965935827552890526">‏يجب إنهاء ما كنت تفعله في نافذة Chrome المفتوحة الأخرى.</translation>
 <translation id="1973910962341002002">‏في إعدادات "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"، يُرجى تفعيل Chrome</translation>
 <translation id="1984705450038014246">‏مزامنة بيانات Chrome</translation>
-<translation id="1987779152850321833">‏يمكنك إكمال هذه الإجراءات المقترَحة أدناه للاستفادة إلى أقصى حدّ من Chrome.</translation>
+<translation id="1987779152850321833">‏أكمِل الخطوات المقترَحة أدناه واستفِد من Chrome على أكمل وجه.</translation>
 <translation id="2055826352861631739">‏استخدام Chrome كمتصفّح تلقائي على جهاز iPad</translation>
 <translation id="2056123005618757196">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Google Chrome السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
 <translation id="2120238739383482109">‏فتح الإشارات المرجعية في Chrome.</translation>
@@ -144,7 +144,7 @@
 <translation id="4840404732697892756">‏لا يستطيع "مدير كلمات المرور في Google" التأكد من كلمات المرور إلّا عند تسجيل الدخول باستخدام حسابك على Google.</translation>
 <translation id="4903674399067644695">‏تعرض لك هذه القائمة اقتراحات حول كيفية الاستفادة إلى أقصى حدّ من Chrome.</translation>
 <translation id="49200511069271369">‏يدير نطاق مؤسستك <ph name="DOMAIN" /> الحساب الذي تسجِّل الدخول إليه وطريقة استخدامك لمتصفِّح Chrome. ويمكن لمشرفك إعداد ميزات معيّنة أو حظرها.</translation>
-<translation id="4925322001044117929">‏استخدام متصفّح Chrome على جهاز iPad تلقائيًا</translation>
+<translation id="4925322001044117929">‏اجعل Chrome متصفّحك التلقائي على iPad</translation>
 <translation id="498985224078955265">‏لإرسال علامة التبويب هذه إلى جهاز آخر، عليك تسجيل الدخول إلى Chrome على كلا الجهازين.</translation>
 <translation id="5030102366287574140">‏يستطيع Chrome المساعدة في حماية بياناتك من عمليات الاختراق والمواقع الإلكترونية غير الآمنة وغيرها من المشاكل.</translation>
 <translation id="5109169629909011627">‏الاطّلاع على الإشارات المرجعية في Chrome</translation>
@@ -276,7 +276,6 @@
 <translation id="778855399387580014">‏يمكنك بدء البحث في علامة تبويب Chrome جديدة.</translation>
 <translation id="7792140019572081272">‏يحمي Chrome بياناتك الحسّاسة باستخدام ميزة "التعرُّف على الوجه".</translation>
 <translation id="7855730255114109580">‏Google Chrome محدّث</translation>
-<translation id="787226752901403048">‏يُرجى تسجيل الدخول إلى Chrome لمشاركة مجموعات علامات التبويب والانضمام إليها والعمل معًا على الأفكار</translation>
 <translation id="7897703007638178753">‏الاطّلاع على علامات التبويب الأخيرة في Chrome</translation>
 <translation id="7948283758957877064">‏الميزات الجديدة في Chrome</translation>
 <translation id="8000174216052461231">‏نصيحة للحصول على أعلى مستويات الأمان في Chrome</translation>
@@ -334,7 +333,7 @@
 <translation id="9176561303811134420">‏إدارة "طرق الدفع" في Chrome</translation>
 <translation id="9181628561061032322">‏فتح علامات التبويب الأخيرة في Chrome</translation>
 <translation id="948597495737267756">‏يؤدي هذا الاختصار إلى فتح صفحة "سجلّ Chrome".</translation>
-<translation id="97300214378190234">‏يؤدي هذا الإعداد إلى فتح Chrome عند النقر على الروابط في التطبيقات الأخرى.</translation>
+<translation id="97300214378190234">‏سيفتح Chrome تلقائيًا عند النقر على روابط في تطبيقات أخرى.</translation>
 <translation id="997929539742564806">‏يمكنك تسجيل الدخول بسرعة إلى التطبيقات والمواقع الإلكترونية من خلال ملء كلمات المرور ومفاتيح المرور تلقائيًا من Chrome</translation>
 <translation id="998677222109959694">‏إدارة إعدادات Chrome</translation>
 </translationbundle>

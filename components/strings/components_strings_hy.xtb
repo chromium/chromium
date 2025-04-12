@@ -496,6 +496,7 @@
 <translation id="1822995137827688764">Անշարժ գույքի կառուցում</translation>
 <translation id="1824402189105105503">Ութերորդ գլանափաթեթ</translation>
 <translation id="1826516787628120939">Ստուգում</translation>
+<translation id="1832730227369924598">Աշխատասեղանի համաժամացում</translation>
 <translation id="1834452765064623979">Շենքերի կառուցում և վերանորոգում</translation>
 <translation id="1838374766361614909">Մաքրել որոնումը</translation>
 <translation id="1839331950812095887">ձեր կարծիքը՝ առնվազն մի քանի բառով</translation>
@@ -833,6 +834,7 @@
 <translation id="2413155254802890957">Հին</translation>
 <translation id="2413528052993050574">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը, հավանաբար, հետ է կանչվել: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="2414886740292270097">Մուգ</translation>
+<translation id="2418292431699242678">Ձեր ադմինիստրատորը միացրել է հետևյալ կարգավորումների համաժամացումը ձեր նախորդ և ընթացիկ աշխատաշրջանների միջև ցանկացած ChromeOS սարքում.</translation>
 <translation id="2429716554270894715">Գործվածք (ջրակայուն)</translation>
 <translation id="2436186046335138073">Թույլատրե՞լ <ph name="HANDLER_HOSTNAME" />-ին բացել <ph name="PROTOCOL" /> հաղորդակարգի բոլոր հղումները:</translation>
 <translation id="2436976580469434549">Թելերի և կտորեղենի արվեստ</translation>
@@ -1166,6 +1168,7 @@
 <translation id="3037177537145227281">Դուք հետևում եք այս ապրանքի գնին</translation>
 <translation id="3037605927509011580">Վա՛յ</translation>
 <translation id="3039406992698062762">Ընտանեկան ճանապարհորդություն</translation>
+<translation id="3040636468789770340">Քուքիներ (թույլ են տալիս դուրս չգալ հաշվից այն կայքերում, որոնք վերջերս այցելել եք)</translation>
 <translation id="3041176923638368519">Տեսնել քարտի առավելությունների պայմանները</translation>
 <translation id="3041612393474885105">Վկայագրի տեղեկությունները</translation>
 <translation id="3045769629416806687">Էքստրեմալ սպորտաձևեր</translation>
@@ -1678,6 +1681,7 @@
 <translation id="3869939189466884821">Ձեր տեղական ֆայլերը կջնջվեն <ph name="MINUTES" /> րոպեից</translation>
 <translation id="3872834068356954457">Գիտություն</translation>
 <translation id="3875783148670536197">Ցույց տալ, թե ինչպես</translation>
+<translation id="387681220560687945">Պատուհաններ (պատուհանների և ներդիրների դասավորում)</translation>
 <translation id="3879748587602334249">Ներբեռնման կառավարիչ</translation>
 <translation id="3880456882942693779">Արվեստ և զվարճանք</translation>
 <translation id="3880589673277376494">Ինտերնետ և հեռահաղորդակցություն</translation>
@@ -4755,6 +4759,7 @@
 <translation id="950736567201356821">Երեք անցք վերևում</translation>
 <translation id="950926967802086924">Մուտքի բանալի • Google գաղտնաբառերի կառավարիչ</translation>
 <translation id="955429569736351433">Տրամադրվել է VR-ի օգտագործման թույլտվություն</translation>
+<translation id="955627189349169688">Դուք կարող եք անջատել այս գործառույթը <ph name="BEGIN_LINK" />Chrome Sync-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="95721182352849470">Դեղին 2</translation>
 <translation id="961663415146723894">Ամրակար ներքևում</translation>
 <translation id="961856697154696964">Ջնջել այցելությունները</translation>

@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">Audio du <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">À propos</translation>
 <translation id="1118572504348554005">Les commentaires que vous transmettez via ce formulaire peuvent être partagés avec nos partenaires afin de résoudre des bugs et d'autres problèmes que vous nous signalez. N'incluez pas d'informations sensibles, comme un mot de passe.</translation>
+<translation id="1118596190635569417">Déplacer ce menu vers la droite</translation>
 <translation id="1119403468619527527">Trop peu de mots pour simplifier</translation>
 <translation id="1119447706177454957">Erreur interne.</translation>
 <translation id="1124772482545689468">Utilisateur</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">Partagez vos commentaires ou décrivez votre problème. Veillez à ne fournir aucune information personnelle, sensible ou confidentielle.</translation>
 <translation id="1923388006036088459">Couleurs d'accentuation</translation>
 <translation id="1926611810597212636">licorne</translation>
+<translation id="1944321879609775960">Pour créer un résumé, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Enregistreur</translation>
 <translation id="1947737735496445907">Impression terminée</translation>
 <translation id="1951012854035635156">Assistant</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Envoyer un rapport de commentaires</translation>
 <translation id="2407209115954268704">État du blocage SIM</translation>
+<translation id="240798792848608143">Pour obtenir la transcription en <ph name="LANGUAGE_NAME" />, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Rouvrez l'écran pour tester</translation>
 <translation id="2414660853550118611">À propos du fond d'écran</translation>
 <translation id="2414886740292270097">Sombre</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Portail captif détecté</translation>
 <translation id="3160172848211257835">Envoyer des <ph name="BEGIN_LINK1" />infos sur le système et l'appli<ph name="END_LINK1" />, ainsi que des <ph name="BEGIN_LINK2" />métriques<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Pour créer un résumé et un titre, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">Placez votre document sur le scanner</translation>
 <translation id="3174321110679064523">Fond d'écran De l'aube au crépuscule</translation>
 <translation id="3178532070248519384">avant-garde</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">Changer de fond d'écran</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est protégé par le protocole peu sécurisé WEP 802.1x</translation>
 <translation id="3606583719724308068">Latence élevée avec les sites HTTPS</translation>
+<translation id="3614639364827854748">Déplacer ce menu vers la gauche</translation>
 <translation id="361575905210396100">Merci pour vos commentaires</translation>
 <translation id="3621072146987826699">éléphants</translation>
 <translation id="3628462041319107639">Téléchargement du modèle de transcription…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">Non exécuté</translation>
 <translation id="4378551569595875038">Connexion</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Pour créer des titres pour votre enregistrement, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">Désactiver</translation>
 <translation id="439429847087949098"><ph name="DEVICE_NAME" /> : redémarrage…</translation>
 <translation id="4395835743215824109">personnalisation du clavier</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967">Vous serez déconnecté à <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Raccourci non disponible. Appuyez sur un nouveau raccourci à l'aide d'une touche de modification (Ctrl, Alt, Maj ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Couleur de l'interface</translation>
+<translation id="4501302804999678844">Pour créer une transcription, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">Flèche vers la gauche</translation>
 <translation id="4503441351962730761">art moderne</translation>
 <translation id="4507392511610824664">augmenter la luminosité</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">augmentation de la luminosité du clavier</translation>
 <translation id="4771923071974529837">demain</translation>
 <translation id="4773299976671772492">Interrompu</translation>
+<translation id="4777310452073659583">Pour obtenir la transcription, redémarrez votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">améthyste</translation>
 <translation id="4782311465517282004">Obtenez des définitions, des traductions ou des conversions d'unités lorsque vous effectuez un clic droit ou appuyez de manière prolongée sur du texte</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
@@ -1696,11 +1704,13 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8655295600908251630">Version</translation>
 <translation id="8655828773034788261">Partager l'URL :</translation>
 <translation id="8660881923941176839">livres</translation>
+<translation id="8669187096858652220">Cliquer pour afficher les onglets</translation>
 <translation id="8670574982334489519">droite</translation>
 <translation id="8675354002693747642">Clé pré-partagée</translation>
 <translation id="8677859815076891398">Aucun album. Créez-en un dans <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Rebranchez le câble USB du <ph name="DEVICE_NAME" /> pour poursuivre le processus de mise à jour</translation>
+<translation id="8699053192961439771">Cliquer pour masquer automatiquement les onglets</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Pour gérer cette fonctionnalité, utilisez les flèches vers la gauche ou vers la droite.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Échec – À court d'encre</translation>

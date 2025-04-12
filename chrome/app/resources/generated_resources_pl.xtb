@@ -5965,6 +5965,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5186381005592669696">Dostosowywanie języka wyświetlania obsługiwanych aplikacji</translation>
 <translation id="5186788525428341874">Możesz używać tego klucza dostępu, aby szybciej logować się na różnych urządzeniach. Menedżer haseł Google zapisze je na koncie <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Zainstaluj stronę jako aplikację…</translation>
+<translation id="5187671830619031922">Dodaj kartę do widoku dzielonego</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Udostępnia <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Używaj lokalizacji. Zezwól aplikacjom na ChromeOS i Androida oraz witrynom i usługom, które mają dostęp do lokalizacji, na używanie lokalizacji tego urządzenia. Ustawienie Dokładność lokalizacji zapewnia dokładniejszą lokalizację aplikacjom i usługom na Androida. W tym celu Google okresowo przetwarza dane z czujników urządzenia i sygnały bezprzewodowe z Twojego urządzenia do ustalania lokalizacji sygnałów bezprzewodowych na zasadzie crowdsourcingu. Dane są wykorzystywane – bez identyfikowania Cię – do poprawiania dokładności lokalizacji i usług wykorzystujących lokalizację, a także do udoskonalania, świadczenia i utrzymywania usług Google w oparciu o uzasadniony interes Google i innych firm w spełnianiu potrzeb użytkowników. <ph name="BEGIN_LINK1" />Więcej informacji o używaniu lokalizacji<ph name="END_LINK1" /></translation>
@@ -11068,6 +11069,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8827125715368568315">Zablokowano uprawnienia: <ph name="PERMISSION" /> i jeszcze <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Przypnij rozszerzenie</translation>
 <translation id="8828933418460119530">Nazwa DNS</translation>
+<translation id="8829979393064090868">Dodaj kartę do widoku dzielonego</translation>
 <translation id="883062543841130884">Zamienniki</translation>
 <translation id="8830779999439981481">Uruchamiam ponownie, by zastosować aktualizacje</translation>
 <translation id="8830796635868321089">Sprawdzenie aktualizacji przy użyciu obecnych ustawień serwera proxy nie powiodło się. Popraw <ph name="PROXY_SETTINGS_LINK_START" />ustawienia serwera proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

@@ -259,6 +259,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="22091350895006575">युजरनेम हाल्नुहोस्</translation>
 <translation id="221494669172414749">तपाईंले प्रोफाइल लकविनै Chrome खोल्नुभयो भने तपाईंले सेभ गरेका पासवर्ड तथा भुक्तानी विधिहरू कारबाट हट्ने छन्। प्रोफाइल लक प्रयोग गर्दा यो जानकारी सुरक्षित रहन्छ।</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> का रूपमा जारी राख्नुहोस्</translation>
+<translation id="2230288123399603508"><ph name="TAB_GROUP_TITLE" /> ट्याब समूहमा नयाँ क्रियाकलाप भएको छ</translation>
 <translation id="2230777942707397948">खाली विन्डो</translation>
 <translation id="223356358902285214">वेब तथा एपसम्बन्धी गतिविधि</translation>
 <translation id="2234827758954819389">गोपनीयतासम्बन्धी मार्गदर्शन</translation>
@@ -892,7 +893,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5114895953710637392">एप फिल्टर सिट बन्द छ।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> मा</translation>
 <translation id="5116239826668864748">तपाईंले कुनै म्यासेज, डकुमेन्ट वा अन्य एपमा भएका लिंकमा ट्याप गर्दा ती लिंक Chrome मा खुल्ने छन्</translation>
-<translation id="5118713593561876160">रूचिहरू</translation>
 <translation id="5122378528687922675">मद्दत चाहिएका खण्डमा आफ्ना अभिभावक (<ph name="PARENT_NAME_1" /> वा <ph name="PARENT_NAME_2" />) लाई अनुरोध गर्नुहोस्</translation>
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5139940364318403933">Google Drive प्रयोग गर्ने तरिका सिक्नुहोस्</translation>

@@ -213,7 +213,6 @@
 <translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_OWNER" /> saytlar guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}other{<ph name="RWS_OWNER" /> saytlar guruhidagi <ph name="RWS_MEMBERS_COUNT" /> ta sayt guruhdagi faoliyatingizni kuzatishi mumkin}}</translation>
 <translation id="3676777756440746804">Saytlarga saqlangan shaxsiy maʼlumotlardan foydalanishga ruxsat soʻrash taqiqlanadi</translation>
 <translation id="3697164069658504920">Yoqilsa, saytlar USB qurilmalardan foydalanishni soʻrashi mumkin. Oʻchirilsa, bunday qurilmalardan foydalana olmaydi.</translation>
-<translation id="3703430731944883733">Tasmani boshqarish</translation>
 <translation id="3707034683772193706">Siz ochadigan sayt Chrome orqali real foydalanuvchi ekaningizni tasdiqlovchi axborotni saqlashi mumkin.</translation>
 <translation id="3708684582558000260">Yopilgan saytlarga maʼlumotlarni oxirigacha yuborish yoki qabul qilishni taqiqlash</translation>
 <translation id="3709818294139939629">Saytning faylga ruxsati yopildi</translation>
@@ -579,7 +578,6 @@
 <translation id="8447861592752582886">Qurilma ruxsatini bekor qilish</translation>
 <translation id="8471525937465764768">Saytlar odatda hujjatni chop etish yoki tashqi xotiraga saqlash maqsadida USB qurilmalarga ulanadi</translation>
 <translation id="8473055640493819707">“<ph name="APP_NAME" />” eskirgan. Ilovani qayta oʻrnating.</translation>
-<translation id="847433688444405067">Barcha qurilmalarda varaqlash</translation>
 <translation id="8487700953926739672">Internetsiz foydalanish mumkin</translation>
 <translation id="848952951823693243">Har doim mobil versiya ochilsin</translation>
 <translation id="8492822722330266509">Saytlar oynalarni qalqib chiqarishi va sahifalarni yoʻnaltirishi mumkin</translation>

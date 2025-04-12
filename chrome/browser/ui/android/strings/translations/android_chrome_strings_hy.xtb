@@ -259,6 +259,7 @@
 <translation id="22091350895006575">Ավելացնել օգտանուն</translation>
 <translation id="221494669172414749">Եթե դուք բացեք Chrome-ը առանց պրոֆիլի կողպման, ձեր պահված գաղտնաբառերը և վճարման եղանակները կհեռացվեն մեքենայից։ Տվյալները պաշտպանելու համար օգտագործեք պրոֆիլի կողպում։</translation>
 <translation id="2227444325776770048">Շարունակել որպես <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230288123399603508">Ներդիրների «<ph name="TAB_GROUP_TITLE" />» խմբում նոր գործողություններ կան</translation>
 <translation id="2230777942707397948">Դատարկ պատուհան</translation>
 <translation id="223356358902285214">Ակտիվությունը համացանցում և հավելվածներում</translation>
 <translation id="2234827758954819389">Տվյալների պաշտպանության ուղեցույց</translation>
@@ -893,7 +894,6 @@
 <translation id="5114895953710637392">Ըստ հավելվածի զտման աղյուսակը փակված է։</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /></translation>
 <translation id="5116239826668864748">Հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումները կարող եք բացել Chrome-ում</translation>
-<translation id="5118713593561876160">Հետաքրքրություններ</translation>
 <translation id="5122378528687922675">Եթե օգնության կարիք ունենաս, դիմիր ծնողիդ (<ph name="PARENT_NAME_1" /> կամ <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">Ինկոգնիտո ներդիր</translation>
 <translation id="5139940364318403933">Իմացեք, թե ինչպես օգտագործել Google Drive-ը</translation>

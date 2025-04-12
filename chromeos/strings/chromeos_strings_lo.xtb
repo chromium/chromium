@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">ໄຟລ໌ສຽງ <ph name="DEVICE_TYPE" /></translation>
 <translation id="1116694919640316211">ກ່ຽວ​ກັບ</translation>
 <translation id="1118572504348554005">ພວກເຮົາອາດແບ່ງປັນຄຳຕິຊົມທີ່ສົ່ງມາທາງແບບຟອມນີ້ກັບຮຸ້ນສ່ວນຂອງພວກເຮົາເພື່ອແກ້ບັນຫາຂໍ້ຜິດພາດ ແລະ ບັນຫາອື່ນໆທີ່ທ່ານລາຍງານໃຫ້ພວກເຮົາ. ກະລຸນາຢ່າໃສ່ຂໍ້ມູນລະອຽດອ່ອນ ເຊັ່ນ: ລະຫັດຜ່ານ.</translation>
+<translation id="1118596190635569417">ຍ້າຍເມນູນີ້ໄປທາງຂວາ</translation>
 <translation id="1119403468619527527">ຄຳສັບໜ້ອຍເກີນໄປເພື່ອເຮັດໃຫ້ງ່າຍ</translation>
 <translation id="1119447706177454957">ຜິດພາດພາຍໃນ</translation>
 <translation id="1124772482545689468">ຜູ້​ໃຊ້</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">ແບ່ງປັນຄຳຕິຊົມ ຫຼື ອະທິບາຍບັນຫາຂອງທ່ານ. ກວດສອບວ່າບໍ່ຮວມເອົາສິ່ງໃດກໍຕາມທີ່ເປັນສ່ວນຕົວ, ລະອຽດອ່ອນ ຫຼື ເປັນຄວາມລັບ.</translation>
 <translation id="1923388006036088459">ສີເນັ້ນ</translation>
 <translation id="1926611810597212636">ຢູນິຄອນ</translation>
+<translation id="1944321879609775960">ເພື່ອສ້າງບົດສະຫຼຸບ, ໃຫ້ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="1945403655450283000">ຕົວບັນທຶກ</translation>
 <translation id="1947737735496445907">ພິມແລ້ວ</translation>
 <translation id="1951012854035635156">ຜູ້ຊ່ວຍ</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">ສົ່ງລາຍງານຄຳຕິຊົມ</translation>
 <translation id="2407209115954268704">ສະຖານະການລັອກຊິມ</translation>
+<translation id="240798792848608143">ເພື່ອຮັບການຖອດຂໍ້ຄວາມຈາກສຽງເປັນ <ph name="LANGUAGE_NAME" />, ໃຫ້ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="241419523391571119">ເປີດຝາໜ້າຈໍອີກຄັ້ງເພື່ອທົດສອບ</translation>
 <translation id="2414660853550118611">ກ່ຽວກັບຮູບພື້ນຫຼັງ</translation>
 <translation id="2414886740292270097">ມືດ</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" />...</translation>
 <translation id="315738237743207937">ກວດພົບຊ່ອງທາງເຂົ້າຮັກສາໄວ້</translation>
 <translation id="3160172848211257835">ສົ່ງ <ph name="BEGIN_LINK1" />ຂໍ້ມູນລະບົບ ແລະ ແອັບ<ph name="END_LINK1" /> ແລະ <ph name="BEGIN_LINK2" />ການວັດແທກ<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">ເພື່ອສ້າງບົດສະຫຼຸບ ແລະ ຊື່, ໃຫ້ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="3170673040743561620">ວາງເອກະສານຂອງທ່ານໃສ່ເຄື່ອງສະແກນ</translation>
 <translation id="3174321110679064523">ຮູບພື້ນຫຼັງຮຸ່ງອະລຸນຈົນເຖິງກາງຄືນ</translation>
 <translation id="3178532070248519384">ອາວອງກາດ</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">ປ່ຽນພາບພື້ນຫຼັງ</translation>
 <translation id="360565022852130722">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP 802.1x ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="3606583719724308068">ເວລາຕອບສະໜອງຫາເວັບໄຊ HTTPS ສູງ</translation>
+<translation id="3614639364827854748">ຍ້າຍເມນູນີ້ໄປທາງຊ້າຍ</translation>
 <translation id="361575905210396100">ຂໍຂອບໃຈສຳລັບຄຳຕິຊົມຂອງທ່ານ</translation>
 <translation id="3621072146987826699">ຊ້າງ</translation>
 <translation id="3628462041319107639">ກຳລັງດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມ…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">ບໍ່ໄດ້ເອີ້ນໃຊ້</translation>
 <translation id="4378551569595875038">ກໍາລັງ​ເຊື່ອມ​ຕໍ່ ...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">ເພື່ອສ້າງຊື່ໃຫ້ການບັນທຶກຂອງທ່ານ, ໃຫ້ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="4394049700291259645">ປິດ​ໃຊ້ງານ</translation>
 <translation id="439429847087949098">ກຳລັງຣີສະຕາດ <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">ປັບແຕ່ງແປ້ນພິມ</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967">ທ່ານຈະອອກຈາກລະບົບໃນເວລາ <ph name="TIME" /></translation>
 <translation id="4500722292849917410">ບໍ່ສາມາດໃຊ້ທາງລັດໄດ້. ກົດຄີລັດໃໝ່ໂດຍໃຊ້ປຸ່ມຕົວດັດແປງ (ctrl, alt, shift ຫຼື <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">ສີຂອງສ່ວນຕິດຕໍ່</translation>
+<translation id="4501302804999678844">ເພື່ອສ້າງການຖອດຂໍ້ຄວາມຈາກສຽງ, ໃຫ້ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="4503223151711056411">ລູກສອນຊ້າຍ</translation>
 <translation id="4503441351962730761">ສິນລະປະສະໄໝໃໝ່</translation>
 <translation id="4507392511610824664">ເພີ່ມຄວາມສະຫວ່າງຂຶ້ນ</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">ແປ້ນພິມແຈ້ງ</translation>
 <translation id="4771923071974529837">ມື້ອື່ນ</translation>
 <translation id="4773299976671772492">ຢຸດ​ແລ້ວ</translation>
+<translation id="4777310452073659583">ເພື່ອຮັບການຖອດຂໍ້ຄວາມຈາກສຽງ, ໃຫ້ຣີສະຕາດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="4778082030331381943">ອະເມທິສ</translation>
 <translation id="4782311465517282004">ຮັບຄຳນິຍາມ, ການແປພາສາ ຫຼື ການປ່ຽນແປງຫົວໜ່ວຍເມື່ອທ່ານຄລິກຂວາ ຫຼື ແຕະໃສ່ຂໍ້ຄວາມຄ້າງໄວ້</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ຮູບ</translation>
@@ -1697,11 +1705,13 @@
 <translation id="8655295600908251630">ຊ່ອງ</translation>
 <translation id="8655828773034788261">ແບ່ງປັນ URL:</translation>
 <translation id="8660881923941176839">ພາວ</translation>
+<translation id="8669187096858652220">ຄລິກເພື່ອສະແດງແຖບ</translation>
 <translation id="8670574982334489519">ຂວາ</translation>
 <translation id="8675354002693747642">ລະຫັດທີ່ແບ່ງປັນລ່ວງໜ້າ</translation>
 <translation id="8677859815076891398">ບໍ່ມີອະລະບ້ຳ. ສ້າງອະລະບໍ້າໃນ <ph name="LINK_BEGIN" />Google ຮູບພາບ<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ຣາເມັງ</translation>
 <translation id="8689520252402395106">ສຽບສາຍ USB <ph name="DEVICE_NAME" /> ຄືນໃໝ່ເພື່ອສືບຕໍ່ຂັ້ນຕອນການອັບເດດ</translation>
+<translation id="8699053192961439771">ຄລິກເພື່ອຍົກເລີກການເຊື່ອງແຖບ</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ໃຊ້ປຸ່ມລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອຈັດການຄຸນສົມບັດນີ້.</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="871560550817059752">ບໍ່ສຳເລັດ, ນໍ້າໝຶກໝົດ</translation>

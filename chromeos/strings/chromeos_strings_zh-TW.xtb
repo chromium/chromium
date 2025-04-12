@@ -30,6 +30,7 @@
 <translation id="1107856713690040084"><ph name="DEVICE_TYPE" /> 音訊</translation>
 <translation id="1116694919640316211">關於</translation>
 <translation id="1118572504348554005">我們可能會將透過這份表單提交的意見回饋提供給合作夥伴，用於排解錯誤及你回報的其他問題。請勿輸入密碼等機密資訊。</translation>
+<translation id="1118596190635569417">將這個選單移到右側</translation>
 <translation id="1119403468619527527">字數太少，無法精簡</translation>
 <translation id="1119447706177454957">內部錯誤</translation>
 <translation id="1124772482545689468">使用者</translation>
@@ -249,6 +250,7 @@
 <translation id="1915960750806557358">分享意見回饋或說明你的問題。請勿加入任何個人、敏感或機密資訊。</translation>
 <translation id="1923388006036088459">強調色</translation>
 <translation id="1926611810597212636">獨角獸</translation>
+<translation id="1944321879609775960">如要建立摘要，請重新啟動「<ph name="DEVICE_TYPE" />」</translation>
 <translation id="1945403655450283000">錄音工具</translation>
 <translation id="1947737735496445907">已列印</translation>
 <translation id="1951012854035635156">小幫手</translation>
@@ -346,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">傳送意見回饋報告</translation>
 <translation id="2407209115954268704">SIM 卡鎖定狀態</translation>
+<translation id="240798792848608143">如要取得<ph name="LANGUAGE_NAME" />的轉錄稿，請重新啟動「<ph name="DEVICE_TYPE" />」</translation>
 <translation id="241419523391571119">請重新打開機蓋即進行測試</translation>
 <translation id="2414660853550118611">關於桌布</translation>
 <translation id="2414886740292270097">深色</translation>
@@ -481,6 +484,7 @@
 <translation id="3156846309055100599">正在掃描第 <ph name="PAGE_NUMBER" /> 頁…</translation>
 <translation id="315738237743207937">已偵測到網頁認證入口</translation>
 <translation id="3160172848211257835">傳送<ph name="BEGIN_LINK1" />系統和應用程式資訊<ph name="END_LINK1" />及<ph name="BEGIN_LINK2" />指標<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">如要建立摘要和標題，請重新啟動「<ph name="DEVICE_TYPE" />」</translation>
 <translation id="3170673040743561620">將文件放入掃描機</translation>
 <translation id="3174321110679064523">黎明到黑夜桌布</translation>
 <translation id="3178532070248519384">前衛主義</translation>
@@ -573,6 +577,7 @@
 <translation id="3604713164406837697">變更桌布</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網路</translation>
 <translation id="3606583719724308068">連線至 HTTPS 網站時延遲時間過長</translation>
+<translation id="3614639364827854748">將這個選單移到左側</translation>
 <translation id="361575905210396100">感謝你提供寶貴意見</translation>
 <translation id="3621072146987826699">大象</translation>
 <translation id="3628462041319107639">正在下載語音轉錄模型…</translation>
@@ -751,6 +756,7 @@
 <translation id="4378373042927530923">未執行</translation>
 <translation id="4378551569595875038">連線中…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">如要建立錄音檔標題，請重新啟動「<ph name="DEVICE_TYPE" />」</translation>
 <translation id="4394049700291259645">停用</translation>
 <translation id="439429847087949098">正在重新啟動「<ph name="DEVICE_NAME" />」</translation>
 <translation id="4395835743215824109">自訂鍵盤</translation>
@@ -779,6 +785,7 @@
 <translation id="4486524074141928967">系統會在<ph name="TIME" /> 將你登出</translation>
 <translation id="4500722292849917410">這組快速鍵無法使用。按下新的快速鍵時，請使用輔助鍵 (Ctrl、Alt、Shift 或<ph name="META_KEY" />鍵)。</translation>
 <translation id="4500966230243561393">介面顏色</translation>
+<translation id="4501302804999678844">如要建立轉錄稿，請重新啟動「<ph name="DEVICE_TYPE" />」</translation>
 <translation id="4503223151711056411">向左鍵</translation>
 <translation id="4503441351962730761">現代藝術</translation>
 <translation id="4507392511610824664">調高亮度</translation>
@@ -831,6 +838,7 @@
 <translation id="4771607256327216405">提高鍵盤亮度</translation>
 <translation id="4771923071974529837">明天</translation>
 <translation id="4773299976671772492">已停止</translation>
+<translation id="4777310452073659583">如要取得轉錄稿，請重新啟動「<ph name="DEVICE_TYPE" />」</translation>
 <translation id="4778082030331381943">紫水晶</translation>
 <translation id="4782311465517282004">按住文字或在文字上按一下滑鼠右鍵後，就能取得定義、翻譯或單位轉換結果</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> 張相片</translation>
@@ -1696,11 +1704,13 @@
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享網址：</translation>
 <translation id="8660881923941176839">磅</translation>
+<translation id="8669187096858652220">按一下即可顯示分頁</translation>
 <translation id="8670574982334489519">右側</translation>
 <translation id="8675354002693747642">預先共用金鑰</translation>
 <translation id="8677859815076891398">沒有任何相簿。請在 <ph name="LINK_BEGIN" />Google 相簿<ph name="LINK_END" />中建立相簿。</translation>
 <translation id="8682949824227998083">拉麵</translation>
 <translation id="8689520252402395106">請重新插入「<ph name="DEVICE_NAME" />」的 USB 傳輸線，以繼續進行更新程序</translation>
+<translation id="8699053192961439771">按一下即可自動隱藏分頁</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />請使用向左鍵或向右鍵管理這項功能。</translation>
 <translation id="8712637175834984815">我瞭解了</translation>
 <translation id="871560550817059752">失敗 - 墨水用盡</translation>

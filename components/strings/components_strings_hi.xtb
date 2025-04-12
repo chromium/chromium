@@ -493,6 +493,7 @@
 <translation id="1822995137827688764">प्रॉपर्टी डेवलपमेंट</translation>
 <translation id="1824402189105105503">आठवां रोल</translation>
 <translation id="1826516787628120939">जाँच की जा रही है</translation>
+<translation id="1832730227369924598">डेस्क सिंक</translation>
 <translation id="1834452765064623979">निर्माण और रखरखाव</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
 <translation id="1839331950812095887">अपने विचारों के बारे में बताने वाले कुछ शब्द</translation>
@@ -830,6 +831,7 @@
 <translation id="2413155254802890957">पुराना</translation>
 <translation id="2413528052993050574">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" />; इसका सुरक्षा प्रमाणपत्र निरस्त कर दिया गया है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="2414886740292270097">गहरा</translation>
+<translation id="2418292431699242678">आपका एडमिन, किसी भी ChromeOS डिवाइस पर आपके पिछले और मौजूदा सेशन के बीच, इन चीज़ों को सिंक करने की सुविधा चालू करता है:</translation>
 <translation id="2429716554270894715">फ़ैब्रिक (वॉटरप्रूफ़)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> को सभी <ph name="PROTOCOL" /> लिंक खोलने दें?</translation>
 <translation id="2436976580469434549">फ़ाइबर और टेक्सटाइल आर्ट</translation>
@@ -1161,6 +1163,7 @@
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
 <translation id="3037605927509011580">हे भगवान!</translation>
 <translation id="3039406992698062762">फ़ैमिली ट्रैवल</translation>
+<translation id="3040636468789770340">कुकी (हाल ही में विज़िट की गई वेबसाइटों पर साइन-इन की स्थिति)</translation>
 <translation id="3041176923638368519">कार्ड पर मिलने वाले फ़ायदों से जुड़ी शर्तें देखें</translation>
 <translation id="3041612393474885105">सर्टिफ़िकेट की जानकारी</translation>
 <translation id="3045769629416806687">जोखिम भरे खेल</translation>
@@ -1670,6 +1673,7 @@
 <translation id="3869939189466884821">आपकी लोकल फ़ाइलें <ph name="MINUTES" /> मिनट में मिटा दी जाएंगी</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">मुझे इसका तरीका दिखाएं</translation>
+<translation id="387681220560687945">विंडो (विंडो और टैब को क्रम से लगाना और व्यवस्थित करना)</translation>
 <translation id="3879748587602334249">डाउनलोड मैनेजर</translation>
 <translation id="3880456882942693779">कला और मनोरंजन</translation>
 <translation id="3880589673277376494">इंटरनेट और टेलीकॉम</translation>
@@ -4749,6 +4753,7 @@
 <translation id="950736567201356821">सबसे ऊपर ट्रिपल पंच</translation>
 <translation id="950926967802086924">पासकी • Google Password Manager</translation>
 <translation id="955429569736351433">वीआर इस्तेमाल करने की अनुमति दी गई</translation>
+<translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome सिंक की सेटिंग<ph name="END_LINK" /> में जाकर, इस नीति से ऑप्ट आउट किया जा सकता है.</translation>
 <translation id="95721182352849470">येलो 2</translation>
 <translation id="961663415146723894">नीचे की ओर बाइंड</translation>
 <translation id="961856697154696964">ब्राउज़िंग डेटा मिटाएं</translation>

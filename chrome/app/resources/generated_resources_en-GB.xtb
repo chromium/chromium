@@ -5997,6 +5997,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5186381005592669696">Customise display language for supported apps</translation>
 <translation id="5186788525428341874">You can use this passkey to sign in faster across your devices. It will be saved to Google Password Manager for <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Install page as app…</translation>
+<translation id="5187671830619031922">Add tab to split view</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Shared by <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Location Accuracy provides more accurate location for Android apps and services. To do this, Google periodically processes information about device sensors and wireless signals from your device to crowdsource wireless signal locations. These are used without identifying you to improve location accuracy and location-based services and to improve, provide and maintain Google's services based on Google's and third parties' legitimate interests to serve users' needs. <ph name="BEGIN_LINK1" />Learn more about using location<ph name="END_LINK1" /></translation>
@@ -11103,6 +11104,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8827125715368568315">Blocked <ph name="PERMISSION" /> and <ph name="COUNT" /> more</translation>
 <translation id="8827289157496676362">Pin extension</translation>
 <translation id="8828933418460119530">DNS Name</translation>
+<translation id="8829979393064090868">Add tab to split view</translation>
 <translation id="883062543841130884">Substitutions</translation>
 <translation id="8830779999439981481">Restarting to apply updates</translation>
 <translation id="8830796635868321089">The update check failed using the current proxy settings. Please adjust your <ph name="PROXY_SETTINGS_LINK_START" />proxy settings<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

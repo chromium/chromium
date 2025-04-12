@@ -5998,6 +5998,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5186381005592669696">Personalizar o idioma de exibição dos apps com suporte</translation>
 <translation id="5186788525428341874">Você pode usar essa chave de acesso para fazer login mais rapidamente nos seus dispositivos. Ela vai ficar salva no Gerenciador de senhas da conta <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="5187641678926990264">&amp;Instalar página como app…</translation>
+<translation id="5187671830619031922">Adicionar guia à visualização dividida</translation>
 <translation id="5187826826541650604"><ph name="KEY_NAME" /> (<ph name="DEVICE" />)</translation>
 <translation id="5188242000716462162">Compartilhado por <ph name="USER_NAME" /></translation>
 <translation id="5188648870018555788">Usar o local. Permitir que apps, sites e serviços do ChromeOS e do Android com permissão de localização usem o local do dispositivo. A Precisão de local fornece dados mais precisos para apps e serviços Android. Para isso, o Google processa periodicamente as informações sobre sensores de dispositivos e sinais sem fio do seu dispositivo para contribuir para a localização de sinais sem fio. Essas informações são usadas sem identificar você para melhorar a precisão e os serviços com base na localização e para melhorar, fornecer e manter os Serviços do Google com base nos interesses legítimos próprios e de terceiros para atender às necessidades dos usuários. <ph name="BEGIN_LINK1" />Saiba mais sobre o uso da localização.<ph name="END_LINK1" /></translation>
@@ -6345,6 +6346,7 @@ Você pode atribuir vários interruptores a essa ação.</translation>
 <translation id="5436492226391861498">Esperando pelo túnel de proxy...</translation>
 <translation id="5436510242972373446">Pesquisar em <ph name="SITE_NAME" />:</translation>
 <translation id="5438014818441491616">A janela <ph name="WINDOW_SIDE" /> agora tem <ph name="WINDOW_SIZE_PERCENT" /> de largura e o painel <ph name="PANE_SIDE" /> tem <ph name="PANE_SIZE_PERCENT" />.</translation>
+<translation id="5438060324827306856">Encontrar extensões</translation>
 <translation id="5440425659852470030">Feche o painel lateral</translation>
 <translation id="544083962418256601">Criar atalhos...</translation>
 <translation id="5441133529460183413">App da Web instalado pelo navegador Chrome</translation>
@@ -11107,6 +11109,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="8827125715368568315">Bloqueados: <ph name="PERMISSION" /> e mais <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Fixe a extensão</translation>
 <translation id="8828933418460119530">Nome DNS</translation>
+<translation id="8829979393064090868">Adicionar guia à visualização dividida</translation>
 <translation id="883062543841130884">Substituições</translation>
 <translation id="8830779999439981481">Reiniciando para aplicar atualizações</translation>
 <translation id="8830796635868321089">A verificação de atualização não pode usar as configurações de proxy atuais. Ajuste suas <ph name="PROXY_SETTINGS_LINK_START" />configurações de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>

@@ -492,6 +492,7 @@
 <translation id="1822995137827688764">प्रोपर्टी डेभलपमेन्ट</translation>
 <translation id="1824402189105105503">आठौँ रोल</translation>
 <translation id="1826516787628120939">जाँच गर्दै</translation>
+<translation id="1832730227369924598">डेस्क सिंक</translation>
 <translation id="1834452765064623979">भवन निर्माण तथा मर्मतसम्भार</translation>
 <translation id="1838374766361614909">खोजी खाली गर्नुहोस्</translation>
 <translation id="1839331950812095887">आफ्ना विचारहरूको सारांश प्रस्तुत गर्ने केही शब्दहरू</translation>
@@ -829,6 +830,7 @@
 <translation id="2413155254802890957">पुरानो</translation>
 <translation id="2413528052993050574">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई रद्द गरिएको हुन सक्छ। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
 <translation id="2414886740292270097">अँध्यारो</translation>
+<translation id="2418292431699242678">तपाईंका एड्मिन सबै ChromeOS डिभाइसमा तपाईंका अघिल्ला र हालका सत्रहरूका बिचमा निम्न सुविधाहरू सिंक गर्न दिनुहुन्छ:</translation>
 <translation id="2429716554270894715">फेब्रिक (वाटरप्रुफ)</translation>
 <translation id="2436186046335138073"><ph name="HANDLER_HOSTNAME" /> लाई सबै <ph name="PROTOCOL" /> लिङ्कहरू खोल्ने अनुमति दिने?</translation>
 <translation id="2436976580469434549">फाइबर तथा वस्त्र कलाहरू</translation>
@@ -1160,6 +1162,7 @@
 <translation id="3037177537145227281">यो उत्पादनको मूल्य ट्र्याक गरिँदै छ</translation>
 <translation id="3037605927509011580">हरे, स्न्याप!</translation>
 <translation id="3039406992698062762">पारिवारिक यात्रा</translation>
+<translation id="3040636468789770340">कुकीहरू (तपाईंले हालसालै चलाउनुभएका वेबसाइटमा साइन इन भए नभएको अवस्था)</translation>
 <translation id="3041176923638368519">कार्डसम्बन्धी लाभहरू प्राप्त गर्न पूरा गर्नु पर्ने सर्तहरू हेर्नुहोस्</translation>
 <translation id="3041612393474885105">प्रमाणपत्र जानकारी</translation>
 <translation id="3045769629416806687">खतरनाक खेलकुद</translation>
@@ -1667,6 +1670,7 @@
 <translation id="3869939189466884821">डिभाइसमा भएका तपाईंका फाइलहरू <ph name="MINUTES" /> मिनेटमा मेटाइने छन्</translation>
 <translation id="3872834068356954457">विज्ञान</translation>
 <translation id="3875783148670536197">यसो गर्ने तरिका देखाउनुहोस्</translation>
+<translation id="387681220560687945">विन्डोहरू (विन्डो र ट्याबहरू मिलाउने तथा व्यवस्थापन गर्ने प्रक्रिया)</translation>
 <translation id="3879748587602334249">डाउनलोड म्यानेजर</translation>
 <translation id="3880456882942693779">कला तथा मनोरञ्जन</translation>
 <translation id="3880589673277376494">इन्टरनेट तथा टेलिकम</translation>
@@ -4745,6 +4749,7 @@
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
 <translation id="950926967802086924">पासकी • Google पासवर्ड म्यानेजर</translation>
 <translation id="955429569736351433">VR प्रयोग गर्ने अनुमति दिइएको छ</translation>
+<translation id="955627189349169688">तपाईं <ph name="BEGIN_LINK" />Chrome सिंक सेटिङ<ph name="END_LINK" />मा गई यो नीतिबाट बाहिरिन सक्नुहुन्छ।</translation>
 <translation id="95721182352849470">पहेँलो २</translation>
 <translation id="961663415146723894">फेदको बाइन्ड</translation>
 <translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>

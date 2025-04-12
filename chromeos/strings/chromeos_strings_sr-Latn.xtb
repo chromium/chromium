@@ -250,6 +250,7 @@
 <translation id="1915960750806557358">Delite povratne informacije ili opišite problem. Vodite računa da ne navedete nikakve lične, osetljive niti poverljive informacije.</translation>
 <translation id="1923388006036088459">Boje za naglašavanje</translation>
 <translation id="1926611810597212636">jednorog</translation>
+<translation id="1944321879609775960">Da biste napravili rezime, restartujte <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Snimač zvuka</translation>
 <translation id="1947737735496445907">Odštampano</translation>
 <translation id="1951012854035635156">Pomoćnik</translation>
@@ -347,6 +348,7 @@
 <translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Pošalji izveštaj sa povratnim informacijama</translation>
 <translation id="2407209115954268704">Status zaključavanja SIM kartice</translation>
+<translation id="240798792848608143">Da biste dobili transkript na jeziku <ph name="LANGUAGE_NAME" />, restartujte <ph name="DEVICE_TYPE" /></translation>
 <translation id="241419523391571119">Ponovo otvorite poklopac da biste ga testirali</translation>
 <translation id="2414660853550118611">O pozadini</translation>
 <translation id="2414886740292270097">Tamna</translation>
@@ -482,6 +484,7 @@
 <translation id="3156846309055100599">Skenira se <ph name="PAGE_NUMBER" />. stranica...</translation>
 <translation id="315738237743207937">Otkriven je ulazni portal</translation>
 <translation id="3160172848211257835">Šalji <ph name="BEGIN_LINK1" />informacije o sistemu i aplikacijama<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />pokazatelje<ph name="END_LINK2" /></translation>
+<translation id="3161556797767210144">Da biste napravili rezime i naslov, restartujte <ph name="DEVICE_TYPE" /></translation>
 <translation id="3170673040743561620">Postavite dokument na skener</translation>
 <translation id="3174321110679064523">Pozadina koji prikazuje ceo dan od svitanja do mraka</translation>
 <translation id="3178532070248519384">avangarda</translation>
@@ -753,6 +756,7 @@
 <translation id="4378373042927530923">Nije pokrenuto</translation>
 <translation id="4378551569595875038">Povezuje se...</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="4383322413532809099">Da biste napravili naslove za snimak, restartujte <ph name="DEVICE_TYPE" /></translation>
 <translation id="4394049700291259645">Onemogući</translation>
 <translation id="439429847087949098">Restartuje se <ph name="DEVICE_NAME" /></translation>
 <translation id="4395835743215824109">prilagođavanje tastature</translation>
@@ -781,6 +785,7 @@
 <translation id="4486524074141928967">Bićete odjavljeni u <ph name="TIME" /></translation>
 <translation id="4500722292849917410">Prečica nije dostupna. Pritisnite novu prečicu pomoću modifikujućeg tastera (ctrl, alt, shift ili <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Boja interfejsa</translation>
+<translation id="4501302804999678844">Da biste napravili transkript, restartujte <ph name="DEVICE_TYPE" /></translation>
 <translation id="4503223151711056411">Strelica nalevo</translation>
 <translation id="4503441351962730761">moderna umetnost</translation>
 <translation id="4507392511610824664">povećajte osvetljenost</translation>
@@ -833,6 +838,7 @@
 <translation id="4771607256327216405">osvetljavanje tastature</translation>
 <translation id="4771923071974529837">sutra</translation>
 <translation id="4773299976671772492">Zaustavljeno je</translation>
+<translation id="4777310452073659583">Da biste dobili transkript, restartujte <ph name="DEVICE_TYPE" /></translation>
 <translation id="4778082030331381943">ametista</translation>
 <translation id="4782311465517282004">Dobijajte definicije, prevode ili konverzije jedinica kada kliknete desnim tasterom na tekst ili ga dodirnete i zadržite</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> slika</translation>

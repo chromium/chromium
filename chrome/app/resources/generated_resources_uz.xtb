@@ -263,7 +263,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1174073918202301297">Yorliq yaratildi</translation>
 <translation id="1174366174291287894">Agar aloqa xavfsiz boʻlmasa, Chrome bu haqida xabar qiladi</translation>
 <translation id="1175131936083782305">Bu funksiya administrator tomonidan faolsizlantirilgan.</translation>
-<translation id="1175277108283187866">Manzillar qatorida saytni oching yoki qidiruvni boshlang</translation>
 <translation id="1175364870820465910">&amp;Chop etish...</translation>
 <translation id="1175572348579024023">Aylantirish</translation>
 <translation id="1175914831232945926">Raqamlar</translation>
@@ -2754,7 +2753,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2878889940310164513">Mobil tarmoq kiritish...</translation>
 <translation id="288042212351694283">Universal 2nd Factor qurilmalariga ruxsat</translation>
 <translation id="2881076733170862447">Kengaytma bosilganda</translation>
-<translation id="2882530630263790933">Ovoz va video</translation>
 <translation id="2882943222317434580">Hozir <ph name="IDS_SHORT_PRODUCT_NAME" /> qaytadan ishga tushiriladi va sozlamalari ilk holatga qaytariladi</translation>
 <translation id="2884070497102362193">Batareya, CPU, xotira, ulanish va boshqalarni sinang</translation>
 <translation id="2885129935310217435">Bu ayni nomdagi tugma. Boshqa birini tanlang.</translation>
@@ -7445,7 +7443,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6248988683584659830">Sozlamalar ichidan qidirish</translation>
 <translation id="6249200942125593849">Maxsus imkoniyatlarni sozlash</translation>
 <translation id="6250186368828697007">Ekran namoyishida tafsilotlar berkitiladi</translation>
-<translation id="6250887692313997958">Ajratilgan rejimga kiritish uchun varaq tanlang</translation>
 <translation id="6251870443722440887">GDI-deskriptorlar</translation>
 <translation id="6251924700383757765">Maxfiylik siyosati</translation>
 <translation id="625369703868467034">Tarmoq holati</translation>
@@ -11517,7 +11514,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="9113240369465613386">Faqat toq sonli sahifalar</translation>
 <translation id="9113469270512809735">Oxirgi yopilganlar tugmasi</translation>
 <translation id="9113529408970052045">Saytdagi matn maydonida qisqa kontent kiritishda "Matn yordamchisi" avtomatik ochilsin</translation>
-<translation id="9114210796909453187">Ajratilgan rejimga oʻting</translation>
 <translation id="9114663181201435112">Osongina kirish</translation>
 <translation id="9115675100829699941">&amp;Xatcho‘plar</translation>
 <translation id="9116366756388192417">Mavzu tanlash</translation>

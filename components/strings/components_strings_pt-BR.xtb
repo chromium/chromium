@@ -492,6 +492,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1822995137827688764">Desenvolvimento imobiliário</translation>
 <translation id="1824402189105105503">Oitavo rolo</translation>
 <translation id="1826516787628120939">Conta corrente</translation>
+<translation id="1832730227369924598">Sincronização do espaço de trabalho</translation>
 <translation id="1834452765064623979">Construção e manutenção</translation>
 <translation id="1838374766361614909">Limpar pesquisa</translation>
 <translation id="1839331950812095887">algumas palavras que resumem seus pensamentos</translation>
@@ -829,6 +830,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2413155254802890957">Antigo</translation>
 <translation id="2413528052993050574">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança pode ter sido revogado. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="2414886740292270097">Escuro</translation>
+<translation id="2418292431699242678">O administrador ativa a sincronização das seguintes informações entre as sessões anteriores e atuais em qualquer dispositivo ChromeOS:</translation>
 <translation id="2429716554270894715">Tecido (à prova d'água)</translation>
 <translation id="2436186046335138073">Permitir que <ph name="HANDLER_HOSTNAME" /> abra todos os links de <ph name="PROTOCOL" />?</translation>
 <translation id="2436976580469434549">Artes têxteis e de fibras</translation>
@@ -1160,6 +1162,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3037177537145227281">Monitorando preço</translation>
 <translation id="3037605927509011580">Ah, não!</translation>
 <translation id="3039406992698062762">Viagens em família</translation>
+<translation id="3040636468789770340">Cookies (estado de conta conectada nos sites visitados recentemente)</translation>
 <translation id="3041176923638368519">Consulte os termos dos benefícios do cartão</translation>
 <translation id="3041612393474885105">Informações do certificado</translation>
 <translation id="3045769629416806687">Esportes radicais</translation>
@@ -1670,6 +1673,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3869939189466884821">Seus arquivos locais serão excluídos em <ph name="MINUTES" /> minutos</translation>
 <translation id="3872834068356954457">Ciência</translation>
 <translation id="3875783148670536197">Me ajude a fazer isso</translation>
+<translation id="387681220560687945">Janelas (arranjo e organização de janelas e guias)</translation>
 <translation id="3879748587602334249">Gerenciador de downloads</translation>
 <translation id="3880456882942693779">Artes e entretenimento</translation>
 <translation id="3880589673277376494">Internet e telecomunicações</translation>
@@ -4750,6 +4754,7 @@ incomuns e incorretas. Isso pode acontecer quando um invasor está fingindo ser 
 <translation id="950736567201356821">Perfuração tripla na parte superior</translation>
 <translation id="950926967802086924">Chave de acesso • Gerenciador de senhas do Google</translation>
 <translation id="955429569736351433">RV permitida</translation>
+<translation id="955627189349169688">Você pode desativar essa política nas <ph name="BEGIN_LINK" />configurações da Sincronização do Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Amarelo 2</translation>
 <translation id="961663415146723894">Encadernação na parte inferior</translation>
 <translation id="961856697154696964">Excluir dados de naveg.</translation>

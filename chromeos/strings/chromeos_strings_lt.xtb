@@ -30,6 +30,7 @@
 <translation id="1107856713690040084">„<ph name="DEVICE_TYPE" />“ garsas</translation>
 <translation id="1116694919640316211">Apie</translation>
 <translation id="1118572504348554005">Galime bendrinti per šią formą pateiktus atsiliepimus su partneriais, siekdami pašalinti triktis ir kitas problemas, apie kurias pranešate. Neįtraukite neskelbtinos informacijos, pvz., slaptažodžių.</translation>
+<translation id="1118596190635569417">Perkelti šį meniu į dešinę</translation>
 <translation id="1119403468619527527">Per mažai žodžių, kad būtų galima supaprastinti</translation>
 <translation id="1119447706177454957">Vidinė klaida</translation>
 <translation id="1124772482545689468">Naudotojas</translation>
@@ -576,6 +577,7 @@
 <translation id="3604713164406837697">Pakeisti ekrano foną</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3606583719724308068">Didelė HTTPS svetainių delsa</translation>
+<translation id="3614639364827854748">Perkelti šį meniu į kairę</translation>
 <translation id="361575905210396100">Dėkojame už atsiliepimą</translation>
 <translation id="3621072146987826699">drambliai</translation>
 <translation id="3628462041319107639">Atsisiunčiamas transkribavimo modelis…</translation>
@@ -1702,11 +1704,13 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8655295600908251630">Kanalas</translation>
 <translation id="8655828773034788261">Bendrinti URL:</translation>
 <translation id="8660881923941176839">svar.</translation>
+<translation id="8669187096858652220">Spustelėkite, kad būtų rodomi skirtukai</translation>
 <translation id="8670574982334489519">dešinėje</translation>
 <translation id="8675354002693747642">Paruoštas bendrinti raktas</translation>
 <translation id="8677859815076891398">Nėra albumų. Sukurkite albumą <ph name="LINK_BEGIN" />„Google“ nuotraukose<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramenas</translation>
 <translation id="8689520252402395106">Jei norite tęsti atnaujinimo procesą, iš naujo prijunkite „<ph name="DEVICE_NAME" />“ USB laidą</translation>
+<translation id="8699053192961439771">Spustelėkite, kad automatiškai paslėptumėte skirtukus</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Šią funkciją galite valdyti rodyklės kairėn ar dešinėn klavišais.</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="871560550817059752">Nepavyko – baigėsi rašalas</translation>
