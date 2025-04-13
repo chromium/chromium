@@ -135,6 +135,9 @@ found in the LICENSE file.
       <message name="IDS_GLIC_OFFLINE_NOTICE_ACTION_BUTTON" translateable="false" desc="This is the button label text for the glic offline notice.">
         Try again
       </message>
+      <message name="IDS_GLIC_UNRESPONSIVE_MESSAGE" translateable="false" desc="This is the text of the glic unresponsive message.">
+        Glic is refreshing...
+      </message>
       <message name="IDS_GLIC_ERROR_NOTICE_HEADER" translateable="false" desc="This is the headline on the glic error notice.">
         Something went wrong
       </message>
