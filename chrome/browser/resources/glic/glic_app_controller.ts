@@ -41,6 +41,7 @@ interface PageElementTypes {
   webviewHeader: HTMLDivElement;
   webviewContainer: HTMLDivElement;
   signInButton: HTMLButtonElement;
+  unresponsiveOverlay: HTMLElement;
 }
 
 const $: PageElementTypes = new Proxy({}, {
@@ -218,11 +219,12 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       WebUiState.kUnresponsive,
       {
         onEnter: () => {
-          // TODO(crbug.com/394162784): Create an unresponsive UI according to
-          // the design spec and remove the placeholder.
-          this.enterUnresponsiveUiPlaceholder();
+          $.unresponsiveOverlay.classList.toggle('hidden', true);
         },
-        onExit: this.exitUnresponsiveUiPlaceholder,
+        onExit:
+            () => {
+              $.unresponsiveOverlay.classList.toggle('hidden', false);
+            },
       },
     ],
     [
@@ -235,21 +237,6 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       },
     ],
   ]);
-
-  private enterUnresponsiveUiPlaceholder(): void {
-    if (!this.webview) {
-      return;
-    }
-    this.webview.webview.style.webkitTransition = 'opacity 250ms';
-    this.webview.webview.style.opacity = '0.5';
-  }
-
-  private exitUnresponsiveUiPlaceholder(): void {
-    if (!this.webview) {
-      return;
-    }
-    this.webview.webview.style.opacity = '1';
-  }
 
   private cancelTimeout(): void {
     if (this.loadingTimer) {

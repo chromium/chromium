@@ -8,6 +8,7 @@
   --color--on-surface: light-dark(#1B1C1D, #FFFFFF);
   --color--on-secondary-container: light-dark(#004A77, #C2E7FF);
   --color--error: light-dark(#B3261E, #F2B8B5);
+  --color--primary: light-dark(#0B57D0, #A8C7FA);
   --color--surface: light-dark(#FFFFFF, #1B1C1D);
   --color--on-surface-variant: light-dark(#575B5F, #A2A9B0);
   --color--surface-container: light-dark(#F0F4F9, #282A2C);
@@ -258,4 +259,59 @@ cr-progress {
   100% {
     background-position: 12.5% 0;
   }
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, .6);
+  width: 100%;
+  height: 100vh;
+  display: block;
+  align-content: center;
+  opacity: 1;
+  transition-property: opacity;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+  transition-delay: 0.2s;
+}
+
+.overlay.hidden {
+  opacity: 0;
+  transition-delay: 0.2s;
+  pointer-events: none;
+}
+
+.overlay .container {
+  text-align: center;
+}
+
+.overlay .message {
+  display: inline-block;
+  font-family: Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color--on-surface);
+  background-color: var(--color--surface);
+  padding: 12px;
+  margin: 0 20px;
+  border-radius: 10px;
+  opacity: 1;
+  transition-property: opacity;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+  transition-delay: 0s;
+}
+
+.overlay.hidden .message {
+  opacity: 0;
+  transition-delay: 0s
+}
+
+.overlay cr-icon {
+  color: var(--cr-fallback-color-primary);
+  width: 20px;
+  height: 20px;
 }
