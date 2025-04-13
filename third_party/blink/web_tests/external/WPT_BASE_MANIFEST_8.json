@@ -479250,14 +479250,14 @@
       ]
      ],
      "connect-src-websocket-allowed.sub.html": [
-      "4263d97fe2dfbb9e2a0f0851c07798d40a5671a9",
+      "1d83bdd18e379f9780cbf7a64e05433ad92dde8b",
       [
        null,
        {}
       ]
      ],
      "connect-src-websocket-blocked.sub.html": [
-      "02c52837bb8bd5cbc26f54f899fe25b5d68bd561",
+      "2cc3f1b5a054dd89c675d7564be8f52ef6d1daa7",
       [
        null,
        {}
