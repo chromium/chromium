@@ -62,8 +62,7 @@ content::WebContents* DataSharingBubbleDialogView::AddNewContents(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
-  NavigateParams params(browser_, target_url,
-                        ui::PageTransition::PAGE_TRANSITION_LINK);
+  NavigateParams params(browser_, std::move(new_contents));
   params.tabstrip_index = browser_->tab_strip_model()->count();
   params.disposition = disposition;
   Navigate(&params);
