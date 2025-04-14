@@ -723,20 +723,6 @@ void SiteSettingsHandler::RegisterMessages() {
       base::BindRepeating(&SiteSettingsHandler::HandleRevokeFileSystemGrants,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "getSmartCardReaderGrants",
-      base::BindRepeating(&SiteSettingsHandler::HandleGetSmartCardReaderGrants,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "revokeAllSmartCardReadersGrants",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleRevokeAllSmartCardReaderGrants,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "revokeSmartCardReaderGrant",
-      base::BindRepeating(
-          &SiteSettingsHandler::HandleRevokeSmartCardReaderGrant,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
       "getChooserExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetChooserExceptionList,
                           base::Unretained(this)));
@@ -1572,73 +1558,6 @@ void SiteSettingsHandler::HandleRevokeFileSystemGrants(
       FileSystemAccessPermissionContextFactory::GetForProfile(profile_);
 
   permission_context->RevokeGrants(origin);
-}
-
-void SiteSettingsHandler::HandleGetSmartCardReaderGrants(
-    const base::Value::List& args) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
-
-  CHECK_EQ(1U, args.size());
-  AllowJavascript();
-
-  const base::Value& callback_id = args[0];
-  base::Value::List reader_names;
-#if BUILDFLAG(IS_CHROMEOS)
-  SmartCardPermissionContext& permission_context =
-      SmartCardPermissionContextFactory::GetForProfile(*profile_);
-
-  reader_names = base::ToValueList(
-      permission_context.GetPersistentReaderGrants(),
-      [this](const SmartCardPermissionContext::ReaderGrants& reader_grant) {
-        return base::Value::Dict()
-            .Set(site_settings::kReaderName, reader_grant.reader_name)
-            .Set(site_settings::kOrigins,
-                 base::ToValueList(
-                     reader_grant.origins, [this](const url::Origin& origin) {
-                       return base::Value::Dict()
-                           .Set(site_settings::kOrigin, origin.Serialize())
-                           .Set(site_settings::kDisplayName,
-                                site_settings::GetUrlIdentityForGURL(
-                                    profile_, origin.GetURL(),
-                                    /*hostname_only=*/false)
-                                    .name);
-                     }));
-      });
-#endif
-  ResolveJavascriptCallback(callback_id, reader_names);
-}
-
-void SiteSettingsHandler::HandleRevokeAllSmartCardReaderGrants(
-    const base::Value::List& args) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
-
-  CHECK(args.empty());
-  AllowJavascript();
-#if BUILDFLAG(IS_CHROMEOS)
-  SmartCardPermissionContext& permission_context =
-      SmartCardPermissionContextFactory::GetForProfile(*profile_);
-
-  permission_context.RevokeAllPermissions();
-#endif
-}
-
-void SiteSettingsHandler::HandleRevokeSmartCardReaderGrant(
-    const base::Value::List& args) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
-
-  CHECK_EQ(2U, args.size());
-  AllowJavascript();
-
-#if BUILDFLAG(IS_CHROMEOS)
-  auto reader_name = args[0].GetString();
-  auto url = GURL(args[1].GetString());
-  DCHECK(url.is_valid());
-  const url::Origin& origin = url::Origin::Create(url);
-
-  SmartCardPermissionContext& permission_context =
-      SmartCardPermissionContextFactory::GetForProfile(*profile_);
-  permission_context.RevokePersistentPermission(reader_name, origin);
-#endif
 }
 
 void SiteSettingsHandler::HandleSetOriginPermissions(

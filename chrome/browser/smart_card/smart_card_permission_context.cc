@@ -349,40 +349,6 @@ void SmartCardPermissionContext::RevokeAllPermissions() {
   RevokeEphemeralPermissions();
 }
 
-void SmartCardPermissionContext::RevokePersistentPermission(
-    const std::string& reader_name,
-    const url::Origin& origin) {
-  RevokeObjectPermission(origin, ReaderNameToValue(reader_name));
-}
-
-SmartCardPermissionContext::ReaderGrants::ReaderGrants(
-    const std::string& reader_name,
-    const std::vector<url::Origin>& origins)
-    : reader_name(reader_name), origins(origins) {}
-SmartCardPermissionContext::ReaderGrants::~ReaderGrants() = default;
-SmartCardPermissionContext::ReaderGrants::ReaderGrants(
-    const ReaderGrants& other) = default;
-bool SmartCardPermissionContext::ReaderGrants::operator==(
-    const ReaderGrants& other) const = default;
-
-std::vector<SmartCardPermissionContext::ReaderGrants>
-SmartCardPermissionContext::GetPersistentReaderGrants() {
-  std::map<std::string, std::set<url::Origin>> reader_grants;
-  for (const auto& object : GetAllGrantedObjects()) {
-    const base::Value::Dict& reader_value = object->value;
-
-    CHECK(IsValidObject(reader_value));
-
-    reader_grants[*reader_value.FindString(kReaderNameKey)].insert(
-        url::Origin::Create(object->origin));
-  }
-
-  return base::ToVector(
-      reader_grants, [](const auto& reader_grants) -> ReaderGrants {
-        return {reader_grants.first, base::ToVector(reader_grants.second)};
-      });
-}
-
 void SmartCardPermissionContext::OnTrackingStarted(
     std::optional<std::vector<SmartCardReaderTracker::ReaderInfo>> info_list) {
   if (!info_list) {

@@ -534,10 +534,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Slider) {
 IN_PROC_BROWSER_TEST_F(SettingsTest, SmartCardReadersPage) {
   RunTest("settings/smart_card_readers_page_test.js", "mocha.run()");
 }
-
-IN_PROC_BROWSER_TEST_F(SettingsTest, SmartCardReaderOriginEntry) {
-  RunTest("settings/smart_card_reader_origin_entry_test.js", "mocha.run()");
-}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SpeedPage) {
