@@ -1189,15 +1189,17 @@ export namespace Emulation {
 export namespace Emulation {
   export const GeolocationCoordinatesSchema = z.lazy(() =>
     z.object({
-      latitude: z.number(),
-      longitude: z.number(),
-      accuracy: z.number().default(1).optional(),
+      latitude: z.number().gte(-90).lte(90),
+      longitude: z.number().gte(-180).lte(180),
+      accuracy: z.number().gte(0).default(1).optional(),
       altitude: z.union([z.number(), z.null().default(null)]).optional(),
       altitudeAccuracy: z
-        .union([z.number(), z.null().default(null)])
+        .union([z.number().gte(0), z.null().default(null)])
         .optional(),
-      heading: z.union([z.number(), z.null().default(null)]).optional(),
-      speed: z.union([z.number(), z.null().default(null)]).optional(),
+      heading: z
+        .union([z.number().gt(0).lt(360), z.null().default(null)])
+        .optional(),
+      speed: z.union([z.number().gte(0), z.null().default(null)]).optional(),
     }),
   );
 }
