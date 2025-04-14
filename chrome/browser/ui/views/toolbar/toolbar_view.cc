@@ -314,6 +314,11 @@ void ToolbarView::Init() {
       download_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
       // Hide the icon by default; it will show up when there's a download.
       download_button_->Hide();
+    } else {
+      // Add the pinned toolbar actions container so that downloads can be
+      // shown in popups.
+      pinned_toolbar_actions_container_ = container_view_->AddChildView(
+          std::make_unique<PinnedToolbarActionsContainer>(browser_view_));
     }
     container_view_->SetBackground(
         views::CreateThemedSolidBackground(kColorLocationBarBackground));
@@ -1095,7 +1100,13 @@ PinnedToolbarActionsContainer* ToolbarView::GetPinnedToolbarActionsContainer() {
 }
 
 gfx::Size ToolbarView::GetToolbarButtonSize() const {
-  const int size = GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
+  // Since DisplayMode::LOCATION is for a slimline toolbar showing only compact
+  // location bar used for popups, toolbar buttons (ie downloads) must be
+  // smaller to accommodate the smaller size.
+  const int size =
+      display_mode_ == DisplayMode::LOCATION
+          ? location_bar_->GetPreferredSize().height()
+          : GetLayoutConstant(LayoutConstant::TOOLBAR_BUTTON_HEIGHT);
   return gfx::Size(size, size);
 }
 
