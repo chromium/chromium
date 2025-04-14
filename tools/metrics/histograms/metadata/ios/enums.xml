@@ -1109,6 +1109,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Reading list item"/>
   <int value="3" label="Bookmark item"/>
   <int value="4" label="Open in Chrome item"/>
+  <int value="5" label="Open in Chrome Incognito item"/>
+  <int value="6" label="Image search item"/>
+  <int value="7" label="Text search item"/>
+  <int value="8" label="Incognito image search item"/>
+  <int value="9" label="Incognito text search item"/>
 </enum>
 
 <enum name="IOSSpotlightAction">
