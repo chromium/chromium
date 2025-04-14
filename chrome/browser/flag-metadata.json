@@ -6614,11 +6614,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ntp-photos-module",
-    "owners": [ "mplg@chromium.org", "tiborg@chromium.org" ],
-    "expiry_milestone": 108
-  },
-  {
     "name": "ntp-photos-opt-in-art-work",
     "owners": [ "mplg@chromium.org", "tiborg@chromium.org"],
     "expiry_milestone":108
@@ -6674,11 +6669,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "ntp-reduced-logo-space",
-    "owners": [ "//components/search/OWNERS" ],
-    "expiry_milestone": 123
-  },
-  {
     "name": "ntp-safe-browsing-module",
     "owners": [ "tiborg@chromium.org" ],
     "expiry_milestone": 105
@@ -6687,11 +6677,6 @@
     "name": "ntp-sharepoint-module",
     "owners": [ "rtatum@google.com", "tiborg@chromium.org", "ftirelo@chromium.org" ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "ntp-single-row-shortcuts",
-    "owners": [ "//components/search/OWNERS" ],
-    "expiry_milestone": 123
   },
   {
     "name": "ntp-view-hierarchy-repair",
@@ -6707,11 +6692,6 @@
     "name": "ntp-wallpaper-search-button-animation",
     "owners": [ "pauladedeji@google.com", "tiborg@chromium.org" ],
     "expiry_milestone": 130
-  },
-  {
-    "name": "ntp-wide-modules",
-    "owners": [ "//components/search/OWNERS" ],
-    "expiry_milestone": 122
   },
   {
     "name": "observable-api",
