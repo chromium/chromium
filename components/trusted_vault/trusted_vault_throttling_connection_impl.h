@@ -40,7 +40,8 @@ class TrustedVaultThrottlingConnectionImpl
       const CoreAccountInfo& account_info,
       const MemberKeysSource& member_keys_source,
       const SecureBoxPublicKey& authentication_factor_public_key,
-      AuthenticationFactorType authentication_factor_type,
+      AuthenticationFactorTypeAndRegistrationParams
+          authentication_factor_type_and_registration_params,
       RegisterAuthenticationFactorCallback callback) override;
 
   std::unique_ptr<Request> RegisterLocalDeviceWithoutKeys(

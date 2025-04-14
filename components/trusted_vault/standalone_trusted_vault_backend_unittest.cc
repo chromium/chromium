@@ -1265,12 +1265,12 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldAddTrustedRecoveryMethod) {
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
           PublicKeyWhenExportedEq(kPublicKey),
-          Eq(AuthenticationFactorType(
+          Eq(AuthenticationFactorTypeAndRegistrationParams(
               UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
           _))
       .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
-                    AuthenticationFactorType,
+                    AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
         registration_callback = std::move(callback);
@@ -1345,12 +1345,12 @@ TEST_F(StandaloneTrustedVaultBackendTest,
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
           PublicKeyWhenExportedEq(kPublicKey),
-          Eq(AuthenticationFactorType(
+          Eq(AuthenticationFactorTypeAndRegistrationParams(
               UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
           _))
       .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
-                    AuthenticationFactorType,
+                    AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
         registration_callback = std::move(callback);
@@ -1409,12 +1409,12 @@ TEST_F(StandaloneTrustedVaultBackendTest,
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKeys}, kLastKeyVersion)),
           PublicKeyWhenExportedEq(kPublicKey),
-          Eq(AuthenticationFactorType(
+          Eq(AuthenticationFactorTypeAndRegistrationParams(
               UnspecifiedAuthenticationFactorType(kMethodTypeHint))),
           _))
       .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
-                    AuthenticationFactorType,
+                    AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
         registration_callback = std::move(callback);

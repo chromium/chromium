@@ -78,11 +78,12 @@ TrustedVaultThrottlingConnectionImpl::RegisterAuthenticationFactor(
     const CoreAccountInfo& account_info,
     const MemberKeysSource& member_keys_source,
     const SecureBoxPublicKey& authentication_factor_public_key,
-    AuthenticationFactorType authentication_factor_type,
+    AuthenticationFactorTypeAndRegistrationParams
+        authentication_factor_type_and_registration_params,
     RegisterAuthenticationFactorCallback callback) {
   return delegate_->RegisterAuthenticationFactor(
       account_info, member_keys_source, authentication_factor_public_key,
-      authentication_factor_type, std::move(callback));
+      authentication_factor_type_and_registration_params, std::move(callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>

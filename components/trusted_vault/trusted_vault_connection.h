@@ -211,9 +211,7 @@ using ICloudKeychain =
 using UnspecifiedAuthenticationFactorType =
     base::StrongAlias<class UnspecifiedAuthenticationFactorTypeTag, int>;
 
-// TODO(crbug.com/406020731): rename to AuthenticationFactorTypeAndMetadata or
-// similar to better reflect what this type holds.
-using AuthenticationFactorType =
+using AuthenticationFactorTypeAndRegistrationParams =
     std::variant<LocalPhysicalDevice,
                  LockScreenKnowledgeFactor,
                  UnspecifiedAuthenticationFactorType,
@@ -290,7 +288,8 @@ class TrustedVaultConnection {
       const CoreAccountInfo& account_info,
       const MemberKeysSource& member_keys_source,
       const SecureBoxPublicKey& authentication_factor_public_key,
-      AuthenticationFactorType authentication_factor_type,
+      AuthenticationFactorTypeAndRegistrationParams
+          authentication_factor_type_and_registration_params,
       RegisterAuthenticationFactorCallback callback) = 0;
 
   // Special version of the above for the case where the caller has no local

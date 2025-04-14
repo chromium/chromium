@@ -143,12 +143,15 @@ class PhysicalDeviceRecoveryFactorTest : public testing::Test {
             Eq(account_info),
             MatchTrustedVaultKeyAndVersions(GetTrustedVaultKeysWithVersions(
                 vault_keys, last_vault_key_version)),
-            _, Eq(AuthenticationFactorType(LocalPhysicalDevice())), _))
+            _,
+            Eq(AuthenticationFactorTypeAndRegistrationParams(
+                LocalPhysicalDevice())),
+            _))
         .WillOnce(
             [&](const CoreAccountInfo&,
                 const MemberKeysSource& member_keys_source,
                 const SecureBoxPublicKey& device_public_key,
-                AuthenticationFactorType,
+                AuthenticationFactorTypeAndRegistrationParams,
                 TrustedVaultConnection::RegisterAuthenticationFactorCallback
                     callback) {
               device_registration_callback = std::move(callback);
@@ -202,10 +205,13 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldRegisterDevice) {
           Eq(account_info()),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
-          _, Eq(AuthenticationFactorType(LocalPhysicalDevice())), _))
+          _,
+          Eq(AuthenticationFactorTypeAndRegistrationParams(
+              LocalPhysicalDevice())),
+          _))
       .WillOnce([&](const CoreAccountInfo&, const MemberKeysSource&,
                     const SecureBoxPublicKey& device_public_key,
-                    AuthenticationFactorType,
+                    AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
         serialized_public_device_key = device_public_key.ExportToBytes();
@@ -290,11 +296,14 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
           Eq(account_info()),
           MatchTrustedVaultKeyAndVersions(
               GetTrustedVaultKeysWithVersions({kVaultKey}, kLastKeyVersion)),
-          _, Eq(AuthenticationFactorType(LocalPhysicalDevice())), _))
+          _,
+          Eq(AuthenticationFactorTypeAndRegistrationParams(
+              LocalPhysicalDevice())),
+          _))
       .WillOnce([&](const CoreAccountInfo&,
                     const MemberKeysSource& member_keys_source,
                     const SecureBoxPublicKey& device_public_key,
-                    AuthenticationFactorType,
+                    AuthenticationFactorTypeAndRegistrationParams,
                     TrustedVaultConnection::RegisterAuthenticationFactorCallback
                         callback) {
         device_registration_callback = std::move(callback);
