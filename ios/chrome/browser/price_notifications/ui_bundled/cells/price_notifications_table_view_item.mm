@@ -218,7 +218,8 @@ UIStackView* CreateLoadingScreen(UIView* track_button, UIView* menu_button) {
     _URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     _URLLabel.adjustsFontForContentSizeCategory = YES;
     _URLLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-    _trackButton = [[PriceNotificationsTrackButton alloc] init];
+    _trackButton =
+        [[PriceNotificationsTrackButton alloc] initWithLightVariant:NO];
     _menuButton = [[PriceNotificationsMenuButton alloc] init];
     __weak PriceNotificationsTableViewCell* weakSelf = self;
     _menuButton.menu = CreateOptionMenu(^(UIAction* action) {

@@ -59,6 +59,7 @@ include_rules = [
   "+ios/chrome/browser/synced_sessions/model",
   "+ios/chrome/browser/tabs/model/tab_sync_util.h",
   "+ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_price_chip_view.h",
+  "+ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_track_button.h",
   "+ios/chrome/browser/tips_notifications/ui",
   "+ios/chrome/browser/docking_promo/ui/animated_promo_view_controller.h",
   "+ios/chrome/browser/content_notification/model/content_notification_util.h",
