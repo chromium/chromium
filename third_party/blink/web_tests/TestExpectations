@@ -559,11 +559,6 @@ crbug.com/843084 external/wpt/css/css-masking/clip-path/clip-path-element-userSp
 crbug.com/384781868 [ Win ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape.html [ Failure ]
 crbug.com/384781868 [ Win ] external/wpt/css/css-masking/animations/clip-path-interpolation-shape-control-points.tentative.html [ Failure ]
 
-# CSS offset-path: shape() not implemented
-crbug.com/389713717 external/wpt/css/motion/offset-path-shape-shape-001.html [ Failure ]
-crbug.com/389713717 external/wpt/css/motion/offset-path-shape-shape-002.html [ Failure ]
-crbug.com/389713717 external/wpt/css/motion/offset-path-shape-shape-003.html [ Failure ]
-
 # Fails, at a minimum, due to lack of support for CSS mask property in html elements
 crbug.com/432153 external/wpt/svg/painting/reftests/display-none-mask.html [ Crash Failure Pass Timeout ]
 
@@ -2610,6 +2605,9 @@ crbug.com/383880384 [ Mac ] external/wpt/css/css-properties-values-api/registere
 crbug.com/383880384 [ Win ] external/wpt/css/css-properties-values-api/registered-property-change-style-002.html [ Failure Pass ]
 
 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Pass Timeout ]
+
+# An unexplained failure on headless shell, opened an infra bug.
+crbug.com/410400550 [ Win ] external/wpt/css/motion/animation/offset-path-interpolation-008.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/409979093 [ Linux ] external/wpt/webdriver/tests/bidi/emulation/set_geolocation_override/contexts.py [ Failure ]

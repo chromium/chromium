@@ -3076,18 +3076,14 @@ OffsetPathOperation* ConvertOffsetPathValueToOperation(
     StyleResolverState& state,
     const CSSValue& value,
     CoordBox coord_box) {
-  if (value.IsRayValue() || value.IsBasicShapeValue()) {
-    return MakeGarbageCollected<ShapeOffsetPathOperation>(
-        BasicShapeForValue(state, value), coord_box);
+  if (auto* url_value = DynamicTo<cssvalue::CSSURIValue>(value)) {
+    return MakeGarbageCollected<ReferenceOffsetPathOperation>(
+        url_value->ValueForSerialization(),
+        state.GetSVGResource(CSSPropertyID::kOffsetPath, *url_value),
+        coord_box);
   }
-  if (auto* path_value = DynamicTo<cssvalue::CSSPathValue>(value)) {
-    return MakeGarbageCollected<ShapeOffsetPathOperation>(
-        path_value->GetStylePath(), coord_box);
-  }
-  const auto& url_value = To<cssvalue::CSSURIValue>(value);
-  return MakeGarbageCollected<ReferenceOffsetPathOperation>(
-      url_value.ValueForSerialization(),
-      state.GetSVGResource(CSSPropertyID::kOffsetPath, url_value), coord_box);
+  return MakeGarbageCollected<ShapeOffsetPathOperation>(
+      BasicShapeForValue(state, value), coord_box);
 }
 
 }  // namespace

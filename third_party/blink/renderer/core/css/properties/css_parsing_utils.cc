@@ -7479,8 +7479,11 @@ CSSValue* ConsumeOffsetPath(CSSParserTokenStream& stream,
 
   CSSValue* offset_path = ConsumeRay(stream, context);
   if (!offset_path) {
-    offset_path = ConsumeBasicShape(stream, context, AllowPathValue::kForbid,
-                                    AllowShapeValue::kForbid);
+    offset_path = ConsumeBasicShape(
+        stream, context, AllowPathValue::kForbid,
+        RuntimeEnabledFeatures::CSSShapeFunctionOffsetPathEnabled()
+            ? AllowShapeValue::kAllow
+            : AllowShapeValue::kForbid);
   }
   if (!offset_path) {
     offset_path = ConsumeUrl(stream, context);

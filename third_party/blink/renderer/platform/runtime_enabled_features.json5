@@ -1376,6 +1376,10 @@
       depends_on: ["CSSShapeFunction", "CompositeClipPathAnimation"]
     },
     {
+      name: "CSSShapeFunctionOffsetPath",
+      status: "experimental",
+    },
+    {
       // sibling-index() and sibling-count()
       name: "CSSSiblingFunctions",
       status: "experimental",

@@ -44,8 +44,8 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
       }
       const auto& shape = offset_path_operation->GetBasicShape();
 
-      // Path and Ray shapes are handled by PathInterpolationType and
-      // RayInterpolationType.
+      // Path, Shape and Ray shapes are handled by PathInterpolationType,
+      // ShapeInterpolationType and RayInterpolationType.
       if (shape.GetType() == BasicShape::kStylePathType ||
           shape.GetType() == BasicShape::kStyleRayType ||
           shape.GetType() == BasicShape::kStyleShapeType) {
