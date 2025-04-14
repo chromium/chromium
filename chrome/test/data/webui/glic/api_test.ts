@@ -513,6 +513,19 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.refreshSignInCookies();
   }
 
+  async testSignInPauseState() {
+    assertTrue(!!this.host.getUserProfileInfo);
+    const profileInfo = await this.host.getUserProfileInfo();
+
+    assertEquals('', profileInfo.displayName);
+    assertEquals('glic-test@example.com', profileInfo.email);
+    assertEquals('', profileInfo.givenName);
+    assertEquals(false, profileInfo.isManaged!);
+    assertTrue((profileInfo.localProfileName?.length ?? 0) > 0);
+
+    await this.advanceToNextStep();
+  }
+
   async testSetContextAccessIndicator() {
     assertTrue(!!this.host.setContextAccessIndicator);
 

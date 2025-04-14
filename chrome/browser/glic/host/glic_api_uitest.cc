@@ -689,6 +689,19 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testRefreshSignInCookies) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSignInPauseState) {
+  // Check that Glic web client is open and can retrieve the user's info.
+  ExecuteJsTest({.expect_guest_frame_destroyed = false});
+
+  // Pause the sign-in.
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(browser()->profile());
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+
+  // Check that Glic web client is no longer alive.
+  ContinueJsTest({.expect_guest_frame_destroyed = true});
+}
+
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetContextAccessIndicator) {
   ExecuteJsTest();
 }
