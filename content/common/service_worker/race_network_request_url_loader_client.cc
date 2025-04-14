@@ -745,6 +745,10 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
           << "state_:" << static_cast<int>(state_);
       break;
     case State::kAborted:
+      // Reset the URLLoaderClient receiver on transition into the aborted state
+      // to prevent delivery of in-flight mojo messages that may otherwise
+      // attempt invalid state transitions.
+      receiver_.reset();
       break;
   }
   state_ = new_state;
