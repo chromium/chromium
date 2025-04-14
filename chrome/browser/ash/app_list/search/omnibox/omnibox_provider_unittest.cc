@@ -33,8 +33,6 @@
 
 namespace app_list::test {
 
-// Note that there is necessarily a lot of overlap with unittest in the lacros
-// omnibox provider unittest, since this is testing the same behavior.
 namespace {
 
 // Helper functions to populate search results.
