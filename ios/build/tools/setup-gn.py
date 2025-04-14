@@ -143,7 +143,12 @@ class GnGenerator(object):
     if os.environ.get('FORCE_MAC_TOOLCHAIN', '0') == '1':
       args.append(('use_system_xcode', False))
 
-    args.append(('target_cpu', self.TARGET_CPU_VALUES[self._target]))
+    target_cpu = self.TARGET_CPU_VALUES[self._target];
+    if (self._target == 'iphoneos' and
+        self._settings.getboolean('build', 'use_arm64e')):
+      target_cpu = '"arm64e"'
+
+    args.append(('target_cpu', target_cpu))
     args.append(
         ('target_environment', self.TARGET_ENVIRONMENT_VALUES[self._target]))
     args.append(('target_platform', self.TARGET_PLATFORM_VALUES[self._target]))
