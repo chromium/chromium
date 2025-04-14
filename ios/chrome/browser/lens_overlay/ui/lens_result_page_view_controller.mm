@@ -52,12 +52,6 @@ const CGFloat kWebContainerTopPadding = 16;
 const CGFloat kProgressBarHeight = 2.0f;
 /// Value of a full progress bar.
 const CGFloat kProgressBarFull = 1.0f;
-/// Value of the grabber corner radius.
-const CGFloat kGrabberCornerRadius = 3.0;
-/// The size of the bottom sheet grabber.
-const CGSize kGrabberSize = CGSizeMake(36, 5);
-/// The top padding of the bottom sheet grabber.
-const CGFloat kGrabberTopPadding = 5;
 
 }  // namespace
 
@@ -127,15 +121,6 @@ const CGFloat kGrabberTopPadding = 5;
   self.webViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
   self.webViewContainer.clipsToBounds = YES;
   [self.view addSubview:self.webViewContainer];
-
-  // Bottom sheet grabber.
-  UIView* grabber = [self createSheetGrabber];
-  [self.view addSubview:grabber];
-  AddSameCenterXConstraint(grabber, self.view);
-  AddSameConstraintsToSidesWithInsets(
-      grabber, self.view, LayoutSides::kTop,
-      NSDirectionalEdgeInsetsMake(kGrabberTopPadding, 0, 0, 0));
-  AddSizeConstraints(grabber, kGrabberSize);
 
   // Omnibox popup container.
   _omniboxPopupContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -456,26 +441,6 @@ const CGFloat kGrabberTopPadding = 5;
 }
 
 #pragma mark - Private
-
-- (UIView*)createSheetGrabber {
-  UIButton* grabber = [[UIButton alloc] init];
-  [grabber addTarget:self
-                action:@selector(didTapBottomSheetGrabber:)
-      forControlEvents:UIControlEventTouchUpInside];
-  grabber.translatesAutoresizingMaskIntoConstraints = NO;
-  grabber.backgroundColor = [UIColor colorNamed:kGrey400Color];
-  grabber.layer.cornerRadius = kGrabberCornerRadius;
-  grabber.accessibilityLabel = l10n_util::GetNSString(
-      IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_LABEL);
-  grabber.accessibilityHint = l10n_util::GetNSString(
-      IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_HINT);
-
-  return grabber;
-}
-
-- (void)didTapBottomSheetGrabber:(id)sender {
-  [_delegate lensResultPageViewControllerDidTapBottomSheetGrabber:self];
-}
 
 /// Handles omnibox tap target taps.
 - (void)didTapOmniboxTapTarget:(UIView*)view {
