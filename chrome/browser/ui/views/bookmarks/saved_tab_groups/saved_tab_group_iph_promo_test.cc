@@ -10,6 +10,7 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/data_sharing/public/features.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -26,7 +27,14 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
             {feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature})) {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          {{tab_groups::kTabGroupSyncServiceDesktopMigration}}, {});
+          {tab_groups::kTabGroupSyncServiceDesktopMigration,
+           data_sharing::features::kDataSharingFeature},
+          {data_sharing::features::kDataSharingJoinOnly});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration,
+               data_sharing::features::kDataSharingFeature,
+               data_sharing::features::kDataSharingJoinOnly});
     }
   }
 
@@ -39,7 +47,6 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
               tab_groups::SavedTabGroupUtils::GetServiceForProfile(
                   browser()->profile());
           ASSERT_TRUE(service);
-          service->SetIsInitializedForTesting(true);
 
           chrome::AddTabAt(browser(), GURL(), 0, true);
           chrome::AddTabAt(browser(), GURL(), 1, true);

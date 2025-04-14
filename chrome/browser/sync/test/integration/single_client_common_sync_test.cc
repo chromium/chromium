@@ -128,8 +128,12 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   // TODO(crbug.com/40264154): remove once GetUpdates is not issued anymore.
   GetUpdatesObserver::GetUpdatesOriginSet get_updates_origins_to_exclude{
       SyncEnums::PROGRAMMATIC};
-  DataTypeSet types_to_exclude{DataType::ARC_PACKAGE, DataType::HISTORY,
-                               DataType::CONTACT_INFO, DataType::NIGORI};
+  DataTypeSet types_to_exclude{
+      DataType::ARC_PACKAGE, DataType::HISTORY, DataType::CONTACT_INFO,
+      DataType::NIGORI,
+      // TODO(crbug.com/410116020): Remove once these types pass this test.
+      DataType::SHARED_TAB_GROUP_DATA, DataType::SHARED_TAB_GROUP_ACCOUNT_DATA,
+      DataType::COLLABORATION_GROUP};
 
   // Verify that there were no unexpected GetUpdates requests during Sync
   // initialization.

@@ -49302,6 +49302,8 @@ should be able to be added at any place in this file.
   <suffix name="PinnedShowTranslateButton"
       label="Pinned show translate button"/>
   <suffix name="PinnedTaskManagerButton" label="Pinned task manager button"/>
+  <suffix name="SharedTabGroupFeedbackButton"
+      label="Feedback button for the shared tab groups feature"/>
   <suffix name="ShowPerformanceSidePanelButton"
       label="Show performance side panel button"/>
   <suffix name="SidePanelButton" label="Side Panel button"/>

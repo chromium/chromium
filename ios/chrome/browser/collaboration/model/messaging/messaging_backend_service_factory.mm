@@ -8,7 +8,6 @@
 
 #import "components/collaboration/internal/messaging/configuration.h"
 #import "components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h"
-#import "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
 #import "components/collaboration/internal/messaging/instant_message_processor_impl.h"
 #import "components/collaboration/internal/messaging/messaging_backend_service_impl.h"
 #import "components/collaboration/internal/messaging/storage/empty_messaging_backend_database.h"
@@ -16,6 +15,7 @@
 #import "components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h"
 #import "components/collaboration/internal/messaging/tab_group_change_notifier_impl.h"
 #import "components/collaboration/public/features.h"
+#import "components/collaboration/public/messaging/empty_messaging_backend_service.h"
 #import "components/data_sharing/public/features.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/messaging/instant_messaging_service.h"

@@ -128,7 +128,6 @@ class TabGroupSyncNavigationIntegrationTest : public InProcessBrowserTest {
         static_cast<TabGroupSyncServiceImpl*>(service());
     SavedTabGroupModel* model = service_impl->GetModelForTesting();
     model->AddObserver(&sync_bridge_model_observer_);
-    service_impl->SetIsInitializedForTesting(true);
   }
 
   content::WebContents* AddTabToBrowser(int index) {

@@ -2353,6 +2353,7 @@ if (!is_android) {
       "//components/cbor",
       "//components/certificate_transparency",
       "//components/certificate_transparency:proto",
+      "//components/collaboration/public:empty_messaging_backend_service",
       "//components/commerce/content/browser",
       "//components/commerce/content/renderer",
       "//components/commerce/core:cart_db_content_proto",

@@ -11,6 +11,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
+#include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -27,6 +28,8 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/collaboration/public/messaging/empty_messaging_backend_service.h"
+#include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_service.h"
@@ -63,6 +66,22 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
  public:
   TabGroupSyncDelegateBrowserTest() {
     features_.InitWithFeatures({kTabGroupSyncServiceDesktopMigration}, {});
+
+    dependency_manager_subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &TabGroupSyncDelegateBrowserTest::RegisterFakeServices,
+                base::Unretained(this)));
+  }
+
+  void RegisterFakeServices(content::BrowserContext* context) {
+    collaboration::messaging::MessagingBackendServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context, base::BindRepeating([](content::BrowserContext* context)
+                                             -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  collaboration::messaging::EmptyMessagingBackendService>();
+            }));
   }
 
   void OnWillBeDestroyed() override {
@@ -150,7 +169,6 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
         std::make_unique<TabGroupSyncDelegateDesktop>(service.get(), profile);
     service->SetTabGroupSyncDelegate(std::move(delegate));
 
-    service->SetIsInitializedForTesting(true);
     service_ = service.get();
     return std::move(service);
   }
@@ -161,6 +179,7 @@ class TabGroupSyncDelegateBrowserTest : public InProcessBrowserTest,
   raw_ptr<TabGroupSyncService> service_;
   base::OnceClosure quit_;
   bool callback_received_ = false;
+  base::CallbackListSubscription dependency_manager_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
@@ -695,11 +714,17 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
 
   EXPECT_EQ(local_tab_group->visual_data()->title(), u"Title");
   EXPECT_EQ(local_tab_group->visual_data()->color(), TabGroupColorId::kBlue);
+  EXPECT_EQ(local_tab_group->ListTabs().length(), 2u);
+
+  // iterate through all of the tabs activating them so that deferred
+  // navigations are resolved.
+  const gfx::Range tab_range = local_tab_group->ListTabs();
+  for (size_t i = tab_range.start(); i < tab_range.end(); ++i) {
+    browser()->tab_strip_model()->ActivateTabAt(i);
+  }
 
   // Verify that a new tab was added, and the existing one navigated to the
   // correct URL.
-  const gfx::Range tab_range = local_tab_group->ListTabs();
-  ASSERT_EQ(tab_range.length(), 2u);
   EXPECT_EQ(browser()
                 ->tab_strip_model()
                 ->GetWebContentsAt(tab_range.start())
@@ -748,8 +773,14 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateBrowserTest,
   EXPECT_EQ(local_tab_group->visual_data()->title(), u"Title");
   EXPECT_EQ(local_tab_group->visual_data()->color(), TabGroupColorId::kBlue);
 
-  // Verify that only one tab remains and it's navigated to the correct URL.
+  // iterate through all of the tabs activating them so that deferred
+  // navigations are resolved.
   const gfx::Range tab_range = local_tab_group->ListTabs();
+  for (size_t i = tab_range.start(); i < tab_range.end(); ++i) {
+    browser()->tab_strip_model()->ActivateTabAt(i);
+  }
+
+  // Verify that only one tab remains and it's navigated to the correct URL.
   ASSERT_EQ(tab_range.length(), 1u);
   EXPECT_EQ(browser()
                 ->tab_strip_model()

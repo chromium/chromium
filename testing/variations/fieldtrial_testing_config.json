@@ -22874,10 +22874,14 @@
             ]
         }
     ],
-    "SharedTabGroupsTeamfood": [
+    "SharedTabGroups": [
         {
             "platforms": [
-                "android"
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {

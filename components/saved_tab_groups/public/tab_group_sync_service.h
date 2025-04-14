@@ -413,7 +413,9 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
 
   // For testing only. This is needed to test the API calls received before
   // service init as we need to explicitly un-initialize the service for these
-  // scenarios.
+  // scenarios. When calling this method the MessagingBackendService will need
+  // to be faked or have its store callbacks set first. (see
+  // EmptyMessagingBackendService)
   virtual void SetIsInitializedForTesting(bool initialized) {}
 
   // For testing only. This is needed to test shared tab groups flow without

@@ -11,6 +11,7 @@ if (is_android) {
 group("public") {
   public_deps = [
     ":core_public",
+    ":empty_messaging_backend_service",
     ":messaging_public",
   ]
 }
@@ -216,4 +217,13 @@ if (is_android) {
       "//base",
     ]
   }
+}
+
+static_library("empty_messaging_backend_service") {
+  visibility = [ "*" ]
+  sources = [
+    "messaging/empty_messaging_backend_service.cc",
+    "messaging/empty_messaging_backend_service.h",
+  ]
+  deps = [ ":messaging_public" ]
 }

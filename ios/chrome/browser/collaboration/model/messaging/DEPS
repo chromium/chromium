@@ -6,7 +6,7 @@ include_rules = [
   # Allows service construction.
   "+components/collaboration/internal/messaging/configuration.h",
   "+components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h",
-  "+components/collaboration/internal/messaging/empty_messaging_backend_service.h",
+  "+components/collaboration/public/messaging/empty_messaging_backend_service.h",
   "+components/collaboration/internal/messaging/messaging_backend_service_impl.h",
   "+components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h",
   "+components/collaboration/internal/messaging/tab_group_change_notifier_impl.h",

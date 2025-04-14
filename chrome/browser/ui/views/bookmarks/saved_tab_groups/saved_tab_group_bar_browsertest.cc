@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
 #include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/features.h"
@@ -45,10 +46,14 @@ class SavedTabGroupBarBrowserTest : public InProcessBrowserTest,
   SavedTabGroupBarBrowserTest() {
     if (GetParam()) {
       features_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration}, {});
+          {tab_groups::kTabGroupSyncServiceDesktopMigration,
+           data_sharing::features::kDataSharingFeature},
+          {data_sharing::features::kDataSharingJoinOnly});
     } else {
       features_.InitWithFeatures(
-          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration});
+          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration,
+               data_sharing::features::kDataSharingFeature,
+               data_sharing::features::kDataSharingJoinOnly});
     }
   }
 
@@ -257,7 +262,6 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
       SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service);
-  service_impl->SetIsInitializedForTesting(true);
   SavedTabGroupModel* model = service_impl->GetModelForTesting();
 
   {  // Create 1 pinned group
@@ -337,7 +341,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
       SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service);
-  service_impl->SetIsInitializedForTesting(true);
+  SavedTabGroupModel* model = service_impl->GetModelForTesting();
 
   {  // Create an empty group.
     ScopedAddObservation observer(service);
@@ -345,7 +349,6 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
     SavedTabGroup group{
         u"group_title", TabGroupColorId::kGrey, {}, 0, group_guid};
 
-    SavedTabGroupModel* model = service_impl->GetModelForTesting();
     model->AddedFromSync(std::move(group));
     observer.Wait();
 

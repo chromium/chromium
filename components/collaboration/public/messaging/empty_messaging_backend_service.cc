@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
+#include "components/collaboration/public/messaging/empty_messaging_backend_service.h"
 
 #include <optional>
 #include <vector>
