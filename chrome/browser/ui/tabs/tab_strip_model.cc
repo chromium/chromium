@@ -2932,14 +2932,6 @@ TabStripSelectionChange TabStripModel::SetSelection(
         ->WillEnterBackground(base::PassKey<TabStripModel>());
   }
 
-  // Validate that |new_model| only selects tabs that actually exist.
-  CHECK(empty() || new_model.active().has_value(), base::NotFatalUntil::M124);
-  CHECK(empty() || ContainsIndex(new_model.active().value()),
-        base::NotFatalUntil::M124);
-  for (size_t selected_index : new_model.selected_indices()) {
-    CHECK(ContainsIndex(selected_index), base::NotFatalUntil::M124);
-  }
-
   // This is done after notifying TabDeactivated() because caller can assume
   // that TabStripModel::active_index() would return the index for
   // |selection.old_contents|.
@@ -2972,6 +2964,9 @@ TabStripSelectionChange TabStripModel::SetSelection(
         }
       }
     }
+
+    ValidateTabStripModel();
+
     TabStripModelChange change;
     OnChange(change, selection);
   }
@@ -3675,15 +3670,31 @@ void TabStripModel::ValidateTabStripModel() {
   CHECK(selection_model().active().has_value() &&
         GetTabAtIndex(selection_model().active().value()));
 
-#if DCHECK_IS_ON()
   // Check if the selected tab indices are valid.
   const ui::ListSelectionModel::SelectedIndices& selected_indices =
       selection_model().selected_indices();
 
+  std::set<split_tabs::SplitTabId> selected_splits;
   for (auto selection : selected_indices) {
-    DCHECK(GetTabAtIndex(selection));
+    // Check if the selected tab indices are valid.
+    const tabs::TabInterface* tab = GetTabAtIndex(selection);
+    CHECK(tab);
+
+    if (tab->IsSplit()) {
+      selected_splits.insert(tab->GetSplit().value());
+    }
   }
-#endif
+
+  // For all splits that have at least one tab selected, check that all tabs are
+  // selected.
+  for (split_tabs::SplitTabId split_id : selected_splits) {
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs_in_split =
+        GetTabsAndIndicesInSplit(split_id);
+    CHECK(std::all_of(tabs_in_split.begin(), tabs_in_split.end(),
+                      [&](std::pair<tabs::TabInterface*, int> tab) {
+                        return IsTabSelected(tab.second);
+                      }));
+  }
 
   contents_data_->ValidateData();
 }
