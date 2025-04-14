@@ -25,6 +25,7 @@ include_rules = [
   "+chrome/android/java/src/org/chromium/chrome/browser/app/serial/SerialNotificationService.java",
   "+chrome/browser/serial/android/java/src/org/chromium/chrome/browser/serial/SerialNotificationManager.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/automotive/AutomotiveUtils.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/document/ChromeLauncherActivity.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationServiceImpl.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/metrics/UkmRecorder.java",
   "+chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",

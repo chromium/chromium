@@ -142,6 +142,7 @@ class TabWebContentsDelegateAndroid
   bool IsInstalledWebappDelegateGeolocation() const;
   bool IsModalContextMenu() const;
   bool IsDynamicSafeAreaInsetsEnabled() const;
+  bool OpenInAppOrChromeFromCct(GURL url);
 
  private:
   std::unique_ptr<device::mojom::GeolocationContext>
