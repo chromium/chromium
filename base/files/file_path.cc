@@ -12,9 +12,11 @@
 #include <string.h>
 
 #include <algorithm>
+#include <atomic>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/features.h"
 #include "base/files/safe_base_name.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
@@ -51,6 +53,10 @@ const char* const kCommonDoubleExtensions[] = {"user.js"};
 
 const FilePath::CharType kStringTerminator = FILE_PATH_LITERAL('\0');
 
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+constexpr size_t kDriveLetterComponentLength = 2;
+#endif  // FILE_PATH_USES_DRIVE_LETTERS
+
 // If this FilePath contains a drive letter specification, returns the
 // position of the last character of the drive letter specification,
 // otherwise returns npos.  This can only be true on Windows, when a pathname
@@ -60,9 +66,8 @@ StringViewType::size_type FindDriveLetter(StringViewType path) {
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
   // This is dependent on an ASCII-based character set, but that's a
   // reasonable assumption.  iswalpha can be too inclusive here.
-  if (path.length() >= 2 && path[1] == L':' &&
-      ((path[0] >= L'A' && path[0] <= L'Z') ||
-       (path[0] >= L'a' && path[0] <= L'z'))) {
+  if (path.length() >= kDriveLetterComponentLength && path[1] == L':' &&
+      IsAsciiAlpha(path[0])) {
     return 1;
   }
 #endif  // FILE_PATH_USES_DRIVE_LETTERS
@@ -87,6 +92,19 @@ bool EqualDriveLetterCaseInsensitive(StringViewType a, StringViewType b) {
   StringViewType a_rest(a.substr(a_letter_pos + 1));
   StringViewType b_rest(b.substr(b_letter_pos + 1));
   return a_rest == b_rest;
+}
+
+// Returns true if `left` and `right` are equivalent drive letter components.
+// Will return false if `left` or `right` is not a drive letter component.
+bool AreDriveLetterComponentsEqual(FilePath::StringViewType left,
+                                   FilePath::StringViewType right) {
+  // Check if `left` and `right` are both drive letter components (have exactly
+  // 2 characters, 1st is a letter and 2nd is ":"), and their drive letter is
+  // the same (case-insensitive).
+  return left.size() == kDriveLetterComponentLength &&
+         right.size() == kDriveLetterComponentLength && left[1] == ':' &&
+         right[1] == ':' && IsAsciiAlpha(left[0]) &&
+         ToLowerASCII(left[0]) == ToLowerASCII(right[0]);
 }
 #endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 
@@ -184,7 +202,89 @@ bool IsEmptyOrSpecialCase(const StringType& path) {
   return false;
 }
 
+// Splits `path` in 2 parts: the first component and the remainder of the path.
+// Leading separators are removed from the remainder of the path, unless
+// `can_be_drive_letter` is true. `can_be_drive_letter` indicates that a leading
+// drive letter in `path` must be extracted as a standalone component, even if
+// not followed by a separator.
+std::pair<FilePath::StringViewType, FilePath::StringViewType>
+ExtractFirstComponent(FilePath::StringViewType path, bool can_be_drive_letter) {
+  if (path.empty()) {
+    return {};
+  }
+
+  // Special case for leading separators, which form a distinct path component:
+  // - 1 separator is interpreted as the root directory. Use as-is.
+  // - 2 separators indicates a network path. Use as-is.
+  // - 3+ separators are interpreted as the root directory. Use only the
+  //   first separator and discard the others.
+  if (FilePath::IsSeparator(path[0])) {
+    size_t first_non_separator_pos = path.find_first_not_of(
+        FilePath::kSeparators, 0, FilePath::kSeparatorsLength - 1);
+    FilePath::StringViewType first_component =
+        path.substr(0, first_non_separator_pos);
+    FilePath::StringViewType remainder;
+    if (first_non_separator_pos != FilePath::StringViewType::npos) {
+      remainder = path.substr(first_non_separator_pos);
+    }
+    if (first_component.size() >= 3) {
+      first_component = first_component.substr(0, 1);
+    }
+    return {first_component, remainder};
+  }
+
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+  // Special case for a leading drive letter: the drive letter and the separator
+  // that follows it (if any) each form a distinct path component. The separator
+  // is preserved because "C:\a" and "C:a" don't have the same meaning
+  // (https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#fully-qualified-vs-relative-paths).
+  if (can_be_drive_letter &&
+      FindDriveLetter(path) != FilePath::StringViewType::npos) {
+    return {/*first_component=*/path.substr(0, kDriveLetterComponentLength),
+            /*remainder=*/path.size() > kDriveLetterComponentLength
+                ? path.substr(kDriveLetterComponentLength)
+                : FilePath::StringViewType{}};
+  }
+#endif  // FILE_PATH_USES_DRIVE_LETTERS
+
+  // Find the next separator.
+  size_t next_separator_pos = path.find_first_of(
+      FilePath::kSeparators, 0, FilePath::kSeparatorsLength - 1);
+
+  if (next_separator_pos == FilePath::StringViewType::npos) {
+    // `path` is the last component.
+    return {/*first_component=*/path,
+            /*remainder=*/FilePath::StringViewType{}};
+  }
+
+  FilePath::StringViewType first_component = path.substr(0, next_separator_pos);
+  FilePath::StringViewType remainder = path.substr(next_separator_pos);
+
+  // Remove leading separators from `remainder`.
+  size_t first_non_separator_in_remainder_pos = remainder.find_first_not_of(
+      FilePath::kSeparators, 0, FilePath::kSeparatorsLength - 1);
+  if (first_non_separator_in_remainder_pos == FilePath::StringViewType::npos) {
+    remainder = FilePath::StringViewType();
+  } else {
+    remainder.remove_prefix(first_non_separator_in_remainder_pos);
+  }
+
+  return {first_component, remainder};
+}
+
+// State of the `FastFilePathIsParent` feature, to be updated after the feature
+// list is available.
+std::atomic_bool g_fast_file_path_is_parent{false};
+
 }  // namespace
+
+void FilePath::InitializeFeatures() {
+  // `std::memory_order_relaxed` because there are no dependencies with other
+  // memory operations.
+  g_fast_file_path_is_parent.store(
+      FeatureList::IsEnabled(features::kFastFilePathIsParent),
+      std::memory_order_relaxed);
+}
 
 FilePath::FilePath() = default;
 
@@ -263,6 +363,89 @@ std::vector<FilePath::StringType> FilePath::GetComponents() const {
 }
 
 bool FilePath::IsParent(const FilePath& child) const {
+  // `std::memory_order_relaxed` because there are no dependencies with other
+  // memory operations.
+  if (g_fast_file_path_is_parent.load(std::memory_order_relaxed)) {
+    return IsParentFast(child);
+  }
+
+  return IsParentSlow(child);
+}
+
+bool FilePath::IsParentFast(const FilePath& child) const {
+  StringViewType parent_view = path_;
+  StringViewType child_view = child.path_;
+
+  for (size_t component_index = 0;; ++component_index) {
+    // The first component which is not a "current directory" component can be
+    // interpreted as a drive letter.
+    const bool can_be_drive_letter = (component_index == 0);
+
+    auto [parent_component, parent_remainder] =
+        ExtractFirstComponent(parent_view, can_be_drive_letter);
+    auto [child_component, child_remainder] =
+        ExtractFirstComponent(child_view, can_be_drive_letter);
+
+    if (component_index == 0) {
+      if (parent_component.empty()) {
+        // `this` has no component: Cannot be the parent of any child.
+        return false;
+      }
+
+      // Skip current directory component if not the last component.
+      //
+      // This allows "./a" to be considered the parent of "a/b", but it also
+      // means that "." isn't considered the parent of "a". This code exists
+      // to preserve old behavior and we should consider fixing it.
+      if (!parent_remainder.empty() && parent_component == kCurrentDirectory) {
+        auto [new_component, new_remainder] =
+            ExtractFirstComponent(parent_remainder, can_be_drive_letter);
+        parent_component = new_component;
+        parent_remainder = new_remainder;
+      }
+
+      if (!child_remainder.empty() && child_component == kCurrentDirectory) {
+        auto [new_component, new_remainder] =
+            ExtractFirstComponent(child_remainder, can_be_drive_letter);
+        child_component = new_component;
+        child_remainder = new_remainder;
+      }
+    }
+
+    if (parent_component.empty()) {
+      CHECK(parent_remainder.empty());
+      // The components of `this` are a prefix of the components of `child`:
+      // `this` is a parent of `child` only if `child` has more components
+      // (because a path is not its own parent).
+      return !child_component.empty();
+    }
+
+    // Abort if components at the current index are not equal.
+    if (
+        // Not equal components (case sensitive)
+        parent_component != child_component &&
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+        // Not equivalent drive letter components (case insensitive)
+        !(component_index == 0 &&
+          AreDriveLetterComponentsEqual(parent_component, child_component)) &&
+#endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
+        // Not equivalent host components (case insensitive).
+        //
+        // Discussion: For a network path, the first 2 components are
+        // [<2-Separators>, <hostname>]. Use case insensitive comparison for the
+        // hostname. https://tools.ietf.org/html/rfc3986#section-3.2.2
+        !(component_index == 1 && IsNetwork() &&
+          EqualsCaseInsensitiveASCII(parent_component, child_component))) {
+      CHECK(!child_component.empty() || child_remainder.empty());
+      return false;
+    }
+
+    parent_view = parent_remainder;
+    child_view = child_remainder;
+  }
+}
+
+bool FilePath::IsParentSlow(const FilePath& child) const {
   return AppendRelativePath(child, nullptr);
 }
 

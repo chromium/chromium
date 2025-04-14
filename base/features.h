@@ -17,6 +17,8 @@ namespace base::features {
 // Alphabetical:
 BASE_EXPORT BASE_DECLARE_FEATURE(kFeatureParamWithCache);
 
+BASE_EXPORT BASE_DECLARE_FEATURE(kFastFilePathIsParent);
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseRustJsonParser);
 
 BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
