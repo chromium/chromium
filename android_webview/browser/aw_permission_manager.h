@@ -54,23 +54,23 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override;
   blink::mojom::PermissionStatus GetPermissionStatus(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) override;
   content::PermissionResult GetPermissionResultForOriginWithoutContext(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForCurrentDocument(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       bool should_include_device_status) override;
   blink::mojom::PermissionStatus GetPermissionStatusForWorker(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) override;
   blink::mojom::PermissionStatus GetPermissionStatusForEmbeddedRequester(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) override;
   void SetOriginCanReadEnumerateDevicesAudioLabels(const url::Origin& origin,
@@ -99,7 +99,7 @@ class AwPermissionManager : public content::PermissionControllerDelegate {
                                                           int render_frame_id);
 
   blink::mojom::PermissionStatus GetPermissionStatusInternal(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin,
       content::WebContents* web_contents);

@@ -12,7 +12,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
-#include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -66,12 +65,12 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // outside of a frame context. Prefer GetPermissionStatusForCurrentDocument
   // (below) whenever possible.
   virtual PermissionStatus GetPermissionStatus(
-      const blink::mojom::PermissionDescriptorPtr& permission,
+      blink::PermissionType permission,
       const GURL& requesting_origin,
       const GURL& embedding_origin) = 0;
 
   virtual PermissionResult GetPermissionResultForOriginWithoutContext(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) = 0;
 
@@ -86,14 +85,14 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // PermissionStatus::DENIED in scenarios where the site-level permission is
   // granted but the device-level permission is not.
   virtual PermissionStatus GetPermissionStatusForCurrentDocument(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status) = 0;
 
   // The method does the same as `GetPermissionStatusForCurrentDocument` but
   // additionally returns a source or reason for the permission status.
   virtual PermissionResult GetPermissionResultForCurrentDocument(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status);
 
@@ -102,7 +101,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // additional checks such as Permission Policy.  Use this over
   // GetPermissionStatus whenever possible.
   virtual PermissionStatus GetPermissionStatusForWorker(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       RenderProcessHost* render_process_host,
       const GURL& worker_origin) = 0;
 
@@ -113,7 +112,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // last committed origin of the requesting frame.  It is designed to be used
   // only for `TOP_LEVEL_STORAGE_ACCESS`.
   virtual PermissionStatus GetPermissionStatusForEmbeddedRequester(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      blink::PermissionType permission,
       RenderFrameHost* render_frame_host,
       const url::Origin& requesting_origin) = 0;
 

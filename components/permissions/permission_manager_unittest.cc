@@ -101,8 +101,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     EXPECT_EQ(expected,
               GetPermissionManager()
                   ->GetPermissionStatusInternal(
-                      content::PermissionDescriptorUtil::
-                          CreatePermissionDescriptorForPermissionType(type),
+                      PermissionUtil::PermissionTypeToContentSettingsType(type),
                       /*render_process_host=*/nullptr,
                       /*render_frame_host=*/nullptr, url_, url_,
                       should_include_device_status)
@@ -115,9 +114,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       content::PermissionStatusSource expected_status_source) {
     content::PermissionResult result =
         GetPermissionManager()->GetPermissionResultForOriginWithoutContext(
-            content::PermissionDescriptorUtil::
-                CreatePermissionDescriptorForPermissionType(type),
-            url::Origin::Create(url_), url::Origin::Create(url_));
+            type, url::Origin::Create(url_), url::Origin::Create(url_));
     EXPECT_EQ(expected_status, result.status);
     EXPECT_EQ(expected_status_source, result.source);
   }
@@ -186,18 +183,14 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       PermissionType permission,
       content::RenderFrameHost* render_frame_host) {
     return GetPermissionManager()->GetPermissionStatusForCurrentDocument(
-        content::PermissionDescriptorUtil::
-            CreatePermissionDescriptorForPermissionType(permission),
-        render_frame_host, /*should_include_device_status*/ false);
+        permission, render_frame_host, /*should_include_device_status*/ false);
   }
 
   content::PermissionResult GetPermissionResultForCurrentDocument(
       PermissionType permission,
       content::RenderFrameHost* render_frame_host) {
     return GetPermissionManager()->GetPermissionResultForCurrentDocument(
-        content::PermissionDescriptorUtil::
-            CreatePermissionDescriptorForPermissionType(permission),
-        render_frame_host, /*should_include_device_status*/ false);
+        permission, render_frame_host, /*should_include_device_status*/ false);
   }
 
   PermissionStatus GetPermissionStatusForWorker(
@@ -205,9 +198,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) {
     return GetPermissionManager()->GetPermissionStatusForWorker(
-        content::PermissionDescriptorUtil::
-            CreatePermissionDescriptorForPermissionType(permission),
-        render_process_host, worker_origin);
+        permission, render_process_host, worker_origin);
   }
 
   bool IsPermissionOverridable(PermissionType permission,

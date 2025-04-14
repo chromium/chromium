@@ -85,10 +85,9 @@ class LastRequestResultCache {
     pmi_result_cache_[key] = status;
   }
 
-  PermissionStatus GetResult(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
-      const GURL& requesting_origin,
-      const GURL& embedding_origin) const {
+  PermissionStatus GetResult(PermissionType permission,
+                             const GURL& requesting_origin,
+                             const GURL& embedding_origin) const {
     // TODO(ddorwin): We should be denying empty origins at a higher level.
     if (requesting_origin.is_empty() || embedding_origin.is_empty()) {
       return PermissionStatus::ASK;
@@ -99,8 +98,6 @@ class LastRequestResultCache {
     DCHECK(embedding_origin.is_valid())
         << embedding_origin.possibly_invalid_spec();
 
-    const PermissionType permission =
-        blink::PermissionDescriptorToPermissionType(permission_descriptor);
     switch (permission) {
       case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
       case PermissionType::STORAGE_ACCESS_GRANT:
@@ -534,22 +531,20 @@ void AwPermissionManager::RequestPermissionsFromCurrentDocument(
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatus(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  return GetPermissionStatusInternal(permission_descriptor, requesting_origin,
+  return GetPermissionStatusInternal(permission, requesting_origin,
                                      embedding_origin,
                                      /*web_contents=*/nullptr);
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     content::WebContents* web_contents) {
-  const blink::PermissionType permission_type =
-      blink::PermissionDescriptorToPermissionType(permission_descriptor);
-  switch (permission_type) {
+  switch (permission) {
     // Setting results is called outside the Permissions API only for these
     // permissions.
     case blink::PermissionType::STORAGE_ACCESS_GRANT:
@@ -557,11 +552,11 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
       if (!base::FeatureList::IsEnabled(features::kWebViewAutoSAA)) {
         return PermissionStatus::DENIED;
       }
-      return result_cache_->GetResult(permission_descriptor, requesting_origin,
+      return result_cache_->GetResult(permission, requesting_origin,
                                       embedding_origin);
     }
     case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-      return result_cache_->GetResult(permission_descriptor, requesting_origin,
+      return result_cache_->GetResult(permission, requesting_origin,
                                       embedding_origin);
 
     case blink::PermissionType::GEOLOCATION:
@@ -609,8 +604,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::WINDOW_MANAGEMENT:
       return PermissionStatus::DENIED;
   }
-  NOTREACHED() << "Unhandled permission type: "
-               << static_cast<int>(permission_type);
+  NOTREACHED() << "Unhandled permission type: " << static_cast<int>(permission);
 }
 
 PermissionStatus AwPermissionManager::GetGeolocationPermission(
@@ -638,25 +632,24 @@ PermissionStatus AwPermissionManager::GetGeolocationPermission(
 
 content::PermissionResult
 AwPermissionManager::GetPermissionResultForOriginWithoutContext(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    blink::PermissionType permission,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  blink::mojom::PermissionStatus status =
-      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
-                          embedding_origin.GetURL());
+  blink::mojom::PermissionStatus status = GetPermissionStatus(
+      permission, requesting_origin.GetURL(), embedding_origin.GetURL());
 
   return content::PermissionResult(
       status, content::PermissionStatusSource::UNSPECIFIED);
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatusForCurrentDocument(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   return GetPermissionStatusInternal(
-      permission_descriptor,
+      permission,
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
@@ -665,19 +658,18 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForCurrentDocument(
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatusForWorker(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    PermissionType permission,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
-  return GetPermissionStatus(permission_descriptor, worker_origin,
-                             worker_origin);
+  return GetPermissionStatus(permission, worker_origin, worker_origin);
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {
   return GetPermissionStatusInternal(
-      permission_descriptor, requesting_origin.GetURL(),
+      permission, requesting_origin.GetURL(),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host->GetMainFrame()),
       content::WebContents::FromRenderFrameHost(render_frame_host));

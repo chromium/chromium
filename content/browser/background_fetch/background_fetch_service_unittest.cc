@@ -44,11 +44,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"
 
-MATCHER_P(PermissionTypeMatcher, id, "") {
-  return ::testing::Matches(::testing::Eq(id))(
-      blink::PermissionDescriptorToPermissionType(arg));
-}
-
 namespace content {
 namespace {
 
@@ -310,9 +305,7 @@ class BackgroundFetchServiceTest
     std::unique_ptr<MockPermissionManager> mock_permission_manager(
         new testing::NiceMock<MockPermissionManager>());
     ON_CALL(*mock_permission_manager,
-            GetPermissionStatus(
-                PermissionTypeMatcher(blink::PermissionType::BACKGROUND_FETCH),
-                _, _))
+            GetPermissionStatus(blink::PermissionType::BACKGROUND_FETCH, _, _))
         .WillByDefault(
             testing::Return(blink::mojom::PermissionStatus::GRANTED));
     browser_context()->SetPermissionControllerDelegate(

@@ -74,7 +74,7 @@ class TestPermissionManager : public MockPermissionManager {
   ~TestPermissionManager() override = default;
 
   PermissionStatus GetPermissionStatusForCurrentDocument(
-      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      PermissionType permission,
       RenderFrameHost* render_frame_host,
       bool should_include_device_status) override {
     RenderFrameHost* top_frame = render_frame_host->GetParentOrOuterDocument();

@@ -539,8 +539,10 @@ PermissionStatus PermissionControllerImpl::GetPermissionStatusInternal(
   if (!delegate) {
     return PermissionStatus::DENIED;
   }
-  return delegate->GetPermissionStatus(permission_descriptor, requesting_origin,
-                                       embedding_origin);
+
+  return delegate->GetPermissionStatus(
+      blink::PermissionDescriptorToPermissionType(permission_descriptor),
+      requesting_origin, embedding_origin);
 }
 
 PermissionStatus
@@ -565,7 +567,7 @@ PermissionControllerImpl::GetPermissionStatusForCurrentDocumentInternal(
     return PermissionStatus::DENIED;
   }
   return delegate->GetPermissionStatusForCurrentDocument(
-      permission_descriptor, render_frame_host, should_include_device_status);
+      permission_type, render_frame_host, should_include_device_status);
 }
 
 PermissionStatus PermissionControllerImpl::GetPermissionStatusForWorker(
@@ -587,7 +589,7 @@ PermissionStatus PermissionControllerImpl::GetPermissionStatusForWorker(
   }
 
   return delegate->GetPermissionStatusForWorker(
-      permission_descriptor, render_process_host, worker_origin.GetURL());
+      permission_type, render_process_host, worker_origin.GetURL());
 }
 
 PermissionStatus
@@ -624,7 +626,7 @@ PermissionControllerImpl::GetPermissionResultForCurrentDocument(
   }
 
   return delegate->GetPermissionResultForCurrentDocument(
-      permission_descriptor, render_frame_host,
+      permission_type, render_frame_host,
       /*should_include_device_status=*/false);
 }
 
@@ -657,16 +659,16 @@ PermissionControllerImpl::GetPermissionResultForOriginWithoutContext(
   }
 
   return delegate->GetPermissionResultForOriginWithoutContext(
-      permission_descriptor, requesting_origin, embedding_origin);
+      permission_type, requesting_origin, embedding_origin);
 }
 
 PermissionStatus
 PermissionControllerImpl::GetPermissionStatusForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    const blink::mojom::PermissionDescriptorPtr& permission,
     RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {
   auto permission_type =
-      blink::PermissionDescriptorToPermissionType(permission_descriptor);
+      blink::PermissionDescriptorToPermissionType(permission);
 
   // This API is suited only for `TOP_LEVEL_STORAGE_ACCESS`. Do not use it for
   // other permissions unless discussed with `permissions-core@`.
@@ -694,7 +696,7 @@ PermissionControllerImpl::GetPermissionStatusForEmbeddedRequester(
   }
 
   return delegate->GetPermissionStatusForEmbeddedRequester(
-      permission_descriptor, render_frame_host, requesting_origin);
+      permission_type, render_frame_host, requesting_origin);
 }
 
 PermissionStatus PermissionControllerImpl::GetCombinedPermissionAndDeviceStatus(

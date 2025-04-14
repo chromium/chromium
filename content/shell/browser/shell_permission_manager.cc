@@ -141,15 +141,12 @@ void ShellPermissionManager::RequestPermissionsFromCurrentDocument(
 }
 
 blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  const auto permission_type =
-      blink::PermissionDescriptorToPermissionType(permission_descriptor);
-
-  if ((permission_type == PermissionType::AUDIO_CAPTURE ||
-       permission_type == PermissionType::VIDEO_CAPTURE) &&
+  if ((permission == PermissionType::AUDIO_CAPTURE ||
+       permission == PermissionType::VIDEO_CAPTURE) &&
       command_line->HasSwitch(switches::kUseFakeDeviceForMediaStream) &&
       command_line->HasSwitch(switches::kUseFakeUIForMediaStream) &&
       command_line->GetSwitchValueASCII(
@@ -157,32 +154,31 @@ blink::mojom::PermissionStatus ShellPermissionManager::GetPermissionStatus(
     return blink::mojom::PermissionStatus::GRANTED;
   }
 
-  return IsAllowlistedPermissionType(permission_type)
+  return IsAllowlistedPermissionType(permission)
              ? blink::mojom::PermissionStatus::GRANTED
              : blink::mojom::PermissionStatus::DENIED;
 }
 
 PermissionResult
 ShellPermissionManager::GetPermissionResultForOriginWithoutContext(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    blink::PermissionType permission,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  blink::mojom::PermissionStatus status =
-      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
-                          embedding_origin.GetURL());
+  blink::mojom::PermissionStatus status = GetPermissionStatus(
+      permission, requesting_origin.GetURL(), embedding_origin.GetURL());
 
   return PermissionResult(status, content::PermissionStatusSource::UNSPECIFIED);
 }
 
 blink::mojom::PermissionStatus
 ShellPermissionManager::GetPermissionStatusForCurrentDocument(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
   if (render_frame_host->IsNestedWithinFencedFrame())
     return blink::mojom::PermissionStatus::DENIED;
   return GetPermissionStatus(
-      permission_descriptor,
+      permission,
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
@@ -191,23 +187,22 @@ ShellPermissionManager::GetPermissionStatusForCurrentDocument(
 
 blink::mojom::PermissionStatus
 ShellPermissionManager::GetPermissionStatusForWorker(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    PermissionType permission,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
-  return GetPermissionStatus(permission_descriptor, worker_origin,
-                             worker_origin);
+  return GetPermissionStatus(permission, worker_origin, worker_origin);
 }
 
 blink::mojom::PermissionStatus
 ShellPermissionManager::GetPermissionStatusForEmbeddedRequester(
-    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+    blink::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& overridden_origin) {
   if (render_frame_host->IsNestedWithinFencedFrame()) {
     return blink::mojom::PermissionStatus::DENIED;
   }
   return GetPermissionStatus(
-      permission_descriptor, overridden_origin.GetURL(),
+      permission, overridden_origin.GetURL(),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host->GetMainFrame()));
 }

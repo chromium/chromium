@@ -31,7 +31,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller_delegate.h"
-#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
@@ -583,10 +582,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, PermissionManagerAlwaysASK) {
   // Check that the permission manager returns ASK for a given permission type.
   EXPECT_EQ(blink::mojom::PermissionStatus::ASK,
             permission_controller_delegate->GetPermissionStatus(
-                content::PermissionDescriptorUtil::
-                    CreatePermissionDescriptorForPermissionType(
-                        blink::PermissionType::NOTIFICATIONS),
-                url, url));
+                blink::PermissionType::NOTIFICATIONS, url, url));
 }
 
 class BrowserTargetTracingTest : public HeadlessBrowserTest {

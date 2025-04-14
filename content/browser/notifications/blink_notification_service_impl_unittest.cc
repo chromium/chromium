@@ -51,11 +51,6 @@
 using ::testing::_;
 using ::testing::Return;
 
-MATCHER_P(PermissionTypeMatcher, id, "") {
-  return ::testing::Matches(::testing::Eq(id))(
-      blink::PermissionDescriptorToPermissionType(arg));
-}
-
 namespace content {
 
 namespace {
@@ -410,15 +405,13 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
         static_cast<MockPermissionManager*>(
             browser_context_.GetPermissionControllerDelegate());
 
-    ON_CALL(
-        *mock_permission_manager,
-        GetPermissionStatusForCurrentDocument(
-            PermissionTypeMatcher(blink::PermissionType::NOTIFICATIONS), _, _))
+    ON_CALL(*mock_permission_manager,
+            GetPermissionStatusForCurrentDocument(
+                blink::PermissionType::NOTIFICATIONS, _, _))
         .WillByDefault(Return(permission_status));
-    ON_CALL(
-        *mock_permission_manager,
-        GetPermissionStatusForWorker(
-            PermissionTypeMatcher(blink::PermissionType::NOTIFICATIONS), _, _))
+    ON_CALL(*mock_permission_manager,
+            GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS,
+                                         _, _))
         .WillByDefault(Return(permission_status));
   }
 
