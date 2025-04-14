@@ -64,9 +64,10 @@ void P2PSocketClientImpl::Init(blink::P2PSocketClientDelegate* delegate) {
       &P2PSocketClientImpl::OnConnectionError, WTF::Unretained(this)));
 }
 
-uint64_t P2PSocketClientImpl::Send(const net::IPEndPoint& address,
-                                   base::span<const uint8_t> data,
-                                   const rtc::PacketOptions& options) {
+uint64_t P2PSocketClientImpl::Send(
+    const net::IPEndPoint& address,
+    base::span<const uint8_t> data,
+    const webrtc::AsyncSocketPacketOptions& options) {
   uint64_t unique_id = GetUniqueId(random_socket_id_, ++next_packet_id_);
 
   // Can send data only when the socket is open.
@@ -94,10 +95,11 @@ void P2PSocketClientImpl::DoSendBatch() {
   }
 }
 
-void P2PSocketClientImpl::SendWithPacketId(const net::IPEndPoint& address,
-                                           base::span<const uint8_t> data,
-                                           const rtc::PacketOptions& options,
-                                           uint64_t packet_id) {
+void P2PSocketClientImpl::SendWithPacketId(
+    const net::IPEndPoint& address,
+    base::span<const uint8_t> data,
+    const webrtc::AsyncSocketPacketOptions& options,
+    uint64_t packet_id) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("p2p", "Send", packet_id);
 
   // Conditionally start or continue temporarily storing the packets of a batch.
