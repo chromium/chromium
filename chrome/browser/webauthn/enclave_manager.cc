@@ -1162,7 +1162,7 @@ class EnclaveManager::StateMachine {
       FileFetched,
       PINHashed,
       Response,
-      trusted_vault::UpdateRecoveryKeyStoreStatus,
+      trusted_vault::RecoveryKeyStoreStatus,
       trusted_vault::DownloadAuthenticationFactorsRegistrationStateResult>;
 
   void Process(Event event) {
@@ -1344,23 +1344,22 @@ class EnclaveManager::StateMachine {
     }
   }
 
-  static const char* ToString(
-      trusted_vault::UpdateRecoveryKeyStoreStatus status) {
+  static const char* ToString(trusted_vault::RecoveryKeyStoreStatus status) {
     switch (status) {
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::kSuccess:
+      case trusted_vault::RecoveryKeyStoreStatus::kSuccess:
         return "Success";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::
+      case trusted_vault::RecoveryKeyStoreStatus::
           kTransientAccessTokenFetchError:
         return "TransientError";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::
+      case trusted_vault::RecoveryKeyStoreStatus::
           kPersistentAccessTokenFetchError:
         return "AccessTokenError";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::
+      case trusted_vault::RecoveryKeyStoreStatus::
           kPrimaryAccountChangeAccessTokenFetchError:
         return "AccountChangedError";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::kNetworkError:
+      case trusted_vault::RecoveryKeyStoreStatus::kNetworkError:
         return "NetworkError";
-      case trusted_vault::UpdateRecoveryKeyStoreStatus::kOtherError:
+      case trusted_vault::RecoveryKeyStoreStatus::kOtherError:
         return "OtherError";
     }
   }
@@ -1417,7 +1416,7 @@ class EnclaveManager::StateMachine {
               return base::StringPrintf("Response(%zu bytes)",
                                         response_str.size());
             },
-            [](const trusted_vault::UpdateRecoveryKeyStoreStatus& status) {
+            [](const trusted_vault::RecoveryKeyStoreStatus& status) {
               return base::StrCat(
                   {"UpdateRecoveryKeyStoreStatus(", ToString(status), ")"});
             },
@@ -2199,7 +2198,7 @@ class EnclaveManager::StateMachine {
             *primary_account_info_, *vault_,
             base::BindOnce(
                 [](base::WeakPtr<StateMachine> machine,
-                   trusted_vault::UpdateRecoveryKeyStoreStatus status) {
+                   trusted_vault::RecoveryKeyStoreStatus status) {
                   if (!machine) {
                     return;
                   }
@@ -2212,13 +2211,12 @@ class EnclaveManager::StateMachine {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     recovery_key_store_request_.reset();
-    CHECK(std::holds_alternative<trusted_vault::UpdateRecoveryKeyStoreStatus>(
-        event))
+    CHECK(std::holds_alternative<trusted_vault::RecoveryKeyStoreStatus>(event))
         << ToString(event);
 
     const auto* status =
-        std::get_if<trusted_vault::UpdateRecoveryKeyStoreStatus>(&event);
-    if (*status != trusted_vault::UpdateRecoveryKeyStoreStatus::kSuccess) {
+        std::get_if<trusted_vault::RecoveryKeyStoreStatus>(&event);
+    if (*status != trusted_vault::RecoveryKeyStoreStatus::kSuccess) {
       if (is_pin_renewal_) {
         base::UmaHistogramEnumeration(kPinRenewalFailureHistogram,
                                       PinRenewalFailureCause::kRKSUpload);
@@ -2495,7 +2493,7 @@ class EnclaveManager::StateMachine {
             *primary_account_info_, *vault_,
             base::BindOnce(
                 [](base::WeakPtr<StateMachine> machine,
-                   trusted_vault::UpdateRecoveryKeyStoreStatus status) {
+                   trusted_vault::RecoveryKeyStoreStatus status) {
                   if (!machine) {
                     return;
                   }

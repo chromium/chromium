@@ -159,7 +159,8 @@ class TestURLLoaderFactory : public mojom::URLLoaderFactory {
 
   // Waits until there's a PendingRequest for `url`. Note that PendingRequests
   // will not be made for requests handled by a previous AddResponse() call.
-  void WaitForRequest(const GURL& url);
+  void WaitForRequest(const GURL& url,
+                      ResponseMatchFlags flags = kMatchDefault);
 
   // Sends a response for the first (oldest) pending request with URL |url|.
   // Returns false if no such pending request exists.

@@ -260,8 +260,10 @@ TestURLLoaderFactory::FindPendingRequest(const GURL& url,
   }
 }
 
-void TestURLLoaderFactory::WaitForRequest(const GURL& url) {
-  FindPendingRequest(url, ResponseMatchFlags::kWaitForRequest,
+void TestURLLoaderFactory::WaitForRequest(const GURL& url,
+                                          ResponseMatchFlags flags) {
+  FindPendingRequest(url,
+                     static_cast<ResponseMatchFlags>(flags | kWaitForRequest),
                      /*keep_request=*/true);
 }
 

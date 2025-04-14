@@ -48,6 +48,8 @@ std::string GetRecoveryKeyStoreURLFetchReasonSuffix(
   switch (reason) {
     case RecoveryKeyStoreURLFetchReasonForUMA::kUpdateRecoveryKeyStore:
       return "UpdateRecoveryKeyStore";
+    case RecoveryKeyStoreURLFetchReasonForUMA::kListRecoveryKeyStores:
+      return "ListRecoveryKeyStores";
   }
 
   NOTREACHED();

@@ -70,6 +70,7 @@ enum class TrustedVaultURLFetchReasonForUMA {
 // Used to provide UMA metric breakdowns.
 enum class RecoveryKeyStoreURLFetchReasonForUMA {
   kUpdateRecoveryKeyStore,
+  kListRecoveryKeyStores,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

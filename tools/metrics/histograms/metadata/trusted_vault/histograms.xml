@@ -185,6 +185,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Reason">
     <variant name="" summary="Any reason"/>
+    <variant name=".ListRecoveryKeyStores"
+        summary="List the set of recovery key stores"/>
     <variant name=".UpdateRecoveryKeyStore"
         summary="Upload a set of recovery keys"/>
   </token>
