@@ -31,17 +31,13 @@ is_placeholder = true
 
 [dependencies.cfg-if]
 version = "^1.0.0"
-default_features = true
-features = []
+default_features = false
 [dependencies.once_cell]
 version = "^1.12"
 default_features = false
-features = []
 [dependencies.rustversion]
 version = "^1.0"
-default_features = true
-features = []
+default_features = false
 [dependencies.wasm-bindgen-macro]
 version = "=0.2.100"
-default_features = true
-features = []
+default_features = false

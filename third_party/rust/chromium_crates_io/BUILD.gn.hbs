@@ -33,13 +33,17 @@ cargo_crate("{{this.name}}") {
   build_native_rust_unit_tests = false
   edition = "{{edition}}"
   cargo_pkg_version = "{{cargo_pkg_version}}"
-  {{#with cargo_pkg_authors}}
-  cargo_pkg_authors = "{{gn_escape this}}"
-  {{/with}}
+  {{#if cargo_pkg_authors}}
+    {{#with cargo_pkg_authors}}
+      cargo_pkg_authors = "{{gn_escape this}}"
+    {{/with}}
+  {{/if}}
   cargo_pkg_name = "{{cargo_pkg_name}}"
-  {{#with cargo_pkg_description}}
-  cargo_pkg_description = "{{gn_escape this}}"
-  {{/with}}
+  {{#if cargo_pkg_description}}
+    {{#with cargo_pkg_description}}
+      cargo_pkg_description = "{{gn_escape this}}"
+    {{/with}}
+  {{/if}}
   library_configs -= [ "//build/config/coverage:default_coverage" ]
   library_configs -= [ "//build/config/compiler:chromium_code" ]
   library_configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -99,41 +103,45 @@ cargo_crate("{{this.name}}") {
   ]
   {{/if}}
   {{#if build_root}}
-  build_root = "{{build_root}}"
-  build_sources = [
-    {{#each build_script_sources}}
-    "{{this}}",
-    {{/each}}
-  ]
-  {{#with build_script_inputs}}
-  build_script_inputs = [
-    {{#each this}}
-    "{{this}}",
-    {{/each}}
-  ]
-  {{/with}}
-  {{#with build_script_outputs}}
-  build_script_outputs = [
-    {{#each this}}
-    "{{this}}",
-    {{/each}}
-  ]
-  {{/with}}
+    build_root = "{{build_root}}"
+    build_sources = [
+      {{#each build_script_sources}}
+        "{{this}}",
+      {{/each}}
+    ]
+    {{#if build_script_inputs}}
+      build_script_inputs = [
+        {{#each build_script_inputs}}
+          "{{this}}",
+        {{/each}}
+      ]
+    {{/if}}
+    {{#if build_script_outputs}}
+      build_script_outputs = [
+        {{#each build_script_outputs}}
+          "{{this}}",
+        {{/each}}
+      ]
+    {{/if}}
   {{/if}}
-  {{#with extra_kv.configs_to_remove}}
-  {{#each this}}
-    library_configs -= [ "{{this}}" ]
-    executable_configs -= [ "{{this}}" ]
-    proc_macro_configs -= [ "{{this}}" ]
-  {{/each}}
-  {{/with}}
-  {{#with extra_kv.configs_to_add}}
-  {{#each this}}
-    library_configs += [ "{{this}}" ]
-    executable_configs += [ "{{this}}" ]
-    proc_macro_configs += [ "{{this}}" ]
-  {{/each}}
-  {{/with}}
+  {{#if extra_kv.configs_to_remove}}
+    {{#with extra_kv.configs_to_remove}}
+      {{#each this}}
+        library_configs -= [ "{{this}}" ]
+        executable_configs -= [ "{{this}}" ]
+        proc_macro_configs -= [ "{{this}}" ]
+      {{/each}}
+    {{/with}}
+  {{/if}}
+  {{#if extra_kv.configs_to_add}}
+    {{#with extra_kv.configs_to_add}}
+      {{#each this}}
+        library_configs += [ "{{this}}" ]
+        executable_configs += [ "{{this}}" ]
+        proc_macro_configs += [ "{{this}}" ]
+      {{/each}}
+    {{/with}}
+  {{/if}}
   rustflags = [
     "--cap-lints=allow",  # Suppress all warnings in crates.io crates
   ]
@@ -159,9 +167,11 @@ cargo_crate("{{this.name}}") {
   # it from first-party code.
   visibility = [ "//third_party/rust/*" ]
   {{/if}}
-  {{#each detail.extra_kv.visibility}}
-  visibility += [ "{{this}}" ]
-  {{/each}}
+  {{#if detail.extra_kv.visibility}}
+    {{#each detail.extra_kv.visibility}}
+      visibility += [ "{{this}}" ]
+    {{/each}}
+  {{/if}}
   {{#if gn_visibility.testonly}}
   testonly = true
   {{/if}}

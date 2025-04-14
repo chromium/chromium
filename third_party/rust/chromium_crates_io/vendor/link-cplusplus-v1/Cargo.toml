@@ -25,5 +25,4 @@ is_placeholder = true
 
 [dependencies.cc]
 version = "^1.0"
-default_features = true
-features = []
+default_features = false

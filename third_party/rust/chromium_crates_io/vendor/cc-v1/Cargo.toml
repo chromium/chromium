@@ -21,5 +21,4 @@ is_placeholder = true
 
 [dependencies.shlex]
 version = "^1.3.0"
-default_features = true
-features = []
+default_features = false

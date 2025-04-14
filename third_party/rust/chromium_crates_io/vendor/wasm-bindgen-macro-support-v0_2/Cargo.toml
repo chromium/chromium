@@ -21,21 +21,16 @@ is_placeholder = true
 
 [dependencies.proc-macro2]
 version = "^1.0"
-default_features = true
-features = []
+default_features = false
 [dependencies.quote]
 version = "^1.0"
-default_features = true
-features = []
+default_features = false
 [dependencies.syn]
 version = "^2.0"
-default_features = true
-features = []
+default_features = false
 [dependencies.wasm-bindgen-backend]
 version = "=0.2.100"
-default_features = true
-features = []
+default_features = false
 [dependencies.wasm-bindgen-shared]
 version = "=0.2.100"
-default_features = true
-features = []
+default_features = false

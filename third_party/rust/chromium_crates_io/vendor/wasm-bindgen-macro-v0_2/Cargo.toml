@@ -21,9 +21,7 @@ is_placeholder = true
 
 [dependencies.quote]
 version = "^1.0"
-default_features = true
-features = []
+default_features = false
 [dependencies.wasm-bindgen-macro-support]
 version = "=0.2.100"
-default_features = true
-features = []
+default_features = false

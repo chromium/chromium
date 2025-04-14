@@ -53,6 +53,7 @@ cargo_crate("lib") {
   deps = [ "//third_party/rust/serde_derive/v1:lib" ]
   features = [
     "alloc",
+    "default",
     "derive",
     "serde_derive",
     "std",

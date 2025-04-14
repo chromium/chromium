@@ -51,7 +51,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-run"]
 
 [policy."anyhow:1.0.97"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."arrayvec:0.7.6"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -120,7 +120,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."derivre:0.3.5"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."diplomat-runtime:0.10.0"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -312,7 +312,7 @@ criteria = []
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."llguidance:0.7.13"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."log:0.4.27"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
@@ -474,7 +474,7 @@ criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."toktrie:0.7.13"]
-criteria = ["crypto-safe", "safe-to-run"]
+criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."unicode-bidi:0.3.18"]
 criteria = []

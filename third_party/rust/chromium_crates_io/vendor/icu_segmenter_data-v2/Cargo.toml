@@ -20,8 +20,6 @@ is_placeholder = true
 [dependencies.icu_locale]
 version = "~2.0.0-beta2"
 default_features = false
-features = []
 [dependencies.icu_provider_baked]
 version = "~2.0.0-beta2"
 default_features = false
-features = []

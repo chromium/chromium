@@ -23,6 +23,5 @@ is_placeholder = true
 {{#each this.dependencies}}
 [dependencies.{{this.name}}]
 version = "{{this.version}}"
-default_features = {{this.default_features}}
-features = [{{#each this.featuress}}{{#if @first}}{{this}}{{else}},{{this}}{{/if}}{{/each}}]
+default_features = false
 {{/each}}

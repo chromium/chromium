@@ -13,8 +13,8 @@ use crate::paths::{self, get_vendor_dir_for_package};
 use crate::readme;
 use crate::util::{
     create_dirs_if_needed, get_guppy_package_graph, init_handlebars,
-    init_handlebars_with_template_path, remove_checksums_from_lock, run_command,
-    without_cargo_config_toml,
+    init_handlebars_with_template_paths, remove_checksums_from_lock, render_handlebars,
+    render_handlebars_named_template, run_command, without_cargo_config_toml,
 };
 use crate::vet::create_vet_config;
 use crate::VendorCommandArgs;
@@ -160,11 +160,10 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
     // no parent.
     let third_party_dir = paths.third_party_config_file.parent().unwrap();
     let readme_template_path = third_party_dir.join(&config.gn_config.readme_file_template);
-    let readme_handlebars = init_handlebars_with_template_path(&readme_template_path)
-        .context("init_handlebars for `README.chromium`")?;
     let vet_template_path = third_party_dir.join(&config.vet_config.config_template);
-    let vet_handlebars = init_handlebars_with_template_path(&vet_template_path)
-        .context("init_handlebars for `supply-chain/config.toml`")?;
+    let handlebars =
+        init_handlebars_with_template_paths(&[&readme_template_path, &vet_template_path])
+            .context("init_handlebars for `supply-chain/config.toml`")?;
 
     // Fetch the package graph again based on the locally vendored crates, to ensure
     // that locally applied patches which impact the package graph are considered.
@@ -192,7 +191,7 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
             .map(|p| p.into())
             .collect();
     let is_removed = |guppy_package_id: &guppy::PackageId| -> bool {
-        let p = graph.metadata(&guppy_package_id).unwrap();
+        let p = graph.metadata(guppy_package_id).unwrap();
         config.resolve.remove_crates.contains(p.name())
             || !guppy_resolved_package_ids.contains(&(&p).into())
     };
@@ -268,28 +267,17 @@ fn update_vendored_metadata(args: &VendorCommandArgs, paths: &paths::ChromiumPat
         return Ok(());
     }
 
-    {
-        let config_str = vet_handlebars.render("template", &vet_config_toml)?;
-        let file_path = paths.vet_config_file;
-        let file = std::fs::File::create(paths.vet_config_file).with_context(|| {
-            format!("Could not create vet config output file {}", file_path.to_string_lossy())
-        })?;
-        use std::io::Write;
-        write!(std::io::BufWriter::new(file), "{}", config_str)
-            .with_context(|| format!("{}", file_path.to_string_lossy()))?;
-    }
+    render_handlebars(&handlebars, &vet_template_path, &vet_config_toml, paths.vet_config_file)?;
 
     for (dir, readme_file) in &all_readme_files {
-        let readme_str = readme_handlebars.render("template", &readme_file)?;
-
-        let file_path = dir.join("README.chromium");
-        let file = std::fs::File::create(&file_path).with_context(|| {
-            format!("Could not create README.chromium output file {}", file_path.to_string_lossy())
-        })?;
-        use std::io::Write;
-        write!(std::io::BufWriter::new(file), "{}", readme_str)
-            .with_context(|| format!("{}", file_path.to_string_lossy()))?;
+        render_handlebars(
+            &handlebars,
+            &readme_template_path,
+            &readme_file,
+            &dir.join("README.chromium"),
+        )?;
     }
+
     Ok(())
 }
 
@@ -422,8 +410,6 @@ struct PlaceholderCrate<'a> {
 struct PlaceholderDependency<'a> {
     name: &'a str,
     version: String,
-    default_features: bool,
-    features: Vec<&'a str>,
 }
 
 fn get_placeholder_crate_metadata<'a>(
@@ -450,15 +436,9 @@ fn get_placeholder_crate_metadata<'a>(
     let mut dependencies: Vec<_> = package
         .direct_links()
         .filter(|link| !link.dev_only())
-        .map(|link| {
-            let feature_dep_info =
-                [link.normal(), link.build()].into_iter().find(|req| req.is_present()).unwrap();
-            PlaceholderDependency {
-                name: link.to().name(),
-                version: link.version_req().to_string(),
-                default_features: !feature_dep_info.default_features().is_never(),
-                features: feature_dep_info.features().collect(),
-            }
+        .map(|link| PlaceholderDependency {
+            name: link.to().name(),
+            version: link.version_req().to_string(),
         })
         .collect();
     dependencies.sort_unstable_by(|left, right| left.name.cmp(right.name));
@@ -473,8 +453,8 @@ fn generate_placeholder_crate(
     package: guppy::graph::PackageMetadata<'_>,
     crate_dir: &Path,
 ) -> Result<()> {
-    const CARGO_TOML_TEMPLATE: &str = "template name: Cargo.toml";
-    const LIB_RS_TEMPLATE: &str = "template name: lib.rs.hbs";
+    const CARGO_TOML_TEMPLATE: &str = "`gnrt`-built-in `removed_Cargo.toml.hbs` template";
+    const LIB_RS_TEMPLATE: &str = "`gnrt`-built-in `removed_lib.rs.hbs` template";
     let mut handlebars = init_handlebars();
     handlebars
         .register_template_string(CARGO_TOML_TEMPLATE, include_str!("removed_Cargo.toml.hbs"))?;
@@ -494,28 +474,20 @@ fn generate_placeholder_crate(
 
     let placeholder_crate = get_placeholder_crate_metadata(package);
 
-    {
-        let rendered = handlebars.render(CARGO_TOML_TEMPLATE, &placeholder_crate)?;
-        let file_path = crate_dir.join("Cargo.toml");
-        let file = std::fs::File::create(&file_path).with_context(|| {
-            format!("Could not create Cargo.toml output file {}", file_path.to_string_lossy())
-        })?;
-        use std::io::Write;
-        write!(std::io::BufWriter::new(file), "{}", rendered)
-            .with_context(|| format!("{}", file_path.to_string_lossy()))?;
-    }
+    render_handlebars_named_template(
+        &handlebars,
+        CARGO_TOML_TEMPLATE,
+        &placeholder_crate,
+        &crate_dir.join("Cargo.toml"),
+    )?;
 
     create_dirs_if_needed(&crate_dir.join("src")).context("creating src dir")?;
-    {
-        let rendered = handlebars.render(LIB_RS_TEMPLATE, &placeholder_crate)?;
-        let file_path = crate_dir.join("src").join("lib.rs");
-        let file = std::fs::File::create(&file_path).with_context(|| {
-            format!("Could not create lib.rs output file {}", file_path.to_string_lossy())
-        })?;
-        use std::io::Write;
-        write!(std::io::BufWriter::new(file), "{}", rendered)
-            .with_context(|| format!("{}", file_path.to_string_lossy()))?;
-    }
+    render_handlebars_named_template(
+        &handlebars,
+        LIB_RS_TEMPLATE,
+        &placeholder_crate,
+        &crate_dir.join("src").join("lib.rs"),
+    )?;
 
     std::fs::write(crate_dir.join(".cargo-checksum.json"), "{\"files\":{}}\n")
         .with_context(|| format!("writing .cargo-checksum.json for crate {}", package.name()))?;
@@ -585,6 +557,7 @@ mod test {
         let temp_dir = TempDir::with_prefix("gnrt_unittests").unwrap();
         let crate_dir = temp_dir.path();
         assert!(!is_placeholder_crate(crate_dir));
+        assert_eq!(None, get_package_id_from_vendored_dir(crate_dir));
 
         write_placeholder_crate_for_tests(SAMPLE_CARGO_METADATA2, "quote", crate_dir).unwrap();
 
@@ -596,6 +569,29 @@ mod test {
         };
         assert_eq!(package_id.name(), "quote");
         assert_eq!(*package_id.version(), Version::new(1, 0, 39));
+
+        // Check that `cargo` can parse the generated `Cargo.toml`.
+        let placeholder_graph = guppy::MetadataCommand::new()
+            .manifest_path(&crate_dir.join("Cargo.toml"))
+            .no_deps()
+            .build_graph()
+            .unwrap();
+        let placeholder_package =
+            placeholder_graph.packages().exactly_one().map_err(|_| ()).unwrap();
+        assert_eq!(placeholder_package.name(), "quote");
+        assert_eq!(*placeholder_package.version(), Version::new(1, 0, 39));
+        let placeholder_features = placeholder_package
+            .to_feature_set(guppy::graph::feature::StandardFeatures::All)
+            .features(guppy::graph::DependencyDirection::Forward)
+            .filter_map(|feature| {
+                use guppy::graph::feature::FeatureLabel;
+                match feature.label() {
+                    FeatureLabel::Base | FeatureLabel::OptionalDependency(_) => None,
+                    FeatureLabel::Named(feature_name) => Some(feature_name),
+                }
+            })
+            .collect_vec();
+        assert_eq!(placeholder_features, &["default", "proc-macro"]);
     }
 
     #[test]
@@ -609,27 +605,22 @@ mod test {
         let placeholder = get_placeholder_crate_metadata(yoke_derive);
         assert_eq!(placeholder.name, "yoke-derive");
         assert_eq!(placeholder.version.to_string(), "0.8.0");
-        assert!(placeholder.features.is_empty());
 
         let mut i = 0;
         assert_eq!(placeholder.dependencies[i].name, "proc-macro2");
         assert_eq!(placeholder.dependencies[i].version, "^1.0.61");
-        assert!(placeholder.dependencies[i].features.is_empty());
 
         i += 1;
         assert_eq!(placeholder.dependencies[i].name, "quote");
         assert_eq!(placeholder.dependencies[i].version, "^1.0.28");
-        assert!(placeholder.dependencies[i].features.is_empty());
 
         i += 1;
         assert_eq!(placeholder.dependencies[i].name, "syn");
         assert_eq!(placeholder.dependencies[i].version, "^2.0.21");
-        assert_eq!(placeholder.dependencies[i].features, &["fold"]);
 
         i += 1;
         assert_eq!(placeholder.dependencies[i].name, "synstructure");
         assert_eq!(placeholder.dependencies[i].version, "^0.13.0");
-        assert!(placeholder.dependencies[i].features.is_empty());
 
         i += 1;
         assert_eq!(placeholder.dependencies.len(), i);

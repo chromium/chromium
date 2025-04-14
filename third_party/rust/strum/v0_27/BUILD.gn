@@ -35,6 +35,7 @@ cargo_crate("lib") {
   proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
   deps = [ "//third_party/rust/strum_macros/v0_27:lib" ]
   features = [
+    "default",
     "derive",
     "std",
     "strum_macros",

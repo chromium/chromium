@@ -19,5 +19,4 @@ is_placeholder = true
 
 [dependencies.unicode-ident]
 version = "^1.0.5"
-default_features = true
-features = []
+default_features = false
