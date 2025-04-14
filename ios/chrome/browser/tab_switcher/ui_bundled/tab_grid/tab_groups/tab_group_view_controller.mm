@@ -97,9 +97,8 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   SharingState _sharingState;
   // The bottom toolbar.
   TabGridBottomToolbar* _bottomToolbar;
-  // The face pile view controller that displays the share button or
-  // the face pile.
-  UIViewController* _facePileViewController;
+  // The face pile view that displays the share button or the face pile.
+  UIView* _facePileView;
   // Container for the content of the ViewController.
   UIView* _container;
 }
@@ -364,21 +363,22 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   [self configureNavigationBarItems];
 }
 
-- (void)setFacePileViewController:(UIViewController*)facePileViewController {
-  if (_facePileViewController == facePileViewController) {
+- (void)setFacePileView:(UIView*)facePileView {
+  if (_facePileView == facePileView) {
     return;
   }
-  if (_facePileViewController) {
-    [_facePileViewController willMoveToParentViewController:nil];
-    [_facePileViewController.view removeFromSuperview];
-    [_facePileViewController removeFromParentViewController];
+
+  if (_facePileView.superview == self.view) {
+    [_facePileView removeFromSuperview];
   }
-  _facePileViewController = facePileViewController;
-  if (_facePileViewController) {
-    [self addChildViewController:_facePileViewController];
-    [self.view addSubview:_facePileViewController.view];
-    [_facePileViewController didMoveToParentViewController:self];
+
+  _facePileView = facePileView;
+
+  if (_facePileView) {
+    _facePileView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_facePileView];
   }
+
   [self configureNavigationBarItems];
 }
 
@@ -423,15 +423,15 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 
   UIBarButtonItem* facePileBarButton;
 
-  if (_facePileViewController) {
-    _facePileViewController.view.userInteractionEnabled = NO;
+  if (_facePileView) {
+    _facePileView.userInteractionEnabled = NO;
 
     UIButton* facePileButton =
-        [[UIButton alloc] initWithFrame:_facePileViewController.view.bounds];
+        [[UIButton alloc] initWithFrame:_facePileView.bounds];
     [facePileButton addTarget:self
                        action:@selector(didTapFacePileButton)
              forControlEvents:UIControlEventTouchUpInside];
-    [facePileButton addSubview:_facePileViewController.view];
+    [facePileButton addSubview:_facePileView];
     facePileButton.accessibilityIdentifier = kTabGroupFacePileButtonIdentifier;
     [NSLayoutConstraint activateConstraints:@[
       [facePileButton.widthAnchor constraintEqualToConstant:kFacePileWidth],

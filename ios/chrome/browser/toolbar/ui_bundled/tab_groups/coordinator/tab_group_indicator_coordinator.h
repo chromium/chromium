@@ -18,13 +18,6 @@
 // assigned to the PrimaryToolbarCoordinator's viewController.
 @property(nonatomic, strong, readonly) TabGroupIndicatorView* view;
 
-// This property ensures the FacePile view controller is added as a child of the
-// correct parent view controller within the hierarchy. This is necessary to
-// avoid UIViewControllerHierarchyInconsistency exceptions. Specifically, it
-// should be added to the same view controller whose view contains the
-// TabGroupIndicatorView.
-@property(nonatomic, weak) UIViewController* parentViewController;
-
 /// Delegate that handles the toolbars height.
 @property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 

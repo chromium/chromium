@@ -35,15 +35,13 @@
 // The current state which the cell should display.
 @property(nonatomic, assign) GridCellState state;
 
+// The face pile, to be set externally.
+@property(nonatomic, strong) UIView* facePile;
+
 // Configures every tab of the group with a given snapshot/favicon pairs and
 // passes the total tabs count to the bottomTrailingView.
 - (void)configureWithGroupTabInfos:(NSArray<GroupTabInfo*>*)groupTabInfos
                     totalTabsCount:(NSInteger)totalTabsCount;
-
-// Configures the `facePileViewController`, adding it to `parentViewController`.
-// The parent must be non-nil if the face pile is non-nil.
-- (void)setFacePileViewController:(UIViewController*)facePileViewController
-             parentViewController:(UIViewController*)parentViewController;
 
 // Returns all tab views that compose this tab group view in the order they're
 // presented.

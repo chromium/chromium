@@ -375,7 +375,7 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForInvalidGroup) {
     // Disabled on iPadOS 16.
     return;
   }
-  OCMReject([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
+  OCMReject([tab_group_consumer_ setFacePileView:OCMOCK_ANY]);
 
   SavedTabGroup other_saved_group(
       u"other group", tab_groups::TabGroupColorId::kOrange, {},
@@ -396,7 +396,7 @@ TEST_F(TabGroupMediatorTest, CollaborationIDChangedForGroupShared) {
     // Disabled on iPadOS 16.
     return;
   }
-  OCMExpect([tab_group_consumer_ setFacePileViewController:OCMOCK_ANY]);
+  OCMExpect([tab_group_consumer_ setFacePileView:OCMOCK_ANY]);
 
   const SavedTabGroup saved_group =
       tab_group_sync_service_->GetGroup(tab_group_->tab_group_id()).value();

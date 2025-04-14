@@ -25,9 +25,8 @@
 // Sets the sharing state of a group.
 - (void)setSharingState:(tab_groups::SharingState)state;
 
-// Sets the face pile view controller to display the share button or the face
-// pile.
-- (void)setFacePileViewController:(UIViewController*)facePileViewController;
+// Sets the face pile view to display the share button or the face pile.
+- (void)setFacePileView:(UIView*)facePileView;
 
 // Sets the text to the activity summary cell.
 - (void)setActivitySummaryCellText:(NSString*)text;

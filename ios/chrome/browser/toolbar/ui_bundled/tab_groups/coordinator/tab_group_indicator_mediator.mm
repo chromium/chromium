@@ -466,7 +466,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
 
   // Prevent the face pile from being set up for tab groups that are not shared.
   if (!isShared) {
-    [_consumer setFacePileViewController:nil];
+    [_consumer setFacePileView:nil];
   }
 
   // Configure the face pile.
@@ -476,7 +476,7 @@ constexpr CGFloat kFacePileAvatarSize = 20;
   config.showsEmptyState = NO;
   config.avatarSize = kFacePileAvatarSize;
 
-  [_consumer setFacePileViewController:_shareKitService->FacePile(config)];
+  [_consumer setFacePileView:_shareKitService->FacePileView(config)];
 }
 
 // Closes all tabs in `tabGroup`. If `deleteGroup` is false, the group is closed

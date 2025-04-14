@@ -23,8 +23,6 @@ const CGFloat kDotSize = 14;
 @implementation TabGroupsPanelCell {
   // The main stack view that contains subviews.
   UIStackView* _stackView;
-  // The FacePile.
-  UIViewController* _facePileViewController;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -84,7 +82,7 @@ const CGFloat kDotSize = 14;
   _faviconsGrid.favicon2 = nil;
   _faviconsGrid.favicon3 = nil;
   _faviconsGrid.favicon4 = nil;
-  [self setFacePileViewController:nil parentViewController:nil];
+  self.facePile = nil;
   self.item = nil;
 }
 
@@ -134,30 +132,19 @@ const CGFloat kDotSize = 14;
 
 #pragma mark - Setters
 
-- (void)setFacePileViewController:(UIViewController*)facePileViewController
-             parentViewController:(UIViewController*)parentViewController {
-  if (_facePileViewController == facePileViewController) {
+- (void)setFacePile:(UIView*)facePile {
+  if (_facePile.superview == _stackView) {
+    [_facePile removeFromSuperview];
+  }
+
+  _facePile = facePile;
+
+  if (!facePile) {
     return;
   }
 
-  [_facePileViewController willMoveToParentViewController:nil];
-  [_facePileViewController.view removeFromSuperview];
-  [_facePileViewController removeFromParentViewController];
-
-  _facePileViewController = facePileViewController;
-
-  if (_facePileViewController) {
-    CHECK(parentViewController);
-    [parentViewController addChildViewController:_facePileViewController];
-    UIView* facePileView = _facePileViewController.view;
-    NSLayoutConstraint* facePileMinWidthConstraint =
-        [facePileView.widthAnchor constraintEqualToConstant:0];
-    facePileMinWidthConstraint.priority = UILayoutPriorityDefaultLow;
-    facePileMinWidthConstraint.active = YES;
-    [_stackView addArrangedSubview:facePileView];
-    [_facePileViewController
-        didMoveToParentViewController:parentViewController];
-  }
+  facePile.translatesAutoresizingMaskIntoConstraints = NO;
+  [_stackView addArrangedSubview:facePile];
 }
 
 @end

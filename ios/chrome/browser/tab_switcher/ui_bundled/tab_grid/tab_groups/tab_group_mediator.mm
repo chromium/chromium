@@ -725,7 +725,7 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
   config.collabID = base::SysUTF8ToNSString(savedCollabID.value());
   config.showsEmptyState = YES;
   config.avatarSize = kFacePileAvatarSize;
-  [_groupConsumer setFacePileViewController:_shareKitService->FacePile(config)];
+  [_groupConsumer setFacePileView:_shareKitService->FacePileView(config)];
 }
 
 // Inserts an item representing `webState` in the consumer at `index`.

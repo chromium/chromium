@@ -69,7 +69,6 @@ using collaboration::CollaborationServiceShareOrManageEntryPoint;
   _view.displayedOnNTP = _displayedOnNTP;
   _view.incognito = incognito;
   _view.toolbarHeightDelegate = self.toolbarHeightDelegate;
-  _view.facePileParentViewController = self.parentViewController;
   ProfileIOS* profile = browser->GetProfile();
 
   tab_groups::TabGroupSyncService* tabGroupSyncService =

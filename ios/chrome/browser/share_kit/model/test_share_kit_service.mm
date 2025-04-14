@@ -194,18 +194,6 @@ NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
   return @"joinFlow";
 }
 
-UIViewController* TestShareKitService::FacePile(
-    ShareKitFacePileConfiguration* config) {
-  UIViewController* view_controller = [[UIViewController alloc] init];
-  if (config.collabID.length) {
-    [view_controller.view setBackgroundColor:UIColor.blueColor];
-  } else {
-    [view_controller.view setBackgroundColor:UIColor.redColor];
-  }
-
-  return view_controller;
-}
-
 UIView* TestShareKitService::FacePileView(
     ShareKitFacePileConfiguration* config) {
   UIView* view = [[UIView alloc] init];

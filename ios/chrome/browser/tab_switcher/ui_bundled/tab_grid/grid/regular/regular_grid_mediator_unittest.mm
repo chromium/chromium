@@ -251,9 +251,8 @@ TEST_F(RegularGridMediatorTest, TestToolbarsNormalModeWithoutWebstates) {
   EXPECT_FALSE(fake_toolbars_mediator_.configuration.cancelSearchButton);
 }
 
-// Tests that `facePileViewControllerForItem` returns an UIViewController when
-// the group is shared.
-TEST_F(RegularGridMediatorTest, FacePileViewControllerForItem) {
+// Tests that `facePileViewForItem` returns an UIView when the group is shared.
+TEST_F(RegularGridMediatorTest, FacePileViewForItem) {
   // Set a saved tab group.
   tab_groups::TabGroupId tab_group_id = tab_groups::TabGroupId::GenerateNew();
   const TabGroup* local_group = browser_->GetWebStateList()->CreateGroup(
@@ -267,13 +266,13 @@ TEST_F(RegularGridMediatorTest, FacePileViewControllerForItem) {
   GridItemIdentifier* group_item_id =
       [GridItemIdentifier groupIdentifier:local_group
                          withWebStateList:browser_->GetWebStateList()];
-  EXPECT_FALSE([mediator_ facePileViewControllerForItem:group_item_id]);
+  EXPECT_EQ(nil, [mediator_ facePileViewForItem:group_item_id]);
 
   // Share the group.
   tab_group_sync_service_->MakeTabGroupShared(
       group.local_group_id().value(), "collaboration",
       tab_groups::TabGroupSyncService::TabGroupSharingCallback());
-  EXPECT_TRUE([mediator_ facePileViewControllerForItem:group_item_id]);
+  EXPECT_NE(nil, [mediator_ facePileViewForItem:group_item_id]);
 }
 
 // Tests that `-activityLabelDataForGroup:` returns the data for a specific tab

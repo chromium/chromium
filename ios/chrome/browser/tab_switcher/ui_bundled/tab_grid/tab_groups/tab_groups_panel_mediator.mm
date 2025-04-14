@@ -380,7 +380,7 @@ NSString* CreationText(base::Time creation_date) {
                                                    cell.item.savedTabGroupID);
 }
 
-- (UIViewController*)facePileViewControllerForItem:(TabGroupsPanelItem*)item {
+- (UIView*)facePileViewForItem:(TabGroupsPanelItem*)item {
   if (!_shareKitService || !_shareKitService->IsSupported() ||
       !_collaborationService || !_tabGroupSyncService) {
     return nil;
@@ -401,7 +401,7 @@ NSString* CreationText(base::Time creation_date) {
   config.showsEmptyState = NO;
   config.avatarSize = kFacePileAvatarSize;
 
-  return _shareKitService->FacePile(config);
+  return _shareKitService->FacePileView(config);
 }
 
 #pragma mark TabGroupsPanelMutator

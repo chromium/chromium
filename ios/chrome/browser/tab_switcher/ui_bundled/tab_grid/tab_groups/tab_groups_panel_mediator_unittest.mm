@@ -685,9 +685,8 @@ TEST_F(TabGroupsPanelMediatorTest, DeleteLocalGroup) {
   EXPECT_EQ(0, browser_->GetWebStateList()->count());
 }
 
-// Tests that `facePileViewControllerForItem` returns an UIViewController when
-// the group is shared.
-TEST_F(TabGroupsPanelMediatorTest, FacePileViewControllerForItem) {
+// Tests that `facePileViewForItem` returns an UIView when the group is shared.
+TEST_F(TabGroupsPanelMediatorTest, FacePileViewForItem) {
   auto sync_service = std::make_unique<tab_groups::FakeTabGroupSyncService>();
   TabGroupsPanelMediator* mediator = [[TabGroupsPanelMediator alloc]
       initWithTabGroupSyncService:sync_service.get()
@@ -709,14 +708,14 @@ TEST_F(TabGroupsPanelMediatorTest, FacePileViewControllerForItem) {
       initWithSavedTabGroupID:group.saved_guid()
                  sharingState:SharingState::kSharedAndOwned];
 
-  EXPECT_FALSE([mediator facePileViewControllerForItem:item]);
+  EXPECT_EQ(nil, [mediator facePileViewForItem:item]);
 
   // Share the group.
   sync_service->MakeTabGroupShared(
       group.local_group_id().value(), "collaboration",
       tab_groups::TabGroupSyncService::TabGroupSharingCallback());
 
-  EXPECT_TRUE([mediator facePileViewControllerForItem:item]);
+  EXPECT_NE(nil, [mediator facePileViewForItem:item]);
 }
 
 // Tests that a persistent message about a shared tab group that is no longer

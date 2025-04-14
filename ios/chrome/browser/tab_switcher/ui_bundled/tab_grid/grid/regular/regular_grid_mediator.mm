@@ -446,7 +446,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 
 #pragma mark - BaseGridMediatorItemProvider
 
-- (UIViewController*)facePileViewControllerForItem:(GridItemIdentifier*)itemID {
+- (UIView*)facePileViewForItem:(GridItemIdentifier*)itemID {
   CHECK(itemID.type == GridItemType::kGroup);
 
   const TabGroup* tabGroup = itemID.tabGroupItem.tabGroup;
@@ -471,7 +471,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   config.showsEmptyState = NO;
   config.avatarSize = kFacePileAvatarSize;
 
-  return _shareKitService->FacePile(config);
+  return _shareKitService->FacePileView(config);
 }
 
 #pragma mark - MessagingBackendServiceObserving
