@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_LIVE_CAPTION_CAPTION_CONTROLLER_BASE_H_
 #define COMPONENTS_LIVE_CAPTION_CAPTION_CONTROLLER_BASE_H_
 
+#include <list>
 #include <memory>
 #include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "ui/native_theme/caption_style.h"
 #include "ui/native_theme/native_theme_observer.h"
 
@@ -18,6 +20,7 @@ class PrefService;
 
 namespace captions {
 
+class CaptionBubbleContext;
 class CaptionBubbleController;
 class CaptionBubbleSettings;
 
@@ -43,10 +46,63 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
    protected:
     Delegate() = default;
   };
+
+  // Listener for transcription-related events.  Listeners are owned by the
+  // `CaptionControllerBase` for simplicity.
+  class Listener {
+   public:
+    virtual ~Listener() = default;
+
+    // Called when a transcription is received from the service.
+    // Transcriptions will halt if this returns false.
+    virtual bool OnTranscription(
+        CaptionBubbleContext*,
+        const media::SpeechRecognitionResult& result) = 0;
+
+    // Called when the audio stream has ended.
+    virtual void OnAudioStreamEnd(
+        CaptionBubbleContext* caption_bubble_context) = 0;
+
+    virtual void OnLanguageIdentificationEvent(
+        CaptionBubbleContext* caption_bubble_context,
+        const media::mojom::LanguageIdentificationEventPtr& event) = 0;
+
+   private:
+    raw_ptr<CaptionControllerBase> caption_controller_ = nullptr;
+  };
+
   CaptionControllerBase(const CaptionControllerBase&) = delete;
   CaptionControllerBase& operator=(const CaptionControllerBase&) = delete;
 
   ~CaptionControllerBase() override;
+
+  // Add or remove a `Listener`.  We maintain ownership, and destroy the
+  // listener when it is removed.
+  void AddListener(std::unique_ptr<Listener>);
+
+  // Routes a transcription to all listeners.  Returns whether the transcription
+  // was routed successfully, which currently means that at least one listener
+  // considered it to be successful.  It is unclear if we should continue to
+  // route transcriptions to a listener once it returns false, but for now
+  // there's at most one listener anyway.
+  //
+  // Transcriptions will halt if this returns false.
+  bool DispatchTranscription(CaptionBubbleContext* caption_bubble_context,
+                             const media::SpeechRecognitionResult& result);
+
+  // Alerts all listeners that the audio stream has ended.
+  void OnAudioStreamEnd(CaptionBubbleContext* caption_bubble_context);
+
+  // Notifies all listeners about a language identification event.
+  void OnLanguageIdentificationEvent(
+      CaptionBubbleContext* caption_bubble_context,
+      const media::mojom::LanguageIdentificationEventPtr& event);
+
+  void create_ui_for_testing() { CreateUI(); }
+  void destroy_ui_for_testing() { DestroyUI(); }
+  CaptionBubbleController* caption_bubble_controller_for_testing() const {
+    return caption_bubble_controller();
+  }
 
  protected:
   CaptionControllerBase(PrefService* profile_prefs,
@@ -67,11 +123,21 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
   // ui::NativeThemeObserver:
   void OnCaptionStyleUpdated() override;
 
+  // The listener will be destroyed when this returns.  Private, so that we
+  // don't have to worry about listeners removing themselves during list
+  // iteration.  If Listeners ever want to do that, then we need to get smarter
+  // about it.
+  void RemoveListener(Listener*);
+
   const raw_ptr<PrefService> profile_prefs_;
   const std::string application_locale_;
   const std::unique_ptr<Delegate> delegate_;
 
-  std::unique_ptr<CaptionBubbleController> caption_bubble_controller_;
+  // The controller is also a `Listener`, and is owned by `listeners_` when we
+  // create it.  While it exists, `caption_bubble_controller_` aliases it.  This
+  // alias is cleared when it's destroyed.
+  raw_ptr<CaptionBubbleController> caption_bubble_controller_ = nullptr;
+
   const std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // Whether the UI has been created. The UI is created asynchronously from the
@@ -79,6 +145,10 @@ class CaptionControllerBase : public ui::NativeThemeObserver {
   // first. This flag ensures that the UI is not constructed or deconstructed
   // twice.
   bool is_ui_constructed_ = false;
+
+  // All the listeners we own.  One of them will be `caption_bubble_controller_`
+  // if we have one.
+  std::list<std::unique_ptr<Listener>> listeners_;
 };
 
 }  // namespace captions

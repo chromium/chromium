@@ -52,7 +52,11 @@ class CaptionControllerDelgateImpl : public CaptionControllerBase::Delegate {
 
 }  // namespace
 
-CaptionControllerBase::~CaptionControllerBase() = default;
+CaptionControllerBase::~CaptionControllerBase() {
+  // The caption bubble controller, if we have one, will be cleaned up as part
+  // of destruction.  Don't leave the raw ptr alias to it dangling.
+  caption_bubble_controller_ = nullptr;
+}
 
 CaptionControllerBase::CaptionControllerBase(
     PrefService* profile_prefs,
@@ -73,8 +77,10 @@ void CaptionControllerBase::CreateUI() {
 
   is_ui_constructed_ = true;
 
-  caption_bubble_controller_ = delegate_->CreateCaptionBubbleController(
+  auto controller = delegate_->CreateCaptionBubbleController(
       caption_bubble_settings(), application_locale_);
+  caption_bubble_controller_ = controller.get();
+  AddListener(std::move(controller));
 
   // Observe native theme changes for caption style updates.
   delegate_->AddCaptionStyleObserver(this);
@@ -96,7 +102,8 @@ void CaptionControllerBase::DestroyUI() {
   }
   is_ui_constructed_ = false;
 
-  caption_bubble_controller_.reset(nullptr);
+  RemoveListener(caption_bubble_controller_);
+  CHECK(!caption_bubble_controller_);
 
   // Remove native theme observer.
   delegate_->RemoveCaptionStyleObserver(this);
@@ -135,6 +142,58 @@ void CaptionControllerBase::OnCaptionStyleUpdated() {
       GetCaptionStyleFromUserSettings(profile_prefs_,
                                       /*record_metrics=*/false);
   caption_bubble_controller_->UpdateCaptionStyle(caption_style);
+}
+
+void CaptionControllerBase::AddListener(std::unique_ptr<Listener> listener) {
+  listeners_.push_back(std::move(listener));
+}
+
+void CaptionControllerBase::RemoveListener(Listener* listener) {
+  if (caption_bubble_controller_ == listener) {
+    caption_bubble_controller_ = nullptr;
+  }
+  // `std::find` doesn't like comparing unique_ptrs to raw ptrs.
+  for (auto iter = listeners_.begin(); iter != listeners_.end(); iter++) {
+    if (iter->get() != listener) {
+      continue;
+    }
+
+    listeners_.erase(iter);
+    return;
+  }
+  NOTREACHED();
+}
+
+bool CaptionControllerBase::DispatchTranscription(
+    CaptionBubbleContext* caption_bubble_context,
+    const media::SpeechRecognitionResult& result) {
+  bool success = false;
+
+  // Once there are more listeners than just the caption bubble controller, be
+  // sure that the caption bubble controller expects that it can return false
+  // and still get future calls.  Alternatively, cause it not to get future
+  // calls without stopping transcription if there are other listeners.
+  for (auto& listener : listeners_) {
+    success |= listener->OnTranscription(caption_bubble_context, result);
+  }
+
+  return success;
+}
+
+void CaptionControllerBase::OnAudioStreamEnd(
+    CaptionBubbleContext* caption_bubble_context) {
+  for (auto& listener : listeners_) {
+    listener->OnAudioStreamEnd(caption_bubble_context);
+  }
+}
+
+void CaptionControllerBase::OnLanguageIdentificationEvent(
+    CaptionBubbleContext* caption_bubble_context,
+    const media::mojom::LanguageIdentificationEventPtr& event) {
+  // TODO(crbug.com/40167928): Implement the UI for language identification.
+  for (auto& listener : listeners_) {
+    listener->OnLanguageIdentificationEvent(caption_bubble_context, event);
+  }
 }
 
 }  // namespace captions

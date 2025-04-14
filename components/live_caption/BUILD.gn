@@ -103,6 +103,7 @@ if (!is_android && !is_ios) {
     testonly = true
 
     sources = [
+      "caption_controller_base_unittest.cc",
       "greedy_text_stabilizer_unittest.cc",
       "live_caption_bubble_settings_unittest.cc",
     ]
