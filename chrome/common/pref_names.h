@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iterator>
 
 #include "build/branding_buildflags.h"
@@ -209,12 +210,13 @@ inline constexpr char kDefaultCharset[] = "intl.charset_default";
 
 // If these change, the corresponding enums in the extension API
 // experimental.fontSettings.json must also change.
-inline constexpr const char* const kWebKitScriptsForFontFamilyMaps[] = {
+inline constexpr auto kWebKitScriptsForFontFamilyMaps =
+    std::to_array<const char*>({
 #define EXPAND_SCRIPT_FONT(x, script_name) script_name,
 #include "chrome/common/pref_font_script_names-inl.h"
-    ALL_FONT_SCRIPTS("unused param")
+        ALL_FONT_SCRIPTS("unused param")
 #undef EXPAND_SCRIPT_FONT
-};
+    });
 
 inline constexpr size_t kWebKitScriptsForFontFamilyMapsLength =
     std::size(kWebKitScriptsForFontFamilyMaps);

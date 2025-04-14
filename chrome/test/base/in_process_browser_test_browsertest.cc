@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -96,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(InProcessBrowserTest, ExternalConnectionFail) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  const char* const kURLs[] = {"https://www.google.com/",
-                               "https://www.cnn.com/"};
+  const auto kURLs = std::to_array<const char*>(
+      {"https://www.google.com/", "https://www.cnn.com/"});
   for (size_t i = 0; i < std::size(kURLs); ++i) {
     GURL url(kURLs[i]);
     LoadFailObserver observer(contents);
