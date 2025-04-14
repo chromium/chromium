@@ -152,9 +152,7 @@ public class DisplayAndroid {
         return getManager().getDisplayAndroid(display);
     }
 
-    /**
-     * Returns the display id that does not necessarily match the one defined in Android's Display.
-     */
+    /** Returns the display ID that matches the one defined in Android's Display. */
     public int getDisplayId() {
         return mDisplayId;
     }
@@ -317,6 +315,11 @@ public class DisplayAndroid {
         mObservers.remove(observer);
     }
 
+    /**
+     * Constructs an instance.
+     *
+     * @param displayId The display ID of Android's Display represented by this object.
+     */
     protected DisplayAndroid(int displayId) {
         mDisplayId = displayId;
         mObservers = new WeakHashMap<>();
