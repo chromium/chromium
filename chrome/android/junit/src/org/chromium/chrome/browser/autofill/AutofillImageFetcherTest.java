@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -32,6 +33,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Shadows;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -44,11 +48,13 @@ import org.chromium.components.image_fetcher.ImageFetcher.Params;
 import org.chromium.url.GURL;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 // TODO(crbug.com/388217006): Add tests for {@link AutofillImageFetcher#getImageIfAvailable(GURL,
 // CardIconSpecs)} after refactor.
 /** Unit tests for {@link AutofillImageFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AutofillImageFetcherTest {
     private static final GURL TEST_IMAGE_URL = new GURL("https://www.google.com/test-image-url");
     private static final Bitmap TEST_IMAGE = Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
@@ -58,10 +64,12 @@ public class AutofillImageFetcherTest {
     @Mock private ImageFetcher mMockImageFetcher;
 
     private AutofillImageFetcher mAutofillImageFetcher;
+    private ShadowLooper mShadowLooper;
 
     @Before
     public void setUp() {
         mAutofillImageFetcher = new AutofillImageFetcher(mMockImageFetcher);
+        mShadowLooper = Shadows.shadowOf(new Handler().getLooper());
         doAnswer(
                         invocation -> {
                             Params params = invocation.getArgument(0);
@@ -169,21 +177,79 @@ public class AutofillImageFetcherTest {
                         })
                 .when(mMockImageFetcher)
                 .fetchImage(any(Params.class), any(Callback.class));
-        // Failure histogram should be logged since fetching was attempted but failed.
+        // Failure histogram should be logged twice since fetching is attempted again.
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
-                                "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 1)
+                                "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 2)
                         .build();
 
         mAutofillImageFetcher.prefetchCardArtImages(
                 new GURL[] {TEST_IMAGE_URL}, new int[] {ImageSize.SMALL});
 
-        // Verify that fetchImage was called once.
-        verify(mMockImageFetcher).fetchImage(any(Params.class), any(Callback.class));
+        // Advance the clock to trigger the retry.
+        mShadowLooper.runOneTask();
+        // Advance the task again to make sure image fetching is retried only once.
+        mShadowLooper.runOneTask();
+
+        // Verify that fetchImage was called twice.
+        verify(mMockImageFetcher, times(2)).fetchImage(any(Params.class), any(Callback.class));
 
         // Verify the image cache is empty.
         assertTrue(mAutofillImageFetcher.getCachedImagesForTesting().isEmpty());
+
+        expectedHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testPrefetchCardArtImages_validUrl_unsuccessfulImageFetch_successOnRetry() {
+        // Use AtomicInteger to track the number of calls.
+        AtomicInteger callCount = new AtomicInteger(0);
+        // Make the first fetch fail, and the second succeed.
+        doAnswer(
+                        invocation -> {
+                            Callback callback = invocation.getArgument(1);
+                            if (callCount.getAndIncrement() == 0) {
+                                callback.onResult(null);
+                                return null;
+                            }
+                            callback.onResult(TEST_IMAGE);
+                            return null;
+                        })
+                .when(mMockImageFetcher)
+                .fetchImage(any(Params.class), any(Callback.class));
+        CardIconSpecs cardIconSpecs =
+                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.SMALL);
+        GURL imageCacheKey =
+                AutofillUiUtils.getFifeIconUrlWithParams(
+                        TEST_IMAGE_URL, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+        Bitmap treatedImage =
+                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
+                        TEST_IMAGE, cardIconSpecs, true);
+        // Failure and success histogram should be logged once each since fetching is successful on
+        // retry.
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 1)
+                        .build();
+
+        mAutofillImageFetcher.prefetchCardArtImages(
+                new GURL[] {TEST_IMAGE_URL}, new int[] {ImageSize.SMALL});
+        Map<String, Bitmap> cachedImages = mAutofillImageFetcher.getCachedImagesForTesting();
+
+        // Advance the clock to trigger the retry.
+        mShadowLooper.runOneTask();
+
+        // Verify that fetchImage was called twice.
+        verify(mMockImageFetcher, times(2)).fetchImage(any(Params.class), any(Callback.class));
+
+        // Verify the image cache contains the fetched image.
+        assertEquals(1, cachedImages.size());
+        assertTrue(treatedImage.sameAs(cachedImages.get(imageCacheKey.getSpec())));
 
         expectedHistogram.assertExpected();
     }

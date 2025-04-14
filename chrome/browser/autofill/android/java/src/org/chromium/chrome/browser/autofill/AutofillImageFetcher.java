@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -33,6 +34,10 @@ import java.util.Optional;
 
 /** Fetches, and caches credit card art images. */
 public class AutofillImageFetcher {
+    private static final long REFETCH_DELAY_MS = 5000;
+    private static final int MAX_FETCH_ATTEMPTS = 2;
+
+    private final Map<String, Integer> mFetchAttemptCounter = new HashMap<>();
     private final Map<String, Bitmap> mImagesCache = new HashMap<>();
     private ImageFetcher mImageFetcher;
 
@@ -142,26 +147,49 @@ public class AutofillImageFetcher {
             return;
         }
 
+        // Update the attempt count for fetching the image.
+        int fetchAttemptCount = mFetchAttemptCounter.getOrDefault(urlToFetch.getSpec(), 0);
+        mFetchAttemptCounter.put(urlToFetch.getSpec(), fetchAttemptCount + 1);
+
         ImageFetcher.Params params =
                 ImageFetcher.Params.create(
                         urlToFetch.getSpec(), ImageFetcher.AUTOFILL_CARD_ART_UMA_CLIENT_NAME);
-        mImageFetcher.fetchImage(
-                params, bitmap -> treatAndCacheImage(bitmap, urlToFetch, cardIconSpecs));
+        mImageFetcher.fetchImage(params, bitmap -> treatAndCacheImage(bitmap, url, cardIconSpecs));
     }
 
-    private void treatAndCacheImage(Bitmap bitmap, GURL urlToCache, CardIconSpecs cardIconSpecs) {
+    /**
+     * Treats and caches the fetched image. If image fetching fails, retries fetching {@code
+     * MAX_FETCH_ATTEMPTS - 1} times with a delay of {@code REFETCH_DELAY_MS} between each attempt.
+     *
+     * @param bitmap Fetched image.
+     * @param url URL for the stored image in the server.
+     * @param cardIconSpecs The sizing specifications for the image.
+     */
+    private void treatAndCacheImage(Bitmap bitmap, GURL url, CardIconSpecs cardIconSpecs) {
         RecordHistogram.recordBooleanHistogram("Autofill.ImageFetcher.Result", bitmap != null);
 
-        // If the image fetching was unsuccessful, silently return.
-        if (bitmap == null) {
+        GURL urlToCache =
+                AutofillUiUtils.getFifeIconUrlWithParams(
+                        url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+
+        if (bitmap != null) {
+            // When adding new sizes for card icons, check if the corner radius needs to be added as
+            // a suffix for caching (crbug.com/1431283).
+            mImagesCache.put(
+                    urlToCache.getSpec(),
+                    AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
+                            bitmap, cardIconSpecs, true));
             return;
         }
-        // When adding new sizes for card icons, check if the corner radius needs to be added as
-        // a suffix for caching (crbug.com/1431283).
-        mImagesCache.put(
-                urlToCache.getSpec(),
-                AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
-                        bitmap, cardIconSpecs, true));
+
+        // Image fetching failed, and max retry attempts reached.
+        if (mFetchAttemptCounter.getOrDefault(urlToCache.getSpec(), 0) >= MAX_FETCH_ATTEMPTS) {
+            return;
+        }
+
+        // Image fetching failed, and max retry attempts not reached -> retry fetch after a delay.
+        Handler handler = new Handler();
+        handler.postDelayed(() -> fetchImage(url, cardIconSpecs), REFETCH_DELAY_MS);
     }
 
     /**
