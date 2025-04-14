@@ -1034,6 +1034,20 @@ const char* FromDawnEnum(wgpu::AdapterType dawn_enum) {
   NOTREACHED();
 }
 
+const char* FromDawnEnum(wgpu::PowerPreference dawn_enum) {
+  switch (dawn_enum) {
+    case wgpu::PowerPreference::Undefined:
+      return "";
+    case wgpu::PowerPreference::LowPower:
+      return "low-power";
+    case wgpu::PowerPreference::HighPerformance:
+      return "high-performance";
+    default:
+      break;
+  }
+  NOTREACHED();
+}
+
 const char* FromDawnEnum(wgpu::WGSLLanguageFeatureName dawn_enum) {
   switch (dawn_enum) {
     case wgpu::WGSLLanguageFeatureName::ReadonlyAndReadwriteStorageTextures:
