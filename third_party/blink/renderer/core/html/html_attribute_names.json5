@@ -251,6 +251,8 @@
     "onpointerup",
     "onpopstate",
     "onprogress",
+    "onpromptaction",
+    "onpromptdismiss",
     "onratechange",
     "onreset",
     "onresize",
