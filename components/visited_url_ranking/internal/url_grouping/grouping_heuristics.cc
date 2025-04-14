@@ -4,6 +4,7 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/grouping_heuristics.h"
 
+#include <unordered_map>
 #include <variant>
 
 #include "base/containers/contains.h"

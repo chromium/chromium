@@ -6,6 +6,7 @@
 #define COMPONENTS_SAVED_TAB_GROUPS_INTERNAL_SHARED_TAB_GROUP_ACCOUNT_DATA_SYNC_BRIDGE_H_
 
 #include <optional>
+#include <unordered_map>
 
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
