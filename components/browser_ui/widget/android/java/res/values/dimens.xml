@@ -150,6 +150,8 @@ found in the LICENSE file.
     <dimen name="tile_view_title_margin_top_modern">63dp</dimen>
     <dimen name="tile_view_padding_edge_tablet">20dp</dimen>
     <dimen name="tile_view_padding_interval_tablet">16dp</dimen>
+    <dimen name="tile_view_divider_thickness">1dp</dimen>
+    <dimen name="tile_view_divider_width">8dp</dimen>
 
     <!-- Chips default measures -->
     <item name="chip_outline_alpha" format="float" type="dimen">0.8</item>

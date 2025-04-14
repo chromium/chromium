@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorStateListDrawable;
 import android.os.Build;
 import android.view.LayoutInflater;
+import android.view.View;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
@@ -177,12 +178,23 @@ public class TileRenderer {
             // to be added back in the correct order.
             parent.removeAllViews();
 
+            Resources resources = mContext.getResources();
+            float dividerWidthDp = resources.getDimension(R.dimen.tile_view_divider_width);
+
+            Tile prevTile = null;
             for (Tile tile : sectionTiles) {
                 SuggestionsTileView tileView = oldTileViews.remove(tile.getData());
                 if (tileView == null) {
                     tileView = buildTileView(tile, parent, setupDelegate);
                 }
+                // Add divider if sources change between CUSTOM_LINKS and any other type.
+                if (prevTile != null
+                        && (prevTile.getData().source == TileSource.CUSTOM_LINKS)
+                                != (tile.getData().source == TileSource.CUSTOM_LINKS)) {
+                    parent.addNonTileViewWithWidth(buildDivider(parent), dividerWidthDp);
+                }
                 parent.addTile(tileView);
+                prevTile = tile;
             }
         }
     }
@@ -290,6 +302,12 @@ public class TileRenderer {
         }
 
         return tileView;
+    }
+
+    View buildDivider(TilesLinearLayout parent) {
+        return (View)
+                LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.suggestions_tile_vertical_divider, parent, false);
     }
 
     /** Returns whether the tile represents a Search query. */

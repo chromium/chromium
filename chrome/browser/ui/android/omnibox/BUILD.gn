@@ -328,6 +328,7 @@ android_resources("java_resources") {
     "java/res/layout/omnibox_answer_suggestion.xml",
     "java/res/layout/omnibox_basic_suggestion.xml",
     "java/res/layout/omnibox_results_container.xml",
+    "java/res/layout/suggestions_tile_vertical_divider.xml",
     "java/res/layout/suggestions_tile_view.xml",
     "java/res/layout/url_action_container.xml",
     "java/res/values-night/drawables.xml",
