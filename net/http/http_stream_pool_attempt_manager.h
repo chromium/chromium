@@ -569,10 +569,12 @@ class HttpStreamPool::AttemptManager
     AbortedAttempt& operator=(AbortedAttempt&& other);
 
     AttemptAbortReason reason;
+    bool svcb_optional;
     bool service_endpoint_request_finished;
     IPEndPoint endpoint;
     std::vector<ServiceEndpoint> current_endpoints;
-    std::string service_endpoint_request_debug_string;
+    base::TimeDelta start_to_abort_time;
+    base::TimeDelta ssl_config_wait_to_abort_time;
   };
   std::vector<AbortedAttempt> aborted_tcp_based_attempts_;
   std::vector<std::vector<ServiceEndpoint>> service_endpoint_results_history_;

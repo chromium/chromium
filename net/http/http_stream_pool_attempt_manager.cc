@@ -27,7 +27,6 @@
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_resolver.h"
-#include "net/dns/host_resolver_manager_service_endpoint_request_impl.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream_key.h"
@@ -454,20 +453,20 @@ HttpStreamPool::AttemptManager::GetSSLConfig(TcpBasedAttempt* attempt) {
   if (!abort_reason.has_value()) {
     abort_reason = AttemptAbortReason::kEndpointResultsEmpty;
   }
+  base::TimeTicks now = base::TimeTicks::Now();
   AbortedAttempt aborted;
   aborted.reason = *abort_reason;
-  aborted.service_endpoint_request_finished =
-      service_endpoint_request_finished_;
+  aborted.svcb_optional = svcb_optional;
   aborted.endpoint = attempt->ip_endpoint();
   aborted.current_endpoints = current_endpoints;
-  aborted.service_endpoint_request_debug_string =
-      static_cast<HostResolverManager::ServiceEndpointRequestImpl*>(
-          service_endpoint_request_.get())
-          ->DebugString();
+  aborted.start_to_abort_time = now - attempt->start_time();
+  aborted.ssl_config_wait_to_abort_time =
+      attempt->ssl_config_wait_start_time().is_null()
+          ? base::TimeDelta()
+          : now - attempt->ssl_config_wait_start_time();
   aborted_tcp_based_attempts_.emplace_back(std::move(aborted));
 
   attempt->set_is_aborted(true);
-
   return base::unexpected(TlsStreamAttempt::GetSSLConfigError::kAbort);
 }
 
@@ -1209,22 +1208,13 @@ void HttpStreamPool::AttemptManager::MaybeAttemptTcpBased(
           base::debug::Alias(service_endpoint_results_history.data());
           for (const auto& endpoints : service_endpoint_results_history) {
             base::debug::Alias(endpoints.data());
-            for (const auto& endpoint : endpoints) {
-              base::debug::Alias(endpoint.ipv4_endpoints.data());
-              for (const auto& ipv4_endpoint : endpoint.ipv4_endpoints) {
-                base::debug::Alias(&ipv4_endpoint);
-              }
-              base::debug::Alias(endpoint.ipv6_endpoints.data());
-              for (const auto& ipv6_endpoint : endpoint.ipv6_endpoints) {
-                base::debug::Alias(&ipv6_endpoint);
-              }
-            }
           }
           base::debug::Alias(&aborted_attempts);
           base::debug::Alias(aborted_attempts.data());
           for (const auto& aborted : aborted_attempts) {
             base::debug::Alias(aborted.current_endpoints.data());
           }
+          DEBUG_ALIAS_FOR_GURL(url_buf, stream_key().destination().GetURL());
           NOTREACHED();
         }
         HandleFinalError(*most_recent_tcp_error_);

@@ -341,10 +341,6 @@ HostResolver::ResolveHostParameters&
 HostResolver::ResolveHostParameters::operator=(const ResolveHostParameters&) =
     default;
 
-std::string HostResolver::ServiceEndpointRequest::DebugString() const {
-  return "";
-}
-
 HostResolver::~HostResolver() = default;
 
 std::unique_ptr<HostResolver::ProbeRequest>
