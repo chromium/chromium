@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/apk_info.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_NACL)
@@ -70,7 +70,7 @@ void PerfettoPlatform::ResetTaskRunner(
 std::string PerfettoPlatform::GetCurrentProcessName() {
   const char* host_package_name = nullptr;
 #if BUILDFLAG(IS_ANDROID)
-  host_package_name = android::BuildInfo::GetInstance()->host_package_name();
+  host_package_name = android::apk_info::host_package_name();
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // On Android we want to include if this is webview inside of an app or
