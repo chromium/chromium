@@ -1419,19 +1419,6 @@
     "expires": "Mar 1, 2026"
   },
   {
-    "prefix": "browsing-topics",
-    "owners": ["yaoxia@chromium.org", "weizhong@google.com"],
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/browsing-topics"
-    ],
-    "exclusive_tests": [
-      "external/wpt/browsing-topics"
-    ],
-    "args": ["--enable-features=BrowsingTopics,PrivacySandboxAdsAPIsOverride"],
-    "expires": "Dec 3, 2024"
-  },
-  {
     "prefix": "private-aggregation",
     "platforms": ["Linux"],
     "bases": [
