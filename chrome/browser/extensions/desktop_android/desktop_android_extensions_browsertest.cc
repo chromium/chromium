@@ -49,36 +49,13 @@ class DesktopAndroidExtensionsBrowserTest : public AndroidBrowserTest {
 
   // Attempts to parse and load an extension from the given `file_path` and add
   // it to the extensions system (which will also activate the extension).
-  // Returns the extension on success; on failure, returns null and adds a test
-  // failure.
+  // Returns the extension on success; on failure, returns null.
   const Extension* LoadExtensionFromDirectory(const base::FilePath& file_path) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-
-    std::string load_error;
-    scoped_refptr<Extension> extension = file_util::LoadExtension(
-        file_path, mojom::ManifestLocation::kUnpacked, 0, &load_error);
-    if (!extension) {
-      ADD_FAILURE() << "Failed to parse extension: " << load_error;
-      return nullptr;
-    }
-
     content::BrowserContext* browser_context =
         GetActiveWebContents()->GetBrowserContext();
-
-    auto* android_system = static_cast<DesktopAndroidExtensionSystem*>(
-        ExtensionSystem::Get(browser_context));
-    std::string error;
-    if (!android_system->AddExtension(extension, error)) {
-      ADD_FAILURE() << "Failed to add extension: " << error;
-    }
-
-    ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
-    if (!registry->enabled_extensions().Contains(extension->id())) {
-      ADD_FAILURE() << "Extension is not properly enabled.";
-      return nullptr;
-    }
-
-    return extension.get();
+    return (static_cast<DesktopAndroidExtensionSystem*>(
+                ExtensionSystem::Get(browser_context)))
+        ->LoadExtensionFromDirectory(file_path);
   }
 };
 
