@@ -276,6 +276,9 @@ void RegisterAutofillPredictions() {
 
 void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
   static bool features_registered = false;
+  // When adding a value here, also update:
+  // - tools/metrics/histograms/metadata/optimization_guide/histogram.xml:
+  // <variants name="LogAiDataRequestFeature">
   if (!features_registered) {
     // The registries are static and so should only be populated once for the
     // program (rather than once per profile).
