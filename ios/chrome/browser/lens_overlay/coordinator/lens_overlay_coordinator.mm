@@ -689,12 +689,12 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
                               kBottomSheetDismissed];
       break;
     case SheetDimensionState::kLarge:
-      [self disableSelectionInteraction:NO];
+      [_selectionViewController disableFlyoutMenu:YES];
       break;
     case SheetDimensionState::kConsent:
       break;
     default:
-      [self disableSelectionInteraction:NO];
+      [_selectionViewController disableFlyoutMenu:NO];
       [_mediator defocusOmnibox];
       break;
   }
