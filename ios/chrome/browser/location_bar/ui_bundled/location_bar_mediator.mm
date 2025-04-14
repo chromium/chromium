@@ -191,7 +191,8 @@
 
   if (!base::FeatureList::IsEnabled(
           kLensOverlayEnableLocationBarEntrypointOnSRP) &&
-      google_util::IsGoogleSearchUrl(visibleURL)) {
+      (google_util::IsGoogleSearchUrl(visibleURL) ||
+       google_util::IsGoogleHomePageUrl(visibleURL))) {
     return NO;
   }
 
