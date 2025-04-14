@@ -87,22 +87,26 @@ if (is_android) {
     # "build_server" ensures that fast_local_dev_server.py is running and
     #     offloads analysis tasks to it to be run after the build completes.
     #     This is the recommended setting for local development.
-    android_static_analysis = "build_server"
+    # Temporarily default to "" to detect if it is explicitly set. Remove after
+    # crbug.com/404503040
+    android_static_analysis = ""
     if (is_official_build) {
       android_static_analysis = "off"
     }
   }
 
-  if (android_static_analysis == "build_server" && enable_java_templates &&
-      getenv("SWARMING_TASK_ID") != "") {
-    # All android bots that can build java targets need to explicitly set
-    # android_static_analysis = "on" or "off" rather than rely on the default
-    # value, because the default value of "build_server" does not work on
-    # bots. This is an assert instead of a dynamic default so that copy
-    # pasting gn args reproduces bot behavior.
-    assert(
-        false,
-        "All android bots must explicitly set android_static_analysis gn arg.")
+  if (android_static_analysis == "") {
+    android_static_analysis = "on"
+    if (enable_java_templates && getenv("SWARMING_TASK_ID") != "") {
+      # All android bots that can build java targets need to explicitly set
+      # android_static_analysis = "on" or "off" rather than rely on the default
+      # value, because the default value of "build_server" (coming soon, see
+      # crbug.com/404503040) does not work on bots. This is an assert instead of
+      # a dynamic default so that copy pasting gn args reproduces bot behavior.
+      assert(
+          false,
+          "All android bots must explicitly set android_static_analysis gn arg.")
+    }
   }
 
   # Our build system no longer supports legacy multidex.
