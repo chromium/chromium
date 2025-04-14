@@ -138,7 +138,14 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         doNothing()
                 .when(mCoordinator)
                 .createAndShowMenu(
-                        any(), any(), anyBoolean(), anyBoolean(), anyInt(), anyInt(), any());
+                        any(),
+                        any(),
+                        anyBoolean(),
+                        anyBoolean(),
+                        anyInt(),
+                        anyInt(),
+                        any(),
+                        anyBoolean());
         mCoordinator.showMenu(rectProvider, TAB_ID);
         verify(mCoordinator)
                 .createAndShowMenu(
@@ -148,7 +155,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
                         eq(false),
                         eq(R.style.TabSwitcherContextMenuAnimation),
                         eq(HorizontalOrientation.LAYOUT_DIRECTION),
-                        eq(mActivity));
+                        eq(mActivity),
+                        eq(false));
     }
 
     @Test

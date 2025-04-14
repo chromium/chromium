@@ -131,7 +131,8 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
                 /* verticalOverlapAnchor= */ false,
                 /* animStyle= */ R.style.TabSwitcherContextMenuAnimation,
                 HorizontalOrientation.LAYOUT_DIRECTION,
-                mActivity);
+                mActivity,
+                /* isIncognito= */ false);
         recordUserActionWithPrefix("Shown");
     }
 
