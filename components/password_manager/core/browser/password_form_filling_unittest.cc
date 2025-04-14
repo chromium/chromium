@@ -318,66 +318,31 @@ TEST_F(PasswordFormFillingTest, FillWithOnlyWebAuthnCredentials) {
 }
 #endif
 
-// Test autofill when username and password are prefilled. Overwrite password
-// if server side classification thought the username was a placeholder or the
-// classification failed. Do not overwrite if username doesn't look like a
-// placeholder.
+// Test autofill when username and password are prefilled. Check that we not
+// overwrite values in the form if username doesn't look like a placeholder.
 // Skip for Android and iOS since it uses touch to fill, meaning placeholders
 // will never be overwritten.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(PasswordFormFillingTest, TestFillOnLoadSuggestionWithPrefill) {
-  const struct {
-    const char* description;
-    bool username_may_use_prefilled_placeholder;
-    bool server_side_classification_successful;
-    LikelyFormFilling likely_form_filling;
-  } kTestCases[] = {
-      {
-          .description = "Username not placeholder",
-          .username_may_use_prefilled_placeholder = false,
-          .server_side_classification_successful = true,
-          .likely_form_filling = LikelyFormFilling::kFillOnAccountSelect,
-      },
-      {
-          .description = "Username is placeholder",
-          .username_may_use_prefilled_placeholder = true,
-          .server_side_classification_successful = true,
-          .likely_form_filling = LikelyFormFilling::kFillOnPageLoad,
-      },
-      {
-          .description = "No server classification",
-          .username_may_use_prefilled_placeholder = false,
-          .server_side_classification_successful = false,
-          .likely_form_filling = LikelyFormFilling::kFillOnPageLoad,
-      },
-  };
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.description);
-    PasswordForm preferred_match = saved_match_;
-    std::vector<PasswordForm> best_matches = {preferred_match};
+  PasswordForm preferred_match = saved_match_;
+  std::vector<PasswordForm> best_matches = {preferred_match};
 
-    PasswordForm observed_form = observed_form_;
-    // Set username to match preferred match
-    observed_form.username_value = preferred_match.username_value;
-    // Set a different password than saved
-    observed_form.password_value = u"New Passwd";
-    // Set classification results
-    observed_form.server_side_classification_successful =
-        test_case.server_side_classification_successful;
-    observed_form.username_may_use_prefilled_placeholder =
-        test_case.username_may_use_prefilled_placeholder;
+  PasswordForm observed_form = observed_form_;
+  // Set username to match preferred match
+  observed_form.username_value = preferred_match.username_value;
+  // Set a different password than saved
+  observed_form.password_value = u"New Passwd";
 
-    EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion);
-    EXPECT_CALL(client_, PasswordWasAutofilled);
+  EXPECT_CALL(driver_, PropagateFillDataOnParsingCompletion);
+  EXPECT_CALL(client_, PasswordWasAutofilled);
 
-    LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
-        &client_, &driver_, observed_form, best_matches, federated_matches_,
-        &preferred_match, metrics_recorder_.get(),
-        /*webauthn_suggestions_available=*/false,
-        /*suggestion_banned_fields=*/{});
+  LikelyFormFilling likely_form_filling = SendFillInformationToRenderer(
+      &client_, &driver_, observed_form, best_matches, federated_matches_,
+      &preferred_match, metrics_recorder_.get(),
+      /*webauthn_suggestions_available=*/false,
+      /*suggestion_banned_fields=*/{});
 
-    EXPECT_EQ(test_case.likely_form_filling, likely_form_filling);
-  }
+  EXPECT_EQ(LikelyFormFilling::kFillOnAccountSelect, likely_form_filling);
 }
 #endif
 
@@ -757,8 +722,6 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
   form_on_page.action = GURL("https://foo.com/login");
   form_on_page.username_element = u"username";
   form_on_page.password_element = u"password";
-  form_on_page.username_may_use_prefilled_placeholder = true;
-  form_on_page.server_side_classification_successful = true;
 
   // Create an exact match in the database.
   PasswordForm preferred_match = form_on_page;
@@ -786,7 +749,6 @@ TEST(PasswordFormFillDataTest, RendererIDs) {
             result.username_element_renderer_id);
   EXPECT_EQ(form_on_page.password_element_renderer_id,
             result.password_element_renderer_id);
-  EXPECT_TRUE(result.username_may_use_prefilled_placeholder);
 }
 
 // Tests that nor username nor password fields are set when password element is

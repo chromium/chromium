@@ -1976,12 +1976,8 @@ bool PasswordAutofillAgent::FillCredentialsAutomatically(
 
     prefilled_placeholder_username =
         !username_element.Value().IsEmpty() &&
-        (PossiblePrefilledUsernameValue(username_element.Value().Utf8(),
-                                        possible_email_domain) ||
-         (fill_data.username_may_use_prefilled_placeholder &&
-          base::FeatureList::IsEnabled(
-              password_manager::features::
-                  kEnableOverwritingPlaceholderUsernames)));
+        PossiblePrefilledUsernameValue(username_element.Value().Utf8(),
+                                       possible_email_domain);
 
     if (!username_element.Value().IsEmpty() &&
         username_element.GetAutofillState() == WebAutofillState::kNotFilled &&

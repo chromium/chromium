@@ -108,8 +108,6 @@ struct FormParsingTestCase {
   // null means no checking
   raw_ptr<const AlternativeElementVector> all_alternative_passwords = nullptr;
   raw_ptr<const AlternativeElementVector> all_alternative_usernames = nullptr;
-  bool server_side_classification_successful = true;
-  bool username_may_use_prefilled_placeholder = false;
   std::optional<FormDataParser::ReadonlyPasswordFields> readonly_status;
   std::optional<FormDataParser::ReadonlyPasswordFields>
       readonly_status_for_saving;
@@ -448,12 +446,6 @@ class FormParserTest : public testing::Test {
           EXPECT_FALSE(parsing_result.password_form->blocked_by_user);
           EXPECT_EQ(PasswordForm::Type::kFormSubmission,
                     parsing_result.password_form->type);
-          EXPECT_EQ(test_case.server_side_classification_successful,
-                    parsing_result.password_form
-                        ->server_side_classification_successful);
-          EXPECT_EQ(test_case.username_may_use_prefilled_placeholder,
-                    parsing_result.password_form
-                        ->username_may_use_prefilled_placeholder);
           EXPECT_EQ(test_case.submission_event,
                     parsing_result.password_form->submission_event);
           if (test_case.is_new_password_reliable &&
@@ -1517,8 +1509,6 @@ TEST_F(FormParserTest, ServerHints) {
                    .server_predicted_type = autofill::PASSWORD,
                    .may_use_prefilled_placeholder = true},
               },
-          .server_side_classification_successful = true,
-          .username_may_use_prefilled_placeholder = true,
       },
       {
           .description_for_logging = "Longer server predictions work",
@@ -1569,8 +1559,6 @@ TEST_F(FormParserTest, ServerHints) {
                    .server_predicted_type = autofill::PASSWORD,
                    .may_use_prefilled_placeholder = false},
               },
-          .server_side_classification_successful = true,
-          .username_may_use_prefilled_placeholder = false,
       },
   });
 }

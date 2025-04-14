@@ -481,7 +481,6 @@ struct PasswordFormFillData {
   url.mojom.Url url;
   FieldRendererId username_element_renderer_id;
   FieldRendererId password_element_renderer_id;
-  bool username_may_use_prefilled_placeholder;
   PasswordAndMetadata preferred_login;
   array<PasswordAndMetadata> additional_logins;
   bool wait_for_username;

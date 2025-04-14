@@ -546,11 +546,6 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     }
   }
 
-  void EnableOverwritingPlaceholderUsernames() {
-    scoped_feature_list_.InitAndEnableFeature(
-        password_manager::features::kEnableOverwritingPlaceholderUsernames);
-  }
-
   void EnableShowAutofillSignatures() {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kShowAutofillSignatures);
@@ -4460,59 +4455,14 @@ TEST_F(PasswordAutofillAgentTest, FillOnLoadNoUsername) {
   EXPECT_EQ(kAlicePassword, password_element_.SuggestedValue().Utf8());
 }
 
-TEST_F(PasswordAutofillAgentTest, MayUsePlaceholderNoPlaceholder) {
-  fill_data_.username_may_use_prefilled_placeholder = true;
+TEST_F(PasswordAutofillAgentTest, FormToFillIsPrefilled) {
+  username_element_.SetValue(WebString::FromUTF8("prefilled_placeholder"));
   SimulateOnFillPasswordForm(fill_data_);
 
-  CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
-}
-
-TEST_F(PasswordAutofillAgentTest,
-       MayUsePlaceholderAndPlaceholderOnFormDisabled) {
-  username_element_.SetValue(WebString::FromUTF8("placeholder"));
-  fill_data_.username_may_use_prefilled_placeholder = true;
-  SimulateOnFillPasswordForm(fill_data_);
-
-  CheckTextFieldsDOMState("placeholder", false, "", false);
-}
-
-TEST_F(PasswordAutofillAgentTest,
-       MayUsePlaceholderAndPlaceholderOnFormEnabled) {
-  EnableOverwritingPlaceholderUsernames();
-  username_element_.SetValue(WebString::FromUTF8("placeholder"));
-  fill_data_.username_may_use_prefilled_placeholder = true;
-  SimulateOnFillPasswordForm(fill_data_);
-
-  CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
-}
-
-TEST_F(PasswordAutofillAgentTest, NoMayUsePlaceholderAndPlaceholderOnForm) {
-  username_element_.SetValue(WebString::FromUTF8("placeholder"));
-  fill_data_.username_may_use_prefilled_placeholder = false;
-
-  SimulateOnFillPasswordForm(fill_data_);
-
-  CheckTextFieldsDOMState("placeholder", false, "", false);
-}
-
-TEST_F(PasswordAutofillAgentTest, AutofillsAfterUserGesture) {
-  SimulateOnFillPasswordForm(fill_data_);
-  CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
-
-  password_autofill_agent_->UserGestureObserved();
-  // It's a way to call PasswordValueGatekeeper::Reset().
-  password_autofill_agent_->ReadyToCommitNavigation(nullptr);
-
-  fill_data_.username_may_use_prefilled_placeholder = true;
-  fill_data_.preferred_login.password_value = kBobPassword16;
-
-  SimulateOnFillPasswordForm(fill_data_);
-  CheckTextFieldsStateForElements(
-      username_element_, kAliceUsername,
-      /* username_autofilled */ true, password_element_, kBobPassword,
-      /* password_autofilled */ true, /* check_suggested_username */ false,
-      /* check_suggested_username */ true);
-  /// CheckTextFieldsSuggestedState(kAliceUsername, true, kBobPassword, true);
+  // Check that the prefilled value was not overwritten.
+  CheckTextFieldsDOMState(/*username=*/"prefilled_placeholder",
+                          /*username_autofilled=*/false, /*password=*/"",
+                          /*password_autofilled=*/false);
 }
 
 TEST_F(PasswordAutofillAgentTest, RestoresAfterJavaScriptModification) {

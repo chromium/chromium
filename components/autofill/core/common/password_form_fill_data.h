@@ -125,10 +125,6 @@ struct PasswordFormFillData {
   FieldRendererId username_element_renderer_id;
   FieldRendererId password_element_renderer_id;
 
-  // True if the server-side classification believes that the field may be
-  // pre-filled with a placeholder in the value attribute.
-  bool username_may_use_prefilled_placeholder = false;
-
   // The preferred credential. See |IsBetterMatch| for how it is selected.
   PasswordAndMetadata preferred_login;
 

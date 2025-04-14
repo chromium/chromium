@@ -1118,25 +1118,6 @@ std::vector<ProcessedField> ProcessFields(
   return result;
 }
 
-// Return true if |significant_fields| has an username field and
-// |form_predictions| has |may_use_prefilled_placeholder| == true for the
-// username field.
-bool GetMayUsePrefilledPlaceholder(
-    const std::optional<FormPredictions>& form_predictions,
-    const SignificantFields& significant_fields) {
-  if (!form_predictions || !significant_fields.username) {
-    return false;
-  }
-
-  FieldRendererId username_id = significant_fields.username->renderer_id();
-  for (const PasswordFieldPrediction& prediction : form_predictions->fields) {
-    if (prediction.renderer_id == username_id) {
-      return prediction.may_use_prefilled_placeholder;
-    }
-  }
-  return false;
-}
-
 // Puts together a PasswordForm, the result of the parsing, based on the
 // |form_data| description of the form metadata (e.g., action), the already
 // parsed information about what are the |significant_fields|, the list
@@ -1168,9 +1149,6 @@ std::unique_ptr<PasswordForm> AssemblePasswordForm(
   result->scheme = PasswordForm::Scheme::kHtml;
   result->blocked_by_user = false;
   result->type = PasswordForm::Type::kFormSubmission;
-  result->server_side_classification_successful = form_predictions.has_value();
-  result->username_may_use_prefilled_placeholder =
-      GetMayUsePrefilledPlaceholder(form_predictions, significant_fields);
   result->only_for_fallback = significant_fields.is_fallback;
   result->submission_event = form_data.submission_event();
   result->accepts_webauthn_credentials =

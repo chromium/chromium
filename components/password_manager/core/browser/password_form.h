@@ -293,14 +293,6 @@ struct PasswordForm {
   // form parsing and not persisted.
   autofill::FieldRendererId username_element_renderer_id;
 
-  // True if the server-side classification was successful.
-  bool server_side_classification_successful = false;
-
-  // True if the server-side classification believes that the field may be
-  // pre-filled with a placeholder in the value attribute. It is set during
-  // form parsing and not persisted.
-  bool username_may_use_prefilled_placeholder = false;
-
   // When parsing an HTML form, this is typically empty unless the site
   // has implemented some form of autofill.
   std::u16string username_value;
