@@ -48,7 +48,9 @@ void AppendV8Value(v8::Isolate* isolate,
 }  // namespace
 
 DOMActivityLogger::DOMActivityLogger(const ExtensionId& extension_id)
-    : extension_id_(extension_id) {}
+    : extension_id_(extension_id) {
+  DCHECK(!extension_id_.empty());
+}
 
 DOMActivityLogger::~DOMActivityLogger() = default;
 

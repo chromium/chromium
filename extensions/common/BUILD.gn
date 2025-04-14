@@ -694,6 +694,7 @@ source_set("unit_tests") {
     "mojom/extension_id_mojom_traits_unittest.cc",
     "mojom/message_port_mojom_traits_unittest.cc",
     "mojom/permission_set_mojom_traits_unittest.cc",
+    "mojom/renderer_host_mojom_unittest.cc",
     "mojom/url_pattern_set_mojom_traits_unittest.cc",
     "permissions/api_permission_set_unittest.cc",
     "permissions/api_permission_unittest.cc",

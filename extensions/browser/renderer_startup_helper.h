@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_RENDERER_STARTUP_HELPER_H_
 
 #include <map>
+#include <optional>
 #include <set>
 
 #include "base/compiler_specific.h"
@@ -64,11 +65,11 @@ class RendererStartupHelper : public KeyedService,
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
   // mojom::RendererHost:
-  void AddAPIActionToActivityLog(const ExtensionId& extension_id,
+  void AddAPIActionToActivityLog(const std::optional<ExtensionId>& extension_id,
                                  const std::string& call_name,
                                  base::Value::List args,
                                  const std::string& extra) override;
-  void AddEventToActivityLog(const ExtensionId& extension_id,
+  void AddEventToActivityLog(const std::optional<ExtensionId>& extension_id,
                              const std::string& call_name,
                              base::Value::List args,
                              const std::string& extra) override;
