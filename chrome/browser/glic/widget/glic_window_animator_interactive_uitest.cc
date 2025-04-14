@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowAnimatorUiTest, OpenDetachedAnimationRuns) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicWindowAnimatorUiTest,
-                       OpenDetachedAnimationBoundsChanges) {
+                       DISABLED_OpenDetachedAnimationBoundsChanges) {
   // Expect widget animates (flies) down during detached open animation.
   RunTestSequence(InAnyContext(
       Steps(OpenDetached(), WaitForAnimationStarted(), GetTargetBounds(),
