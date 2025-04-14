@@ -66,6 +66,7 @@ using signin_metrics::PromoAction;
 
 - (ChangeProfileContinuation)authenticationFlowWillChangeProfile {
   _authenticationFlow = nil;
+  [self.delegate instantSigninMediatorWillSwitchProfile:self];
   return _continuationProvider.Run();
 }
 
