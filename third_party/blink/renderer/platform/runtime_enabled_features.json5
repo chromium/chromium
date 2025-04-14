@@ -4481,6 +4481,11 @@
       status: "stable",
     },
     {
+      // killswitch for fix in M137
+      name: "TextareaStableResizing",
+      status: "stable",
+    },
+    {
       name: "TextAutoSizingDisabledOnFlexbox",
       status: "stable",
     },

@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -407,8 +408,16 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return scroll_corner_.Get();
   }
 
-  void Resize(const gfx::Point& pos, const gfx::Vector2d& old_offset);
+  // During a resize, the caller caches the transform so that all resizer
+  // movement is relative to the original position rather than the updated
+  // position.
+  void Resize(const gfx::Point& pos,
+              const gfx::Vector2d& old_offset,
+              const gfx::Transform& position_to_size_transform);
   gfx::Vector2d OffsetFromResizeCorner(const gfx::Point& absolute_point) const;
+
+  gfx::Transform InitializeResizeTransform(
+      const gfx::Point& absolute_drag_start_point);
 
   bool InResizeMode() const { return in_resize_mode_; }
   void SetInResizeMode(bool in_resize_mode) {
