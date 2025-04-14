@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.settings;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -137,6 +138,7 @@ public class AutofillProfilesFragmentTest {
                         .setPhoneNumber("650-253-0000")
                         .setEmailAddress("second@gmail.com")
                         .setLanguageCode("en-US")
+                        .setRecordType(RecordType.ACCOUNT_HOME)
                         .build());
         // Invalid state should not cause a crash on the state dropdown list.
         mHelper.setProfile(
@@ -398,6 +400,7 @@ public class AutofillProfilesFragmentTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)
     @Feature({"Preferences"})
     public void testEditProfile() throws Exception {
         AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
@@ -409,6 +412,13 @@ public class AutofillProfilesFragmentTest {
                 autofillProfileFragment.findPreference("John Doe");
         assertNotNull(johnProfile);
         assertEquals("John Doe", johnProfile.getTitle());
+        assertTrue(johnProfile.getIcon().isVisible());
+
+        // Make sure that the icon is visible for non-HW profiles too.
+        AutofillProfileEditorPreference billProfile =
+                autofillProfileFragment.findPreference("Bill Doe");
+        assertNotNull(billProfile);
+        assertTrue(billProfile.getIcon().isVisible());
 
         // Edit a profile.
         ThreadUtils.runOnUiThreadBlocking(johnProfile::performClick);

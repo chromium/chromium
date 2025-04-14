@@ -193,6 +193,10 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 // synced, nor saved in the account.
                 pref.setWidgetLayoutResource(R.layout.autofill_local_profile_icon);
             }
+            if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_SUPPORT_FOR_HOME_AND_WORK)) {
+                pref.setIcon(getIconIdForProfile(profile));
+            }
             Bundle args = pref.getExtras();
             args.putString(AutofillEditorBase.AUTOFILL_GUID, profile.getGUID());
             getPreferenceScreen().addPreference(pref);
@@ -322,5 +326,16 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
 
     EditorDialogView getEditorDialogForTest() {
         return mAddressEditor.getEditorDialogForTesting();
+    }
+
+    private int getIconIdForProfile(AutofillProfile profile) {
+        switch (profile.getRecordType()) {
+            case RecordType.ACCOUNT_HOME:
+                return R.drawable.home_logo;
+            case RecordType.ACCOUNT_WORK:
+                return R.drawable.work_logo;
+            default:
+                return R.drawable.location_on_logo;
+        }
     }
 }
