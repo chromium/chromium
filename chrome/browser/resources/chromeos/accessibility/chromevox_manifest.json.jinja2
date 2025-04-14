@@ -37,11 +37,19 @@
     "settingsPrivate",
     "storage",
     "tabs",
-    "tts",
+    "tts"{% if is_manifest_v3 != '1' %},
+    "chrome://resources/",
+    "https://docs.google.com/*",
+    "https://docs.sandbox.google.com/*"
+{% endif %}
+  ],
+{% if is_manifest_v3 == '1' %}
+  "host_permissions": [
     "chrome://resources/",
     "https://docs.google.com/*",
     "https://docs.sandbox.google.com/*"
   ],
+{% endif %}
   "content_scripts": [
     {
       "matches": [
@@ -59,7 +67,13 @@
   },
   "options_page": "chromevox/options/options.html",
   "default_locale": "en",
+{% if is_manifest_v3 != '1' %}
   "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' chrome://resources; style-src 'unsafe-inline' chrome://resources; img-src 'self' data:;",
+{% else %}
+  "content_security_policy": {
+    "extension_pages": "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'unsafe-inline' chrome://resources; img-src 'self' data:;"
+  },
+{% endif %}
   "externally_connectable": {
     "ids": [
       // Braille IME.
