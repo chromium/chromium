@@ -9,11 +9,11 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_utils.h"
-#include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/background.h"
@@ -37,16 +37,17 @@ class OverviewDropTargetView : public views::View {
 
     background_view_ = AddChildView(std::make_unique<views::View>());
 
-    const int corner_radius = window_util::GetMiniWindowRoundedCornerRadius();
     background_view_->SetBackground(views::CreateRoundedRectBackground(
-        kColorAshShieldAndBase20, corner_radius));
+        kColorAshShieldAndBase20, kWindowMiniViewCornerRadius));
 
     SetBorder(views::CreateRoundedRectBorder(
-        kDropTargetBorderThickness, corner_radius,
+        kDropTargetBorderThickness, kWindowMiniViewCornerRadius,
         cros_tokens::kCrosSysSystemBaseElevated));
   }
+
   OverviewDropTargetView(const OverviewDropTargetView&) = delete;
   OverviewDropTargetView& operator=(const OverviewDropTargetView&) = delete;
+
   ~OverviewDropTargetView() override = default;
 
   // Updates the visibility of `background_view_` since it is only shown when

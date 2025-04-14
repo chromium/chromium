@@ -25,7 +25,6 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/window_properties.h"
-#include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
 #include "base/memory/raw_ptr.h"
 
@@ -108,8 +107,7 @@ void OverviewItemBase::RefreshShadowVisuals(bool shadow_visible) {
   gfx::Rect shadow_content_bounds(
       gfx::ToRoundedRect(shadow_bounds_in_screen).size());
   shadow_->SetContentBounds(shadow_content_bounds);
-  shadow_->SetRoundedCornerRadius(
-      window_util::GetMiniWindowRoundedCornerRadius());
+  shadow_->SetRoundedCornerRadius(kWindowMiniViewCornerRadius);
 }
 
 void OverviewItemBase::UpdateShadowTypeForDrag(bool is_dragging) {
