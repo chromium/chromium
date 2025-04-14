@@ -124,6 +124,9 @@ TabbedWebAppNavigationThrottle::OpenInNewTab() {
   content::OpenURLParams params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  // Clear the FrameTreeNode id, as the new navigation will be in a new tab
+  // rather than the frame of the original navigation.
+  params.frame_tree_node_id = content::FrameTreeNodeId();
   navigation_handle()->GetWebContents()->OpenURL(
       std::move(params), /*navigation_handle_callback=*/{});
   return content::NavigationThrottle::CANCEL_AND_IGNORE;
