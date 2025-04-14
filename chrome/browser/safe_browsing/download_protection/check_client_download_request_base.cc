@@ -488,8 +488,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
       std::move(resource_request),
       service_->delegate()->CompleteClientDownloadRequestTrafficAnnotation(
           partial_traffic_annotation));
-  loader_->AttachStringForUpload(client_download_request_data_,
-                                 "application/octet-stream");
+  loader_->AttachStringForUpload(client_download_request_data_);
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       service_->GetURLLoaderFactory(GetBrowserContext()).get(),
       base::BindOnce(&CheckClientDownloadRequestBase::OnURLLoaderComplete,

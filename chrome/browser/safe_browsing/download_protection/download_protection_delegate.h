@@ -63,9 +63,10 @@ class DownloadProtectionDelegate {
 
   // Called immediately prior to consuming the ResourceRequest used to send out
   // a download ping. Allows the delegate to make final modifications to the
-  // ResourceRequest.
+  // ResourceRequest. The delegate must add the appropriate Content-Type HTTP
+  // header in this method.
   virtual void FinalizeResourceRequest(
-      network::ResourceRequest& resource_request) {}
+      network::ResourceRequest& resource_request) = 0;
 
   // Returns the URL that will be contacted for download protection requests.
   virtual const GURL& GetDownloadRequestUrl() const = 0;

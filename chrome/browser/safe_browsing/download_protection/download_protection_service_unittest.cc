@@ -2219,6 +2219,15 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadValidateRequest) {
       .WillOnce(SetDosHeaderContents("dummy dos header"));
 #endif  // BUILDFLAG(IS_MAC)
 
+  sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_TRUE(
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType)
+                .has_value());
+        std::string upload_data = network::GetUploadData(request);
+        EXPECT_FALSE(upload_data.empty());
+      }));
+
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
   RunLoop run_loop;
@@ -2369,6 +2378,9 @@ TEST_F(DownloadProtectionServiceTest,
     sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
+              EXPECT_TRUE(request.headers
+                              .GetHeader(net::HttpRequestHeaders::kContentType)
+                              .has_value());
               upload_data = network::GetUploadData(request);
               if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
@@ -2431,6 +2443,9 @@ TEST_F(DownloadProtectionServiceTest,
     sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
+              EXPECT_TRUE(request.headers
+                              .GetHeader(net::HttpRequestHeaders::kContentType)
+                              .has_value());
               upload_data = network::GetUploadData(request);
               if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
@@ -2980,6 +2995,9 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Payload) {
   std::string upload_data;
   sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_TRUE(
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType)
+                .has_value());
         upload_data = network::GetUploadData(request);
       }));
 
@@ -4266,6 +4284,9 @@ TEST_F(DownloadProtectionServiceTest,
     sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
+              EXPECT_TRUE(request.headers
+                              .GetHeader(net::HttpRequestHeaders::kContentType)
+                              .has_value());
               upload_data = network::GetUploadData(request);
               if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
@@ -5625,6 +5646,11 @@ class AndroidDownloadProtectionTest
     sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
+              EXPECT_EQ(*request.headers.GetHeader(
+                            net::HttpRequestHeaders::kContentType),
+                        "application/x-protobuf");
+              EXPECT_TRUE(
+                  request.headers.GetHeader("X-Goog-Api-Key").has_value());
               EXPECT_EQ(
                   request.url,
                   // Check for the correct service URL, if provided.

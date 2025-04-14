@@ -15,12 +15,18 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace safe_browsing {
 namespace {
 
 const char kDownloadRequestUrl[] =
     "https://sb-ssl.google.com/safebrowsing/clientreport/download";
+
+// Content-Type HTTP header field for the request.
+const char kCheckClientDownloadRequestContentType[] =
+    "application/octet-stream";
 
 // We sample 1% of allowlisted downloads to still send out download pings.
 const double kAllowlistDownloadSampleRate = 0.01;
@@ -73,6 +79,12 @@ bool DownloadProtectionDelegateDesktop::IsSupportedDownload(
                                                          &ignored_reason) &&
          download_type_util::GetDownloadType(target_path) !=
              ClientDownloadRequest::CHROME_EXTENSION;
+}
+
+void DownloadProtectionDelegateDesktop::FinalizeResourceRequest(
+    network::ResourceRequest& resource_request) {
+  resource_request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                     kCheckClientDownloadRequestContentType);
 }
 
 const GURL& DownloadProtectionDelegateDesktop::GetDownloadRequestUrl() const {

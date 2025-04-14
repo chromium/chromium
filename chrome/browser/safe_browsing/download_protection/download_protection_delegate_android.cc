@@ -27,6 +27,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "google_apis/common/api_key_request_util.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/url_constants.h"
 
@@ -38,6 +39,9 @@ using Outcome = DownloadProtectionMetricsData::AndroidDownloadProtectionOutcome;
 // Default URL for download check server.
 const char kDownloadRequestDefaultUrl[] =
     "https://androidchromeprotect.pa.googleapis.com/v1/download";
+
+// Content-Type HTTP header field for the request.
+const char kProtobufContentType[] = "application/x-protobuf";
 
 // File suffix for APKs.
 const base::FilePath::CharType kApkSuffix[] = FILE_PATH_LITERAL(".apk");
@@ -208,6 +212,8 @@ void DownloadProtectionDelegateAndroid::PreSerializeRequest(
 
 void DownloadProtectionDelegateAndroid::FinalizeResourceRequest(
     network::ResourceRequest& resource_request) {
+  resource_request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                                     kProtobufContentType);
   google_apis::AddAPIKeyToRequest(
       resource_request,
       google_apis::GetAPIKey(version_info::android::GetChannel()));
