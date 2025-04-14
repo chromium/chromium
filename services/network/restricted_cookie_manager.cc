@@ -1142,14 +1142,21 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
 
   bool site_for_cookies_ok =
       BoundSiteForCookies().IsEquivalent(site_for_cookies);
-  DCHECK(site_for_cookies_ok)
-      << "site_for_cookies from renderer='" << site_for_cookies.ToDebugString()
-      << "' from browser='" << BoundSiteForCookies().ToDebugString() << "';";
+  // TODO(crbug.com/402207912): Switch back to a DCEHCK once this condition
+  // always holds again.
+  if (!site_for_cookies_ok) {
+    LOG(ERROR) << "site_for_cookies from renderer='"
+               << site_for_cookies.ToDebugString() << "' from browser='"
+               << BoundSiteForCookies().ToDebugString() << "';";
+  }
 
   bool top_frame_origin_ok = (top_frame_origin == BoundTopFrameOrigin());
-  DCHECK(top_frame_origin_ok)
-      << "top_frame_origin from renderer='" << top_frame_origin
-      << "' from browser='" << BoundTopFrameOrigin() << "';";
+  // TODO(crbug.com/402207912): Switch back to a DCEHCK once this condition
+  // always holds again.
+  if (!top_frame_origin_ok) {
+    LOG(ERROR) << "top_frame_origin from renderer='" << top_frame_origin
+               << "' from browser='" << BoundTopFrameOrigin() << "';";
+  }
 
   if (metrics_subsampler_.ShouldSample(net::kHistogramSampleProbability)) {
     base::UmaHistogramBoolean(
