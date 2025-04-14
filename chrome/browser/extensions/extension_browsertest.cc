@@ -195,18 +195,6 @@ bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {
       ->WaitForPageActionVisibilityChangeTo(count);
 }
 
-bool ExtensionBrowserTest::WaitForExtensionIdle(
-    const extensions::ExtensionId& extension_id) {
-  return GetChromeExtensionTestNotificationObserver()->WaitForExtensionIdle(
-      extension_id);
-}
-
-bool ExtensionBrowserTest::WaitForExtensionNotIdle(
-    const extensions::ExtensionId& extension_id) {
-  return GetChromeExtensionTestNotificationObserver()->WaitForExtensionNotIdle(
-      extension_id);
-}
-
 ChromeExtensionTestNotificationObserver*
 ExtensionBrowserTest::GetChromeExtensionTestNotificationObserver() {
   return static_cast<ChromeExtensionTestNotificationObserver*>(

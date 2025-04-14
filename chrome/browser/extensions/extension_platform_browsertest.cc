@@ -978,6 +978,16 @@ bool ExtensionPlatformBrowserTest::WaitForExtensionViewsToLoad() {
   return test_notification_observer_->WaitForExtensionViewsToLoad();
 }
 
+bool ExtensionPlatformBrowserTest::WaitForExtensionIdle(
+    const ExtensionId& extension_id) {
+  return test_notification_observer_->WaitForExtensionIdle(extension_id);
+}
+
+bool ExtensionPlatformBrowserTest::WaitForExtensionNotIdle(
+    const ExtensionId& extension_id) {
+  return test_notification_observer_->WaitForExtensionNotIdle(extension_id);
+}
+
 std::unique_ptr<ExtensionTestNotificationObserver>
 ExtensionPlatformBrowserTest::CreateTestNotificationObserver() {
   return std::make_unique<ExtensionTestNotificationObserver>(profile());

@@ -309,6 +309,12 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   // Wait for all extension views to load.
   bool WaitForExtensionViewsToLoad();
 
+  // Wait for the extension to be idle.
+  bool WaitForExtensionIdle(const ExtensionId& extension_id);
+
+  // Wait for the extension to not be idle.
+  bool WaitForExtensionNotIdle(const ExtensionId& extension_id);
+
   // Creates the ExtensionTestNotificationObserver to use; this allows other
   // implementations to use a more specialized variant.
   virtual std::unique_ptr<ExtensionTestNotificationObserver>
