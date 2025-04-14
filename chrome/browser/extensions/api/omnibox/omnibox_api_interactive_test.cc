@@ -115,11 +115,11 @@ void VerifyMatchComponents(const ExpectedMatchComponents& expected,
 
 using ContextType = browser_test_util::ContextType;
 
-class OmniboxApiTest : public ExtensionApiTest,
-                       public testing::WithParamInterface<ContextType> {
+class OmniboxApiTestBase : public ExtensionApiTest {
  public:
-  OmniboxApiTest() : ExtensionApiTest(GetParam()) {}
-  ~OmniboxApiTest() override = default;
+  explicit OmniboxApiTestBase(ContextType context_type = ContextType::kNone)
+      : ExtensionApiTest(context_type) {}
+  ~OmniboxApiTestBase() override = default;
 
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
@@ -142,6 +142,13 @@ class OmniboxApiTest : public ExtensionApiTest,
         ->controller()
         ->autocomplete_controller();
   }
+};
+
+class OmniboxApiTest : public OmniboxApiTestBase,
+                       public testing::WithParamInterface<ContextType> {
+ public:
+  OmniboxApiTest() : OmniboxApiTestBase(GetParam()) {}
+  ~OmniboxApiTest() override = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
@@ -914,10 +921,9 @@ IN_PROC_BROWSER_TEST_P(OmniboxApiTest, MAYBE_PassEmptySuggestions) {
   }
 }
 
-// TODO(389999425): Unparameterize this test class.
-class UnscopedOmniboxApiTest : public OmniboxApiTest {
+class UnscopedOmniboxApiTest : public OmniboxApiTestBase {
   void SetUpOnMainThread() override {
-    OmniboxApiTest::SetUpOnMainThread();
+    OmniboxApiTestBase::SetUpOnMainThread();
     // Prevent the stop timer from killing the hints fetch early, which might
     // cause test flakiness due to timeout.
     GetAutocompleteController()->SetStartStopTimerDurationForTesting(
@@ -928,15 +934,15 @@ class UnscopedOmniboxApiTest : public OmniboxApiTest {
       extensions_features::kExperimentalOmniboxLabs};
 };
 
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
                        UnscopedExtensionsUpdatedOnLoadAndUnload) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
 
@@ -962,15 +968,15 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
       turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
 }
 
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
                        RuntimePermissionChangesUpdateUnscopedExtensionsList) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "optional_permissions" : [ "omnibox.directInput" ]
          })";
 
@@ -1012,14 +1018,14 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
       turl_service->GetUnscopedModeExtensionIds().contains(extension_id));
 }
 
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSendSuggestions) {
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedSendSuggestions) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
 
@@ -1099,14 +1105,14 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSendSuggestions) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedDeleteSuggestions) {
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedDeleteSuggestions) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
 
@@ -1195,14 +1201,14 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedDeleteSuggestions) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnInputEntered) {
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnInputEntered) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
   // This extension will collect input entered into the omnibox and pass it
@@ -1255,14 +1261,14 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnInputEntered) {
   EXPECT_TRUE(listener.had_user_gesture());
 }
 
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSuggestionGrouping) {
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedSuggestionGrouping) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
 
@@ -1307,14 +1313,14 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedSuggestionGrouping) {
 }
 
 // Tests that unscoped extensions are limited to sending four suggestions.
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, LimitSuggestions) {
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, LimitSuggestions) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
 
@@ -1372,14 +1378,14 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, LimitSuggestions) {
 // Tests that extensions can add actions to Omnibox suggestions and that the
 // corresponding `OnActionExecuted` event is triggered when the user clicks on
 // the action button.
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnActionExecuted) {
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, OnActionExecuted) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Action",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
   // This extension will create a suggestion with an action and handle action
@@ -1441,14 +1447,14 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, OnActionExecuted) {
 
 // Tests that extensions can add actions with custom icons to Omnibox
 // suggestions.
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, ActionIconAppliedToMatch) {
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, ActionIconAppliedToMatch) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Action with icon",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
   // This extension will create a suggestion with an action that has a green
@@ -1513,24 +1519,24 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, ActionIconAppliedToMatch) {
 
 // Tests that multiple unscoped extensions work at the same time and are
 // displayed with different headers.
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
   constexpr char kManifest[] =
       R"({
           "name": "Basic Send Suggestions",
-          "manifest_version": 2,
+          "manifest_version": 3,
           "version": "0.1",
           "omnibox": { "keyword": "alpha" },
-          "background": { "scripts": [ "background.js" ], "persistent": true },
+          "background": { "service_worker": "background.js"},
           "permissions" : [ "omnibox.directInput" ]
         })";
 
   constexpr char kManifest2[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "dog" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
 
@@ -1606,14 +1612,14 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
 }
 
 // Test if unscoped suggestions send in zero suggest.
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedExtensionZeroSuggest) {
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedExtensionZeroSuggest) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "omnibox": { "keyword": "alpha" },
-           "background": { "scripts": [ "background.js" ], "persistent": true },
+           "background": { "service_worker": "background.js"},
            "permissions" : [ "omnibox.directInput" ]
          })";
 
@@ -1688,25 +1694,25 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest, UnscopedExtensionZeroSuggest) {
 }
 
 // Test if unscoped extension are grouped together in zps.
-IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
                        MultipleUnscopedExtensionsZeroSuggest) {
   constexpr char kManifest[] =
       R"({
       "name": "Basic Send Suggestions",
-      "manifest_version": 2,
+      "manifest_version": 3,
       "version": "0.1",
       "omnibox": { "keyword": "alpha" },
-      "background": { "scripts": [ "background.js" ], "persistent": true },
+      "background": { "service_worker": "background.js"},
       "permissions" : [ "omnibox.directInput" ]
     })";
 
   constexpr char kManifest2[] =
       R"({
         "name": "Basic Send Suggestions",
-        "manifest_version": 2,
+        "manifest_version": 3,
         "version": "0.1",
         "omnibox": { "keyword": "dog" },
-        "background": { "scripts": [ "background.js" ], "persistent": true },
+        "background": { "service_worker": "background.js"},
         "permissions" : [ "omnibox.directInput" ]
       })";
 
@@ -1786,8 +1792,4 @@ IN_PROC_BROWSER_TEST_P(UnscopedOmniboxApiTest,
                     *result.match_at(3).suggestion_group_id)));
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(ServiceWorker,
-                         UnscopedOmniboxApiTest,
-                         testing::Values(ContextType::kServiceWorker));
 }  // namespace extensions
