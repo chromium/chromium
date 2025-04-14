@@ -5,7 +5,6 @@
 import '/strings.m.js';
 import '../tab_search_item.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -45,11 +44,22 @@ export class SplitNewTabPageAppElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    assert(loadTimeData.getBoolean('splitViewEnabled'));
+
+    if (loadTimeData.getBoolean('splitViewEnabled')) {
+      this.apiProxy_.getIsSplit().then(({isSplit}) => {
+        if (!isSplit) {
+          this.redirectToNtp_();
+        }
+      });
+    } else {
+      this.redirectToNtp_();
+    }
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
         callbackRouter.tabsChanged.addListener(this.onTabsChanged_.bind(this)));
+    this.listenerIds_.push(
+        callbackRouter.tabUnsplit.addListener(this.redirectToNtp_.bind(this)));
 
     this.apiProxy_.getProfileData().then(({profileData}) => {
       this.onTabsChanged_(profileData);
@@ -95,6 +105,10 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     tabData.a11yTypeText = loadTimeData.getString('a11yOpenTab');
 
     return tabData;
+  }
+
+  private redirectToNtp_() {
+    window.location.replace(loadTimeData.getString('newTabPageUrl'));
   }
 }
 

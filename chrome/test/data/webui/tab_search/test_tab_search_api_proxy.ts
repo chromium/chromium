@@ -30,6 +30,7 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
       'getTabOrganizationFeature',
       'getTabOrganizationSession',
       'getTabOrganizationModelStrategy',
+      'getIsSplit',
       'openRecentlyClosedEntry',
       'requestTabOrganization',
       'removeTabFromOrganization',
@@ -115,6 +116,11 @@ export class TestTabSearchApiProxy extends TestBrowserProxy implements
   getTabOrganizationModelStrategy() {
     this.methodCalled('getTabOrganizationModelStrategy');
     return Promise.resolve({strategy: TabOrganizationModelStrategy.kTopic});
+  }
+
+  getIsSplit() {
+    this.methodCalled('getIsSplit');
+    return Promise.resolve({isSplit: false});
   }
 
   openRecentlyClosedEntry(

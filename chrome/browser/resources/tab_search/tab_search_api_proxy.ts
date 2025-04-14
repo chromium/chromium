@@ -47,6 +47,8 @@ export interface TabSearchApiProxy {
   getTabOrganizationModelStrategy():
       Promise<{strategy: TabOrganizationModelStrategy}>;
 
+  getIsSplit(): Promise<{isSplit: boolean}>;
+
   openRecentlyClosedEntry(
       id: number, withSearch: boolean, isTab: boolean, index: number): void;
 
@@ -150,6 +152,10 @@ export class TabSearchApiProxyImpl implements TabSearchApiProxy {
 
   getTabOrganizationModelStrategy() {
     return this.handler.getTabOrganizationModelStrategy();
+  }
+
+  getIsSplit() {
+    return this.handler.getIsSplit();
   }
 
   openRecentlyClosedEntry(

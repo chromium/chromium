@@ -758,6 +758,18 @@ void TabSearchPageHandler::GetTabOrganizationModelStrategy(
   std::move(callback).Run(std::move(strategy));
 }
 
+void TabSearchPageHandler::GetIsSplit(GetIsSplitCallback callback) {
+  bool is_split = false;
+  if (base::FeatureList::IsEnabled(features::kSideBySide)) {
+    GURL url = web_ui_->GetWebContents()->GetURL();
+    if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
+      is_split = tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())
+                     ->IsSplit();
+    }
+  }
+  std::move(callback).Run(is_split);
+}
+
 void TabSearchPageHandler::SwitchToTab(
     tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) {
   const std::optional<TabDetails> details =
@@ -1588,6 +1600,23 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   tab_update_info->in_active_window = (browser == active_browser);
   tab_update_info->tab = GetTab(browser->tab_strip_model(), contents, index);
   page_->TabUpdated(std::move(tab_update_info));
+}
+
+void TabSearchPageHandler::OnSplitTabRemoved(
+    std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+    split_tabs::SplitTabId split_id,
+    TabStripModelObserver::SplitTabRemoveReason reason) {
+  if (!base::FeatureList::IsEnabled(features::kSideBySide)) {
+    return;
+  }
+  GURL url = web_ui_->GetWebContents()->GetURL();
+  if (url.spec() != chrome::kChromeUISplitViewNewTabPageURL) {
+    return;
+  }
+  if (!tabs::TabInterface::GetFromContents(web_ui_->GetWebContents())
+           ->IsSplit()) {
+    page_->TabUnsplit();
+  }
 }
 
 void TabSearchPageHandler::ScheduleDebounce() {

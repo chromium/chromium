@@ -106,6 +106,7 @@ class MockPage : public tab_search::mojom::Page {
   MOCK_METHOD(void, ShowFREChanged, (bool));
   MOCK_METHOD(void, TabOrganizationEnabledChanged, (bool));
   MOCK_METHOD(void, UnusedTabsChanged, (tab_search::mojom::UnusedTabInfoPtr));
+  MOCK_METHOD(void, TabUnsplit, ());
 };
 
 void ExpectNewTab(const tab_search::mojom::Tab* tab,

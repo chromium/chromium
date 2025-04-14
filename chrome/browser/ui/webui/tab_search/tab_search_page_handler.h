@@ -113,6 +113,7 @@ class TabSearchPageHandler
       GetTabOrganizationSessionCallback callback) override;
   void GetTabOrganizationModelStrategy(
       GetTabOrganizationModelStrategyCallback callback) override;
+  void GetIsSplit(GetIsSplitCallback callback) override;
   void SwitchToTab(
       tab_search::mojom::SwitchToTabInfoPtr switch_to_tab_info) override;
   void OpenRecentlyClosedEntry(int32_t session_id) override;
@@ -146,6 +147,10 @@ class TabSearchPageHandler
   void TabChangedAt(content::WebContents* contents,
                     int index,
                     TabChangeType change_type) override;
+  void OnSplitTabRemoved(
+      std::vector<std::pair<tabs::TabInterface*, int>> tabs,
+      split_tabs::SplitTabId split_id,
+      TabStripModelObserver::SplitTabRemoveReason reason) override;
 
   // TabDeclutterObserver:
   void OnUnusedTabsProcessed(

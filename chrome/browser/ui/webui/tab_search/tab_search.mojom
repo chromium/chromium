@@ -307,6 +307,10 @@ interface PageHandler {
   // Get the current tab organization model strategy.
   GetTabOrganizationModelStrategy() => (TabOrganizationModelStrategy strategy);
 
+  // Returns whether or not the tab associated with this WebUI, if any, is in a
+  // split view.
+  GetIsSplit() => (bool is_split);
+
   // Switch to a specific tab.
   SwitchToTab(SwitchToTabInfo switch_to_tab_info);
 
@@ -404,4 +408,8 @@ interface Page {
   // Called when the list of tabs considered stale based on their last active
   // time, or duplicate based on partial URL match, has changed.
   UnusedTabsChanged(UnusedTabInfo tabs);
+
+  // Called when the tab corresponding to this WebUI, if any, has become newly
+  // unsplit.
+  TabUnsplit();
 };
