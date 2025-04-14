@@ -37,6 +37,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
+#include "components/viz/test/test_context_support.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
@@ -2149,6 +2150,84 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
     EXPECT_FALSE(handler.IsHibernating());
     EXPECT_TRUE(CanvasElement().IsResourceValid());
   }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       ResourcesAreDiscardedAggressivelyOnlyDuringHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
+  CanvasHibernationHandler* handler = CanvasElement().GetHibernationHandler();
+  viz::TestContextSupport* context_support = test_context_provider_->support();
+
+  EXPECT_FALSE(handler->IsHibernating());
+  EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
+
+  // Hide the page, queuing hibernation in an idle task.
+  // Resource should start being aggressively freed immediately.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
+  EXPECT_FALSE(handler->IsHibernating());
+
+  // Run hibernation task.
+  RunIdleTasks();
+  EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
+  EXPECT_TRUE(handler->IsHibernating());
+
+  // Show the page, resources should no longer be freed aggressively.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
+  EXPECT_FALSE(handler->IsHibernating());
+  EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       AggressiveResourceDiscardingCanBeStoppedEvenWhenContextIsLost) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+  CreateContext(kNonOpaque);
+  CanvasElement().GetOrCreateCanvasResourceProvider();
+  CanvasHibernationHandler* handler = CanvasElement().GetHibernationHandler();
+  viz::TestContextSupport* context_support = test_context_provider_->support();
+
+  // Set a minimal restoration delay to make the test fast.
+  Context2D()->SetTryRestoreContextIntervalForTesting(base::Microseconds(10));
+
+  EXPECT_FALSE(handler->IsHibernating());
+  EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
+
+  // Hide the page, queuing hibernation in an idle task.
+  // Resource should start being aggressively freed immediately.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kHidden);
+  EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
+  EXPECT_FALSE(handler->IsHibernating());
+
+  // Simulate GPU context loss while the canvas is hibernated.
+  base::RunLoop run_loop;
+  CanvasElement().addEventListener(
+      event_type_names::kContextrestored,
+      MakeGarbageCollected<CallbackEventListener>(run_loop.QuitClosure()));
+  test_context_provider_->GetTestRasterInterface()->LoseContextCHROMIUM(
+      GL_GUILTY_CONTEXT_RESET_ARB, GL_INNOCENT_CONTEXT_RESET_ARB);
+  EXPECT_FALSE(CanvasElement().IsContextLost());
+  blink::test::RunPendingTasks();
+  EXPECT_TRUE(CanvasElement().IsContextLost());
+
+  // Run hibernation task.
+  RunIdleTasks();
+  EXPECT_TRUE(context_support->GetAggressivelyFreeResources());
+  EXPECT_FALSE(handler->IsHibernating());
+
+  // Show the page, resources should no longer be freed aggressively.
+  SetDocumentVisibility(GetDocument(), PageVisibilityState::kVisible);
+  EXPECT_FALSE(handler->IsHibernating());
+  EXPECT_FALSE(context_support->GetAggressivelyFreeResources());
+
+  // Wait for context to be restored.
+  run_loop.Run();
+  EXPECT_FALSE(CanvasElement().IsContextLost());
+  EXPECT_EQ(CanvasElement().GetRasterMode(), RasterMode::kGPU);
+  EXPECT_THAT(CanvasElement().ResourceProvider(), Pointee(IsValid()));
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,

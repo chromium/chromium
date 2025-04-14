@@ -853,9 +853,7 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
   }
 
   // Conserve memory.
-  if (element->GetRasterMode() == RasterMode::kGPU) {
-    SetAggressivelyFreeSharedGpuContextResourcesIfPossible(!page_is_visible);
-  }
+  SetAggressivelyFreeSharedGpuContextResourcesIfPossible(!page_is_visible);
 
   if (features::IsCanvas2DHibernationEnabled() && element->ResourceProvider() &&
       element->GetRasterMode() == RasterMode::kGPU && !page_is_visible) {

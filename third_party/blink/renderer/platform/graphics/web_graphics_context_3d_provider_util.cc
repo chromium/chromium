@@ -119,7 +119,7 @@ void CreateWebGPUGraphicsContext3DProviderAsync(
 
 void SetAggressivelyFreeSharedGpuContextResourcesIfPossible(bool value) {
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
-      SharedGpuContext::ContextProviderWrapper();
+      SharedGpuContext::GetExistingContextProviderWrapper();
 
   if (!context_provider_wrapper) {
     return;
