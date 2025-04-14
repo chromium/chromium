@@ -5862,6 +5862,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SHARED_GROUP_ERROR_TITLE" desc="Title for a generic alert when an error happened.">
         Something went wrong
       </message>
+      <message name="IDS_IOS_SHARED_GROUP_MANAGE_GROUP" desc="The Voice Over label for the button allowing the user to manage a group. [Read by Text To Speech]">
+        Manage group
+      </message>
       <message name="IDS_IOS_SHARED_GROUP_SHARE_GROUP" desc="The Voice Over label for the button allowing the user to share a group.">
         Share group
       </message>

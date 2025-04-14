@@ -433,6 +433,13 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
              forControlEvents:UIControlEventTouchUpInside];
     [facePileButton addSubview:_facePileView];
     facePileButton.accessibilityIdentifier = kTabGroupFacePileButtonIdentifier;
+    if (_sharingState == SharingState::kNotShared) {
+      facePileButton.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_SHARE_GROUP);
+    } else {
+      facePileButton.accessibilityLabel =
+          l10n_util::GetNSString(IDS_IOS_SHARED_GROUP_MANAGE_GROUP);
+    }
     [NSLayoutConstraint activateConstraints:@[
       [facePileButton.widthAnchor constraintEqualToConstant:kFacePileWidth],
       [facePileButton.heightAnchor constraintEqualToConstant:kFacePileHeight],
