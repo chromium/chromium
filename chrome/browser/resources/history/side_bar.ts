@@ -69,7 +69,10 @@ export class HistorySideBarElement extends PolymerElement {
         notify: true,
       },
 
-      guestSession_: Boolean,
+      guestSession_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('isGuestSession'),
+      },
 
       historyClustersVisibleManagedByPolicy_: {
         type: Boolean,
@@ -94,21 +97,23 @@ export class HistorySideBarElement extends PolymerElement {
             'historyClustersEnabled, historyClustersVisible)',
       },
 
-      compareHistoryEnabled_: Boolean,
+      compareHistoryEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('compareHistoryEnabled'),
+      },
     };
   }
 
-  footerInfo: FooterInfo;
-  historyClustersEnabled: boolean;
-  historyClustersVisible: boolean;
-  selectedPage: string;
-  selectedTab: number;
-  private guestSession_ = loadTimeData.getBoolean('isGuestSession');
-  private historyClustersVisibleManagedByPolicy_: boolean;
-  private showFooter_: boolean;
-  private showHistoryClusters_: boolean;
-  private compareHistoryEnabled_: boolean =
-      loadTimeData.getBoolean('compareHistoryEnabled');
+  declare footerInfo: FooterInfo;
+  declare historyClustersEnabled: boolean;
+  declare historyClustersVisible: boolean;
+  declare selectedPage: string;
+  declare selectedTab: number;
+  declare private guestSession_;
+  declare private historyClustersVisibleManagedByPolicy_: boolean;
+  declare private showFooter_: boolean;
+  declare private showHistoryClusters_: boolean;
+  declare private compareHistoryEnabled_: boolean;
 
   override ready() {
     super.ready();

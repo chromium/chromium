@@ -72,38 +72,54 @@ export class ProductSpecificationsListsElement extends PolymerElement {
 
   static get properties() {
     return {
-      selectedItems: Object,
-      searchTerm: String,
+      selectedItems: {
+        type: Object,
+        value: () => new Set(),
+      },
+      searchTerm: {
+        type: String,
+        value: '',
+      },
       pendingDelete_: {
         notify: true,
         type: Boolean,
+        value: false,
       },
       lastSelectedIndex_: Number,
-      allItems_: Array,
+      allItems_: {
+        type: Array,
+        value: () => [],
+      },
       displayedItems_: {
         type: Array,
         computed: 'computeDisplayedItems_(allItems_.*, searchTerm)',
       },
-      uuidOfOpenMenu_: Object,
-      productSpecificationsFeatureState_: Object,
+      uuidOfOpenMenu_: {
+        type: Object,
+        value: null,
+      },
+      productSpecificationsFeatureState_: {
+        type: Object,
+        value: null,
+      },
     };
   }
 
-  selectedItems: Set<string> = new Set();
-  searchTerm: string = '';
-  private pendingDelete_: boolean = false;
-  private lastSelectedIndex_: number|undefined = undefined;
+  declare selectedItems: Set<string>;
+  declare searchTerm: string;
+  declare private pendingDelete_: boolean;
+  declare private lastSelectedIndex_: number|undefined;
   private shoppingApi_: ShoppingServiceBrowserProxy =
       ShoppingServiceBrowserProxyImpl.getInstance();
-  private allItems_: ProductSpecificationsSet[] = [];
-  private displayedItems_: ProductSpecificationsSet[] = [];
+  declare private allItems_: ProductSpecificationsSet[];
+  declare private displayedItems_: ProductSpecificationsSet[];
 
   private focusGrid_: FocusGrid|null = null;
-  private uuidOfOpenMenu_: Uuid|null = null;
+  declare private uuidOfOpenMenu_: Uuid|null;
   private callbackRouter_: PageCallbackRouter;
   private listenerIds_: number[] = [];
-  private productSpecificationsFeatureState_: ProductSpecificationsFeatureState|
-      null = null;
+  declare private productSpecificationsFeatureState_:
+      ProductSpecificationsFeatureState|null;
   private productSpecificationsProxy_: ProductSpecificationsBrowserProxy =
       ProductSpecificationsBrowserProxyImpl.getInstance();
   private boundFocusCallback_: () => void;

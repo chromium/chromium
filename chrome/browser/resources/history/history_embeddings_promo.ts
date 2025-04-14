@@ -54,9 +54,9 @@ export class HistoryEmbeddingsPromoElement extends CrLitElement {
     };
   }
 
-  protected isAnswersEnabled_: boolean =
+  protected accessor isAnswersEnabled_: boolean =
       loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers');
-  protected shown_: boolean =
+  protected accessor shown_: boolean =
       !(window.localStorage.getItem(getPromoShownKey()));
 
   protected onCloseClick_() {

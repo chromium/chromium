@@ -41,11 +41,15 @@ export class HistoryToolbarElement extends PolymerElement {
       count: {
         type: Number,
         observer: 'changeToolbarView_',
+        value: 0,
       },
 
       // True if 1 or more history items are selected. When this value changes
       // the background colour changes.
-      itemsSelected_: Boolean,
+      itemsSelected_: {
+        type: Boolean,
+        value: false,
+      },
 
       pendingDelete: Boolean,
 
@@ -98,20 +102,20 @@ export class HistoryToolbarElement extends PolymerElement {
     };
   }
 
-  count: number = 0;
-  pendingDelete: boolean;
-  private searchIconOverride_?: string;
-  private searchInputAriaDescription_?: string;
-  private searchPrompt_: string;
-  searchTerm: string;
-  selectedPage: string;
-  hasDrawer: boolean;
-  hasMoreResults: boolean;
-  querying: boolean;
-  queryInfo?: HistoryQuery;
-  spinnerActive: boolean;
-  showMenuPromo: boolean;
-  private itemsSelected_: boolean = false;
+  declare count: number;
+  declare pendingDelete: boolean;
+  declare private searchIconOverride_?: string;
+  declare private searchInputAriaDescription_?: string;
+  declare private searchPrompt_: string;
+  declare searchTerm: string;
+  declare selectedPage: string;
+  declare hasDrawer: boolean;
+  declare hasMoreResults: boolean;
+  declare querying: boolean;
+  declare queryInfo?: HistoryQuery;
+  declare spinnerActive: boolean;
+  declare showMenuPromo: boolean;
+  declare private itemsSelected_: boolean;
 
   private fire_(eventName: string, detail?: any) {
     this.dispatchEvent(

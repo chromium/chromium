@@ -82,13 +82,13 @@ export class HistorySyncedDeviceCardElement extends CrLitElement {
     };
   }
 
-  device: string = '';
-  lastUpdateTime: string = '';
-  tabs: ForeignSessionTab[] = [];
-  opened: boolean = true;
-  searchTerm: string;
-  separatorIndexes: number[] = [];
-  sessionTag: string = '';
+  accessor device: string = '';
+  accessor lastUpdateTime: string = '';
+  accessor tabs: ForeignSessionTab[] = [];
+  accessor opened: boolean = true;
+  accessor searchTerm: string;
+  accessor separatorIndexes: number[] = [];
+  accessor sessionTag: string = '';
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);

@@ -61,9 +61,9 @@ export class HistoryQueryManagerElement extends PolymerElement {
     return ['searchTermChanged_(queryState.searchTerm)'];
   }
 
-  queryState: QueryState;
-  queryResult: QueryResult;
-  router?: HistoryRouterElement;
+  declare queryState: QueryState;
+  declare queryResult: QueryResult;
+  declare router?: HistoryRouterElement;
   private eventTracker_: EventTracker = new EventTracker();
   /**
    * When this is non-null, that means there's a QueryResult that's pending

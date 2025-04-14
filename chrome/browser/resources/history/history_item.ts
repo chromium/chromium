@@ -83,17 +83,17 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 
   private isShiftKeyDown_: boolean = false;
-  protected selectionNotAllowed_: boolean =
+  protected accessor selectionNotAllowed_: boolean =
       !loadTimeData.getBoolean('allowDeletingHistory');
   private eventTracker_: EventTracker = new EventTracker();
-  item?: HistoryEntry;
-  hasTimeGap: boolean = false;
-  index: number = -1;
-  searchTerm: string = '';
-  isCardStart: boolean = false;
-  isCardEnd: boolean = false;
-  numberOfItems: number = 0;
-  selected: boolean = false;
+  accessor item: HistoryEntry|undefined;
+  accessor hasTimeGap: boolean = false;
+  accessor index: number = -1;
+  accessor searchTerm: string = '';
+  accessor isCardStart: boolean = false;
+  accessor isCardEnd: boolean = false;
+  accessor numberOfItems: number = 0;
+  accessor selected: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();

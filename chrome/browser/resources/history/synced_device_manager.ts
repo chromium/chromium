@@ -84,16 +84,18 @@ export class HistorySyncedDeviceManagerElement extends CrLitElement {
 
   private focusGrid_: FocusGrid|null = null;
   private focusGridUpdateTimeout_: number|null = null;
-  protected syncedDevices_: ForeignDeviceInternal[] = [];
-  private hasSeenForeignData_: boolean = false;
-  private fetchingSyncedTabs_: boolean = false;
-  private actionMenuModel_: string|null = null;
-  private guestSession_: boolean = loadTimeData.getBoolean('isGuestSession');
-  private signInAllowed_: boolean = loadTimeData.getBoolean('isSignInAllowed');
+  protected accessor syncedDevices_: ForeignDeviceInternal[] = [];
+  private accessor hasSeenForeignData_: boolean = false;
+  private accessor fetchingSyncedTabs_: boolean = false;
+  private accessor actionMenuModel_: string|null = null;
+  private accessor guestSession_: boolean =
+      loadTimeData.getBoolean('isGuestSession');
+  private accessor signInAllowed_: boolean =
+      loadTimeData.getBoolean('isSignInAllowed');
 
-  signInState: boolean = false;
-  searchTerm: string = '';
-  sessionList: ForeignSession[] = [];
+  accessor signInState: boolean = false;
+  accessor searchTerm: string = '';
+  accessor sessionList: ForeignSession[] = [];
 
   override firstUpdated() {
     this.addEventListener('synced-device-card-open-menu', this.onOpenMenu_);
