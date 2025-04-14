@@ -46,7 +46,6 @@
 #include "media/base/media_log.h"
 #include "media/base/media_player_logging_id.h"
 #include "media/base/media_switches.h"
-#include "media/base/media_url_demuxer.h"
 #include "media/base/memory_dump_provider_proxy.h"
 #include "media/base/output_device_info.h"
 #include "media/base/remoting_constants.h"
@@ -918,15 +917,6 @@ void WebMediaPlayerImpl::DoLoad(LoadType load_type,
   learning::FeatureDictionary dict;
   will_play_helper_.BeginObservation(dict);
 
-#if BUILDFLAG(IS_ANDROID)
-  // Only allow credentials if the crossorigin attribute is unspecified
-  // (kCorsModeUnspecified) or "use-credentials" (kCorsModeUseCredentials).
-  // This value is only used by the MediaPlayerRenderer.
-  // See https://crbug.com/936566.
-  demuxer_manager_->SetAllowMediaPlayerRendererCredentials(cors_mode !=
-                                                           kCorsModeAnonymous);
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Note: `url` may be very large, take care when making copies.
   demuxer_manager_->SetLoadedUrl(GURL(url));
   load_type_ = load_type;
@@ -1509,15 +1499,10 @@ WebTimeRanges WebMediaPlayerImpl::Seekable() const {
   // finite duration; this allows looping to work.
   const bool is_finite_stream = IsStreaming() && std::isfinite(seekable_end);
 
-  // Do not change the seekable range when using the MediaPlayerRenderer. It
-  // will take care of dropping invalid seeks.
-  const bool force_seeks_to_zero =
-      !using_media_player_renderer_ && is_finite_stream;
-
   // TODO(dalecurtis): Technically this allows seeking on media which return an
   // infinite duration so long as DataSource::IsStreaming() is false. While not
   // expected, disabling this breaks semi-live players, http://crbug.com/427412.
-  return WebTimeRanges(0.0, force_seeks_to_zero ? 0.0 : seekable_end);
+  return WebTimeRanges(0.0, is_finite_stream ? 0.0 : seekable_end);
 }
 
 bool WebMediaPlayerImpl::IsPrerollAttemptNeeded() {
@@ -1990,27 +1975,13 @@ void WebMediaPlayerImpl::DemuxerRequestsSeek(base::TimeDelta seek_time) {
 
 void WebMediaPlayerImpl::RestartForHls() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  observer_->OnHlsManifestDetected();
-
-  // Use the media player renderer if the native hls demuxer isn't compiled in
-  // or if the feature is disabled.
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (!base::FeatureList::IsEnabled(media::kBuiltInHlsPlayer)) {
-    renderer_factory_selector_->SetBaseRendererType(
-        media::RendererType::kMediaPlayer);
-  }
-#elif BUILDFLAG(IS_ANDROID)
-  renderer_factory_selector_->SetBaseRendererType(
-      media::RendererType::kMediaPlayer);
-#else
-  // Shouldn't be reachable from desktop where hls is not enabled.
-  NOTREACHED();
-#endif
-
-#if BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
+  observer_->OnHlsManifestDetected();
   SetMemoryReportingState(false);
   StartPipeline();
-#endif
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 }
 
 void WebMediaPlayerImpl::OnError(media::PipelineStatus status) {
@@ -2221,8 +2192,9 @@ void WebMediaPlayerImpl::CreateVideoDecodeStatsReporter() {
     return;
 
   // Only record stats from the local pipeline.
-  if (is_flinging_ || is_remote_rendering_ || using_media_player_renderer_)
+  if (is_flinging_ || is_remote_rendering_) {
     return;
+  }
 
   // Stats reporter requires a valid config. We may not have one for HLS cases
   // where URL demuxer doesn't know details of the stream.
@@ -2486,14 +2458,7 @@ void WebMediaPlayerImpl::OnVideoNaturalSizeChange(const gfx::Size& size) {
 
   pipeline_metadata_.natural_size = rotated_size;
 
-  if (using_media_player_renderer_ && old_size.IsEmpty()) {
-    // If we are using MediaPlayerRenderer and this is the first size change, we
-    // now know that there is a video track. This condition is paired with code
-    // in CreateWatchTimeReporter() that guesses the existence of a video track.
-    CreateWatchTimeReporter();
-  } else {
-    UpdateSecondaryProperties();
-  }
+  UpdateSecondaryProperties();
 
   if (video_decode_stats_reporter_ &&
       !video_decode_stats_reporter_->MatchesBucketedNaturalSize(
@@ -3039,17 +3004,7 @@ media::PipelineStatus WebMediaPlayerImpl::OnDemuxerCreated(
     bool is_streaming,
     bool is_static) {
   CHECK_NE(demuxer, nullptr);
-  switch (demuxer->GetDemuxerType()) {
-    case media::DemuxerType::kMediaUrlDemuxer: {
-      using_media_player_renderer_ = true;
-      video_decode_stats_reporter_.reset();
-      break;
-    }
-    default: {
-      seeking_ = true;
-      break;
-    }
-  }
+  seeking_ = true;
 
   if (start_type != media::Pipeline::StartType::kNormal) {
     attempting_suspended_start_ = true;
@@ -3550,19 +3505,12 @@ void WebMediaPlayerImpl::CreateWatchTimeReporter() {
   if (!HasVideo() && !HasAudio())
     return;
 
-  // MediaPlayerRenderer does not know about tracks until playback starts.
-  // Assume audio-only unless the natural size has been detected.
-  bool has_video = pipeline_metadata_.has_video;
-  if (using_media_player_renderer_) {
-    has_video = !pipeline_metadata_.natural_size.IsEmpty();
-  }
-
   // Create the watch time reporter and synchronize its initial state.
   watch_time_reporter_ = std::make_unique<WatchTimeReporter>(
       media::mojom::PlaybackProperties::New(
-          pipeline_metadata_.has_audio, has_video, false, false,
-          GetDemuxerType() == media::DemuxerType::kChunkDemuxer, is_encrypted_,
-          embedded_media_experience_enabled_,
+          pipeline_metadata_.has_audio, pipeline_metadata_.has_video, false,
+          false, GetDemuxerType() == media::DemuxerType::kChunkDemuxer,
+          is_encrypted_, embedded_media_experience_enabled_,
           media::mojom::MediaStreamType::kNone, renderer_type_),
       pipeline_metadata_.natural_size,
       WTF::BindRepeating(&WebMediaPlayerImpl::GetCurrentTimeInternal,
@@ -3747,13 +3695,6 @@ bool WebMediaPlayerImpl::ShouldPausePlaybackWhenHidden() const {
   // Audio only stream is allowed to play when in background.
   if (!HasVideo() && preserve_audio)
     return false;
-
-  // MediaPlayer always signals audio and video, so use an empty natural size to
-  // determine if there's really video or not.
-  if (using_media_player_renderer_ &&
-      pipeline_metadata_.natural_size.IsEmpty() && preserve_audio) {
-    return false;
-  }
 
   // Video PiP is the only exception when background video playback is disabled.
   if (HasVideo() && IsInVideoPictureInPicture()) {
