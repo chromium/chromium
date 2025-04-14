@@ -745,6 +745,11 @@ inline constexpr char kMigrateWidgetsPrefs[] =
 inline constexpr char kProvisionalNotificationsAllowedByPolicy[] =
     "ios.notifications.provisional.allowed_by_policy";
 
+// Timestamp tracking when the sync error infobar was dismissed the last time
+// (either explicitly swiped by the user or through the dismissal timeout).
+inline constexpr char kIosSyncInfobarErrorLastDismissedTimestamp[] =
+    "ios.sync_infobar_error.last_dismissed_timestamp";
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PREFS_PREF_NAMES_H_

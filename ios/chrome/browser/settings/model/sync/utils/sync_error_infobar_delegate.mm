@@ -9,9 +9,12 @@
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "components/infobars/core/infobar.h"
 #import "components/infobars/core/infobar_delegate.h"
 #import "components/infobars/core/infobar_manager.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/base/features.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
@@ -19,14 +22,44 @@
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+
+namespace {
+
+// Whether the sync error notification timeout is still active since the last
+// error dismissal time.
+bool SyncErrorNotificationsPaused(ProfileIOS* profile) {
+  CHECK(profile);
+  base::Time now = base::Time::Now();
+  base::Time last_dismissal = profile->GetPrefs()->GetTime(
+      prefs::kIosSyncInfobarErrorLastDismissedTimestamp);
+
+  // In case pref time is set too far in the future due to a system time
+  // error, the infobar would not be displayed for a long period. To prevent
+  // that, bypass the check if `last_dismissal` is set to more than twice the
+  // timeout time in the future.
+  if (now + 2 * kSyncErrorInfobarTimeout < last_dismissal) {
+    return false;
+  }
+
+  return now < last_dismissal + kSyncErrorInfobarTimeout;
+}
+
+}  // namespace
 
 // static
 bool SyncErrorInfoBarDelegate::Create(infobars::InfoBarManager* infobar_manager,
                                       ProfileIOS* profile,
                                       id<SyncPresenter> presenter) {
-  DCHECK(infobar_manager);
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncTrustedVaultInfobarImprovements) &&
+      SyncErrorNotificationsPaused(profile)) {
+    return false;
+  }
+
+  CHECK(infobar_manager);
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
       new SyncErrorInfoBarDelegate(profile, presenter));
   std::unique_ptr<InfoBarIOS> infobar = std::make_unique<InfoBarIOS>(
@@ -120,6 +153,11 @@ bool SyncErrorInfoBarDelegate::Accept() {
 }
 
 void SyncErrorInfoBarDelegate::InfoBarDismissed() {
+  if (base::FeatureList::IsEnabled(
+          syncer::kSyncTrustedVaultInfobarImprovements)) {
+    profile_->GetPrefs()->SetTime(
+        prefs::kIosSyncInfobarErrorLastDismissedTimestamp, base::Time::Now());
+  }
   LogSyncErrorInfobarDismissed(error_state_);
   ConfirmInfoBarDelegate::InfoBarDismissed();
 }
