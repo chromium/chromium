@@ -50,7 +50,7 @@ bool IsNewInstall(const apps::AppUpdate& app_update) {
     case apps::AppType::kUnknown:
     case apps::AppType::kSystemWeb:
     case apps::AppType::kRemote:
-      // Chrome, Lacros, Settings, etc. are built-in.
+      // Chrome, Settings, etc. are built-in.
       return false;
     case apps::AppType::kArc:
     case apps::AppType::kCrostini:
