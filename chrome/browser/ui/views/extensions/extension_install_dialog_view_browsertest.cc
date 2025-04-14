@@ -41,6 +41,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_icon_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -584,8 +585,7 @@ void ExtensionInstallDialogViewOnUninstallationTest::UninstallExtension(
     const std::string& extension_id) {
   extensions::TestExtensionRegistryObserver observer(
       extensions::ExtensionRegistry::Get(browser()->profile()), extension_id);
-  extensions::ExtensionSystem::Get(browser()->profile())
-      ->extension_service()
+  extensions::ExtensionRegistrar::Get(browser()->profile())
       ->UninstallExtension(
           extension_id,
           extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, nullptr);

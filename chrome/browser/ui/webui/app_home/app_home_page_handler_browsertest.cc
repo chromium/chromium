@@ -35,6 +35,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -195,6 +196,10 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
     return extensions::ExtensionSystem::Get(profile())->extension_service();
   }
 
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(profile());
+  }
+
   webapps::AppId InstallTestWebApp(
       WebappInstallSource install_source =
           WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -260,7 +265,7 @@ class AppHomePageHandlerTest : public InProcessBrowserTest {
     // locking semantics on WinOS platfom. To workaround this case, make sure
     // the task of uninstalling extension complete before the `AppHome` test
     // tear down.
-    extension_service()->UninstallExtension(
+    extension_registrar()->UninstallExtension(
         extension->id(),
         extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error,
         run_loop.QuitClosure());

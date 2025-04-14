@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "content/public/test/web_contents_tester.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
 
@@ -36,6 +37,10 @@ class ExtensionsToolbarUnitTest : public TestWithBrowserView {
 
   extensions::ExtensionService* extension_service() {
     return extension_service_;
+  }
+
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(profile());
   }
 
   ExtensionsToolbarContainer* extensions_container() {

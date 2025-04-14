@@ -237,7 +237,7 @@ TEST_F(ExtensionSettingsOverriddenDialogUnitTest,
   EXPECT_TRUE(controller.ShouldShow());
   controller.OnDialogShown();
 
-  service()->UninstallExtension(
+  registrar()->UninstallExtension(
       extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   controller.HandleDialogResult(DialogResult::kChangeSettingsBack);

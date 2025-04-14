@@ -190,8 +190,7 @@ class AppInfoDialogViewsTest : public BrowserWithTestWindowTest,
   }
 
   void UninstallApp(const std::string& app_id) {
-    extensions::ExtensionSystem::Get(extension_environment_.profile())
-        ->extension_service()
+    extensions::ExtensionRegistrar::Get(extension_environment_.profile())
         ->UninstallExtension(
             app_id, extensions::UninstallReason::UNINSTALL_REASON_FOR_TESTING,
             nullptr);

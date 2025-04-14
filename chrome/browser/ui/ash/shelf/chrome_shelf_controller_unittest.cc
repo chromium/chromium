@@ -1219,7 +1219,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   // Uninstall extension.
   void UninstallExtension(const std::string& extension_id,
                           extensions::UninstallReason reason) {
-    extension_service_->UninstallExtension(extension_id, reason, nullptr);
+    extension_registrar_->UninstallExtension(extension_id, reason, nullptr);
   }
 
   // Unload extension.

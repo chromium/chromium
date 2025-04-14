@@ -998,7 +998,7 @@ TEST_F(ToolbarActionsModelUnitTest, PinStateErasedOnUninstallation) {
               testing::ElementsAre(extension->id()));
 
   // Uninstall the extension. The pin state should be forgotten.
-  service()->UninstallExtension(
+  registrar()->UninstallExtension(
       extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   EXPECT_FALSE(toolbar_model()->IsActionPinned(extension->id()));

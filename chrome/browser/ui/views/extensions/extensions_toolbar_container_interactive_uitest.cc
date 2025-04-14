@@ -48,6 +48,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions_manager.h"
@@ -141,8 +142,10 @@ class ExtensionsToolbarContainerUITest : public ExtensionsToolbarUITest {
             extension_id, extensions::disable_reason::DISABLE_USER_ACTION);
         break;
       case ExtensionRemovalMethod::kUninstall:
-        extension_service->UninstallExtension(
-            extension_id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+        extensions::ExtensionRegistrar::Get(browser()->profile())
+            ->UninstallExtension(extension_id,
+                                 extensions::UNINSTALL_REASON_FOR_TESTING,
+                                 nullptr);
         break;
       case ExtensionRemovalMethod::kBlocklist:
         extension_service->BlocklistExtensionForTest(extension_id);
@@ -510,9 +513,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
   ASSERT_TRUE(bubble_widget);
   views::test::WidgetVisibleWaiter(bubble_widget).Wait();
 
-  extensions::ExtensionService* const extension_service =
-      extensions::ExtensionSystem::Get(profile())->extension_service();
-  extension_service->UninstallExtension(
+  extensions::ExtensionRegistrar::Get(profile())->UninstallExtension(
       extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   EXPECT_EQ(0u, GetVisibleToolbarActionViews().size());

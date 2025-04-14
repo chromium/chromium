@@ -135,6 +135,7 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/slow_http_response.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -1182,11 +1183,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TabClosingWhenRemovingExtension) {
   model->AddObserver(&observer);
 
   // Uninstall the extension and make sure TabClosing is sent.
-  extensions::ExtensionService* service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
-  service->UninstallExtension(
-      GetExtension()->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+  extensions::ExtensionRegistrar::Get(browser()->profile())
+      ->UninstallExtension(GetExtension()->id(),
+                           extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   EXPECT_EQ(1, observer.closing_count());
 
   model->RemoveObserver(&observer);
