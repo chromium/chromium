@@ -5,8 +5,6 @@
 #include "components/autofill/core/browser/payments/payments_requests/create_bnpl_payment_instrument_request.h"
 
 #include "base/json/json_writer.h"
-#include "base/strings/escape.h"
-#include "base/strings/stringprintf.h"
 #include "base/values.h"
 
 namespace autofill::payments {
@@ -14,9 +12,6 @@ namespace autofill::payments {
 namespace {
 const char kCreateBnplPaymentInstrumentRequestPath[] =
     "payments/apis-secure/chromepaymentsservice/createpaymentinstrument";
-
-const char kCreateBnplPaymentInstrumentRequestFormat[] =
-    "requestContentType=application/json; charset=utf-8&request=%s";
 }  // namespace
 
 CreateBnplPaymentInstrumentRequest::CreateBnplPaymentInstrumentRequest(
@@ -36,7 +31,7 @@ std::string CreateBnplPaymentInstrumentRequest::GetRequestUrlPath() {
 }
 
 std::string CreateBnplPaymentInstrumentRequest::GetRequestContentType() {
-  return "application/x-www-form-urlencoded";
+  return "application/json";
 }
 
 std::string CreateBnplPaymentInstrumentRequest::GetRequestContent() {
@@ -64,13 +59,7 @@ std::string CreateBnplPaymentInstrumentRequest::GetRequestContent() {
   request_dict.Set("risk_data_encoded",
                    BuildRiskDictionary(request_details_.risk_data));
 
-  std::string json_request = base::WriteJson(request_dict).value();
-  std::string request_content = base::StringPrintf(
-      kCreateBnplPaymentInstrumentRequestFormat,
-      base::EscapeUrlEncodedData(json_request, true).c_str());
-  DVLOG(3) << "create bnpl payment instrument request body: "
-           << request_content;
-  return request_content;
+  return base::WriteJson(request_dict).value();
 }
 
 void CreateBnplPaymentInstrumentRequest::ParseResponse(
