@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_crypter.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_fetcher.h"
+#include "components/ip_protection/common/probabilistic_reveal_token_test_issuer.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "sql/database.h"
@@ -31,23 +32,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
-#include "third_party/private-join-and-compute/src/crypto/context.h"
-#include "third_party/private-join-and-compute/src/crypto/ec_group.h"
-#include "third_party/private-join-and-compute/src/crypto/ec_point.h"
-#include "third_party/private-join-and-compute/src/crypto/elgamal.h"
 
 namespace ip_protection {
 
 namespace {
-
-using ::private_join_and_compute::Context;
-using ::private_join_and_compute::ECGroup;
-using ::private_join_and_compute::ECPoint;
-using ::private_join_and_compute::ElGamalDecrypter;
-using ::private_join_and_compute::ElGamalEncrypter;
-using ::private_join_and_compute::elgamal::Ciphertext;
-using ::private_join_and_compute::elgamal::PrivateKey;
-using ::private_join_and_compute::elgamal::PublicKey;
 
 constexpr char kGetTokensResultHistogram[] =
     "NetworkService.IpProtection.GetProbabilisticRevealTokensResult";
@@ -100,127 +88,8 @@ bool Deserialize(const std::string& serialized_prt,
   return true;
 }
 
-// Mocks PRT issuer server capabilities, used to create/decrypt tokens for
-// tests.
-class MockIssuer {
- public:
-  static absl::StatusOr<std::unique_ptr<MockIssuer>> Create(
-      uint64_t private_key,
-      size_t num_tokens,
-      base::Time expiration,
-      base::Time next_start,
-      int32_t num_tokens_with_signal) {
-    auto context = std::make_unique<Context>();
-    std::unique_ptr<ECGroup> group;
-    {
-      ASSIGN_OR_RETURN(ECGroup local_group,
-                       ECGroup::Create(NID_X9_62_prime256v1, context.get()));
-      group = std::make_unique<ECGroup>(std::move(local_group));
-    }
-
-    std::unique_ptr<ElGamalEncrypter> encrypter;
-    std::string serialized_public_key;
-    {
-      ASSIGN_OR_RETURN(ECPoint g, group->GetFixedGenerator());
-      ASSIGN_OR_RETURN(ECPoint y, g.Mul(context->CreateBigNum(private_key)));
-      ASSIGN_OR_RETURN(serialized_public_key, y.ToBytesCompressed());
-      encrypter = std::make_unique<ElGamalEncrypter>(
-          group.get(),
-          std::make_unique<PublicKey>(PublicKey{std::move(g), std::move(y)}));
-    }
-
-    auto decrypter =
-        std::make_unique<ElGamalDecrypter>(std::make_unique<PrivateKey>(
-            PrivateKey{context->CreateBigNum(private_key)}));
-
-    std::vector<ProbabilisticRevealToken> tokens;
-    tokens.reserve(num_tokens);
-    for (std::size_t i = 0; i < num_tokens; ++i) {
-      ASSIGN_OR_RETURN(
-          ECPoint plaintext_point,
-          group->GetPointByHashingToCurveSha256(
-              "awesome-probabilistic-reveal-token-" + base::NumberToString(i)));
-      ASSIGN_OR_RETURN(Ciphertext ciphertext,
-                       encrypter->Encrypt(plaintext_point));
-      ASSIGN_OR_RETURN(std::string u_compressed,
-                       ciphertext.u.ToBytesCompressed());
-      ASSIGN_OR_RETURN(std::string e_compressed,
-                       ciphertext.e.ToBytesCompressed());
-      tokens.emplace_back(1, std::move(u_compressed), std::move(e_compressed));
-    }
-    return base::WrapUnique<MockIssuer>(new MockIssuer(
-        std::move(context), std::move(group), std::move(encrypter),
-        std::move(decrypter), std::move(serialized_public_key),
-        std::move(tokens), expiration, next_start, num_tokens_with_signal));
-  }
-
-  const std::vector<ProbabilisticRevealToken>& Tokens() const {
-    return tokens_;
-  }
-
-  void SetTokens(std::vector<ProbabilisticRevealToken> tokens) {
-    tokens_ = std::move(tokens);
-  }
-
-  std::string GetSerializedPublicKey() const { return serialized_public_key_; }
-
-  // Decrypt given token, serialize returned point, and base64 encode.
-  absl::StatusOr<std::string> DecryptSerializeEncode(
-      const ProbabilisticRevealToken& token) {
-    ASSIGN_OR_RETURN(ECPoint u, group_->CreateECPoint(token.u));
-    ASSIGN_OR_RETURN(ECPoint e, group_->CreateECPoint(token.e));
-    Ciphertext ciphertext{std::move(u), std::move(e)};
-    ASSIGN_OR_RETURN(ECPoint point, decrypter_->Decrypt(ciphertext));
-    ASSIGN_OR_RETURN(std::string serialized_point, point.ToBytesCompressed());
-    return base::Base64Encode(serialized_point);
-  }
-
-  absl::StatusOr<std::vector<std::string>> DecryptSerializeEncode(
-      const std::vector<ProbabilisticRevealToken>& tokens) {
-    std::vector<std::string> encoded;
-    for (const auto& t : tokens) {
-      ASSIGN_OR_RETURN(std::string sp, DecryptSerializeEncode(t));
-      encoded.push_back(std::move(sp));
-    }
-    return encoded;
-  }
-
-  base::Time Expiration() const { return expiration_; }
-  base::Time NextStart() const { return next_start_; }
-  int32_t NumTokensWithSignal() const { return num_tokens_with_signal_; }
-
- private:
-  MockIssuer(std::unique_ptr<Context> context,
-             std::unique_ptr<ECGroup> group,
-             std::unique_ptr<ElGamalEncrypter> encrypter,
-             std::unique_ptr<ElGamalDecrypter> decrypter,
-             std::string serialized_public_key,
-             std::vector<ProbabilisticRevealToken> tokens,
-             base::Time expiration,
-             base::Time next_start,
-             int32_t num_tokens_with_signal)
-      : context_(std::move(context)),
-        group_(std::move(group)),
-        encrypter_(std::move(encrypter)),
-        decrypter_(std::move(decrypter)),
-        serialized_public_key_(std::move(serialized_public_key)),
-        tokens_(std::move(tokens)),
-        expiration_(expiration),
-        next_start_(next_start),
-        num_tokens_with_signal_(num_tokens_with_signal) {}
-  std::unique_ptr<const Context> context_;
-  std::unique_ptr<const ECGroup> group_;
-  std::unique_ptr<const ElGamalEncrypter> encrypter_;
-  std::unique_ptr<const ElGamalDecrypter> decrypter_;
-  const std::string serialized_public_key_;
-  std::vector<ProbabilisticRevealToken> tokens_;
-  const base::Time expiration_;
-  const base::Time next_start_;
-  const int32_t num_tokens_with_signal_;
-};
-
-// Mocks a PRT fetcher. Uses MockIssuer for successful fetches with valid tokens
-// and SetResponse to mock error results.
+// Mocks a PRT fetcher. Uses ProbabilisticRevealTokenTestIssuer for successful
+// fetches with valid tokens and SetResponse to mock error results.
 class MockFetcher : public IpProtectionProbabilisticRevealTokenFetcher {
  public:
   MockFetcher() = default;
@@ -246,10 +115,14 @@ class MockFetcher : public IpProtectionProbabilisticRevealTokenFetcher {
                          base::Time next_start,
                          int32_t num_tokens_with_signal,
                          std::string epoch_id) {
-    ASSIGN_OR_RETURN(issuer_,
-                     MockIssuer::Create(private_key, num_tokens, expiration,
-                                        next_start, num_tokens_with_signal));
-
+    {
+      auto maybe_issuer =
+          ProbabilisticRevealTokenTestIssuer::Create(private_key, num_tokens);
+      if (!maybe_issuer.has_value()) {
+        return maybe_issuer.error();
+      }
+      issuer_ = std::move(maybe_issuer.value());
+    }
     TryGetProbabilisticRevealTokensOutcome outcome;
     outcome.tokens = issuer_->Tokens();
     outcome.public_key = issuer_->GetSerializedPublicKey();
@@ -267,13 +140,13 @@ class MockFetcher : public IpProtectionProbabilisticRevealTokenFetcher {
 
   size_t NumCalls() const { return num_calls_; }
 
-  MockIssuer* Issuer() { return issuer_.get(); }
+  ProbabilisticRevealTokenTestIssuer* Issuer() { return issuer_.get(); }
 
  private:
   std::optional<TryGetProbabilisticRevealTokensOutcome> outcome_;
   TryGetProbabilisticRevealTokensResult result_;
   size_t num_calls_ = 0;
-  std::unique_ptr<MockIssuer> issuer_;
+  std::unique_ptr<ProbabilisticRevealTokenTestIssuer> issuer_;
 };
 
 }  // namespace
@@ -324,7 +197,7 @@ class IpProtectionProbabilisticRevealTokenManagerTest : public testing::Test {
   std::string DecryptSerializeEncode(const ProbabilisticRevealToken& token) {
     auto maybe_serialized_point =
         fetcher_ptr_->Issuer()->DecryptSerializeEncode(token);
-    EXPECT_TRUE(maybe_serialized_point.ok());
+    EXPECT_TRUE(maybe_serialized_point.has_value());
     return std::move(maybe_serialized_point.value());
   }
 
@@ -332,7 +205,7 @@ class IpProtectionProbabilisticRevealTokenManagerTest : public testing::Test {
       const std::vector<ProbabilisticRevealToken>& tokens) {
     auto maybe_serialized_points =
         fetcher_ptr_->Issuer()->DecryptSerializeEncode(tokens);
-    EXPECT_TRUE(maybe_serialized_points.ok());
+    EXPECT_TRUE(maybe_serialized_points.has_value());
     return std::move(maybe_serialized_points.value());
   }
 
