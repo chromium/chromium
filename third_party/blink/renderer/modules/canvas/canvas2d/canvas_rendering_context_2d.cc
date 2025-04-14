@@ -848,15 +848,17 @@ void CanvasRenderingContext2D::OnPageVisibilityChangeWhenPaintable() {
   HTMLCanvasElement* const element = canvas();
 
   bool page_is_visible = element->IsPageVisible();
-  if (element->ResourceProvider()) {
-    element->ResourceProvider()->SetResourceRecyclingEnabled(page_is_visible);
+  CanvasResourceProvider* resource_provider = element->ResourceProvider();
+  if (resource_provider) {
+    resource_provider->SetResourceRecyclingEnabled(page_is_visible);
   }
 
   // Conserve memory.
   SetAggressivelyFreeSharedGpuContextResourcesIfPossible(!page_is_visible);
 
-  if (features::IsCanvas2DHibernationEnabled() && element->ResourceProvider() &&
-      element->GetRasterMode() == RasterMode::kGPU && !page_is_visible) {
+  if (features::IsCanvas2DHibernationEnabled() && !page_is_visible &&
+      !element->IsHibernating() && resource_provider &&
+      resource_provider->IsAccelerated()) {
     element->GetHibernationHandler()->InitiateHibernationIfNecessary();
   }
 
