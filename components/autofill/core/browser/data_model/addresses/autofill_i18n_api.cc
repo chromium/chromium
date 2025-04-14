@@ -430,11 +430,6 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
     return false;
   }
 
-  if (country_code == AddressCountryCode("IT") &&
-      !base::FeatureList::IsEnabled(features::kAutofillUseITAddressModel)) {
-    return false;
-  }
-
   if (country_code == AddressCountryCode("NL") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseNLAddressModel)) {
     return false;

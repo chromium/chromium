@@ -558,11 +558,8 @@ TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
 // repeated ADDRESS_HOME_LINE1 are reclassified as ADDRESS_HOME_LINE1 and
 // ADDRESS_HOME_LINE2 for IT forms.
 TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseITAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Nome", u"nome", NAME_FIRST},
@@ -585,11 +582,8 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
 // ADDRESS_HOME_LINE2 are reclassified as ADDRESS_HOME_STREET_ADDRESS for IT
 // forms.
 TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kTestFeatureForFormStructureRationalizationEngine,
-       features::kAutofillUseITAddressModel},
-      {});
+  base::test::ScopedFeatureList feature_list{
+      kTestFeatureForFormStructureRationalizationEngine};
 
   std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
       {u"Nome", u"nome", NAME_FIRST},

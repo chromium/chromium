@@ -22,7 +22,6 @@ class AddressFieldParserTest : public FormFieldParserTestBase,
   AddressFieldParserTest() {
     default_features.InitWithFeatures({features::kAutofillUseFRAddressModel,
                                        features::kAutofillUseINAddressModel,
-                                       features::kAutofillUseITAddressModel,
                                        features::kAutofillUseNLAddressModel},
                                       {});
   }

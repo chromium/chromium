@@ -955,7 +955,6 @@ class AutofillProfileSyncUtilTest
         {
             features::kAutofillUseFRAddressModel,
             features::kAutofillUseINAddressModel,
-            features::kAutofillUseITAddressModel,
             features::kAutofillUseNLAddressModel,
             features::kAutofillSupportPhoneticNameForJP,
             features::kAutofillSupportLastNamePrefix,

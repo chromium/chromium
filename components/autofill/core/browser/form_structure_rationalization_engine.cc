@@ -455,7 +455,6 @@ void ApplyRationalizationEngineRules(
             .SetEnvironmentCondition(
                 EnvironmentConditionBuilder()
                     .SetCountryList({GeoIpCountryCode("IT")})
-                    .SetFeature(&features::kAutofillUseITAddressModel)
                     .Build())
             .SetTriggerField(FieldCondition{
                 .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}})
@@ -478,7 +477,6 @@ void ApplyRationalizationEngineRules(
             .SetEnvironmentCondition(
                 EnvironmentConditionBuilder()
                     .SetCountryList({GeoIpCountryCode("IT")})
-                    .SetFeature(&features::kAutofillUseITAddressModel)
                     .Build())
             .SetTriggerField(FieldCondition{
                 .possible_overall_types = FieldTypeSet{ADDRESS_HOME_LINE1}})

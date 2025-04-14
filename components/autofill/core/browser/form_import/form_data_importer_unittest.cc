@@ -536,7 +536,6 @@ class FormDataImporterTest : public testing::Test {
     scoped_feature_list_.InitWithFeatures(
         {features::kAutofillUseFRAddressModel,
          features::kAutofillUseINAddressModel,
-         features::kAutofillUseITAddressModel,
          features::kAutofillUseNLAddressModel},
         {});
 

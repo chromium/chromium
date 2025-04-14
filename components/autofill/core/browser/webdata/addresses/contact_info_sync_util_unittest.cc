@@ -699,7 +699,6 @@ class ContactInfoSyncUtilTest
   ContactInfoSyncUtilTest() {
     features_.InitWithFeatures({features::kAutofillUseFRAddressModel,
                                 features::kAutofillUseINAddressModel,
-                                features::kAutofillUseITAddressModel,
                                 features::kAutofillUseNLAddressModel,
                                 features::kAutofillSupportPhoneticNameForJP,
                                 features::kAutofillSupportLastNamePrefix},

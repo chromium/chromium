@@ -213,7 +213,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillEnableSupportForParsingWithSharedLabels,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
-          features::kAutofillUseITAddressModel,
       },
       // Disabled
       {

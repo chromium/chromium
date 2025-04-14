@@ -121,7 +121,6 @@ class AutofillServerTest : public InProcessBrowserTest {
         // Enabled.
         {features::test::kAutofillServerCommunication,
          features::kAutofillUseFRAddressModel,
-         features::kAutofillUseITAddressModel,
          features::kAutofillUseNLAddressModel},
         // Disabled.
         {});

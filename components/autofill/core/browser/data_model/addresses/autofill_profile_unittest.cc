@@ -1410,8 +1410,7 @@ TEST_F(AutofillProfileTest, Compare_StructuredTypes) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures({features::kAutofillUseFRAddressModel,
                                  features::kAutofillUseINAddressModel,
-                                 features::kAutofillUseNLAddressModel,
-                                 features::kAutofillUseITAddressModel},
+                                 features::kAutofillUseNLAddressModel},
                                 {});
   // Those types do store a verification status.
   FieldTypeSet structured_types{

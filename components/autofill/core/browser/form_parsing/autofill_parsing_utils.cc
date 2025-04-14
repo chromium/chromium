@@ -20,8 +20,6 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return nullptr;
     case RegexFeature::kAutofillGreekRegexes:
       return &features::kAutofillGreekRegexes;
-    case RegexFeature::kAutofillUseITAddressModel:
-      return &features::kAutofillUseITAddressModel;
     case RegexFeature::kAutofillUseFRAddressModel:
       return &features::kAutofillUseFRAddressModel;
     case RegexFeature::kAutofillUseNLAddressModel:
