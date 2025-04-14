@@ -1808,7 +1808,7 @@
     {
       //See: crbug.com/40771555
       name: "EnterInOpenShadowRoots",
-      status: "stable",
+      status: "test",
     },
     {
       // Experiment with preventing some instances of mutation XSS
