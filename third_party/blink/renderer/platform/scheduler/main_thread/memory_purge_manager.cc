@@ -167,6 +167,9 @@ void MemoryPurgeManager::PerformMemoryPurge() {
 
   if (AreAllPagesFrozen()) {
     base::MemoryPressureListener::SetNotificationsSuppressed(true);
+#if BUILDFLAG(IS_ANDROID)
+    base::android::PreFreezeBackgroundMemoryTrimmer::OnRunningCompact();
+#endif
   }
   backgrounded_purge_pending_ = false;
 }
