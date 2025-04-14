@@ -37,9 +37,6 @@ interface ShadowRoot : DocumentFragment {
     readonly attribute boolean delegatesFocus;
     readonly attribute SlotAssignmentMode slotAssignment;
 
-    [RuntimeEnabled=ScopedCustomElementRegistry]
-    readonly attribute CustomElementRegistry? registry;
-
     // Declarative Shadow DOM getHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] HTMLString getHTML(optional GetHTMLOptions options = {});
 

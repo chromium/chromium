@@ -6,6 +6,6 @@ This is a testharness.js-based test.
 [FAIL] innerHTML on a connected shadow root should not upgrade a custom element inside a template element
   assert_equals: expected "SomeElement" but got "SomeElement1"
 [FAIL] innerHTML on a connected shadow root should be able to create an unknown element
-  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+  assert_equals: expected object "[object CustomElementRegistry]" but got null
 Harness: the test ran to completion.
 

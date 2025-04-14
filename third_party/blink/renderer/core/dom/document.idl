@@ -59,6 +59,11 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     [NewObject, RaisesException] ProcessingInstruction createProcessingInstruction(DOMString target, DOMString data);
 
     [NewObject, CEReactions, RaisesException] Node importNode(Node node, optional boolean deep = false);
+
+    // TODO(https://crbug.com/399124619): Merge all importnode variants, once Scoped Custom Element Registries
+    // are shipped unflagged
+    [NewObject, CEReactions, RaisesException, RuntimeEnabled=ScopedCustomElementRegistry] Node importNode(Node node, ImportNodeOptions options);
+
     [RaisesException, CEReactions] Node adoptNode(Node node);
 
     [NewObject, RaisesException, MeasureAs=DocumentCreateAttribute] Attr createAttribute(DOMString localName);

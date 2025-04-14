@@ -6017,6 +6017,12 @@ CustomElementDefinition* Element::GetCustomElementDefinition() const {
   return nullptr;
 }
 
+// Scoped Custom Elements
+CustomElementRegistry* Element::customElementRegistry() const {
+  DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+  return nullptr;
+}
+
 void Element::SetIsValue(const AtomicString& is_value) {
   DCHECK(IsValue().IsNull()) << "SetIsValue() should be called at most once.";
   EnsureElementRareData().SetIsValue(is_value);

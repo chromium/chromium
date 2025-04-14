@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] idl_test setup
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'CustomElementRegistry': Illegal constructor"
+[FAIL] HTMLTemplateElement interface: attribute shadowRootCustomElementRegistry
+  assert_true: The prototype object must have a property "shadowRootCustomElementRegistry" expected true got false
+[FAIL] CustomElementRegistry interface: operation initialize(Node)
+  assert_own_property: interface prototype object missing non-static operation expected property "initialize" missing
+[FAIL] Document interface: attribute customElementRegistry
+  assert_true: The prototype object must have a property "customElementRegistry" expected true got false
+[FAIL] ShadowRoot interface: attribute customElementRegistry
+  assert_true: The prototype object must have a property "customElementRegistry" expected true got false
+[FAIL] Element interface: attribute customElementRegistry
+  assert_true: The prototype object must have a property "customElementRegistry" expected true got false
+Harness: the test ran to completion.
+

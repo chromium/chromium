@@ -179,6 +179,13 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   void SetRegistry(CustomElementRegistry*);
   CustomElementRegistry* registry() const { return registry_.Get(); }
 
+  // Revamped scoped custom element registry renames
+  // `.registry` to `.customElementRegistry`, and it is read only.
+  CustomElementRegistry* customElementRegistry() const override {
+    DCHECK(RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
+    return registry_.Get();
+  }
+
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   void Trace(Visitor*) const override;

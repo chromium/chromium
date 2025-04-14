@@ -43,6 +43,7 @@ namespace blink {
 class Animation;
 class ContainerNode;
 class CSSStyleSheet;
+class CustomElementRegistry;
 class DOMSelection;
 class Document;
 class Element;
@@ -201,6 +202,8 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
   Element* CreateElement(const QualifiedName&,
                          const CreateElementFlags,
                          const AtomicString& is);
+
+  virtual CustomElementRegistry* customElementRegistry() const = 0;
 
  protected:
   TreeScope(ContainerNode&, Document&);
