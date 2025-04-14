@@ -4,7 +4,6 @@
 
 #include "net/http/http_cache_transaction.h"
 
-#include "base/time/time.h"
 #include "build/build_config.h"  // For IS_POSIX
 
 #if BUILDFLAG(IS_POSIX)
@@ -38,7 +37,9 @@
 #include "base/strings/string_util.h"  // For EqualsCaseInsensitiveASCII.
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/values.h"
 #include "net/base/auth.h"
 #include "net/base/features.h"
@@ -76,13 +77,6 @@ using CacheEntryStatus = HttpResponseInfo::CacheEntryStatus;
 namespace {
 
 constexpr base::TimeDelta kStaleRevalidateTimeout = base::Seconds(60);
-
-uint64_t GetNextTraceId(HttpCache* cache) {
-  static uint32_t sNextTraceId = 0;
-
-  DCHECK(cache);
-  return (reinterpret_cast<uint64_t>(cache) << 32) | sNextTraceId++;
-}
 
 // From http://tools.ietf.org/html/draft-ietf-httpbis-p6-cache-21#section-6
 //      a "non-error response" is one with a 2xx (Successful) or 3xx
@@ -183,7 +177,7 @@ bool MethodUsesNoVarySearch(const std::string& method) {
 //-----------------------------------------------------------------------------
 
 HttpCache::Transaction::Transaction(RequestPriority priority, HttpCache* cache)
-    : track_for_state_change_(GetNextTraceId(cache)),
+    : track_for_state_change_(base::trace_event::GetNextGlobalTraceId()),
       priority_(priority),
       cache_(cache->GetWeakPtr()),
       read_no_vary_search_cache_(cache->no_vary_search_cache_) {

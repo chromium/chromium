@@ -24,6 +24,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/unguessable_token.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
@@ -90,12 +91,6 @@ const char* RequestStartTriggerString(RequestStartTrigger trigger) {
     case RequestStartTrigger::PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED:
       return "PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED";
   }
-}
-
-uint64_t CalculateTrackId(ResourceScheduler* scheduler) {
-  static uint32_t sNextId = 0;
-  CHECK(scheduler);
-  return (reinterpret_cast<uint64_t>(scheduler) << 32) | sNextId++;
 }
 
 }  // namespace
@@ -239,7 +234,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
                                bool visible,
                                bool is_async)
       : client_id_(client_id),
-        trace_track_(perfetto::Track(CalculateTrackId(scheduler))),
+        trace_track_(base::trace_event::GetNextGlobalTraceId()),
         request_(request),
         ready_(false),
         deferred_(false),
