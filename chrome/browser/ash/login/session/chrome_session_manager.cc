@@ -432,11 +432,7 @@ void ChromeSessionManager::Initialize(
 
   KioskCryptohomeRemover::RemoveObsoleteCryptohomes();
 
-  if (ShouldOneTimeAutoLaunchKioskApp(parsed_command_line, local_state)) {
-    VLOG(1) << "One time auto launching kiosk app";
-    KioskAppId app_id = ExtractOneTimeAutoLaunchKioskAppId(local_state);
-    StartKioskSession(app_id);
-  } else if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state)) {
+  if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state)) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
     StartAutoLaunchKioskSession();
   } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
