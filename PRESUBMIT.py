@@ -2362,7 +2362,7 @@ _KNOWN_ROBOTS = set(
                     'infra-try-recipes-tester', 'lacros-tracking-roller',
                     'lacros-sdk-version-roller', 'chrome-automated-expectation',
                     'chromium-automated-expectation', 'chrome-branch-day',
-                    'chromium-autosharder')
+                    'chrome-cherry-picker', 'chromium-autosharder')
   ) | set('%s@skia-public.iam.gserviceaccount.com' % s
           for s in ('chromium-autoroll', 'chromium-release-autoroll')
   ) | set('%s@skia-corp.google.com.iam.gserviceaccount.com' % s
