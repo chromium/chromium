@@ -420,6 +420,13 @@ class VideoResourceUpdater::FrameResource {
     shared_image_->UpdateDestructionSyncToken(sync_token_);
   }
 
+  bool Equals(const gfx::Size& size,
+              viz::SharedImageFormat format,
+              const gfx::ColorSpace& color_space) {
+    return size == shared_image_->size() && format == shared_image_->format() &&
+           color_space == shared_image_->color_space();
+  }
+
   // Returns true if this resource matches the unique identifiers of another
   // VideoFrame resource.
   bool Matches(VideoFrame::ID unique_frame_id) {
@@ -674,8 +681,7 @@ VideoResourceUpdater::RecycleOrAllocateResource(
     // it even if resource_provider_ holds some references to it, because those
     // references are read-only.
     if (!unique_id.is_null() && resource->Matches(unique_id)) {
-      DCHECK_EQ(resource->size(), resource_size);
-      DCHECK_EQ(resource->format(), si_format);
+      DCHECK(resource->Equals(resource_size, si_format, color_space));
       return resource.get();
     }
 
@@ -684,14 +690,14 @@ VideoResourceUpdater::RecycleOrAllocateResource(
     // because we still want to find any reusable resources.
     const bool in_use = resource->has_refs();
 
-    if (!in_use && resource->size() == resource_size &&
-        resource->format() == si_format) {
+    if (!in_use && resource->Equals(resource_size, si_format, color_space)) {
       recyclable_resource = resource.get();
     }
   }
 
-  if (recyclable_resource)
+  if (recyclable_resource) {
     return recyclable_resource;
+  }
 
   // There was nothing available to reuse or recycle. Allocate a new resource.
   return AllocateResource(resource_size, si_format, color_space);
@@ -1225,14 +1231,14 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
 
   // Delete recycled resources that are the wrong format or wrong size.
   auto can_delete_resource_fn =
-      [output_si_format,
-       output_resource_size](const std::unique_ptr<FrameResource>& resource) {
+      [output_si_format, output_resource_size,
+       output_color_space](const std::unique_ptr<FrameResource>& resource) {
         // Resources that are still being used can't be deleted.
-        if (resource->has_refs())
+        if (resource->has_refs()) {
           return false;
-
-        return resource->format() != output_si_format ||
-               resource->size() != output_resource_size;
+        }
+        return !resource->Equals(output_resource_size, output_si_format,
+                                 output_color_space);
       };
   std::erase_if(all_resources_, can_delete_resource_fn);
 
@@ -1245,6 +1251,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
 
   // The formats must match.
   CHECK_EQ(output_si_format, frame_resource->format());
+  CHECK_EQ(output_color_space, frame_resource->shared_image()->color_space());
   VideoFrameExternalResource external_resource;
   if (software_compositor() || texture_needs_rgb_conversion ||
       IsFrameFormat32BitRGB(input_frame_format)) {
@@ -1263,12 +1270,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
       frame_resource->SetUniqueId(video_frame->unique_id());
     }
 
-    auto metadata_override = viz::TransferableResource::MetadataOverride{
-        .color_space = output_color_space};
     auto transferable_resource = viz::TransferableResource::Make(
         frame_resource->shared_image(),
         viz::TransferableResource::ResourceSource::kVideo,
-        frame_resource->sync_token(), metadata_override);
+        frame_resource->sync_token());
     transferable_resource.hdr_metadata =
         video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
     transferable_resource.needs_detiling =
@@ -1291,12 +1296,10 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwareFrame(
     return VideoFrameExternalResource();
   }
 
-  auto metadata_override = viz::TransferableResource::MetadataOverride{
-      .color_space = output_color_space};
   auto transferable_resource = viz::TransferableResource::Make(
       frame_resource->shared_image(),
       viz::TransferableResource::ResourceSource::kVideo,
-      frame_resource->sync_token(), metadata_override);
+      frame_resource->sync_token());
   transferable_resource.hdr_metadata =
       video_frame->hdr_metadata().value_or(gfx::HDRMetadata());
 
