@@ -37,6 +37,7 @@ import type {UserContextStorage} from './modules/browser/UserContextStorage.js';
 import {CdpProcessor} from './modules/cdp/CdpProcessor.js';
 import {BrowsingContextProcessor} from './modules/context/BrowsingContextProcessor.js';
 import type {BrowsingContextStorage} from './modules/context/BrowsingContextStorage.js';
+import {EmulationProcessor} from './modules/emulation/EmulationProcessor';
 import {InputProcessor} from './modules/input/InputProcessor.js';
 import {NetworkProcessor} from './modules/network/NetworkProcessor.js';
 import type {NetworkStorage} from './modules/network/NetworkStorage.js';
@@ -67,6 +68,7 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
   #browserProcessor: BrowserProcessor;
   #browsingContextProcessor: BrowsingContextProcessor;
   #cdpProcessor: CdpProcessor;
+  #emulationProcessor: EmulationProcessor;
   #inputProcessor: InputProcessor;
   #networkProcessor: NetworkProcessor;
   #permissionsProcessor: PermissionsProcessor;
@@ -116,6 +118,10 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       realmStorage,
       cdpConnection,
       browserCdpClient,
+    );
+    this.#emulationProcessor = new EmulationProcessor(
+      browsingContextStorage,
+      userContextStorage,
     );
     this.#inputProcessor = new InputProcessor(browsingContextStorage);
     this.#networkProcessor = new NetworkProcessor(
@@ -266,8 +272,8 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
       // Emulation module
       // keep-sorted start block=yes
       case 'emulation.setGeolocationOverride':
-        throw new UnknownErrorException(
-          `Method ${command.method} is not implemented.`,
+        return await this.#emulationProcessor.setGeolocationOverride(
+          this.#parser.parseSetGeolocationOverrideParams(command.params),
         );
       // keep-sorted end
 

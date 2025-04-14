@@ -295,6 +295,15 @@ export namespace Session {
   }
 }
 
+export namespace Emulation {
+  export function parseSetGeolocationOverrideParams(params: unknown) {
+    return parseObject(
+      params,
+      WebDriverBidi.Emulation.SetGeolocationOverrideParametersSchema,
+    ) as Protocol.Emulation.SetGeolocationOverrideParameters;
+  }
+}
+
 export namespace Input {
   export function parsePerformActionsParams(params: unknown) {
     return parseObject(

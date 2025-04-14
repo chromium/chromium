@@ -13,15 +13,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-from urllib.parse import urlparse
-
 from test_helpers import execute_command
-
-
-def get_origin(url):
-    """ Return the origin for the given url."""
-    parts = urlparse(url)
-    return parts.scheme + '://' + parts.netloc
 
 
 async def query_permission(websocket, context_id, name):

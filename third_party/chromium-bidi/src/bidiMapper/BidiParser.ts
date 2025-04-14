@@ -20,6 +20,7 @@ import type {
   Browser,
   BrowsingContext,
   Cdp,
+  Emulation,
   Input,
   Network,
   Permissions,
@@ -87,6 +88,13 @@ export interface BidiCommandParameterParser {
   parseGetSessionParams(params: unknown): Cdp.GetSessionParameters;
   parseResolveRealmParams(params: unknown): Cdp.ResolveRealmParameters;
   parseSendCommandParams(params: unknown): Cdp.SendCommandParameters;
+  // keep-sorted end
+
+  // Emulation module
+  // keep-sorted start block=yes
+  parseSetGeolocationOverrideParams(
+    params: unknown,
+  ): Emulation.SetGeolocationOverrideParameters;
   // keep-sorted end
 
   // Input module

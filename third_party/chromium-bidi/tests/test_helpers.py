@@ -22,6 +22,7 @@ import json
 import logging
 from collections.abc import Callable
 from typing import Literal
+from urllib.parse import urlparse
 
 from anys import (ANY_NUMBER, ANY_STR, AnyFullmatch, AnyGT, AnyLT, AnyMatch,
                   AnyWithEntries)
@@ -560,3 +561,9 @@ def stabilize_key_values(obj,
                 obj[key] = new_value
 
     return known_values
+
+
+def get_origin(url):
+    """ Return the origin for the given url."""
+    parts = urlparse(url)
+    return parts.scheme + '://' + parts.netloc

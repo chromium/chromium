@@ -14,8 +14,8 @@
 #  limitations under the License.
 
 import pytest
-from permissions import get_origin, query_permission, set_permission
-from test_helpers import execute_command, goto_url
+from permissions import query_permission, set_permission
+from test_helpers import execute_command, get_origin, goto_url
 
 
 @pytest.mark.asyncio

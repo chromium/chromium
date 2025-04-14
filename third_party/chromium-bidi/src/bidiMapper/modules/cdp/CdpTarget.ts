@@ -22,6 +22,7 @@ import {Bluetooth} from '../../../protocol/chromium-bidi.js';
 import {
   type BrowsingContext,
   type ChromiumBidi,
+  type Emulation,
   Session,
   UnsupportedOperationException,
 } from '../../../protocol/protocol.js';
@@ -614,16 +615,38 @@ export class CdpTarget {
     }
   }
 
+  /**
+   * Immediately schedules all the required commands to configure user context
+   * configuration and waits for them to finish. It's important to schedule them
+   * in parallel, so that they are enqueued before any page's scripts.
+   */
   async #setUserContextConfig() {
+    const promises = [];
+
     if (
       this.#userContextConfig.viewport !== undefined ||
       this.#userContextConfig.devicePixelRatio !== undefined
     ) {
-      await this.setViewport(
-        this.#userContextConfig.viewport,
-        this.#userContextConfig.devicePixelRatio,
+      promises.push(
+        this.setViewport(
+          this.#userContextConfig.viewport,
+          this.#userContextConfig.devicePixelRatio,
+        ),
       );
     }
+
+    if (
+      this.#userContextConfig.emulatedGeolocation !== undefined &&
+      this.#userContextConfig.emulatedGeolocation !== null
+    ) {
+      promises.push(
+        this.setGeolocationOverride(
+          this.#userContextConfig.emulatedGeolocation,
+        ),
+      );
+    }
+
+    await Promise.all(promises);
   }
 
   get topLevelId() {
@@ -646,5 +669,19 @@ export class CdpTarget {
         Session.UserPromptHandlerType.Ignore) ===
       Session.UserPromptHandlerType.Ignore
     );
+  }
+
+  async setGeolocationOverride(
+    coordinates: Emulation.GeolocationCoordinates | null,
+  ): Promise<void> {
+    if (coordinates === null) {
+      await this.cdpClient.sendCommand('Emulation.clearGeolocationOverride');
+    } else {
+      await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        accuracy: coordinates.accuracy ?? 1,
+      });
+    }
   }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-import type {BrowsingContext} from '../../../protocol/protocol.js';
+import type {BrowsingContext, Emulation} from '../../../protocol/protocol.js';
 
 /**
  * Represents a user context configurations. Each new CDP target of the given user context
@@ -28,6 +28,7 @@ export class UserContextConfig {
   readonly userContextId: string;
   viewport?: BrowsingContext.Viewport | null;
   devicePixelRatio?: number | null;
+  emulatedGeolocation?: Emulation.GeolocationCoordinates | null;
 
   constructor(userContextId: string) {
     this.userContextId = userContextId;

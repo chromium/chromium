@@ -19,6 +19,7 @@ import type {
   Browser,
   BrowsingContext,
   Cdp,
+  Emulation,
   Input,
   Network,
   Script,
@@ -130,6 +131,15 @@ export class BidiNoOpParser implements BidiCommandParameterParser {
   }
   parseSendCommandParams(params: unknown): Cdp.SendCommandParameters {
     return params as Cdp.SendCommandParameters;
+  }
+  // keep-sorted end
+
+  // Emulation module
+  // keep-sorted start block=yes
+  parseSetGeolocationOverrideParams(
+    params: unknown,
+  ): Emulation.SetGeolocationOverrideParameters {
+    return params as Emulation.SetGeolocationOverrideParameters;
   }
   // keep-sorted end
 
