@@ -158,7 +158,6 @@
         BiDiModule["Browser"] = "browser";
         BiDiModule["BrowsingContext"] = "browsingContext";
         BiDiModule["Cdp"] = "goog:cdp";
-        BiDiModule["DeprecatedCdp"] = "cdp";
         BiDiModule["Input"] = "input";
         BiDiModule["Log"] = "log";
         BiDiModule["Network"] = "network";
@@ -433,6 +432,9 @@
             return params;
         }
         parseSendCommandParams(params) {
+            return params;
+        }
+        parseSetGeolocationOverrideParams(params) {
             return params;
         }
         parseAddPreloadScriptParams(params) {
@@ -875,6 +877,86 @@
                 }, context.id);
             });
             return Promise.resolve();
+        }
+    }
+
+    /**
+     * Copyright 2025 Google LLC.
+     * Copyright (c) Microsoft Corporation.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    class EmulationProcessor {
+        #userContextStorage;
+        #browsingContextStorage;
+        constructor(browsingContextStorage, userContextStorage) {
+            this.#userContextStorage = userContextStorage;
+            this.#browsingContextStorage = browsingContextStorage;
+        }
+        async setGeolocationOverride(params) {
+            if ((params.coordinates?.altitude ?? null) !== null) {
+                throw new UnsupportedOperationException('Geolocation altitude emulation is not supported');
+            }
+            if ((params.coordinates?.heading ?? null) !== null) {
+                throw new UnsupportedOperationException('Geolocation heading emulation is not supported');
+            }
+            if ((params.coordinates?.altitudeAccuracy ?? null) !== null) {
+                throw new UnsupportedOperationException('Geolocation altitudeAccuracy emulation is not supported');
+            }
+            if ((params.coordinates?.speed ?? null) !== null) {
+                throw new UnsupportedOperationException('Geolocation speed emulation is not supported');
+            }
+            const browsingContexts = await this.#getRelatedTopLevelBrowsingContexts(params.contexts, params.userContexts);
+            for (const userContextId of params.userContexts ?? []) {
+                const userContextConfig = this.#userContextStorage.getConfig(userContextId);
+                userContextConfig.emulatedGeolocation = params.coordinates;
+            }
+            await Promise.all(browsingContexts.map(async (context) => await context.cdpTarget.setGeolocationOverride(params.coordinates)));
+            return {};
+        }
+        async #getRelatedTopLevelBrowsingContexts(browsingContextIds, userContextIds) {
+            if (browsingContextIds === undefined && userContextIds === undefined) {
+                throw new InvalidArgumentException('Either user contexts or browsing contexts must be provided');
+            }
+            if (browsingContextIds !== undefined && userContextIds !== undefined) {
+                throw new InvalidArgumentException('User contexts and browsing contexts are mutually exclusive');
+            }
+            const result = [];
+            if (browsingContextIds === undefined) {
+                if (userContextIds.length === 0) {
+                    throw new InvalidArgumentException('user context should be provided');
+                }
+                await this.#userContextStorage.verifyUserContextIdList(userContextIds);
+                for (const userContextId of userContextIds) {
+                    const topLevelBrowsingContexts = this.#browsingContextStorage
+                        .getTopLevelContexts()
+                        .filter((browsingContext) => browsingContext.userContext === userContextId);
+                    result.push(...topLevelBrowsingContexts);
+                }
+            }
+            else {
+                if (browsingContextIds.length === 0) {
+                    throw new InvalidArgumentException('browsing context should be provided');
+                }
+                for (const browsingContextId of browsingContextIds) {
+                    const browsingContext = this.#browsingContextStorage.getContext(browsingContextId);
+                    if (!browsingContext.isTopLevelContext()) {
+                        throw new InvalidArgumentException('The command is only supported on the top-level context');
+                    }
+                    result.push(browsingContext);
+                }
+            }
+            return [...new Set(result).values()];
         }
     }
 
@@ -3979,18 +4061,18 @@
                 },
             };
         }
-        async subscribe(params, channel = {}) {
-            const subscription = await this.#eventManager.subscribe(params.events, params.contexts ?? [], params.userContexts ?? [], channel);
+        async subscribe(params, googChannel = null) {
+            const subscription = await this.#eventManager.subscribe(params.events, params.contexts ?? [], params.userContexts ?? [], googChannel);
             return {
                 subscription,
             };
         }
-        async unsubscribe(params, channel = {}) {
+        async unsubscribe(params, googChannel = null) {
             if ('subscriptions' in params) {
                 await this.#eventManager.unsubscribeByIds(params.subscriptions);
                 return {};
             }
-            await this.#eventManager.unsubscribe(params.events, params.contexts ?? [], channel);
+            await this.#eventManager.unsubscribe(params.events, params.contexts ?? [], googChannel);
             return {};
         }
     }
@@ -4231,33 +4313,33 @@
      */
     class OutgoingMessage {
         #message;
-        #channel;
-        constructor(message, channel) {
+        #googChannel;
+        constructor(message, googChannel = null) {
             this.#message = message;
-            this.#channel = channel;
+            this.#googChannel = googChannel;
         }
-        static createFromPromise(messagePromise, channel) {
+        static createFromPromise(messagePromise, googChannel) {
             return messagePromise.then((message) => {
                 if (message.kind === 'success') {
                     return {
                         kind: 'success',
-                        value: new OutgoingMessage(message.value, channel),
+                        value: new OutgoingMessage(message.value, googChannel),
                     };
                 }
                 return message;
             });
         }
-        static createResolved(message, channel) {
+        static createResolved(message, googChannel = null) {
             return Promise.resolve({
                 kind: 'success',
-                value: new OutgoingMessage(message, channel),
+                value: new OutgoingMessage(message, googChannel),
             });
         }
         get message() {
             return this.#message;
         }
-        get channel() {
-            return this.#channel;
+        get googChannel() {
+            return this.#googChannel;
         }
     }
 
@@ -4282,6 +4364,7 @@
         #browserProcessor;
         #browsingContextProcessor;
         #cdpProcessor;
+        #emulationProcessor;
         #inputProcessor;
         #networkProcessor;
         #permissionsProcessor;
@@ -4299,6 +4382,7 @@
             this.#browserProcessor = new BrowserProcessor(browserCdpClient, browsingContextStorage, userContextStorage);
             this.#browsingContextProcessor = new BrowsingContextProcessor(browserCdpClient, browsingContextStorage, userContextStorage, eventManager);
             this.#cdpProcessor = new CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
+            this.#emulationProcessor = new EmulationProcessor(browsingContextStorage, userContextStorage);
             this.#inputProcessor = new InputProcessor(browsingContextStorage);
             this.#networkProcessor = new NetworkProcessor(browsingContextStorage, networkStorage);
             this.#permissionsProcessor = new PermissionsProcessor(browserCdpClient);
@@ -4361,17 +4445,8 @@
                     return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
                 case 'goog:cdp.sendCommand':
                     return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
-                case 'cdp.getSession':
-                    this.#logger?.(LogType.debugWarn, `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`);
-                    return this.#cdpProcessor.getSession(this.#parser.parseGetSessionParams(command.params));
-                case 'cdp.resolveRealm':
-                    this.#logger?.(LogType.debugWarn, `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`);
-                    return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
-                case 'cdp.sendCommand':
-                    this.#logger?.(LogType.debugWarn, `Legacy '${command.method}' command is deprecated and will not supported soon. Use 'goog:${command.method}' instead.`);
-                    return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
                 case 'emulation.setGeolocationOverride':
-                    throw new UnknownErrorException(`Method ${command.method} is not implemented.`);
+                    return await this.#emulationProcessor.setGeolocationOverride(this.#parser.parseSetGeolocationOverrideParams(command.params));
                 case 'input.performActions':
                     return await this.#inputProcessor.performActions(this.#parser.parsePerformActionsParams(command.params));
                 case 'input.releaseActions':
@@ -4415,9 +4490,9 @@
                 case 'session.status':
                     return this.#sessionProcessor.status();
                 case 'session.subscribe':
-                    return await this.#sessionProcessor.subscribe(this.#parser.parseSubscribeParams(command.params), command.channel);
+                    return await this.#sessionProcessor.subscribe(this.#parser.parseSubscribeParams(command.params), command['goog:channel']);
                 case 'session.unsubscribe':
-                    return await this.#sessionProcessor.unsubscribe(this.#parser.parseUnsubscribeParams(command.params), command.channel);
+                    return await this.#sessionProcessor.unsubscribe(this.#parser.parseUnsubscribeParams(command.params), command['goog:channel']);
                 case 'storage.deleteCookies':
                     return await this.#storageProcessor.deleteCookies(this.#parser.parseDeleteCookiesParams(command.params));
                 case 'storage.getCookies':
@@ -4451,14 +4526,14 @@
                     result,
                 };
                 this.emit("response" , {
-                    message: OutgoingMessage.createResolved(response, command.channel),
+                    message: OutgoingMessage.createResolved(response, command['goog:channel']),
                     event: command.method,
                 });
             }
             catch (e) {
                 if (e instanceof Exception) {
                     this.emit("response" , {
-                        message: OutgoingMessage.createResolved(e.toErrorResponse(command.id), command.channel),
+                        message: OutgoingMessage.createResolved(e.toErrorResponse(command.id), command['goog:channel']),
                         event: command.method,
                     });
                 }
@@ -4466,7 +4541,7 @@
                     const error = e;
                     this.#logger?.(LogType.bidi, error);
                     this.emit("response" , {
-                        message: OutgoingMessage.createResolved(new UnknownErrorException(error.message, error.stack).toErrorResponse(command.id), command.channel),
+                        message: OutgoingMessage.createResolved(new UnknownErrorException(error.message, error.stack).toErrorResponse(command.id), command['goog:channel']),
                         event: command.method,
                     });
                 }
@@ -4581,6 +4656,7 @@
         userContextId;
         viewport;
         devicePixelRatio;
+        emulatedGeolocation;
         constructor(userContextId) {
             this.userContextId = userContextId;
         }
@@ -7272,8 +7348,8 @@
                         flatten: true,
                     }),
                     this.#updateWindowId(),
-                    this.#initAndEvaluatePreloadScripts(),
                     this.#setUserContextConfig(),
+                    this.#initAndEvaluatePreloadScripts(),
                     this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                     this.#parentCdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
                     this.toggleDeviceAccessIfNeeded(),
@@ -7427,15 +7503,6 @@
                         session: this.cdpSessionId,
                     },
                 }, this.id);
-                this.#eventManager.registerEvent({
-                    type: 'event',
-                    method: `cdp.${event}`,
-                    params: {
-                        event,
-                        params,
-                        session: this.cdpSessionId,
-                    },
-                }, this.id);
             });
         }
         async #enableFetch(stages) {
@@ -7548,10 +7615,16 @@
             }
         }
         async #setUserContextConfig() {
+            const promises = [];
             if (this.#userContextConfig.viewport !== undefined ||
                 this.#userContextConfig.devicePixelRatio !== undefined) {
-                await this.setViewport(this.#userContextConfig.viewport, this.#userContextConfig.devicePixelRatio);
+                promises.push(this.setViewport(this.#userContextConfig.viewport, this.#userContextConfig.devicePixelRatio));
             }
+            if (this.#userContextConfig.emulatedGeolocation !== undefined &&
+                this.#userContextConfig.emulatedGeolocation !== null) {
+                promises.push(this.setGeolocationOverride(this.#userContextConfig.emulatedGeolocation));
+            }
+            await Promise.all(promises);
         }
         get topLevelId() {
             return (this.#browsingContextStorage.findTopLevelContextId(this.id) ?? this.id);
@@ -7564,6 +7637,18 @@
                 this.#unhandledPromptBehavior?.default ??
                 "ignore" ) ===
                 "ignore" );
+        }
+        async setGeolocationOverride(coordinates) {
+            if (coordinates === null) {
+                await this.cdpClient.sendCommand('Emulation.clearGeolocationOverride');
+            }
+            else {
+                await this.cdpClient.sendCommand('Emulation.setGeolocationOverride', {
+                    latitude: coordinates.latitude,
+                    longitude: coordinates.longitude,
+                    accuracy: coordinates.accuracy ?? 1,
+                });
+            }
         }
     }
 
@@ -9019,14 +9104,8 @@
     function isCdpEvent(name) {
         return (name.split('.').at(0)?.startsWith(BiDiModule.Cdp) ?? false);
     }
-    function isDeprecatedCdpEvent(name) {
-        return (name.split('.').at(0)?.startsWith(BiDiModule.DeprecatedCdp) ??
-            false);
-    }
     function assertSupportedEvent(name) {
-        if (!EVENT_NAMES.has(name) &&
-            !isCdpEvent(name) &&
-            !isDeprecatedCdpEvent(name)) {
+        if (!EVENT_NAMES.has(name) && !isCdpEvent(name)) {
             throw new InvalidArgumentException(`Unknown event: ${name}`);
         }
     }
@@ -9087,23 +9166,23 @@
         constructor(browsingContextStorage) {
             this.#browsingContextStorage = browsingContextStorage;
         }
-        getChannelsSubscribedToEvent(eventName, contextId) {
-            const channels = new Map();
+        getGoogChannelsSubscribedToEvent(eventName, contextId) {
+            const googChannels = new Set();
             for (const subscription of this.#subscriptions) {
                 if (this.#isSubscribedTo(subscription, eventName, contextId)) {
-                    channels.set(JSON.stringify(subscription.channel), subscription.channel);
+                    googChannels.add(subscription.googChannel);
                 }
             }
-            return Array.from(channels.values());
+            return Array.from(googChannels);
         }
-        getChannelsSubscribedToEventGlobally(eventName) {
-            const channels = new Map();
+        getGoogChannelsSubscribedToEventGlobally(eventName) {
+            const googChannels = new Set();
             for (const subscription of this.#subscriptions) {
                 if (this.#isSubscribedTo(subscription, eventName)) {
-                    channels.set(JSON.stringify(subscription.channel), subscription.channel);
+                    googChannels.add(subscription.googChannel);
                 }
             }
-            return Array.from(channels.values());
+            return Array.from(googChannels);
         }
         #isSubscribedTo(subscription, moduleOrEvent, browsingContextId) {
             let includesEvent = false;
@@ -9147,7 +9226,7 @@
             }
             return false;
         }
-        subscribe(eventNames, contextIds, userContextIds, channel) {
+        subscribe(eventNames, contextIds, userContextIds, googChannel) {
             const subscription = {
                 id: uuidv4(),
                 eventNames: new Set(unrollEvents(eventNames)),
@@ -9159,13 +9238,13 @@
                     return topLevelContext;
                 })),
                 userContextIds: new Set(userContextIds),
-                channel,
+                googChannel,
             };
             this.#subscriptions.push(subscription);
             this.#knownSubscriptionIds.add(subscription.id);
             return subscription;
         }
-        unsubscribe(inputEventNames, inputContextIds, channel) {
+        unsubscribe(inputEventNames, inputContextIds, googChannel) {
             const eventNames = new Set(unrollEvents(inputEventNames));
             this.#browsingContextStorage.verifyContextsList(inputContextIds);
             const topLevelTraversables = new Set(inputContextIds.map((contextId) => {
@@ -9180,7 +9259,7 @@
             const eventsMatched = new Set();
             const contextsMatched = new Set();
             for (const subscription of this.#subscriptions) {
-                if (JSON.stringify(subscription.channel) !== JSON.stringify(channel)) {
+                if (subscription.googChannel !== googChannel) {
                     newSubscriptions.push(subscription);
                     continue;
                 }
@@ -9239,7 +9318,7 @@
                     for (const [eventName, remainingContextIds] of eventMap) {
                         const partialSubscription = {
                             id: subscription.id,
-                            channel: subscription.channel,
+                            googChannel: subscription.googChannel,
                             eventNames: new Set([eventName]),
                             topLevelTraversableIds: remainingContextIds,
                             userContextIds: new Set(),
@@ -9372,29 +9451,29 @@
         }
         registerPromiseEvent(event, contextId, eventName) {
             const eventWrapper = new EventWrapper(event, contextId);
-            const sortedChannels = this.#subscriptionManager.getChannelsSubscribedToEvent(eventName, contextId);
+            const sortedGoogChannels = this.#subscriptionManager.getGoogChannelsSubscribedToEvent(eventName, contextId);
             this.#bufferEvent(eventWrapper, eventName);
-            for (const channel of sortedChannels) {
+            for (const googChannel of sortedGoogChannels) {
                 this.emit("event" , {
-                    message: OutgoingMessage.createFromPromise(event, channel),
+                    message: OutgoingMessage.createFromPromise(event, googChannel),
                     event: eventName,
                 });
-                this.#markEventSent(eventWrapper, channel, eventName);
+                this.#markEventSent(eventWrapper, googChannel, eventName);
             }
         }
         registerGlobalPromiseEvent(event, eventName) {
             const eventWrapper = new EventWrapper(event, null);
-            const sortedChannels = this.#subscriptionManager.getChannelsSubscribedToEventGlobally(eventName);
+            const sortedGoogChannels = this.#subscriptionManager.getGoogChannelsSubscribedToEventGlobally(eventName);
             this.#bufferEvent(eventWrapper, eventName);
-            for (const channel of sortedChannels) {
+            for (const googChannel of sortedGoogChannels) {
                 this.emit("event" , {
-                    message: OutgoingMessage.createFromPromise(event, channel),
+                    message: OutgoingMessage.createFromPromise(event, googChannel),
                     event: eventName,
                 });
-                this.#markEventSent(eventWrapper, channel, eventName);
+                this.#markEventSent(eventWrapper, googChannel, eventName);
             }
         }
-        async subscribe(eventNames, contextIds, userContextIds, channel) {
+        async subscribe(eventNames, contextIds, userContextIds, googChannel) {
             for (const name of eventNames) {
                 assertSupportedEvent(name);
             }
@@ -9423,15 +9502,15 @@
                 }));
                 subscribeStepEvents.set(eventName, difference(subscriptionNavigableIds, subscribedNavigableIds));
             }
-            const subscription = this.#subscriptionManager.subscribe(eventNames, contextIds, userContextIds, channel);
+            const subscription = this.#subscriptionManager.subscribe(eventNames, contextIds, userContextIds, googChannel);
             for (const eventName of subscription.eventNames) {
                 for (const contextId of subscriptionNavigableIds) {
-                    for (const eventWrapper of this.#getBufferedEvents(eventName, contextId, channel)) {
+                    for (const eventWrapper of this.#getBufferedEvents(eventName, contextId, googChannel)) {
                         this.emit("event" , {
-                            message: OutgoingMessage.createFromPromise(eventWrapper.event, channel),
+                            message: OutgoingMessage.createFromPromise(eventWrapper.event, googChannel),
                             event: eventName,
                         });
-                        this.#markEventSent(eventWrapper, channel, eventName);
+                        this.#markEventSent(eventWrapper, googChannel, eventName);
                     }
                 }
             }
@@ -9443,11 +9522,11 @@
             await this.toggleModulesIfNeeded();
             return subscription.id;
         }
-        async unsubscribe(eventNames, contextIds, channel) {
+        async unsubscribe(eventNames, contextIds, googChannel) {
             for (const name of eventNames) {
                 assertSupportedEvent(name);
             }
-            this.#subscriptionManager.unsubscribe(eventNames, contextIds, channel);
+            this.#subscriptionManager.unsubscribe(eventNames, contextIds, googChannel);
             await this.toggleModulesIfNeeded();
         }
         async unsubscribeByIds(subscriptionIds) {
@@ -9476,25 +9555,23 @@
             this.#eventBuffers.get(bufferMapKey).add(eventWrapper);
             this.#eventToContextsMap.get(eventName).add(eventWrapper.contextId);
         }
-        #markEventSent(eventWrapper, channel, eventName) {
+        #markEventSent(eventWrapper, googChannel, eventName) {
             if (!eventBufferLength.has(eventName)) {
                 return;
             }
             const lastSentMapKey = _a$2.#getMapKey(eventName, eventWrapper.contextId);
-            const lastId = Math.max(this.#lastMessageSent.get(lastSentMapKey)?.get(JSON.stringify(channel)) ??
-                0, eventWrapper.id);
-            const channelMap = this.#lastMessageSent.get(lastSentMapKey);
-            if (channelMap) {
-                channelMap.set(JSON.stringify(channel), lastId);
+            const lastId = Math.max(this.#lastMessageSent.get(lastSentMapKey)?.get(googChannel) ?? 0, eventWrapper.id);
+            const googChannelMap = this.#lastMessageSent.get(lastSentMapKey);
+            if (googChannelMap) {
+                googChannelMap.set(googChannel, lastId);
             }
             else {
-                this.#lastMessageSent.set(lastSentMapKey, new Map([[JSON.stringify(channel), lastId]]));
+                this.#lastMessageSent.set(lastSentMapKey, new Map([[googChannel, lastId]]));
             }
         }
-        #getBufferedEvents(eventName, contextId, channel) {
+        #getBufferedEvents(eventName, contextId, googChannel) {
             const bufferMapKey = _a$2.#getMapKey(eventName, contextId);
-            const lastSentMessageId = this.#lastMessageSent.get(bufferMapKey)?.get(JSON.stringify(channel)) ??
-                -Infinity;
+            const lastSentMessageId = this.#lastMessageSent.get(bufferMapKey)?.get(googChannel) ?? -Infinity;
             const result = this.#eventBuffers
                 .get(bufferMapKey)
                 ?.get()
@@ -9504,7 +9581,7 @@
                     .filter((_contextId) =>
                 _contextId !== null &&
                     this.#browsingContextStorage.hasContext(_contextId))
-                    .map((_contextId) => this.#getBufferedEvents(eventName, _contextId, channel))
+                    .map((_contextId) => this.#getBufferedEvents(eventName, _contextId, googChannel))
                     .forEach((events) => result.push(...events));
             }
             return result.sort((e1, e2) => e1.id - e2.id);
@@ -9544,7 +9621,10 @@
             });
         };
         #processOutgoingMessage = async (messageEntry) => {
-            const message = { ...messageEntry.message, ...messageEntry.channel };
+            const message = messageEntry.message;
+            if (messageEntry.googChannel !== null) {
+                message['goog:channel'] = messageEntry.googChannel;
+            }
             await this.#transport.sendMessage(message);
         };
         constructor(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, parser, logger) {
@@ -15037,14 +15117,14 @@
             defaultValue: z.string().optional(),
         }));
     })(BrowsingContext$1 || (BrowsingContext$1 = {}));
-    const EmulationCommandSchema = z.lazy(() => Emulation.SetGeolocationOverrideSchema);
-    var Emulation;
+    const EmulationCommandSchema = z.lazy(() => Emulation$1.SetGeolocationOverrideSchema);
+    var Emulation$1;
     (function (Emulation) {
         Emulation.SetGeolocationOverrideSchema = z.lazy(() => z.object({
             method: z.literal('emulation.setGeolocationOverride'),
             params: Emulation.SetGeolocationOverrideParametersSchema,
         }));
-    })(Emulation || (Emulation = {}));
+    })(Emulation$1 || (Emulation$1 = {}));
     (function (Emulation) {
         Emulation.SetGeolocationOverrideParametersSchema = z.lazy(() => z.object({
             coordinates: z.union([Emulation.GeolocationCoordinatesSchema, z.null()]),
@@ -15054,20 +15134,22 @@
                 .optional(),
             userContexts: z.array(Browser$1.UserContextSchema).min(1).optional(),
         }));
-    })(Emulation || (Emulation = {}));
+    })(Emulation$1 || (Emulation$1 = {}));
     (function (Emulation) {
         Emulation.GeolocationCoordinatesSchema = z.lazy(() => z.object({
-            latitude: z.number(),
-            longitude: z.number(),
-            accuracy: z.number().default(1).optional(),
+            latitude: z.number().gte(-90).lte(90),
+            longitude: z.number().gte(-180).lte(180),
+            accuracy: z.number().gte(0).default(1).optional(),
             altitude: z.union([z.number(), z.null().default(null)]).optional(),
             altitudeAccuracy: z
-                .union([z.number(), z.null().default(null)])
+                .union([z.number().gte(0), z.null().default(null)])
                 .optional(),
-            heading: z.union([z.number(), z.null().default(null)]).optional(),
-            speed: z.union([z.number(), z.null().default(null)]).optional(),
+            heading: z
+                .union([z.number().gt(0).lt(360), z.null().default(null)])
+                .optional(),
+            speed: z.union([z.number().gte(0), z.null().default(null)]).optional(),
         }));
-    })(Emulation || (Emulation = {}));
+    })(Emulation$1 || (Emulation$1 = {}));
     const NetworkCommandSchema = z.lazy(() => z.union([
         Network$1.AddInterceptSchema,
         Network$1.ContinueRequestSchema,
@@ -16709,6 +16791,13 @@
         }
         Session.parseUnsubscribeParams = parseUnsubscribeParams;
     })(Session || (Session = {}));
+    var Emulation;
+    (function (Emulation) {
+        function parseSetGeolocationOverrideParams(params) {
+            return parseObject(params, Emulation$1.SetGeolocationOverrideParametersSchema);
+        }
+        Emulation.parseSetGeolocationOverrideParams = parseSetGeolocationOverrideParams;
+    })(Emulation || (Emulation = {}));
     var Input;
     (function (Input) {
         function parsePerformActionsParams(params) {
@@ -16876,6 +16965,9 @@
         parseSendCommandParams(params) {
             return Cdp.parseSendCommandRequest(params);
         }
+        parseSetGeolocationOverrideParams(params) {
+            return Emulation.parseSetGeolocationOverrideParams(params);
+        }
         parsePerformActionsParams(params) {
             return Input.parsePerformActionsParams(params);
         }
@@ -17018,7 +17110,7 @@
                 }
                 catch (e) {
                     const error = e instanceof Error ? e : new Error(e);
-                    this.#respondWithError(message, "invalid argument" , error, {});
+                    this.#respondWithError(message, "invalid argument" , error, null);
                 }
             };
         }
@@ -17034,12 +17126,17 @@
             this.#onMessage = null;
             window.onBidiMessage = null;
         }
-        #respondWithError(plainCommandData, errorCode, error, channel) {
+        #respondWithError(plainCommandData, errorCode, error, googChannel) {
             const errorResponse = _a.#getErrorResponse(plainCommandData, errorCode, error);
-            this.sendMessage({
-                ...errorResponse,
-                ...(channel ?? {}),
-            });
+            if (googChannel) {
+                this.sendMessage({
+                    ...errorResponse,
+                    'goog:channel': googChannel,
+                });
+            }
+            else {
+                this.sendMessage(errorResponse);
+            }
         }
         static #getJsonType(value) {
             if (value === null) {
@@ -17092,27 +17189,22 @@
             if (paramsType !== 'object') {
                 throw new Error(`Expected object params but got ${paramsType}`);
             }
-            let channel = {};
-            if (command['goog:channel'] !== undefined) {
-                const channelType = _a.#getJsonType(command['goog:channel']);
-                if (channelType !== 'string') {
-                    throw new Error(`Expected string value of 'goog:channel' but got ${channelType}`);
+            let googChannel = command['goog:channel'];
+            if (googChannel !== undefined) {
+                const googChannelType = _a.#getJsonType(googChannel);
+                if (googChannelType !== 'string') {
+                    throw new Error(`Expected string channel but got ${googChannelType}`);
                 }
-                if (command['goog:channel'] !== '') {
-                    channel = { 'goog:channel': command['goog:channel'] };
-                }
-            }
-            else if (command.channel !== undefined) {
-                log(_a.LOGGER_PREFIX_WARN, 'Legacy `channel` parameter is deprecated and will not supported soon. Use `goog:channel` instead.');
-                const channelType = _a.#getJsonType(command.channel);
-                if (channelType !== 'string') {
-                    throw new Error(`Expected string 'channel' but got ${channelType}`);
-                }
-                if (command.channel !== '') {
-                    channel = { channel: command.channel };
+                if (googChannel === '') {
+                    googChannel = undefined;
                 }
             }
-            return { id, method, params, channel };
+            return {
+                id,
+                method,
+                params,
+                'goog:channel': googChannel,
+            };
         }
     }
     _a = WindowBidiTransport;
