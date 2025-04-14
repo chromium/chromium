@@ -785,6 +785,8 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
   return frame;
 }
 
+// TODO(crbug.com/338570700): This method needs to be remove in favour
+// of its span version.
 // static
 scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     VideoPixelFormat format,
@@ -795,6 +797,31 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
     size_t uv_stride,
     const uint8_t* y_data,
     const uint8_t* uv_data,
+    base::TimeDelta timestamp) {
+  auto layout = VideoFrameLayout::CreateWithStrides(format, coded_size,
+                                                    {y_stride, uv_stride});
+  if (!layout) {
+    DLOG(ERROR) << "Invalid layout.";
+    return nullptr;
+  }
+
+  return WrapExternalYuvData(
+      format, coded_size, visible_rect, natural_size, y_stride, uv_stride,
+      UNSAFE_TODO(base::span(y_data, layout->planes()[Plane::kY].size)),
+      UNSAFE_TODO(base::span(uv_data, layout->planes()[Plane::kUV].size)),
+      timestamp);
+}
+
+// static
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
+    VideoPixelFormat format,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    size_t y_stride,
+    size_t uv_stride,
+    base::span<const uint8_t> y_data,
+    base::span<const uint8_t> uv_data,
     base::TimeDelta timestamp) {
   const StorageType storage = STORAGE_UNOWNED_MEMORY;
   if (!IsValidConfig(format, storage, coded_size, visible_rect, natural_size)) {
@@ -819,11 +846,9 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
   auto frame = base::MakeRefCounted<VideoFrame>(base::PassKey<VideoFrame>(),
                                                 *layout, storage, visible_rect,
                                                 natural_size, timestamp);
-  std::array<const uint8_t*, 2> data = {y_data, uv_data};
+  std::array<base::span<const uint8_t>, 2> data = {y_data, uv_data};
   for (size_t plane = 0; plane < NumPlanes(format); ++plane) {
-    // TODO(crbug.com/338570700): y_data, uv_data should be spans
-    frame->data_[plane] =
-        UNSAFE_TODO(base::span(data[plane], layout->planes()[plane].size));
+    frame->data_[plane] = data[plane];
   }
   return frame;
 }
