@@ -23,7 +23,7 @@ P2PAsyncAddressResolver::~P2PAsyncAddressResolver() {
   DCHECK(state_ == STATE_CREATED || state_ == STATE_FINISHED);
 }
 
-void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
+void P2PAsyncAddressResolver::Start(const webrtc::SocketAddress& host_name,
                                     std::optional<int> address_family,
                                     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

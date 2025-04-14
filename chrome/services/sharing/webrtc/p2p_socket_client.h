@@ -49,7 +49,7 @@ class P2PSocketClient : public network::mojom::P2PSocketClient {
   // |dscp|. Return value is the unique packet_id for this packet.
   uint64_t Send(const net::IPEndPoint& address,
                 base::span<const uint8_t> data,
-                const rtc::PacketOptions& options);
+                const webrtc::AsyncSocketPacketOptions& options);
 
   // Setting socket options.
   void SetOption(network::P2PSocketOption option, int value);
@@ -75,7 +75,7 @@ class P2PSocketClient : public network::mojom::P2PSocketClient {
   // condition.
   void SendWithPacketId(const net::IPEndPoint& address,
                         base::span<const uint8_t> data,
-                        const rtc::PacketOptions& options,
+                        const webrtc::AsyncSocketPacketOptions& options,
                         uint64_t packet_id);
 
   // network::mojom::P2PSocketClient interface.

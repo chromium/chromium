@@ -26,7 +26,7 @@ class MockPeerConnectionObserver : public webrtc::PeerConnectionObserver {
               (override));
   MOCK_METHOD(void,
               OnDataChannel,
-              (rtc::scoped_refptr<webrtc::DataChannelInterface>),
+              (webrtc::scoped_refptr<webrtc::DataChannelInterface>),
               (override));
   MOCK_METHOD(void,
               OnIceGatheringChange,
@@ -132,7 +132,8 @@ TEST_F(WebRtcMediumTest, CreatePeerConnection) {
 
   base::RunLoop loop;
   GetMedium().CreatePeerConnection(
-      &observer, [&](rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc) {
+      &observer,
+      [&](webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc) {
         ASSERT_TRUE(pc);
         pc->Close();
         loop.Quit();

@@ -26,9 +26,9 @@ class MdnsResponderAdapter : public webrtc::MdnsResponderInterface {
   ~MdnsResponderAdapter() override;
 
   // webrtc::MdnsResponderInterface:
-  void CreateNameForAddress(const rtc::IPAddress& addr,
+  void CreateNameForAddress(const webrtc::IPAddress& addr,
                             NameCreatedCallback callback) override;
-  void RemoveNameForAddress(const rtc::IPAddress& addr,
+  void RemoveNameForAddress(const webrtc::IPAddress& addr,
                             NameRemovedCallback callback) override;
 
  private:

@@ -108,14 +108,14 @@ class ProxyAsyncDnsResolverFactory final
     return socket_factory_->CreateAsyncDnsResolver();
   }
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
-      const rtc::SocketAddress& addr,
+      const webrtc::SocketAddress& addr,
       absl::AnyInvocable<void()> callback) override {
     auto temp = Create();
     temp->Start(addr, std::move(callback));
     return temp;
   }
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
-      const rtc::SocketAddress& addr,
+      const webrtc::SocketAddress& addr,
       int family,
       absl::AnyInvocable<void()> callback) override {
     auto temp = Create();
@@ -390,7 +390,7 @@ void WebRtcMedium::FetchIceServers(webrtc::PeerConnectionObserver* observer,
       base::UnsafeDanglingUntriaged(observer), std::move(callback)));
 }
 
-void WebRtcMedium::InitWebRTCThread(rtc::Thread** thread_to_set) {
+void WebRtcMedium::InitWebRTCThread(webrtc::Thread** thread_to_set) {
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
   webrtc::ThreadWrapper::current()->set_send_allowed(true);
   *thread_to_set = webrtc::ThreadWrapper::current();
@@ -477,7 +477,7 @@ void WebRtcMedium::InitNetworkThread(base::OnceClosure complete_callback) {
 
   // NOTE: IpcNetworkManager::Initialize() does not override the empty default
   // implementation so this doesn't actually do anything right now. However
-  // the contract of rtc::NetworkManagerBase states that it should be called
+  // the contract of webrtc::NetworkManagerBase states that it should be called
   // before using and explicitly on the network thread (which right now is the
   // current thread). Previously this was handled by P2PPortAllocator.
   network_manager_->Initialize();
@@ -554,7 +554,7 @@ void WebRtcMedium::OnIceServersFetched(
   dependencies.async_dns_resolver_factory =
       std::make_unique<ProxyAsyncDnsResolverFactory>(socket_factory_.get());
 
-  webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::PeerConnectionInterface>>
+  webrtc::RTCErrorOr<webrtc::scoped_refptr<webrtc::PeerConnectionInterface>>
       peer_connection = peer_connection_factory_->CreatePeerConnectionOrError(
           rtc_config, std::move(dependencies));
   if (peer_connection.ok()) {

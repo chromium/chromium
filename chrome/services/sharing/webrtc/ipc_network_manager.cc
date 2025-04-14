@@ -21,22 +21,22 @@ namespace sharing {
 
 namespace {
 
-rtc::AdapterType ConvertConnectionTypeToAdapterType(
+webrtc::AdapterType ConvertConnectionTypeToAdapterType(
     net::NetworkChangeNotifier::ConnectionType type) {
   switch (type) {
     case net::NetworkChangeNotifier::CONNECTION_UNKNOWN:
-      return rtc::ADAPTER_TYPE_UNKNOWN;
+      return webrtc::ADAPTER_TYPE_UNKNOWN;
     case net::NetworkChangeNotifier::CONNECTION_ETHERNET:
-      return rtc::ADAPTER_TYPE_ETHERNET;
+      return webrtc::ADAPTER_TYPE_ETHERNET;
     case net::NetworkChangeNotifier::CONNECTION_WIFI:
-      return rtc::ADAPTER_TYPE_WIFI;
+      return webrtc::ADAPTER_TYPE_WIFI;
     case net::NetworkChangeNotifier::CONNECTION_2G:
     case net::NetworkChangeNotifier::CONNECTION_3G:
     case net::NetworkChangeNotifier::CONNECTION_4G:
     case net::NetworkChangeNotifier::CONNECTION_5G:
-      return rtc::ADAPTER_TYPE_CELLULAR;
+      return webrtc::ADAPTER_TYPE_CELLULAR;
     default:
-      return rtc::ADAPTER_TYPE_UNKNOWN;
+      return webrtc::ADAPTER_TYPE_UNKNOWN;
   }
 }
 
@@ -90,39 +90,43 @@ void IpcNetworkManager::NetworkListChanged(
   bool use_default_ipv4_address = false;
   bool use_default_ipv6_address = false;
 
-  // rtc::Network uses these prefix_length to compare network
+  // webrtc::Network uses these prefix_length to compare network
   // interfaces discovered.
-  std::vector<std::unique_ptr<rtc::Network>> networks;
+  std::vector<std::unique_ptr<webrtc::Network>> networks;
   for (auto it = list.begin(); it != list.end(); it++) {
-    rtc::IPAddress ip_address = webrtc::NetIPAddressToRtcIPAddress(it->address);
+    webrtc::IPAddress ip_address =
+        webrtc::NetIPAddressToRtcIPAddress(it->address);
     DCHECK(!ip_address.IsNil());
 
-    rtc::IPAddress prefix = rtc::TruncateIP(ip_address, it->prefix_length);
-    rtc::AdapterType adapter_type =
+    webrtc::IPAddress prefix =
+        webrtc::TruncateIP(ip_address, it->prefix_length);
+    webrtc::AdapterType adapter_type =
         ConvertConnectionTypeToAdapterType(it->type);
     // If the adapter type is unknown, try to guess it using WebRTC's string
     // matching rules.
-    if (adapter_type == rtc::ADAPTER_TYPE_UNKNOWN) {
-      adapter_type = rtc::GetAdapterTypeFromName(it->name.c_str());
+    if (adapter_type == webrtc::ADAPTER_TYPE_UNKNOWN) {
+      adapter_type = webrtc::GetAdapterTypeFromName(it->name.c_str());
     }
     auto network = CreateNetwork(it->name, it->name, prefix, it->prefix_length,
                                  adapter_type);
     network->set_default_local_address_provider(this);
     network->set_mdns_responder_provider(this);
 
-    rtc::InterfaceAddress iface_addr;
+    webrtc::InterfaceAddress iface_addr;
     if (it->address.IsIPv4()) {
       use_default_ipv4_address |= (default_ipv4_local_address == it->address);
-      iface_addr = rtc::InterfaceAddress(ip_address);
+      iface_addr = webrtc::InterfaceAddress(ip_address);
     } else {
       DCHECK(it->address.IsIPv6());
-      iface_addr = rtc::InterfaceAddress(ip_address, it->ip_address_attributes);
+      iface_addr =
+          webrtc::InterfaceAddress(ip_address, it->ip_address_attributes);
 
       // Only allow non-link-local, non-loopback, non-deprecated IPv6 addresses
       // which don't contain MAC.
-      if (rtc::IPIsMacBased(iface_addr) ||
+      if (webrtc::IPIsMacBased(iface_addr) ||
           (it->ip_address_attributes & net::IP_ADDRESS_ATTRIBUTE_DEPRECATED) ||
-          rtc::IPIsLinkLocal(iface_addr) || rtc::IPIsLoopback(iface_addr)) {
+          webrtc::IPIsLinkLocal(iface_addr) ||
+          webrtc::IPIsLoopback(iface_addr)) {
         continue;
       }
 
@@ -133,8 +137,8 @@ void IpcNetworkManager::NetworkListChanged(
   }
 
   // Update the default local addresses.
-  rtc::IPAddress ipv4_default;
-  rtc::IPAddress ipv6_default;
+  webrtc::IPAddress ipv4_default;
+  webrtc::IPAddress ipv6_default;
   if (use_default_ipv4_address) {
     ipv4_default =
         webrtc::NetIPAddressToRtcIPAddress(default_ipv4_local_address);
