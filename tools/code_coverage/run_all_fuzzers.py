@@ -149,9 +149,20 @@ class CentipedeRunner(EngineRunner):
 
 
 @dataclasses.dataclass
-class FuzzilliRunner(CmdRunner):
+class FuzzilliRunner(EngineRunner):
   """Runs a given target with Fuzzilli.
   """
+  d8_path: str
+  target_arguments: Sequence[str]
+  source_dir: str
+
+  def __post_init__(self):
+    self.d8_path = os.path.abspath(self.d8_path)
+    self.source_dir = os.path.abspath(self.source_dir)
+
+  @property
+  def cmd(self):
+    return [self.d8_path] + self.target_arguments
 
   def run_full_corpus(self, env: Mapping[str, str], timeout: float,
                       annotation: str, corpus_dir: Optional[str]) -> bool:
@@ -161,11 +172,18 @@ class FuzzilliRunner(CmdRunner):
 
   def run_testcases(self, env: Mapping[str, str], timeout: float,
                     annotation: str, testcases: Sequence[str]) -> bool:
-    # That's a tricky part here. Basically, running cases by cases takes a
-    # gigantic amount of time, and given that we split initial targets chunks
-    # into even smaller chunks, we just hope that we execute as much test cases
-    # as possible in those runs and consider it a success.
-    super().run_testcases(env, timeout, annotation, testcases)
+    run_dir = tempfile.TemporaryDirectory()
+    os.symlink(os.path.join(self.source_dir, 'v8/test/'),
+               os.path.join(run_dir.name, 'test'))
+    # We need to run the test cases separately, because otherwise the JS files
+    # will be ran in the same JS namespace.
+    for testcase in testcases:
+      testcase = os.path.abspath(testcase)
+      _run_and_log(cmd=self.cmd + [testcase],
+                   env=env,
+                   timeout=timeout,
+                   annotation=annotation,
+                   cwd=run_dir.name)
     return True
 
 
@@ -206,8 +224,11 @@ def _profdata_merge(inputs: Sequence[str], output: str) -> bool:
   return False
 
 
-def _run_and_log(cmd: Sequence[str], env: Mapping[str, str], timeout: float,
-                 annotation: str) -> bool:
+def _run_and_log(cmd: Sequence[str],
+                 env: Mapping[str, str],
+                 timeout: float,
+                 annotation: str,
+                 cwd: str = None) -> bool:
   """Runs a given command and logs output in case of failure.
 
   Args:
@@ -225,7 +246,8 @@ def _run_and_log(cmd: Sequence[str], env: Mapping[str, str], timeout: float,
                    env=env,
                    timeout=timeout,
                    capture_output=True,
-                   check=True)
+                   check=True,
+                   cwd=cwd)
     return True
   except Exception as e:
     if type(e) == subprocess.TimeoutExpired:
@@ -678,6 +700,7 @@ def _get_all_target_details(args):
 def _get_fuzzilli_target_details(args):
   all_target_details = []
   fuzzer_target_binpath = os.path.join(args.fuzzer_binaries_dir, 'd8')
+  source_dir = os.path.abspath(os.path.join(args.fuzzer_binaries_dir, '../../'))
   if not os.path.isfile(fuzzer_target_binpath):
     logging.warning(f'Could not find binary file: {fuzzer_target_binpath}')
     return all_target_details
@@ -692,8 +715,6 @@ def _get_fuzzilli_target_details(args):
                                     'settings.json')
     with open(path_to_settings, 'r') as fp:
       settings = json.load(fp)
-    cmd = [fuzzer_target_binpath]
-    cmd.extend(settings['processArguments'])
     path_to_js_dir = os.path.join(target_corpora_dir, 'fuzzdir', 'corpus')
     jsfiles = [
         os.path.join(path_to_js_dir, file)
@@ -711,7 +732,9 @@ def _get_fuzzilli_target_details(args):
           'env':
           dict(),
           'cmd_runner':
-          FuzzilliRunner(cmd=cmd),
+          FuzzilliRunner(d8_path=fuzzer_target_binpath,
+                         target_arguments=settings['processArguments'],
+                         source_dir=source_dir),
           'corpus':
           None,
           'files':
