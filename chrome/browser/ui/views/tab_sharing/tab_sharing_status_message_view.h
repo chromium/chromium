@@ -19,8 +19,9 @@ class TabSharingStatusMessageView : public views::View {
       std::variant<raw_ptr<views::Label>, raw_ptr<views::MdTextButton>>;
 
   struct EndpointInfo final {
-    EndpointInfo(std::u16string text,
-                 content::GlobalRenderFrameHostId focus_target_id);
+    explicit EndpointInfo(std::u16string text,
+                          content::GlobalRenderFrameHostId focus_target_id =
+                              content::GlobalRenderFrameHostId());
 
     std::u16string text;
     content::GlobalRenderFrameHostId focus_target_id;

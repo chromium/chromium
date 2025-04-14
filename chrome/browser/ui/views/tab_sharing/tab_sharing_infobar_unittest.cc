@@ -195,6 +195,17 @@ TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingTitledTab) {
   }
 }
 
+TEST_P(TabSharingInfoBarTest, InfobarOnSelfCapturingTab) {
+  SCOPED_TRACE("InfobarOnCapturedTab");
+  const TabSharingInfoBar& infobar =
+      CreateInfobar({.shared_tab_name = std::u16string(),
+                     .capturer_name = kAppName,
+                     .role = TabRole::kSelfCapturingTab,
+                     .shared_tab_id = content::GlobalRenderFrameHostId(1, 1),
+                     .capturer_id = content::GlobalRenderFrameHostId(1, 1)});
+  CheckStatusMessage(infobar, {LabelInfo(u"Sharing this tab to " + kAppName)});
+}
+
 // Test that the infobar on the capturing tab has the correct text:
 // "|icon| Sharing this tab to |app|"
 TEST_P(TabSharingInfoBarTest, InfobarOnCapturingTabWhenCapturingUntitledTab) {

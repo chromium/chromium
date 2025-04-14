@@ -90,21 +90,30 @@ MessageInfo GetMessageInfoCapturing(
     TabRole role,
     const TabSharingStatusMessageView::EndpointInfo& shared_tab_info,
     const TabSharingStatusMessageView::EndpointInfo& capturer_info) {
+  if (role == TabRole::kSelfCapturingTab) {
+    return MessageInfo(
+        IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL,
+        {TabSharingStatusMessageView::EndpointInfo(capturer_info.text)});
+  }
+
   if (TabSharingInfoBarDelegate::IsCapturedTab(role)) {
     return MessageInfo(IDS_TAB_SHARING_INFOBAR_SHARING_CURRENT_TAB_LABEL,
                        {capturer_info});
   }
+
   if (shared_tab_info.text.empty()) {
     return MessageInfo(
         IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_UNTITLED_TAB_LABEL,
         {capturer_info});
   }
+
   if (base::FeatureList::IsEnabled(features::kTabCaptureInfobarLinks) &&
       TabSharingInfoBarDelegate::IsCapturingTab(role)) {
     return MessageInfo(
         IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_TO_THIS_TAB_LABEL,
         {shared_tab_info});
   }
+
   return MessageInfo(IDS_TAB_SHARING_INFOBAR_SHARING_ANOTHER_TAB_LABEL,
                      {shared_tab_info, capturer_info});
 }
