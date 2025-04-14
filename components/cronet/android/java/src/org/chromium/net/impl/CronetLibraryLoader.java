@@ -142,7 +142,8 @@ public class CronetLibraryLoader {
                         ScopedSysTraceEvent.scoped(
                                 "CronetLibraryLoader#ensureInitialized calling nativeInit")) {
                     CommandLine.getInstance().switchToNativeImpl();
-                    CronetLibraryLoaderJni.get().nativeInit();
+                    CronetLibraryLoaderJni.get()
+                            .nativeInit(CronetManifest.shouldUsePerfetto(applicationContext));
                 }
                 var initializeBuildInfoOnStartup =
                         HttpFlagsForImpl.getHttpFlags()
@@ -342,7 +343,7 @@ public class CronetLibraryLoader {
     @NativeMethods
     interface Natives {
         // Native methods are implemented in cronet_library_loader.cc.
-        void nativeInit();
+        void nativeInit(boolean initializePerfetto);
 
         void cronetInitOnInitThread(boolean updateNetworkStateFromNative);
 

@@ -4,6 +4,7 @@
 
 #include "components/cronet/android/cronet_library_loader.h"
 
+#include <android/trace.h>
 #include <jni.h>
 
 #include <memory>
@@ -22,11 +23,16 @@
 #include "base/feature_list.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/trace_event/trace_event.h"
+#include "base/tracing/perfetto_platform.h"
 #include "build/build_config.h"
 #include "components/cronet/android/cronet_base_feature.h"
 #include "components/cronet/android/cronet_jni_registration_generated.h"
@@ -38,6 +44,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 #include "third_party/zlib/zlib.h"
 #include "url/buildflags.h"
 
@@ -87,14 +94,55 @@ base::WaitableEvent g_init_thread_init_done(
   return overrides;
 }
 
+void InitializePerfetto() {
+  // This logic is inspired by
+  // tracing::PerfettoTracedProcess::MaybeCreateInstance(), which is how
+  // Perfetto is initialized in other Chromium products such as Clank and
+  // WebView. We could, however, diverge if we have a reason to.
+  static base::NoDestructor<base::tracing::PerfettoPlatform> perfetto_platform(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING}),
+      base::tracing::PerfettoPlatform::Options{
+          // Use our own producer name prefix so that our traces can be
+          // filtered separately from other embedded Chromium code, especially
+          // WebView.
+          .process_name_prefix = "cronet-"});
+
+  perfetto::TracingInitArgs tracing_init_args;
+  tracing_init_args.backends = perfetto::kSystemBackend;
+  tracing_init_args.platform = perfetto_platform.get();
+  tracing_init_args.enable_system_consumer = false;
+  // Note: Perfetto initializes asynchronously in a background thread.
+  // Unfortunately, trace events logged while Perfetto is still initializing are
+  // just dropped on the floor. This means that events logged within a brief
+  // window (typically about 3 milliseconds) after initialization are lost. See
+  // https://crbug.com/324031921. For this reason, it is probably a good idea
+  // to prefer Android ATrace APIs to Perfetto APIs for events that are likely
+  // to get lost in this way.
+  perfetto::Tracing::Initialize(tracing_init_args);
+
+  base::TrackEvent::Register();
+}
+
 }  // namespace
 
-void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env) {
+void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env,
+                                        jboolean initializePerfetto) {
   logging::InitLogging(logging::LoggingSettings());
 
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
   base::i18n::InitializeICU();
 #endif
+
+  if (!base::ThreadPoolInstance::Get()) {
+    base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Cronet");
+  }
+
+  if (initializePerfetto) {
+    ATrace_beginSection("CronetLibraryLoader_NativeInit initializing Perfetto");
+    InitializePerfetto();
+    ATrace_endSection();
+  }
 
   ApplyBaseFeatureOverrides(GetBaseFeatureOverrides(env));
 
@@ -103,9 +151,6 @@ void JNI_CronetLibraryLoader_NativeInit(JNIEnv* env) {
         << "CronetLogMe feature flag set, logging as instructed. Message: "
         << kLogMeMessage.Get();
   }
-
-  if (!base::ThreadPoolInstance::Get())
-    base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Cronet");
 }
 
 bool OnInitThread() {

@@ -23,13 +23,11 @@
 
 namespace base::tracing {
 
-namespace {
-constexpr char kProcessNamePrefix[] = "org.chromium-";
-}  // namespace
-
 PerfettoPlatform::PerfettoPlatform(
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)),
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    Options options)
+    : process_name_prefix_(std::move(options.process_name_prefix)),
+      task_runner_(std::move(task_runner)),
       thread_local_object_([](void* object) {
         delete static_cast<ThreadLocalObject*>(object);
       }) {}
@@ -79,11 +77,11 @@ std::string PerfettoPlatform::GetCurrentProcessName() {
   std::string process_name;
   if (host_package_name) {
     process_name = StrCat(
-        {kProcessNamePrefix, host_package_name, "-",
+        {process_name_prefix_, host_package_name, "-",
          NumberToString(trace_event::TraceLog::GetInstance()->process_id())});
   } else {
     process_name = StrCat(
-        {kProcessNamePrefix,
+        {process_name_prefix_,
          NumberToString(trace_event::TraceLog::GetInstance()->process_id())});
   }
   return process_name;

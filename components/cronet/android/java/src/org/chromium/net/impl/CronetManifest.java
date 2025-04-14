@@ -51,9 +51,12 @@ public final class CronetManifest {
     @VisibleForTesting
     public static final String READ_HTTP_FLAGS_META_DATA_KEY = "android.net.http.ReadHttpFlags";
 
+    @VisibleForTesting
+    public static final String USE_PERFETTO_META_DATA_KEY = "android.net.http.UsePerfetto";
+
     /**
      * @return True if telemetry should be enabled, based on the {@link
-     * #ENABLE_TELEMETRY_META_DATA_KEY} meta-data entry in the Android manifest.
+     *     #ENABLE_TELEMETRY_META_DATA_KEY} meta-data entry in the Android manifest.
      */
     public static boolean isAppOptedInForTelemetry(Context context, CronetSource source) {
         boolean telemetryIsDefaultEnabled =
@@ -66,11 +69,15 @@ public final class CronetManifest {
 
     /**
      * @return True if HTTP flags (typically used for experiments) should be enabled, based on the
-     * {@link #READ_HTTP_FLAGS_META_DATA_KEY} meta-data entry in the Android manifest.
+     *     {@link #READ_HTTP_FLAGS_META_DATA_KEY} meta-data entry in the Android manifest.
      * @see HttpFlagsLoader
      */
     public static boolean shouldReadHttpFlags(Context context) {
         return getMetaData(context).getBoolean(READ_HTTP_FLAGS_META_DATA_KEY, /* default= */ true);
+    }
+
+    public static boolean shouldUsePerfetto(Context context) {
+        return getMetaData(context).getBoolean(USE_PERFETTO_META_DATA_KEY, /* default= */ true);
     }
 
     private static final Object sLock = new Object();
