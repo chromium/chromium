@@ -6,8 +6,6 @@
 
 #include <vector>
 
-#include "ash/public/cpp/desk_profiles_delegate.h"
-#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -39,23 +37,6 @@ int DeskButtonContainer::GetMaxLength(bool zero_state) {
     return kDeskButtonContainerHeightVertical;
   }
   return kDeskButtonContainerWidthHorizontalExpandedNoAvatar;
-}
-
-void DeskButtonContainer::OnProfileUpsert(const LacrosProfileSummary& summary) {
-  UpdateUiAndLayoutIfNeeded(DesksController::Get()->active_desk());
-}
-
-void DeskButtonContainer::OnProfileRemoved(uint64_t profile_id) {
-  UpdateUiAndLayoutIfNeeded(DesksController::Get()->active_desk());
-}
-
-void DeskButtonContainer::OnFirstSessionStarted() {
-  // The desk profiles delegate will be available if lacros and desk profiles
-  // are both enabled.
-  desk_profiles_observer_.Reset();
-  if (auto* delegate = Shell::Get()->GetDeskProfilesDelegate()) {
-    desk_profiles_observer_.Observe(delegate);
-  }
 }
 
 gfx::Size DeskButtonContainer::CalculatePreferredSize(
@@ -222,7 +203,6 @@ void DeskButtonContainer::Init(DeskButtonWidget* desk_button_widget) {
           .Build());
 
   desks_observation_.Observe(DesksController::Get());
-  session_observer_.Observe(SessionController::Get());
 }
 
 void DeskButtonContainer::UpdateUi(const Desk* active_desk) {

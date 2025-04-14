@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/screen_util.h"
 #include "ash/shelf/desk_button_widget.h"
@@ -48,7 +47,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/highlight_path_generator.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/metadata/view_factory_internal.h"
 
@@ -106,49 +104,9 @@ void DeskButton::Layout(PassKey) {
     return;
   }
 
-  if (IsShowingAvatar()) {
-    if (base::i18n::IsRTL()) {
-      // Layout when the desk avatar is visible and it's rtl.
-      gfx::Insets desk_button_insets = GetButtonInsets();
-      desk_button_insets.set_left_right(desk_button_insets.right(),
-                                        desk_button_insets.left());
-      available_bounds.Inset(desk_button_insets);
-      gfx::Rect desk_avatar_view_bounds = gfx::Rect(
-          {available_bounds.right() - kDeskButtonAvatarSize.width(),
-           available_bounds.y() +
-               (available_bounds.height() - kDeskButtonAvatarSize.height()) /
-                   2},
-          kDeskButtonAvatarSize);
-      gfx::Insets insets_taken =
-          gfx::Insets::TLBR(0, 0, 0,
-                            kDeskButtonAvatarSize.width() +
-                                kDeskButtonChildSpacingHorizontalExpanded);
-      desk_avatar_view_->SetBoundsRect(desk_avatar_view_bounds);
-      available_bounds.Inset(insets_taken);
-      desk_name_label_->SetBoundsRect(available_bounds);
-    } else {
-      // Layout when the desk avatar is visible and it's *not* rtl.
-      available_bounds.Inset(GetButtonInsets());
-      gfx::Rect desk_avatar_view_bounds = gfx::Rect(
-          {available_bounds.x(),
-           available_bounds.y() +
-               (available_bounds.height() - kDeskButtonAvatarSize.height()) /
-                   2},
-          kDeskButtonAvatarSize);
-      gfx::Insets insets_taken =
-          gfx::Insets::TLBR(0,
-                            kDeskButtonAvatarSize.width() +
-                                kDeskButtonChildSpacingHorizontalExpanded,
-                            0, 0);
-      desk_avatar_view_->SetBoundsRect(desk_avatar_view_bounds);
-      available_bounds.Inset(insets_taken);
-      desk_name_label_->SetBoundsRect(available_bounds);
-    }
-  } else {
-    // Layout when the desk avatar is *not* visible.
-    available_bounds.Inset(GetButtonInsets());
-    desk_name_label_->SetBoundsRect(available_bounds);
-  }
+  // Layout when the desk avatar is *not* visible.
+  available_bounds.Inset(GetButtonInsets());
+  desk_name_label_->SetBoundsRect(available_bounds);
 }
 
 void DeskButton::OnMouseEvent(ui::MouseEvent* event) {
@@ -235,46 +193,21 @@ gfx::Insets DeskButton::GetButtonInsets() const {
     return kDeskButtonInsetVerticalNoAvatar;
   }
 
-  if (IsShowingAvatar()) {
-    return kDeskButtonInsetHorizontalExpandedWithAvatar;
-  }
-
   return kDeskButtonInsetHorizontalExpandedNoAvatar;
 }
 
 void DeskButton::UpdateUi(const Desk* active_desk) {
-  UpdateAvatar(active_desk);
   UpdateLocaleSpecificSettings();
-}
-
-bool DeskButton::IsShowingAvatar() const {
-  return desk_avatar_view_ && desk_avatar_view_->GetVisible();
-}
-
-void DeskButton::UpdateAvatar(const Desk* active_desk) {
-  if (!desk_avatar_view_) {
-    return;
-  }
-
-  desk_avatar_view_->SetVisible(false);
 }
 
 void DeskButton::UpdateLocaleSpecificSettings() {
   // Update the accessible name.
   DesksController* desk_controller = DesksController::Get();
   const Desk* active_desk = desk_controller->active_desk();
-  if (IsShowingAvatar()) {
-    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_SHELF_DESK_BUTTON_TITLE_WITH_PROFILE_AVATAR, active_desk->name(),
-        profile_.name, profile_.email,
-        base::NumberToString16(desk_controller->GetDeskIndex(active_desk) + 1),
-        base::NumberToString16(desk_controller->GetNumberOfDesks())));
-  } else {
-    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
-        IDS_SHELF_DESK_BUTTON_TITLE_NO_PROFILE_AVATAR, active_desk->name(),
-        base::NumberToString16(desk_controller->GetDeskIndex(active_desk) + 1),
-        base::NumberToString16(desk_controller->GetNumberOfDesks())));
-  }
+  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+      IDS_SHELF_DESK_BUTTON_TITLE_NO_PROFILE_AVATAR, active_desk->name(),
+      base::NumberToString16(desk_controller->GetDeskIndex(active_desk) + 1),
+      base::NumberToString16(desk_controller->GetNumberOfDesks())));
 
   // Update the button text since the default desk name can be locale specific.
   desk_name_label_->SetText(GetDeskNameLabelText(active_desk));

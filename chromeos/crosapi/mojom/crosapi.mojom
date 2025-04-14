@@ -130,12 +130,7 @@ interface Crosapi {
 
   // BindDebugInterfaceRegisterer@133 was removed.
   // BindDesk@103 was removed.
-
-  // Binds the desk profiles interface.
-  // Added in M119.
-  [MinVersion=122] BindDeskProfileObserver@124(
-      pending_receiver<DeskProfileObserver> receiver);
-
+  // BindDeskProfileObserver@124 was removed.
   // BindDeskTemplate@71 was removed.
 
   // Binds the device attributes service which is used by enterprise extension

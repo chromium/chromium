@@ -104,7 +104,6 @@ class ChromeShellDelegate : public ash::ShellDelegate {
   std::string GetVersionString() override;
   void ShouldExitFullscreenBeforeLock(
       ShouldExitFullscreenCallback callback) override;
-  ash::DeskProfilesDelegate* GetDeskProfilesDelegate() override;
   void OpenMultitaskingSettings() override;
   bool IsNoFirstRunSwitchOn() const override;
 };

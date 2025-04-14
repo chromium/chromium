@@ -47,7 +47,6 @@ class CertProvisioningAsh;
 class ChapsServiceAsh;
 class ChromeAppKioskServiceAsh;
 class ClipboardHistoryAsh;
-class DeskProfilesAsh;
 class DeviceAttributesAsh;
 class DeviceOAuth2TokenServiceAsh;
 class DocumentScanAsh;
@@ -104,8 +103,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindCrosDisplayConfigController(
       mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver)
       override;
-  void BindDeskProfileObserver(
-      mojo::PendingReceiver<mojom::DeskProfileObserver> receiver) override;
   void BindDeviceAttributes(
       mojo::PendingReceiver<mojom::DeviceAttributes> receiver) override;
   void BindDeviceOAuth2TokenService(
@@ -213,8 +210,6 @@ class CrosapiAsh : public mojom::Crosapi {
     return chrome_app_kiosk_service_ash_.get();
   }
 
-  DeskProfilesAsh* desk_profiles_ash() { return desk_profiles_ash_.get(); }
-
   DeviceAttributesAsh* device_attributes_ash() {
     return device_attributes_ash_.get();
   }
@@ -295,7 +290,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<ChapsServiceAsh> chaps_service_ash_;
   std::unique_ptr<ChromeAppKioskServiceAsh> chrome_app_kiosk_service_ash_;
   std::unique_ptr<ClipboardHistoryAsh> clipboard_history_ash_;
-  std::unique_ptr<DeskProfilesAsh> desk_profiles_ash_;
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<DeviceOAuth2TokenServiceAsh> device_oauth2_token_service_ash_;
   std::unique_ptr<ash::DiagnosticsServiceAsh> diagnostics_service_ash_;

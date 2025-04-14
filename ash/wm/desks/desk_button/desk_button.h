@@ -8,7 +8,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/desk_profiles_delegate.h"
 #include "ash/shelf/shelf.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -16,7 +15,6 @@
 #include "ui/views/controls/image_view.h"
 
 namespace views {
-class ImageView;
 class Label;
 }
 
@@ -68,11 +66,6 @@ class ASH_EXPORT DeskButton : public views::Button {
   // Updates UI status without re-layout.
   void UpdateUi(const Desk* active_desk);
 
-  // Returns true if it is currently showing the desk profile avatar.
-  bool IsShowingAvatar() const;
-
-  void UpdateAvatar(const Desk* active_desk);
-
   // Updates locale-specific settings.
   void UpdateLocaleSpecificSettings();
 
@@ -100,16 +93,6 @@ class ASH_EXPORT DeskButton : public views::Button {
       bool should_enable_shelf_auto_hide);
 
   void UpdateBackground();
-
-  // A view that displays the profile avatar of the current desk.
-  raw_ptr<views::ImageView> desk_avatar_view_;
-
-  // Image for the profile avatar.
-  gfx::ImageSkia desk_avatar_image_;
-
-  // Profile summary of the desk's associated profile. It's cached during
-  // `UpdateAvatar()`.
-  LacrosProfileSummary profile_;
 
   // A label that displays the active desk's name.
   raw_ptr<views::Label> desk_name_label_;
