@@ -313,10 +313,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // bubble if `options.show_prompt` is true; otherwise only shows the omnibox
   // icon. On mobile, shows the offer-to-save infobar if `options.show_prompt`
   // is true; otherwise does not offer to save at all.
-  virtual void ConfirmSaveCreditCardLocally(
-      const CreditCard& card,
-      SaveCreditCardOptions options,
-      LocalSaveCardPromptCallback callback);
+  virtual void ShowSaveCreditCardLocally(const CreditCard& card,
+                                         SaveCreditCardOptions options,
+                                         LocalSaveCardPromptCallback callback);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. This includes both the save server card prompt and
@@ -331,7 +330,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // not offer to save at all.
   // TODO (crbug.com/1462821): Make `legal_message_lines` optional, as CVC
   // upload has no legal message.
-  virtual void ConfirmSaveCreditCardToCloud(
+  virtual void ShowSaveCreditCardToCloud(
       const CreditCard& card,
       const LegalMessageLines& legal_message_lines,
       SaveCreditCardOptions options,

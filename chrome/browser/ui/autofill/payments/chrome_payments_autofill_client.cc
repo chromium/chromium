@@ -251,7 +251,7 @@ void ChromePaymentsAutofillClient::ScanCreditCard(
                                               std::move(callback));
 }
 
-void ChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
+void ChromePaymentsAutofillClient::ShowSaveCreditCardLocally(
     const CreditCard& card,
     SaveCreditCardOptions options,
     LocalSaveCardPromptCallback callback) {
@@ -283,7 +283,7 @@ void ChromePaymentsAutofillClient::ConfirmSaveCreditCardLocally(
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void ChromePaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
+void ChromePaymentsAutofillClient::ShowSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     SaveCreditCardOptions options,

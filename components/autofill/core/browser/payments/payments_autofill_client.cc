@@ -66,12 +66,12 @@ bool PaymentsAutofillClient::HasCreditCardScanFeature() const {
 
 void PaymentsAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {}
 
-void PaymentsAutofillClient::ConfirmSaveCreditCardLocally(
+void PaymentsAutofillClient::ShowSaveCreditCardLocally(
     const CreditCard& card,
     SaveCreditCardOptions options,
     LocalSaveCardPromptCallback callback) {}
 
-void PaymentsAutofillClient::ConfirmSaveCreditCardToCloud(
+void PaymentsAutofillClient::ShowSaveCreditCardToCloud(
     const CreditCard& card,
     const LegalMessageLines& legal_message_lines,
     SaveCreditCardOptions options,
