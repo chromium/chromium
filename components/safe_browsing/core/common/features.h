@@ -276,6 +276,10 @@ extern const base::FeatureParam<std::string> kRedWarningSurveyReportTypeFilter;
 // Specifies the HaTS survey's identifier.
 extern const base::FeatureParam<std::string> kRedWarningSurveyTriggerId;
 
+// Enables reporting notification contents and metadata to the server, upon user
+// consent.
+BASE_DECLARE_FEATURE(kReportNotificationContentDetectionData);
+
 // Enables client side phishing daily reports limit to be configured via Finch
 // for ESB and SBER users
 BASE_DECLARE_FEATURE(kSafeBrowsingDailyPhishingReportsLimit);

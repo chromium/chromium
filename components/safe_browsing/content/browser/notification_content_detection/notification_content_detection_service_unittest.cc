@@ -196,7 +196,8 @@ TEST_F(NotificationContentDetectionServiceTest,
   EXPECT_CALL(*notification_content_detection_model(),
               Execute(_, origin, false, false, _))
       .Times(1);
-  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(0);
+  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false, _))
+      .Times(0);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
           notification_data, origin, /*is_allowlisted_by_user=*/false,
@@ -219,7 +220,11 @@ TEST_F(NotificationContentDetectionServiceTest,
               Execute(_, origin, /*is_allowlisted_by_user=*/false,
                       /*did_match_allowlist=*/true, _))
       .Times(1);
-  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
+  EXPECT_CALL(model_verdict_callback_,
+              Run(/*is_suspicious=*/false,
+                  testing::Eq("{\"is-origin-allowlisted-by-user\":false,\"is-"
+                              "origin-on-global-cache-list\":true}")))
+      .Times(1);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
           notification_data, origin, /*is_allowlisted_by_user=*/false,
@@ -240,7 +245,11 @@ TEST_F(NotificationContentDetectionServiceTest,
   SetUpTestNotificationContentDetectionModel();
   EXPECT_CALL(*notification_content_detection_model(), Execute(_, _, _, _, _))
       .Times(0);
-  EXPECT_CALL(model_verdict_callback_, Run(/*is_suspicious=*/false)).Times(1);
+  EXPECT_CALL(model_verdict_callback_,
+              Run(/*is_suspicious=*/false,
+                  testing::Eq("{\"is-origin-allowlisted-by-user\":false,\"is-"
+                              "origin-on-global-cache-list\":true}")))
+      .Times(1);
   notification_content_detection_service()
       ->MaybeCheckNotificationContentDetectionModel(
           notification_data, origin, /*is_allowlisted_by_user=*/false,

@@ -37,11 +37,15 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_constants.h"
 #include "components/safe_browsing/content/browser/notification_content_detection/test_model_observer_tracker.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/platform_notification_context.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -113,8 +117,9 @@ const char kTimeUntilLastClickMillis[] = "TimeUntilLastClick";
 class PlatformNotificationServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        safe_browsing::kOnDeviceNotificationContentDetectionModel);
+    scoped_feature_list_.InitWithFeatures(
+        {}, {safe_browsing::kOnDeviceNotificationContentDetectionModel,
+             safe_browsing::kReportNotificationContentDetectionData});
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
@@ -138,6 +143,40 @@ class PlatformNotificationServiceTest : public testing::Test {
     display_service_tester_.reset();
     mock_logger_ = nullptr;
     profile_.reset();
+  }
+
+  content::PlatformNotificationContext* GetPlatformNotificationContext(
+      std::string origin_host) {
+    auto storage_partition_config = content::StoragePartitionConfig::Create(
+        profile_.get(), origin_host, /*partition_name=*/"",
+        /*in_memory=*/false);
+    return profile_->GetStoragePartition(storage_partition_config, true)
+        ->GetPlatformNotificationContext();
+  }
+
+  NotificationDatabaseData ReadNotificationDataAndRecordInteractionSynchronous(
+      content::PlatformNotificationContext* context,
+      const std::string& notification_id,
+      const GURL& origin) {
+    base::RunLoop run_loop;
+    context->ReadNotificationDataAndRecordInteraction(
+        "p#" + origin.spec() + "#0" + notification_id, origin,
+        content::PlatformNotificationContext::Interaction::NONE,
+        base::BindOnce(
+            &PlatformNotificationServiceTest::
+                DidReadNotificationDataAndRecordInteractionSynchronous,
+            base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+    return notification_database_data_;
+  }
+
+  void DidReadNotificationDataAndRecordInteractionSynchronous(
+      base::OnceClosure quit_closure,
+      bool success,
+      const NotificationDatabaseData& data) {
+    ASSERT_TRUE(success);
+    notification_database_data_ = data;
+    std::move(quit_closure).Run();
   }
 
  protected:
@@ -174,6 +213,9 @@ class PlatformNotificationServiceTest : public testing::Test {
   raw_ptr<MockNotificationMetricsLogger> mock_logger_;
 
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> recorder_;
+
+ private:
+  NotificationDatabaseData notification_database_data_;
 };
 
 TEST_F(PlatformNotificationServiceTest, DisplayNonPersistentThenClose) {
@@ -777,11 +819,13 @@ class PlatformNotificationServiceTest_NotificationContentDetection
         HistoryServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
     if (IsNotificationContentDetectionEnabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          safe_browsing::kOnDeviceNotificationContentDetectionModel);
+      scoped_feature_list_.InitWithFeatures(
+          {safe_browsing::kOnDeviceNotificationContentDetectionModel},
+          {safe_browsing::kReportNotificationContentDetectionData});
     } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          safe_browsing::kOnDeviceNotificationContentDetectionModel);
+      scoped_feature_list_.InitWithFeatures(
+          {}, {safe_browsing::kOnDeviceNotificationContentDetectionModel,
+               safe_browsing::kReportNotificationContentDetectionData});
     }
     if (IsSafeBrowsingEnabled()) {
       profile_->GetTestingPrefService()->SetManagedPref(
@@ -841,4 +885,85 @@ TEST_P(PlatformNotificationServiceTest_NotificationContentDetection,
   service()->DisplayPersistentNotification(
       kNotificationId, GURL() /* service_worker_scope */,
       GURL("https://chrome.com/"), data, NotificationResources());
+}
+
+class PlatformNotificationServiceTest_ReportNotificationContentDetectionData
+    : public PlatformNotificationServiceTest {
+ public:
+  void SetUp() override {
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        HistoryServiceFactory::GetInstance(),
+        HistoryServiceFactory::GetDefaultFactory());
+    profile_ = profile_builder.Build();
+    scoped_feature_list_.InitWithFeatures(
+        {safe_browsing::kOnDeviceNotificationContentDetectionModel,
+         safe_browsing::kReportNotificationContentDetectionData},
+        {});
+    profile_->GetTestingPrefService()->SetManagedPref(
+        prefs::kSafeBrowsingEnabled, std::make_unique<base::Value>(true));
+    mock_notification_content_detection_service_ = static_cast<
+        safe_browsing::MockNotificationContentDetectionService*>(
+        safe_browsing::NotificationContentDetectionServiceFactory::GetInstance()
+            ->SetTestingFactoryAndUse(
+                profile_.get(),
+                base::BindRepeating(
+                    &safe_browsing::MockNotificationContentDetectionService::
+                        FactoryForTests,
+                    &model_observer_tracker_,
+                    base::ThreadPool::CreateSequencedTaskRunner(
+                        {base::MayBlock()}))));
+  }
+
+  void TearDown() override {
+    mock_notification_content_detection_service_ = nullptr;
+    PlatformNotificationServiceTest::TearDown();
+  }
+
+ protected:
+  raw_ptr<safe_browsing::MockNotificationContentDetectionService>
+      mock_notification_content_detection_service_ = nullptr;
+  safe_browsing::TestModelObserverTracker model_observer_tracker_;
+};
+
+TEST_F(PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
+       UpdateNotificationDatabaseMetadata) {
+  // Store notification data in `NotificationDatabase`.
+  const int64_t kFakeServiceWorkerRegistrationId = 42;
+  int notification_id = 1;
+  GURL origin("https://example.com");
+  NotificationDatabaseData notification_database_data;
+  notification_database_data.origin = origin;
+  GetPlatformNotificationContext(origin.host())
+      ->WriteNotificationData(notification_id, kFakeServiceWorkerRegistrationId,
+                              origin, notification_database_data,
+                              base::DoNothing());
+  base::RunLoop().RunUntilIdle();
+  // Update `NotificationDatabase` entry with metadata.
+  Notification notification = message_center::Notification(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      "p#" + origin.spec() + "#0" + base::NumberToString(notification_id),
+      /*title=*/std::u16string(),
+      /*message=*/std::u16string(), /*icon=*/ui::ImageModel(),
+      /*display_source=*/std::u16string(), origin, message_center::NotifierId(),
+      message_center::RichNotificationData(), /*delegate=*/nullptr);
+  auto metadata = std::make_unique<PersistentNotificationMetadata>();
+  bool is_on_global_cache_list = false;
+  bool is_allowlisted_by_user = false;
+  double suspicious_score = 70.0;
+  service()->UpdatePersistentMetadataThenDisplay(
+      notification, std::move(metadata), /*should_show_warning=*/true,
+      safe_browsing::NotificationContentDetectionModel::GetSerializedMetadata(
+          is_on_global_cache_list, is_allowlisted_by_user, suspicious_score));
+  // Read and check the entry from `NotificationDatabase`.
+  NotificationDatabaseData data =
+      ReadNotificationDataAndRecordInteractionSynchronous(
+          GetPlatformNotificationContext(origin.host()),
+          base::NumberToString(notification_id), origin);
+  ASSERT_TRUE(
+      data.serialized_metadata.contains(safe_browsing::kMetadataDictionaryKey));
+  ASSERT_EQ(
+      safe_browsing::NotificationContentDetectionModel::GetSerializedMetadata(
+          is_on_global_cache_list, is_allowlisted_by_user, suspicious_score),
+      data.serialized_metadata.at(safe_browsing::kMetadataDictionaryKey));
 }

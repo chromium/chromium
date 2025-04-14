@@ -109,6 +109,9 @@ class PlatformNotificationServiceImpl
   FRIEND_TEST_ALL_PREFIXES(
       PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       FindWebAppIconAndTitle);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
+      UpdateNotificationDatabaseMetadata);
 
   struct WebAppIconAndTitle {
     gfx::ImageSkia icon;
@@ -161,12 +164,15 @@ class PlatformNotificationServiceImpl
   // Clears |closed_notifications_|. Should only be used for testing purposes.
   void ClearClosedNotificationsForTesting() { closed_notifications_.clear(); }
 
-  // Update the persistent metadata, given the value of `is_suspicious` then
-  // display the notification.
+  // Update the notification entry in the `NotificationDatabase` with
+  // `serialized_content_detection_metadata` for possible MQLS logging later.
+  // Update `persistent_metadata`, given the value of `should_show_warning`, to
+  // tell the front end whether to display the notification or the warning.
   void UpdatePersistentMetadataThenDisplay(
       const message_center::Notification& notification,
-      std::unique_ptr<PersistentNotificationMetadata> metadata,
-      bool is_suspicious);
+      std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+      bool should_show_warning,
+      std::optional<std::string> serialized_content_detection_metadata);
 
   // Logs metrics when displaying a persistent notification.
   void LogPersistentNotificationShownMetrics(
@@ -177,6 +183,24 @@ class PlatformNotificationServiceImpl
   // Returns true if the user tapped "Always allow" on a notification warning
   // for `origin`.
   bool AreSuspiciousNotificationsAllowlistedByUser(const GURL& origin);
+
+  // `WriteResourcesResultCallback` callback that updates the
+  // `persistent_metadata` and displays the notification with a call to
+  // `DoUpdatePersistentMetadataThenDisplay`, after updating the notification
+  // database with serialized metadata. Note the `success` value is currently
+  // unused.
+  void DidUpdatePersistentMetadata(
+      std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+      message_center::Notification notification,
+      bool should_show_warning,
+      bool success);
+
+  // Helper method for updating `persistent_metadata`, given the value of
+  // `should_show_warning` then displaying the notification.
+  void DoUpdatePersistentMetadataThenDisplay(
+      std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+      message_center::Notification notification,
+      bool should_show_warning);
 
   // The profile for this instance or NULL if the initial profile has been
   // shutdown already.

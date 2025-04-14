@@ -17,6 +17,12 @@ extern const char kSuspiciousScoreHistogram[];
 // Website setting value key for user's allowlist.
 extern const char kIsAllowlistedByUserKey[];
 
+// MQLS metadata dictionary.
+extern const char kMetadataDictionaryKey[];
+extern const char kMetadataSuspiciousKey[];
+extern const char kMetadataIsOriginOnGlobalCacheListKey[];
+extern const char kMetadataIsOriginAllowlistedByUserKey[];
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_NOTIFICATION_CONTENT_DETECTION_NOTIFICATION_CONTENT_DETECTION_CONSTANTS_H_

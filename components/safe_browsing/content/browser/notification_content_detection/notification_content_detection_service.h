@@ -23,7 +23,9 @@ namespace safe_browsing {
 class NotificationContentDetectionService : public KeyedService {
  public:
   // The callback for displaying a persistent notification.
-  using ModelVerdictCallback = base::OnceCallback<void(bool is_suspicious)>;
+  using ModelVerdictCallback = base::OnceCallback<void(
+      bool is_suspicious,
+      std::optional<std::string> serialized_content_detection_metadata)>;
 
   NotificationContentDetectionService(
       optimization_guide::OptimizationGuideModelProvider* model_provider,

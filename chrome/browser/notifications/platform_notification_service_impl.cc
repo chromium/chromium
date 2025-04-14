@@ -46,6 +46,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
@@ -759,15 +760,39 @@ bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
 
 void PlatformNotificationServiceImpl::UpdatePersistentMetadataThenDisplay(
     const message_center::Notification& notification,
-    std::unique_ptr<PersistentNotificationMetadata> metadata,
-    bool is_suspicious) {
-  base::UmaHistogramEnumeration(
-      kNotificationContentDetectionDisplayPersistentNotificationEventHistogram,
-      DisplayPersistentNotificationEvents::kFinished);
-  metadata->is_suspicious = is_suspicious;
-  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
-      NotificationHandler::Type::WEB_PERSISTENT, notification,
-      std::move(metadata));
+    std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+    bool should_show_warning,
+    std::optional<std::string> serialized_content_detection_metadata) {
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kReportNotificationContentDetectionData) &&
+      serialized_content_detection_metadata.has_value()) {
+    // Obtain the storage partition for the url and if found, update
+    // `NotificationDatabase` with metadata.
+    auto storage_partition_config = content::StoragePartitionConfig::Create(
+        profile_, notification.origin_url().host(), /*partition_name=*/"",
+        /*in_memory=*/false);
+    // If there is no storage partition for the url, then there is also no
+    // notification data so do not create a partition to store metadata.
+    content::StoragePartition* current_storage_partition_ =
+        profile_->GetStoragePartition(storage_partition_config,
+                                      /*can_create=*/false);
+    if (current_storage_partition_ &&
+        current_storage_partition_->GetPlatformNotificationContext()) {
+      current_storage_partition_->GetPlatformNotificationContext()
+          ->WriteNotificationMetadata(
+              notification.id(), notification.origin_url(),
+              safe_browsing::kMetadataDictionaryKey,
+              serialized_content_detection_metadata.value(),
+              base::BindOnce(
+                  &PlatformNotificationServiceImpl::DidUpdatePersistentMetadata,
+                  weak_ptr_factory_.GetWeakPtr(),
+                  std::move(persistent_metadata), notification,
+                  should_show_warning));
+      return;
+    }
+  }
+  DoUpdatePersistentMetadataThenDisplay(std::move(persistent_metadata),
+                                        notification, should_show_warning);
 }
 
 void PlatformNotificationServiceImpl::LogPersistentNotificationShownMetrics(
@@ -810,4 +835,26 @@ bool PlatformNotificationServiceImpl::
   return stored_value.GetDict()
       .FindBool(safe_browsing::kIsAllowlistedByUserKey)
       .value_or(false);
+}
+
+void PlatformNotificationServiceImpl::DidUpdatePersistentMetadata(
+    std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+    message_center::Notification notification,
+    bool should_show_warning,
+    bool success) {
+  DoUpdatePersistentMetadataThenDisplay(std::move(persistent_metadata),
+                                        notification, should_show_warning);
+}
+
+void PlatformNotificationServiceImpl::DoUpdatePersistentMetadataThenDisplay(
+    std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+    message_center::Notification notification,
+    bool should_show_warning) {
+  base::UmaHistogramEnumeration(
+      kNotificationContentDetectionDisplayPersistentNotificationEventHistogram,
+      DisplayPersistentNotificationEvents::kFinished);
+  persistent_metadata->is_suspicious = should_show_warning;
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
+      NotificationHandler::Type::WEB_PERSISTENT, notification,
+      std::move(persistent_metadata));
 }
