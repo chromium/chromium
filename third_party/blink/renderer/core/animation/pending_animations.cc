@@ -96,12 +96,13 @@ bool PendingAnimations::Update(
         continue;
       }
 
-      if (animation->Playing() && !animation->StartTimeInternal() &&
-          has_monotonic_timeline) {
+      if (animation->Playing() && !animation->StartTimeInternal()) {
         // Scroll timelines get their start time set during timeline validation
         // and do not need to be added to the list. Once the start time is set
         // they must be re-added to the pending animations.
-        waiting_for_start_time.push_back(animation.Get());
+        if (has_monotonic_timeline) {
+          waiting_for_start_time.push_back(animation.Get());
+        }
       } else if (animation->PendingInternal()) {
         DCHECK(animation->TimelineInternal()->IsActive() &&
                animation->TimelineInternal()->CurrentTime() &&
