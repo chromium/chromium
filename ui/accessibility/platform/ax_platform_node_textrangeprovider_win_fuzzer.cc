@@ -10,7 +10,6 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
@@ -28,6 +27,7 @@
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
 #include <UIAutomationClient.h>
@@ -181,6 +181,7 @@ void MutateTextRangeProvider(ComPtr<ITextRangeProvider>& text_range,
 struct Environment {
   Environment() { CHECK(base::i18n::InitializeICU()); }
   base::AtExitManager at_exit_manager;
+  ui::AXPlatformForTest ax_platform_for_test;
 };
 
 // Entry point for LibFuzzer.
