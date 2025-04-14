@@ -1826,8 +1826,6 @@ if (!is_robolectric && enable_java_templates) {
       jar_excluded_patterns += [
         "*/R.class",
         "*/R\$*.class",
-        "*/Manifest.class",
-        "*/Manifest\$*.class",
         "*/*GEN_JNI.class",
       ]
     }
@@ -1877,8 +1875,6 @@ if (!is_robolectric && enable_java_templates) {
       jar_excluded_patterns += [
         "*/R.class",
         "*/R\$*.class",
-        "*/Manifest.class",
-        "*/Manifest\$*.class",
         "*/*GEN_JNI.class",
       ]
 
