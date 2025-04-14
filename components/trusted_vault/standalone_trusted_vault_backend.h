@@ -187,22 +187,20 @@ class StandaloneTrustedVaultBackend
   // Initializes |local_recovery_factors_| with the current |primary_account_|.
   void ResetLocalRecoveryFactors();
 
-  // Attempts to register device in case it's not yet registered and currently
-  // available local data is sufficient to do it. For the cases where
-  // registration is desirable (i.e. feature toggle enabled and user signed in),
-  // it returns an enum representing the registration state, intended to be used
-  // for metric recording. Otherwise it returns nullopt.
-  std::optional<TrustedVaultDeviceRegistrationStateForUMA>
-  MaybeRegisterDevice();
+  // Attempts to register local recovery factors in case they're not yet
+  // registered and currently available local data is sufficient to do it. Also
+  // records device registration related metrics.
+  void MaybeRegisterLocalRecoveryFactors();
 
   // Attempts to honor the pending operation stored in
   // |pending_trusted_recovery_method_|.
   void MaybeProcessPendingTrustedRecoveryMethod();
 
-  // Called when device registration for |gaia_id| is completed (either
-  // successfully or not). |storage_| must contain LocalTrustedVaultPerUser for
-  // given |gaia_id|.
-  void OnDeviceRegistered(TrustedVaultRegistrationStatus status,
+  // Called when registration of a local recovery factor for |gaia_id| is
+  // completed (either successfully or not). |storage_| must contain
+  // LocalTrustedVaultPerUser for given |gaia_id|.
+  void OnDeviceRegistered(LocalRecoveryFactorType local_recovery_factor_type,
+                          TrustedVaultRegistrationStatus status,
                           int key_version,
                           bool had_local_keys);
 

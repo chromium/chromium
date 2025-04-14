@@ -11,6 +11,8 @@
 
 namespace trusted_vault {
 
+enum class LocalRecoveryFactorType;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // LINT.IfChange(TrustedVaultHintDegradedRecoverabilityChangedReason)
@@ -127,16 +129,13 @@ void RecordTrustedVaultHintDegradedRecoverabilityChangedReason(
     TrustedVaultHintDegradedRecoverabilityChangedReasonForUMA
         hint_degraded_recoverability_changed_reason);
 
-// TODO(crbug.com/369980730): this is used in internals, replace usages with the
-// version below and delete this one.
 void RecordTrustedVaultDeviceRegistrationState(
-    TrustedVaultDeviceRegistrationStateForUMA registration_state);
-
-void RecordTrustedVaultDeviceRegistrationState(
+    LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
     TrustedVaultDeviceRegistrationStateForUMA registration_state);
 
 void RecordTrustedVaultDeviceRegistrationOutcome(
+    LocalRecoveryFactorType local_recovery_factor_type,
     SecurityDomainId security_domain_id,
     TrustedVaultDeviceRegistrationOutcomeForUMA registration_outcome);
 
@@ -190,6 +189,22 @@ void RecordCallToJsSetClientEncryptionKeysWithSecurityDomainToUma(
 void RecordTrustedVaultListSecurityDomainMembersPinStatus(
     SecurityDomainId security_domain_id,
     TrustedVaultListSecurityDomainMembersPinStatus status);
+
+// Returns a recovery factor name suitable for using in histograms. When
+// including this in a histogram, its name in the XML should have
+// "{LocalRecoveryFactorType}" where the returned string will be inserted (which
+// will include a leading period). For example:
+//   name="TrustedVault.Foo{LocalRecoveryFactorType}"
+// Will match a histogram name like:
+//   TrustedVault.Foo.PhysicalDevice
+//
+// Then there needs to be a <token> element in the XML entry like:
+//   <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
+//
+// See
+// https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms
+std::string GetLocalRecoveryFactorNameForUma(
+    LocalRecoveryFactorType local_recovery_factor_type);
 
 // Returns a security domain name suitable for using in histograms. When
 // including this in a histogram, its name in the XML should have

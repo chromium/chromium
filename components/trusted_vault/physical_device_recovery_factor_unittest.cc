@@ -228,6 +228,7 @@ TEST_F(PhysicalDeviceRecoveryFactorTest, ShouldRegisterDevice) {
       .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
 
   // Now the device should be registered.
+  EXPECT_TRUE(recovery_factor()->IsRegistered());
   trusted_vault_pb::LocalDeviceRegistrationInfo* registration_info =
       GetDeviceRegistrationInfo(account_info());
   EXPECT_TRUE(registration_info->device_registered());
@@ -342,10 +343,12 @@ TEST_F(PhysicalDeviceRecoveryFactorTest,
   // Mimic device previously registered with some keys.
   StoreKeysAndMimicDeviceRegistration(account_info(), {kVaultKey},
                                       kLastKeyVersion);
+  EXPECT_TRUE(recovery_factor()->IsRegistered());
 
   recovery_factor()->MarkAsNotRegistered();
 
   // Now the device should no longer be registered.
+  EXPECT_FALSE(recovery_factor()->IsRegistered());
   trusted_vault_pb::LocalDeviceRegistrationInfo* registration_info =
       GetDeviceRegistrationInfo(account_info());
   EXPECT_FALSE(registration_info->device_registered());
