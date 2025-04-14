@@ -200,7 +200,7 @@ class MockPeerWebRtcAudioTrack : public webrtc::AudioTrackInterface {
               (webrtc::AudioTrackSinkInterface * sink),
               (override));
   MOCK_METHOD(bool, GetSignalLevel, (int* level), (override));
-  MOCK_METHOD(rtc::scoped_refptr<webrtc::AudioProcessorInterface>,
+  MOCK_METHOD(webrtc::scoped_refptr<webrtc::AudioProcessorInterface>,
               GetAudioProcessor,
               (),
               (override));
@@ -562,9 +562,9 @@ class WebRtcAudioRendererTrackSourceTest : public WebRtcAudioRendererTest {
         std::move(audio_source));
 
     remote_source_interface_ =
-        new rtc::RefCountedObject<MockAudioSourceInterface>();
+        new webrtc::RefCountedObject<MockAudioSourceInterface>();
     remote_track_interface_ =
-        new rtc::RefCountedObject<MockPeerWebRtcAudioTrack>(
+        new webrtc::RefCountedObject<MockPeerWebRtcAudioTrack>(
             remote_source_interface_);
     auto webrtc_audio_track = std::make_unique<PeerConnectionRemoteAudioTrack>(
         remote_track_interface_);

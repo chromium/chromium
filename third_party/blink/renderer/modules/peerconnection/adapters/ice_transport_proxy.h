@@ -46,12 +46,11 @@ class IceTransportProxy final {
    public:
     virtual ~Delegate() = default;
 
-    virtual void OnGatheringStateChanged(cricket::IceGatheringState new_state) {
-    }
-    virtual void OnCandidateGathered(const cricket::Candidate& candidate) {}
+    virtual void OnGatheringStateChanged(webrtc::IceGatheringState new_state) {}
+    virtual void OnCandidateGathered(const webrtc::Candidate& candidate) {}
     virtual void OnStateChanged(webrtc::IceTransportState new_state) {}
     virtual void OnSelectedCandidatePairChanged(
-        const std::pair<cricket::Candidate, cricket::Candidate>&
+        const std::pair<webrtc::Candidate, webrtc::Candidate>&
             selected_candidate_pair) {}
   };
 
@@ -73,11 +72,11 @@ class IceTransportProxy final {
  private:
   // Callbacks from RTCIceTransportHost.
   friend class IceTransportHost;
-  void OnGatheringStateChanged(cricket::IceGatheringState new_state);
-  void OnCandidateGathered(const cricket::Candidate& candidate);
+  void OnGatheringStateChanged(webrtc::IceGatheringState new_state);
+  void OnCandidateGathered(const webrtc::Candidate& candidate);
   void OnStateChanged(webrtc::IceTransportState new_state);
   void OnSelectedCandidatePairChanged(
-      const std::pair<cricket::Candidate, cricket::Candidate>&
+      const std::pair<webrtc::Candidate, webrtc::Candidate>&
           selected_candidate_pair);
 
   const scoped_refptr<base::SingleThreadTaskRunner> proxy_thread_;

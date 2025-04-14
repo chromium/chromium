@@ -113,7 +113,7 @@ scoped_refptr<webrtc::RtpReceiverInterface> RtpReceiverState::webrtc_receiver()
   return webrtc_receiver_;
 }
 
-rtc::scoped_refptr<webrtc::DtlsTransportInterface>
+webrtc::scoped_refptr<webrtc::DtlsTransportInterface>
 RtpReceiverState::webrtc_dtls_transport() const {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   return webrtc_dtls_transport_;
@@ -141,7 +141,7 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
           RTCRtpReceiverImpl::RTCRtpReceiverInternal,
           RTCRtpReceiverImpl::RTCRtpReceiverInternalTraits> {
  public:
-  RTCRtpReceiverInternal(rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+  RTCRtpReceiverInternal(webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
                              native_peer_connection,
                          RtpReceiverState state,
                          bool require_encoded_insertable_streams,
@@ -233,13 +233,13 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
 
   void GetStatsOnSignalingThread(RTCStatsReportCallback callback) {
     native_peer_connection_->GetStats(
-        rtc::scoped_refptr<webrtc::RtpReceiverInterface>(
+        webrtc::scoped_refptr<webrtc::RtpReceiverInterface>(
             webrtc_receiver_.get()),
         CreateRTCStatsCollectorCallback(main_task_runner_,
                                         std::move(callback)));
   }
 
-  const rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+  const webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
       native_peer_connection_;
   // Task runners and webrtc receiver: Same information as stored in
   // |state_| but const and safe to touch on the signaling thread to
@@ -274,7 +274,8 @@ uintptr_t RTCRtpReceiverImpl::getId(
 }
 
 RTCRtpReceiverImpl::RTCRtpReceiverImpl(
-    rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
+    webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
+        native_peer_connection,
     RtpReceiverState state,
     bool require_encoded_insertable_streams,
     std::unique_ptr<webrtc::Metronome> decode_metronome)
@@ -312,7 +313,7 @@ uintptr_t RTCRtpReceiverImpl::Id() const {
   return getId(internal_->state().webrtc_receiver().get());
 }
 
-rtc::scoped_refptr<webrtc::DtlsTransportInterface>
+webrtc::scoped_refptr<webrtc::DtlsTransportInterface>
 RTCRtpReceiverImpl::DtlsTransport() {
   return internal_->state().webrtc_dtls_transport();
 }

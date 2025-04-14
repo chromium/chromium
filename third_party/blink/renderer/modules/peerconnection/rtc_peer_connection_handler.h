@@ -183,7 +183,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> GetPlatformSenders()
       const;
 
-  virtual rtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
+  virtual webrtc::scoped_refptr<webrtc::DataChannelInterface> CreateDataChannel(
       const String& label,
       const webrtc::DataChannelInit& init);
   virtual webrtc::PeerConnectionInterface* NativePeerConnection();
@@ -197,7 +197,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // Asynchronously calls native_peer_connection_->getStats on the signaling
   // thread. (Future cleanup potential: just use the other GetStats() method?)
   void GetStandardStatsForTracker(
-      rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> observer);
+      webrtc::scoped_refptr<webrtc::RTCStatsCollectorCallback> observer);
 
   // Allows webrtc-internals to request a brief dump of the current state.
   void EmitCurrentStateForTracker();
@@ -264,7 +264,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       std::vector<blink::RtpTransceiverState> transceiver_states,
       bool is_remote_description,
       bool is_rollback);
-  void OnDataChannel(rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
+  void OnDataChannel(
+      webrtc::scoped_refptr<webrtc::DataChannelInterface> channel);
   void OnIceCandidate(const String& sdp,
                       const String& sdp_mid,
                       int sdp_mline_index,
@@ -306,19 +307,21 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
       webrtc::MediaStreamTrackInterface* webrtc_track,
       webrtc::RtpTransceiverInit init,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
-      webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
+      webrtc::RTCErrorOr<
+          webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
           error_or_transceiver);
   void AddTransceiverWithMediaTypeOnSignalingThread(
       webrtc::MediaType media_type,
       webrtc::RtpTransceiverInit init,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
-      webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
+      webrtc::RTCErrorOr<
+          webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>*
           error_or_transceiver);
   void AddTrackOnSignalingThread(
       webrtc::MediaStreamTrackInterface* track,
       std::vector<std::string> stream_ids,
       blink::TransceiverStateSurfacer* transceiver_state_surfacer,
-      webrtc::RTCErrorOr<rtc::scoped_refptr<webrtc::RtpSenderInterface>>*
+      webrtc::RTCErrorOr<webrtc::scoped_refptr<webrtc::RtpSenderInterface>>*
           error_or_sender);
   // Helper function to remove a track on the signaling thread.
   // Updates the entire transceiver state.
@@ -407,7 +410,8 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   CrossThreadPersistent<Observer> peer_connection_observer_;
 
   // |native_peer_connection_| is the WebRTC native PeerConnection object.
-  rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
+  webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
+      native_peer_connection_;
 
   // The last applied configuration. Used so that the constraints
   // used when constructing the PeerConnection carry over when

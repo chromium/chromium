@@ -52,7 +52,7 @@ using ::testing::Sequence;
 }  // namespace
 
 webrtc::VideoFrame::Builder CreateBlackFrameBuilder() {
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer =
       webrtc::I420Buffer::Create(8, 8);
   webrtc::I420Buffer::SetBlack(buffer.get());
   return webrtc::VideoFrame::Builder().set_video_frame_buffer(buffer);
@@ -203,8 +203,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, StartTrack) {
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(std::move(quit_closure)));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
 
   webrtc::I420Buffer::SetBlack(buffer.get());
 
@@ -270,8 +270,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, PreservesColorSpace) {
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
   webrtc::ColorSpace kColorSpace(webrtc::ColorSpace::PrimaryID::kSMPTE240M,
                                  webrtc::ColorSpace::TransferID::kSMPTE240M,
                                  webrtc::ColorSpace::MatrixID::kSMPTE240M,
@@ -305,8 +305,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
   webrtc::ColorSpace kColorSpace(webrtc::ColorSpace::PrimaryID::kUnspecified,
                                  webrtc::ColorSpace::TransferID::kUnspecified,
                                  webrtc::ColorSpace::MatrixID::kUnspecified,
@@ -342,8 +342,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
   webrtc::ColorSpace kColorSpace(webrtc::ColorSpace::PrimaryID::kUnspecified,
                                  webrtc::ColorSpace::TransferID::kUnspecified,
                                  webrtc::ColorSpace::MatrixID::kUnspecified,
@@ -377,8 +377,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
 
   uint32_t kSsrc = 0;
   const std::vector<uint32_t> kCsrcs;
@@ -386,7 +386,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest,
   float kProcessingTime = 0.014;
 
   const webrtc::Timestamp kProcessingFinish =
-      webrtc::Timestamp::Millis(rtc::TimeMillis());
+      webrtc::Timestamp::Millis(webrtc::TimeMillis());
   const webrtc::Timestamp kProcessingStart =
       kProcessingFinish - webrtc::TimeDelta::Millis(1.0e3 * kProcessingTime);
   const webrtc::Timestamp kCaptureTime =
@@ -462,10 +462,10 @@ TEST_F(MediaStreamRemoteVideoSourceTest, ReferenceTimeEqualsTimestampUs) {
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
 
-  int64_t kTimestampUs = rtc::TimeMicros();
+  int64_t kTimestampUs = webrtc::TimeMicros();
   webrtc::VideoFrame input_frame = webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
                                        .set_timestamp_us(kTimestampUs)
@@ -488,7 +488,7 @@ TEST_F(MediaStreamRemoteVideoSourceTest, ReferenceTimeEqualsTimestampUs) {
 TEST_F(MediaStreamRemoteVideoSourceTest, BaseTimeTicksAndRtcMicrosAreTheSame) {
   base::TimeTicks first_chromium_timestamp = base::TimeTicks::Now();
   base::TimeTicks webrtc_timestamp =
-      base::TimeTicks() + base::Microseconds(rtc::TimeMicros());
+      base::TimeTicks() + base::Microseconds(webrtc::TimeMicros());
   base::TimeTicks second_chromium_timestamp = base::TimeTicks::Now();
 
   // Test that the timestamps are correctly ordered, which they can only be if
@@ -511,8 +511,8 @@ TEST_F(MediaStreamRemoteVideoSourceTest, NoTimestampUsMeansNoReferenceTime) {
   base::RunLoop run_loop;
   EXPECT_CALL(sink, OnVideoFrame)
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  rtc::scoped_refptr<webrtc::I420Buffer> buffer(
-      new rtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
 
   webrtc::VideoFrame input_frame =
       webrtc::VideoFrame::Builder().set_video_frame_buffer(buffer).build();
@@ -535,8 +535,8 @@ class TestEncodedVideoFrame : public webrtc::RecordableEncodedFrame {
   explicit TestEncodedVideoFrame(webrtc::Timestamp timestamp)
       : timestamp_(timestamp) {}
 
-  rtc::scoped_refptr<const webrtc::EncodedImageBufferInterface> encoded_buffer()
-      const override {
+  webrtc::scoped_refptr<const webrtc::EncodedImageBufferInterface>
+  encoded_buffer() const override {
     return nullptr;
   }
   std::optional<webrtc::ColorSpace> color_space() const override {

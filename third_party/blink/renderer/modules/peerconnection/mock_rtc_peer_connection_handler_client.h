@@ -63,7 +63,7 @@ class MockRTCPeerConnectionHandlerClient
                                  is_remote_description);
   }
   MOCK_METHOD1(DidAddRemoteDataChannel,
-               void(rtc::scoped_refptr<webrtc::DataChannelInterface>));
+               void(webrtc::scoped_refptr<webrtc::DataChannelInterface>));
   MOCK_METHOD1(DidNoteInterestingUsage, void(int));
   MOCK_METHOD0(UnregisterPeerConnectionHandler, void());
 

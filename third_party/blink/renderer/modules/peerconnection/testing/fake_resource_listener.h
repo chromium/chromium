@@ -19,7 +19,7 @@ class FakeResourceListener : public webrtc::ResourceListener {
 
   // webrtc::ResourceListener implementation.
   void OnResourceUsageStateMeasured(
-      rtc::scoped_refptr<webrtc::Resource> resource,
+      webrtc::scoped_refptr<webrtc::Resource> resource,
       webrtc::ResourceUsageState usage_state) override;
 
  private:

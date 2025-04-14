@@ -65,9 +65,9 @@ struct CrossThreadCopier<scoped_refptr<blink::InternalStandardStatsObserver>>
 };
 
 template <typename T>
-struct CrossThreadCopier<rtc::scoped_refptr<T>> {
+struct CrossThreadCopier<webrtc::scoped_refptr<T>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = rtc::scoped_refptr<T>;
+  using Type = webrtc::scoped_refptr<T>;
   static Type Copy(Type pointer) { return pointer; }
 };
 
@@ -447,7 +447,8 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
         completion_callback_(std::move(completion_callback)) {}
 
   void OnStatsDelivered(
-      const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report) override {
+      const webrtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
+      override {
     // We're on the signaling thread.
     DCHECK(!main_thread_->BelongsToCurrentThread());
     PostCrossThreadTask(
@@ -462,12 +463,12 @@ class InternalStandardStatsObserver : public webrtc::RTCStatsCollectorCallback {
 
  private:
   void OnStatsDeliveredOnMainThread(
-      rtc::scoped_refptr<const webrtc::RTCStatsReport> report) {
+      webrtc::scoped_refptr<const webrtc::RTCStatsReport> report) {
     std::move(completion_callback_).Run(lid_, ReportToList(report));
   }
 
   base::Value::List ReportToList(
-      const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
+      const webrtc::scoped_refptr<const webrtc::RTCStatsReport>& report) {
     std::map<std::string, MediaStreamTrackPlatform*> tracks_by_id;
     for (const auto& sender : senders_) {
       MediaStreamComponent* track_component = sender->Track();
@@ -707,8 +708,8 @@ void PeerConnectionTracker::GetStandardStats() {
   for (const auto& pair : peer_connection_local_id_map_) {
     Vector<std::unique_ptr<blink::RTCRtpSenderPlatform>> senders =
         pair.key->GetPlatformSenders();
-    rtc::scoped_refptr<InternalStandardStatsObserver> observer(
-        new rtc::RefCountedObject<InternalStandardStatsObserver>(
+    webrtc::scoped_refptr<InternalStandardStatsObserver> observer(
+        new webrtc::RefCountedObject<InternalStandardStatsObserver>(
             pair.key->GetWeakPtr(), pair.value, main_thread_task_runner_,
             std::move(senders),
             CrossThreadBindOnce(&PeerConnectionTracker::AddStandardStats,

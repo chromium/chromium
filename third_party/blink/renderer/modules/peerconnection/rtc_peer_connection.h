@@ -288,7 +288,7 @@ class MODULES_EXPORT RTCPeerConnection final
                              Vector<uintptr_t>,
                              bool is_remote_description_or_rollback) override;
   void DidAddRemoteDataChannel(
-      rtc::scoped_refptr<webrtc::DataChannelInterface> channel) override;
+      webrtc::scoped_refptr<webrtc::DataChannelInterface> channel) override;
   void DidNoteInterestingUsage(int usage_pattern) override;
   void UnregisterPeerConnectionHandler() override;
   void ClosePeerConnection() override;
@@ -312,7 +312,7 @@ class MODULES_EXPORT RTCPeerConnection final
 
   static void GenerateCertificateCompleted(
       ScriptPromiseResolver<RTCCertificate>* resolver,
-      rtc::scoped_refptr<rtc::RTCCertificate> certificate);
+      webrtc::scoped_refptr<webrtc::RTCCertificate> certificate);
 
   // Called by RTCIceTransport::OnStateChange to update the ice connection
   // state.
@@ -401,13 +401,13 @@ class MODULES_EXPORT RTCPeerConnection final
   // Creates or updates the RTCDtlsTransport object corresponding to the
   // given webrtc::DtlsTransportInterface object.
   RTCDtlsTransport* CreateOrUpdateDtlsTransport(
-      rtc::scoped_refptr<webrtc::DtlsTransportInterface>,
+      webrtc::scoped_refptr<webrtc::DtlsTransportInterface>,
       const webrtc::DtlsTransportInformation& info);
 
   // Creates or updates the RTCIceTransport object corresponding to the given
   // webrtc::IceTransportInterface object.
   RTCIceTransport* CreateOrUpdateIceTransport(
-      rtc::scoped_refptr<webrtc::IceTransportInterface>);
+      webrtc::scoped_refptr<webrtc::IceTransportInterface>);
 
   // Update the |receiver->streams()| to the streams indicated by |stream_ids|,
   // adding to |remove_list| and |add_list| accordingly.

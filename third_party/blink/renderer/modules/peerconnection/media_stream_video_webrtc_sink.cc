@@ -223,9 +223,9 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
              : base::DoNothing();
 
   // TODO(pbos): Consolidate WebRtcVideoCapturerAdapter into WebRtcVideoSource
-  // by removing the need for and dependency on a cricket::VideoCapturer.
+  // by removing the need for and dependency on a webrtc::VideoCapturer.
   video_source_ = scoped_refptr<WebRtcVideoTrackSource>(
-      new rtc::RefCountedObject<WebRtcVideoTrackSource>(
+      new webrtc::RefCountedObject<WebRtcVideoTrackSource>(
           is_screencast, needs_denoising, feedback_cb,
           request_refresh_frame_closure, factory->GetGpuFactories()));
 

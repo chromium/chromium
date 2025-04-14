@@ -21,7 +21,7 @@
 namespace blink {
 
 class MockPeerConnectionInterface
-    : public rtc::RefCountedObject<webrtc::MockPeerConnectionInterface> {};
+    : public webrtc::RefCountedObject<webrtc::MockPeerConnectionInterface> {};
 
 static_assert(!std::is_abstract<MockPeerConnectionInterface>::value, "");
 

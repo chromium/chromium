@@ -43,11 +43,10 @@ class IceTransportAdapter {
     virtual ~Delegate() = default;
 
     // Called asynchronously when the ICE gathering state changes.
-    virtual void OnGatheringStateChanged(cricket::IceGatheringState new_state) {
-    }
+    virtual void OnGatheringStateChanged(webrtc::IceGatheringState new_state) {}
 
     // Called asynchronously when a new ICE candidate has been gathered.
-    virtual void OnCandidateGathered(const cricket::Candidate& candidate) {}
+    virtual void OnCandidateGathered(const webrtc::Candidate& candidate) {}
 
     // Called asynchronously when the ICE connection state has changed.
     virtual void OnStateChanged(webrtc::IceTransportState new_state) {}
@@ -55,7 +54,7 @@ class IceTransportAdapter {
     // Called asynchronously when the ICE agent selects a different candidate
     // pair for the active connection.
     virtual void OnSelectedCandidatePairChanged(
-        const std::pair<cricket::Candidate, cricket::Candidate>&
+        const std::pair<webrtc::Candidate, webrtc::Candidate>&
             selected_candidate_pair) {}
   };
 
@@ -63,25 +62,25 @@ class IceTransportAdapter {
 
   // Start ICE candidate gathering.
   virtual void StartGathering(
-      const cricket::IceParameters& local_parameters,
-      const cricket::ServerAddresses& stun_servers,
-      const std::vector<cricket::RelayServerConfig>& turn_servers,
+      const webrtc::IceParameters& local_parameters,
+      const webrtc::ServerAddresses& stun_servers,
+      const std::vector<webrtc::RelayServerConfig>& turn_servers,
       IceTransportPolicy policy) = 0;
 
   // Start ICE connectivity checks with the given initial remote candidates.
   virtual void Start(
-      const cricket::IceParameters& remote_parameters,
-      cricket::IceRole role,
-      const Vector<cricket::Candidate>& initial_remote_candidates) = 0;
+      const webrtc::IceParameters& remote_parameters,
+      webrtc::IceRole role,
+      const Vector<webrtc::Candidate>& initial_remote_candidates) = 0;
 
   // Handle a remote ICE restart. This changes the remote parameters and clears
   // all remote candidates.
   virtual void HandleRemoteRestart(
-      const cricket::IceParameters& new_remote_parameters) = 0;
+      const webrtc::IceParameters& new_remote_parameters) = 0;
 
   // Adds a remote candidate to potentially start connectivity checks with.
   // The caller must ensure Start() has already bene called.
-  virtual void AddRemoteCandidate(const cricket::Candidate& candidate) = 0;
+  virtual void AddRemoteCandidate(const webrtc::Candidate& candidate) = 0;
 };
 
 }  // namespace blink

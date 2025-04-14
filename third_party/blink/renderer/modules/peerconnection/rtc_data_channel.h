@@ -71,7 +71,7 @@ class MODULES_EXPORT RTCDataChannel final
   static void EnsureThreadWrappersForWorkerThread();
 
   RTCDataChannel(ExecutionContext*,
-                 rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
+                 webrtc::scoped_refptr<webrtc::DataChannelInterface> channel);
   ~RTCDataChannel() override;
 
   String label() const;
@@ -110,7 +110,8 @@ class MODULES_EXPORT RTCDataChannel final
   void close();
 
   bool IsTransferable();
-  rtc::scoped_refptr<webrtc::DataChannelInterface> TransferUnderlyingChannel();
+  webrtc::scoped_refptr<webrtc::DataChannelInterface>
+  TransferUnderlyingChannel();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(open, kOpen)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(bufferedamountlow, kBufferedamountlow)
@@ -146,13 +147,13 @@ class MODULES_EXPORT RTCDataChannel final
    public:
     Observer(scoped_refptr<base::SingleThreadTaskRunner> main_thread,
              RTCDataChannel* blink_channel,
-             rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
+             webrtc::scoped_refptr<webrtc::DataChannelInterface> channel);
     ~Observer() override;
 
     // Returns a reference to |webrtc_channel_|. Typically called from the main
     // thread except for on observer registration, done in a synchronous call to
     // the signaling thread (safe because the call is synchronous).
-    const rtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
+    const webrtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
 
     // Returns true if a valid `blink_channel_` is held and `Unregister()`
     // hasn't been called. A return value of false indicates that the `Observer`
@@ -178,7 +179,7 @@ class MODULES_EXPORT RTCDataChannel final
 
     const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
     WeakPersistent<RTCDataChannel> blink_channel_;
-    const rtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
+    const webrtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
   };
 
   void RegisterObserver();
@@ -189,7 +190,7 @@ class MODULES_EXPORT RTCDataChannel final
 
   void Dispose();
 
-  const rtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
+  const webrtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
   bool ValidateSendLength(uint64_t length, ExceptionState& exception_state);
   void SendRawData(const char* data, size_t length);
   void SendDataBuffer(webrtc::DataBuffer data_buffer);

@@ -140,14 +140,14 @@ class ProxyAsyncDnsResolverFactory final
     return ipc_psf_->CreateAsyncDnsResolver();
   }
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
-      const rtc::SocketAddress& addr,
+      const webrtc::SocketAddress& addr,
       absl::AnyInvocable<void()> callback) override {
     auto temp = Create();
     temp->Start(addr, std::move(callback));
     return temp;
   }
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAndResolve(
-      const rtc::SocketAddress& addr,
+      const webrtc::SocketAddress& addr,
       int family,
       absl::AnyInvocable<void()> callback) override {
     auto temp = Create();
@@ -313,9 +313,9 @@ class PeerConnectionStaticDeps {
     return init_signaling_event;
   }
 
-  rtc::Thread* GetSignalingThread() { return signaling_thread_; }
-  rtc::Thread* GetWorkerThread() { return worker_thread_; }
-  rtc::Thread* GetNetworkThread() {
+  webrtc::Thread* GetSignalingThread() { return signaling_thread_; }
+  webrtc::Thread* GetWorkerThread() { return worker_thread_; }
+  webrtc::Thread* GetNetworkThread() {
     return chrome_network_thread_ ? network_thread_ : worker_thread_;
   }
   base::Thread& GetChromeSignalingThread() { return chrome_signaling_thread_; }
@@ -358,7 +358,7 @@ class PeerConnectionStaticDeps {
   }
 
   static void InitializeOnThread(
-      raw_ptr<rtc::Thread>* thread,
+      raw_ptr<webrtc::Thread>* thread,
       base::WaitableEvent* event,
       base::RepeatingCallback<void(base::TimeDelta)> latency_callback,
       base::RepeatingCallback<void(base::TimeDelta)> duration_callback) {
@@ -374,9 +374,9 @@ class PeerConnectionStaticDeps {
 
   // PeerConnection threads. signaling_thread_ is created from the "current"
   // (main) chrome thread.
-  raw_ptr<rtc::Thread> signaling_thread_ = nullptr;
-  raw_ptr<rtc::Thread> worker_thread_ = nullptr;
-  raw_ptr<rtc::Thread> network_thread_ = nullptr;
+  raw_ptr<webrtc::Thread> signaling_thread_ = nullptr;
+  raw_ptr<webrtc::Thread> worker_thread_ = nullptr;
+  raw_ptr<webrtc::Thread> network_thread_ = nullptr;
   base::Thread chrome_signaling_thread_;
   base::Thread chrome_worker_thread_;
   std::optional<base::Thread> chrome_network_thread_;
@@ -409,13 +409,13 @@ PeerConnectionStaticDeps& StaticDeps() {
   return instance;
 }
 
-rtc::Thread* GetSignalingThread() {
+webrtc::Thread* GetSignalingThread() {
   return StaticDeps().GetSignalingThread();
 }
-rtc::Thread* GetWorkerThread() {
+webrtc::Thread* GetWorkerThread() {
   return StaticDeps().GetWorkerThread();
 }
-rtc::Thread* GetNetworkThread() {
+webrtc::Thread* GetNetworkThread() {
   return StaticDeps().GetNetworkThread();
 }
 base::Thread& GetChromeSignalingThread() {
@@ -591,7 +591,7 @@ PeerConnectionDependencyFactory::CreateRTCPeerConnectionHandler(
                                                     encoded_insertable_streams);
 }
 
-const rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
+const webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
 PeerConnectionDependencyFactory::GetPcFactory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
@@ -638,7 +638,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   // TODO: https://issues.webrtc.org/issues/339300437 - remove once
   // BoringSSL no longer requires this after
   // https://bugs.chromium.org/p/boringssl/issues/detail?id=35
-  if (!rtc::InitializeSSL()) {
+  if (!webrtc::InitializeSSL()) {
     NOTREACHED() << "Failed on InitializeSSL.";
   }
 
@@ -857,7 +857,7 @@ bool PeerConnectionDependencyFactory::PeerConnectionFactoryCreated() {
   return !!pc_factory_;
 }
 
-rtc::scoped_refptr<webrtc::PeerConnectionInterface>
+webrtc::scoped_refptr<webrtc::PeerConnectionInterface>
 PeerConnectionDependencyFactory::CreatePeerConnection(
     const webrtc::PeerConnectionInterface::RTCConfiguration& config,
     blink::WebLocalFrame* web_frame,
@@ -891,7 +891,7 @@ PeerConnectionDependencyFactory::CreatePeerConnection(
   }
 }
 
-std::unique_ptr<cricket::PortAllocator>
+std::unique_ptr<webrtc::PortAllocator>
 PeerConnectionDependencyFactory::CreatePortAllocator(
     blink::WebLocalFrame* web_frame) {
   DCHECK(web_frame);
@@ -973,7 +973,7 @@ PeerConnectionDependencyFactory::CreatePortAllocator(
     }
   }
 
-  std::unique_ptr<rtc::NetworkManager> network_manager;
+  std::unique_ptr<webrtc::NetworkManager> network_manager;
   if (port_config.enable_multiple_routes) {
     network_manager = std::make_unique<FilteringNetworkManager>(
         network_manager_.get(), media_permission, allow_mdns_obfuscation);
@@ -1019,7 +1019,7 @@ PeerConnectionDependencyFactory::CreateLocalVideoTrack(
     webrtc::VideoTrackSourceInterface* source) {
   return GetPcFactory()
       ->CreateVideoTrack(
-          rtc::scoped_refptr<webrtc::VideoTrackSourceInterface>(source),
+          webrtc::scoped_refptr<webrtc::VideoTrackSourceInterface>(source),
           id.Utf8())
       .get();
 }
@@ -1087,7 +1087,8 @@ void PeerConnectionDependencyFactory::CleanupPeerConnectionFactory() {
     signaling_thread->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](rtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface> pcf) {
+            [](webrtc::scoped_refptr<webrtc::PeerConnectionFactoryInterface>
+                   pcf) {
               // The binding releases `pcf` on the signaling thread as this
               // method goes out of scope.
             },
@@ -1146,7 +1147,7 @@ void PeerConnectionDependencyFactory::EnsureWebRtcAudioDeviceImpl() {
   if (audio_device_.get())
     return;
 
-  audio_device_ = new rtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>();
+  audio_device_ = new webrtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>();
 }
 
 std::unique_ptr<webrtc::RtpCapabilities>

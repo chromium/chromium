@@ -54,7 +54,7 @@ std::unique_ptr<SctpTransportProxy> CreateProxy(
   DCHECK(frame);
   return SctpTransportProxy::Create(
       *frame, main_thread, worker_thread,
-      rtc::scoped_refptr<webrtc::SctpTransportInterface>(native_transport),
+      webrtc::scoped_refptr<webrtc::SctpTransportInterface>(native_transport),
       delegate);
 }
 
@@ -62,7 +62,7 @@ std::unique_ptr<SctpTransportProxy> CreateProxy(
 
 RTCSctpTransport::RTCSctpTransport(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport)
+    webrtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport)
     : RTCSctpTransport(context,
                        native_transport,
                        context->GetTaskRunner(TaskType::kNetworking),
@@ -71,7 +71,7 @@ RTCSctpTransport::RTCSctpTransport(
 
 RTCSctpTransport::RTCSctpTransport(
     ExecutionContext* context,
-    rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport,
+    webrtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport,
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     scoped_refptr<base::SingleThreadTaskRunner> worker_thread)
     : ExecutionContextClient(context),
@@ -112,7 +112,7 @@ RTCDtlsTransport* RTCSctpTransport::transport() const {
   return dtls_transport_.Get();
 }
 
-rtc::scoped_refptr<webrtc::SctpTransportInterface>
+webrtc::scoped_refptr<webrtc::SctpTransportInterface>
 RTCSctpTransport::native_transport() {
   return native_transport_;
 }

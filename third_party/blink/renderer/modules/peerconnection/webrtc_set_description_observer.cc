@@ -52,7 +52,7 @@ WebRtcSetDescriptionObserverHandlerImpl::
     WebRtcSetDescriptionObserverHandlerImpl(
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-        rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+        webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
         scoped_refptr<WebRtcSetDescriptionObserver> observer)
@@ -68,9 +68,10 @@ WebRtcSetDescriptionObserverHandlerImpl::
 void WebRtcSetDescriptionObserverHandlerImpl::OnSetDescriptionComplete(
     webrtc::RTCError error) {
   CHECK(signaling_task_runner_->BelongsToCurrentThread());
-  std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+  std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
       receiver_only_transceivers;
-  std::vector<rtc::scoped_refptr<webrtc::RtpTransceiverInterface>> transceivers;
+  std::vector<webrtc::scoped_refptr<webrtc::RtpTransceiverInterface>>
+      transceivers;
   // Only surface transceiver states if the peer connection is not closed. If
   // the peer connection is closed, the peer connection handler may have been
   // destroyed along with any track adapters that TransceiverStateSurfacer
@@ -136,10 +137,10 @@ scoped_refptr<WebRtcSetLocalDescriptionObserverHandler>
 WebRtcSetLocalDescriptionObserverHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-    rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+    webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
     scoped_refptr<WebRtcSetDescriptionObserver> observer) {
-  return new rtc::RefCountedObject<WebRtcSetLocalDescriptionObserverHandler>(
+  return new webrtc::RefCountedObject<WebRtcSetLocalDescriptionObserverHandler>(
       std::move(main_task_runner), std::move(signaling_task_runner),
       std::move(pc), std::move(track_adapter_map), std::move(observer));
 }
@@ -148,7 +149,7 @@ WebRtcSetLocalDescriptionObserverHandler::
     WebRtcSetLocalDescriptionObserverHandler(
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-        rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+        webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
         scoped_refptr<WebRtcSetDescriptionObserver> observer)
@@ -172,10 +173,11 @@ scoped_refptr<WebRtcSetRemoteDescriptionObserverHandler>
 WebRtcSetRemoteDescriptionObserverHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-    rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+    webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
     scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_adapter_map,
     scoped_refptr<WebRtcSetDescriptionObserver> observer) {
-  return new rtc::RefCountedObject<WebRtcSetRemoteDescriptionObserverHandler>(
+  return new webrtc::RefCountedObject<
+      WebRtcSetRemoteDescriptionObserverHandler>(
       std::move(main_task_runner), std::move(signaling_task_runner),
       std::move(pc), std::move(track_adapter_map), std::move(observer));
 }
@@ -184,7 +186,7 @@ WebRtcSetRemoteDescriptionObserverHandler::
     WebRtcSetRemoteDescriptionObserverHandler(
         scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
         scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner,
-        rtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
+        webrtc::scoped_refptr<webrtc::PeerConnectionInterface> pc,
         scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap>
             track_adapter_map,
         scoped_refptr<WebRtcSetDescriptionObserver> observer)

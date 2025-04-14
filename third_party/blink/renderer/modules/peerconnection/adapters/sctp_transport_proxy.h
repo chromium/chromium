@@ -56,7 +56,7 @@ class SctpTransportProxy : public webrtc::SctpTransportObserverInterface {
       LocalFrame& frame,
       scoped_refptr<base::SingleThreadTaskRunner> proxy_thread,
       scoped_refptr<base::SingleThreadTaskRunner> host_thread,
-      rtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport,
+      webrtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport,
       Delegate* delegate);
 
   ~SctpTransportProxy() override {}
@@ -66,7 +66,7 @@ class SctpTransportProxy : public webrtc::SctpTransportObserverInterface {
       LocalFrame& frame,
       scoped_refptr<base::SingleThreadTaskRunner> proxy_thread,
       scoped_refptr<base::SingleThreadTaskRunner> host_thread,
-      rtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport,
+      webrtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport,
       Delegate* delegate);
   // Implementation of webrtc::SctpTransportObserver
   void OnStateChange(webrtc::SctpTransportInformation info) override;
@@ -76,7 +76,7 @@ class SctpTransportProxy : public webrtc::SctpTransportObserverInterface {
 
   const scoped_refptr<base::SingleThreadTaskRunner> proxy_thread_;
   const scoped_refptr<base::SingleThreadTaskRunner> host_thread_;
-  const rtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport_;
+  const webrtc::scoped_refptr<webrtc::SctpTransportInterface> sctp_transport_;
   UnwrappingCrossThreadHandle<Delegate> delegate_;
 };
 
