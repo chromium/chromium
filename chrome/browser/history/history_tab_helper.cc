@@ -330,7 +330,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
                        navigation_handle->GetPreviousPrimaryMainFrameURL()))
                  : std::nullopt);
 
-  // Top-level site is used to calculate the triple-key for partitioned :visited
+  // Top-level URL is used to calculate the triple-key for partitioned :visited
   // links. When a navigation occurs, the top-level url is the previous primary
   // main frame. However, sometimes this information is not available to us; for
   // example, a navigation may open in a new tab or have a severed opener
@@ -342,7 +342,7 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
   std::optional<GURL> top_level_url =
       navigation_handle->GetPreviousPrimaryMainFrameURL();
   // If there is not a valid previous primary main frame, attempt to replace it.
-  if (top_level_url->is_empty() || !top_level_url->is_valid()) {
+  if (!top_level_url.has_value() || !top_level_url->is_valid()) {
     // We support the use of opener or opener chain URL for `LINK` types only.
     if (ui::PageTransitionCoreTypeIs(page_transition,
                                      ui::PAGE_TRANSITION_LINK)) {
