@@ -23,7 +23,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -35,13 +34,9 @@
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
@@ -65,7 +60,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
-#include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -194,152 +188,6 @@ const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
   app_loaded_observer.Wait();
 
   return app;
-}
-
-const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    std::optional<int> expected_change) {
-  return InstallOrUpdateExtension(
-      id, path, InstallUIType::kNone, std::move(expected_change),
-      ManifestLocation::kInternal, GetActiveWebContents(), Extension::NO_FLAGS,
-      false, false);
-}
-
-const Extension* ExtensionBrowserTest::InstallExtensionWithUIAutoConfirm(
-    const base::FilePath& path,
-    std::optional<int> expected_change) {
-  return InstallOrUpdateExtension(
-      std::string(), path, InstallUIType::kAutoConfirm,
-      std::move(expected_change), mojom::ManifestLocation::kInternal,
-      GetActiveWebContents(), Extension::NO_FLAGS,
-      /*install_immediately=*/true,
-      /*grant_permissions=*/false);
-}
-
-const Extension* ExtensionBrowserTest::InstallExtensionFromWebstore(
-    const base::FilePath& path,
-    std::optional<int> expected_change) {
-  return InstallOrUpdateExtension(
-      std::string(), path, InstallUIType::kAutoConfirm,
-      std::move(expected_change), ManifestLocation::kInternal,
-      GetActiveWebContents(), Extension::FROM_WEBSTORE, true, false);
-}
-
-const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
-    const extensions::ExtensionId& id,
-    const base::FilePath& path,
-    InstallUIType ui_type,
-    std::optional<int> expected_change,
-    ManifestLocation install_source,
-    content::WebContents* active_web_contents,
-    Extension::InitFromValueFlags creation_flags,
-    bool install_immediately,
-    bool grant_permissions) {
-  ExtensionRegistry* registry = extension_registry();
-  size_t num_before = registry->enabled_extensions().size();
-
-  scoped_refptr<CrxInstaller> installer;
-  std::optional<CrxInstallError> install_error;
-  {
-    std::unique_ptr<ScopedTestDialogAutoConfirm> prompt_auto_confirm;
-    if (ui_type == InstallUIType::kCancel) {
-      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
-          ScopedTestDialogAutoConfirm::CANCEL);
-    } else if (ui_type == InstallUIType::kNormal) {
-      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
-          ScopedTestDialogAutoConfirm::NONE);
-    } else if (ui_type == InstallUIType::kAutoConfirm) {
-      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
-          ScopedTestDialogAutoConfirm::ACCEPT);
-    }
-
-    // TODO(tessamac): Update callers to always pass an unpacked extension
-    //                 and then always pack the extension here.
-    base::FilePath crx_path = path;
-    if (crx_path.Extension() != FILE_PATH_LITERAL(".crx")) {
-      crx_path = PackExtension(path, ExtensionCreator::kNoRunFlags);
-    }
-    if (crx_path.empty()) {
-      return nullptr;
-    }
-
-    std::unique_ptr<ExtensionInstallPrompt> install_ui;
-    if (prompt_auto_confirm) {
-      install_ui =
-          std::make_unique<ExtensionInstallPrompt>(active_web_contents);
-    }
-    installer = CrxInstaller::Create(profile(), std::move(install_ui));
-    installer->set_expected_id(id);
-    installer->set_creation_flags(creation_flags);
-    installer->set_install_source(install_source);
-    installer->set_install_immediately(install_immediately);
-    installer->set_allow_silent_install(grant_permissions);
-    if (!installer->is_gallery_install()) {
-      installer->set_off_store_install_allow_reason(
-          CrxInstaller::OffStoreInstallAllowedInTest);
-    }
-
-    base::test::TestFuture<std::optional<CrxInstallError>>
-        installer_done_future;
-    installer->AddInstallerCallback(
-        installer_done_future
-            .GetCallback<const std::optional<CrxInstallError>&>());
-
-    installer->InstallCrx(crx_path);
-
-    install_error = installer_done_future.Get();
-  }
-
-  if (expected_change.has_value()) {
-    size_t num_after = registry->enabled_extensions().size();
-    EXPECT_EQ(num_before + expected_change.value(), num_after);
-    if (num_before + expected_change.value() != num_after) {
-      VLOG(1) << "Num extensions before: " << base::NumberToString(num_before)
-              << " num after: " << base::NumberToString(num_after)
-              << " Installed extensions follow:";
-
-      for (const scoped_refptr<const Extension>& extension :
-           registry->enabled_extensions()) {
-        VLOG(1) << "  " << extension->id();
-      }
-
-      VLOG(1) << "Errors follow:";
-      const std::vector<std::u16string>* errors =
-          LoadErrorReporter::GetInstance()->GetErrors();
-      for (const auto& error : *errors) {
-        VLOG(1) << error;
-      }
-
-      return nullptr;
-    }
-  }
-
-  // If possible, wait for the extension's background context to be loaded.
-  // `WaitForExtensionViewsToLoad()` by itself is insufficient for this, since
-  // it only waits for existent views registered in the process manager, and
-  // the background context may not be registered yet.
-  std::string reason_unused;
-  bool extension_enabled =
-      !install_error &&
-      registry->enabled_extensions().Contains(installer->extension()->id());
-  if (extension_enabled && ExtensionBackgroundPageWaiter::CanWaitFor(
-                               *installer->extension(), reason_unused)) {
-    ExtensionBackgroundPageWaiter(profile(), *installer->extension())
-        .WaitForBackgroundInitialized();
-  }
-
-  if (!test_notification_observer()->WaitForExtensionViewsToLoad()) {
-    return nullptr;
-  }
-
-  if (install_error) {
-    return nullptr;
-  }
-
-  // Even though we can already get the Extension from the CrxInstaller,
-  // ensure it's also in the list of enabled extensions.
-  return registry->enabled_extensions().GetByID(installer->extension()->id());
 }
 
 bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {

@@ -83,91 +83,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
   const Extension* LoadAndLaunchApp(const base::FilePath& path,
                                     bool uses_guest_view = false);
 
-  // |expected_change| indicates how many extensions should be installed (or
-  // disabled, if negative).
-  // 1 means you expect a new install, 0 means you expect an upgrade, -1 means
-  // you expect a failed upgrade.
-  const Extension* InstallExtension(const base::FilePath& path,
-                                    std::optional<int> expected_change) {
-    return InstallOrUpdateExtension(std::string(), path, InstallUIType::kNone,
-                                    std::move(expected_change),
-                                    mojom::ManifestLocation::kInternal,
-                                    GetActiveWebContents(), Extension::NO_FLAGS,
-                                    /*install_immediately=*/true,
-                                    /*grant_permissions=*/false);
-  }
-
-  // Same as above, but an install source other than
-  // mojom::ManifestLocation::kInternal can be specified.
-  const Extension* InstallExtension(const base::FilePath& path,
-                                    std::optional<int> expected_change,
-                                    mojom::ManifestLocation install_source) {
-    return InstallOrUpdateExtension(std::string(), path, InstallUIType::kNone,
-                                    std::move(expected_change), install_source,
-                                    GetActiveWebContents(), Extension::NO_FLAGS,
-                                    /*install_immediately=*/true,
-                                    /*grant_permissions=*/false);
-  }
-
-  // Installs an extension and grants it the permissions it requests.
-  // TODO(devlin): It seems like this is probably the desired outcome most of
-  // the time - otherwise the extension installs in a disabled state.
-  const Extension* InstallExtensionWithPermissionsGranted(
-      const base::FilePath& file_path,
-      std::optional<int> expected_change) {
-    return InstallOrUpdateExtension(
-        std::string(), file_path, InstallUIType::kNone,
-        std::move(expected_change), mojom::ManifestLocation::kInternal,
-        GetActiveWebContents(), Extension::NO_FLAGS, false, true);
-  }
-
-  // Installs extension as if it came from the Chrome Webstore.
-  const Extension* InstallExtensionFromWebstore(
-      const base::FilePath& path,
-      std::optional<int> expected_change);
-
-  // Same as above but passes an id to CrxInstaller and does not allow a
-  // privilege increase.
-  const Extension* UpdateExtension(const extensions::ExtensionId& id,
-                                   const base::FilePath& path,
-                                   std::optional<int> expected_change) {
-    return InstallOrUpdateExtension(id, path, InstallUIType::kNone,
-                                    std::move(expected_change),
-                                    mojom::ManifestLocation::kInternal,
-                                    GetActiveWebContents(), Extension::NO_FLAGS,
-                                    /*install_immediately=*/true,
-                                    /*grant_permissions=*/false);
-  }
-
-  // Same as UpdateExtension but waits for the extension to be idle first.
-  const Extension* UpdateExtensionWaitForIdle(
-      const extensions::ExtensionId& id,
-      const base::FilePath& path,
-      std::optional<int> expected_change);
-
-  const Extension* InstallExtensionWithUIAutoConfirm(
-      const base::FilePath& path,
-      std::optional<int> expected_change);
-
-  const Extension* InstallExtensionWithSourceAndFlags(
-      const base::FilePath& path,
-      std::optional<int> expected_change,
-      mojom::ManifestLocation install_source,
-      Extension::InitFromValueFlags creation_flags) {
-    return InstallOrUpdateExtension(
-        std::string(), path, InstallUIType::kNone, std::move(expected_change),
-        install_source, GetActiveWebContents(), creation_flags, false, false);
-  }
-
-  // Begins install process but simulates a user cancel.
-  const Extension* StartInstallButCancel(const base::FilePath& path) {
-    return InstallOrUpdateExtension(std::string(), path, InstallUIType::kCancel,
-                                    0, mojom::ManifestLocation::kInternal,
-                                    GetActiveWebContents(), Extension::NO_FLAGS,
-                                    /*install_immediately=*/true,
-                                    /*grant_permissions=*/false);
-  }
-
   // Wait for the number of visible page actions to change to |count|.
   bool WaitForPageActionVisibilityChangeTo(int count);
 
@@ -186,26 +101,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
  private:
   // Temporary directory for testing.
   base::ScopedTempDir temp_dir_;
-
-  // Specifies the type of UI (if any) to show during installation and what
-  // user action to simulate.
-  enum class InstallUIType {
-    kNone,
-    kCancel,
-    kNormal,
-    kAutoConfirm,
-  };
-
-  const Extension* InstallOrUpdateExtension(
-      const extensions::ExtensionId& id,
-      const base::FilePath& path,
-      InstallUIType ui_type,
-      std::optional<int> expected_change,
-      mojom::ManifestLocation install_source,
-      content::WebContents* active_web_contents,
-      Extension::InitFromValueFlags creation_flags,
-      bool wait_for_idle,
-      bool grant_permissions);
 
   // A convenience method to get the ExtensionTestNotificationObserver as its
   // Chrome-side implementation.
