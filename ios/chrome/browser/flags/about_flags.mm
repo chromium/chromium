@@ -869,6 +869,9 @@ const FeatureEntry::FeatureParam kPriceDropOnTabArm[] = {
 const FeatureEntry::FeatureParam kPriceTrackableProductOnTabArm[] = {
     {"ShopCardVariant", "arm_4"},
 };
+const FeatureEntry::FeatureParam kTabResumptionWithImpressionLimitsArm[] = {
+    {"ShopCardVariant", "arm_5"},
+};
 const FeatureEntry::FeatureParam kPriceDropForTrackedProductsFront[] = {
     {"ShopCardVariant", "arm_1"},
     {"ShopCardPosition", "shop_card_front"},
@@ -883,6 +886,10 @@ const FeatureEntry::FeatureParam kPriceDropOnTabFront[] = {
 };
 const FeatureEntry::FeatureParam kPriceTrackableProductOnTabFront[] = {
     {"ShopCardVariant", "arm_4"},
+    {"ShopCardPosition", "shop_card_front"},
+};
+const FeatureEntry::FeatureParam kTabResumptionWithImpressionLimitsFront[] = {
+    {"ShopCardVariant", "arm_5"},
     {"ShopCardPosition", "shop_card_front"},
 };
 
@@ -974,6 +981,9 @@ const FeatureEntry::FeatureVariation kShopCardOverrideOptions[] = {
      std::size(kPriceDropOnTabArm), nullptr},
     {"Card 4 Price Trackable on Tab Resumption", kPriceTrackableProductOnTabArm,
      std::size(kPriceTrackableProductOnTabArm), nullptr},
+    {"Card 5 Tab Resumption with Impression Limits",
+     kTabResumptionWithImpressionLimitsArm,
+     std::size(kTabResumptionWithImpressionLimitsArm), nullptr},
     {"Card 1 Price Drop at front of magic stack",
      kPriceDropForTrackedProductsFront,
      std::size(kPriceDropForTrackedProductsFront), nullptr},
@@ -984,6 +994,9 @@ const FeatureEntry::FeatureVariation kShopCardOverrideOptions[] = {
     {"Card 4 Price Trackable on Tab Resumption at front of magic stack",
      kPriceTrackableProductOnTabFront,
      std::size(kPriceTrackableProductOnTabFront), nullptr},
+    {"Card 5 Tab Resumption with Impression Limits at front of magic stack",
+     kTabResumptionWithImpressionLimitsFront,
+     std::size(kTabResumptionWithImpressionLimitsFront), nullptr},
 };
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =

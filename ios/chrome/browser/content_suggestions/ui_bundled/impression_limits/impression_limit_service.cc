@@ -305,7 +305,9 @@ void ImpressionLimitService::RemoveOldestEntryIfSizeExceedsMaximum(
 
 const std::set<std::string_view> ImpressionLimitService::GetAllowListedPrefs() {
   static std::set<std::string_view> prefs = {
+      tab_resumption_prefs::kTabResumptionRegularUrlImpressions,
       tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions,
+      tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions,
       shop_card_prefs::kShopCardPriceDropUrlImpressions};
   return prefs;
 }
