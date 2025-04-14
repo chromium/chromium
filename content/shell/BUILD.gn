@@ -248,18 +248,6 @@ static_library("content_shell_lib") {
 
   if (is_ios) {
     sources += [
-      "browser/bluetooth/ios/shell_bluetooth_chooser_coordinator.h",
-      "browser/bluetooth/ios/shell_bluetooth_chooser_coordinator.mm",
-      "browser/bluetooth/ios/shell_bluetooth_chooser_ios.h",
-      "browser/bluetooth/ios/shell_bluetooth_chooser_ios.mm",
-      "browser/bluetooth/ios/shell_bluetooth_chooser_mediator.h",
-      "browser/bluetooth/ios/shell_bluetooth_chooser_mediator.mm",
-      "browser/bluetooth/ios/shell_bluetooth_device_list_consumer.h",
-      "browser/bluetooth/ios/shell_bluetooth_device_list_delegate.h",
-      "browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.h",
-      "browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.mm",
-      "browser/bluetooth/shell_bluetooth_delegate_impl_client.cc",
-      "browser/bluetooth/shell_bluetooth_delegate_impl_client.h",
       "browser/color_chooser/shell_color_chooser_ios.h",
       "browser/color_chooser/shell_color_chooser_ios.mm",
       "browser/shell_browser_main_parts_ios.mm",
@@ -268,6 +256,23 @@ static_library("content_shell_lib") {
       "browser/shell_platform_delegate_ios.mm",
       "browser/shell_web_contents_view_delegate_ios.mm",
     ]
+
+    if (target_platform == "iphoneos") {
+      sources += [
+        "browser/bluetooth/ios/shell_bluetooth_chooser_coordinator.h",
+        "browser/bluetooth/ios/shell_bluetooth_chooser_coordinator.mm",
+        "browser/bluetooth/ios/shell_bluetooth_chooser_ios.h",
+        "browser/bluetooth/ios/shell_bluetooth_chooser_ios.mm",
+        "browser/bluetooth/ios/shell_bluetooth_chooser_mediator.h",
+        "browser/bluetooth/ios/shell_bluetooth_chooser_mediator.mm",
+        "browser/bluetooth/ios/shell_bluetooth_device_list_consumer.h",
+        "browser/bluetooth/ios/shell_bluetooth_device_list_delegate.h",
+        "browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.h",
+        "browser/bluetooth/ios/shell_bluetooth_device_list_view_controller.mm",
+        "browser/bluetooth/shell_bluetooth_delegate_impl_client.cc",
+        "browser/bluetooth/shell_bluetooth_delegate_impl_client.h",
+      ]
+    }
   }
 
   if (is_win) {
