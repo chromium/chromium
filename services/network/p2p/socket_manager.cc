@@ -256,16 +256,16 @@ void P2PSocketManager::DumpPacket(base::span<const uint8_t> packet,
 
   size_t rtp_packet_pos = 0;
   size_t rtp_packet_size = packet.size();
-  if (!cricket::UnwrapTurnPacket(packet.data(), packet.size(), &rtp_packet_pos,
-                                 &rtp_packet_size)) {
+  if (!webrtc::UnwrapTurnPacket(packet.data(), packet.size(), &rtp_packet_pos,
+                                &rtp_packet_size)) {
     return;
   }
 
   auto rtp_packet = packet.subspan(rtp_packet_pos, rtp_packet_size);
 
   size_t header_size = 0;
-  bool valid = cricket::ValidateRtpHeader(rtp_packet.data(), rtp_packet.size(),
-                                          &header_size);
+  bool valid = webrtc::ValidateRtpHeader(rtp_packet.data(), rtp_packet.size(),
+                                         &header_size);
   if (!valid) {
     NOTREACHED();
   }

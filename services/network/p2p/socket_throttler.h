@@ -31,7 +31,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PMessageThrottler {
   void SetSendIceBandwidth(int bandwith_kbps);
 
  private:
-  std::unique_ptr<rtc::DataRateLimiter> rate_limiter_;
+  std::unique_ptr<webrtc::DataRateLimiter> rate_limiter_;
 };
 
 }  // namespace network

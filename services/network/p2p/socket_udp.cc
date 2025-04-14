@@ -90,18 +90,18 @@ std::unique_ptr<net::DatagramServerSocket> DefaultSocketFactory(
   return base::WrapUnique(socket);
 }
 
-rtc::EcnMarking GetEcnMarking(net::DscpAndEcn tos) {
+webrtc::EcnMarking GetEcnMarking(net::DscpAndEcn tos) {
   switch (tos.ecn) {
     case net::ECN_NO_CHANGE:
       NOTREACHED();
     case net::ECN_NOT_ECT:
-      return rtc::EcnMarking::kNotEct;
+      return webrtc::EcnMarking::kNotEct;
     case net::ECN_ECT1:
-      return rtc::EcnMarking::kEct1;
+      return webrtc::EcnMarking::kEct1;
     case net::ECN_ECT0:
-      return rtc::EcnMarking::kEct0;
+      return webrtc::EcnMarking::kEct0;
     case net::ECN_CE:
-      return rtc::EcnMarking::kCe;
+      return webrtc::EcnMarking::kCe;
   }
 }
 
@@ -109,10 +109,11 @@ rtc::EcnMarking GetEcnMarking(net::DscpAndEcn tos) {
 
 namespace network {
 
-P2PPendingPacket::P2PPendingPacket(const net::IPEndPoint& to,
-                                   base::span<const uint8_t> content,
-                                   const rtc::PacketOptions& options,
-                                   uint64_t id)
+P2PPendingPacket::P2PPendingPacket(
+    const net::IPEndPoint& to,
+    base::span<const uint8_t> content,
+    const webrtc::AsyncSocketPacketOptions& options,
+    uint64_t id)
     : to(to),
       data(base::MakeRefCounted<net::IOBufferWithSize>(content.size())),
       size(content.size()),
@@ -317,7 +318,7 @@ bool P2PSocketUdp::HandleReadResult(int result) {
     delegate_->DumpPacket(data, true);
     auto packet = mojom::P2PReceivedPacket::New(
         data, recv_address_,
-        base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()),
+        base::TimeTicks() + base::Nanoseconds(webrtc::TimeNanos()),
         GetEcnMarking(socket_->GetLastTos()));
 
     if (interceptor_) {
@@ -350,7 +351,7 @@ bool P2PSocketUdp::HandleReadResult(int result) {
 }
 
 bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
-  int64_t send_time_us = rtc::TimeMicros();
+  int64_t send_time_us = webrtc::TimeMicros();
 
   // The peer is considered not connected until the first incoming STUN
   // request/response. In that state the renderer is allowed to send only STUN
@@ -403,9 +404,9 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
     }
   }
 
-  cricket::ApplyPacketOptions(packet.data->bytes(), packet.size,
-                              packet.packet_options.packet_time_params,
-                              send_time_us);
+  webrtc::ApplyPacketOptions(packet.data->bytes(), packet.size,
+                             packet.packet_options.packet_time_params,
+                             send_time_us);
   auto callback_binding = base::BindRepeating(
       &P2PSocketUdp::OnSend, base::Unretained(this), packet.id,
       packet.packet_options.packet_id, send_time_us / 1000);

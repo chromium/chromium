@@ -78,7 +78,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
                             size_t* bytes_consumed) = 0;
   virtual void DoSend(const net::IPEndPoint& to,
                       base::span<const uint8_t> data,
-                      const rtc::PacketOptions& options) = 0;
+                      const webrtc::AsyncSocketPacketOptions& options) = 0;
 
   void WriteOrQueue(SendBuffer& send_buffer);
   [[nodiscard]] bool OnPacket(base::span<const uint8_t> data);
@@ -142,7 +142,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp : public P2PSocketTcpBase {
                     size_t* bytes_consumed) override;
   void DoSend(const net::IPEndPoint& to,
               base::span<const uint8_t> data,
-              const rtc::PacketOptions& options) override;
+              const webrtc::AsyncSocketPacketOptions& options) override;
 };
 
 // P2PSocketStunTcp class provides the framing of STUN messages when used
@@ -170,7 +170,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketStunTcp
                     size_t* bytes_consumed) override;
   void DoSend(const net::IPEndPoint& to,
               base::span<const uint8_t> data,
-              const rtc::PacketOptions& options) override;
+              const webrtc::AsyncSocketPacketOptions& options) override;
 
  private:
   int GetExpectedPacketSize(base::span<const uint8_t> data, int* pad_bytes);
