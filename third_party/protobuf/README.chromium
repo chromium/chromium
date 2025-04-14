@@ -227,3 +227,10 @@ Description of the patches:
   of forward declarations to work around known issue with protobuf +
   newer abseil version,
   https://github.com/protocolbuffers/protobuf/issues/20331
+
+- 0055-optimize-compile-time.patch
+
+  This backports clang compile speed optimization from upstream.
+  https://github.com/protocolbuffers/protobuf/commit/d8964801b196a65cb9ab26f7c17872993c76b140
+  It mitigates the build time regression https://crbug.com/397550708.
+  It should be possible to remove this patch when rolling out v31.0.

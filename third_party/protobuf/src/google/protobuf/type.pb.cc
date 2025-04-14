@@ -550,7 +550,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         Type_class_data_ =
             Type::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL Type::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    Type::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&Type_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(Type_class_data_.tc_table);
   return Type_class_data_.base();
@@ -1046,7 +1048,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         Field_class_data_ =
             Field::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL Field::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    Field::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&Field_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(Field_class_data_.tc_table);
   return Field_class_data_.base();
@@ -1650,7 +1654,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         Enum_class_data_ =
             Enum::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL Enum::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    Enum::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&Enum_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(Enum_class_data_.tc_table);
   return Enum_class_data_.base();
@@ -2100,7 +2106,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         EnumValue_class_data_ =
             EnumValue::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL EnumValue::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    EnumValue::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&EnumValue_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(EnumValue_class_data_.tc_table);
   return EnumValue_class_data_.base();
@@ -2438,7 +2446,9 @@ PROTOBUF_CONSTINIT PROTOBUF_EXPORT
         Option_class_data_ =
             Option::InternalGenerateClassData_();
 
-const ::google::protobuf::internal::ClassData* PROTOBUF_NONNULL Option::GetClassData() const {
+PROTOBUF_ATTRIBUTE_WEAK const ::google::protobuf::internal::ClassData*
+    PROTOBUF_NONNULL
+    Option::GetClassData() const {
   ::google::protobuf::internal::PrefetchToLocalCache(&Option_class_data_);
   ::google::protobuf::internal::PrefetchToLocalCache(Option_class_data_.tc_table);
   return Option_class_data_.base();
