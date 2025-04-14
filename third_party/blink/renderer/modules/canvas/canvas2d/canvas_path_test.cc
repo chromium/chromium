@@ -91,9 +91,10 @@ TEST_F(CanvasPathTest, LineEquality) {
   path->lineTo(end.x(), end.y());
   EXPECT_TRUE(path->IsLine());
 
-  Path path2;
-  path2.MoveTo(start);
-  path2.AddLineTo(end);
+  const Path path2 = PathBuilder()
+      .MoveTo(start)
+      .LineTo(end)
+      .Finalize();
 
   EXPECT_EQ(path->GetPath(), path2);
 }
@@ -102,17 +103,18 @@ TEST_F(CanvasPathTest, LineEquality2) {
   CanvasPath* path = MakeGarbageCollected<TestCanvasPath>(context_);
   const gfx::PointF start(0, 1);
   path->moveTo(start.x(), start.y());
-  Path path2;
+
+  PathBuilder path2;
   path2.MoveTo(start);
-  EXPECT_EQ(path->GetPath(), path2);
+  EXPECT_EQ(path->GetPath(), path2.CurrentPath());
 
   const gfx::PointF end(2, 3);
   path->lineTo(end.x(), end.y());
   EXPECT_TRUE(path->IsLine());
 
-  path2.AddLineTo(end);
+  path2.LineTo(end);
 
-  EXPECT_EQ(path->GetPath(), path2);
+  EXPECT_EQ(path->GetPath(), path2.Finalize());
 }
 
 TEST_F(CanvasPathTest, MultipleMoveTos) {
@@ -186,10 +188,11 @@ TEST_F(CanvasPathTest, LineToLineTo) {
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
   // CanvasPath::lineTo() when empty implicitly does a moveto.
-  Path path;
-  path.MoveTo(start);
-  path.AddLineTo(start);
-  path.AddLineTo(end);
+  const Path path = PathBuilder()
+      .MoveTo(start)
+      .LineTo(start)
+      .LineTo(end)
+      .Finalize();
   EXPECT_EQ(canvas_path->GetPath(), path);
 }
 
@@ -203,10 +206,12 @@ TEST_F(CanvasPathTest, MoveToLineToMoveTo) {
   canvas_path->moveTo(p3.x(), p3.y());
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
-  Path path;
-  path.MoveTo(p1);
-  path.AddLineTo(p2);
-  path.MoveTo(p3);
+
+  const Path path = PathBuilder()
+      .MoveTo(p1)
+      .LineTo(p2)
+      .MoveTo(p3)
+      .Finalize();
   EXPECT_EQ(canvas_path->GetPath(), path);
 }
 
@@ -220,10 +225,12 @@ TEST_F(CanvasPathTest, MoveToMoveToLineTo) {
   canvas_path->lineTo(p3.x(), p3.y());
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
-  Path path;
-  path.MoveTo(p1);
-  path.MoveTo(p2);
-  path.AddLineTo(p3);
+
+  const Path path = PathBuilder()
+      .MoveTo(p1)
+      .MoveTo(p2)
+      .LineTo(p3)
+      .Finalize();
   EXPECT_EQ(canvas_path->GetPath(), path);
 }
 
@@ -238,10 +245,11 @@ TEST_F(CanvasPathTest, MoveToLineClosePath) {
   // closePath() cancels the line.
   EXPECT_FALSE(canvas_path->IsLine());
 
-  Path path;
-  path.MoveTo(p1);
-  path.AddLineTo(p2);
-  path.CloseSubpath();
+  const Path path = PathBuilder()
+      .MoveTo(p1)
+      .LineTo(p2)
+      .Close()
+      .Finalize();
   EXPECT_EQ(canvas_path->GetPath(), path);
 }
 

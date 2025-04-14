@@ -312,25 +312,6 @@ bool Path::IsLine() const {
   return path_.isLine(nullptr);
 }
 
-void Path::MoveTo(const gfx::PointF& point) {
-  path_.moveTo(gfx::PointFToSkPoint(point));
-}
-
-void Path::AddLineTo(const gfx::PointF& point) {
-  path_.lineTo(gfx::PointFToSkPoint(point));
-}
-
-void Path::AddBezierCurveTo(const gfx::PointF& p1,
-                            const gfx::PointF& p2,
-                            const gfx::PointF& ep) {
-  path_.cubicTo(gfx::PointFToSkPoint(p1), gfx::PointFToSkPoint(p2),
-                gfx::PointFToSkPoint(ep));
-}
-
-void Path::CloseSubpath() {
-  path_.close();
-}
-
 Path Path::MakeRect(const gfx::RectF& rect) {
   return PathBuilder().AddRect(rect).Finalize();
 }
