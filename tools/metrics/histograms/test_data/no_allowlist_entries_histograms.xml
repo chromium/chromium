@@ -1,7 +1,7 @@
 <!--
   This is a version of histograms.xml file that doesn't contain all the entries
   that are expected due to their presence in
-  android_webview/java/res/raw/histograms_allowlist.txt, this file can be used
+  HistogramsAllowlist.java, this file can be used
   to validate test scenarios that rely on such circumstances.
 -->
 

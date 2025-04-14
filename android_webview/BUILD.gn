@@ -1141,7 +1141,6 @@ android_resources("resources") {
     "java/res/layout/aw_context_menu_fullscreen_container.xml",
     "java/res/layout/aw_context_menu_header.xml",
     "java/res/layout/aw_context_menu_row.xml",
-    "java/res/raw/histograms_allowlist.txt",
     "java/res/values/styles.xml",
   ]
   deps = [ ":strings_grd" ]
