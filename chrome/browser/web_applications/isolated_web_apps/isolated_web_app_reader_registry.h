@@ -118,13 +118,8 @@ class IsolatedWebAppReaderRegistry
   void OnComponentUpdateSuccess(const base::Version& version,
                                 bool is_preloaded) override;
 
-  void ClearCacheForPathImpl(const base::FilePath& web_bundle_path,
-                             bool dev_mode,
-                             base::OnceClosure callback);
-
   void OnResponseReaderCreated(
       const base::FilePath& web_bundle_path,
-      bool dev_mode,
       const web_package::SignedWebBundleId& web_bundle_id,
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                      UnusableSwbnFileError> reader);
@@ -147,7 +142,8 @@ class IsolatedWebAppReaderRegistry
   // memory.
   class Cache {
    public:
-    struct Key;
+    using Key = base::FilePath;
+
     class Entry;
 
     Cache();
@@ -165,13 +161,6 @@ class IsolatedWebAppReaderRegistry
         Args&&... args);
 
     void Erase(base::flat_map<Key, Entry>::iterator iterator);
-
-    struct Key {
-      base::FilePath path;
-      bool dev_mode;
-
-      bool operator<(const Key& other) const;
-    };
 
     // A cache `Entry` has two states: In its initial `kPending` state, it
     // caches requests made to a Signed Web Bundle until an
