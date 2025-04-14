@@ -50,6 +50,10 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
     local_record_type_count_ = local_record_type_count;
   }
 
+  // Called by BnplManager after its suggestion update barrier callback is
+  // triggered and a BNPL suggestion is shown.
+  virtual void OnBnplSuggestionShown();
+
   // Invoked when `suggestions` are successfully fetched.
   // `with_offer` indicates whether an offer is attached to any of the
   // suggestion in the list.
@@ -219,6 +223,9 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // If true, the suggestions shown on BNPL eligible merchant is logged and
   // should not be logged again.
   bool has_logged_suggestions_shown_on_bnpl_eligible_merchant_ = false;
+  // If true, the BNPL suggestion being shown was already logged and should not
+  // be logged again.
+  bool has_logged_bnpl_suggestion_shown_ = false;
   // If true, the metrics for a BNPL suggestion being accepted were already
   // logged and should not log again.
   bool has_logged_bnpl_suggestion_accepted_ = false;

@@ -368,4 +368,25 @@ TEST_F(CreditCardFormEventLoggerTest,
                        /*count=*/1)));
 }
 
+// Tests that the `kBnplSuggestionShownOnce` event is logged once when
+// `OnBnplSuggestionShown()` is called.
+TEST_F(CreditCardFormEventLoggerTest,
+       OnBnplSuggestionShown_SuggestionAddedLogged) {
+  base::HistogramTester histogram_tester;
+
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionShownOnce,
+      /*expected_bucket_count=*/1);
+
+  // Test that `kBnplSuggestionShownOnce` is logged only once even if
+  // `OnBnplSuggestionShown()` is called more than once on the same page.
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.FormEvents.CreditCard.Bnpl",
+      /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionShownOnce,
+      /*expected_bucket_count=*/1);
+}
+
 }  // namespace autofill::autofill_metrics

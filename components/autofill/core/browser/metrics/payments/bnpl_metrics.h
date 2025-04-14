@@ -89,7 +89,9 @@ enum class BnplFormEvent {
   // Payments autofill suggestions were shown on a BNPL-eligible merchant.
   kSuggestionsShownOnce = 0,
 
-  // Temp note: enum = 1 is reserved for the metric for BNPL suggestion shown.
+  // The BNPL suggestion was added to the payments autofill dropdown and shown
+  // to the user.
+  kBnplSuggestionShownOnce = 1,
 
   // A BNPL suggestion was accepted on the current page.
   kBnplSuggestionAcceptedOnce = 2,
