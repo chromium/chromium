@@ -640,6 +640,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.NoVarySearch.ReplaceFileError"
+    enum="PlatformFileError" expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The error code returned by base::ReplaceFile() inside the concrete
+    implementation of NoVarySearchCacheStorageFileOperations::AtomicSave().
+
+    On Windows base::ReplaceFile() may be retried on failure, and if it is
+    subsequently successful then this histogram will not be logged. See
+    &quot;HttpCache.NoVarySearch.ReplaceFileTryCount&quot;.
+
+    Logged once per failure to replace the file in AtomicSave(). Not logged on
+    success.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.NoVarySearch.ReplaceFileTryCount" units="tries"
+    expires_after="2025-12-16">
+  <owner>ricea@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The number of calls to ReplaceFile() in ReplaceFileWithRetries() needed
+    until one is successful. This should usually be 1, but may be more if there
+    was interference from an anti-virus or other third-party program.
+
+    Only logged on Windows because retries are only necessary on Windows.
+
+    Not logged when ReplaceFile fails more than the maximum numer of retries. In
+    that case &quot;HttpCache.NoVarySearch.ReplaceFileError&quot; will be logged
+    with a value of IN_USE instead.
+
+    Logged once for each successful call to AtomicSave() in the concrete
+    implementation of NoVarySearchCacheStorageFileOperations on Windows.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.NoVarySearch.UseResult" enum="NoVarySearchUseResult"
     expires_after="2025-12-16">
   <owner>ricea@chromium.org</owner>
