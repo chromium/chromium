@@ -391,6 +391,9 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
   auto client_summarized_result_type =
       GetClientSummarizedResultType(omnibox_event_result_type);
 
+  const std::string page_context = OmniboxEventProto::PageClassification_Name(
+      log.current_page_classification);
+
   // Log UMA histograms.
   base::UmaHistogramEnumeration(
       "Omnibox.SuggestionUsed.ClientSummarizedResultType",
@@ -401,11 +404,21 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.ClientSummarizedResultType."
+                      "ByPageContext.",
+                      page_context}),
+        ClientSummarizedResultType::kSearch);
   }
   if (log.zero_prefix_url_suggestions_shown_in_session ||
       log.typed_url_suggestions_shown_in_session) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.ClientSummarizedResultType."
+                      "ByPageContext.",
+                      page_context}),
         ClientSummarizedResultType::kUrl);
   }
 
@@ -413,10 +426,20 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.ZeroSuggest."
+                      "ClientSummarizedResultType.ByPageContext.",
+                      page_context}),
+        ClientSummarizedResultType::kSearch);
   }
   if (log.zero_prefix_url_suggestions_shown_in_session) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.ZeroSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.ZeroSuggest."
+                      "ClientSummarizedResultType.ByPageContext.",
+                      page_context}),
         ClientSummarizedResultType::kUrl);
   }
 
@@ -424,10 +447,20 @@ void OmniboxMetricsProvider::RecordMetrics(const OmniboxLog& log) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
         ClientSummarizedResultType::kSearch);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.TypedSuggest."
+                      "ClientSummarizedResultType.ByPageContext.",
+                      page_context}),
+        ClientSummarizedResultType::kSearch);
   }
   if (log.typed_url_suggestions_shown_in_session) {
     base::UmaHistogramEnumeration(
         "Omnibox.SuggestionShown.TypedSuggest.ClientSummarizedResultType",
+        ClientSummarizedResultType::kUrl);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Omnibox.SuggestionShown.TypedSuggest."
+                      "ClientSummarizedResultType.ByPageContext.",
+                      page_context}),
         ClientSummarizedResultType::kUrl);
   }
 
