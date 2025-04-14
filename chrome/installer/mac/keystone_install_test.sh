@@ -173,6 +173,15 @@ function assert_registration_flags() {
   fi
 }
 
+function set_info_plist_item() {
+  defaults write "${1}/Contents/Info" "${2}" -string "${3}"
+}
+
+function set_src_ksupdateurl () {
+  set_info_plist_item "${SRC}" KSUpdateURL \
+      "https://example.com/update2"
+}
+
 # Make an old-style destination directory, to test updating from old-style
 # versions to new-style versions.
 function make_old_dest() {
@@ -180,7 +189,7 @@ function make_old_dest() {
   export KS_TICKET_XC_PATH="${DEST}"
   rm -rf "${DEST}"
   mkdir -p "${DEST}"/Contents
-  defaults write "${DEST}/Contents/Info" KSVersion 0
+  set_info_plist_item "${DEST}" KSVersion 0
   prepare_fake_ksadmin
 }
 
@@ -190,27 +199,24 @@ function make_new_dest() {
   DEST="${TEMPDIR}"/Dest.app
   export KS_TICKET_XC_PATH="${DEST}"
   rm -rf "${DEST}"
-  defaults write "${DEST}/Contents/Info" CFBundleShortVersionString 0
-  defaults write "${DEST}/Contents/Info" KSVersion 0
+  set_info_plist_item "${DEST}" CFBundleShortVersionString 0
+  set_info_plist_item "${DEST}" KSVersion 0
   prepare_fake_ksadmin
 }
 
 # Make a simple source directory - the update that is to be applied
 # Arg0: the name of the application directory
 function make_src() {
-  local appname="${1}"
+  SRC="${TEMPDIR}/${1}"
 
   chmod ugo+w "${TEMPDIR}"
   rm -rf "${TEMPDIR}/${APPNAME_STABLE}"
   rm -rf "${TEMPDIR}/${APPNAME_CANARY}"
-  RSRCDIR="${TEMPDIR}/${appname}/Contents/Versions/1/${FWKNAME}/Resources"
+  RSRCDIR="${SRC}/Contents/Versions/1/${FWKNAME}/Resources"
   mkdir -p "${RSRCDIR}"
-  defaults write "${TEMPDIR}/${appname}/Contents/Info" \
-      CFBundleShortVersionString "1"
-  defaults write "${TEMPDIR}/${appname}/Contents/Info" \
-      KSProductID "com.google.Chrome"
-  defaults write "${TEMPDIR}/${appname}/Contents/Info" \
-      KSVersion "2"
+  set_info_plist_item "${SRC}" CFBundleShortVersionString 1
+  set_info_plist_item "${SRC}" KSProductID "com.google.Chrome"
+  set_info_plist_item "${SRC}" KSVersion 2
 }
 
 function make_basic_src_and_dest() {
@@ -219,11 +225,15 @@ function make_basic_src_and_dest() {
 }
 
 function set_library_brand() {
-  defaults write "${LIBRARY_BRAND_DEFAULTS_TARGET}" "KSBrandID" -string "${1}"
+  defaults write "${LIBRARY_BRAND_DEFAULTS_TARGET}" KSBrandID -string "${1}"
 }
 
 function remove_library_brand() {
   rm "${LIBRARY_BRAND_FILE}"
+}
+
+function set_dest_plist_brand() {
+  set_info_plist_item "${DEST}" KSBrandID "${1}"
 }
 
 # Reads an item out of a plist file, forcing the defaults utility to read off
@@ -275,31 +285,46 @@ fail_installer "Was no KSUpdateURL in dest after copy" 9
 
 make_src "${APPNAME_STABLE}"
 make_old_dest
-defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
-    KSUpdateURL "http://foobar"
+set_src_ksupdateurl
 pass_installer "Old-style update"
 assert_registration
 
 make_basic_src_and_dest
-defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
-    KSUpdateURL "http://foobar"
+set_src_ksupdateurl
 pass_installer "New-style Stable"
 assert_registration
 
-set_library_brand "TEST"
+set_library_brand "LIBR"
 make_basic_src_and_dest
-defaults write "${TEMPDIR}/${APPNAME_STABLE}/Contents/Info" \
-    KSUpdateURL "http://foobar"
+set_src_ksupdateurl
 pass_installer "Old brand code Stable"
 assert_registration
-assert_library_brand_registered "TEST"
+assert_library_brand_registered "LIBR"
 remove_library_brand
 
 make_src "${APPNAME_CANARY}"
 make_new_dest
-defaults write "${TEMPDIR}/${APPNAME_CANARY}/Contents/Info" \
-    KSUpdateURL "http://foobar"
+set_src_ksupdateurl
 pass_installer "New-style Canary"
 assert_registration
+
+make_basic_src_and_dest
+set_src_ksupdateurl
+set_dest_plist_brand "PLST"
+pass_installer "brand code in Info.plist"
+assert_registration
+assert_library_brand_registered "PLST"
+remove_library_brand
+
+# In a brand conflict between the library brand (presumably configured during
+# a previous update) and the Info.plist brand, Info.plist should "win".
+make_basic_src_and_dest
+set_src_ksupdateurl
+set_dest_plist_brand "PLST"
+set_library_brand "LIBR"
+pass_installer "conflict between library brand and Info.plist"
+assert_registration
+assert_library_brand_registered "PLST"
+remove_library_brand
 
 cleanup_tempdir
