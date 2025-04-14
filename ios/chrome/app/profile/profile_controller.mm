@@ -247,6 +247,9 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
     _state = [[ProfileState alloc] initWithAppState:appState];
     _metricsMediator = metricsMediator;
     [_state addObserver:self];
+
+    // Inform the AppState of the ProfileState creation.
+    [appState profileStateCreated:_state];
   }
   return self;
 }
@@ -288,6 +291,9 @@ void RecordDiscardedSceneConnectedAfterBeingPurged(
   // Cancel any pending deferred startup tasks (the profile is shutting
   // down, so there is no point in running them).
   [_state.deferredRunner cancelAllBlocks];
+
+  // Inform the AppState of the ProfileState destruction.
+  [_state.appState profileStateDestroyed:_state];
 }
 
 #pragma mark ProfileStateObserver
