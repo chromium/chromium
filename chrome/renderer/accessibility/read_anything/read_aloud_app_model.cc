@@ -571,15 +571,24 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
     ui::AXNodePosition::AXPositionInstance possible_new_position =
         new_position->CreateNextSentenceStartPosition(
             sentence_movement_options_);
-    bool use_paragraph = false;
+
+    // If the new position and the previous position are the same, try moving
+    // to the next line position instead. This seems to happen on pdfs sometimes
+    // where next sentence returns the same position and next paragraph skips
+    // some text.
+    // TODO(crbug.com/40927698): Investigate whether this is helpful beyond pdfs
+    if (is_pdf && ArePositionsEqual(possible_new_position, new_position)) {
+      possible_new_position =
+          new_position->CreateNextLineStartPosition(sentence_movement_options_);
+    }
 
     // If the new position and the previous position are the same, try moving
     // to the next paragraph position instead. This happens rarely, but when
     // it does, we can get stuck in an infinite loop of calling
     // CreateNextSentenceStartPosition, as it will always return the same
     // position.
-    if (ArePositionsEqual(possible_new_position, new_position)) {
-      use_paragraph = true;
+    if (possible_new_position->IsNullPosition() ||
+        ArePositionsEqual(possible_new_position, new_position)) {
       possible_new_position = new_position->CreateNextParagraphStartPosition(
           sentence_movement_options_);
 
@@ -596,9 +605,9 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
     }
 
     // If the new position is still the same as the old position after trying
-    // a paragraph position, go ahead and return a null position instead, as
-    // ending speech early is preferable to getting stuck in an infinite
-    // loop.
+    // both line and paragraph positions, go ahead and return a null position
+    // instead, as ending speech early is preferable to getting stuck in an
+    // infinite loop.
     if (ArePositionsEqual(possible_new_position, new_position)) {
       return ui::AXNodePosition::AXPosition::CreateNullPosition();
     }
@@ -614,11 +623,7 @@ ReadAloudAppModel::GetNextValidPositionFromCurrentPosition(
       return new_position;
     }
 
-    new_position = use_paragraph
-                       ? new_position->CreateNextParagraphStartPosition(
-                             sentence_movement_options_)
-                       : new_position->CreateNextSentenceStartPosition(
-                             sentence_movement_options_);
+    new_position = std::move(possible_new_position);
   }
 
   return new_position;
