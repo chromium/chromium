@@ -159,10 +159,8 @@ PdfNavigationThrottle::WillStartRequest() {
             // `MimeHandlerViewGuest` navigates its embedder for calls to
             // `WebContents::OpenURL()`, so use `LoadURLWithParams()` directly
             // instead.
-            content::WebContents::FromRenderFrameHost(embedder_frame)
-                ->GetController()
-                .LoadURLWithParams(
-                    content::NavigationController::LoadURLParams(new_params));
+            embedder_frame->GetController().LoadURLWithParams(
+                content::NavigationController::LoadURLParams(new_params));
 
             // Note that we don't need to register the stream's URL loader as a
             // subresource, as `MimeHandlerViewGuest::ReadyToCommitNavigation()`
