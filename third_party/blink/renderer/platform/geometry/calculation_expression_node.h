@@ -36,6 +36,13 @@ enum class CalculationOperator {
   kCalcSize,
   kMediaProgress,
   kPow,
+  kSin,
+  kCos,
+  kTan,
+  kAsin,
+  kAcos,
+  kAtan,
+  kAtan2,
   kInvalid
 };
 

@@ -224,32 +224,6 @@ static bool HasDoubleValue(CSSPrimitiveValue::UnitType type) {
 
 namespace {
 
-double TanDegrees(double degrees) {
-  // Use table values for tan() if possible.
-  // We pick a pretty arbitrary limit that should be safe.
-  if (degrees > -90000000.0 && degrees < 90000000.0) {
-    // Make sure 0, 45, 90, 135, 180, 225 and 270 degrees get exact results.
-    double n45degrees = degrees / 45.0;
-    int octant = static_cast<int>(n45degrees);
-    if (octant == n45degrees) {
-      constexpr std::array<double, 8> kTanN45 = {
-          /* 0deg */ 0.0,
-          /* 45deg */ 1.0,
-          /* 90deg */ std::numeric_limits<double>::infinity(),
-          /* 135deg */ -1.0,
-          /* 180deg */ 0.0,
-          /* 225deg */ 1.0,
-          /* 270deg */ -std::numeric_limits<double>::infinity(),
-          /* 315deg */ -1.0,
-      };
-      return kTanN45[octant & 7];
-    }
-  }
-  // Slow path for non-table cases.
-  double x = Deg2rad(degrees);
-  return std::tan(x);
-}
-
 const PixelsAndPercent CreateClampedSamePixelsAndPercent(float value) {
   return PixelsAndPercent(CSSValueClampingUtils::ClampLength(value),
                           CSSValueClampingUtils::ClampLength(value),
@@ -1375,66 +1349,6 @@ static double ValueAsNumber(const CSSMathExpressionNode* node, bool& error) {
   return 0;
 }
 
-static bool SupportedCategoryForAtan2(
-    const CalculationResultCategory category) {
-  switch (category) {
-    case kCalcNumber:
-    case kCalcLength:
-    case kCalcPercent:
-    case kCalcTime:
-    case kCalcFrequency:
-    case kCalcAngle:
-      return true;
-    default:
-      return false;
-  }
-}
-
-static bool IsRelativeLength(CSSPrimitiveValue::UnitType type) {
-  return CSSPrimitiveValue::IsRelativeUnit(type) &&
-         CSSPrimitiveValue::IsLength(type);
-}
-
-static double ResolveAtan2(const CSSMathExpressionNode* y_node,
-                           const CSSMathExpressionNode* x_node,
-                           bool& error) {
-  const CalculationResultCategory category = y_node->Category();
-  if (category != x_node->Category() || !SupportedCategoryForAtan2(category)) {
-    error = true;
-    return 0;
-  }
-  CSSPrimitiveValue::UnitType y_type = y_node->ResolvedUnitType();
-  CSSPrimitiveValue::UnitType x_type = x_node->ResolvedUnitType();
-
-  // TODO(crbug.com/1392594): We ignore parameters in complex relative units
-  // (e.g., 1rem + 1px) until they can be supported.
-  if (y_type == CSSPrimitiveValue::UnitType::kUnknown ||
-      x_type == CSSPrimitiveValue::UnitType::kUnknown) {
-    error = true;
-    return 0;
-  }
-
-  if (IsRelativeLength(y_type) || IsRelativeLength(x_type)) {
-    // TODO(crbug.com/1392594): Relative length units are currently hard
-    // to resolve. We ignore the units for now, so that
-    // we can at least support the case where both operands have the same unit.
-    double y = y_node->DoubleValue();
-    double x = x_node->DoubleValue();
-    return std::atan2(y, x);
-  }
-  auto y = y_node->ComputeValueInCanonicalUnit();
-  auto x = x_node->ComputeValueInCanonicalUnit();
-  return std::atan2(y.value(), x.value());
-}
-
-// Helper function for parsing trigonometric functions' parameter
-static double ValueAsDegrees(const CSSMathExpressionNode* node, bool& error) {
-  if (node->Category() == kCalcAngle) {
-    return node->ComputeValueInCanonicalUnit().value();
-  }
-  return Rad2deg(ValueAsNumber(node, error));
-}
-
 static bool CanonicalizeRoundArguments(
     CSSMathExpressionOperation::Operands& nodes) {
   if (nodes.size() == 2) {
@@ -1471,69 +1385,98 @@ static bool ShouldSerializeRoundingStep(
   return false;
 }
 
-CSSMathExpressionNode*
-CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
+namespace {
+
+bool ShouldConvertRad2DegForOperator(CSSMathOperator op) {
+  return op == CSSMathOperator::kSin || op == CSSMathOperator::kCos ||
+         op == CSSMathOperator::kTan;
+}
+
+CSSValueID TrigonometricCalculationOperatorToCSSValueID(
+    const CalculationOperator& op) {
+  switch (op) {
+    case CalculationOperator::kSin:
+      return CSSValueID::kSin;
+    case CalculationOperator::kCos:
+      return CSSValueID::kCos;
+    case CalculationOperator::kTan:
+      return CSSValueID::kTan;
+    case CalculationOperator::kAsin:
+      return CSSValueID::kAsin;
+    case CalculationOperator::kAcos:
+      return CSSValueID::kAcos;
+    case CalculationOperator::kAtan:
+      return CSSValueID::kAtan;
+    case CalculationOperator::kAtan2:
+      return CSSValueID::kAtan2;
+    default:
+      return CSSValueID::kInvalid;
+  }
+}
+
+CSSMathOperator TrigonometricFunctionIdToOperator(
+    const CSSValueID& function_id) {
+  switch (function_id) {
+    case CSSValueID::kSin:
+      return CSSMathOperator::kSin;
+    case CSSValueID::kCos:
+      return CSSMathOperator::kCos;
+    case CSSValueID::kTan:
+      return CSSMathOperator::kTan;
+    case CSSValueID::kAsin:
+      return CSSMathOperator::kAsin;
+    case CSSValueID::kAcos:
+      return CSSMathOperator::kAcos;
+    case CSSValueID::kAtan:
+      return CSSMathOperator::kAtan;
+    case CSSValueID::kAtan2:
+      return CSSMathOperator::kAtan2;
+    default:
+      return CSSMathOperator::kInvalid;
+  }
+}
+
+}  // namespace
+
+CSSMathExpressionNode* CSSMathExpressionOperation::CreateTrigonometricFunction(
     Operands&& operands,
     CSSValueID function_id) {
-  double value;
-  auto unit_type = CSSPrimitiveValue::UnitType::kUnknown;
-  bool error = false;
-  switch (function_id) {
-    case CSSValueID::kSin: {
-      DCHECK_EQ(operands.size(), 1u);
-      unit_type = CSSPrimitiveValue::UnitType::kNumber;
-      value = gfx::SinCosDegrees(ValueAsDegrees(operands[0], error)).sin;
-      break;
-    }
-    case CSSValueID::kCos: {
-      DCHECK_EQ(operands.size(), 1u);
-      unit_type = CSSPrimitiveValue::UnitType::kNumber;
-      value = gfx::SinCosDegrees(ValueAsDegrees(operands[0], error)).cos;
-      break;
-    }
-    case CSSValueID::kTan: {
-      DCHECK_EQ(operands.size(), 1u);
-      unit_type = CSSPrimitiveValue::UnitType::kNumber;
-      value = TanDegrees(ValueAsDegrees(operands[0], error));
-      break;
-    }
-    case CSSValueID::kAsin: {
-      DCHECK_EQ(operands.size(), 1u);
-      unit_type = CSSPrimitiveValue::UnitType::kDegrees;
-      value = Rad2deg(std::asin(ValueAsNumber(operands[0], error)));
-      DCHECK(value >= -90 && value <= 90 || std::isnan(value));
-      break;
-    }
-    case CSSValueID::kAcos: {
-      DCHECK_EQ(operands.size(), 1u);
-      unit_type = CSSPrimitiveValue::UnitType::kDegrees;
-      value = Rad2deg(std::acos(ValueAsNumber(operands[0], error)));
-      DCHECK(value >= 0 && value <= 180 || std::isnan(value));
-      break;
-    }
-    case CSSValueID::kAtan: {
-      DCHECK_EQ(operands.size(), 1u);
-      unit_type = CSSPrimitiveValue::UnitType::kDegrees;
-      value = Rad2deg(std::atan(ValueAsNumber(operands[0], error)));
-      DCHECK(value >= -90 && value <= 90 || std::isnan(value));
-      break;
-    }
-    case CSSValueID::kAtan2: {
-      DCHECK_EQ(operands.size(), 2u);
-      unit_type = CSSPrimitiveValue::UnitType::kDegrees;
-      value = Rad2deg(ResolveAtan2(operands[0], operands[1], error));
-      DCHECK(value >= -180 && value <= 180 || std::isnan(value));
-      break;
-    }
-    default:
-      return nullptr;
-  }
-
-  if (error) {
+  DCHECK(operands.size() == 1u && function_id != CSSValueID::kAtan2 ||
+         operands.size() == 2u);
+  CSSMathOperator op = TrigonometricFunctionIdToOperator(function_id);
+  if (op == CSSMathOperator::kInvalid) {
     return nullptr;
   }
-
-  DCHECK_NE(unit_type, CSSPrimitiveValue::UnitType::kUnknown);
+  bool is_number_output = ShouldConvertRad2DegForOperator(op);
+  bool sin_cos_tan_category_check =
+      is_number_output && (operands.front()->Category() == kCalcNumber ||
+                           operands.front()->Category() == kCalcAngle);
+  bool asin_acos_atan_check =
+      !is_number_output && operands.front()->Category() == kCalcNumber;
+  bool atan2_check =
+      op == CSSMathOperator::kAtan2 &&
+      operands.front()->Category() == operands.back()->Category();
+  if (!sin_cos_tan_category_check && !asin_acos_atan_check && !atan2_check) {
+    return nullptr;
+  }
+  if (!CanEagerlySimplify(operands)) {
+    CalculationResultCategory category =
+        is_number_output ? CalculationResultCategory::kCalcNumber
+                         : CalculationResultCategory::kCalcAngle;
+    return MakeGarbageCollected<CSSMathExpressionOperation>(
+        category, std::move(operands), op);
+  }
+  CSSPrimitiveValue::UnitType unit_type =
+      is_number_output ? CSSPrimitiveValue::UnitType::kNumber
+                       : CSSPrimitiveValue::UnitType::kDegrees;
+  double a = operands.front()->ComputeValueInCanonicalUnit().value();
+  if (is_number_output && operands.front()->Category() == kCalcNumber) {
+    a = Rad2deg(a);
+  }
+  std::optional<double> b = op == CSSMathOperator::kAtan2
+                                ? operands.back()->ComputeValueInCanonicalUnit()
+                                : std::nullopt;
+  double value = EvaluateTrigonometricFunction(op, a, b);
   return CSSMathExpressionNumericLiteral::Create(value, unit_type);
 }
 
@@ -2271,6 +2214,13 @@ std::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
     case CSSMathOperator::kMediaProgress:
     case CSSMathOperator::kContainerProgress:
     case CSSMathOperator::kPow:
+    case CSSMathOperator::kSin:
+    case CSSMathOperator::kCos:
+    case CSSMathOperator::kTan:
+    case CSSMathOperator::kAsin:
+    case CSSMathOperator::kAcos:
+    case CSSMathOperator::kAtan:
+    case CSSMathOperator::kAtan2:
       return std::nullopt;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -2345,6 +2295,13 @@ CSSMathExpressionOperation::ToCalculationExpression(
     case CSSMathOperator::kMediaProgress:
     case CSSMathOperator::kContainerProgress:
     case CSSMathOperator::kCalcSize:
+    case CSSMathOperator::kSin:
+    case CSSMathOperator::kCos:
+    case CSSMathOperator::kTan:
+    case CSSMathOperator::kAsin:
+    case CSSMathOperator::kAcos:
+    case CSSMathOperator::kAtan:
+    case CSSMathOperator::kAtan2:
     case CSSMathOperator::kPow: {
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.reserve(operands_.size());
@@ -2378,6 +2335,20 @@ CSSMathExpressionOperation::ToCalculationExpression(
         op = CalculationOperator::kContainerProgress;
       } else if (operator_ == CSSMathOperator::kPow) {
         op = CalculationOperator::kPow;
+      } else if (operator_ == CSSMathOperator::kSin) {
+        op = CalculationOperator::kSin;
+      } else if (operator_ == CSSMathOperator::kCos) {
+        op = CalculationOperator::kCos;
+      } else if (operator_ == CSSMathOperator::kTan) {
+        op = CalculationOperator::kTan;
+      } else if (operator_ == CSSMathOperator::kAsin) {
+        op = CalculationOperator::kAsin;
+      } else if (operator_ == CSSMathOperator::kAcos) {
+        op = CalculationOperator::kAcos;
+      } else if (operator_ == CSSMathOperator::kAtan) {
+        op = CalculationOperator::kAtan;
+      } else if (operator_ == CSSMathOperator::kAtan2) {
+        op = CalculationOperator::kAtan2;
       } else {
         CHECK(operator_ == CSSMathOperator::kCalcSize);
         op = CalculationOperator::kCalcSize;
@@ -2395,7 +2366,12 @@ double CSSMathExpressionOperation::DoubleValue() const {
   Vector<double> double_values;
   double_values.reserve(operands_.size());
   for (const CSSMathExpressionNode* operand : operands_) {
-    double_values.push_back(operand->DoubleValue());
+    double value = operand->DoubleValue();
+    if (ShouldConvertRad2DegForOperator(operator_) &&
+        operand->Category() == kCalcNumber) {
+      value = Rad2deg(value);
+    }
+    double_values.push_back(value);
   }
   return Evaluate(double_values);
 }
@@ -2439,7 +2415,12 @@ std::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit(
     if (!maybe_value.has_value()) {
       return std::nullopt;
     }
-    double_values.push_back(maybe_value.value());
+    double value = maybe_value.value();
+    if (ShouldConvertRad2DegForOperator(operator_) &&
+        operand->Category() == kCalcNumber) {
+      value = Rad2deg(maybe_value.value());
+    }
+    double_values.push_back(value);
   }
   return Evaluate(double_values);
 }
@@ -2449,8 +2430,13 @@ double CSSMathExpressionOperation::ComputeDouble(
   Vector<double> double_values;
   double_values.reserve(operands_.size());
   for (const CSSMathExpressionNode* operand : operands_) {
-    double_values.push_back(
-        CSSMathExpressionNode::ComputeDouble(operand, length_resolver));
+    double value =
+        CSSMathExpressionNode::ComputeDouble(operand, length_resolver);
+    if (ShouldConvertRad2DegForOperator(operator_) &&
+        operand->Category() == kCalcNumber) {
+      value = Rad2deg(value);
+    }
+    double_values.push_back(value);
   }
   return Evaluate(double_values);
 }
@@ -2521,6 +2507,13 @@ bool CSSMathExpressionOperation::AccumulateLengthArray(
     case CSSMathOperator::kMediaProgress:
     case CSSMathOperator::kContainerProgress:
     case CSSMathOperator::kPow:
+    case CSSMathOperator::kSin:
+    case CSSMathOperator::kCos:
+    case CSSMathOperator::kTan:
+    case CSSMathOperator::kAsin:
+    case CSSMathOperator::kAcos:
+    case CSSMathOperator::kAtan:
+    case CSSMathOperator::kAtan2:
       return false;
     case CSSMathOperator::kInvalid:
       NOTREACHED();
@@ -2622,6 +2615,13 @@ String CSSMathExpressionOperation::CustomCSSText() const {
     case CSSMathOperator::kAbs:
     case CSSMathOperator::kSign:
     case CSSMathOperator::kCalcSize:
+    case CSSMathOperator::kSin:
+    case CSSMathOperator::kCos:
+    case CSSMathOperator::kTan:
+    case CSSMathOperator::kAsin:
+    case CSSMathOperator::kAcos:
+    case CSSMathOperator::kAtan:
+    case CSSMathOperator::kAtan2:
     case CSSMathOperator::kPow: {
       StringBuilder result;
       result.Append(ToString(operator_));
@@ -2752,7 +2752,15 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
         case CSSMathOperator::kMediaProgress:
         case CSSMathOperator::kContainerProgress:
         case CSSMathOperator::kPow:
+        case CSSMathOperator::kSin:
+        case CSSMathOperator::kCos:
+        case CSSMathOperator::kTan:
           return CSSPrimitiveValue::UnitType::kNumber;
+        case CSSMathOperator::kAsin:
+        case CSSMathOperator::kAcos:
+        case CSSMathOperator::kAtan:
+        case CSSMathOperator::kAtan2:
+          return CSSPrimitiveValue::UnitType::kDegrees;
         case CSSMathOperator::kCalcSize: {
           DCHECK_EQ(operands_.size(), 2u);
           CSSPrimitiveValue::UnitType calculation_type =
@@ -2928,6 +2936,18 @@ double CSSMathExpressionOperation::EvaluateOperator(
       DCHECK_EQ(operands.size(), 2u);
       return std::pow(operands[0], operands[1]);
     }
+    case CSSMathOperator::kSin:
+    case CSSMathOperator::kCos:
+    case CSSMathOperator::kTan:
+    case CSSMathOperator::kAsin:
+    case CSSMathOperator::kAcos:
+    case CSSMathOperator::kAtan:
+      DCHECK_EQ(operands.size(), 1u);
+      return EvaluateTrigonometricFunction(op, operands.front());
+    case CSSMathOperator::kAtan2:
+      DCHECK_EQ(operands.size(), 2u);
+      return EvaluateTrigonometricFunction(op, operands.front(),
+                                           {operands.back()});
     case CSSMathOperator::kInvalid:
       NOTREACHED();
   }
@@ -3942,7 +3962,7 @@ class CSSMathExpressionNodeParser {
       case CSSValueID::kAtan:
       case CSSValueID::kAtan2: {
         CSSMathExpressionNode* node =
-            CSSMathExpressionOperation::CreateTrigonometricFunctionSimplified(
+            CSSMathExpressionOperation::CreateTrigonometricFunction(
                 std::move(nodes), function_id);
         if (node) {
           context_.Count(WebFeature::kCSSTrigFunctions);
@@ -4498,6 +4518,28 @@ CSSMathExpressionNode* CSSMathExpressionNode::Create(
     }
     case CalculationOperator::kInvalid:
       NOTREACHED();
+    case CalculationOperator::kSin:
+    case CalculationOperator::kCos:
+    case CalculationOperator::kTan:
+    case CalculationOperator::kAsin:
+    case CalculationOperator::kAcos:
+    case CalculationOperator::kAtan: {
+      DCHECK_EQ(children.size(), 1u);
+      CSSValueID funtion_id =
+          TrigonometricCalculationOperatorToCSSValueID(calc_op);
+      CSSMathExpressionOperation::Operands operands;
+      operands.push_back(Create(*children.front()));
+      return CSSMathExpressionOperation::CreateTrigonometricFunction(
+          std::move(operands), funtion_id);
+    }
+    case CalculationOperator::kAtan2: {
+      DCHECK_EQ(children.size(), 2u);
+      CSSMathExpressionOperation::Operands operands;
+      operands.push_back(Create(*children.front()));
+      operands.push_back(Create(*children.back()));
+      return CSSMathExpressionOperation::CreateSignRelatedFunction(
+          std::move(operands), CSSValueID::kAtan2);
+    }
   }
 }
 

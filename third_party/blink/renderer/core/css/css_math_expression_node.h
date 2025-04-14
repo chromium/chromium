@@ -558,7 +558,7 @@ class CORE_EXPORT CSSMathExpressionOperation final
       Operands&& operands,
       CSSMathOperator op);
 
-  static CSSMathExpressionNode* CreateTrigonometricFunctionSimplified(
+  static CSSMathExpressionNode* CreateTrigonometricFunction(
       Operands&& operands,
       CSSValueID function_id);
 
