@@ -60,7 +60,8 @@
 
 - (void)scrollViewDidScroll:(UIScrollView*)scrollView {
   CGFloat headerHeight = [self header].bounds.size.height;
-  BOOL headerHidden = headerHeight < scrollView.contentOffset.y;
+  BOOL headerHidden =
+      headerHeight < scrollView.contentOffset.y + scrollView.contentInset.top;
   [self.viewDelegate gridViewHeaderHidden:headerHidden];
   [super scrollViewDidScroll:scrollView];
 }

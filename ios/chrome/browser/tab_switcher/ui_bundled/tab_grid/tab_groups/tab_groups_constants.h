@@ -19,6 +19,7 @@ extern NSString* const kTabGroupViewIdentifier;
 extern NSString* const kTabGroupViewTitleIdentifier;
 extern NSString* const kTabGroupNewTabButtonIdentifier;
 extern NSString* const kTabGroupOverflowMenuButtonIdentifier;
+extern NSString* const kTabGroupCloseButtonIdentifier;
 extern NSString* const kTabGroupFacePileButtonIdentifier;
 
 // Accessibility identifiers for the Recent Activity view.

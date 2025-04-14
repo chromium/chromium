@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
@@ -40,6 +41,11 @@ namespace {
 // Background.
 constexpr CGFloat kBackgroundAlpha = 0.6;
 
+// Top toolbar
+constexpr CGFloat kTopToolbarHeight = 44;
+constexpr CGFloat kTopStackViewSpacing = 10;
+constexpr CGFloat kTopToolbarMargin = 16;
+
 // Button.
 constexpr CGFloat kPlusImageSize = 20;
 
@@ -47,7 +53,7 @@ constexpr CGFloat kPlusImageSize = 20;
 constexpr CGFloat kTranslationCompletion = 0;
 constexpr CGFloat kOriginScale = 0.1;
 
-// Navigation bar.
+// Top title.
 constexpr CGFloat kDotSize = 12;
 constexpr CGFloat kSpace = 8;
 
@@ -70,6 +76,14 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 @implementation TabGroupViewController {
   // The embedded navigation bar.
   UINavigationBar* _navigationBar;
+  // The top toolbar.
+  UIView* _topToolbar;
+  // The background of the top toolbar.
+  UIView* _topToolbarBackground;
+  // The stack view containing the buttons of the top toolbar.
+  UIStackView* _topToolbarButtonsStackView;
+  // The the tab group menu button.
+  UIButton* _menuButton;
   // Tab Groups handler.
   __weak id<TabGroupsCommands> _handler;
   // Group's title.
@@ -206,6 +220,7 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 - (void)gridViewControllerDidScroll {
   [_bottomToolbar
       setScrollViewScrolledToEdge:self.gridViewController.scrolledToBottom];
+  _topToolbarBackground.hidden = self.gridViewController.scrolledToTop;
 }
 
 #pragma mark - UIViewController
@@ -233,6 +248,7 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
     _container.backgroundColor =
         [UIColor.blackColor colorWithAlphaComponent:kContainerBackgroundAlpha];
     _container.layer.cornerRadius = kContainerCornerRadius;
+    _container.layer.masksToBounds = YES;
 
     [NSLayoutConstraint activateConstraints:@[
       [self.view.centerXAnchor
@@ -251,12 +267,29 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
     AddSameConstraints(self.view, _container);
   }
 
-  [self configureNavigationBar];
+  if (IsContainedTabGroupEnabled()) {
+    _topToolbar = [self configuredTopToolbar];
+    [_container addSubview:_topToolbar];
+
+    [NSLayoutConstraint activateConstraints:@[
+      [_topToolbar.topAnchor constraintEqualToAnchor:_container.topAnchor],
+      [_topToolbar.leadingAnchor
+          constraintEqualToAnchor:_container.leadingAnchor],
+      [_topToolbar.trailingAnchor
+          constraintEqualToAnchor:_container.trailingAnchor],
+    ]];
+  } else {
+    [self configureNavigationBar];
+  }
 
   UIView* gridView = _gridViewController.view;
   gridView.translatesAutoresizingMaskIntoConstraints = NO;
   [self addChildViewController:_gridViewController];
-  [_container insertSubview:gridView belowSubview:_navigationBar];
+  if (IsContainedTabGroupEnabled()) {
+    [_container insertSubview:gridView belowSubview:_topToolbar];
+  } else {
+    [_container insertSubview:gridView belowSubview:_navigationBar];
+  }
 
   [self updateGridInsets];
 
@@ -351,7 +384,11 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 
 - (void)setShareAvailable:(BOOL)shareAvailable {
   _shareAvailable = shareAvailable;
-  [self configureNavigationBarItems];
+  if (IsContainedTabGroupEnabled()) {
+    _menuButton.menu = [self configuredTabGroupMenu];
+  } else {
+    [self configureNavigationBarItems];
+  }
 }
 
 - (void)setSharingState:(SharingState)state {
@@ -360,7 +397,11 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   }
   _sharingState = state;
   _gridViewController.shared = _sharingState != SharingState::kNotShared;
-  [self configureNavigationBarItems];
+  if (IsContainedTabGroupEnabled()) {
+    _menuButton.menu = [self configuredTabGroupMenu];
+  } else {
+    [self configureNavigationBarItems];
+  }
 }
 
 - (void)setFacePileView:(UIView*)facePileView {
@@ -374,12 +415,17 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 
   _facePileView = facePileView;
 
-  if (_facePileView) {
-    _facePileView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:_facePileView];
+  if (!_facePileView) {
+    return;
   }
 
-  [self configureNavigationBarItems];
+  if (IsContainedTabGroupEnabled()) {
+    [_topToolbarButtonsStackView insertArrangedSubview:_facePileView atIndex:0];
+  } else {
+    _facePileView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:_facePileView];
+    [self configureNavigationBarItems];
+  }
 }
 
 - (void)setActivitySummaryCellText:(NSString*)text {
@@ -395,6 +441,12 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   [self openNewTab];
 }
 
+// The close button has been tapped.
+- (void)didTapCloseButton {
+  _backButtonTapped = YES;
+  [_handler hideTabGroup];
+}
+
 // The facePile button has been tapped.
 - (void)didTapFacePileButton {
   [self.presentationHandler showShareKitFlow];
@@ -402,27 +454,130 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 
 // Returns the navigation item which contain the back button.
 - (UINavigationItem*)configuredBackButton {
+  CHECK(!IsContainedTabGroupEnabled());
   UINavigationItem* back = [[UINavigationItem alloc] init];
   back.title = @"";
   return back;
 }
 
+// Returns the menu button, configured.
+- (UIButton*)configuredMenuButton {
+  UIImage* threeDotImage =
+      DefaultSymbolWithPointSize(kMenuSymbol, kPlusImageSize);
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  configuration.image = threeDotImage;
+
+  UIButton* button = [UIButton buttonWithConfiguration:configuration
+                                         primaryAction:nil];
+  button.showsMenuAsPrimaryAction = YES;
+  button.menu = [self configuredTabGroupMenu];
+  button.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
+  button.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
+
+  return button;
+}
+
+// Returns the stack view containing the top toolbar buttons.
+- (UIStackView*)configuredTopToolbarStackView {
+  CHECK(IsContainedTabGroupEnabled());
+  UIStackView* stackView = [[UIStackView alloc] init];
+  stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  stackView.alignment = UIStackViewAlignmentCenter;
+  stackView.distribution = UIStackViewDistributionFill;
+  stackView.spacing = kTopStackViewSpacing;
+
+  if (_facePileView) {
+    [stackView addArrangedSubview:_facePileView];
+  }
+
+  _menuButton = [self configuredMenuButton];
+  [stackView addArrangedSubview:_menuButton];
+
+  __weak __typeof(self) weakSelf = self;
+  UIAction* closeAction = [UIAction actionWithHandler:^(UIAction* action) {
+    [weakSelf didTapCloseButton];
+  }];
+  UIButtonConfiguration* closeConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  closeConfiguration.image =
+      DefaultSymbolWithPointSize(kXMarkSymbol, kPlusImageSize);
+  UIButton* closeButton = [UIButton buttonWithConfiguration:closeConfiguration
+                                              primaryAction:closeAction];
+  [stackView addArrangedSubview:closeButton];
+
+  return stackView;
+}
+
+// Returns the top toolbar with all its content.
+- (UIView*)configuredTopToolbar {
+  CHECK(IsContainedTabGroupEnabled());
+  _topToolbarBackground = [[UIVisualEffectView alloc]
+      initWithEffect:
+          [UIBlurEffect
+              effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialDark]];
+  _topToolbarBackground.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UIView* topToolbar = [[UIView alloc] init];
+  topToolbar.translatesAutoresizingMaskIntoConstraints = NO;
+  [topToolbar addSubview:_topToolbarBackground];
+
+  [topToolbar.heightAnchor constraintEqualToConstant:kTopToolbarHeight].active =
+      YES;
+  AddSameConstraints(topToolbar, _topToolbarBackground);
+
+  _titleView = [self configuredTitleView];
+
+  _topToolbarButtonsStackView = [self configuredTopToolbarStackView];
+
+  [topToolbar addSubview:_titleView];
+  [topToolbar addSubview:_topToolbarButtonsStackView];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [_titleView.leadingAnchor constraintEqualToAnchor:topToolbar.leadingAnchor
+                                             constant:kTopToolbarMargin],
+    [_titleView.centerYAnchor constraintEqualToAnchor:topToolbar.centerYAnchor],
+    [_titleView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:topToolbar.topAnchor],
+    [_titleView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:topToolbar.bottomAnchor],
+
+    [_topToolbarButtonsStackView.leadingAnchor
+        constraintGreaterThanOrEqualToAnchor:_titleView.trailingAnchor
+                                    constant:kTopToolbarMargin],
+
+    [_topToolbarButtonsStackView.trailingAnchor
+        constraintEqualToAnchor:topToolbar.trailingAnchor
+                       constant:-kTopToolbarMargin],
+    [_topToolbarButtonsStackView.centerYAnchor
+        constraintEqualToAnchor:topToolbar.centerYAnchor],
+    [_topToolbarButtonsStackView.topAnchor
+        constraintGreaterThanOrEqualToAnchor:topToolbar.topAnchor],
+    [_topToolbarButtonsStackView.bottomAnchor
+        constraintLessThanOrEqualToAnchor:topToolbar.bottomAnchor],
+
+  ]];
+
+  return topToolbar;
+}
+
 // Returns the navigation item which contain the plus button and the overflow
 // menu.
 - (UINavigationItem*)configuredRightNavigationItems {
+  CHECK(!IsContainedTabGroupEnabled());
   UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
 
   UIImage* threeDotImage =
       DefaultSymbolWithPointSize(kMenuSymbol, kPlusImageSize);
-  UIBarButtonItem* dotsItem =
+  UIBarButtonItem* menuItem =
       [[UIBarButtonItem alloc] initWithImage:threeDotImage
                                         menu:[self configuredTabGroupMenu]];
-  dotsItem.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
-  dotsItem.accessibilityLabel = l10n_util::GetNSString(
+  menuItem.accessibilityIdentifier = kTabGroupOverflowMenuButtonIdentifier;
+  menuItem.accessibilityLabel = l10n_util::GetNSString(
       IDS_IOS_TAB_GROUP_THREE_DOT_MENU_BUTTON_ACCESSIBILITY_LABEL);
 
   UIBarButtonItem* facePileBarButton;
-
   if (_facePileView) {
     _facePileView.userInteractionEnabled = NO;
 
@@ -450,11 +605,12 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
   }
 
   if (IsTabGroupIndicatorEnabled() && HasTabGroupIndicatorButtonsUpdated()) {
+    NSMutableArray* buttons = [NSMutableArray array];
+    [buttons addObject:menuItem];
     if (facePileBarButton) {
-      navigationItem.rightBarButtonItems = @[ dotsItem, facePileBarButton ];
-    } else {
-      navigationItem.rightBarButtonItems = @[ dotsItem ];
+      [buttons addObject:facePileBarButton];
     }
+    navigationItem.rightBarButtonItems = buttons;
   } else {
     UIImage* plusImage =
         DefaultSymbolWithPointSize(kPlusSymbol, kPlusImageSize);
@@ -467,16 +623,23 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
     plusItem.accessibilityLabel =
         l10n_util::GetNSString(IDS_IOS_TAB_GRID_CREATE_NEW_TAB);
 
-    navigationItem.rightBarButtonItems = @[ dotsItem, plusItem ];
+    navigationItem.rightBarButtonItems = @[ menuItem, plusItem ];
   }
   return navigationItem;
 }
 
-// Returns the navigation item which contain the group title, color and the
-// right navigation items.
-- (UINavigationItem*)configuredGroupItem {
-  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
+// Returns the colorful dot for the title, configured.
+- (UIView*)configuredTitleDot {
+  UIView* dotView = [[UIView alloc] initWithFrame:CGRectZero];
+  dotView.translatesAutoresizingMaskIntoConstraints = NO;
+  dotView.layer.cornerRadius = kDotSize / 2;
+  dotView.backgroundColor = _groupColor;
 
+  return dotView;
+}
+
+// Returns the title label, configured.
+- (UILabel*)configuredTitleLabel {
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.textColor = UIColor.whiteColor;
   titleLabel.numberOfLines = 1;
@@ -494,35 +657,58 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
                     range:NSMakeRange(0, _groupTitle.length)];
   titleLabel.attributedText = boldTitle;
 
-  UIView* dotView = [[UIView alloc] initWithFrame:CGRectZero];
-  dotView.translatesAutoresizingMaskIntoConstraints = NO;
-  dotView.layer.cornerRadius = kDotSize / 2;
-  dotView.backgroundColor = _groupColor;
+  return titleLabel;
+}
+
+// Returns the configured title view.
+- (UIView*)configuredTitleView {
+  _coloredDotView = [self configuredTitleDot];
+  _titleLabel = [self configuredTitleLabel];
 
   UIView* titleView = [[UIView alloc] init];
   titleView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [titleView addSubview:dotView];
-  [titleView addSubview:titleLabel];
+  [titleView addSubview:_coloredDotView];
+  [titleView addSubview:_titleLabel];
 
   [NSLayoutConstraint activateConstraints:@[
-    [titleLabel.leadingAnchor constraintEqualToAnchor:dotView.trailingAnchor
-                                             constant:kSpace],
-    [dotView.centerYAnchor constraintEqualToAnchor:titleView.centerYAnchor],
-    [dotView.leadingAnchor constraintEqualToAnchor:titleView.leadingAnchor
-                                          constant:-kDotSize - kSpace],
-    [titleLabel.trailingAnchor
+    [_titleLabel.leadingAnchor
+        constraintEqualToAnchor:_coloredDotView.trailingAnchor
+                       constant:kSpace],
+    [_coloredDotView.centerYAnchor
+        constraintEqualToAnchor:titleView.centerYAnchor],
+    [_titleLabel.trailingAnchor
         constraintEqualToAnchor:titleView.trailingAnchor],
-    [titleLabel.topAnchor constraintEqualToAnchor:titleView.topAnchor],
-    [titleLabel.bottomAnchor constraintEqualToAnchor:titleView.bottomAnchor],
-    [dotView.heightAnchor constraintEqualToConstant:kDotSize],
-    [dotView.widthAnchor constraintEqualToConstant:kDotSize],
+    [_titleLabel.topAnchor constraintEqualToAnchor:titleView.topAnchor],
+    [_titleLabel.bottomAnchor constraintEqualToAnchor:titleView.bottomAnchor],
+    [_coloredDotView.heightAnchor constraintEqualToConstant:kDotSize],
+    [_coloredDotView.widthAnchor constraintEqualToConstant:kDotSize],
   ]];
 
-  _titleView = titleView;
-  _titleLabel = titleLabel;
-  _coloredDotView = dotView;
-  navigationItem.titleView = titleView;
+  if (IsContainedTabGroupEnabled()) {
+    [_coloredDotView.leadingAnchor
+        constraintEqualToAnchor:titleView.leadingAnchor
+                       constant:kSpace]
+        .active = YES;
+  } else {
+    [_coloredDotView.leadingAnchor
+        constraintEqualToAnchor:titleView.leadingAnchor
+                       constant:-kDotSize - kSpace]
+        .active = YES;
+  }
+
+  return titleView;
+}
+
+// Returns the navigation item which contain the group title, color and the
+// right navigation items.
+- (UINavigationItem*)configuredGroupItem {
+  CHECK(!IsContainedTabGroupEnabled());
+  UINavigationItem* navigationItem = [[UINavigationItem alloc] init];
+
+  _titleView = [self configuredTitleView];
+
+  navigationItem.titleView = _titleView;
   navigationItem.titleView.hidden = YES;
   navigationItem.rightBarButtonItems =
       [self configuredRightNavigationItems].rightBarButtonItems;
@@ -531,6 +717,7 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 
 // Configures the navigation bar.
 - (void)configureNavigationBar {
+  CHECK(!IsContainedTabGroupEnabled());
   _navigationBar = [[UINavigationBar alloc] init];
   _navigationBar.translatesAutoresizingMaskIntoConstraints = NO;
   [self configureNavigationBarItems];
@@ -557,6 +744,7 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 
 // Configures the navigation bar items.
 - (void)configureNavigationBarItems {
+  CHECK(!IsContainedTabGroupEnabled());
   if (!_navigationBar) {
     return;
   }
@@ -789,9 +977,8 @@ constexpr CGFloat kContainerBackgroundAlpha = 0.8;
 // bottom toolbar, except the top one as the grid is below a toolbar.
 - (void)updateGridInsets {
   if (IsContainedTabGroupEnabled()) {
-    _gridViewController.contentInsets =
-        UIEdgeInsetsMake(_navigationBar.intrinsicContentSize.height, 0,
-                         _bottomToolbar.intrinsicContentSize.height, 0);
+    _gridViewController.contentInsets = UIEdgeInsetsMake(
+        kTopToolbarHeight, 0, _bottomToolbar.intrinsicContentSize.height, 0);
     return;
   }
   CGFloat bottomToolbarInset = 0;

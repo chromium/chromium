@@ -21,6 +21,8 @@ NSString* const kTabGroupNewTabButtonIdentifier =
     @"kTabGroupNewTabButtonIdentifier";
 NSString* const kTabGroupOverflowMenuButtonIdentifier =
     @"kTabGroupOverflowMenuButtonIdentifier";
+NSString* const kTabGroupCloseButtonIdentifier =
+    @"kTabGroupCloseButtonIdentifier";
 NSString* const kTabGroupFacePileButtonIdentifier =
     @"kTabGroupFacePileButtonIdentifier";
 
