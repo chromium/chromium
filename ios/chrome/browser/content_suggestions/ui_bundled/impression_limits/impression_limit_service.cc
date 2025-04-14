@@ -25,11 +25,18 @@
 
 namespace {
 
-GURL GetUrlKey(GURL url) {
+const size_t kMaxEntriesPerPreference = 10;
+const size_t kMaxUrlLength = 1024;
+
+std::string GetUrlKey(GURL url) {
   GURL::Replacements replacements;
   replacements.ClearRef();
   replacements.ClearQuery();
-  return url.ReplaceComponents(replacements);
+  std::string shortened = url.ReplaceComponents(replacements).spec();
+  if (shortened.length() > kMaxUrlLength) {
+    shortened = shortened.substr(0, kMaxUrlLength);
+  }
+  return shortened;
 }
 
 }  // namespace
@@ -79,7 +86,7 @@ void ImpressionLimitService::OnHistoryDeletions(
   } else {
     std::set<std::string> urls_to_remove;
     for (const history::URLRow& row : deletion_info.deleted_rows()) {
-      urls_to_remove.insert(GetUrlKey(row.url()).spec());
+      urls_to_remove.insert(GetUrlKey(row.url()));
     }
     RemoveEntriesForURls(urls_to_remove);
   }
@@ -95,7 +102,7 @@ void ImpressionLimitService::BookmarkNodeRemoved(
     const base::Location& location) {
   std::set<std::string> urls_to_remove;
   for (const GURL& url : no_longer_bookmarked) {
-    urls_to_remove.insert(GetUrlKey(url).spec());
+    urls_to_remove.insert(GetUrlKey(url));
   }
   RemoveEntriesForURls(urls_to_remove);
 }
@@ -123,7 +130,7 @@ void ImpressionLimitService::OnUnsubscribe(
   // Note not associating bookmarks w/ cluster id.
   for (auto* node :
        commerce::GetBookmarksWithClusterId(bookmark_model_, cluster_id)) {
-    urls_to_remove.insert(GetUrlKey(node->url()).spec());
+    urls_to_remove.insert(GetUrlKey(node->url()));
   }
   RemoveEntriesForURls(urls_to_remove);
 }
@@ -148,7 +155,7 @@ std::optional<int> ImpressionLimitService::GetImpressionCount(
   const base::Value::Dict& impressions = pref_service_->GetDict(pref_name);
 
   const base::Value::List* impressions_data =
-      impressions.FindList(GetUrlKey(url).spec());
+      impressions.FindList(GetUrlKey(url));
 
   base::Value::List impressions_data_update;
   if (impressions_data) {
@@ -164,7 +171,7 @@ void ImpressionLimitService::LogCardEngagement(
     NOTREACHED() << pref_name
                  << " must be registered with ImpressionLimitService";
   }
-  std::string url_key = GetUrlKey(url).spec();
+  std::string url_key = GetUrlKey(url);
   base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
 
   const base::Value::List* impressions_data = impressions.FindList(url_key);
@@ -186,6 +193,7 @@ void ImpressionLimitService::LogCardEngagement(
 
   impressions.Set(url_key, std::move(impressions_data_update));
   pref_service_->SetDict(pref_name, std::move(impressions));
+  RemoveOldestEntryIfSizeExceedsMaximum(pref_name);
 }
 
 bool ImpressionLimitService::HasBeenEngagedWith(
@@ -195,7 +203,7 @@ bool ImpressionLimitService::HasBeenEngagedWith(
     NOTREACHED() << pref_name
                  << " must be registered with ImpressionLimitService";
   }
-  std::string url_key = GetUrlKey(url).spec();
+  std::string url_key = GetUrlKey(url);
   const base::Value::Dict& impressions = pref_service_->GetDict(pref_name);
 
   const base::Value::List* impressions_data = impressions.FindList(url_key);
@@ -214,7 +222,7 @@ void ImpressionLimitService::LogImpressionForURLAtTime(
     const GURL& url,
     const std::string_view& pref_name,
     base::Time impression_time) {
-  std::string url_key = GetUrlKey(url).spec();
+  std::string url_key = GetUrlKey(url);
   base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
 
   const base::Value::List* impressions_data = impressions.FindList(url_key);
@@ -237,6 +245,7 @@ void ImpressionLimitService::LogImpressionForURLAtTime(
   }
   impressions.Set(url_key, std::move(impressions_data_update));
   pref_service_->SetDict(pref_name, std::move(impressions));
+  RemoveOldestEntryIfSizeExceedsMaximum(pref_name);
 }
 
 void ImpressionLimitService::RemoveEntriesBeforeTime(
@@ -267,6 +276,29 @@ void ImpressionLimitService::RemoveEntriesForURls(
     for (const auto& url : urls_to_remove) {
       impressions.Remove(url);
     }
+    pref_service_->SetDict(pref_name, std::move(impressions));
+  }
+}
+
+void ImpressionLimitService::RemoveOldestEntryIfSizeExceedsMaximum(
+    const std::string_view& pref_name) {
+  if (pref_service_->GetDict(pref_name).size() <= kMaxEntriesPerPreference) {
+    return;
+  }
+  base::Value::Dict impressions = pref_service_->GetDict(pref_name).Clone();
+  // Find URL for earliest entry
+  std::optional<std::pair<std::string, base::Time>> smallest = std::nullopt;
+  for (const auto impression : impressions) {
+    const base::Value::List& impressions_data = impression.second.GetList();
+    base::Time impression_time = base::ValueToTime(impressions_data[1]).value();
+
+    if (!smallest.has_value() || impression_time < smallest.value().second) {
+      smallest = {impression.first, impression_time};
+    }
+  }
+  // Remove earliest entry.
+  if (smallest.has_value()) {
+    impressions.Remove(smallest->first);
     pref_service_->SetDict(pref_name, std::move(impressions));
   }
 }

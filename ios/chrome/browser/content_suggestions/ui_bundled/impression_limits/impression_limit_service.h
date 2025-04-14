@@ -97,6 +97,10 @@ class ImpressionLimitService : public bookmarks::BaseBookmarkModelObserver,
 
   void RemoveEntriesForURls(std::set<std::string> urls_to_remove);
 
+  // Limit entries in any one preference to 10 at a time, Remove the oldest time
+  // if we exceed the maximum.
+  void RemoveOldestEntryIfSizeExceedsMaximum(const std::string_view& pref_name);
+
   const std::set<std::string_view> GetAllowListedPrefs();
 
   raw_ptr<PrefService> pref_service_;

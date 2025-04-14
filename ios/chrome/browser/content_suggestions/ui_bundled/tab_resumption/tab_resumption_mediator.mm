@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_constants.h"
@@ -92,7 +93,6 @@ bool ShouldShowItemImmediately() {
 
 // Salient images should come from gstatic.com.
 const char kGStatic[] = ".gstatic.com";
-const int kMaxImpressionLimit = 3;
 
 NSString* GetFormattedPrice(payments::CurrencyFormatter* formatter,
                             long price_micros) {
@@ -205,6 +205,12 @@ void ConfigureTabResumptionItemForShopCard(
 
 bool IsShopCardImpressionLimitsEnabled() {
   return base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits);
+}
+
+int GetImpressionLimit() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      commerce::kShopCard, commerce::kShopCardMaxImpressions,
+      kShopCardMaxImpressions);
 }
 
 }  // namespace
@@ -593,7 +599,7 @@ class TabResumptionMediatorProxy {
       std::optional<int> count = _impressionLimitService->GetImpressionCount(
           resumptionURL,
           tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
-      if (count.has_value() && count.value() > kMaxImpressionLimit) {
+      if (count.has_value() && count.value() >= GetImpressionLimit()) {
         return;
       }
     }
