@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/content_verifier/content_verifier.h"
+
 #include <memory>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/test/icu_test_util.h"
 #include "base/values.h"
-#include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_utils.h"
-#include "extensions/browser/content_verifier/content_verifier.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_registry.h"
@@ -170,6 +170,35 @@ class ContentVerifierTest : public ExtensionsTest {
 
   BackgroundManifestType GetBackgroundManifestType() {
     return background_manifest_type_;
+  }
+
+  void TestPathsForCaseInsensitiveHandling(std::string_view lower,
+                                           std::string_view upper) {
+    const auto lower_path = base::FilePath::FromUTF8Unsafe(lower);
+    const auto upper_path = base::FilePath::FromUTF8Unsafe(upper);
+    UpdateBrowserImagePaths({});
+
+    // The path would be treated as unclassified resource, so it gets verified.
+    EXPECT_TRUE(ShouldVerifySinglePath(lower_path))
+        << "for lower_path " << lower_path;
+    EXPECT_TRUE(ShouldVerifySinglePath(upper_path))
+        << "for upper_path " << upper_path;
+
+    // If the path is specified as browser image, it doesn't get verified.
+    UpdateBrowserImagePaths({lower_path});
+    EXPECT_FALSE(ShouldVerifySinglePath(lower_path))
+        << "for lower_path " << lower_path;
+    EXPECT_FALSE(ShouldVerifySinglePath(upper_path))
+        << "for upper_path " << upper_path;
+
+    // The case of the image path shouldn't matter.
+    UpdateBrowserImagePaths({upper_path});
+    EXPECT_FALSE(ShouldVerifySinglePath(lower_path))
+        << "for lower_path " << lower_path;
+    EXPECT_FALSE(ShouldVerifySinglePath(upper_path))
+        << "for upper_path " << upper_path;
+
+    UpdateBrowserImagePaths({});
   }
 
  protected:
@@ -369,29 +398,29 @@ TEST_F(ContentVerifierTest, CaseInsensitivePaths) {
   };
 
   for (const auto& [lower, upper] : lower_upper) {
-    const auto lower_path = base::FilePath::FromUTF8Unsafe(lower);
-    const auto upper_path = base::FilePath::FromUTF8Unsafe(upper);
-    UpdateBrowserImagePaths({});
+    TestPathsForCaseInsensitiveHandling(lower, upper);
+  }
+}
 
-    // |path| would be treated as unclassified resource, so it gets verified.
-    EXPECT_TRUE(ShouldVerifySinglePath(lower_path))
-        << "for lower_path " << lower_path;
-    EXPECT_TRUE(ShouldVerifySinglePath(upper_path))
-        << "for upper_path " << upper_path;
+TEST_F(ContentVerifierTest, CaseInsensitivePathsLocaleIndependent) {
+  if (content_verifier_utils::IsFileAccessCaseSensitive()) {
+    return;
+  }
 
-    // If |path| is specified as browser image, it doesn't get verified.
-    UpdateBrowserImagePaths({lower_path});
-    EXPECT_FALSE(ShouldVerifySinglePath(lower_path))
-        << "for lower_path " << lower_path;
-    EXPECT_FALSE(ShouldVerifySinglePath(upper_path))
-        << "for upper_path " << upper_path;
+  std::vector<std::pair<std::string, std::string>> lower_upper = {
+      // Locale-depended Turkish conversion may normalize these file names
+      // differently, which would be undesirable.
+      {"icon.png", "Icon.png"},
+  };
 
-    // The case of the image path shouldn't matter.
-    UpdateBrowserImagePaths({upper_path});
-    EXPECT_FALSE(ShouldVerifySinglePath(lower_path))
-        << "for lower_path " << lower_path;
-    EXPECT_FALSE(ShouldVerifySinglePath(upper_path))
-        << "for upper_path " << upper_path;
+  std::vector<std::string> locales = {"en_US", "tr"};
+
+  for (const auto& locale : locales) {
+    base::test::ScopedRestoreICUDefaultLocale restore_locale(locale);
+
+    for (const auto& [lower, upper] : lower_upper) {
+      TestPathsForCaseInsensitiveHandling(lower, upper);
+    }
   }
 }
 
