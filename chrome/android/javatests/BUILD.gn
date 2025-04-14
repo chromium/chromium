@@ -570,8 +570,8 @@ android_library("chrome_test_java_org.chromium.chrome.browser.bookmarks") {
   resources_package = "org.chromium.chrome.test"
 
   sources = [
-    "//chrome/android/junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",
-    "//chrome/android/junit/src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
+    "//chrome/browser/bookmarks/android/junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",
+    "//chrome/browser/bookmarks/android/junit/src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
     "src/org/chromium/chrome/browser/bookmarks/AccountBookmarkTest.java",
     "src/org/chromium/chrome/browser/bookmarks/BookmarkBridgeTest.java",
     "src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerRenderTest.java",

@@ -567,7 +567,6 @@ public class BookmarkManagerMediatorTest {
         BookmarkModelListTestUtil.verifyModelListHasBookmarkIds(mModelList, expectedBookmarkIds);
     }
 
-
     @Test
     public void initAndLoadBookmarkModel() {
         finishLoading();

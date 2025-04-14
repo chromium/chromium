@@ -36,8 +36,8 @@ if (is_android) {
   # Contain all source code that is used by tests in a different package.
   robolectric_library("chrome_junit_tests_helper") {
     sources = [
+      "//chrome/browser/bookmarks/android/junit/src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",
       "src/org/chromium/chrome/browser/ChromeRobolectricTestRunner.java",
-      "src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModel.java",
       "src/org/chromium/chrome/browser/compositor/overlays/strip/TestTabModel.java",
       "src/org/chromium/chrome/browser/multiwindow/MultiWindowTestUtils.java",
     ]
@@ -481,49 +481,6 @@ if (is_android) {
     ]
 
     deps = [ ":chrome_junit_tests_helper" ]
-  }
-
-  robolectric_library(
-      "chrome_junit_tests_org.chromium.chrome.browser.bookmarks") {
-    sources = [
-      "src/org/chromium/chrome/browser/bookmarks/AddToBookmarksToolbarButtonControllerUnitTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BasicBookmarkQueryHandlerUnitTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkAddNewFolderCoordinatorTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkFolderPickerMediatorUnitTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkImageFetcherTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkManagerCoordinatorTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkManagerMediatorTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkManagerOpenerTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkManagerViewBinderTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkModelListTestUtil.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkPaneUnitTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkSaveFlowMediatorUnitTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkTextInputLayoutTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkToolbarMediatorTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkUiPrefsUnitTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkUiStateTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/BookmarkUtilsTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/FakeBookmarkModelTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkQueryHandlerTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowCoordinatorTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/ImprovedBookmarkRowTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/PendingRunnableTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/ReadingListSectionHeaderTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/ScopedBookmarkModelObservationTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/SharedBookmarkModelMocks.java",
-      "src/org/chromium/chrome/browser/bookmarks/ShoppingAccessoryCoordinatorTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarCoordinatorTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsLayoutManagerTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarItemsProviderTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarSettingProviderTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarUtilsTest.java",
-      "src/org/chromium/chrome/browser/bookmarks/bar/BookmarkBarVisibilityProviderTest.java",
-    ]
-
-    deps = [
-      ":chrome_junit_tests_helper",
-      "//third_party/androidx:androidx_recyclerview_recyclerview_java",
-    ]
   }
 
   robolectric_library(
