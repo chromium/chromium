@@ -730,9 +730,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // specific to one direction.
   std::optional<mojom::TrustTokenOperationStatus> trust_token_status_;
 
-  // Whether the caller has opted into using the Storage Access API (via JS).
-  const net::StorageAccessApiStatus storage_access_api_status_;
-
   // This is used to determine whether it is allowed to use a dictionary when
   // there is a matching shared dictionary for the request.
   std::unique_ptr<SharedDictionaryAccessChecker> shared_dictionary_checker_;

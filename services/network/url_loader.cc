@@ -402,7 +402,6 @@ URLLoader::URLLoader(
                                           GetClientSecurityState(),
                                           options_),
       trust_token_helper_factory_(std::move(trust_token_helper_factory)),
-      storage_access_api_status_(request.storage_access_api_status),
       shared_dictionary_checker_(std::move(shared_dictionary_checker)),
       origin_access_list_(context.GetOriginAccessList()),
       cookie_observer_(std::move(cookie_observer)),
