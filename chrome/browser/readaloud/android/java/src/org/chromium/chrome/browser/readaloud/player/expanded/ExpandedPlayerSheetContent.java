@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.PlayerProperties;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
+import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackMode;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -162,6 +163,14 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
 
     public void hide() {
         mBottomSheetController.hideContent(this, /* animate= */ true);
+    }
+
+    void setPlaybackMode(PlaybackMode playbackMode) {
+      // TODO(crbug.com/401256755): Implement with actual logic.
+    }
+
+    void setPlaybackModeSelectionEnabled(boolean enabled) {
+      // TODO(crbug.com/401256755): Implement with actual logic.
     }
 
     void setTitle(String title) {
