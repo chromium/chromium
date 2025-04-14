@@ -161,6 +161,8 @@ static_library("test_support") {
   sources = [
     "core/command_storage_manager_test_helper.cc",
     "core/command_storage_manager_test_helper.h",
+    "core/mock_tab_restore_service.cc",
+    "core/mock_tab_restore_service.h",
     "core/serialized_navigation_entry_test_helper.cc",
     "core/serialized_navigation_entry_test_helper.h",
   ]

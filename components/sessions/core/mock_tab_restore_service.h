@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_COMMERCE_CORE_MOCK_TAB_RESTORE_SERVICE_H_
-#define COMPONENTS_COMMERCE_CORE_MOCK_TAB_RESTORE_SERVICE_H_
+#ifndef COMPONENTS_SESSIONS_CORE_MOCK_TAB_RESTORE_SERVICE_H_
+#define COMPONENTS_SESSIONS_CORE_MOCK_TAB_RESTORE_SERVICE_H_
 
 #include <vector>
 
@@ -100,4 +100,4 @@ class MockTabRestoreService : public sessions::TabRestoreService {
   MOCK_METHOD(bool, IsRestoring, (), (const, override));
 };
 
-#endif  // COMPONENTS_COMMERCE_CORE_MOCK_TAB_RESTORE_SERVICE_H_
+#endif  // COMPONENTS_SESSIONS_CORE_MOCK_TAB_RESTORE_SERVICE_H_
