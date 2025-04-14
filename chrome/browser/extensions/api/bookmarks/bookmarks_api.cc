@@ -151,7 +151,7 @@ void BookmarkEventRouter::BookmarkNodeRemoved(
   remove_info.parent_id = base::NumberToString(parent->id());
 
   // TODO(crbug.com/395071423): Calculate the API index correctly (account for
-  // visibility of subling nodes). This is not trivial, because a single
+  // visibility of sibling nodes). This is not trivial, because a single
   // operation may trigger an update of the visibility of multiple permanent
   // nodes (and this code therefore can't know what the visibility that was
   // last reported on the API was).
