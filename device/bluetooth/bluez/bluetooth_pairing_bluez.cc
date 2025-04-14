@@ -32,21 +32,7 @@ BluetoothPairingBlueZ::BluetoothPairingBlueZ(
 BluetoothPairingBlueZ::~BluetoothPairingBlueZ() {
   DVLOG(1) << "Destroying BluetoothPairingBlueZ for " << device_->GetAddress();
 
-  if (!pincode_callback_.is_null()) {
-    std::move(pincode_callback_)
-        .Run(bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED, "");
-  }
-
-  if (!passkey_callback_.is_null()) {
-    std::move(passkey_callback_)
-        .Run(bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED, 0);
-  }
-
-  if (!confirmation_callback_.is_null()) {
-    std::move(confirmation_callback_)
-        .Run(bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED);
-  }
-
+  ResetCallbacks();
   pairing_delegate_ = nullptr;
 }
 
@@ -184,9 +170,20 @@ BluetoothDevice::PairingDelegate* BluetoothPairingBlueZ::GetPairingDelegate()
 }
 
 void BluetoothPairingBlueZ::ResetCallbacks() {
-  pincode_callback_.Reset();
-  passkey_callback_.Reset();
-  confirmation_callback_.Reset();
+  if (!pincode_callback_.is_null()) {
+    std::move(pincode_callback_)
+        .Run(bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED, "");
+  }
+
+  if (!passkey_callback_.is_null()) {
+    std::move(passkey_callback_)
+        .Run(bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED, 0);
+  }
+
+  if (!confirmation_callback_.is_null()) {
+    std::move(confirmation_callback_)
+        .Run(bluez::BluetoothAgentServiceProvider::Delegate::CANCELLED);
+  }
 }
 
 bool BluetoothPairingBlueZ::RunPairingCallbacks(
