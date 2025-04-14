@@ -527,11 +527,6 @@ BASE_FEATURE(kAutofillUseNLAddressModel,
              "AutofillUseNLAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables using a custom address model for Poland, overriding the legacy one.
-BASE_FEATURE(kAutofillUsePLAddressModel,
-             "AutofillUsePLAddressModel",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, the form field parser won't try to match other attributes if
 // any of the negative patterns matched.
 BASE_FEATURE(kAutofillUseNegativePatternForAllAttributes,

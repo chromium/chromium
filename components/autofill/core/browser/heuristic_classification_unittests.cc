@@ -634,7 +634,6 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       features::kAutofillUseFRAddressModel,
       features::kAutofillUseITAddressModel,
       features::kAutofillUseNLAddressModel,
-      features::kAutofillUsePLAddressModel,
       features::kAutofillUseINAddressModel,
       features::kAutofillSupportPhoneticNameForJP,
       features::kAutofillEnableExpirationDateImprovements,

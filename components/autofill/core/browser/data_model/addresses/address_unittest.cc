@@ -34,7 +34,6 @@ class AddressTest : public testing::Test {
             features::kAutofillUseINAddressModel,
             features::kAutofillUseITAddressModel,
             features::kAutofillUseNLAddressModel,
-            features::kAutofillUsePLAddressModel,
         },
         {});
   }

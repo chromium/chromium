@@ -440,11 +440,6 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
     return false;
   }
 
-  if (country_code == AddressCountryCode("PL") &&
-      !base::FeatureList::IsEnabled(features::kAutofillUsePLAddressModel)) {
-    return false;
-  }
-
   return kAutofillModelRules.find(country_code.value()) !=
          kAutofillModelRules.end();
 }

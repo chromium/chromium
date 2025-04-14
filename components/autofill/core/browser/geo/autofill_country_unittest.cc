@@ -9,12 +9,10 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/country_data.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
@@ -245,7 +243,6 @@ TEST(AutofillCountryTest, VerifyAddressFormatExtensions) {
 // Test the address requirement method for Poland.
 TEST(AutofillCountryTest, PLAddressRequirements) {
   AutofillCountry country("PL", "pl_PL");
-  base::test::ScopedFeatureList enabled{features::kAutofillUsePLAddressModel};
 
   EXPECT_FALSE(country.requires_state());
   EXPECT_TRUE(

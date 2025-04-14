@@ -59,14 +59,13 @@ enum class RegexFeature : uint8_t {
   kUnusedDummyFeature = 0,
   kAutofillGreekRegexes = 1,
   kAutofillUseITAddressModel = 2,
-  kAutofillUsePLAddressModel = 3,
-  kAutofillUseFRAddressModel = 4,
-  kAutofillSupportPhoneticNameForJP = 5,
-  kAutofillUseNLAddressModel = 6,
-  kAutofillSupportLastNamePrefix = 7,
-  kAutofillEnableLoyaltyCardsFilling = 8,
-  kAutofillImproveCityFieldClassification = 9,
-  kAutofillDisallowSlashDotLabels = 10,
+  kAutofillUseFRAddressModel = 3,
+  kAutofillSupportPhoneticNameForJP = 4,
+  kAutofillUseNLAddressModel = 5,
+  kAutofillSupportLastNamePrefix = 6,
+  kAutofillEnableLoyaltyCardsFilling = 7,
+  kAutofillImproveCityFieldClassification = 8,
+  kAutofillDisallowSlashDotLabels = 9,
   kMaxValue = kAutofillDisallowSlashDotLabels
 };
 
