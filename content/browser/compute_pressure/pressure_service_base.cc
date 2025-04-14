@@ -57,6 +57,10 @@ PressureServiceBase::~PressureServiceBase() {
 // static
 // https://www.w3.org/TR/compute-pressure/#dfn-document-has-implicit-focus
 bool PressureServiceBase::HasImplicitFocus(RenderFrameHost* render_frame_host) {
+  if (!render_frame_host) {
+    return false;
+  }
+
   // 1. If document is not fully active, return false.
   if (!render_frame_host->IsActive()) {
     return false;
