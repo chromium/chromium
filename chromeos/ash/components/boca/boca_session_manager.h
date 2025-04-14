@@ -239,8 +239,7 @@ class BocaSessionManager
                            std::unique_ptr<::boca::Session> current_session,
                            bool dispatch_event);
   void UpdateLocalSessionDurationTracker();
-  void StartSendingStudentHeartbeatRequests(
-      base::TimeDelta student_heartbeat_interval);
+  void StartSendingStudentHeartbeatRequests();
   void StopSendingStudentHeartbeatRequests();
   void SendStudentHeartbeatRequest();
   void HandleCaptionNotification();
@@ -271,6 +270,8 @@ class BocaSessionManager
 
   // Timer used for student heartbeat.
   base::RepeatingTimer student_heartbeat_timer_;
+  // Timer used for student heartbeat exponential backoff.
+  base::OneShotTimer student_heartbeat_backoff_timer_;
 
   std::unique_ptr<::boca::Session> current_session_;
   std::unique_ptr<::boca::Session> previous_session_;

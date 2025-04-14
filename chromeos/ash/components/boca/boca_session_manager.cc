@@ -472,7 +472,7 @@ void BocaSessionManager::NotifySessionUpdate() {
   }
 
   if (IsSessionActive(current_session_.get())) {
-    StartSendingStudentHeartbeatRequests(student_heartbeat_interval_);
+    StartSendingStudentHeartbeatRequests();
   } else {
     StopSendingStudentHeartbeatRequests();
   }
@@ -666,19 +666,23 @@ void BocaSessionManager::HandleCaptionNotification() {
           .captions_enabled());
 }
 
-void BocaSessionManager::StartSendingStudentHeartbeatRequests(
-    base::TimeDelta student_heartbeat_interval) {
+void BocaSessionManager::StartSendingStudentHeartbeatRequests() {
   if (!features::IsBocaStudentHeartbeatEnabled() || is_producer_ ||
-      student_heartbeat_interval == base::Seconds(0)) {
+      student_heartbeat_interval_ == base::Seconds(0)) {
     return;
   }
-  student_heartbeat_timer_.Start(
-      FROM_HERE, student_heartbeat_interval, this,
-      &BocaSessionManager::SendStudentHeartbeatRequest);
+  if (!student_heartbeat_timer_.IsRunning() &&
+      !student_heartbeat_backoff_timer_.IsRunning()) {
+    student_heartbeat_timer_.Start(
+        FROM_HERE, student_heartbeat_interval_, this,
+        &BocaSessionManager::SendStudentHeartbeatRequest);
+  }
 }
 
 void BocaSessionManager::StopSendingStudentHeartbeatRequests() {
-  student_heartbeat_timer_.Stop();
+  if (student_heartbeat_timer_.IsRunning()) {
+    student_heartbeat_timer_.Stop();
+  }
 }
 
 void BocaSessionManager::SendStudentHeartbeatRequest() {
@@ -705,14 +709,17 @@ void BocaSessionManager::OnStudentHeartbeat(
     if ((result.error() >= 500 && result.error() < 600) ||
         result.error() == 429) {
       student_heartbeat_retry_backoff_.InformOfRequest(/*succeeded=*/false);
-      // Reset the timer to use the new backoff interval.
-      StartSendingStudentHeartbeatRequests(
-          student_heartbeat_retry_backoff_.GetTimeUntilRelease());
+      // Stop the repeating student heartbeat timer and start the backoff
+      // oneshot timer.
+      StopSendingStudentHeartbeatRequests();
+      student_heartbeat_backoff_timer_.Start(
+          FROM_HERE, student_heartbeat_retry_backoff_.GetTimeUntilRelease(),
+          this, &BocaSessionManager::SendStudentHeartbeatRequest);
     }
     return;
   }
   student_heartbeat_retry_backoff_.Reset();
-  StartSendingStudentHeartbeatRequests(student_heartbeat_interval_);
+  StartSendingStudentHeartbeatRequests();
 }
 
 void BocaSessionManager::UpdateNetworkRestriction(
