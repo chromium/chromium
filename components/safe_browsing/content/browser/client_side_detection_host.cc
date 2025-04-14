@@ -1055,7 +1055,9 @@ void ClientSideDetectionHost::MaybeSendClientPhishingRequest(
       "SBClientPhishing.LocalModelDetectsPhishing." + request_type_name,
       verdict->is_phishing());
 
-  bool force_request_from_rt_url_lookup = false;
+  bool force_request_from_rt_url_lookup =
+      verdict->client_side_detection_type() ==
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST;
 
   if (verdict->client_side_detection_type() ==
           ClientSideDetectionType::TRIGGER_MODELS &&
@@ -1383,15 +1385,49 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
 bool ClientSideDetectionHost::HasForceRequestFromRtUrlLookup() {
   raw_ptr<VerdictCacheManager> cache_manager = delegate_->GetCacheManager();
 
-  if (!cache_manager || !current_url_.is_valid()) {
+  if (!cache_manager || !current_url_.is_valid() ||
+      !IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
     return false;
   }
 
-  safe_browsing::ClientSideDetectionType cached_csd_type =
-      cache_manager->GetCachedRealTimeUrlClientSideDetectionType(current_url_);
-  return cached_csd_type ==
-             safe_browsing::ClientSideDetectionType::FORCE_REQUEST &&
-         IsEnhancedProtectionEnabled(*delegate_->GetPrefs());
+  if (cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+          current_url_) ==
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kClientSideDetectionRedirectChainKillswitch)) {
+    return false;
+  }
+
+  std::vector<GURL> redirect_chain = web_contents()
+                                         ->GetController()
+                                         .GetLastCommittedEntry()
+                                         ->GetRedirectChain();
+
+  // We pop the last element because if the redirect chain is not empty, the
+  // last element will be the current URL.
+  if (!redirect_chain.empty()) {
+    redirect_chain.pop_back();
+  }
+
+  bool redirect_chain_contains_force_request = false;
+  for (GURL url : redirect_chain) {
+    if (cache_manager->GetCachedRealTimeUrlClientSideDetectionType(url) ==
+        safe_browsing::ClientSideDetectionType::FORCE_REQUEST) {
+      redirect_chain_contains_force_request = true;
+      break;
+    }
+  }
+
+  if (!redirect_chain.empty()) {
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.RedirectChainContainsForceRequest",
+        redirect_chain_contains_force_request);
+  }
+
+  return redirect_chain_contains_force_request;
 }
 
 void ClientSideDetectionHost::set_client_side_detection_service(

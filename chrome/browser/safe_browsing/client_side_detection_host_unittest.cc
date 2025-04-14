@@ -1527,6 +1527,244 @@ TEST_F(ClientSideDetectionHostTest,
       1);
 }
 
+TEST_F(ClientSideDetectionHostTest,
+       RTLookupResponseOnFirstURLInRedirectChainTriggersForceRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  GURL first_url_redirect("http://firsturlsuspicious.com/");
+  GURL second_url_redirect("http://secondurlnotsuspicious.com/");
+  GURL third_url_redirect("http://thirdurlnotsuspicious.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url_redirect, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url_redirect,
+                                                     false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(third_url_redirect, false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      first_url_redirect, web_contents());
+  navigation->Start();
+  navigation->Redirect(second_url_redirect);
+  navigation->Redirect(third_url_redirect);
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+
+  VerdictCacheManager* cache_manager =
+      VerdictCacheManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+  // We will only create a RTLookupResponse for the first URL and cache it in
+  // the cache_manager.
+  RTLookupResponse response;
+
+  RTLookupResponse::ThreatInfo* new_threat_info2 = response.add_threat_info();
+  new_threat_info2->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
+  new_threat_info2->set_threat_type(
+      RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+  new_threat_info2->set_cache_duration_sec(60);
+  new_threat_info2->set_cache_expression_using_match_type(
+      "firsturlsuspicious.com/");
+  new_threat_info2->set_cache_expression_match_type(
+      RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  response.set_client_side_detection_type(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+  cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
+  EXPECT_EQ(
+      static_cast<int>(safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
+      cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+          first_url_redirect));
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+
+  // The verdict's is_phishing is false, but we will still send a ping! We are
+  // using the third URL for the verdict because it's the last in the referrer
+  // chain, but the first is in the cache, so it should still send a ping.
+  ClientPhishingRequest verdict;
+  verdict.set_url(third_url_redirect.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_for_force_request"))
+      .WillOnce(MoveArg<1>(&cb));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token_for_force_request");
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run(third_url_redirect, false, net::HTTP_OK, std::nullopt);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.RedirectChainContainsForceRequest", true, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       NoRTLookupResponseInRedirectChainContainsForceRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  GURL first_url_redirect("http://firsturlnotsuspicious.com/");
+  GURL second_url_redirect("http://secondurlnotsuspicious.com/");
+  GURL third_url_redirect("http://thirdurlnotsuspicious.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url_redirect, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url_redirect,
+                                                     false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(third_url_redirect, false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      first_url_redirect, web_contents());
+  navigation->Start();
+  navigation->Redirect(second_url_redirect);
+  navigation->Redirect(third_url_redirect);
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+
+  // The verdict's is_phishing is false, and there are no force requests at all
+  // in the current URL and its redirect chain, so no ping will be sent.
+  ClientPhishingRequest verdict;
+  verdict.set_url(third_url_redirect.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 0);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::TRIGGER_MODELS, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     false, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.RedirectChainContainsForceRequest", false, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       RedirectChainKillswitchDoesNotTriggersForceRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionRedirectChainKillswitch}, {});
+
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  GURL first_url_redirect("http://firsturlsuspicious.com/");
+  GURL second_url_redirect("http://secondurlnotsuspicious.com/");
+  GURL third_url_redirect("http://thirdurlnotsuspicious.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url_redirect, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url_redirect,
+                                                     false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(third_url_redirect, false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      first_url_redirect, web_contents());
+  navigation->Start();
+  navigation->Redirect(second_url_redirect);
+  navigation->Redirect(third_url_redirect);
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+
+  VerdictCacheManager* cache_manager =
+      VerdictCacheManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+  // We will only create a RTLookupResponse for the first URL and cache it in
+  // the cache_manager.
+  RTLookupResponse response;
+
+  RTLookupResponse::ThreatInfo* new_threat_info2 = response.add_threat_info();
+  new_threat_info2->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
+  new_threat_info2->set_threat_type(
+      RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+  new_threat_info2->set_cache_duration_sec(60);
+  new_threat_info2->set_cache_expression_using_match_type(
+      "firsturlsuspicious.com/");
+  new_threat_info2->set_cache_expression_match_type(
+      RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  response.set_client_side_detection_type(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+  cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
+  EXPECT_EQ(
+      static_cast<int>(safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
+      cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+          first_url_redirect));
+
+  // The verdict's is_phishing is false, but we will still send a ping! We are
+  // using the third URL for the verdict because it's the last in the referrer
+  // chain, but the first is in the cache, so it should still send a ping.
+  ClientPhishingRequest verdict;
+  verdict.set_url(third_url_redirect.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::TRIGGER_MODELS, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     false, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.RedirectChainContainsForceRequest", 0);
+}
+
 class ClientSideDetectionHostNotificationTest
     : public ClientSideDetectionHostTest {
  public:

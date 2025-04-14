@@ -947,6 +947,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.RedirectChainContainsForceRequest"
+    enum="BooleanExists" expires_after="2026-04-14">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Logs whether the redirect chain from the classification URL contains URLs
+    that has a force request from RTLookupResponse. This is only logged when the
+    URL that the user is on does not have a force request and the URL contains a
+    redirect chain other than itself. This is only for ESB users.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.RTLookupForceRequest"
     enum="BooleanForceRequest" expires_after="2025-08-24">
   <owner>andysjlim@chromium.org</owner>
