@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.0.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v3.2.1...chromium-bidi-v4.0.0) (2025-04-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **chrome:** update the pinned browser version to 137.0.7104.0 ([#3264](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3264))
+
+### Features
+
+* **chrome:** update the pinned browser version to 137.0.7104.0 ([#3264](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3264)) ([b85d415](https://github.com/GoogleChromeLabs/chromium-bidi/commit/b85d415cc8397443ddb724b74cf3b548e8abc3a8))
+* implement `emulation.setGeolocationOverride` ([#3311](https://github.com/GoogleChromeLabs/chromium-bidi/issues/3311)) ([7b8b52d](https://github.com/GoogleChromeLabs/chromium-bidi/commit/7b8b52d57f2a936e77995d2e67da192d6cbbd56c))
+
 ## [3.2.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v3.2.0...chromium-bidi-v3.2.1) (2025-04-02)
 
 
