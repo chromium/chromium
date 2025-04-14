@@ -9,6 +9,7 @@
 
 #include <cmath>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +21,8 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_fetch_throttler_delegate.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -146,7 +149,7 @@ TEST_F(AffiliationFetchThrottlerTest, SuccessfulRequests) {
   // Signal while request is in flight should be ignored.
   throttler->SignalNetworkRequestNeeded();
   AssertNoReleaseUntilNoTasksRemain();
-  throttler->InformOfNetworkRequestComplete(true);
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
   AssertNoReleaseUntilNoTasksRemain();
 
   // Duplicate the second signal 3 times: still only 1 callback should arrive.
@@ -161,7 +164,7 @@ TEST_F(AffiliationFetchThrottlerTest, FailedRequests) {
 
   throttler->SignalNetworkRequestNeeded();
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(true, 0, 0));
-  throttler->InformOfNetworkRequestComplete(false);
+  throttler->InformOfNetworkRequestComplete(false, std::nullopt);
 
   // The request after the first failure should be delayed by |initial_delay_ms|
   // spread out over Uniform(1 - |jitter_factor|, 1).
@@ -170,12 +173,12 @@ TEST_F(AffiliationFetchThrottlerTest, FailedRequests) {
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(
       true, kPolicy.initial_delay_ms * (1 - kPolicy.jitter_factor),
       kPolicy.initial_delay_ms));
-  throttler->InformOfNetworkRequestComplete(true);
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
 
   // After a successful request, the next one should be released immediately.
   throttler->SignalNetworkRequestNeeded();
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(true, 0, 0));
-  throttler->InformOfNetworkRequestComplete(false);
+  throttler->InformOfNetworkRequestComplete(false, std::nullopt);
 
   // In general, the request after the n-th failure should be delayed by
   //   |multiply_factor| ^ (n-1) * |initial_delay_ms|,
@@ -193,7 +196,57 @@ TEST_F(AffiliationFetchThrottlerTest, FailedRequests) {
       min_delay_ms = kPolicy.maximum_backoff_ms;
     ASSERT_NO_FATAL_FAILURE(
         AssertReleaseInBetween(true, min_delay_ms, max_delay_ms));
-    throttler->InformOfNetworkRequestComplete(false);
+    throttler->InformOfNetworkRequestComplete(false, std::nullopt);
+  }
+}
+
+TEST_F(AffiliationFetchThrottlerTest, NonRetryableFailedRequestsSetLongDelay) {
+  std::unique_ptr<AffiliationFetchThrottler> throttler(CreateThrottler());
+
+  throttler->SignalNetworkRequestNeeded();
+  ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(true, 0, 0));
+  throttler->InformOfNetworkRequestComplete(false, net::HTTP_TOO_MANY_REQUESTS);
+
+  // The request after a non-retryable failure should be delayed by
+  // |kBackoffAfterNonRetryableErrorHours|
+  throttler->SignalNetworkRequestNeeded();
+  const auto& non_retryable_delay_in_ms =
+      AffiliationFetchThrottler::kBackoffAfterNonRetryableErrorHours * 60 * 60 *
+      1000;
+  ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(
+      true, non_retryable_delay_in_ms, non_retryable_delay_in_ms));
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
+
+  // After a successful request, the next one should be released immediately.
+  throttler->SignalNetworkRequestNeeded();
+  ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(true, 0, 0));
+  throttler->InformOfNetworkRequestComplete(false, net::HTTP_TOO_MANY_REQUESTS);
+
+  const auto& kPolicy = AffiliationFetchThrottler::kBackoffPolicy;
+  // In general, non-retryable errors still contribute to the number of failed
+  // requests and thus to the delay set by the backoff policy. This means that
+  // a non-retryable error will effectively set a minimum delay.
+  for (int num_failures = 1; num_failures < 100; ++num_failures) {
+    throttler->SignalNetworkRequestNeeded();
+    double max_delay_ms = kPolicy.initial_delay_ms *
+                          pow(kPolicy.multiply_factor, num_failures - 1);
+    double min_delay_ms = max_delay_ms * (1 - kPolicy.jitter_factor);
+    if (max_delay_ms > kPolicy.maximum_backoff_ms) {
+      max_delay_ms = kPolicy.maximum_backoff_ms;
+    }
+    if (min_delay_ms > kPolicy.maximum_backoff_ms) {
+      min_delay_ms = kPolicy.maximum_backoff_ms;
+    }
+    if (max_delay_ms < non_retryable_delay_in_ms) {
+      max_delay_ms = non_retryable_delay_in_ms;
+    }
+    if (min_delay_ms < non_retryable_delay_in_ms) {
+      min_delay_ms = non_retryable_delay_in_ms;
+    }
+    ASSERT_NO_FATAL_FAILURE(
+        AssertReleaseInBetween(true, min_delay_ms, max_delay_ms));
+    throttler->InformOfNetworkRequestComplete(false,
+                                              net::HTTP_TOO_MANY_REQUESTS);
   }
 }
 
@@ -228,7 +281,7 @@ TEST_F(AffiliationFetchThrottlerTest, GracePeriodAfterConnectivityIsRestored) {
       AffiliationFetchThrottler::kGracePeriodAfterReconnectMs;
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(
       true, kGraceMs * (1 - kPolicy.jitter_factor), kGraceMs));
-  throttler->InformOfNetworkRequestComplete(true);
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
 
   // The next request should not be delayed.
   throttler->SignalNetworkRequestNeeded();
@@ -248,7 +301,7 @@ TEST_F(AffiliationFetchThrottlerTest, GracePeriodAfterConnectivityIsRestored2) {
       AffiliationFetchThrottler::kGracePeriodAfterReconnectMs;
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(
       true, kGraceMs * (1 - kPolicy.jitter_factor), kGraceMs));
-  throttler->InformOfNetworkRequestComplete(true);
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
 
   throttler->SignalNetworkRequestNeeded();
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(true, 0, 0));
@@ -259,7 +312,7 @@ TEST_F(AffiliationFetchThrottlerTest, ConnectivityLostDuringBackoff) {
 
   throttler->SignalNetworkRequestNeeded();
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(true, 0, 0));
-  throttler->InformOfNetworkRequestComplete(false);
+  throttler->InformOfNetworkRequestComplete(false, std::nullopt);
 
   throttler->SignalNetworkRequestNeeded();
   SimulateHasNetworkConnectivity(false);
@@ -275,7 +328,7 @@ TEST_F(AffiliationFetchThrottlerTest, ConnectivityLostDuringBackoff) {
       AffiliationFetchThrottler::kGracePeriodAfterReconnectMs;
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(
       true, kGraceMs * (1 - kPolicy.jitter_factor), kGraceMs));
-  throttler->InformOfNetworkRequestComplete(true);
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
 }
 
 TEST_F(AffiliationFetchThrottlerTest,
@@ -284,14 +337,14 @@ TEST_F(AffiliationFetchThrottlerTest,
 
   throttler->SignalNetworkRequestNeeded();
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(true, 0, 0));
-  throttler->InformOfNetworkRequestComplete(false);
+  throttler->InformOfNetworkRequestComplete(false, std::nullopt);
 
   throttler->SignalNetworkRequestNeeded();
   const auto& kPolicy = AffiliationFetchThrottler::kBackoffPolicy;
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(
       true, kPolicy.initial_delay_ms * (1 - kPolicy.jitter_factor),
       kPolicy.initial_delay_ms));
-  throttler->InformOfNetworkRequestComplete(false);
+  throttler->InformOfNetworkRequestComplete(false, std::nullopt);
 
   SimulateHasNetworkConnectivity(false);
   SimulateHasNetworkConnectivity(true);
@@ -309,7 +362,7 @@ TEST_F(AffiliationFetchThrottlerTest,
       true, kPolicy.initial_delay_ms * kPolicy.multiply_factor *
                 (1 - kPolicy.jitter_factor),
       kPolicy.initial_delay_ms * kPolicy.multiply_factor));
-  throttler->InformOfNetworkRequestComplete(false);
+  throttler->InformOfNetworkRequestComplete(false, std::nullopt);
 }
 
 TEST_F(AffiliationFetchThrottlerTest, FlakyConnectivity) {
@@ -317,7 +370,7 @@ TEST_F(AffiliationFetchThrottlerTest, FlakyConnectivity) {
 
   throttler->SignalNetworkRequestNeeded();
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(true, 0, 0));
-  throttler->InformOfNetworkRequestComplete(false);
+  throttler->InformOfNetworkRequestComplete(false, std::nullopt);
 
   // Run for a total of 5 grace periods and simulate connectivity being lost and
   // restored every second. This verifies that a flaky connection will not flood
@@ -347,7 +400,7 @@ TEST_F(AffiliationFetchThrottlerTest, ConnectivityLostDuringRequest) {
 
   SimulateHasNetworkConnectivity(false);
   AssertNoReleaseUntilNoTasksRemain();
-  throttler->InformOfNetworkRequestComplete(false);
+  throttler->InformOfNetworkRequestComplete(false, std::nullopt);
   AssertNoReleaseUntilNoTasksRemain();
   throttler->SignalNetworkRequestNeeded();
   AssertNoReleaseUntilNoTasksRemain();
@@ -360,7 +413,7 @@ TEST_F(AffiliationFetchThrottlerTest, ConnectivityLostDuringRequest) {
       AffiliationFetchThrottler::kGracePeriodAfterReconnectMs;
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(
       true, kGraceMs * (1 - kPolicy.jitter_factor), kGraceMs));
-  throttler->InformOfNetworkRequestComplete(true);
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
 }
 
 TEST_F(AffiliationFetchThrottlerTest,
@@ -374,7 +427,7 @@ TEST_F(AffiliationFetchThrottlerTest,
   AssertNoReleaseUntilNoTasksRemain();
   SimulateHasNetworkConnectivity(true);
   AssertNoReleaseUntilNoTasksRemain();
-  throttler->InformOfNetworkRequestComplete(true);
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
 
   // Even though the previous request succeeded, the next request should still
   // be held back for the normal grace period after connection is restored.
@@ -384,7 +437,7 @@ TEST_F(AffiliationFetchThrottlerTest,
       AffiliationFetchThrottler::kGracePeriodAfterReconnectMs;
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(
       true, kGraceMs * (1 - kPolicy.jitter_factor), kGraceMs));
-  throttler->InformOfNetworkRequestComplete(true);
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
 }
 
 TEST_F(AffiliationFetchThrottlerTest,
@@ -401,7 +454,7 @@ TEST_F(AffiliationFetchThrottlerTest,
   const int64_t& kGraceMs =
       AffiliationFetchThrottler::kGracePeriodAfterReconnectMs;
   AssertNoReleaseForSecs(kGraceMs / base::Time::kMillisecondsPerSecond);
-  throttler->InformOfNetworkRequestComplete(true);
+  throttler->InformOfNetworkRequestComplete(true, net::HTTP_OK);
 
   // The next request should not be held back.
   throttler->SignalNetworkRequestNeeded();
@@ -413,7 +466,7 @@ TEST_F(AffiliationFetchThrottlerTest, InstanceDestroyedWhileInBackoff) {
 
   throttler->SignalNetworkRequestNeeded();
   ASSERT_NO_FATAL_FAILURE(AssertReleaseInBetween(true, 0, 0));
-  throttler->InformOfNetworkRequestComplete(false);
+  throttler->InformOfNetworkRequestComplete(false, std::nullopt);
 
   throttler->SignalNetworkRequestNeeded();
   throttler.reset();

@@ -6,16 +6,39 @@
 
 #include <stdint.h>
 
+#include <optional>
+
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "components/affiliations/core/browser/affiliation_fetch_throttler_delegate.h"
+#include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 
 namespace affiliations {
 
+namespace {
+constexpr auto kRetryableHttpErrors =
+    base::MakeFixedFlatSet<net::HttpStatusCode>(
+        {net::HTTP_INTERNAL_SERVER_ERROR, net::HTTP_BAD_GATEWAY,
+         net::HTTP_SERVICE_UNAVAILABLE, net::HTTP_GATEWAY_TIMEOUT,
+         net::HTTP_INSUFFICIENT_STORAGE,
+         net::HTTP_NETWORK_AUTHENTICATION_REQUIRED});
+
+// Checks if the response code belongs to |kRetryableHttpErrors|.
+// Empty |response_code_optional| is treated as a retryable error.
+bool IsHttpErrorNonRetryable(
+    std::optional<net::HttpStatusCode> response_code_optional) {
+  return response_code_optional
+             ? !base::Contains(kRetryableHttpErrors,
+                               response_code_optional.value())
+             : false;
+}
+}  // namespace
 // static
 const net::BackoffEntry::Policy AffiliationFetchThrottler::kBackoffPolicy = {
     // Number of initial errors (in sequence) to ignore before going into
@@ -48,6 +71,10 @@ const net::BackoffEntry::Policy AffiliationFetchThrottler::kBackoffPolicy = {
 // static
 const int64_t AffiliationFetchThrottler::kGracePeriodAfterReconnectMs =
     10 * 1000;  // 10 seconds
+
+// static
+const int64_t AffiliationFetchThrottler::kBackoffAfterNonRetryableErrorHours =
+    3;
 
 AffiliationFetchThrottler::AffiliationFetchThrottler(
     AffiliationFetchThrottlerDelegate* delegate,
@@ -84,10 +111,19 @@ void AffiliationFetchThrottler::SignalNetworkRequestNeeded() {
     EnsureCallbackIsScheduled();
 }
 
-void AffiliationFetchThrottler::InformOfNetworkRequestComplete(bool success) {
+void AffiliationFetchThrottler::InformOfNetworkRequestComplete(
+    bool success,
+    std::optional<net::HttpStatusCode> http_status_code_optional) {
   DCHECK_EQ(state_, FETCH_IN_FLIGHT);
   state_ = IDLE;
   exponential_backoff_->InformOfRequest(success);
+
+  if (!success && IsHttpErrorNonRetryable(http_status_code_optional)) {
+    exponential_backoff_->SetCustomReleaseTime(
+        std::max(exponential_backoff_->GetReleaseTime(),
+                 tick_clock_->NowTicks() +
+                     base::Hours(kBackoffAfterNonRetryableErrorHours)));
+  }
 }
 
 bool AffiliationFetchThrottler::HasInternetConnection() const {

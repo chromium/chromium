@@ -371,12 +371,12 @@ void AffiliationBackend::RetryRequestIfNeeded() {
 
 void AffiliationBackend::OnFetchFinished(
     AffiliationFetcherInterface::FetchResult fetch_result) {
+  throttler_->InformOfNetworkRequestComplete(fetch_result.IsSuccessful(),
+                                             fetch_result.http_status_code);
   if (!fetch_result.IsSuccessful()) {
-    throttler_->InformOfNetworkRequestComplete(false);
     RetryRequestIfNeeded();
     return;
   }
-  throttler_->InformOfNetworkRequestComplete(true);
   ProcessSuccessfulFetch(std::move(fetch_result.data.value()));
 }
 
