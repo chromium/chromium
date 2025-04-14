@@ -8,15 +8,26 @@
 #include "base/containers/flat_set.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
+
+class PrefService;
+class PrefRegistrySimple;
+
 namespace visited_url_ranking {
 
 class GroupSuggestionsTracker {
  public:
-  GroupSuggestionsTracker();
+  static const char kGroupSuggestionsTrackerStatePref[];
+  static const char kGroupSuggestionsTrackerTimeKey[];
+  static const char kGroupSuggestionsTrackerUserResponseKey[];
+  static const char kGroupSuggestionsTrackerUserTabIdsKey[];
+
+  explicit GroupSuggestionsTracker(PrefService* pref_service);
   ~GroupSuggestionsTracker();
 
   GroupSuggestionsTracker(const GroupSuggestionsTracker&) = delete;
   GroupSuggestionsTracker& operator=(const GroupSuggestionsTracker&) = delete;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   void AddSuggestion(const GroupSuggestion& suggestion,
                      GroupSuggestionsDelegate::UserResponse user_response);
@@ -30,12 +41,21 @@ class GroupSuggestionsTracker {
     ShownSuggestion(ShownSuggestion&& suggestion);
     ShownSuggestion& operator=(ShownSuggestion&& suggestion);
 
+    // Returns the dictionary representation of the `ShownSuggestion` to be
+    // saved into pref.
+    base::Value::Dict ToDict() const;
+
+    // Returns ShownSuggestion extracted from a dictionary representation.
+    static std::optional<ShownSuggestion> FromDict(
+        const base::Value::Dict& dict);
+
     base::Time time_shown;
     std::vector<int> tab_ids;
     GroupSuggestionsDelegate::UserResponse user_response =
         GroupSuggestionsDelegate::UserResponse::kUnknown;
   };
 
+  raw_ptr<PrefService> pref_service_;
   std::vector<ShownSuggestion> suggestions_;
 };
 

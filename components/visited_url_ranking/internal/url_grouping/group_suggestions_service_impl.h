@@ -17,6 +17,9 @@
 #include "components/visited_url_ranking/public/url_grouping/tab_event_tracker.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
 
+class PrefService;
+class PrefRegistrySimple;
+
 namespace visited_url_ranking {
 
 class GroupSuggestionsServiceImpl : public GroupSuggestionsService,
@@ -24,12 +27,15 @@ class GroupSuggestionsServiceImpl : public GroupSuggestionsService,
  public:
   GroupSuggestionsServiceImpl(
       VisitedURLRankingService* visited_url_ranking_service,
-      TabEventsVisitTransformer* tab_events_transformer);
+      TabEventsVisitTransformer* tab_events_transformer,
+      PrefService* pref_service);
   ~GroupSuggestionsServiceImpl() override;
 
   GroupSuggestionsServiceImpl(const GroupSuggestionsServiceImpl&) = delete;
   GroupSuggestionsServiceImpl& operator=(const GroupSuggestionsServiceImpl&) =
       delete;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // GroupSuggestionsService impl:
   TabEventTracker* GetTabEventTracker() override;

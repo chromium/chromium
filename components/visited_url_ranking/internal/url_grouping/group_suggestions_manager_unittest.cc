@@ -4,7 +4,9 @@
 
 #include "components/visited_url_ranking/internal/url_grouping/group_suggestions_manager.h"
 
+#include "components/prefs/testing_pref_service.h"
 #include "components/sessions/core/session_id.h"
+#include "components/visited_url_ranking/internal/url_grouping/group_suggestions_service_impl.h"
 #include "components/visited_url_ranking/internal/url_grouping/mock_suggestions_delegate.h"
 #include "components/visited_url_ranking/public/testing/mock_visited_url_ranking_service.h"
 #include "components/visited_url_ranking/public/url_grouping/group_suggestions_delegate.h"
@@ -22,9 +24,11 @@ class GroupSuggestionsManagerTest : public testing::Test {
 
   void SetUp() override {
     Test::SetUp();
+    auto* registry = pref_service_.registry();
+    GroupSuggestionsServiceImpl::RegisterProfilePrefs(registry);
     mock_ranking_service_ = std::make_unique<MockVisitedURLRankingService>();
-    suggestions_manager_ =
-        std::make_unique<GroupSuggestionsManager>(mock_ranking_service_.get());
+    suggestions_manager_ = std::make_unique<GroupSuggestionsManager>(
+        mock_ranking_service_.get(), &pref_service_);
   }
 
   void TearDown() override {
@@ -33,6 +37,7 @@ class GroupSuggestionsManagerTest : public testing::Test {
   }
 
  protected:
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<MockVisitedURLRankingService> mock_ranking_service_;
   std::unique_ptr<GroupSuggestionsManager> suggestions_manager_;
 };

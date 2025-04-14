@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/visited_url_ranking/internal/url_grouping/mock_suggestions_delegate.h"
 #include "components/visited_url_ranking/internal/url_grouping/tab_events_visit_transformer.h"
 #include "components/visited_url_ranking/public/tab_metadata.h"
@@ -73,11 +74,13 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
 
   void SetUp() override {
     Test::SetUp();
+    auto* registry = pref_service_.registry();
+    GroupSuggestionsServiceImpl::RegisterProfilePrefs(registry);
     mock_ranking_service_ = std::make_unique<MockVisitedURLRankingService>();
     mock_transformer_ = std::make_unique<MockTabEventsVisitTransformer>();
     mock_delegate_ = std::make_unique<MockGroupSuggestionsDelegate>();
     suggestions_service_ = std::make_unique<GroupSuggestionsServiceImpl>(
-        mock_ranking_service_.get(), mock_transformer_.get());
+        mock_ranking_service_.get(), mock_transformer_.get(), &pref_service_);
   }
 
   void TearDown() override {
@@ -165,6 +168,7 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple pref_service_;
   std::unique_ptr<MockVisitedURLRankingService> mock_ranking_service_;
   std::unique_ptr<MockTabEventsVisitTransformer> mock_transformer_;
   std::unique_ptr<MockGroupSuggestionsDelegate> mock_delegate_;
