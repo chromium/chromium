@@ -191,15 +191,16 @@ TabSharingStatusMessageView::TabSharingStatusMessageView(
 TabSharingStatusMessageView::~TabSharingStatusMessageView() = default;
 
 void TabSharingStatusMessageView::AddChildViews(MessageInfo info) {
-  // Format the message text with one-character replacements and retrieve the
-  // offsets to where the replacements should go. (The replacement needs to be
-  // non-empty for the reordering to work correctly in the next step.)
-  // TODO(crbug.com/380903159): For EndpointInfos without
-  // focus_target_id, pass the text here instead of adding buttons further down.
+  // Format the message text and retrieve the offsets to where the replacements
+  // should go.
   std::vector<size_t> offsets;
-  const std::u16string label_text = l10n_util::FormatString(
-      info.format_string,
-      std::vector<std::u16string>(info.endpoint_infos.size(), u" "), &offsets);
+  std::vector<std::u16string> replacements;
+  for (const TabSharingStatusMessageView::EndpointInfo& endpoint_info :
+       info.endpoint_infos) {
+    replacements.emplace_back(endpoint_info.text);
+  }
+  const std::u16string label_text =
+      l10n_util::FormatString(info.format_string, replacements, &offsets);
 
   // Some languages have the replacements in reverse order in the localization
   // string. Swap the offsets and the endpoint_infos if that is the case.
@@ -210,28 +211,36 @@ void TabSharingStatusMessageView::AddChildViews(MessageInfo info) {
     std::swap(info.endpoint_infos[0], info.endpoint_infos[1]);
   }
 
-  // For each endpoint_info (if any), add:
-  // - a label for the text coming before the endpoint_info (if present)
-  // - a button for the endpoint_info
-  for (size_t i = 0; i < info.endpoint_infos.size(); i++) {
-    // Add one to offset to account for the single-character replacement.
-    const size_t start = i == 0 ? 0 : offsets[i - 1] + 1;
-    const size_t length = offsets[i] - start;
-    if (length > 0) {
-      AddChildView(
-          std::make_unique<views::Label>(label_text.substr(start, length)));
+  // For each endpoint_info with a focus_target_id (if any):
+  // - add a label for any plain text coming before the endpoint_info.
+  // - add a button for the endpoint_info.
+  // - update label_start to the end of the corresponding replacement.
+  //
+  // For endpoint_infos without focus_target_id (if any):
+  // - no label or button is added.
+  // - label_start is left unchanged.
+  // This results in the text before the endpoint_info and the replacement text
+  // being added to the next label.
+  size_t label_start = 0;
+  for (size_t i = 0; i < info.endpoint_infos.size(); ++i) {
+    if (!info.endpoint_infos[i].focus_target_id) {
+      continue;
+    }
+    const size_t label_length = offsets[i] - label_start;
+    if (label_length > 0) {
+      AddChildView(std::make_unique<views::Label>(
+          label_text.substr(label_start, label_length)));
     }
     AddButton(info.endpoint_infos[i]);
+    label_start = offsets[i] + replacements[i].size();
   }
 
   // Add a label for the text after the last button, if any; otherwise, this
   // label covers the entire string.
-  // Add one to offset to account for the single-character replacement.
-  const size_t start = offsets.empty() ? 0 : offsets.back() + 1;
-  const size_t length = label_text.size() - start;
-  if (length > 0) {
-    AddChildView(
-        std::make_unique<views::Label>(label_text.substr(start, length)));
+  const size_t label_length = label_text.size() - label_start;
+  if (label_length > 0) {
+    AddChildView(std::make_unique<views::Label>(
+        label_text.substr(label_start, label_length)));
   }
 }
 

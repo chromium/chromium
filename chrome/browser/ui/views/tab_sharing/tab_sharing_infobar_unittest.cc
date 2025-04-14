@@ -130,6 +130,10 @@ class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
     TabRole role;
     TabSharingInfoBarDelegate::TabShareType capture_type =
         TabSharingInfoBarDelegate::TabShareType::CAPTURE;
+    content::GlobalRenderFrameHostId shared_tab_id =
+        content::GlobalRenderFrameHostId(1, 1);
+    content::GlobalRenderFrameHostId capturer_id =
+        content::GlobalRenderFrameHostId(2, 2);
   };
 
   TabSharingInfoBarTest() {
@@ -139,11 +143,10 @@ class TabSharingInfoBarTest : public testing::TestWithParam<bool> {
 
   const TabSharingInfoBar& CreateInfobar(const Preferences& prefs) {
     return *static_cast<TabSharingInfoBar*>(TabSharingInfoBarDelegate::Create(
-        infobar_manager_.get(), nullptr, content::GlobalRenderFrameHostId(),
-        content::GlobalRenderFrameHostId(), prefs.shared_tab_name,
-        prefs.capturer_name, /*web_contents=*/nullptr, prefs.role,
-        TabSharingInfoBarDelegate::ButtonState::ENABLED, FocusTarget(), true,
-        &mock_ui, prefs.capture_type, false));
+        infobar_manager_.get(), nullptr, prefs.shared_tab_id, prefs.capturer_id,
+        prefs.shared_tab_name, prefs.capturer_name, /*web_contents=*/nullptr,
+        prefs.role, TabSharingInfoBarDelegate::ButtonState::ENABLED,
+        FocusTarget(), true, &mock_ui, prefs.capture_type, false));
   }
 
  protected:
@@ -256,7 +259,7 @@ TEST_P(TabSharingInfoBarTest, InfobarOnNotCastTab) {
   const TabSharingInfoBar& infobar = CreateInfobar(preferences);
   CheckStatusMessage(infobar,
                      {LabelInfo(u"Casting "), ButtonInfo(kSharedTabName),
-                      LabelInfo(u" to "), ButtonInfo(kSinkName)});
+                      LabelInfo(u" to " + kSinkName)});
   // Without sink name.
   preferences.capturer_name = std::u16string();
   const TabSharingInfoBar& infobar2 = CreateInfobar(preferences);
@@ -274,8 +277,7 @@ TEST_P(TabSharingInfoBarTest, InfobarOnCastTab) {
       .role = TabRole::kCapturedTab,
       .capture_type = TabSharingInfoBarDelegate::TabShareType::CAST};
   const TabSharingInfoBar& infobar = CreateInfobar(preferences);
-  CheckStatusMessage(
-      infobar, {LabelInfo(u"Casting this tab to "), ButtonInfo(kSinkName)});
+  CheckStatusMessage(infobar, {LabelInfo(u"Casting this tab to " + kSinkName)});
 
   // Without sink name.
   preferences.capturer_name = std::u16string();

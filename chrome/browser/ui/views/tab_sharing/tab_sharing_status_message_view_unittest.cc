@@ -27,6 +27,10 @@ std::vector<std::string> GetChildTexts(
 
 EndpointInfo kTab1 = EndpointInfo(u"Tab1", GlobalRenderFrameHostId(1, 1));
 EndpointInfo kTab2 = EndpointInfo(u"Tab2", GlobalRenderFrameHostId(2, 2));
+EndpointInfo kWithoutId1 =
+    EndpointInfo(u"WithoutId1", GlobalRenderFrameHostId());
+EndpointInfo kWithoutId2 =
+    EndpointInfo(u"WithoutId2", GlobalRenderFrameHostId());
 }  // namespace
 
 class TabSharingStatusMessageViewTest : public ::testing::Test {
@@ -183,4 +187,32 @@ TEST_F(TabSharingStatusMessageViewTest, SpacesInfix) {
 TEST_F(TabSharingStatusMessageViewTest, SpacesPostfix) {
   TabSharingStatusMessageView view(MessageInfo(u"$1   ", {kTab1}));
   EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"Tab1", "   "}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, TwoEndpointsWithoutId) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"$1$2", {kWithoutId1, kWithoutId2}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"WithoutId1WithoutId2"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest,
+       TwoEndpointsWithoutIdPrefixAndInfixAndPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"prefix-$1-infix-$2-postfix", {kWithoutId1, kWithoutId2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({"prefix-WithoutId1-infix-WithoutId2-postfix"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest, ReversedTwoEndpointsWithoutId) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"$2$1", {kWithoutId1, kWithoutId2}));
+  EXPECT_THAT(GetChildTexts(view), ElementsAreArray({"WithoutId2WithoutId1"}));
+}
+
+TEST_F(TabSharingStatusMessageViewTest,
+       ReversedTwoEndpointsWithoutIdPrefixAndInfixAndPostfix) {
+  TabSharingStatusMessageView view(
+      MessageInfo(u"prefix-$2-infix-$1-postfix", {kWithoutId1, kWithoutId2}));
+  EXPECT_THAT(GetChildTexts(view),
+              ElementsAreArray({"prefix-WithoutId2-infix-WithoutId1-postfix"}));
 }
