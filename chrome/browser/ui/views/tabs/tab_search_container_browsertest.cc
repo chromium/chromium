@@ -377,8 +377,10 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 2, 1);
 }
 
+// TODO(crbug.com/409311762): This test is flaky, fix and re-enable if work on
+// declutter resumes.
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       LogsWhenDeclutterButtonClicked) {
+                       DISABLED_LogsWhenDeclutterButtonClicked) {
   base::HistogramTester histogram_tester;
 
   tab_search_container()->ShowTabOrganization(
