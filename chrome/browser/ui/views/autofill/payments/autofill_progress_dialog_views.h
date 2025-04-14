@@ -57,6 +57,8 @@ class AutofillProgressDialogViews : public views::DialogDelegateView {
   base::WeakPtr<AutofillProgressDialogController> controller_;
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::Throbber> progress_throbber_ = nullptr;
+
+  base::WeakPtrFactory<AutofillProgressDialogViews> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

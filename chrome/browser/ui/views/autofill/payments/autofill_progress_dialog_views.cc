@@ -204,7 +204,7 @@ void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutofillProgressDialogViews::CloseWidget,
-                       base::Unretained(this)),
+                       weak_ptr_factory_.GetWeakPtr()),
         kDelayBeforeDismissingProgressDialog);
     return;
   }
