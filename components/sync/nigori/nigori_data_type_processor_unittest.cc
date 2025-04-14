@@ -89,7 +89,6 @@ CommitResponseData CreateNigoriCommitResponseData(
   commit_response_data.sequence_number = commit_request_data.sequence_number;
   commit_response_data.response_version = response_version;
   commit_response_data.specifics_hash = commit_request_data.specifics_hash;
-  commit_response_data.unsynced_time = commit_request_data.unsynced_time;
   return commit_response_data;
 }
 

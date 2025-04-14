@@ -181,10 +181,6 @@ class ProcessorEntity {
 
   // The sequence number of the last item sent to the sync thread.
   int64_t commit_requested_sequence_number_;
-
-  // The time when this entity transition from being synced to being unsynced
-  // (i.e. a local change happened).
-  base::Time unsynced_time_;
 };
 
 }  // namespace syncer

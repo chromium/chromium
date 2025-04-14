@@ -336,7 +336,6 @@ void ProcessorEntity::InitializeCommitRequestData(CommitRequestData* request) {
   request->sequence_number = metadata_.sequence_number();
   request->base_version = metadata_.server_version();
   request->specifics_hash = metadata_.specifics_hash();
-  request->unsynced_time = unsynced_time_;
   commit_requested_sequence_number_ = metadata_.sequence_number();
 }
 
@@ -382,7 +381,6 @@ void ProcessorEntity::IncrementSequenceNumber(base::Time modification_time) {
   if (!IsUnsynced()) {
     // Update the base specifics hash if this entity wasn't already out of sync.
     metadata_.set_base_specifics_hash(metadata_.specifics_hash());
-    unsynced_time_ = modification_time;
   }
   metadata_.set_sequence_number(metadata_.sequence_number() + 1);
   DCHECK(IsUnsynced());
