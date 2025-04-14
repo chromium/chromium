@@ -242,6 +242,7 @@ extern const base::FeatureParam<bool> kPageActionsMigrationIntentPicker;
 extern const base::FeatureParam<bool> kPageActionsMigrationZoom;
 extern const base::FeatureParam<bool> kPageActionsMigrationOfferNotification;
 extern const base::FeatureParam<bool> kPageActionsMigrationFileSystemAccess;
+extern const base::FeatureParam<bool> kPageActionsMigrationPwaInstall;
 
 // Controls whether browser tab loading animations are driven by the compositor
 // vs. a repeating timer.

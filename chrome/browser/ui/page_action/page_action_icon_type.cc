@@ -39,6 +39,8 @@ bool IsPageActionMigrated(PageActionIconType page_action) {
       return features::kPageActionsMigrationOfferNotification.Get();
     case PageActionIconType::kFileSystemAccess:
       return features::kPageActionsMigrationFileSystemAccess.Get();
+    case PageActionIconType::kPwaInstall:
+      return features::kPageActionsMigrationPwaInstall.Get();
     default:
       return false;
   }

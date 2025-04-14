@@ -76,6 +76,14 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
                   .type = PageActionIconType::kFileSystemAccess,
               },
           },
+          {
+            kActionInstallPwa,
+            {
+                .histogram_name = "PwaInstall",
+                .is_ephemeral = true,
+                .type = PageActionIconType::kPwaInstall,
+            },
+        },
       });
 
   CHECK(kPageActionProperties.contains(action_id));

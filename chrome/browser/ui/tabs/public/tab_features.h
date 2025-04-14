@@ -23,6 +23,7 @@ class SidePanelRegistry;
 class TranslatePageActionController;
 class IntentPickerViewPageActionController;
 class FileSystemAccessPageActionController;
+class PwaInstallPageActionController;
 
 namespace commerce {
 class CommerceUiTabHelper;
@@ -198,6 +199,10 @@ class TabFeatures {
 
   LensOverlayController* lens_overlay_controller();
 
+  PwaInstallPageActionController* pwa_install_page_action_controller() {
+    return pwa_install_page_action_controller_.get();
+  }
+
   // Called exactly once to initialize features.
   // Can be overridden in tests to initialize nothing.
   virtual void Init(TabInterface& tab, Profile* profile);
@@ -291,6 +296,10 @@ class TabFeatures {
   // Responsible for managing the "Translate" page action.
   std::unique_ptr<TranslatePageActionController>
       translate_page_action_controller_;
+
+  // Responsible for managing the "PWA Install" page action.
+  std::unique_ptr<PwaInstallPageActionController>
+      pwa_install_page_action_controller_;
 
   // Responsible for managing the "Zoom" page action and bubble.
   std::unique_ptr<zoom::ZoomViewController> zoom_view_controller_;
