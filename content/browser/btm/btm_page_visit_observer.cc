@@ -97,6 +97,16 @@ class NavigationState
     // TODO - crbug.com/406841434: `CHECK` the result of `filter_.Filter`.
     bool were_all_accesses_matched = filter_.Filter(urls, accesses);
     if (!were_all_accesses_matched) {
+      std::string redirects_debug_string;
+      for (const GURL& url : urls) {
+        redirects_debug_string += url.spec();
+        redirects_debug_string += ", ";
+      }
+      DEBUG_ALIAS_FOR_CSTR(redirects_debug_alias,
+                           redirects_debug_string.c_str(), 256);
+      DEBUG_ALIAS_FOR_CSTR(accesses_debug_alias,
+                           filter_.ToDebugString().c_str(), 256);
+
       base::debug::DumpWithoutCrashing();
     }
 
