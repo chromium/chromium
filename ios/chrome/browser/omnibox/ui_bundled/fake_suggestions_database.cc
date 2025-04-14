@@ -21,14 +21,10 @@
 namespace {
 
 std::map<std::u16string, std::string> DeserializeJSON(const std::string& str) {
-  JSONStringValueDeserializer deserializer(str,
-                                           base::JSON_ALLOW_TRAILING_COMMAS);
-  int error_code = 0;
-  std::string error_message = "";
-  std::unique_ptr<base::Value> root =
-      deserializer.Deserialize(&error_code, &error_message);
+  base::JSONReader::Result root = base::JSONReader::ReadAndReturnValueWithError(
+      str, base::JSON_ALLOW_TRAILING_COMMAS);
 
-  DCHECK(!error_code) << error_message;
+  DCHECK(root.has_value()) << root.error().ToString();
 
   // The root should be a list containing the suggestions.
   const base::Value::List& list = root->GetList();
