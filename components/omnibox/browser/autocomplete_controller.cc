@@ -1812,6 +1812,7 @@ void AutocompleteController::UpdateKeywordDescriptions(
               u" People";
         }
       }
+      last_keyword = i->keyword;
     } else {
       last_keyword.clear();
     }
