@@ -150,7 +150,7 @@ class TabGridDialogViewBinder {
         } else if (SCRIMVIEW_CLICK_RUNNABLE == propertyKey) {
             viewHolder.dialogView.setScrimClickRunnable(model.get(SCRIMVIEW_CLICK_RUNNABLE));
         } else if (IS_DIALOG_VISIBLE == propertyKey) {
-            if (model.get(IS_DIALOG_VISIBLE)) {
+            if (Boolean.TRUE.equals(model.get(IS_DIALOG_VISIBLE))) {
                 viewHolder.dialogView.resetDialog(viewHolder.toolbarView, viewHolder.contentView);
                 viewHolder.dialogView.showDialog();
             } else {

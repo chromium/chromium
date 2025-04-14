@@ -152,6 +152,7 @@ public class TabGridDialogView extends FrameLayout {
         mUngroupBarHoveredBackgroundColor =
                 TabUiThemeProvider.getTabGridDialogUngroupBarHoveredBackgroundColor(
                         mContext, false);
+        setVisibility(GONE);
     }
 
     void forceAnimationToFinish() {
@@ -193,8 +194,6 @@ public class TabGridDialogView extends FrameLayout {
                 };
         mParent.getViewTreeObserver().addOnGlobalLayoutListener(mParentGlobalLayoutListener);
         updateDialogWithOrientation(mOrientation);
-        setVisibility(GONE);
-        notifyVisibilityListenerOnHide();
     }
 
     @Override
@@ -1008,26 +1007,30 @@ public class TabGridDialogView extends FrameLayout {
 
     /** Show {@link PopupWindow} for dialog with animation. */
     void showDialog() {
+        if (getVisibility() == VISIBLE) return;
+
         if (mCurrentDialogAnimator != null && mCurrentDialogAnimator != mShowDialogAnimation) {
             mCurrentDialogAnimator.end();
         }
         mCurrentDialogAnimator = mShowDialogAnimation;
+
         assert mScrimManager != null && mScrimPropertyModel != null;
         mScrimManager.showScrim(mScrimPropertyModel);
+
         setVisibility(View.VISIBLE);
         mShowDialogAnimation.start();
     }
 
     /** Hide {@link PopupWindow} for dialog with animation. */
     void hideDialog() {
-        // Skip the hideDialog call caused by initializing the dialog visibility as false.
         if (getVisibility() != VISIBLE) return;
 
-        assert mScrimManager != null && mScrimPropertyModel != null;
         if (mCurrentDialogAnimator != null && mCurrentDialogAnimator != mHideDialogAnimation) {
             mCurrentDialogAnimator.end();
         }
         mCurrentDialogAnimator = mHideDialogAnimation;
+
+        assert mScrimManager != null && mScrimPropertyModel != null;
         if (mScrimManager.isShowingScrim()) {
             if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
                 mScrimManager.hideScrim(

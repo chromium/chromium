@@ -558,7 +558,7 @@ public class TabGridDialogMediator
     }
 
     void hideDialog(boolean showAnimation) {
-        if (!mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE)) {
+        if (!isVisible()) {
             if (!showAnimation) {
                 // Forcibly finish any pending animations.
                 mModel.set(TabGridDialogProperties.FORCE_ANIMATION_TO_FINISH, true);
@@ -643,12 +643,12 @@ public class TabGridDialogMediator
             updateDialog();
             mModel.set(TabGridDialogProperties.SCRIMVIEW_CLICK_RUNNABLE, mScrimClickRunnable);
             updateDialogScrollPosition();
+            mDialogController.prepareDialog();
 
             // Do this after the dialog is updated so most attributes are not set with stale values
             // when the binding token is set.
             mModel.set(TabGridDialogProperties.BINDING_TOKEN, hashCode());
 
-            mDialogController.prepareDialog();
             mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
 
             requestShowBottomSheet();
@@ -686,7 +686,7 @@ public class TabGridDialogMediator
     }
 
     boolean isVisible() {
-        return mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE);
+        return Boolean.TRUE.equals(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
     }
 
     void setSelectedTabGroupColor(int selectedColor) {
