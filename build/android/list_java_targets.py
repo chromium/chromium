@@ -79,7 +79,13 @@ def _query_for_build_config_targets(output_dir):
   # Query ninja rather than GN since it's faster.
   # Use ninja rather than autoninja to avoid extra output if user has set the
   # NINJA_SUMMARIZE_BUILD environment variable.
-  cmd = [_resolve_ninja(), '-C', output_dir, '-t', 'targets']
+  if not os.path.exists(os.path.join(output_dir, '.ninja_deps')):
+    cmd = [_resolve_ninja(), '-C', output_dir, '-t', 'targets']
+  else:
+    cmd = [
+        os.path.join(_SRC_ROOT, 'third_party', 'siso', 'cipd', 'siso'), 'query',
+        'targets', '-C', output_dir
+    ]
   logging.info('Running: %r', cmd)
   try:
     ninja_output = subprocess.run(cmd,
