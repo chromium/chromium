@@ -1351,6 +1351,8 @@ policies:
   1350: FaceGazeEnabled
   1351: ProvisionalNotificationsAllowed
   1352: DeviceLoginScreenFaceGazeEnabled
+  1353: EnterpriseLogoUrlForBrowser
+  1354: EnterpriseCustomLabelForBrowser
 
 atomic_groups:
   1: Homepage

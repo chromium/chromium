@@ -4211,7 +4211,7 @@ inline constexpr char kEnterpriseCustomLabelForBrowser[] =
 inline constexpr char kEnterpriseCustomLabelForProfile[] =
     "enterprise_label.custom_value.for_profile";
 
-// IntegerValue of the custom label preset of a managed profile.
+// Integer value of the custom label preset of a managed profile.
 inline constexpr char kEnterpriseProfileBadgeToolbarSettings[] =
     "enterprise.profile_badging.toolbar_settings";
 

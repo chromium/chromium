@@ -2220,6 +2220,8 @@ chromium-metrics-reviews@google.com.
   <int value="1350" label="FaceGazeEnabled"/>
   <int value="1351" label="ProvisionalNotificationsAllowed"/>
   <int value="1352" label="DeviceLoginScreenFaceGazeEnabled"/>
+  <int value="1353" label="EnterpriseLogoUrlForBrowser"/>
+  <int value="1354" label="EnterpriseCustomLabelForBrowser"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
