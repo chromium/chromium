@@ -121,13 +121,13 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
                        .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
                        .Build());
   if (controller_->IsSavePrompt()) {
-    auto subtititle_container =
+    auto subtitle_container =
         views::Builder<views::BoxLayoutView>()
             .SetOrientation(views::BoxLayout::Orientation::kVertical)
             .SetInsideBorderInsets(
                 gfx::Insets::TLBR(0, 0, kSubTitleBottomMargin, 0))
             .Build();
-    subtititle_container->AddChildView(
+    subtitle_container->AddChildView(
         views::Builder<views::Label>()
             .SetText(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE))
@@ -137,7 +137,7 @@ SaveOrUpdateAutofillAiDataBubbleView::SaveOrUpdateAutofillAiDataBubbleView(
             .SetMultiLine(true)
             .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
             .Build());
-    main_content_wrapper->AddChildView(std::move(subtititle_container));
+    main_content_wrapper->AddChildView(std::move(subtitle_container));
   }
 
   auto* attributes_wrapper = main_content_wrapper->AddChildView(
