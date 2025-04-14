@@ -17,21 +17,21 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/writing_assistance_api.pb.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
-using ::testing::_;
-
 namespace {
+
+using ::blink::mojom::AILanguageCode;
+using ::blink::mojom::AILanguageCodePtr;
+using ::testing::_;
 
 constexpr char kSharedContextString[] = "test shared context";
 constexpr char kContextString[] = "test context";
 constexpr char kInputString[] = "input string";
-
-using blink::mojom::AILanguageCode;
-using blink::mojom::AILanguageCodePtr;
 
 class MockCreateWriterClient
     : public blink::mojom::AIManagerCreateWriterClient {
@@ -93,8 +93,6 @@ std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
 GetDefaultExpectedOptions() {
   return AIWriter::ToProtoOptions(GetDefaultOptions());
 }
-
-}  // namespace
 
 class AIWriterTest : public AITestUtils::AITestBase {
  protected:
@@ -768,3 +766,22 @@ TEST_F(AIWriterTest, MeasureUsageFails) {
                               future.GetCallback());
   ASSERT_EQ(future.Get<0>(), std::nullopt);
 }
+
+TEST_F(AIWriterTest, Priority) {
+  SetupMockOptimizationGuideKeyedService();
+  SetupMockSession();
+
+  EXPECT_CALL(session_,
+              SetPriority(on_device_model::mojom::Priority::kForeground));
+  auto remote = GetAIWriterRemote();
+
+  EXPECT_CALL(session_,
+              SetPriority(on_device_model::mojom::Priority::kBackground));
+  main_rfh()->GetRenderWidgetHost()->GetView()->Hide();
+
+  EXPECT_CALL(session_,
+              SetPriority(on_device_model::mojom::Priority::kForeground));
+  main_rfh()->GetRenderWidgetHost()->GetView()->Show();
+}
+
+}  // namespace

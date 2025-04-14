@@ -47,6 +47,9 @@ class AIRewriter : public AIContextBoundObject,
                     const std::string& context,
                     MeasureUsageCallback callback) override;
 
+  // AIContextBoundObject:
+  void SetPriority(on_device_model::mojom::Priority priority) override;
+
  private:
   void DidGetExecutionInputSizeForRewrite(
       mojo::RemoteSetElementId responder_id,

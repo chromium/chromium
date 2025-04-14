@@ -8781,10 +8781,12 @@ bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(
 void ChromeContentBrowserClient::BindAIManager(
     content::BrowserContext* browser_context,
     base::SupportsUserData* context_user_data,
+    content::RenderFrameHost* rfh,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   if (!context_user_data->GetUserData(kAIManagerUserDataKey)) {
     context_user_data->SetUserData(
-        kAIManagerUserDataKey, std::make_unique<AIManager>(browser_context));
+        kAIManagerUserDataKey,
+        std::make_unique<AIManager>(browser_context, rfh));
   }
 
   AIManager* ai_manager = static_cast<AIManager*>(

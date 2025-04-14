@@ -1111,6 +1111,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void BindAIManager(
       content::BrowserContext* browser_context,
       base::SupportsUserData* context_user_data,
+      content::RenderFrameHost* rfh,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver) override;
 
 #if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)

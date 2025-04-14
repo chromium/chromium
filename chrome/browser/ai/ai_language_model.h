@@ -170,6 +170,9 @@ class AILanguageModel : public AIContextBoundObject,
       mojo::PendingRemote<blink::mojom::AILanguageModelMeasureInputUsageClient>
           client) override;
 
+  // AIContextBoundObject:
+  void SetPriority(on_device_model::mojom::Priority priority) override;
+
   // Format the initial prompts, gets the token count, updates the session,
   // and passes the session information back through the callback.
   void SetInitialPrompts(

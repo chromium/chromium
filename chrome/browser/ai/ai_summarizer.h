@@ -36,6 +36,9 @@ class AISummarizer : public AIContextBoundObject,
                     const std::string& context,
                     MeasureUsageCallback callback) override;
 
+  // AIContextBoundObject:
+  void SetPriority(on_device_model::mojom::Priority priority) override;
+
   ~AISummarizer() override;
 
   static std::unique_ptr<optimization_guide::proto::SummarizeOptions>

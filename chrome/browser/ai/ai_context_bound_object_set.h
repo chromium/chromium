@@ -9,11 +9,12 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
+#include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 
 // The data structure that supports adding and removing `AIContextBoundObject`.
 class AIContextBoundObjectSet {
  public:
-  AIContextBoundObjectSet();
+  explicit AIContextBoundObjectSet(on_device_model::mojom::Priority priority);
   AIContextBoundObjectSet(const AIContextBoundObjectSet&) = delete;
   AIContextBoundObjectSet& operator=(const AIContextBoundObjectSet&) = delete;
   ~AIContextBoundObjectSet();
@@ -26,7 +27,11 @@ class AIContextBoundObjectSet {
   // Remove the `AIContextBoundObject` from the set.
   void RemoveContextBoundObject(AIContextBoundObject* object);
 
+  // Sets the priority for all objects owned by this.
+  void SetPriority(on_device_model::mojom::Priority priority);
+
  protected:
+  on_device_model::mojom::Priority priority_;
   base::flat_set<std::unique_ptr<AIContextBoundObject>,
                  base::UniquePtrComparator>
       context_bound_object_set_;

@@ -342,6 +342,15 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
         reason, 1);
   }
 
+  std::string GetResponse(OptimizationGuideModelExecutor::Session& session,
+                          const std::string& prompt) {
+    ResponseHolder response;
+    session.ExecuteModel(PageUrlRequest(prompt),
+                         response.GetStreamingCallback());
+    EXPECT_TRUE(response.GetFinalStatus());
+    return *response.value();
+  }
+
  protected:
   StandardAssets standard_assets_;
   base::test::TaskEnvironment task_environment_{
@@ -3673,6 +3682,48 @@ TEST_F(OnDeviceModelServiceControllerTest, Broker) {
   session->ExecuteModel(PageUrlRequest("bar"), response.GetStreamingCallback());
   ASSERT_TRUE(response.GetFinalStatus());
   EXPECT_EQ(*response.value(), "Context: execute:bar off:0 max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, Priority) {
+  Initialize(standard_assets_);
+
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+
+  EXPECT_EQ(GetResponse(*session, "foo"),
+            "Context: execute:foo off:0 max:1024\n");
+
+  session->SetPriority(on_device_model::mojom::Priority::kBackground);
+  EXPECT_EQ(GetResponse(*session, "foo"),
+            "Priority: background\nContext: execute:foo off:0 max:1024\n");
+  EXPECT_EQ(GetResponse(*session, "foo"),
+            "Priority: background\nContext: execute:foo off:0 max:1024\n");
+
+  session->SetPriority(on_device_model::mojom::Priority::kForeground);
+  EXPECT_EQ(GetResponse(*session, "foo"),
+            "Context: execute:foo off:0 max:1024\n");
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, PriorityClone) {
+  Initialize(standard_assets_);
+
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession();
+  EXPECT_TRUE(session);
+
+  EXPECT_EQ(GetResponse(*session, "foo"),
+            "Context: execute:foo off:0 max:1024\n");
+
+  session->SetPriority(on_device_model::mojom::Priority::kBackground);
+  EXPECT_EQ(GetResponse(*session, "foo"),
+            "Priority: background\nContext: execute:foo off:0 max:1024\n");
+
+  auto clone = session->Clone();
+  EXPECT_EQ(GetResponse(*clone, "foo"),
+            "Priority: background\nContext: execute:foo off:0 max:1024\n");
+  EXPECT_EQ(GetResponse(*clone, "foo"),
+            "Priority: background\nContext: execute:foo off:0 max:1024\n");
 }
 
 }  // namespace optimization_guide

@@ -19,6 +19,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "chrome/browser/ai/features.h"
@@ -32,6 +33,7 @@
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,11 +44,6 @@
 #include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-shared.h"
 
-using testing::_;
-using testing::ReturnRef;
-using testing::Test;
-using Role = blink::mojom::AILanguageModelPromptRole;
-
 namespace {
 
 using ::optimization_guide::MultimodalMessage;
@@ -55,6 +52,10 @@ using ::optimization_guide::proto::PromptApiPrompt;
 using ::optimization_guide::proto::PromptApiRequest;
 using ::optimization_guide::proto::PromptApiRole;
 using ::optimization_guide::proto::ProtoField;
+using ::testing::_;
+using ::testing::ReturnRef;
+using ::testing::Test;
+using Role = ::blink::mojom::AILanguageModelPromptRole;
 
 constexpr uint32_t kTestMaxContextToken = 10u;
 constexpr uint32_t kTestInitialPromptsToken = 5u;
@@ -696,7 +697,7 @@ class AILanguageModelTest : public AITestUtils::AITestBase {
   }
 
   void TestPromptCall(mojo::Remote<blink::mojom::AILanguageModel>& mock_session,
-                      std::string& prompt,
+                      const std::string& prompt,
                       bool should_overflow_context) {
     AITestUtils::MockModelStreamingResponder mock_responder;
 
@@ -1111,6 +1112,36 @@ TEST_P(AILanguageModelContextTest, TestContextOperation_OverflowOnFirstItem) {
   } else {
     EXPECT_FALSE(context_.HasContextItem());
   }
+}
+
+TEST_F(AILanguageModelTest, Priority) {
+  SetupMockOptimizationGuideKeyedService();
+  base::test::TestFuture<testing::NiceMock<optimization_guide::MockSession>*>
+      session_future;
+  EXPECT_CALL(*mock_optimization_guide_keyed_service_, StartSession(_, _))
+      .WillOnce(
+          [&](optimization_guide::ModelBasedCapabilityKey feature,
+              const std::optional<optimization_guide::SessionConfigParams>&
+                  config_params) {
+            auto session = std::make_unique<
+                testing::NiceMock<optimization_guide::MockSession>>();
+            SetUpMockSession(*session);
+            EXPECT_CALL(
+                *session,
+                SetPriority(on_device_model::mojom::Priority::kForeground));
+            session_future.SetValue(session.get());
+            return session;
+          });
+  auto session_remote = CreateMockSession();
+  auto* session = session_future.Get();
+
+  EXPECT_CALL(*session,
+              SetPriority(on_device_model::mojom::Priority::kBackground));
+  main_rfh()->GetRenderWidgetHost()->GetView()->Hide();
+
+  EXPECT_CALL(*session,
+              SetPriority(on_device_model::mojom::Priority::kForeground));
+  main_rfh()->GetRenderWidgetHost()->GetView()->Show();
 }
 
 }  // namespace

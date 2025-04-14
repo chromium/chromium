@@ -77,7 +77,8 @@ AITestUtils::AITestBase::~AITestBase() = default;
 
 void AITestUtils::AITestBase::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
-  ai_manager_ = std::make_unique<AIManager>(main_rfh()->GetBrowserContext());
+  ai_manager_ =
+      std::make_unique<AIManager>(main_rfh()->GetBrowserContext(), main_rfh());
 }
 
 void AITestUtils::AITestBase::TearDown() {

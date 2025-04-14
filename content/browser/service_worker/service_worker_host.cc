@@ -294,7 +294,8 @@ void ServiceWorkerHost::BindAIManager(
   auto* process = GetProcessHost();
   if (process) {
     GetContentClient()->browser()->BindAIManager(process->GetBrowserContext(),
-                                                 this, std::move(receiver));
+                                                 this, /*rfh=*/nullptr,
+                                                 std::move(receiver));
   }
 }
 

@@ -104,6 +104,10 @@ class MockSession : public OptimizationGuideModelExecutor::Session {
               (),
               (const override));
   MOCK_METHOD(std::unique_ptr<Session>, Clone, (), (override));
+  MOCK_METHOD(void,
+              SetPriority,
+              (on_device_model::mojom::Priority priority),
+              (override));
 };
 
 }  // namespace optimization_guide

@@ -555,6 +555,12 @@ void AILanguageModel::MeasureInputUsage(
               std::move(client))));
 }
 
+void AILanguageModel::SetPriority(on_device_model::mojom::Priority priority) {
+  if (session_) {
+    session_->SetPriority(priority);
+  }
+}
+
 mojo::PendingRemote<blink::mojom::AILanguageModel>
 AILanguageModel::TakePendingRemote() {
   return std::move(pending_remote_);

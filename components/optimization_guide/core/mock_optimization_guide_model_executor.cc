@@ -86,6 +86,10 @@ void MockSession::Delegate(OptimizationGuideModelExecutor::Session* impl) {
       .WillByDefault([impl]() -> const proto::Any& {
         return impl->GetOnDeviceFeatureMetadata();
       });
+  ON_CALL(*this, SetPriority)
+      .WillByDefault([impl](on_device_model::mojom::Priority priority) {
+        impl->SetPriority(priority);
+      });
 }
 
 }  // namespace optimization_guide

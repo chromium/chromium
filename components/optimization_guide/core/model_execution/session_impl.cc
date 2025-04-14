@@ -299,6 +299,12 @@ std::unique_ptr<OptimizationGuideModelExecutor::Session> SessionImpl::Clone() {
   return session;
 }
 
+void SessionImpl::SetPriority(on_device_model::mojom::Priority priority) {
+  if (on_device_context_) {
+    on_device_context_->SetPriority(priority);
+  }
+}
+
 void SessionImpl::GetSizeInTokensInternal(
     MultimodalMessageReadView request,
     OptimizationGuideModelSizeInTokenCallback callback,
