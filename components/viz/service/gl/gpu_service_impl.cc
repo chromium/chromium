@@ -938,10 +938,15 @@ void GpuServiceImpl::BindWebNNContextProvider(
   }
 
   if (!webnn_context_provider_) {
+    scoped_refptr<gpu::SharedContextState> shared_context_state =
+        GetContextState();
+    if (!shared_context_state) {
+      return;
+    }
     // TODO(crbug.com/345352987): manage `WebNNContextProviderImpl` instance per
     // `client_id` in order to support memory metrics.
     webnn_context_provider_ = webnn::WebNNContextProviderImpl::Create(
-        GetContextState(), gpu_feature_info_, gpu_info_,
+        std::move(shared_context_state), gpu_feature_info_, gpu_info_,
         base::BindOnce(&GpuServiceImpl::LoseAllContexts, weak_ptr_));
   }
 
