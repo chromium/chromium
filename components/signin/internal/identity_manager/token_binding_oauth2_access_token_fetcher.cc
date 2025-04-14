@@ -14,12 +14,9 @@
 #include "base/memory/weak_ptr.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/session_binding_utils.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
-
-namespace {
-constexpr std::string_view kAssertionFailedPlaceholder = "SIGNATURE_FAILED";
-}
 
 TokenBindingOAuth2AccessTokenFetcher::TokenBindingOAuth2AccessTokenFetcher(
     std::unique_ptr<OAuth2MintAccessTokenFetcherAdapter> fetcher)
@@ -40,7 +37,7 @@ void TokenBindingOAuth2AccessTokenFetcher::SetBindingKeyAssertion(
     // the server doesn't verify assertions during dark launch.
     // TODO(crbug.com/377942773): fail here immediately after the feature is
     // fully launched.
-    assertion = kAssertionFailedPlaceholder;
+    assertion = GaiaConstants::kTokenBindingAssertionFailedPlaceholder;
   } else if (ephemeral_key.has_value()) {
     fetcher_->SetTokenDecryptor(
         base::BindRepeating(&signin::DecryptValueWithEphemeralKey,
