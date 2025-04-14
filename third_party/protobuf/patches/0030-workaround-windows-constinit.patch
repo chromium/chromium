@@ -38,7 +38,7 @@ index 460ff6c0244ec..8672b34a76967 100644
                PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 $type$ $name$;
          )cc");
    }
-diff --git a/third_party/protobuf/src/google/protobuf/compiler/cpp/message.cc b/third_party/protobuf/src/google/protobuf/compiler/cpp/message.cc
+diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
 index 1b4b8e6051772..9caa39c20af28 100644
 --- a/third_party/protobuf/src/google/protobuf/compiler/cpp/message.cc
 +++ b/third_party/protobuf/src/google/protobuf/compiler/cpp/message.cc
@@ -51,10 +51,10 @@ index 1b4b8e6051772..9caa39c20af28 100644
                PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 const $pbi$::ClassDataFull
                    $classname$_class_data_ =
                        $classname$::InternalGenerateClassData_();
-diff --git a/third_party/protobuf/src/google/protobuf/compiler/cpp/parse_function_generator.cc b/third_party/protobuf/src/google/protobuf/compiler/cpp/parse_function_generator.cc
+diff --git a/src/google/protobuf/compiler/cpp/parse_function_generator.cc b/src/google/protobuf/compiler/cpp/parse_function_generator.cc
 index 774679bd30804..be004cef4b39b 100644
---- a/third_party/protobuf/src/google/protobuf/compiler/cpp/parse_function_generator.cc
-+++ b/third_party/protobuf/src/google/protobuf/compiler/cpp/parse_function_generator.cc
+--- a/src/google/protobuf/compiler/cpp/parse_function_generator.cc
++++ b/src/google/protobuf/compiler/cpp/parse_function_generator.cc
 @@ -464,7 +464,7 @@ void ParseFunctionGenerator::GenerateTailCallTable(io::Printer* p) {
          // FileDescriptorProto is safe from this.
          IsFileDescriptorProto(descriptor_->file(), options_)

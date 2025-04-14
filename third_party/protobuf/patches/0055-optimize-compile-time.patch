@@ -1,4 +1,4 @@
-diff --git a/src/google/protobuf/any.pb.cc b/third_party/protobuf/src/google/protobuf/any.pb.cc
+diff --git a/src/google/protobuf/any.pb.cc b/src/google/protobuf/any.pb.cc
 index e8d626ebf1011..53e27aaa956bc 100644
 --- a/src/google/protobuf/any.pb.cc
 +++ b/src/google/protobuf/any.pb.cc
@@ -13,7 +13,7 @@ index e8d626ebf1011..53e27aaa956bc 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&Any_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(Any_class_data_.tc_table);
    return Any_class_data_.base();
-diff --git a/src/google/protobuf/api.pb.cc b/third_party/protobuf/src/google/protobuf/api.pb.cc
+diff --git a/src/google/protobuf/api.pb.cc b/src/google/protobuf/api.pb.cc
 index 47f1184461621..4039a9c6c0b4d 100644
 --- a/src/google/protobuf/api.pb.cc
 +++ b/src/google/protobuf/api.pb.cc
@@ -50,7 +50,7 @@ index 47f1184461621..4039a9c6c0b4d 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&Mixin_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(Mixin_class_data_.tc_table);
    return Mixin_class_data_.base();
-diff --git a/src/google/protobuf/compiler/cpp/message.cc b/third_party/protobuf/src/google/protobuf/compiler/cpp/message.cc
+diff --git a/src/google/protobuf/compiler/cpp/message.cc b/src/google/protobuf/compiler/cpp/message.cc
 index 9caa39c20af28..dc5a522b922ab 100644
 --- a/src/google/protobuf/compiler/cpp/message.cc
 +++ b/src/google/protobuf/compiler/cpp/message.cc
@@ -88,7 +88,7 @@ index 9caa39c20af28..dc5a522b922ab 100644
              return $classname$_class_data_.base();
            }
          )cc");
-diff --git a/src/google/protobuf/compiler/plugin.pb.cc b/third_party/protobuf/src/google/protobuf/compiler/plugin.pb.cc
+diff --git a/src/google/protobuf/compiler/plugin.pb.cc b/src/google/protobuf/compiler/plugin.pb.cc
 index 3d1321d3af3f9..082c0b908c9f1 100644
 --- a/src/google/protobuf/compiler/plugin.pb.cc
 +++ b/src/google/protobuf/compiler/plugin.pb.cc
@@ -136,7 +136,7 @@ index 3d1321d3af3f9..082c0b908c9f1 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&CodeGeneratorResponse_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(CodeGeneratorResponse_class_data_.tc_table);
    return CodeGeneratorResponse_class_data_.base();
-diff --git a/src/google/protobuf/cpp_features.pb.cc b/third_party/protobuf/src/google/protobuf/cpp_features.pb.cc
+diff --git a/src/google/protobuf/cpp_features.pb.cc b/src/google/protobuf/cpp_features.pb.cc
 index ace8e5da81562..76ceeef097f39 100644
 --- a/src/google/protobuf/cpp_features.pb.cc
 +++ b/src/google/protobuf/cpp_features.pb.cc
@@ -151,7 +151,7 @@ index ace8e5da81562..76ceeef097f39 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&CppFeatures_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(CppFeatures_class_data_.tc_table);
    return CppFeatures_class_data_.base();
-diff --git a/src/google/protobuf/descriptor.pb.cc b/third_party/protobuf/src/google/protobuf/descriptor.pb.cc
+diff --git a/src/google/protobuf/descriptor.pb.cc b/src/google/protobuf/descriptor.pb.cc
 index 0c82234ae9537..06c33301afe33 100644
 --- a/src/google/protobuf/descriptor.pb.cc
 +++ b/src/google/protobuf/descriptor.pb.cc
@@ -518,7 +518,7 @@ index 0c82234ae9537..06c33301afe33 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&GeneratedCodeInfo_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(GeneratedCodeInfo_class_data_.tc_table);
    return GeneratedCodeInfo_class_data_.base();
-diff --git a/src/google/protobuf/duration.pb.cc b/third_party/protobuf/src/google/protobuf/duration.pb.cc
+diff --git a/src/google/protobuf/duration.pb.cc b/src/google/protobuf/duration.pb.cc
 index 405b5622786d5..3376e2b90c179 100644
 --- a/src/google/protobuf/duration.pb.cc
 +++ b/src/google/protobuf/duration.pb.cc
@@ -533,7 +533,7 @@ index 405b5622786d5..3376e2b90c179 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&Duration_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(Duration_class_data_.tc_table);
    return Duration_class_data_.base();
-diff --git a/src/google/protobuf/empty.pb.cc b/third_party/protobuf/src/google/protobuf/empty.pb.cc
+diff --git a/src/google/protobuf/empty.pb.cc b/src/google/protobuf/empty.pb.cc
 index 9cd4656876418..6f954a9edb64b 100644
 --- a/src/google/protobuf/empty.pb.cc
 +++ b/src/google/protobuf/empty.pb.cc
@@ -548,7 +548,7 @@ index 9cd4656876418..6f954a9edb64b 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&Empty_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(Empty_class_data_.tc_table);
    return Empty_class_data_.base();
-diff --git a/src/google/protobuf/field_mask.pb.cc b/third_party/protobuf/src/google/protobuf/field_mask.pb.cc
+diff --git a/src/google/protobuf/field_mask.pb.cc b/src/google/protobuf/field_mask.pb.cc
 index 3f7c3a405deaa..5c1fecaac5a1c 100644
 --- a/src/google/protobuf/field_mask.pb.cc
 +++ b/src/google/protobuf/field_mask.pb.cc
@@ -563,7 +563,7 @@ index 3f7c3a405deaa..5c1fecaac5a1c 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&FieldMask_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(FieldMask_class_data_.tc_table);
    return FieldMask_class_data_.base();
-diff --git a/src/google/protobuf/source_context.pb.cc b/third_party/protobuf/src/google/protobuf/source_context.pb.cc
+diff --git a/src/google/protobuf/source_context.pb.cc b/src/google/protobuf/source_context.pb.cc
 index 02f182c95fc27..ddb7f98510bf1 100644
 --- a/src/google/protobuf/source_context.pb.cc
 +++ b/src/google/protobuf/source_context.pb.cc
@@ -578,7 +578,7 @@ index 02f182c95fc27..ddb7f98510bf1 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&SourceContext_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(SourceContext_class_data_.tc_table);
    return SourceContext_class_data_.base();
-diff --git a/src/google/protobuf/struct.pb.cc b/third_party/protobuf/src/google/protobuf/struct.pb.cc
+diff --git a/src/google/protobuf/struct.pb.cc b/src/google/protobuf/struct.pb.cc
 index 2ccd2ecfac94c..de1989fc8fbb6 100644
 --- a/src/google/protobuf/struct.pb.cc
 +++ b/src/google/protobuf/struct.pb.cc
@@ -626,7 +626,7 @@ index 2ccd2ecfac94c..de1989fc8fbb6 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&ListValue_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(ListValue_class_data_.tc_table);
    return ListValue_class_data_.base();
-diff --git a/src/google/protobuf/timestamp.pb.cc b/third_party/protobuf/src/google/protobuf/timestamp.pb.cc
+diff --git a/src/google/protobuf/timestamp.pb.cc b/src/google/protobuf/timestamp.pb.cc
 index fbeaa82dc5673..228182fce15a6 100644
 --- a/src/google/protobuf/timestamp.pb.cc
 +++ b/src/google/protobuf/timestamp.pb.cc
@@ -641,7 +641,7 @@ index fbeaa82dc5673..228182fce15a6 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&Timestamp_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(Timestamp_class_data_.tc_table);
    return Timestamp_class_data_.base();
-diff --git a/src/google/protobuf/type.pb.cc b/third_party/protobuf/src/google/protobuf/type.pb.cc
+diff --git a/src/google/protobuf/type.pb.cc b/src/google/protobuf/type.pb.cc
 index 9bfe6f41e8e60..4d955a1678842 100644
 --- a/src/google/protobuf/type.pb.cc
 +++ b/src/google/protobuf/type.pb.cc
@@ -700,7 +700,7 @@ index 9bfe6f41e8e60..4d955a1678842 100644
    ::google::protobuf::internal::PrefetchToLocalCache(&Option_class_data_);
    ::google::protobuf::internal::PrefetchToLocalCache(Option_class_data_.tc_table);
    return Option_class_data_.base();
-diff --git a/src/google/protobuf/wrappers.pb.cc b/third_party/protobuf/src/google/protobuf/wrappers.pb.cc
+diff --git a/src/google/protobuf/wrappers.pb.cc b/src/google/protobuf/wrappers.pb.cc
 index 4a800eb50b88b..108b0ef9b9c1b 100644
 --- a/src/google/protobuf/wrappers.pb.cc
 +++ b/src/google/protobuf/wrappers.pb.cc

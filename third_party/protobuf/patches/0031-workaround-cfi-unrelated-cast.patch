@@ -50,10 +50,10 @@ index cae9ebe01ec2c..b84b55e4d8762 100644
  // ThreadSafeArenaz is turned off completely in opensource builds.
  
  // Windows declares several inconvenient macro names.  We #undef them and then
-diff --git a/third_party/protobuf/src/google/protobuf/map.h b/third_party/protobuf/src/google/protobuf/map.h
+diff --git a/src/google/protobuf/map.h b/src/google/protobuf/map.h
 index 769435b9996b1..2d22dd031c53e 100644
---- a/third_party/protobuf/src/google/protobuf/map.h
-+++ b/third_party/protobuf/src/google/protobuf/map.h
+--- a/src/google/protobuf/map.h
++++ b/src/google/protobuf/map.h
 @@ -320,6 +320,7 @@ class PROTOBUF_EXPORT UntypedMapBase {
    UntypedMapBase& operator=(const UntypedMapBase&) = delete;
  
