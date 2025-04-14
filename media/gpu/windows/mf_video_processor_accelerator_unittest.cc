@@ -171,8 +171,8 @@ class MFVideoProcessorAcceleratorTest : public ::testing::Test {
   template <typename F>
   void ValidateResult(IMFMediaBuffer* buffer, UINT size, F validation_func) {
     MediaBufferScopedPointer scoped_buffer(buffer);
-    ASSERT_EQ(scoped_buffer.current_length(), size);
-    validation_func(scoped_buffer.get());
+    ASSERT_EQ(scoped_buffer.as_span().size(), size);
+    validation_func(scoped_buffer.as_span().data());
   }
 
   scoped_refptr<DXGIDeviceManager> dxgi_device_man_;

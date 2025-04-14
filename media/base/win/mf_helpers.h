@@ -83,15 +83,11 @@ class MEDIA_EXPORT MediaBufferScopedPointer {
 
   ~MediaBufferScopedPointer();
 
-  raw_ptr<uint8_t, AllowPtrArithmetic> get() { return buffer_; }
-  DWORD current_length() const { return current_length_; }
-  DWORD max_length() const { return max_length_; }
+  base::span<uint8_t> as_span() { return data_; }
 
  private:
   Microsoft::WRL::ComPtr<IMFMediaBuffer> media_buffer_;
-  raw_ptr<uint8_t, AllowPtrArithmetic> buffer_;
-  DWORD max_length_;
-  DWORD current_length_;
+  base::raw_span<uint8_t> data_;
 };
 
 // Copies |in_string| to |out_string| that is allocated with CoTaskMemAlloc().
