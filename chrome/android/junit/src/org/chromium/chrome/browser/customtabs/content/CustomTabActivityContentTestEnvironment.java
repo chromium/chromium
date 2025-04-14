@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
@@ -244,6 +245,17 @@ public class CustomTabActivityContentTestEnvironment extends TestWatcher {
         warmUp();
         Tab hiddenTab = prepareTab();
         return hiddenTab;
+    }
+
+    public Tab prepareTransferredTab() {
+        int tabId = 1;
+        Tab tab = prepareTab();
+        when(tab.getId()).thenReturn(tabId);
+        AsyncTabParamsManagerSingleton.getInstance()
+                .add(tabId, new TabReparentingParams(tab, null));
+        IntentHandler.setTabId(mIntent, tabId);
+        IntentUtils.setForceIsTrustedIntentForTesting(true);
+        return tab;
     }
 
     public Tab prepareTab() {

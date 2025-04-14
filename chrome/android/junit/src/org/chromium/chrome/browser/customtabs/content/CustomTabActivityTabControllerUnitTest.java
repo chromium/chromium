@@ -343,4 +343,20 @@ public class CustomTabActivityTabControllerUnitTest {
         mTabController.finishNativeInitialization();
         verify(handler).setTabObserverRegistrar(env.tabObserverRegistrar);
     }
+
+    @Test
+    public void usesTabFromIntent_IfAvailable() {
+        Tab tab = env.prepareTransferredTab();
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertEquals(tab, env.tabProvider.getTab());
+    }
+
+    @Test
+    public void doesNotUseTabFromIntent_IfNotInAsyncParamsManager() {
+        Tab tab = env.prepareTransferredTab();
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+        assertEquals(tab, env.tabProvider.getTab());
+    }
 }
