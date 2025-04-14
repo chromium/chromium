@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_block_flow_iterator.h"
@@ -887,7 +888,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // FinalizeTree() is called. It will recursively traversse the tree and mark
   // nodes as on-screen or off-screen. This information is later used to
   // determine which nodes will be serialized.
-  bool MarkOnScreenNodes(AXObject* obj);
+  bool MarkOnScreenNodes(AXObject* obj,
+                         const HitTestResult::NodeSet* on_screen_nodes);
 
   HeapHashSet<WeakMember<InspectorAccessibilityAgent>> agents_;
 

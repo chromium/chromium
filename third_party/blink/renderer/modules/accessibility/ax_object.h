@@ -452,7 +452,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual bool IsLoaded() const;
   virtual bool IsModal() const;
   virtual bool IsMultiSelectable() const;
-  virtual bool ComputeIsOffScreen() const;
   virtual bool IsRequired() const;
   virtual AccessibilitySelectedState IsSelected() const;
   virtual bool IsSelectedFromFocusSupported() const;

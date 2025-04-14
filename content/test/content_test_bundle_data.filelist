@@ -3334,6 +3334,10 @@ data/accessibility/html/commandfor-api-popover-expected-mac.txt
 data/accessibility/html/commandfor-api-popover-expected-uia-win.txt
 data/accessibility/html/commandfor-api-popover-expected-win.txt
 data/accessibility/html/commandfor-api-popover.html
+data/accessibility/html/content-left-of-view-port-for-on-screen-mode-expected-blink.txt
+data/accessibility/html/content-left-of-view-port-for-on-screen-mode.html
+data/accessibility/html/content-with-3-view-port-scrolls-for-on-screen-mode-expected-blink.txt
+data/accessibility/html/content-with-3-view-port-scrolls-for-on-screen-mode.html
 data/accessibility/html/contenteditable-br-expected-blink.txt
 data/accessibility/html/contenteditable-br.html
 data/accessibility/html/contenteditable-descendants-expected-android-assist-data.txt

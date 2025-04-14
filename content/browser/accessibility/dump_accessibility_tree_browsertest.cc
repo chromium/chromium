@@ -2078,6 +2078,18 @@ IN_PROC_BROWSER_TEST_P(OnScreenModeDumpAccessibilityTreeTest,
   RunOnScreenTest(FILE_PATH_LITERAL("on-screen-mode.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(OnScreenModeDumpAccessibilityTreeTest,
+                       ContentLeftOfViewPortForOnScreenMode) {
+  RunOnScreenTest(
+      FILE_PATH_LITERAL("content-left-of-view-port-for-on-screen-mode.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(OnScreenModeDumpAccessibilityTreeTest,
+                       ContentWith3ViewPortScrollsForOnScreenMode) {
+  RunOnScreenTest(FILE_PATH_LITERAL(
+      "content-with-3-view-port-scrolls-for-on-screen-mode.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityBlockquoteLevels) {
   RunHtmlTest(FILE_PATH_LITERAL("blockquote-levels.html"));
