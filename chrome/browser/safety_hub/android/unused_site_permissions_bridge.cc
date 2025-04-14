@@ -49,6 +49,9 @@ PermissionsData FromJavaPermissionsData(
       content_settings::ContentSettingConstraints(expiration - lifetime);
   permissions_data.constraints.set_lifetime(lifetime);
 
+  permissions_data.revocation_type = static_cast<PermissionsRevocationType>(
+      Java_PermissionsData_getRevocationType(env, jobject));
+
   return permissions_data;
 }
 
@@ -69,7 +72,8 @@ base::android::ScopedJavaLocalRef<jobject> ToJavaPermissionsData(
   return Java_PermissionsData_create(
       env, origin.Serialize(), permissions,
       obj.constraints.expiration().ToDeltaSinceWindowsEpoch().InMicroseconds(),
-      obj.constraints.lifetime().InMicroseconds());
+      obj.constraints.lifetime().InMicroseconds(),
+      static_cast<int32_t>(obj.revocation_type));
 }
 
 std::vector<PermissionsData> GetRevokedPermissions(Profile* profile) {

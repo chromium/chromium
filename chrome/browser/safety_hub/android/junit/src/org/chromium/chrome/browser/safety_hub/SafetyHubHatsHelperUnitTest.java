@@ -50,7 +50,8 @@ public class SafetyHubHatsHelperUnitTest {
                         ContentSettingsType.MEDIASTREAM_CAMERA,
                     },
                     0,
-                    0);
+                    0,
+                    PermissionsRevocationType.UNUSED_PERMISSIONS);
     private static final NotificationPermissions NOTIFICATION_PERMISSIONS =
             NotificationPermissions.create(EXAMPLE_URL, "*", 3);
     private static final String HATS_SURVEY_TRIGGER_ID = "safety_hub_android_organic_survey";
