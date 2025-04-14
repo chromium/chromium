@@ -792,7 +792,7 @@ void NdkVideoEncodeAccelerator::FeedInput() {
     }
   }
 
-  auto mc_input_buffer = GetInputBuffer(buffer_idx);
+  auto mc_input_buffer = media_codec_->GetInputBuffer(buffer_idx);
   if (mc_input_buffer.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
                        "Can't obtain input buffer from media codec"});
@@ -936,7 +936,8 @@ bool NdkVideoEncodeAccelerator::DrainConfig() {
   // We already have the info we need from `output_buffer`
   std::ignore = media_codec_->TakeOutput();
 
-  auto out_buffer_data = GetOutputBuffer(output_buffer.buffer_index);
+  auto out_buffer_data =
+      media_codec_->GetOutputBuffer(output_buffer.buffer_index);
   if (out_buffer_data.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "Can't obtain output buffer from media codec"});
@@ -1015,7 +1016,8 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
     return;
   }
 
-  auto out_buffer_data = GetOutputBuffer(output_buffer.buffer_index);
+  auto out_buffer_data =
+      media_codec_->GetOutputBuffer(output_buffer.buffer_index);
   if (out_buffer_data.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "Can't obtain output buffer from media codec"});
@@ -1204,22 +1206,6 @@ void NdkVideoEncodeAccelerator::SetEncoderColorSpace() {
   }
 
   DVLOG(1) << "Set color space to: " << encoder_color_space_->ToString();
-}
-
-base::span<uint8_t> NdkVideoEncodeAccelerator::GetInputBuffer(size_t idx) {
-  size_t capacity = 0;
-  uint8_t* buf_data =
-      AMediaCodec_getInputBuffer(media_codec_->codec(), idx, &capacity);
-  // SAFETY: `AMediaCodec_getInputBuffer` returns buffer size as the out param.
-  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity));
-}
-
-base::span<uint8_t> NdkVideoEncodeAccelerator::GetOutputBuffer(size_t idx) {
-  size_t capacity = 0;
-  // SAFETY: `AMediaCodec_getOutputBuffer` returns buffer size as the out param.
-  uint8_t* buf_data =
-      AMediaCodec_getOutputBuffer(media_codec_->codec(), idx, &capacity);
-  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity));
 }
 
 }  // namespace media

@@ -98,9 +98,6 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   void NotifyEncoderInfo();
 
-  base::span<uint8_t> GetInputBuffer(size_t idx);
-  base::span<uint8_t> GetOutputBuffer(size_t idx);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // VideoDecodeAccelerator::Client callbacks go here.  Invalidated once any
