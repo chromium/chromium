@@ -156,10 +156,10 @@ class TabAndroid : public tabs::TabInterface,
       bool did_start_load,
       bool did_finish_load);
 
-  bool IsCustomTab();
-  bool IsHidden();
+  bool IsCustomTab() const;
+  bool IsHidden() const;
 
-  bool IsTrustedWebActivity();
+  bool IsTrustedWebActivity() const;
 
   // Observers -----------------------------------------------------------------
 

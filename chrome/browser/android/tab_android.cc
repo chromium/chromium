@@ -335,12 +335,12 @@ std::unique_ptr<content::WebContents> TabAndroid::SwapWebContents(
   return base::WrapUnique(old_contents);
 }
 
-bool TabAndroid::IsCustomTab() {
+bool TabAndroid::IsCustomTab() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isCustomTab(env, weak_java_tab_.get(env));
 }
 
-bool TabAndroid::IsHidden() {
+bool TabAndroid::IsHidden() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isHidden(env, weak_java_tab_.get(env));
 }
@@ -574,7 +574,7 @@ void TabAndroid::SetDevToolsAgentHost(
   devtools_host_ = std::move(host);
 }
 
-bool TabAndroid::IsTrustedWebActivity() {
+bool TabAndroid::IsTrustedWebActivity() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_TabImpl_isTrustedWebActivity(env, weak_java_tab_.get(env));
 }
@@ -619,8 +619,7 @@ base::CallbackListSubscription TabAndroid::RegisterWillDeactivate(
 }
 
 bool TabAndroid::IsVisible() const {
-  NOTIMPLEMENTED();
-  return false;
+  return !IsHidden();
 }
 
 base::CallbackListSubscription TabAndroid::RegisterDidBecomeVisible(
