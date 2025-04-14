@@ -328,6 +328,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kReadAloudIPHMenuButtonHighlightCCT,
     &kReaderModeAutoDistill,
     &kReaderModeDevEntryPoint,
+    &kReaderModeImprovements,
     &kRecordSuppressionMetrics,
     &kReengagementNotification,
     &kRelatedSearchesAllLanguage,
@@ -1088,6 +1089,10 @@ BASE_FEATURE(kReaderModeAutoDistill,
 
 BASE_FEATURE(kReaderModeDevEntryPoint,
              "ReaderModeDevEntryPoint",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kReaderModeImprovements,
+             "ReaderModeImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRecordSuppressionMetrics,

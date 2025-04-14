@@ -4894,6 +4894,9 @@ const char kReaderModeHeuristicsAdaboost[] = "Non-mobile-friendly articles";
 const char kReaderModeHeuristicsAllArticles[] = "All articles";
 const char kReaderModeHeuristicsAlwaysOff[] = "Never";
 const char kReaderModeHeuristicsAlwaysOn[] = "Always";
+const char kReaderModeImprovementsName[] = "Reader Mode improvements";
+const char kReaderModeImprovementsDescription[] =
+    "Collection of improvements to reader modefor android.";
 
 const char kReengagementNotificationName[] =
     "Enable re-engagement notifications";

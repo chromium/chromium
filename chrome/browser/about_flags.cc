@@ -724,6 +724,24 @@ const FeatureEntry::Choice kReaderModeHeuristicsChoices[] = {
      switches::reader_mode_heuristics::kAllArticles},
 };
 
+const FeatureEntry::FeatureParam
+    kReaderModeImprovementsTriggerOnMobileFriendly[] = {
+        {"trigger_on_mobile_friendly_pages", "true"}};
+const FeatureEntry::FeatureParam kReaderModeImprovementsAlwaysOnEntryPoint[] = {
+    {"always_on_entry_point", "true"}};
+const FeatureEntry::FeatureParam kReaderModeImprovementsAllOn[] = {
+    {"trigger_on_mobile_friendly_pages", "true"},
+    {"always_on_entry_point", "true"}};
+
+const FeatureEntry::FeatureVariation kReaderModeImprovementsChoices[] = {
+    {"trigger on mobile-friendly pages",
+     kReaderModeImprovementsTriggerOnMobileFriendly,
+     std::size(kReaderModeImprovementsTriggerOnMobileFriendly), nullptr},
+    {"always-on entry point", kReaderModeImprovementsAlwaysOnEntryPoint,
+     std::size(kReaderModeImprovementsAlwaysOnEntryPoint), nullptr},
+    {"all", kReaderModeImprovementsAllOn,
+     std::size(kReaderModeImprovementsAllOn), nullptr}};
+
 const FeatureEntry::Choice kForceUpdateMenuTypeChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kUpdateMenuTypeNone, switches::kForceUpdateMenuType,
@@ -5154,6 +5172,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContextualPageActionsShareModelDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(
          segmentation_platform::features::kContextualPageActionShareModel)},
+
     {"reader-mode-auto-distill", flag_descriptions::kReaderModeAutoDistillName,
      flag_descriptions::kReaderModeAutoDistillDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReaderModeAutoDistill)},
@@ -5164,6 +5183,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},
+    {"reader-mode-improvements", flag_descriptions::kReaderModeImprovementsName,
+     flag_descriptions::kReaderModeImprovementsDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kReaderModeImprovements,
+                                    kReaderModeImprovementsChoices,
+                                    "Reader Mode Improvements (fdas)")},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,

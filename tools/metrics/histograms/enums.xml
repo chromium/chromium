@@ -9834,6 +9834,7 @@ from previous Chrome versions.
   <int value="-1710772665" label="disable-my-files-navigation"/>
   <int value="-1710314754"
       label="MessagesForAndroidStackingAnimation:disabled"/>
+  <int value="-1709603348" label="ReaderModeImprovements:enabled"/>
   <int value="-1709271317" label="AutofillEnableBuyNowPayLaterSyncing:enabled"/>
   <int value="-1707707919"
       label="AutofillEnableCardBenefitsForAmericanExpress:enabled"/>
@@ -18351,6 +18352,7 @@ from previous Chrome versions.
   <int value="1563255033" label="memlog-stack-mode"/>
   <int value="1563267770"
       label="FencedFramesReportingAttestationsChanges:disabled"/>
+  <int value="1565165813" label="ReaderModeImprovements:disabled"/>
   <int value="1565467134" label="AccessibilityShakeToLocate:enabled"/>
   <int value="1565630921" label="MediaFoundationCameraUsageMonitoring:enabled"/>
   <int value="1567695310" label="CrostiniBullseyeUpgrade:disabled"/>
