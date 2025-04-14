@@ -1708,7 +1708,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (object_.IsBoxModelObject()) {
         if (auto* layer = To<LayoutBoxModelObject>(object_).Layer()) {
           CompositorFilterOperations operations;
-          gfx::RRectF bounds;
+          SkPath bounds;
           layer->UpdateCompositorFilterOperationsForBackdropFilter(operations,
                                                                    bounds);
           if (!operations.IsEmpty()) {

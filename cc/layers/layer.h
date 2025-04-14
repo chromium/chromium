@@ -44,6 +44,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 
 namespace viz {
 class CopyOutputRequest;
@@ -375,9 +376,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   }
 
   // For layer tree mode only.
-  void SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds);
+  void SetBackdropFilterBounds(const SkPath& backdrop_filter_bounds);
+  void SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds) {
+    SetBackdropFilterBounds(SkPath::RRect(SkRRect(backdrop_filter_bounds)));
+  }
   void ClearBackdropFilterBounds();
-  std::optional<gfx::RRectF> backdrop_filter_bounds() const {
+  std::optional<SkPath> backdrop_filter_bounds() const {
     return layer_tree_inputs() ? layer_tree_inputs()->backdrop_filter_bounds
                                : std::nullopt;
   }
@@ -1109,7 +1113,7 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
 
     FilterOperations filters;
     FilterOperations backdrop_filters;
-    std::optional<gfx::RRectF> backdrop_filter_bounds;
+    std::optional<SkPath> backdrop_filter_bounds;
     float backdrop_filter_quality = 1.0f;
 
     int mirror_count = 0;

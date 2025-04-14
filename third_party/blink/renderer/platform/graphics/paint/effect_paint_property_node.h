@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/restriction_target_id.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
 
@@ -92,7 +93,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
 
   struct BackdropFilterInfo {
     CompositorFilterOperations operations;
-    gfx::RRectF bounds;
+    SkPath bounds;
     // The compositor element id for any masks that are applied to elements that
     // also have backdrop-filters applied.
     CompositorElementId mask_element_id;
@@ -227,7 +228,7 @@ class PLATFORM_EXPORT EffectPaintPropertyNode final
     return &state_.backdrop_filter_info->operations;
   }
 
-  const gfx::RRectF& BackdropFilterBounds() const {
+  const SkPath& BackdropFilterBounds() const {
     DCHECK(state_.backdrop_filter_info);
     return state_.backdrop_filter_info->bounds;
   }

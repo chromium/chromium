@@ -3878,7 +3878,8 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
     VizPixelTestWithParam::SetUp();
     filter_pass_layer_rect_ = gfx::Rect(device_viewport_size_);
     filter_pass_layer_rect_.Inset(gfx::Insets::TLBR(14, 12, 18, 16));
-    backdrop_filter_bounds_ = gfx::RRectF(gfx::RectF(filter_pass_layer_rect_));
+    backdrop_filter_bounds_ =
+        SkPath::Rect(gfx::RectToSkRect(filter_pass_layer_rect_));
   }
 
   void SetUpRenderPassList() {
@@ -4034,7 +4035,7 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
 
   AggregatedRenderPassList pass_list_;
   cc::FilterOperations backdrop_filters_;
-  std::optional<gfx::RRectF> backdrop_filter_bounds_;
+  std::optional<SkPath> backdrop_filter_bounds_;
   bool include_backdrop_mask_ = false;
   gfx::Transform filter_pass_to_target_transform_;
   gfx::Rect filter_pass_layer_rect_;
@@ -4439,7 +4440,7 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
   auto child_pass = std::make_unique<AggregatedRenderPass>();
   child_pass->SetAll(
       child_pass_id, child_pass_rect, child_pass_rect, transform_to_root,
-      cc::FilterOperations(), cc::FilterOperations(), gfx::RRectF(),
+      cc::FilterOperations(), cc::FilterOperations(), SkPath(),
       gfx::ContentColorUsage::kSRGB, false, false, false, generate_mipmap);
 
   gfx::Rect red_rect(child_pass_rect);
@@ -6269,7 +6270,7 @@ class ColorTransformPixelTest
         pass_list.back()->damage_rect, gfx::Transform(),
         /*filters=*/cc::FilterOperations(),
         /*backdrop_filters=*/cc::FilterOperations(),
-        /*backdrop_filter_bounds=*/gfx::RRectF(),
+        /*backdrop_filter_bounds=*/SkPath(),
         dst_color_space_.GetContentColorUsage(),
         pass_list.back()->has_transparent_background,
         /*cache_render_pass=*/false,

@@ -696,7 +696,7 @@ void Layer::SetBackdropFilters(const FilterOperations& filters) {
   SetNeedsCommit();
 }
 
-void Layer::SetBackdropFilterBounds(const gfx::RRectF& backdrop_filter_bounds) {
+void Layer::SetBackdropFilterBounds(const SkPath& backdrop_filter_bounds) {
   EnsureLayerTreeInputs().backdrop_filter_bounds = backdrop_filter_bounds;
 }
 

@@ -887,12 +887,12 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
       BackdropFiltersForPass(quad->render_pass_id);
   if (!ShouldApplyBackdropFilters(backdrop_filters, quad))
     return nullptr;
-  std::optional<gfx::RRectF> backdrop_filter_bounds =
+  std::optional<SkPath> backdrop_filter_bounds =
       BackdropFilterBoundsForPass(quad->render_pass_id);
 
   if (backdrop_filter_bounds.has_value()) {
-    backdrop_filter_bounds->Scale(quad->filters_scale.x(),
-                                  quad->filters_scale.y());
+    backdrop_filter_bounds->transform(
+        SkMatrix::Scale(quad->filters_scale.x(), quad->filters_scale.y()));
   }
 
   gfx::Transform contents_device_transform =
@@ -920,7 +920,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   gfx::Point image_offset = gfx::Point(0, 0);
   if (backdrop_filter_bounds.has_value()) {
     gfx::Rect filter_clip = gfx::ToEnclosingRect(cc::MathUtil::MapClippedRect(
-        backdrop_filter_bounds_transform, backdrop_filter_bounds->rect()));
+        backdrop_filter_bounds_transform,
+        gfx::SkRectToRectF(backdrop_filter_bounds->getBounds())));
     filter_clip.Intersect(
         gfx::Rect(backdrop_bitmap.width(), backdrop_bitmap.height()));
     if (filter_clip.IsEmpty())
@@ -975,8 +976,8 @@ sk_sp<SkShader> SoftwareRenderer::GetBackdropFilterShader(
   if (backdrop_filter_bounds) {
     canvas.setMatrix(
         gfx::TransformToFlattenedSkMatrix(backdrop_filter_bounds_transform));
-    canvas.clipRRect(SkRRect(*backdrop_filter_bounds), SkClipOp::kIntersect,
-                     true /* antialias */);
+    canvas.clipPath(*backdrop_filter_bounds, SkClipOp::kIntersect,
+                    true /* antialias */);
     canvas.resetMatrix();
   }
 

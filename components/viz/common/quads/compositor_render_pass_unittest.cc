@@ -5,6 +5,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 
 #include <stddef.h>
+
 #include <utility>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace viz {
@@ -67,8 +69,8 @@ TEST(CompositorRenderPassTest,
   filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
   cc::FilterOperations backdrop_filters;
   backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
-  std::optional<gfx::RRectF> backdrop_filter_bounds(
-      {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
+  std::optional<SkPath> backdrop_filter_bounds(SkPath::RRect(
+      SkRRect(gfx::RRectF{10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8})));
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kHDR;
   bool has_transparent_background = true;
   bool cache_render_pass = false;
@@ -104,8 +106,7 @@ TEST(CompositorRenderPassTest,
   EXPECT_EQ(pass->damage_rect, copy->damage_rect);
   EXPECT_EQ(pass->filters, copy->filters);
   EXPECT_EQ(pass->backdrop_filters, copy->backdrop_filters);
-  EXPECT_TRUE(pass->backdrop_filter_bounds->ApproximatelyEqual(
-      copy->backdrop_filter_bounds.value(), 0.001));
+  EXPECT_EQ(pass->backdrop_filter_bounds, copy->backdrop_filter_bounds.value());
   EXPECT_EQ(pass->content_color_usage, copy->content_color_usage);
   EXPECT_EQ(pass->has_transparent_background, copy->has_transparent_background);
   EXPECT_EQ(pass->cache_render_pass, copy->cache_render_pass);
@@ -131,8 +132,8 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
   cc::FilterOperations backdrop_filters;
   backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
-  std::optional<gfx::RRectF> backdrop_filter_bounds(
-      {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
+  std::optional<SkPath> backdrop_filter_bounds(SkPath::RRect(
+      SkRRect(gfx::RRectF{10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8})));
   bool has_transparent_background = true;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;
@@ -193,8 +194,8 @@ TEST(CompositorRenderPassTest, CopyAllShouldBeIdentical) {
   contrib_filters.Append(cc::FilterOperation::CreateSepiaFilter(0.5));
   cc::FilterOperations contrib_backdrop_filters;
   contrib_backdrop_filters.Append(cc::FilterOperation::CreateSaturateFilter(1));
-  std::optional<gfx::RRectF> contrib_backdrop_filter_bounds(
-      {20, 30, 140, 150, 1, 2, 3, 4, 5, 6, 7, 8});
+  std::optional<SkPath> contrib_backdrop_filter_bounds(SkPath::RRect(
+      SkRRect(gfx::RRectF{20, 30, 140, 150, 1, 2, 3, 4, 5, 6, 7, 8})));
   bool contrib_has_transparent_background = true;
   bool contrib_cache_render_pass = false;
   bool contrib_has_damage_from_contributing_content = false;
@@ -253,8 +254,8 @@ TEST(CompositorRenderPassTest, CopyAllWithCulledQuads) {
   filters.Append(cc::FilterOperation::CreateOpacityFilter(0.5));
   cc::FilterOperations backdrop_filters;
   backdrop_filters.Append(cc::FilterOperation::CreateInvertFilter(1.0));
-  std::optional<gfx::RRectF> backdrop_filter_bounds(
-      {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
+  std::optional<SkPath> backdrop_filter_bounds(SkPath::RRect(
+      SkRRect(gfx::RRectF{10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8})));
   bool has_transparent_background = true;
   bool cache_render_pass = false;
   bool has_damage_from_contributing_content = false;

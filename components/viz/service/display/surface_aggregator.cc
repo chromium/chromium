@@ -1327,8 +1327,8 @@ void SurfaceAggregator::AddRenderPassHelper(
                       render_pass_damage_rect, gfx::Transform(),
                       /*filters=*/cc::FilterOperations(),
                       /*backdrop_filters=*/cc::FilterOperations(),
-                      /*backdrop_filter_bounds=*/gfx::RRectF(),
-                      pass_color_usage, pass_has_transparent_background,
+                      /*backdrop_filter_bounds=*/SkPath(), pass_color_usage,
+                      pass_has_transparent_background,
                       /*cache_render_pass=*/false,
                       /*has_damage_from_contributing_content=*/false,
                       /*generate_mipmap=*/false);

@@ -114,8 +114,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
   FilterOperations filters;
   filters.Append(FilterOperation::CreateBlurFilter(2.f, SkTileMode::kClamp));
   blur->SetBackdropFilters(filters);
-  gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
-  blur->SetBackdropFilterBounds(backdrop_filter_bounds);
+  blur->SetBackdropFilterBounds(SkPath::Rect(
+      SkRect::MakeWH(blur->bounds().width(), blur->bounds().height())));
 
 #if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915

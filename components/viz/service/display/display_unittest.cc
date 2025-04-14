@@ -76,8 +76,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkRect.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/delegated_ink_point.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -758,7 +760,7 @@ TEST_F(DisplayTest, BackdropFilterTest) {
       bd_pass->SetAll(
           render_pass_id_generator.GenerateNextId(), sub_surface_rect,
           no_damage, gfx::Transform(), cc::FilterOperations(), backdrop_filters,
-          gfx::RRectF(gfx::RectF(sub_surface_rect), 0), SubtreeCaptureId(),
+          SkPath::Rect(gfx::RectToSkRect(sub_surface_rect)), SubtreeCaptureId(),
           sub_surface_rect.size(), ViewTransitionElementResourceId(), false,
           false, false, false, false);
       pass_list.push_back(std::move(bd_pass));
@@ -1420,12 +1422,13 @@ TEST_P(UseMapRectDisplayTest, PixelMovingForegroundFilterTest) {
       cc::FilterOperations foreground_filters;
       foreground_filters.Append(cc::FilterOperation::CreateDropShadowFilter(
           gfx::Point(5, 10), 2.f, SkColors::kTransparent));
-      bd_pass->SetAll(
-          render_pass_id_generator.GenerateNextId(), sub_surface_rect,
-          no_damage, gfx::Transform(), foreground_filters,
-          cc::FilterOperations(), gfx::RRectF(gfx::RectF(sub_surface_rect), 0),
-          SubtreeCaptureId(), sub_surface_rect.size(),
-          ViewTransitionElementResourceId(), false, false, false, false, false);
+      bd_pass->SetAll(render_pass_id_generator.GenerateNextId(),
+                      sub_surface_rect, no_damage, gfx::Transform(),
+                      foreground_filters, cc::FilterOperations(),
+                      SkPath::Rect(gfx::RectToSkRect(sub_surface_rect)),
+                      SubtreeCaptureId(), sub_surface_rect.size(),
+                      ViewTransitionElementResourceId(), false, false, false,
+                      false, false);
       pass_list.push_back(std::move(bd_pass));
 
       CompositorFrame frame = CompositorFrameBuilder()

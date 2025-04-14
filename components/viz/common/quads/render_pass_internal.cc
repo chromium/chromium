@@ -118,7 +118,7 @@ void RenderPassInternal::AsValueInto(
 
   if (backdrop_filter_bounds.has_value()) {
     cc::MathUtil::AddToTracedValue("backdrop_filter_bounds",
-                                   backdrop_filter_bounds.value(), value);
+                                   *backdrop_filter_bounds, value);
   }
 
   value->BeginArray("shared_quad_state_list");

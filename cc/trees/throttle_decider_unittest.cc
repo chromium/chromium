@@ -8,11 +8,13 @@
 #endif
 
 #include "cc/trees/throttle_decider.h"
+
 #include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
@@ -79,8 +81,8 @@ TEST_F(ThrottleDeciderTest, BackdropFilter) {
   EXPECT_EQ(GetFrameSinksToThrottle(), expected_frame_sinks);
 
   // Put the backdrop filter within bounds (0,10 50x50).
-  render_passes[0]->backdrop_filter_bounds =
-      std::optional<gfx::RRectF>(gfx::RRectF(0.0f, 10.0f, 50.0f, 50.0f, 1.0f));
+  render_passes[0]->backdrop_filter_bounds = SkPath::RRect(
+      SkRRect::MakeRectXY(SkRect::MakeXYWH(0.0f, 10.0f, 50.0f, 50.0f), 1, 1));
   // The surface quad (0,0 100x100) is partially behind the backdrop filter on
   // the rpdq (0,10 50x50) so it should not be throttled.
   RunThrottleDecider(render_passes);

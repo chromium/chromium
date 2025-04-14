@@ -59,7 +59,7 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
               const gfx::Transform& transform_to_root_target,
               const cc::FilterOperations& filters,
               const cc::FilterOperations& backdrop_filters,
-              const std::optional<gfx::RRectF>& backdrop_filter_bounds,
+              const std::optional<SkPath>& backdrop_filter_bounds,
               gfx::ContentColorUsage color_usage,
               bool has_transparent_background,
               bool cache_render_pass,
