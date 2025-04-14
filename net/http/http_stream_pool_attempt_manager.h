@@ -26,7 +26,6 @@
 #include "net/base/net_export.h"
 #include "net/base/priority_queue.h"
 #include "net/base/request_priority.h"
-#include "net/base/tracing.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_stream_pool.h"
@@ -111,7 +110,7 @@ class HttpStreamPool::AttemptManager
   const NetLogWithSource& net_log();
 
   // Starts a Job. Will call one of Job::Delegate methods to notify results.
-  void StartJob(Job* job);
+  void StartJob(Job* job, const NetLogWithSource& request_net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that `job` will be notified once `this` has enough streams/sessions
@@ -512,9 +511,6 @@ class HttpStreamPool::AttemptManager
   const raw_ptr<Group> group_;
 
   const NetLogWithSource net_log_;
-
-  // For trace events.
-  const perfetto::Track track_;
 
   const base::TimeTicks created_time_;
 

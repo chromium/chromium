@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
-#include "net/base/tracing.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
@@ -32,11 +31,9 @@ std::string_view TcpStreamAttempt::StateToString(State state) {
 
 TcpStreamAttempt::TcpStreamAttempt(const StreamAttemptParams* params,
                                    IPEndPoint ip_endpoint,
-                                   perfetto::Track track,
                                    const NetLogWithSource* net_log)
     : StreamAttempt(params,
                     ip_endpoint,
-                    std::move(track),
                     NetLogSourceType::TCP_STREAM_ATTEMPT,
                     NetLogEventType::TCP_STREAM_ATTEMPT_ALIVE,
                     net_log) {}
@@ -85,15 +82,13 @@ int TcpStreamAttempt::StartInternal() {
       FROM_HERE, kTcpHandshakeTimeout,
       base::BindOnce(&TcpStreamAttempt::OnTimeout, base::Unretained(this)));
 
-  TRACE_EVENT_INSTANT("net.stream", "TcpConnectStart", track(), "ip_endpoint",
-                      ip_endpoint().ToString());
   net_log().AddEventReferencingSource(
       NetLogEventType::TCP_STREAM_ATTEMPT_CONNECT,
       socket_ptr->NetLog().source());
   int rv = socket_ptr->Connect(
       base::BindOnce(&TcpStreamAttempt::OnIOComplete, base::Unretained(this)));
   if (rv != ERR_IO_PENDING) {
-    HandleCompletion(rv);
+    HandleCompletion();
   }
   return rv;
 }
@@ -104,8 +99,7 @@ base::Value::Dict TcpStreamAttempt::GetNetLogStartParams() {
   return dict;
 }
 
-void TcpStreamAttempt::HandleCompletion(int rv) {
-  TRACE_EVENT_INSTANT("net.stream", "TcpConnectEnd", track(), "result", rv);
+void TcpStreamAttempt::HandleCompletion() {
   next_state_ = State::kNone;
   timeout_timer_.Stop();
   mutable_connect_timing().connect_end = base::TimeTicks::Now();
@@ -113,7 +107,7 @@ void TcpStreamAttempt::HandleCompletion(int rv) {
 
 void TcpStreamAttempt::OnIOComplete(int rv) {
   CHECK_NE(rv, ERR_IO_PENDING);
-  HandleCompletion(rv);
+  HandleCompletion();
   NotifyOfCompletion(rv);
 }
 

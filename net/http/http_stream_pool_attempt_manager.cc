@@ -19,7 +19,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/trace_event/trace_id_helper.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
@@ -27,7 +26,6 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
-#include "net/base/tracing.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
@@ -37,7 +35,6 @@
 #include "net/http/http_stream_pool_group.h"
 #include "net/http/http_stream_pool_handle.h"
 #include "net/http/http_stream_pool_job.h"
-#include "net/log/net_log_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/quic/quic_http_stream.h"
 #include "net/quic/quic_session_alias_key.h"
@@ -165,15 +162,11 @@ HttpStreamPool::AttemptManager::AttemptManager(Group* group, NetLog* net_log)
       net_log_(NetLogWithSource::Make(
           net_log,
           NetLogSourceType::HTTP_STREAM_POOL_ATTEMPT_MANAGER)),
-      track_(base::trace_event::GetNextGlobalTraceId()),
       created_time_(base::TimeTicks::Now()),
       jobs_(NUM_PRIORITIES),
       tcp_based_attempt_delay_(GetTcpBasedAttemptDelay()),
       should_block_tcp_based_attempt_(!tcp_based_attempt_delay_.is_zero()) {
   CHECK(group_);
-
-  TRACE_EVENT_BEGIN("net.stream", "AttemptManager::AttemptManager", track_,
-                    "destination", stream_key().destination().Serialize());
 
   net_log_.BeginEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_ALIVE, [&] {
@@ -201,14 +194,12 @@ HttpStreamPool::AttemptManager::~AttemptManager() {
   group_->net_log().AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_GROUP_ATTEMPT_MANAGER_DESTROYED,
       net_log_.source());
-  TRACE_EVENT_END("net.stream", track_);
 }
 
-void HttpStreamPool::AttemptManager::StartJob(Job* job) {
+void HttpStreamPool::AttemptManager::StartJob(
+    Job* job,
+    const NetLogWithSource& request_net_log) {
   CHECK(!is_failing_);
-
-  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::StartJob", track_,
-                      NetLogWithSourceToFlow(job->request_net_log()));
 
   net_log_.AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_START_JOB, [&] {
@@ -230,7 +221,7 @@ void HttpStreamPool::AttemptManager::StartJob(Job* job) {
         job->net_log().source().AddToEventParameters(dict);
         return dict;
       });
-  job->request_net_log().AddEventReferencingSource(
+  request_net_log.AddEventReferencingSource(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_JOB_BOUND,
       net_log_.source());
   job->net_log().AddEventReferencingSource(
@@ -284,9 +275,6 @@ void HttpStreamPool::AttemptManager::StartJob(Job* job) {
 void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
   CHECK(!is_failing_);
 
-  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::Preconnect", track_,
-                      NetLogWithSourceToFlow(job->request_net_log()));
-
   // If `job` is resumed, there could be enough streams at this point.
   if (group_->ActiveStreamSocketCount() >= job->num_streams()) {
     NotifyJobOfPreconnectCompleteLater(job, OK);
@@ -318,8 +306,6 @@ void HttpStreamPool::AttemptManager::Preconnect(Job* job) {
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
-  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::OnServiceEndpointsUpdated",
-                      track_);
   net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_DNS_RESOLUTION_UPDATED,
       [&] {
@@ -331,9 +317,6 @@ void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {
-  TRACE_EVENT_INSTANT("net.stream",
-                      "AttemptManager::OnServiceEndpointRequestFinished",
-                      track_, "result", rv);
   CHECK(!service_endpoint_request_finished_);
   CHECK(service_endpoint_request_);
 
@@ -1560,30 +1543,19 @@ void HttpStreamPool::AttemptManager::NotifyJobOfFailure() {
 
   FailureKind kind = DetermineFailureKind();
   switch (kind) {
-    case FailureKind::kStreamFailed: {
-      TRACE_EVENT_INSTANT("net.stream", "AttemptManager::StreamFailed", track_,
-                          NetLogWithSourceToFlow(job->request_net_log()));
+    case FailureKind::kStreamFailed:
       job->OnStreamFailed(final_error_to_notify_jobs(), net_error_details_,
                           resolve_error_info_);
       break;
-    }
-    case FailureKind::kCertifcateError: {
+    case FailureKind::kCertifcateError:
       CHECK(cert_error_ssl_info_.has_value());
-      TRACE_EVENT_INSTANT("net.stream", "AttemptManager::CertificateError",
-                          track_,
-                          NetLogWithSourceToFlow(job->request_net_log()));
       job->OnCertificateError(final_error_to_notify_jobs(),
                               *cert_error_ssl_info_);
       break;
-    }
-    case FailureKind::kNeedsClientAuth: {
+    case FailureKind::kNeedsClientAuth:
       CHECK(client_auth_cert_info_.get());
-      TRACE_EVENT_INSTANT("net.stream", "AttemptManager::NeedsClientAuth",
-                          track_,
-                          NetLogWithSourceToFlow(job->request_net_log()));
       job->OnNeedsClientAuth(client_auth_cert_info_.get());
       break;
-    }
   }
   // `this` may be deleted.
 }
@@ -1643,9 +1615,6 @@ void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectCompleteLater(
 // too so we shouldn't reach here because we use "weak this" to post a task.
 void HttpStreamPool::AttemptManager::NotifyJobOfPreconnectComplete(Job* job,
                                                                    int rv) {
-  TRACE_EVENT_INSTANT("net.stream",
-                      "AttemptManager::NotifyJobOfPreconnectComplete", track_,
-                      NetLogWithSourceToFlow(job->request_net_log()));
   CHECK_GT(notifying_preconnect_completion_count_, 0u);
   --notifying_preconnect_completion_count_;
   // We don't need to call MaybeCompleteLater() here, since `job` will call
@@ -1741,9 +1710,6 @@ void HttpStreamPool::AttemptManager::NotifyStreamReady(
     // going to be destructed.
     return;
   }
-  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::NotifyStreamReady", track_,
-                      NetLogWithSourceToFlow(job->request_net_log()),
-                      "negotiated_protocol", negotiated_protocol);
   job->OnStreamReady(std::move(stream), negotiated_protocol);
 }
 
@@ -1755,8 +1721,6 @@ void HttpStreamPool::AttemptManager::HandleSpdySessionReady(
   CHECK(spdy_session);
   CHECK(spdy_session->IsAvailable());
 
-  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::SpdySessionReady", track_);
-
   group_->Refresh(kSwitchingToHttp2, refresh_group_reason);
   NotifyPreconnectsComplete(OK);
   CreateSpdyStreamAndNotify(spdy_session);
@@ -1767,8 +1731,6 @@ void HttpStreamPool::AttemptManager::HandleQuicSessionReady(
   CHECK(!is_failing_);
   CHECK(!quic_task_);
   DCHECK(CanUseExistingQuicSession());
-
-  TRACE_EVENT_INSTANT("net.stream", "AttemptManager::QuicSessionReady", track_);
 
   group_->Refresh(kSwitchingToHttp3, refresh_group_reason);
   NotifyPreconnectsComplete(OK);

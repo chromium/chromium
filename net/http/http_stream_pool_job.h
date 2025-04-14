@@ -157,8 +157,6 @@ class HttpStreamPool::Job {
 
   const NetLogWithSource& net_log() const { return job_net_log_; }
 
-  const NetLogWithSource& request_net_log() const { return request_net_log_; }
-
   quic::ParsedQuicVersion quic_version() const { return quic_version_; }
 
   const NextProtoSet& allowed_alpns() const { return allowed_alpns_; }

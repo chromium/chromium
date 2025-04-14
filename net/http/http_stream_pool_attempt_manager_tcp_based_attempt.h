@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
-#include "net/base/tracing.h"
 #include "net/http/http_stream_pool_attempt_manager.h"
 #include "net/socket/stream_attempt.h"
 #include "net/socket/stream_socket_close_reason.h"
@@ -76,8 +75,6 @@ class HttpStreamPool::AttemptManager::TcpBasedAttempt
 
   const raw_ptr<AttemptManager> manager_;
   const bool using_tls_;
-  const perfetto::Track track_;
-  const perfetto::Flow flow_;
   std::unique_ptr<StreamAttempt> attempt_;
   base::TimeTicks start_time_;
   std::optional<int> result_;

@@ -140,8 +140,6 @@ PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     perfetto::Category("navigation"),
     perfetto::Category("navigation.debug"),
     perfetto::Category("net"),
-    perfetto::Category("net.stream").SetDescription(
-        "Includes events related to creating HTTP streams to serve requests."),
     perfetto::Category("network.scheduler"),
     perfetto::Category("netlog"),
     perfetto::Category("offline_pages"),
