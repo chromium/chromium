@@ -117,17 +117,75 @@ const RangeBoundary* AnimationTrigger::exitRangeEnd(
 double ComputeTriggerBoundary(
     std::optional<TimelineOffset> offset,
     double default_value,
-    ScrollTimeline* timeline,
+    const ScrollTimeline& timeline,
     const TimelineRange::ScrollOffsets& range_offsets) {
   if (offset) {
     double range = range_offsets.end - range_offsets.start;
     return range_offsets.start +
-           (timeline->IsViewTimeline()
-                ? range *
-                      To<ViewTimeline>(timeline)->ToFractionalOffset(*offset)
+           (timeline.IsViewTimeline()
+                ? range * To<ViewTimeline>(timeline).ToFractionalOffset(*offset)
                 : MinimumValueForLength(offset->offset, LayoutUnit(range)));
   }
   return default_value;
+}
+
+AnimationTrigger::TriggerBoundaries AnimationTrigger::ComputeTriggerBoundaries(
+    Element& timeline_source,
+    const ScrollTimeline& timeline) {
+  using TriggerBoundaries = AnimationTrigger::TriggerBoundaries;
+
+  const TimelineState timeline_state = timeline.ComputeTimelineState();
+
+  TriggerBoundaries boundaries;
+
+  ExceptionState exception_state(nullptr);
+  std::optional<TimelineOffset> trigger_start = TimelineOffset::Create(
+      &timeline_source, range_start_, 0, ASSERT_NO_EXCEPTION);
+  std::optional<TimelineOffset> trigger_end = TimelineOffset::Create(
+      &timeline_source, range_end_, 1, ASSERT_NO_EXCEPTION);
+  TimelineOffsetOrAuto exit_start = TimelineOffsetOrAuto::Create(
+      &timeline_source, exit_range_start_, 0, ASSERT_NO_EXCEPTION);
+  TimelineOffsetOrAuto exit_end = TimelineOffsetOrAuto::Create(
+      &timeline_source, exit_range_end_, 1, ASSERT_NO_EXCEPTION);
+
+  // For a ScrollTimeline, these correspond to the min and max scroll offsets of
+  // the associated scroll container.
+  // For a ViewTimeline, these correspond to the cover 0% and cover 100%
+  // respectively.
+  const double default_start_position = timeline_state.scroll_offsets->start;
+  const double default_end_position = timeline_state.scroll_offsets->end;
+
+  boundaries.start =
+      ComputeTriggerBoundary(trigger_start, default_start_position, timeline,
+                             *timeline_state.scroll_offsets);
+  boundaries.end =
+      ComputeTriggerBoundary(trigger_end, default_end_position, timeline,
+                             *timeline_state.scroll_offsets);
+
+  if (exit_start.IsAuto()) {
+    // auto behavior: match the trigger range.
+    boundaries.exit_start = boundaries.start;
+  } else {
+    // Note: a nullopt |offset| implies normal, which corresponds to the start
+    // of the timeline's range: |timeline_state.scroll_offsets->start|.
+    std::optional<TimelineOffset> offset = exit_start.GetTimelineOffset();
+    double default_exit_start_offset = timeline_state.scroll_offsets->start;
+    boundaries.exit_start =
+        ComputeTriggerBoundary(offset, default_exit_start_offset, timeline,
+                               *timeline_state.scroll_offsets);
+  }
+
+  if (exit_end.IsAuto()) {
+    boundaries.exit_end = boundaries.end;
+  } else {
+    std::optional<TimelineOffset> offset = exit_end.GetTimelineOffset();
+    double default_exit_end_offset = timeline_state.scroll_offsets->end;
+    boundaries.exit_end =
+        ComputeTriggerBoundary(offset, default_exit_end_offset, timeline,
+                               *timeline_state.scroll_offsets);
+  }
+
+  return boundaries;
 }
 
 void AnimationTrigger::ActionAnimation(Animation* animation) {
@@ -149,7 +207,7 @@ void AnimationTrigger::ActionAnimation(Animation* animation) {
     return;
   }
 
-  auto* timeline_source = timeline->ComputeResolvedSource();
+  Node* timeline_source = timeline->ComputeResolvedSource();
   if (!timeline_source) {
     return;
   }
@@ -157,49 +215,18 @@ void AnimationTrigger::ActionAnimation(Animation* animation) {
     // If the source is the root document, it isn't an "Element", so we need
     // to work with its scrollingElement
     timeline_source = To<Document>(timeline_source)->ScrollingElementNoLayout();
+    if (!timeline_source) {
+      return;
+    }
   }
 
-  ExceptionState exception_state(nullptr);
-  std::optional<TimelineOffset> trigger_start = TimelineOffset::Create(
-      To<Element>(timeline_source), range_start_, 0, exception_state);
-  std::optional<TimelineOffset> trigger_end = TimelineOffset::Create(
-      To<Element>(timeline_source), range_end_, 1, exception_state);
-  TimelineOffsetOrAuto exit_start = TimelineOffsetOrAuto::Create(
-      To<Element>(timeline_source), exit_range_start_, 0, exception_state);
-  TimelineOffsetOrAuto exit_end = TimelineOffsetOrAuto::Create(
-      To<Element>(timeline_source), exit_range_end_, 1, exception_state);
+  AnimationTrigger::TriggerBoundaries boundaries =
+      ComputeTriggerBoundaries(*To<Element>(timeline_source), *timeline);
 
-  const TimelineState timeline_state = timeline->ComputeTimelineState();
-  // For a ScrollTimeline, these correspond to the min and max scroll offsets of
-  // the associated scroll container.
-  // For a ViewTimeline, these correspond to the cover 0% and cover 100%
-  // respectively.
-  const double default_start_position = timeline_state.scroll_offsets->start;
-  const double default_end_position = timeline_state.scroll_offsets->end;
-
-  double trigger_start_offset =
-      ComputeTriggerBoundary(trigger_start, default_start_position, timeline,
-                             *timeline_state.scroll_offsets);
-  double trigger_end_offset =
-      ComputeTriggerBoundary(trigger_end, default_end_position, timeline,
-                             *timeline_state.scroll_offsets);
-  double exit_start_offset = ComputeTriggerBoundary(
-      exit_start.GetTimelineOffset(), trigger_start_offset, timeline,
-      *timeline_state.scroll_offsets);
-  double exit_end_offset =
-      ComputeTriggerBoundary(exit_end.GetTimelineOffset(), trigger_end_offset,
-                             timeline, *timeline_state.scroll_offsets);
-
-  bool within_trigger = false;
-  bool within_exit = false;
-  if (current_offset >= trigger_start_offset &&
-      current_offset <= trigger_end_offset) {
-    within_trigger = true;
-  }
-  if (current_offset >= exit_start_offset &&
-      current_offset <= exit_end_offset) {
-    within_exit = true;
-  }
+  bool within_trigger =
+      current_offset >= boundaries.start && current_offset <= boundaries.end;
+  bool within_exit = current_offset >= boundaries.exit_start &&
+                     current_offset <= boundaries.exit_end;
 
   if (ActionAnimationInternal(animation, within_trigger, within_exit)) {
     animation->SetPendingTriggerPlayStateUpdate(false);

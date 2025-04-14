@@ -10,6 +10,7 @@ blink_core_tests_animation = [
   "animation_test_helpers.cc",
   "animation_test_helpers.h",
   "animation_time_delta_test.cc",
+  "animation_trigger_test.cc",
   "animation_utils_test.cc",
   "compositor_animations_test.cc",
   "css/css_animations_test.cc",
