@@ -65,6 +65,19 @@ void LayoutSVGImage::StyleDidChange(StyleDifference diff,
   TransformHelper::UpdateOffsetPath(*GetElement(), old_style);
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
+
+  if (old_style && EverHadLayout()) {
+    const ComputedStyle& style = StyleRef();
+    bool length_attribute_changed = old_style->X() != style.X() ||
+                                    old_style->Y() != style.Y() ||
+                                    old_style->Width() != style.Width() ||
+                                    old_style->Height() != style.Height();
+    if (length_attribute_changed) {
+      LayoutSVGResourceContainer::MarkForLayoutAndParentResourceInvalidation(
+          *this);
+    }
+  }
+
   LayoutSVGModelObject::StyleDidChange(diff, old_style);
 }
 
