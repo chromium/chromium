@@ -426,6 +426,22 @@ TEST(CookiePartitionKeyTest, Equality_WithNonce) {
   EXPECT_NE(key1, unnonced_key);
 }
 
+TEST(CookiePartitionKeyTest, NoncedKeyForbidsUnpartitionedAccess) {
+  SchemefulSite top_level_site(GURL("https://toplevelsite.com"));
+  SchemefulSite frame_site(GURL("https://cookiesite.com"));
+
+  auto key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/false);
+  EXPECT_FALSE(key->ForbidsUnpartitionedCookieAccess());
+
+  base::UnguessableToken nonce = base::UnguessableToken::Create();
+  key = CookiePartitionKey::FromNetworkIsolationKey(
+      NetworkIsolationKey(top_level_site, frame_site, nonce), SiteForCookies(),
+      top_level_site, /*main_frame_navigation=*/false);
+  EXPECT_TRUE(key->ForbidsUnpartitionedCookieAccess());
+}
+
 TEST(CookiePartitionKeyTest, Localhost) {
   SchemefulSite top_level_site(GURL("https://localhost:8000"));
 

@@ -350,6 +350,15 @@ ScriptPromise<T> DocumentStorageAccess::RequestStorageAccessImpl(
     UseCounter::Count(GetSupplementable()->GetExecutionContext(),
                       WebFeature::kFedCmWithStorageAccessAPI);
   }
+
+  // All reasons why the storage key might forbid unpartitioned storage access
+  // should have been covered above. If this check fails, a feature must have
+  // been added without adding a new check above.
+  CHECK(!GetSupplementable()
+             ->dom_window_->GetStorageKey()
+             .ForbidsUnpartitionedStorageAccess(),
+        base::NotFatalUntil::M138);
+
   // RequestPermission may return `GRANTED` without actually creating a
   // permission grant if cookies are already accessible.
   auto descriptor = mojom::blink::PermissionDescriptor::New();

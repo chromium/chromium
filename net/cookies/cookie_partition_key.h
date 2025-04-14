@@ -170,6 +170,10 @@ class NET_EXPORT CookiePartitionKey {
   // Cookie partition keys whose internal site is opaque cannot be serialized.
   bool IsSerializeable() const;
 
+  // Returns true if unpartitioned cookie access is forbidden for the current
+  // cookie partition key.
+  bool ForbidsUnpartitionedCookieAccess() const { return nonce_.has_value(); }
+
   const std::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
   static bool HasNonce(base::optional_ref<const CookiePartitionKey> key) {

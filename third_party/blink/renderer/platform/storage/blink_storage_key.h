@@ -127,6 +127,10 @@ class PLATFORM_EXPORT BlinkStorageKey {
 
   const BlinkSchemefulSite& GetTopLevelSite() const { return top_level_site_; }
 
+  // Returns true if unpartitioned storage access is forbidden for the current
+  // storage key.
+  bool ForbidsUnpartitionedStorageAccess() const { return nonce_.has_value(); }
+
   const std::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
   }

@@ -165,8 +165,9 @@ bool IncludeUnpartitionedCookies(
   if (list.IsEmpty() || list.ContainsAllKeys())
     return true;
 
-  return std::ranges::any_of(list.PartitionKeys(),
-                             [](const auto& key) { return !key.nonce(); });
+  return !std::ranges::all_of(
+      list.PartitionKeys(),
+      &net::CookiePartitionKey::ForbidsUnpartitionedCookieAccess);
 }
 
 size_t NameValueSizeBytes(const net::CanonicalCookie& cc) {
