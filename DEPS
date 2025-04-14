@@ -2685,7 +2685,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/protocolbuffers/protobuf-javascript' + '@' + 'eb785a9363664a402b6336dfe96aad27fb33ffa8',
 
   'src/third_party/pthreadpool/src':
-    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + '706a8ea9e4b8c2129718af195ddce7fc2573e719',
+    Var('chromium_git') + '/external/github.com/google/pthreadpool.git' + '@' + 'da30a55fecdd9f2f90f236874a305db146567aef',
 
   # Dependency of skia.
   'src/third_party/pyelftools': {
@@ -2842,7 +2842,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/GoogleChromeLabs/text-fragments-polyfill.git' + '@' + 'c036420683f672d685e27415de0a5f5e85bdc23f',
 
   'src/third_party/tflite/src':
-    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '884af6db46eb09928f52c1e21fe8f0eda55eec33',
+    Var('chromium_git') + '/external/github.com/tensorflow/tensorflow.git' + '@' + '9f864536fbf47afcde2960f8ebd9892b6c9bb3be',
 
   'src/third_party/turbine/cipd': {
       'packages': [
@@ -2933,7 +2933,7 @@ deps = {
   },
 
   'src/third_party/xnnpack/src':
-    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'd6a6be8aea8192827ee7e81135e17531164df782',
+    Var('chromium_git') + '/external/github.com/google/XNNPACK.git' + '@' + 'f5a3cd278c9f0b2a607f1387fba0f6f6f0ff4f5a',
 
   'src/third_party/libei/cipd': {
 
