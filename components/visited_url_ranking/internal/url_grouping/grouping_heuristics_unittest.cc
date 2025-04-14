@@ -21,12 +21,16 @@ namespace visited_url_ranking {
 using ::testing::ElementsAre;
 
 constexpr char kTestUrl[] = "https://www.example1.com/";
+constexpr char kFooUrl1[] = "https://www.foo.com/1";
+constexpr char kFooUrl2[] = "https://www.foo.com/2";
+constexpr char kFooUrl3[] = "https://www.foo.com/3";
 
 URLVisitAggregate CreateVisitForTab(base::TimeDelta time_since_active,
-                                    int tab_id) {
+                                    int tab_id,
+                                    GURL url = GURL(kTestUrl)) {
   base::Time timestamp = base::Time::Now() - time_since_active;
-  auto candidate = CreateSampleURLVisitAggregate(GURL(kTestUrl), 1, timestamp,
-                                                 {Fetcher::kTabModel});
+  auto candidate =
+      CreateSampleURLVisitAggregate(url, 1, timestamp, {Fetcher::kTabModel});
   auto tab_data_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
   auto* tab_data =
       std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
@@ -182,7 +186,7 @@ TEST_F(GroupingHeuristicsTest, SwitchedBetweenHeuristic) {
   EXPECT_EQ(GroupSuggestion::SuggestionReason::kSwitchedBetween,
             suggestion.suggestion_reason);
   EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112));
-  EXPECT_EQ("Group tabs in bottom tab strip?", suggestion.promo_header);
+  EXPECT_EQ("Group recently selected tabs?", suggestion.promo_header);
   EXPECT_EQ("Switch between tabs easily with tab strip at the bottom.",
             suggestion.promo_contents);
   EXPECT_EQ(u"today", suggestion.suggested_name);
@@ -315,6 +319,31 @@ TEST_F(GroupingHeuristicsTest, SimilarSourceHeuristic_RecentTabs) {
   EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 114));
 }
 
+TEST_F(GroupingHeuristicsTest, SameOrigin) {
+  std::vector<URLVisitAggregate> candidates = {};
+
+  // 4 tabs with 3 of them from the same origin.
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(60), 111, GURL(kFooUrl1)));
+  GetTabMetadata(candidates[0]).is_currently_active = true;
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(250), 112, GURL(kFooUrl2)));
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(200), 113, GURL(kFooUrl3)));
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(200), 114, GURL(kTestUrl)));
+
+  std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
+      std::move(candidates), GroupSuggestion::SuggestionReason::kSameOrigin);
+
+  ASSERT_TRUE(suggestions.has_value());
+  ASSERT_EQ(1u, suggestions->suggestions.size());
+  const auto& suggestion = suggestions->suggestions[0];
+  EXPECT_EQ(GroupSuggestion::SuggestionReason::kSameOrigin,
+            suggestion.suggestion_reason);
+  EXPECT_THAT(suggestion.tab_ids, ElementsAre(111, 112, 113));
+}
+
 TEST_F(GroupingHeuristicsTest, DisableRecentlyOpen) {
   // Reset heuristics so that Recently Open heuristics is not enabled.
   features_.InitAndEnableFeatureWithParameters(
@@ -383,6 +412,30 @@ TEST_F(GroupingHeuristicsTest, DisableSimilarSource) {
 
   std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
       std::move(candidates), GroupSuggestion::SuggestionReason::kSimilarSource);
+
+  ASSERT_FALSE(suggestions.has_value());
+}
+
+TEST_F(GroupingHeuristicsTest, DisableSameOrigin) {
+  // Reset heuristics so that Same Origin heuristics is not enabled.
+  features_.InitAndEnableFeatureWithParameters(
+      features::kGroupSuggestionService,
+      {{"group_suggestion_enable_same_origin", "false"}});
+  heuristics_.reset();
+  heuristics_ = std::make_unique<GroupingHeuristics>();
+
+  std::vector<URLVisitAggregate> candidates = {};
+
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(60), 111, GURL(kFooUrl1)));
+  GetTabMetadata(candidates[0]).is_currently_active = true;
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(250), 112, GURL(kFooUrl2)));
+  candidates.push_back(
+      CreateVisitForTab(base::Seconds(200), 113, GURL(kFooUrl3)));
+
+  std::optional<GroupSuggestions> suggestions = GetSuggestionsFor(
+      std::move(candidates), GroupSuggestion::SuggestionReason::kSameOrigin);
 
   ASSERT_FALSE(suggestions.has_value());
 }

@@ -27,20 +27,21 @@ struct GroupSuggestion {
 
   GroupSuggestion DeepCopy() const;
 
+  enum class SuggestionReason {
+    kUnknown = 0,
+    kRecentlyOpened = 1,
+    kSwitchedBetween = 2,
+    kSimilarSource = 3,
+    kSameOrigin = 4,
+    kNumReasons
+  };
+
   // LINT.IfChange
 
   // The list of tabs / URLs to suggest, in order of relevance. For the initial
   // prototype, the current tab is always the first entry in the list. This need
   // not be the tab order in the group, if the group is created.
   std::vector<int> tab_ids;
-
-  enum class SuggestionReason {
-    kUnknown = 0,
-    kRecentlyOpened = 1,
-    kSwitchedBetween = 2,
-    kSimilarSource = 3,
-    kNumReasons
-  };
 
   // The contents of the promo to be shown.
   SuggestionReason suggestion_reason = SuggestionReason::kUnknown;

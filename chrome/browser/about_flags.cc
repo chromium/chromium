@@ -3704,16 +3704,25 @@ const FeatureEntry::FeatureParam kGroupSuggestionEnableRecentlyOpenedOnly[] = {
     {"group_suggestion_enable_recently_opened", "true"},
     {"group_suggestion_enable_switch_between", "false"},
     {"group_suggestion_enable_similar_source", "false"},
+    {"group_suggestion_enable_same_origin", "false"},
 };
 const FeatureEntry::FeatureParam kGroupSuggestionEnableSwitchBetweenOnly[] = {
     {"group_suggestion_enable_recently_opened", "false"},
     {"group_suggestion_enable_switch_between", "true"},
     {"group_suggestion_enable_similar_source", "false"},
+    {"group_suggestion_enable_same_origin", "false"},
 };
 const FeatureEntry::FeatureParam kGroupSuggestionEnableSimilarSourceOnly[] = {
     {"group_suggestion_enable_recently_opened", "false"},
     {"group_suggestion_enable_switch_between", "false"},
     {"group_suggestion_enable_similar_source", "true"},
+    {"group_suggestion_enable_same_origin", "false"},
+};
+const FeatureEntry::FeatureParam kGroupSuggestionEnableSameOriginOnly[] = {
+    {"group_suggestion_enable_recently_opened", "false"},
+    {"group_suggestion_enable_switch_between", "false"},
+    {"group_suggestion_enable_similar_source", "false"},
+    {"group_suggestion_enable_same_origin", "true"},
 };
 const FeatureEntry::FeatureVariation kGroupSuggestionVariations[] = {
     {"Recently Opened Only", kGroupSuggestionEnableRecentlyOpenedOnly,
@@ -3722,6 +3731,8 @@ const FeatureEntry::FeatureVariation kGroupSuggestionVariations[] = {
      std::size(kGroupSuggestionEnableSwitchBetweenOnly), nullptr},
     {"Similar Source Only", kGroupSuggestionEnableSimilarSourceOnly,
      std::size(kGroupSuggestionEnableSimilarSourceOnly), nullptr},
+    {"Same Origin Only", kGroupSuggestionEnableSameOriginOnly,
+     std::size(kGroupSuggestionEnableSameOriginOnly), nullptr},
 };
 
 #if BUILDFLAG(ENABLE_COMPOSE)

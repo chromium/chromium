@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
-#include "base/hash/hash.h"
 #include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,6 +35,7 @@ constexpr auto kReasonToMinTabCount =
         {GroupSuggestion::SuggestionReason::kRecentlyOpened, 4},
         {GroupSuggestion::SuggestionReason::kSwitchedBetween, 2},
         {GroupSuggestion::SuggestionReason::kSimilarSource, 3},
+        {GroupSuggestion::SuggestionReason::kSameOrigin, 3},
     });
 
 // Limit for tab age till which a tab is considered recent.
@@ -195,6 +195,39 @@ class SimilarSourceHeuristic : public GroupingHeuristics::Heuristic {
   }
 };
 
+// A heuristic that find the recently opened tabs of the same origin.
+class SameOriginHeuristic : public GroupingHeuristics::Heuristic {
+ public:
+  SameOriginHeuristic()
+      : GroupingHeuristics::Heuristic(
+            GroupSuggestion::SuggestionReason::kSameOrigin) {}
+  ~SameOriginHeuristic() override = default;
+
+  std::vector<float> Run(
+      const std::vector<scoped_refptr<segmentation_platform::InputContext>>&
+          inputs) override {
+    std::vector<float> result(inputs.size(), 0.0f);
+    const char* time_since_active_input = GetNameForInput(
+        URLVisitAggregateRankingModelInputSignals::kTimeSinceLastActiveSec);
+    const char* tab_url_hash = GetNameForInput(
+        URLVisitAggregateRankingModelInputSignals::kTabUrlOriginHash);
+    for (unsigned i = 0; i < inputs.size(); ++i) {
+      std::optional<ProcessedValue> duration_sec =
+          inputs[i]->GetMetadataArgument(time_since_active_input);
+      std::optional<ProcessedValue> tab_url_origin_hash_value =
+          inputs[i]->GetMetadataArgument(tab_url_hash);
+      if (duration_sec &&
+          duration_sec->float_val < kRecencyTabTimeLimit.InSecondsF() &&
+          tab_url_origin_hash_value &&
+          tab_url_origin_hash_value->float_val != 0) {
+        result[i] = tab_url_origin_hash_value->float_val;
+      }
+    }
+    CHECK_EQ(result.size(), inputs.size());
+    return result;
+  }
+};
+
 // Fills in the text to be shown to the user for the `suggestion`.
 void SetSuggestionText(GroupSuggestion& suggestion) {
   // TODO(ssid): Set better messages and tab group names.
@@ -203,7 +236,7 @@ void SetSuggestionText(GroupSuggestion& suggestion) {
     case GroupSuggestion::SuggestionReason::kNumReasons:
       NOTREACHED();
     case GroupSuggestion::SuggestionReason::kSwitchedBetween:
-      suggestion.promo_header = "Group tabs in bottom tab strip?";
+      suggestion.promo_header = "Group recently selected tabs?";
       suggestion.promo_contents =
           "Switch between tabs easily with tab strip at the bottom.";
       suggestion.suggested_name = u"today";
@@ -211,12 +244,18 @@ void SetSuggestionText(GroupSuggestion& suggestion) {
     case GroupSuggestion::SuggestionReason::kSimilarSource:
       suggestion.promo_header = "Group recently opened tabs?";
       suggestion.promo_contents =
-          "Organize recent tabs opened using the same action.";
+          "Organize recent tabs opened from the same tab.";
       suggestion.suggested_name = u"today";
       break;
     case GroupSuggestion::SuggestionReason::kRecentlyOpened:
       suggestion.promo_header = "Group recently opened tabs?";
       suggestion.promo_contents = "Organize recently opened tabs.";
+      suggestion.suggested_name = u"today";
+      break;
+    case GroupSuggestion::SuggestionReason::kSameOrigin:
+      suggestion.promo_header = "Group recently opened tabs?";
+      suggestion.promo_contents =
+          "Organize recently opened tabs from the same website.";
       suggestion.suggested_name = u"today";
       break;
   }
@@ -323,6 +362,10 @@ GroupingHeuristics::GroupingHeuristics() {
     heuristics_.emplace(GroupSuggestion::SuggestionReason::kSimilarSource,
                         std::make_unique<SimilarSourceHeuristic>());
   }
+  if (features::kGroupSuggestionEnableSameOrigin.Get()) {
+    heuristics_.emplace(GroupSuggestion::SuggestionReason::kSameOrigin,
+                        std::make_unique<SameOriginHeuristic>());
+  }
 }
 
 GroupingHeuristics::~GroupingHeuristics() = default;
@@ -333,6 +376,7 @@ void GroupingHeuristics::GetSuggestions(
   GetSuggestions(std::move(candidates),
                  {GroupSuggestion::SuggestionReason::kSwitchedBetween,
                   GroupSuggestion::SuggestionReason::kSimilarSource,
+                  GroupSuggestion::SuggestionReason::kSameOrigin,
                   GroupSuggestion::SuggestionReason::kRecentlyOpened},
                  std::move(callback));
 }

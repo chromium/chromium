@@ -23,6 +23,7 @@ constexpr auto kReasonToMaxOverlappingTabs =
         {GroupSuggestion::SuggestionReason::kRecentlyOpened, 0.55},
         {GroupSuggestion::SuggestionReason::kSwitchedBetween, 0.60},
         {GroupSuggestion::SuggestionReason::kSimilarSource, 0.55},
+        {GroupSuggestion::SuggestionReason::kSameOrigin, 0.55},
     });
 
 float GetOverlappingTabCount(const base::flat_set<int>& shown_tabs,

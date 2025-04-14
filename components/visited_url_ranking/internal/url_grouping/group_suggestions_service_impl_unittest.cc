@@ -27,13 +27,19 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Invoke;
 
-constexpr char kTestUrl[] = "https://www.example1.com/";
+constexpr char kTestUrl1[] = "https://www.example1.com/";
+constexpr char kTestUrl2[] = "https://www.example2.com/";
+constexpr char kTestUrl3[] = "https://www.example3.com/";
+constexpr char kTestUrl4[] = "https://www.example4.com/";
+constexpr char kTestUrl5[] = "https://www.example5.com/";
+constexpr char kTestUrl6[] = "https://www.example6.com/";
 
 URLVisitAggregate CreateVisitForTab(base::TimeDelta time_since_active,
-                                    int tab_id) {
+                                    int tab_id,
+                                    const GURL& url) {
   base::Time timestamp = base::Time::Now() - time_since_active;
-  auto candidate = CreateSampleURLVisitAggregate(GURL(kTestUrl), 1, timestamp,
-                                                 {Fetcher::kTabModel});
+  auto candidate =
+      CreateSampleURLVisitAggregate(url, 1, timestamp, {Fetcher::kTabModel});
   auto tab_data_it = candidate.fetcher_data_map.find(Fetcher::kTabModel);
   auto* tab = std::get_if<URLVisitAggregate::TabData>(&tab_data_it->second);
   tab->last_active_tab.id = tab_id;
@@ -86,26 +92,38 @@ class GroupSuggestionsServiceImplTest : public testing::Test {
     std::vector<URLVisitAggregate> candidates;
     // Add 5 tabs within 600 seconds and one over 600. The first 5 tabs should
     // be grouped.
-    candidates.push_back(CreateVisitForTab(base::Seconds(60), 111));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(60), 111, GURL(kTestUrl1)));
     GetTabMetadata(candidates[0]).is_currently_active = true;
-    candidates.push_back(CreateVisitForTab(base::Seconds(250), 112));
-    candidates.push_back(CreateVisitForTab(base::Seconds(300), 114));
-    candidates.push_back(CreateVisitForTab(base::Seconds(500), 115));
-    candidates.push_back(CreateVisitForTab(base::Seconds(500), 116));
-    candidates.push_back(CreateVisitForTab(base::Seconds(800), 117));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(250), 112, GURL(kTestUrl2)));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(300), 114, GURL(kTestUrl3)));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(500), 115, GURL(kTestUrl4)));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(500), 116, GURL(kTestUrl5)));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(800), 117, GURL(kTestUrl6)));
     return candidates;
   }
 
   std::vector<URLVisitAggregate> GetNonOverlappingCandidates() {
     std::vector<URLVisitAggregate> candidates;
     // 5 tabs with new IDs.
-    candidates.push_back(CreateVisitForTab(base::Seconds(60), 11));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(60), 11, GURL(kTestUrl1)));
     GetTabMetadata(candidates[0]).is_currently_active = true;
-    candidates.push_back(CreateVisitForTab(base::Seconds(250), 12));
-    candidates.push_back(CreateVisitForTab(base::Seconds(300), 14));
-    candidates.push_back(CreateVisitForTab(base::Seconds(500), 15));
-    candidates.push_back(CreateVisitForTab(base::Seconds(500), 16));
-    candidates.push_back(CreateVisitForTab(base::Seconds(800), 17));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(250), 12, GURL(kTestUrl2)));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(300), 14, GURL(kTestUrl3)));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(500), 15, GURL(kTestUrl4)));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(500), 16, GURL(kTestUrl5)));
+    candidates.push_back(
+        CreateVisitForTab(base::Seconds(800), 17, GURL(kTestUrl6)));
     return candidates;
   }
 

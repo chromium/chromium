@@ -166,4 +166,9 @@ constexpr base::FeatureParam<bool> kGroupSuggestionEnableSimilarSource{
     /*name=*/"group_suggestion_enable_similar_source",
     /*default_value=*/true};
 
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableSameOrigin{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_same_origin",
+    /*default_value=*/true};
+
 }  // namespace visited_url_ranking::features

@@ -44,6 +44,7 @@ const char kSignalTabParentId[] = "tab_parent_id";
 const char kSignalTimeSinceTabCreationSec[] = "time_since_tab_creation_sec";
 const char kSignalTabGroupSyncId[] = "tab_group_sync_id";
 const char kSignalTabId[] = "tab_id";
+const char kSignalTabUrlOriginHash[] = "tab_url_origin_hash";
 
 constexpr std::array<FieldSchema, kTabResumptionNumInputs>
     kURLVisitAggregateSchema = {{
@@ -141,6 +142,8 @@ constexpr std::array<FieldSchema, kSuggestionsNumInputs>
          .name = kSignalTabGroupSyncId},
         {.signal = URLVisitAggregateRankingModelInputSignals::kTabId,
          .name = kSignalTabId},
+        {.signal = URLVisitAggregateRankingModelInputSignals::kTabUrlOriginHash,
+         .name = kSignalTabUrlOriginHash},
     }};
 
 }  // namespace visited_url_ranking
