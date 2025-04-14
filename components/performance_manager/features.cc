@@ -241,7 +241,7 @@ BASE_FEATURE_PARAM(double,
                    kFreezingHighCPUProportion,
                    &kCPUMeasurementInFreezingPolicy,
                    "freezing_high_cpu_proportion",
-                   0.25);
+                   0.05);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kFreezingVisibleProtectionTime,
                    &kCPUMeasurementInFreezingPolicy,
