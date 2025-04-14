@@ -58,8 +58,11 @@ source_set("test_support") {
     "actor_test_util.h",
   ]
 
-  public_deps =
-      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/test:test_support",
+  ]
 }
 
 source_set("unit_tests") {
@@ -97,7 +100,6 @@ source_set("browser_tests") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common:features",
-    "//content/test:test_support",
     "//testing/gtest",
   ]
 }

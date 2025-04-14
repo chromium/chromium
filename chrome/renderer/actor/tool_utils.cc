@@ -13,27 +13,22 @@
 
 namespace actor {
 
-namespace {
-std::optional<gfx::Rect> BoundingBoxForWebNode(const blink::WebNode& node) {
-  // Find and validate the bounding box.
-  blink::WebElement web_element = node.To<blink::WebElement>();
-  gfx::Rect rect = web_element.BoundsInWidget();
-  // Validate element is visible.
-  if (rect.width() == 0 || rect.height() == 0) {
-    return std::nullopt;
-  }
-  return rect;
-}
-}  // namespace
-
 std::optional<gfx::PointF> InteractionPointFromWebNode(
     const blink::WebNode& node) {
-  auto rect = BoundingBoxForWebNode(node);
-  if (rect->IsEmpty()) {
+  blink::WebElement element = node.DynamicTo<blink::WebElement>();
+  if (element.IsNull()) {
     return std::nullopt;
   }
-  return {
-      {rect->x() + rect->width() / 2.0f, rect->y() + rect->height() / 2.0f}};
+
+  gfx::Rect rect = element.BoundsInWidget();
+  if (rect.IsEmpty()) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/389739308): This should clip to the viewport so the center
+  // point stays within the viewport..
+
+  return gfx::PointF(rect.CenterPoint());
 }
 
 blink::WebNode GetNodeFromId(const content::RenderFrame& frame,

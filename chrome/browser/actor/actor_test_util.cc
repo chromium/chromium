@@ -6,16 +6,31 @@
 
 #include <string_view>
 
+#include "base/values.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
-
-using optimization_guide::proto::BrowserAction;
-using optimization_guide::proto::ClickAction;
-using optimization_guide::proto::MoveMouseAction;
-using optimization_guide::proto::NavigateAction;
-using optimization_guide::proto::ScrollAction;
-using optimization_guide::proto::TypeAction;
+#include "content/public/test/test_devtools_protocol_client.h"
 
 namespace actor {
+
+using ::content::TestDevToolsProtocolClient;
+using ::optimization_guide::proto::BrowserAction;
+using ::optimization_guide::proto::ClickAction;
+using ::optimization_guide::proto::MoveMouseAction;
+using ::optimization_guide::proto::NavigateAction;
+using ::optimization_guide::proto::ScrollAction;
+using ::optimization_guide::proto::TypeAction;
+
+namespace {
+
+class ScopedTestDevToolsProtocolClient : public TestDevToolsProtocolClient {
+ public:
+  explicit ScopedTestDevToolsProtocolClient(content::RenderFrameHost& rfh) {
+    AttachToFrameTreeHost(&rfh);
+  }
+  ~ScopedTestDevToolsProtocolClient() override { DetachProtocolClient(); }
+};
+
+}  // namespace
 
 BrowserAction MakeClick(int content_node_id) {
   BrowserAction action;
@@ -87,6 +102,46 @@ BrowserAction MakeScroll(std::optional<int> content_node_id,
     scroll->set_distance(-scroll_offset_y);
   }
   return action;
+}
+
+std::optional<int> FindContentNodeId(content::RenderFrameHost& rfh,
+                                     std::string_view query_selector) {
+  ScopedTestDevToolsProtocolClient dev_tools_client(rfh);
+
+  // Get the document node.
+  const base::Value::Dict* result =
+      dev_tools_client.SendCommandSync("DOM.getDocument");
+  CHECK(result);
+
+  std::optional<int> document_id = result->FindIntByDottedPath("root.nodeId");
+  CHECK(document_id.has_value());
+
+  // Find a node matching the selector in the document.
+  auto params = base::Value::Dict()
+                    .Set("nodeId", document_id.value())
+                    .Set("selector", query_selector);
+  result =
+      dev_tools_client.SendCommandSync("DOM.querySelector", std::move(params));
+  CHECK(result);
+
+  // QuerySelector returns a node_id: 0 when the selector isn't matched.
+  std::optional<int> node_id = result->FindInt("nodeId");
+  if (!node_id || node_id.value() == 0) {
+    return std::nullopt;
+  }
+
+  // Extract the backendNodeId from the matched node. backendNodeId corresponds
+  // to the Blink DOMNodeId
+  params = base::Value::Dict().Set("nodeId", node_id.value());
+  result =
+      dev_tools_client.SendCommandSync("DOM.describeNode", std::move(params));
+  CHECK(result);
+
+  std::optional<int> dom_node_id =
+      result->FindIntByDottedPath("node.backendNodeId");
+  CHECK(dom_node_id.has_value());
+
+  return dom_node_id;
 }
 
 }  // namespace actor

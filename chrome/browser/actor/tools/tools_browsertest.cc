@@ -46,7 +46,7 @@ namespace actor {
 
 namespace {
 
-constexpr int64_t kNonExistentContentNodeId = 12345;
+constexpr int32_t kNonExistentContentNodeId = 12345;
 
 class ActorToolsTest : public InProcessBrowserTest {
  public:
@@ -95,6 +95,10 @@ class ActorToolsTest : public InProcessBrowserTest {
     return chrome_test_utils::GetActiveWebContents(this);
   }
 
+  RenderFrameHost* main_frame() {
+    return web_contents()->GetPrimaryMainFrame();
+  }
+
   ActorCoordinator& actor_coordinator() { return *actor_coordinator_; }
 
  private:
@@ -102,19 +106,101 @@ class ActorToolsTest : public InProcessBrowserTest {
   std::unique_ptr<ActorCoordinator> actor_coordinator_;
 };
 
-// Exercises the basic API to ensure nothing CHECKs or crashes.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, BasicSmokeTest) {
-  const GURL url = embedded_test_server()->GetURL("/blank.html");
+// Basic test to ensure sending a click to an element works.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_SentToElement) {
+  const GURL url =
+      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Send a click to the document body.
+  {
+    std::optional<int> body_id = FindContentNodeId(*main_frame(), "body");
+    ASSERT_TRUE(body_id);
+
+    BrowserAction action = MakeClick(body_id.value());
+    TestFuture<bool> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    EXPECT_TRUE(result.Get());
+    EXPECT_EQ("mousedown[BODY#],mouseup[BODY#],click[BODY#]",
+              EvalJs(web_contents(), "mouse_event_log.join(',')"));
+  }
+
+  ASSERT_TRUE(ExecJs(web_contents(), "mouse_event_log = []"));
+
+  // Send a second click to the button.
+  {
+    std::optional<int> button_id =
+        FindContentNodeId(*main_frame(), "button#clickable");
+    ASSERT_TRUE(button_id);
+
+    BrowserAction action = MakeClick(button_id.value());
+    TestFuture<bool> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    EXPECT_TRUE(result.Get());
+    EXPECT_EQ(
+        "mousedown[BUTTON#clickable],mouseup[BUTTON#clickable],click[BUTTON#"
+        "clickable]",
+        EvalJs(web_contents(), "mouse_event_log.join(',')"));
+
+    // Ensure the button's event handler was invoked.
+    EXPECT_EQ(true, EvalJs(web_contents(), "button_clicked"));
+  }
+}
+
+// Sending a click to an element that doesn't exist fails.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_NonExistentElement) {
+  const GURL url =
+      embedded_test_server()->GetURL("/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Use a random node id that doesn't exist.
-  BrowserAction action =
-      MakeClick(/*content_node_id=*/kNonExistentContentNodeId);
-
+  BrowserAction action = MakeClick(kNonExistentContentNodeId);
   TestFuture<bool> result_fail;
   actor_coordinator().Act(action, result_fail.GetCallback());
   // The node id doesn't exist so the tool will return false.
   EXPECT_FALSE(result_fail.Get());
+
+  // The page should not have received any events.
+  EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
+}
+
+// Sending a click to a disabled element should fail without dispatching events.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_DisabledElement) {
+  const GURL url =
+      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> button_id =
+      FindContentNodeId(*main_frame(), "button#disabled");
+  ASSERT_TRUE(button_id);
+
+  BrowserAction action = MakeClick(button_id.value());
+  TestFuture<bool> result_fail;
+  actor_coordinator().Act(action, result_fail.GetCallback());
+  EXPECT_FALSE(result_fail.Get());
+
+  // The page should not have received any events.
+  EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
+}
+
+// Sending a click to an element that's not in the viewport should fail without
+// dispatching events.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
+  const GURL url =
+      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::optional<int> button_id =
+      FindContentNodeId(*main_frame(), "button#offscreen");
+  ASSERT_TRUE(button_id);
+
+  BrowserAction action = MakeClick(button_id.value());
+  TestFuture<bool> result_fail;
+  actor_coordinator().Act(action, result_fail.GetCallback());
+  EXPECT_FALSE(result_fail.Get());
+
+  // The page should not have received any events.
+  EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
 }
 
 // Basic test of the TypeTool.
@@ -122,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool) {
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  BrowserAction action = MakeType(/*content_node_id=*/kNonExistentContentNodeId,
+  BrowserAction action = MakeType(kNonExistentContentNodeId,
                                   /*text=*/"test", /*follow_by_enter=*/true);
 
   TestFuture<bool> result_fail;
@@ -139,8 +225,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool) {
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Use a random node id that doesn't exist.
-  BrowserAction action =
-      MakeMouseMove(/*content_node_id=*/kNonExistentContentNodeId);
+  BrowserAction action = MakeMouseMove(kNonExistentContentNodeId);
 
   TestFuture<bool> result_fail;
   actor_coordinator().Act(action, result_fail.GetCallback());
@@ -154,29 +239,25 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
   const GURL url = embedded_test_server()->GetURL("/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  float scroll_offset_y = 50;
+  int scroll_offset_y = 50;
 
   {
     // If no node id is passed, it will scroll the page's viewport.
-    BrowserAction action = MakeScroll(
-        /*content_node_id=*/std::nullopt, /*scroll_offset_x=*/0,
-        scroll_offset_y);
+    BrowserAction action = MakeScroll(/*content_node_id=*/std::nullopt,
+                                      /*scroll_offset_x=*/0, scroll_offset_y);
     TestFuture<bool> result_success;
     actor_coordinator().Act(action, result_success.GetCallback());
     EXPECT_TRUE(result_success.Get());
-    EXPECT_EQ(scroll_offset_y,
-              EvalJs(web_contents(), "window.scrollY").ExtractDouble());
+    EXPECT_EQ(scroll_offset_y, EvalJs(web_contents(), "window.scrollY"));
   }
 
   {
-    BrowserAction action = MakeScroll(
-        /*content_node_id=*/std::nullopt, /*scroll_offset_x=*/0,
-        scroll_offset_y);
+    BrowserAction action = MakeScroll(/*content_node_id=*/std::nullopt,
+                                      /*scroll_offset_x=*/0, scroll_offset_y);
     TestFuture<bool> result_success;
     actor_coordinator().Act(action, result_success.GetCallback());
     EXPECT_TRUE(result_success.Get());
-    EXPECT_EQ(2 * scroll_offset_y,
-              EvalJs(web_contents(), "window.scrollY").ExtractDouble());
+    EXPECT_EQ(2 * scroll_offset_y, EvalJs(web_contents(), "window.scrollY"));
   }
 }
 
@@ -186,15 +267,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
 
   // Use a random node id that doesn't exist.
   float scroll_offset_y = 50;
-  BrowserAction action = MakeScroll(
-      /*content_node_id=*/kNonExistentContentNodeId, /*scroll_offset_x=*/0,
-      scroll_offset_y);
+  BrowserAction action = MakeScroll(kNonExistentContentNodeId,
+                                    /*scroll_offset_x=*/0, scroll_offset_y);
 
   TestFuture<bool> result_fail;
   actor_coordinator().Act(action, result_fail.GetCallback());
   EXPECT_FALSE(result_fail.Get());
 
-  EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY").ExtractDouble());
+  EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 }
 
 // Basic test of the NavigateTool.

@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 
 namespace blink {
-class WebNode;
 class WebMouseEvent;
 }  // namespace blink
 
@@ -40,8 +39,9 @@ class ClickTool : public ToolBase {
   void Execute(ToolFinishedCallback callback) override;
 
  private:
+  std::optional<gfx::PointF> ValidateAndGetClickPoint() const;
+
   blink::WebMouseEvent CreateClickMouseEvent(
-      const blink::WebNode& node,
       const mojom::ClickAction::Type type,
       const mojom::ClickAction::Count count,
       blink::WebInputEvent::Type event_type,
