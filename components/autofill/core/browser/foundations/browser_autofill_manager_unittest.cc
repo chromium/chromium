@@ -49,6 +49,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -98,6 +99,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_utils.h"
 #include "components/autofill/core/browser/test_utils/vote_uploads_test_matchers.h"
 #include "components/autofill/core/browser/ui/payments/bubble_show_options.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
@@ -123,6 +125,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/variations/variations_associated_data.h"
@@ -2004,6 +2007,62 @@ TEST_F(BrowserAutofillManagerTest,
             AutofillSuggestionTriggerSource::kFormControlElementClicked);
   external_delegate()->CheckSuggestions(form.fields()[0].global_id(),
                                         {suggestions[0], suggestions[1]});
+}
+
+class BrowserAutofillManagerTestValuables : public BrowserAutofillManagerTest {
+ public:
+  void SetUp() override {
+    BrowserAutofillManagerTest::SetUp();
+    std::unique_ptr<ValuablesTable> valuables_table =
+        std::make_unique<ValuablesTable>();
+    valuables_table_ = valuables_table.get();
+
+    web_data_service_helper_ =
+        std::make_unique<AutofillWebDataServiceTestHelper>(
+            std::move(valuables_table));
+    client().set_valuables_data_manager(std::make_unique<ValuablesDataManager>(
+        web_data_service_helper_->autofill_webdata_service()));
+    web_data_service_helper_->WaitUntilIdle();
+  }
+
+  void SetLoyaltyCards(const std::vector<LoyaltyCard>& loyalty_cards) {
+    valuables_table_.get()->SetLoyaltyCards(loyalty_cards);
+    test_api(client().GetValuablesDataManager()).LoadLoyaltyCards();
+    web_data_service_helper_->WaitUntilIdle();
+  }
+
+  ValuablesDataManager& valuables_data() {
+    return client().GetValuablesDataManager();
+  }
+
+ private:
+  std::unique_ptr<AutofillWebDataServiceTestHelper> web_data_service_helper_;
+  // Owned by `web_data_service_helper_`.
+  raw_ptr<ValuablesTable> valuables_table_;
+};
+
+TEST_F(BrowserAutofillManagerTestValuables, GetSuggestions_LoyaltyCards) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {syncer::kSyncAutofillLoyaltyCard,
+       features::kAutofillEnableLoyaltyCardsFilling},
+      {});
+
+  SetLoyaltyCards({test::CreateLoyaltyCard()});
+
+  FormData form =
+      test::GetFormData({.fields = {{.role = LOYALTY_MEMBERSHIP_ID}}});
+
+  FormsSeen({form});
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  external_delegate()->CheckSuggestions(
+      form.fields()[0].global_id(),
+      {Suggestion("1234", "Deutsche Bahn", Suggestion::Icon::kNoIcon,
+                  SuggestionType::kLoyaltyCardEntry),
+       CreateSeparator(),
+       Suggestion("Manage loyalty cards...", "", Suggestion::Icon::kSettings,
+                  SuggestionType::kManageLoyaltyCard)});
 }
 
 class BrowserAutofillManagerTestForMetadataCardSuggestions

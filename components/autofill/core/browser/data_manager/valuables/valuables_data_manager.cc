@@ -24,24 +24,36 @@ base::span<const LoyaltyCard> ValuablesDataManager::GetLoyaltyCards() const {
   return loyalty_cards_;
 }
 
+void ValuablesDataManager::OnDataRetrieved(
+    WebDataServiceBase::Handle handle,
+    std::unique_ptr<WDTypedResult> result) {
+  CHECK_EQ(handle, pending_query_);
+  pending_query_ = {};
+  if (result) {
+    CHECK_EQ(result->GetType(), AUTOFILL_LOYALTY_CARD_RESULT);
+    OnLoyaltyCardsLoaded(
+        static_cast<WDResult<std::vector<LoyaltyCard>>*>(result.get())
+            ->GetValue());
+  }
+}
+
 void ValuablesDataManager::LoadLoyaltyCards() {
   if (pending_query_) {
     webdata_service_->CancelRequest(pending_query_);
   }
   pending_query_ = webdata_service_->GetLoyaltyCards(base::BindOnce(
-      [](base::WeakPtr<ValuablesDataManager> self,
-         WebDataServiceBase::Handle handle,
-         std::unique_ptr<WDTypedResult> result) {
-        CHECK_EQ(handle, self->pending_query_);
-        self->pending_query_ = {};
-        if (result) {
-          CHECK_EQ(result->GetType(), AUTOFILL_LOYALTY_CARD_RESULT);
-          self->loyalty_cards_ =
-              static_cast<WDResult<std::vector<LoyaltyCard>>*>(result.get())
-                  ->GetValue();
-        }
-      },
-      weak_ptr_factory_.GetWeakPtr()));
+      &ValuablesDataManager::OnDataRetrieved, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ValuablesDataManager::OnLoyaltyCardsLoaded(
+    const std::vector<LoyaltyCard>& loyalty_cards) {
+  loyalty_cards_ = loyalty_cards;
+  // Store loyalty cards sorted by merchant name as they are always
+  // shown in this order.
+  std::ranges::sort(loyalty_cards_,
+                    [](const LoyaltyCard& a, const LoyaltyCard& b) {
+                      return a.merchant_name() < b.merchant_name();
+                    });
 }
 
 void ValuablesDataManager::OnAutofillChangedBySync(syncer::DataType data_type) {

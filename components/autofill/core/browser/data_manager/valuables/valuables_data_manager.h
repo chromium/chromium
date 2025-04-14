@@ -48,7 +48,17 @@ class ValuablesDataManager : public KeyedService,
   void OnAutofillChangedBySync(syncer::DataType data_type) override;
 
  private:
+  friend class ValuablesDataManagerTestApi;
+
+  // Handler method called when `pending_query_` finishes.
+  void OnDataRetrieved(WebDataServiceBase::Handle handle,
+                       std::unique_ptr<WDTypedResult> result);
+
+  // Starts a query to retrieve all loyalty cards.
   void LoadLoyaltyCards();
+
+  // Handler method called with newly received loyalty cards.
+  void OnLoyaltyCardsLoaded(const std::vector<LoyaltyCard>& loyalty_cards);
 
   const scoped_refptr<AutofillWebDataService> webdata_service_;
 
@@ -60,6 +70,7 @@ class ValuablesDataManager : public KeyedService,
   WebDataServiceBase::Handle pending_query_{};
 
   // The result of the last successful `LoadLoyaltyCards()` query.
+  // Stored loyalty cards are sorted by merchant name.
   std::vector<LoyaltyCard> loyalty_cards_;
 
   base::WeakPtrFactory<ValuablesDataManager> weak_ptr_factory_{this};

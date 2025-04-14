@@ -414,6 +414,11 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       autofill_metrics::SuggestionRankingContext& ranking_context);
 
+  // Returns valuables suggestions depending on the `trigger_autofill_field`
+  // value type.
+  std::vector<Suggestion> GetValuablesSuggestions(
+      const AutofillField& trigger_autofill_field);
+
   // Fills or previews `form` with the information in `credit_card`.
   // `autofill_field` is the field that triggered the filling operation.
   // `trigger_source` is the reason for triggering the filling operation.
@@ -469,7 +474,7 @@ class BrowserAutofillManager : public AutofillManager {
   // regarding the ranking of suggestions and is used for metrics logging.
   // TODO(crbug.com/340494671): Move ablation study fields out of the function
   // and make the context a const ref.
-  std::vector<Suggestion> GetAvailableAddressAndCreditCardSuggestions(
+  std::vector<Suggestion> GetAvailableSuggestions(
       const FormData& form,
       const FormStructure* form_structure,
       const FormFieldData& field,

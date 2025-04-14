@@ -22,6 +22,7 @@
 
 namespace autofill {
 namespace {
+using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
 
@@ -48,7 +49,7 @@ class ValuablesDataManagerTest : public testing::Test {
   std::unique_ptr<AutofillWebDataServiceTestHelper> helper_;
 };
 
-// Tests that the `PassseDataManager` correctly loads loyalty cards from the
+// Tests that the `ValuablesDataManager` correctly loads loyalty cards from the
 // database in the constructor.
 TEST_F(ValuablesDataManagerTest, GetLoyaltyCards) {
   const LoyaltyCard card1 = test::CreateLoyaltyCard();
@@ -76,7 +77,8 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
               UnorderedElementsAre(card1));
 
   const LoyaltyCard card2 = test::CreateLoyaltyCard2();
-  valuables_table().SetLoyaltyCards({card1, card2});
+  // Loyalty cards are passed unsorted by sync.
+  valuables_table().SetLoyaltyCards({card2, card1});
   // Make sure all async tasks are executed.
   helper().WaitUntilIdle();
 
@@ -93,8 +95,9 @@ TEST_F(ValuablesDataManagerTest, DataChangedBySync) {
   //   the UI sequence.
   helper().WaitUntilIdle();
   helper().WaitUntilIdle();
+  // Assert the cards are stored sorted by merchant name.
   EXPECT_THAT(valuables_data_manager.GetLoyaltyCards(),
-              UnorderedElementsAre(card1, card2));
+              ElementsAre(card1, card2));
 }
 
 }  // namespace

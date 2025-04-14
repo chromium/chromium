@@ -52,6 +52,8 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/browser/webdata/valuables/valuables_table.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
@@ -142,7 +144,9 @@ class TestAutofillClientTemplate : public T {
     return *test_personal_data_manager_.get();
   }
 
-  ValuablesDataManager& GetValuablesDataManager() override { NOTREACHED(); }
+  ValuablesDataManager& GetValuablesDataManager() override {
+    return *valuables_data_manager_.get();
+  }
 
   EntityDataManager* GetEntityDataManager() override {
     return entity_data_manager_non_owning_
@@ -502,6 +506,11 @@ class TestAutofillClientTemplate : public T {
     payments_autofill_client_ = std::move(payments_client);
   }
 
+  void set_valuables_data_manager(
+      std::unique_ptr<ValuablesDataManager> valuables_data_manager) {
+    valuables_data_manager_ = std::move(valuables_data_manager);
+  }
+
   void set_single_field_fill_router(
       std::unique_ptr<SingleFieldFillRouter> router) {
     single_field_fill_router_ = std::move(router);
@@ -615,6 +624,7 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
+  std::unique_ptr<ValuablesDataManager> valuables_data_manager_;
   std::unique_ptr<EntityDataManager> entity_data_manager_;
   raw_ptr<EntityDataManager> entity_data_manager_non_owning_ = nullptr;
   // The below objects must be destroyed before `TestPersonalDataManager`
