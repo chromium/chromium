@@ -361,8 +361,15 @@ bool Thread::GetThreadWasQuitProperly() {
 }
 
 void Thread::ThreadMain() {
-  // First, make GetThreadId() available to avoid deadlocks. It could be called
-  // any place in the following thread initialization code.
+  // First, set the thread name. It is important to do this first because some
+  // of the code below may end up storing/caching the thread name. One example
+  // is Perfetto being triggered by a TRACE_EVENT call from id_event_.Signal().
+  // See https://crbug.com/333597498.
+  PlatformThread::SetName(name_.c_str());
+  ABSL_ANNOTATE_THREAD_NAME(name_.c_str());  // Tell the name to race detector.
+
+  // Make GetThreadId() available to avoid deadlocks. It could be called any
+  // place in the following thread initialization code.
   DCHECK(!id_event_.IsSignaled());
   // Note: this read of |id_| while |id_event_| isn't signaled is exceptionally
   // okay because ThreadMain has a happens-after relationship with the other
@@ -371,10 +378,6 @@ void Thread::ThreadMain() {
   id_ = PlatformThread::CurrentId();
   DCHECK_NE(kInvalidThreadId, id_);
   id_event_.Signal();
-
-  // Complete the initialization of our Thread object.
-  PlatformThread::SetName(name_.c_str());
-  ABSL_ANNOTATE_THREAD_NAME(name_.c_str());  // Tell the name to race detector.
 
   // Lazily initialize the |message_loop| so that it can run on this thread.
   DCHECK(delegate_);
