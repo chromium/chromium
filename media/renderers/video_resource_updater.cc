@@ -527,6 +527,12 @@ void VideoResourceUpdater::ObtainFrameResource(
       CreateExternalResourceFromVideoFrame(video_frame);
   frame_resource_type_ = external_resource.type;
 
+  if (external_resource.resource.is_empty()) {
+    DLOG(ERROR) << "external_resource is empty.";
+    frame_resource_id_ = viz::kInvalidResourceId;
+    return;
+  }
+
   frame_resource_id_ = resource_provider_->ImportResource(
       external_resource.resource,
       std::move(external_resource.release_callback));
@@ -1390,6 +1396,10 @@ bool VideoResourceUpdater::OnMemoryDump(
 gpu::SharedImageInterface* VideoResourceUpdater::shared_image_interface()
     const {
   return shared_image_interface_.get();
+}
+
+viz::ResourceId VideoResourceUpdater::GetFrameResourceIdForTesting() const {
+  return frame_resource_id_;
 }
 
 }  // namespace media

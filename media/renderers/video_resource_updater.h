@@ -122,6 +122,8 @@ class MEDIA_EXPORT VideoResourceUpdater
   viz::SharedImageFormat YuvSharedImageFormat(int bits_per_channel);
   gpu::SharedImageInterface* shared_image_interface() const;
 
+  viz::ResourceId GetFrameResourceIdForTesting() const;
+
  private:
   class FrameResource;
 
