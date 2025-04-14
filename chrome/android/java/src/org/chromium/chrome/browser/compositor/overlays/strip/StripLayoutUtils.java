@@ -254,7 +254,7 @@ public class StripLayoutUtils {
      * @param id The ID of the {@link StripLayoutTab} we're searching for.
      * @return The {@link StripLayoutTab}. {@code null} if not found.
      */
-    static @Nullable StripLayoutTab findTabById(StripLayoutTab[] stripTabs, int id) {
+    public static @Nullable StripLayoutTab findTabById(StripLayoutTab[] stripTabs, int id) {
         if (stripTabs == null) return null;
         for (int i = 0; i < stripTabs.length; i++) {
             if (stripTabs[i].getTabId() == id) return stripTabs[i];

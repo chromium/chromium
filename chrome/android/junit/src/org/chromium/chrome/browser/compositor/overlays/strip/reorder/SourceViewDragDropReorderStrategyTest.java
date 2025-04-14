@@ -47,6 +47,8 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     // Dependencies
     @Mock private TabDragSource mTabDragSource;
+    @Mock protected ReorderStrategy mTabStrategy;
+    @Mock protected ReorderStrategy mGroupStrategy;
 
     // Target
     private SourceViewDragDropReorderStrategy mStrategy;
@@ -79,7 +81,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
 
     private void setupForGroupDrag() {
         mInteractingGroupTitle =
-                buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID, TAB_WIDTH, TAB_WIDTH);
+                buildGroupTitle(INTERACTING_VIEW_ROOT_ID, GROUP_ID1, TAB_WIDTH, TAB_WIDTH);
     }
 
     @Test
@@ -149,7 +151,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         verify(mTabDragSource)
                 .startGroupDragAction(
                         mContainerView,
-                        GROUP_ID,
+                        GROUP_ID1,
                         /* isGroupShared= */ false,
                         DRAG_START_POINT,
                         TAB_WIDTH,
@@ -405,7 +407,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
         mInteractingGroupTitle.setIsDraggedOffStrip(true);
 
         // Call. Simulate failed drop.
-        when(mTabGroupModelFilter.tabGroupExists(GROUP_ID)).thenReturn(true);
+        when(mTabGroupModelFilter.tabGroupExists(GROUP_ID1)).thenReturn(true);
         mStrategy.stopReorderMode(mStripViews, mGroupTitles);
 
         // Verify restore.
@@ -459,7 +461,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     private void startGroupReorder() {
         when(mTabDragSource.startGroupDragAction(
                         Mockito.eq(mContainerView),
-                        eq(GROUP_ID),
+                        eq(GROUP_ID1),
                         anyBoolean(),
                         eq(DRAG_START_POINT),
                         anyFloat(),

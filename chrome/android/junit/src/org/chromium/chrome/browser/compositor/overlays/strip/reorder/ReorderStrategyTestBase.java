@@ -40,14 +40,14 @@ public class ReorderStrategyTestBase {
     protected static final PointF DRAG_START_POINT = new PointF(70f, 20f); // Arbitrary value.
     protected static final float EPSILON = 0.001f;
     protected static final int INTERACTING_VIEW_ID = 10; // Arbitrary value.
-    protected static final Token GROUP_ID =
-            new Token(/* high= */ 0L, /* low= */ 0L); // Arbitrary value.
+    protected static final Token GROUP_ID1 =
+            new Token(/* high= */ 1L, /* low= */ 1L); // Arbitrary value.
+    protected static final Token GROUP_ID2 =
+            new Token(/* high= */ 2L, /* low= */ 2L); // Arbitrary value.
 
     // Dependencies
     private Activity mActivity;
     @Mock protected ActionConfirmationManager mActionConfirmationManager;
-    @Mock protected ReorderStrategy mTabStrategy;
-    @Mock protected ReorderStrategy mGroupStrategy;
     @Mock protected StripUpdateDelegate mStripUpdateDelegate;
     @Mock protected ScrollDelegate mScrollDelegate;
     @Mock protected View mContainerView;
@@ -66,7 +66,6 @@ public class ReorderStrategyTestBase {
     protected StripLayoutView[] mStripViews = new StripLayoutView[0];
     protected StripLayoutTab mInteractingTab;
     protected StripLayoutGroupTitle mInteractingGroupTitle;
-    protected StripLayoutGroupTitle mInteractingTabGroupTitle;
     @Mock protected Tab mTabForInteractingView;
 
     protected void setup() {
@@ -94,6 +93,7 @@ public class ReorderStrategyTestBase {
     }
 
     private void setDrawProperties(StripLayoutView view, int x, int width) {
+        view.setIdealX(x);
         view.setDrawX(x);
         view.setDrawY(0);
         view.setHeight(40);
