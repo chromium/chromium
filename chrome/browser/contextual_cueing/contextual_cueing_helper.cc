@@ -46,7 +46,6 @@ class ScopedNudgeDecisionRecorder {
       ukm::SourceId source_id)
       : optimization_type_(optimization_type), source_id_(source_id) {}
   ~ScopedNudgeDecisionRecorder() {
-    CHECK_NE(nudge_decision_, NudgeDecision::kUnknown);
     base::UmaHistogramEnumeration(
         "ContextualCueing.NudgeDecision." +
             optimization_guide::GetStringNameForOptimizationType(
