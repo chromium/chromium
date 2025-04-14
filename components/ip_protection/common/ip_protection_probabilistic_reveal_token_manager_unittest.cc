@@ -59,6 +59,8 @@ constexpr char kInitialTokenAvailableHistogram[] =
 constexpr char kSubsequentTokenAvailableHistogram[] =
     "NetworkService.IpProtection."
     "IsProbabilisticRevealTokenAvailableOnSubsequentRequest";
+constexpr char kRandomizationTimeHistogram[] =
+    "NetworkService.IpProtection.ProbabilisticRevealTokenRandomizationTime";
 
 // Size of a PRT when TLS serialized, before base64 encoding.
 constexpr size_t kPRTSize = 79;
@@ -465,6 +467,9 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
     const std::string token2 = serialized_token.value();
     EXPECT_EQ(token1, token2);
   }
+
+  // The token will only be randomized once for the same first/third party pair.
+  histogram_tester_.ExpectTotalCount(kRandomizationTimeHistogram, 1);
 }
 
 // Test whether GetToken() returns the randomized versions of the same
@@ -488,6 +493,9 @@ TEST_F(IpProtectionProbabilisticRevealTokenManagerTest,
   ASSERT_TRUE(serialized_token_com.has_value());
 
   EXPECT_NE(serialized_token_ex.value(), serialized_token_com.value());
+
+  // The token will be randomized for each distinct first/third party pair.
+  histogram_tester_.ExpectTotalCount(kRandomizationTimeHistogram, 2);
 
   ProbabilisticRevealToken token_ex;
   std::string epoch_id_ex;

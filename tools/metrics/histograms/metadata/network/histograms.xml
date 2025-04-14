@@ -5244,6 +5244,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="NetworkService.IpProtection.ProbabilisticRevealTokenRandomizationTime"
+    units="ms" expires_after="2025-09-01">
+  <owner>ryankalla@google.com</owner>
+  <owner>kiln-eng@google.com</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Records the elapsed time for successfully re-randomizing a probabilistic
+    reveal token.
+  </summary>
+</histogram>
+
+<histogram
     name="NetworkService.IpProtection.ProbabilisticRevealTokensRequestTime"
     units="ms" expires_after="2025-09-01">
   <owner>ryankalla@google.com</owner>

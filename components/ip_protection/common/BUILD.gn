@@ -660,6 +660,7 @@ source_set("ip_protection_probabilistic_reveal_token_crypter") {
     "//third_party/abseil-cpp:absl",
   ]
   deps = [
+    ":ip_protection_telemetry",
     "//base",
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
   ]
