@@ -88,6 +88,13 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
   [self setUpBottomSheetDetents];
 }
 
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  if (!self.dismissedFromSheetAction) {
+    [self.delegate shareExtensionSheetWillDisappear:self];
+  }
+}
+
 #pragma mark - Public
 
 - (void)setSharedURL:(NSURL*)sharedURL {

@@ -110,6 +110,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 - (void)didTapCloseShareExtensionSheet:
     (ShareExtensionSheet*)shareExtensionSheet {
+  self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
   [self
       queueActionItemURL:nil
@@ -129,6 +130,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 - (void)didTapOpenInChromeShareExtensionSheet:
     (ShareExtensionSheet*)shareExtensionSheet {
+  self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
   AppGroupCommand* command = [[AppGroupCommand alloc]
       initWithSourceApp:app_group::kOpenCommandSourceShareExtension
@@ -143,7 +145,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
                     action:app_group::OPEN_IN_CHROME_ITEM
                     cancel:NO
                 completion:^{
-                  [weakSelf dissmissAndShowShareItem];
+                  [weakSelf dismissAndShowShareItem];
                 }];
 }
 
@@ -173,6 +175,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 - (void)didTapSearchInChromeShareExtensionSheet:
     (ShareExtensionSheet*)shareExtensionSheet {
+  self.shareSheet.dismissedFromSheetAction = YES;
   CHECK(!self.shareURL);
   __weak ExtendedShareViewController* weakSelf = self;
   AppGroupCommand* command = [[AppGroupCommand alloc]
@@ -202,7 +205,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
                       action:app_group::IMAGE_SEARCH_ITEM
                       cancel:NO
                   completion:^{
-                    [weakSelf dissmissAndShowShareItem];
+                    [weakSelf dismissAndShowShareItem];
                   }];
     return;
   }
@@ -210,6 +213,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
 
 - (void)didTapSearchInIncognitoShareExtensionSheet:
     (ShareExtensionSheet*)shareExtensionSheet {
+  self.shareSheet.dismissedFromSheetAction = YES;
   CHECK(!self.shareURL);
   __weak ExtendedShareViewController* weakSelf = self;
   AppGroupCommand* command = [[AppGroupCommand alloc]
@@ -239,10 +243,29 @@ const NSUInteger kSearchCharacterLimit = 1000;
                       action:app_group::INCOGNITO_IMAGE_SEARCH_ITEM
                       cancel:NO
                   completion:^{
-                    [weakSelf dissmissAndShowShareItem];
+                    [weakSelf dismissAndShowShareItem];
                   }];
     return;
   }
+}
+
+- (void)shareExtensionSheetWillDisappear:
+    (ShareExtensionSheet*)shareExtensionSheet {
+  __weak ExtendedShareViewController* weakSelf = self;
+  [self
+      queueActionItemURL:nil
+                   title:nil
+                  action:app_group::READING_LIST_ITEM  // Ignored
+                  cancel:YES
+              completion:^{
+                [weakSelf
+                    dismissAndReturnItem:nil
+                                   error:
+                                       [NSError
+                                           errorWithDomain:NSCocoaErrorDomain
+                                                      code:NSUserCancelledError
+                                                  userInfo:nil]];
+              }];
 }
 
 #pragma mark - Private methods
@@ -591,6 +614,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)handleAddingToBookmark {
+  self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
@@ -602,6 +626,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)handleAddingToReadingList {
+  self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
@@ -613,6 +638,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
 }
 
 - (void)handleOpeningInIncognito {
+  self.shareSheet.dismissedFromSheetAction = YES;
   __weak ExtendedShareViewController* weakSelf = self;
   AppGroupCommand* command = [[AppGroupCommand alloc]
       initWithSourceApp:app_group::kOpenCommandSourceShareExtension
@@ -627,11 +653,11 @@ const NSUInteger kSearchCharacterLimit = 1000;
                     action:app_group::OPEN_IN_CHROME_INCOGNITO_ITEM
                     cancel:NO
                 completion:^{
-                  [weakSelf dissmissAndShowShareItem];
+                  [weakSelf dismissAndShowShareItem];
                 }];
 }
 
-- (void)dissmissAndShowShareItem {
+- (void)dismissAndShowShareItem {
   [self dismissAndReturnItem:_shareItem error:nil];
 }
 @end
