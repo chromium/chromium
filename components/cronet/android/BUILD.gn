@@ -1350,6 +1350,7 @@ android_library("cronet_javatests") {
     "test/javatests/src/org/chromium/net/TestNetworkQualityRttListener.java",
     "test/javatests/src/org/chromium/net/TestNetworkQualityThroughputListener.java",
     "test/javatests/src/org/chromium/net/UrlResponseInfoTest.java",
+    "test/javatests/src/org/chromium/net/ZstdTest.java",
     "test/javatests/src/org/chromium/net/apihelpers/ContentTypeParametersParserTest.java",
     "test/javatests/src/org/chromium/net/apihelpers/UploadDataProvidersTest.java",
     "test/javatests/src/org/chromium/net/httpflags/BaseFeatureTest.java",
