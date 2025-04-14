@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chromeos/ash/components/boca/babelorca/testing_utils.h"
+#include "chromeos/ash/components/boca/babelorca/soda_testing_utils.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
