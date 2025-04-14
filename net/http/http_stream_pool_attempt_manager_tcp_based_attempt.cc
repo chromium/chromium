@@ -12,11 +12,13 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/tracing.h"
 #include "net/http/http_stream_key.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_attempt_manager.h"
@@ -64,15 +66,25 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::TcpBasedAttempt(
     AttemptManager* manager,
     bool using_tls,
     IPEndPoint ip_endpoint)
-    : manager_(manager), using_tls_(using_tls) {
+    : manager_(manager),
+      using_tls_(using_tls),
+      track_(base::trace_event::GetNextGlobalTraceId()),
+      flow_(perfetto::Flow::ProcessScoped(
+          base::trace_event::GetNextGlobalTraceId())) {
+  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttemptStart", manager_->track_,
+                      flow_);
+  TRACE_EVENT_BEGIN("net.stream", "TcpBasedAttempt::TcpBasedAttempt", track_,
+                    flow_, "ip_endpoint", ip_endpoint.ToString());
   if (using_tls_) {
     attempt_ = std::make_unique<TlsStreamAttempt>(
         manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
+        track_,
         HostPortPair::FromSchemeHostPort(manager_->stream_key().destination()),
         /*ssl_config_provider=*/this);
   } else {
     attempt_ = std::make_unique<TcpStreamAttempt>(
-        manager_->pool()->stream_attempt_params(), std::move(ip_endpoint));
+        manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
+        track_);
   }
 }
 
@@ -99,6 +111,11 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::~TcpBasedAttempt() {
         base::StrCat({"Net.HttpStreamPool.StreamAttemptCanceledTime.", suffix}),
         elapsed);
   }
+
+  TRACE_EVENT_END("net.stream", track_, "result",
+                  result_.value_or(ERR_ABORTED));
+  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttemptEnd", manager_->track_,
+                      flow_);
 }
 
 void HttpStreamPool::AttemptManager::TcpBasedAttempt::Start() {
@@ -144,6 +161,8 @@ void HttpStreamPool::AttemptManager::TcpBasedAttempt::Start() {
 
 void HttpStreamPool::AttemptManager::TcpBasedAttempt::SetCancelReason(
     StreamSocketCloseReason reason) {
+  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttempt::SetCancelReason", track_,
+                      "reason", StreamSocketCloseReasonToString(reason));
   cancel_reason_ = reason;
   if (attempt_) {
     attempt_->SetCancelReason(reason);
@@ -203,6 +222,8 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::GetInfoAsValue() const {
 
 void HttpStreamPool::AttemptManager::TcpBasedAttempt::OnAttemptComplete(
     int rv) {
+  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttempt::OnAttemptComplete",
+                      track_, "result", rv);
   manager_->net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_END,
       [&] {

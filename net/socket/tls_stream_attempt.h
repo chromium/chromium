@@ -65,6 +65,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   // `params` and `ssl_config_provider` must outlive `this`.
   TlsStreamAttempt(const StreamAttemptParams* params,
                    IPEndPoint ip_endpoint,
+                   perfetto::Track track,
                    HostPortPair host_port_pair,
                    SSLConfigProvider* ssl_config_provider);
 
