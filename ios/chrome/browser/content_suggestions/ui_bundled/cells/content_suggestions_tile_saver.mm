@@ -123,6 +123,9 @@ void GetFaviconsAndSave(
 
 void ClearOutdatedIcons(const ntp_tiles::NTPTilesVector& most_visited_data,
                         NSURL* favicons_directory) {
+  // TODO(crbug.com/410336678): The following code is deleting shortcuts needed
+  // for other profiles, update this code to keep data needed from other
+  // profiles.
   NSMutableSet<NSString*>* allowed_files_name = [[NSMutableSet alloc] init];
   for (size_t i = 0; i < most_visited_data.size(); i++) {
     const ntp_tiles::NTPTile& ntp_tile = most_visited_data[i];
