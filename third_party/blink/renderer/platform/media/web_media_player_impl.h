@@ -969,6 +969,18 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // unimportant.
   bool suppress_destruction_errors_ = false;
 
+  // NOTE: |using_media_player_renderer_| is set based on the usage of a
+  // MediaResource::Type::URL in StartPipeline(). This works because
+  // MediaPlayerRendererClientFactory is the only factory that uses
+  // MediaResource::Type::URL for now.
+  bool using_media_player_renderer_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Set during the initial DoLoad() call. Used to determine whether to allow
+  // credentials or not for MediaPlayerRenderer.
+  bool allow_media_player_renderer_credentials_ = false;
+#endif
+
   // Stores the current position state of the media.
   media_session::MediaPosition media_position_state_;
 
