@@ -438,9 +438,9 @@ void DemuxerManager::SetDataSource(std::unique_ptr<DataSource> data_source) {
   data_source_info_ = data_source_.get();
 }
 
-void DemuxerManager::OnBufferingHaveEnough(bool enough) {
+void DemuxerManager::StopPreloading() {
   CHECK(data_source_);
-  data_source_->OnBufferingHaveEnough(enough);
+  data_source_->StopPreloading();
 }
 
 void DemuxerManager::SetPreload(DataSource::Preload preload) {

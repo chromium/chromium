@@ -46,10 +46,7 @@ class MockDataSource : public CrossOriginDataSource {
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (override));
   MOCK_METHOD(void, SetPreload, (DataSource::Preload preload), (override));
   MOCK_METHOD(GURL, GetUrlAfterRedirects, (), (const, override));
-  MOCK_METHOD(void,
-              OnBufferingHaveEnough,
-              (bool must_cancel_netops),
-              (override));
+  MOCK_METHOD(void, StopPreloading, (), (override));
   MOCK_METHOD(void,
               OnMediaPlaybackRateChanged,
               (double playback_rate),

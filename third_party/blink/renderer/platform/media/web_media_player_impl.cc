@@ -1902,14 +1902,14 @@ void WebMediaPlayerImpl::OnPipelineSuspended() {
       // will cancel upon destruction of this class and `demuxer_manager_` is
       // gauranteeed to outlive us as a result of the DestructionHelper.
       have_enough_after_lazy_load_cb_.Reset(
-          WTF::BindOnce(&media::DemuxerManager::OnBufferingHaveEnough,
-                        WTF::Unretained(demuxer_manager_.get()), true));
+          WTF::BindOnce(&media::DemuxerManager::StopPreloading,
+                        WTF::Unretained(demuxer_manager_.get())));
       main_task_runner_->PostDelayedTask(
           FROM_HERE, have_enough_after_lazy_load_cb_.callback(),
           base::Milliseconds(250));
     } else {
       have_enough_after_lazy_load_cb_.Cancel();
-      demuxer_manager_->OnBufferingHaveEnough(true);
+      demuxer_manager_->StopPreloading();
     }
   }
 
@@ -2353,10 +2353,11 @@ void WebMediaPlayerImpl::OnBufferingStateChangeInternal(
     MaybeUpdateBufferSizesForPlayback();
     if (demuxer_manager_->HasDataSource() && !CouldPlayIfEnoughData()) {
       // For LazyLoad this will be handled during OnPipelineSuspended().
-      if (for_suspended_start && did_lazy_load_)
+      if (for_suspended_start && did_lazy_load_) {
         DCHECK(!have_enough_after_lazy_load_cb_.IsCancelled());
-      else
-        demuxer_manager_->OnBufferingHaveEnough(false);
+      } else if (preload_ == media::DataSource::METADATA && !IsStreaming()) {
+        demuxer_manager_->StopPreloading();
+      }
     }
 
     // Blink expects a timeChanged() in response to a seek().

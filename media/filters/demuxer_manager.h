@@ -146,7 +146,7 @@ class MEDIA_EXPORT DemuxerManager {
   // Methods that help manage or access |data_source_|
   DataSource* GetDataSourceForTesting() const;
   void SetDataSource(std::unique_ptr<DataSource> data_source);
-  void OnBufferingHaveEnough(bool enough);
+  void StopPreloading();
   void SetPreload(DataSource::Preload preload);
 
   void StopAndResetClient();
