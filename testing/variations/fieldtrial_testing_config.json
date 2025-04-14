@@ -14430,21 +14430,6 @@
             ]
         }
     ],
-    "MacAccessibilityOptimizeChildrenChanged": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MacAccessibilityOptimizeChildrenChanged"
-                    ]
-                }
-            ]
-        }
-    ],
     "MacPermanentThinController": [
         {
             "platforms": [

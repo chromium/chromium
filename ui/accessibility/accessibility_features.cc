@@ -443,7 +443,7 @@ bool IsMacAccessibilityAPIMigrationEnabled() {
 
 BASE_FEATURE(kMacAccessibilityOptimizeChildrenChanged,
              "MacAccessibilityOptimizeChildrenChanged",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsMacAccessibilityOptimizeChildrenChangedEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kMacAccessibilityOptimizeChildrenChanged);
