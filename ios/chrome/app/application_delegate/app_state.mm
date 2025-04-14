@@ -367,9 +367,6 @@ BOOL ApplicationIsInBackground() {
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (level >= SceneActivationLevelForegroundActive) {
-    [_observers appState:self sceneDidBecomeActive:sceneState];
-  }
   crash_keys::SetForegroundScenesCount([self foregroundScenes].count);
 }
 
