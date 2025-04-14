@@ -8,43 +8,65 @@
 #include <stdint.h>
 
 #include <array>
+#include <memory>
+#include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
-#include "base/barrier_closure.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/synchronization/waitable_event_watcher.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
+#include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/uuid.h"
+#include "components/services/storage/indexed_db/locks/partitioned_lock.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
-#include "components/services/storage/privileged/mojom/indexed_db_control.mojom-test-utils.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
+#include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
+#include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
+#include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
+#include "content/browser/indexed_db/indexed_db_external_object.h"
+#include "content/browser/indexed_db/indexed_db_external_object_storage.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
+#include "content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h"
+#include "content/browser/indexed_db/status.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -52,7 +74,6 @@
 #include "storage/browser/test/fake_blob.h"
 #include "storage/browser/test/mock_quota_manager.h"
 #include "storage/browser/test/mock_quota_manager_proxy.h"
-#include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -284,7 +305,8 @@ class BackingStoreTest : public testing::Test {
   BackingStore* backing_store() { return backing_store_; }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<MockBlobStorageContext> blob_context_;
@@ -2145,4 +2167,47 @@ TEST_F(BackingStoreTestForCleanupScheduler,
                   .GetRunningStateForTesting()
                   .has_value());
 }
+
+TEST_F(BackingStoreTest, TombstoneSweeperTiming) {
+  // Open a connection.
+  EXPECT_FALSE(backing_store()->ShouldRunTombstoneSweeper());
+
+  // Move the clock to run the tasks in the next close sequence.
+  task_environment_.FastForwardBy(kMaxGlobalSweepDelay);
+
+  EXPECT_TRUE(backing_store()->ShouldRunTombstoneSweeper());
+
+  // Move clock forward to trigger next sweep, but storage key has longer
+  // sweep minimum, so no tasks should execute.
+  task_environment_.FastForwardBy(kMaxGlobalSweepDelay);
+
+  EXPECT_FALSE(backing_store()->ShouldRunTombstoneSweeper());
+
+  //  Finally, move the clock forward so the storage key should allow a sweep.
+  task_environment_.FastForwardBy(kMaxBucketSweepDelay);
+
+  EXPECT_TRUE(backing_store()->ShouldRunTombstoneSweeper());
+}
+
+TEST_F(BackingStoreTest, CompactionTaskTiming) {
+  EXPECT_FALSE(backing_store()->ShouldRunCompaction());
+
+  // Move the clock to run the tasks in the next close sequence.
+  task_environment_.FastForwardBy(kMaxGlobalCompactionDelay);
+
+  EXPECT_TRUE(backing_store()->ShouldRunCompaction());
+
+  // Move clock forward to trigger next compaction, but storage key has longer
+  // compaction minimum, so no tasks should execute.
+  task_environment_.FastForwardBy(kMaxGlobalCompactionDelay);
+
+  EXPECT_FALSE(backing_store()->ShouldRunCompaction());
+
+  // Finally, move the clock forward so the storage key should allow a
+  // compaction.
+  task_environment_.FastForwardBy(kMaxBucketCompactionDelay);
+
+  EXPECT_TRUE(backing_store()->ShouldRunCompaction());
+}
+
 }  // namespace content::indexed_db::level_db

@@ -9,6 +9,7 @@
 
 #include <inttypes.h>
 
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -33,12 +34,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/numerics/clamped_math.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -50,6 +52,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_id.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
+#include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
@@ -69,7 +72,7 @@
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_mojo_indexed_db_factory_client.h"
-#include "content/public/common/content_features.h"
+#include "content/browser/indexed_db/status.h"
 #include "env_chromium.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -1883,70 +1886,13 @@ TEST_P(IndexedDBTest, PreCloseTasksStart) {
   }
 }
 
-namespace level_db {
-
-TEST_P(IndexedDBTest, TombstoneSweeperTiming) {
-  // Open a connection.
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  level_db::BackingStore* backing_store =
-      reinterpret_cast<level_db::BackingStore*>(
-          bucket_context_handle->backing_store());
-  EXPECT_FALSE(backing_store->ShouldRunTombstoneSweeper());
-
-  // Move the clock to run the tasks in the next close sequence.
-  task_environment_.FastForwardBy(kMaxGlobalSweepDelay);
-
-  EXPECT_TRUE(backing_store->ShouldRunTombstoneSweeper());
-
-  // Move clock forward to trigger next sweep, but storage key has longer
-  // sweep minimum, so no tasks should execute.
-  task_environment_.FastForwardBy(kMaxGlobalSweepDelay);
-
-  EXPECT_FALSE(backing_store->ShouldRunTombstoneSweeper());
-
-  //  Finally, move the clock forward so the storage key should allow a sweep.
-  task_environment_.FastForwardBy(kMaxBucketSweepDelay);
-
-  EXPECT_TRUE(backing_store->ShouldRunTombstoneSweeper());
-}
-
-TEST_P(IndexedDBTest, CompactionTaskTiming) {
-  // Open a connection.
-  BucketContextHandle bucket_context_handle = CreateBucketHandle();
-  level_db::BackingStore* backing_store =
-      reinterpret_cast<level_db::BackingStore*>(
-          bucket_context_handle->backing_store());
-  EXPECT_FALSE(backing_store->ShouldRunCompaction());
-
-  // Move the clock to run the tasks in the next close sequence.
-  task_environment_.FastForwardBy(kMaxGlobalCompactionDelay);
-
-  EXPECT_TRUE(backing_store->ShouldRunCompaction());
-
-  // Move clock forward to trigger next compaction, but storage key has longer
-  // compaction minimum, so no tasks should execute.
-  task_environment_.FastForwardBy(kMaxGlobalCompactionDelay);
-
-  EXPECT_FALSE(backing_store->ShouldRunCompaction());
-
-  // Finally, move the clock forward so the storage key should allow a
-  // compaction.
-  task_environment_.FastForwardBy(kMaxBucketCompactionDelay);
-
-  EXPECT_TRUE(backing_store->ShouldRunCompaction());
-}
-
-}  // namespace level_db
-
 TEST_P(IndexedDBTest, InMemoryFactoriesStay) {
   SetUpInMemoryContext();
 
   BucketContextHandle bucket_context_handle = CreateBucketHandle();
   BucketLocator bucket_locator = bucket_context_handle->bucket_locator();
 
-  EXPECT_TRUE(reinterpret_cast<level_db::BackingStore*>(
-                  bucket_context_handle->backing_store())
-                  ->in_memory());
+  EXPECT_TRUE(bucket_context_handle->in_memory());
   BucketContext* bucket_context = bucket_context_handle.bucket_context();
   bucket_context_handle.Release();
   RunPostedTasks();

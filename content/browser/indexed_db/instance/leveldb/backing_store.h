@@ -587,8 +587,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
  private:
   FRIEND_TEST_ALL_PREFIXES(BackingStoreTestWithExternalObjects,
                            ActiveBlobJournal);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, CompactionTaskTiming);
-  FRIEND_TEST_ALL_PREFIXES(IndexedDBTest, TombstoneSweeperTiming);
+  FRIEND_TEST_ALL_PREFIXES(BackingStoreTest, CompactionTaskTiming);
+  FRIEND_TEST_ALL_PREFIXES(BackingStoreTest, TombstoneSweeperTiming);
 
   friend class AutoDidCommitTransaction;
   friend class indexed_db::BucketContext;

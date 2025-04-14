@@ -310,6 +310,8 @@ class CONTENT_EXPORT BucketContext
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
                     base::trace_event::ProcessMemoryDump* pmd) override;
 
+  bool in_memory() const { return data_path_.empty(); }
+
  private:
   friend BucketContextHandle;
   friend class level_db::BackingStoreTest;
@@ -395,8 +397,6 @@ class CONTENT_EXPORT BucketContext
   level_db::BackingStore* leveldb_backing_store() {
     return reinterpret_cast<level_db::BackingStore*>(backing_store_.get());
   }
-
-  bool in_memory() const { return data_path_.empty(); }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
