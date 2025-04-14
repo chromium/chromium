@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>AudioContext Constructor SinkID OnError Conditions</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+"use strict";
+
+/**
+ * Runs a test case for AudioContext error reporting.
+ * @param {object} t Test object.
+ * @param {object} param Test parameters.
+ * @param {function} param.testFunction Function that creates an AudioContext.
+ * @param {object} param.expected Expected result object
+ *   { sinkId, onErrorCount, exceptionCount }.
+ */
+const runTestWithParam = (t, param) => {
+  const actual = {
+    sinkId: null,
+    onErrorCount: 0,
+    exceptionCount: 0
+  };
+
+  let audioContext = null;
+  try {
+    audioContext = param.testFunction();
+    actual.sinkId = audioContext.sinkId;
+    audioContext.onerror = () => {
+      actual.onErrorCount++;
+    };
+  } catch(error) {
+    actual.exceptionCount++;
+    reject();
+  }
+
+  t.step(() => {
+    if (audioContext) {
+      audioContext.onerror = null;
+    }
+    assert_equals(actual.sinkId, param.expected.sinkId, 'Sink ID');
+    assert_equals(actual.onErrorCount, param.expected.onErrorCount,
+                  'onError Count');
+    assert_equals(actual.exceptionCount, param.expected.exceptionCount,
+                  'Exception Count');
+  });
+  audioContext.close();
+  t.done();
+};
+
+async_test(t => runTestWithParam(t, {
+  testFunction: () => new AudioContext(),
+  expected: {
+    sinkId: '',
+    onErrorCount: 0,
+    exceptionCount: 0
+  },
+}), 'AudioContext constructor without arguments');
+
+async_test(t => runTestWithParam(t, {
+  testFunction: () => new AudioContext({sinkId: ''}),
+  expected: {
+    sinkId: '',
+    onErrorCount: 0,
+    exceptionCount: 0
+  },
+}), 'AudioContext constructor with default sinkId (empty string)');
+
+async_test(t => runTestWithParam(t, {
+  testFunction: () => new AudioContext({sinkId: 'default'}),
+  expected: {
+    sinkId: 'default',
+    onErrorCount: 0,
+    exceptionCount: 0
+  },
+}), 'AudioContext constructor with default sinkId ("default")');
+
+async_test(t => runTestWithParam(t, {
+  testFunction: () => new AudioContext({sinkId: 'an-invalid-sink-id'}),
+  expected: {
+    sinkId: '',
+    onErrorCount: 1,
+    exceptionCount: 0
+  },
+}), 'AudioContext constructor with an invalid sinkId');
+</script>
+</body>
+</html>

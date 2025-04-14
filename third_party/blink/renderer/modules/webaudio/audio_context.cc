@@ -1265,6 +1265,7 @@ void AudioContext::OnDevicesChanged(mojom::blink::MediaDeviceType device_type,
       SendLogMessage(__func__,
                      "=> sink was not explicitly specified, falling back to "
                      "default sink.");
+      DispatchEvent(*Event::Create(event_type_names::kError));
       GetExecutionContext()->AddConsoleMessage(
           MakeGarbageCollected<ConsoleMessage>(
               mojom::ConsoleMessageSource::kOther,
