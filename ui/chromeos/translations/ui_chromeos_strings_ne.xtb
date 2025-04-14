@@ -26,7 +26,7 @@
 <translation id="117624967391683467"><ph name="FILE_NAME" /> प्रतिलिपि बनाउँदै...</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1190144681599273207">यो फाइललाई ल्याउँदा मोबाइल डाटाको लगभग <ph name="FILE_SIZE" /> प्रयोग हुनेछ।</translation>
-<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> मार्फत फाइल हेर्न तथा प्रयोग गर्न सकिन्छ</translation>
+<translation id="1194390763418645112"><ph name="RESTRICTED_DESTINATIONS" /> मार्फत फाइल एक्सेस गर्न सकिन्छ</translation>
 <translation id="1201402288615127009">अर्को</translation>
 <translation id="1209796539517632982">स्वचालित नाम सर्भरहरू</translation>
 <translation id="1210831758834677569">लाओ</translation>
@@ -194,7 +194,7 @@
 <translation id="2500392669976258912">गुजराती फोनेटिक</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">स्क्यान गर्नुहोस्</translation>
-<translation id="252641322760726369">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा हेर्न तथा प्रयोग गर्न कुनै फाइलमा टच एण्ड होल्ड गर्नुहोस् अनि <ph name="ICON" /> मा ट्याप गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
+<translation id="252641322760726369">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा एक्सेस गर्न कुनै फाइलमा टच एण्ड होल्ड गर्नुहोस् अनि <ph name="ICON" /> मा ट्याप गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
 <translation id="2534460670861217804">सुरक्षित HTTP को प्रोक्सी</translation>
 <translation id="2541377937973966830">यो फोल्डरका सामग्री रिड गर्न मात्र मिल्छ। केही क्रियाकलापहरू गर्न मिल्दैन।</translation>
 <translation id="2542049655219295786">Google तालिका</translation>
@@ -384,7 +384,7 @@
 <translation id="4124935795427217608">एक सिङे घोडा</translation>
 <translation id="4131235941541910880">आफूलाई नचाहिने फाइलहरू सारेर ट्र्यासमा लैजानुहोस्</translation>
 <translation id="4134804435730168042"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, डिभाइस सेटअप गरेपछि एक्टिभेट गर्नुहोस्</translation>
-<translation id="4153015322587141338">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा हेर्न तथा प्रयोग गर्न कुनै फाइलमा दायाँ क्लिक गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
+<translation id="4153015322587141338">आफ्ना फाइलहरू सेल्फबाट द्रुत रूपमा एक्सेस गर्न कुनै फाइलमा दायाँ क्लिक गर्नुहोस् र "<ph name="PIN_COMMAND" />" चयन गर्नुहोस्।</translation>
 <translation id="4157569377477607576">एड्मिनले तोकेको नीतिअनुसार निम्न कार्य गर्न सिफारिस गरिँदैन:</translation>
 <translation id="4159731583141908892"><ph name="FILE_NAME" /> सारियो।</translation>
 <translation id="4176286497474237543">अहिले नै ट्र्यास खाली गर्नुहोस्</translation>
@@ -1029,7 +1029,7 @@
 <translation id="8810671769985673465">जिप गर्न सकिएन, विद्यमान वस्तु: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">स्पेनी (स्पेन)</translation>
 <translation id="8834164572807951958">'<ph name="DESTINATION_NAME" />' का सदस्यहरूले यी वस्तुहरूको प्रतिलिपिमाथिको पहुँच पाउनुहुनेछ।</translation>
-<translation id="8849389110234859568">एड्मिनले तोक्नुभएको नीतिअनुसार केही फाइलहरू हेर्न तथा प्रयोग गर्न मिल्दैन।</translation>
+<translation id="8849389110234859568">एड्मिनले तोक्नुभएको नीतिअनुसार केही फाइलहरू एक्सेस गर्न मिल्दैन।</translation>
 <translation id="8857149712089373752">नेपाली फोनेटिक किबोर्ड</translation>
 <translation id="8860454412039442620">Excel स्प्रेडसिट</translation>
 <translation id="8866284467018526531">अरबी लिपि रूपान्तरण</translation>

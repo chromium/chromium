@@ -11553,7 +11553,7 @@
 <translation id="9124084978667228083">{MEMBERS,plural, =1{1 сајт во групата на <ph name="RWS_OWNER" />}one{{MEMBERS} сајт во групата на <ph name="RWS_OWNER" />}other{{MEMBERS} сајта во групата на <ph name="RWS_OWNER" />}}</translation>
 <translation id="9125910124977405374">Отстранете го <ph name="LANGUAGE_NAME" /> од јазиците што автоматски се преведуваат</translation>
 <translation id="9125912770834459638">Вашата организација не ви дозволува да се најавите</translation>
-<translation id="9126149354162942022">Боја на курсор</translation>
+<translation id="9126149354162942022">Боја на курсорот</translation>
 <translation id="9128317794749765148">Поставувањето не може да се заврши</translation>
 <translation id="9128335130883257666">Отворете ја страницата со поставки за <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="9128870381267983090">Поврзете се на мрежа</translation>
