@@ -203,7 +203,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
       {
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
-          features::kAutofillPageLanguageDetection,
           features::kAutofillFixValueSemantics,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
@@ -214,6 +213,19 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           // renderer side and disabled to avoid too many differences between
           // the expectations.
           features::kAutofillBetterLocalHeuristicPlaceholderSupport,
+          // TODO(crbug.com/360322019): kAutofillPageLanguageDetection needs to
+          // be disabled because the page language detection is an asynchronous
+          // process in the renderer. If the form parsing in the browser
+          // completes before the language detection triggers a second run with
+          // a known language, the results are different from results without
+          // such a second run: Form parsing with a known language applies fewer
+          // regular expressions than formparsing without a known language. It
+          // would be ideal if the browser could just wait until the page
+          // language detection is complete but at the moment the browser is
+          // only informed if a non-null language could be determined. See
+          // crbug.com/409067352. We disable page language detection to get a
+          // deterministic result until this is fixed.
+          features::kAutofillPageLanguageDetection,
       });
 }
 
@@ -351,10 +363,6 @@ const auto& GetFailingTestNames() {
       "115_checkout_walgreens.com.html",
       "116_cc_checkout_walgreens.com.html",
       "150_checkout_venus.com_search_field.html",
-      // TODO(crbug.com/360322019): Even though the page language detection
-      // feature is enabled, is it not triggered properly for this test on iOS.
-      "153_fmm-en_inm.gob.mx.html",
-      "155_fmm-ja_inm.gob.mx.html",
   };
   return failing_test_names;
 }

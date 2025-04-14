@@ -208,7 +208,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {
-          features::kAutofillPageLanguageDetection,
           features::kAutofillFixValueSemantics,
           // TODO(crbug.com/40741721): Remove once shared labels are launched.
           features::kAutofillEnableSupportForParsingWithSharedLabels,
@@ -217,14 +216,29 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillUseITAddressModel,
       },
       // Disabled
-      {// TODO(crbug.com/320965828): This feature is not supported on the iOS
-       // renderer side and disabled to avoid too many differences between
-       // the expectations.
-       features::kAutofillBetterLocalHeuristicPlaceholderSupport,
-       // TODO(crbug.com/40285735): Remove when launched.
-       features::kAutofillEnableEmailHeuristicOutsideForms,
-       // TODO(crbug.com/395831853): Remove once launched.
-       features::kAutofillEnableLoyaltyCardsFilling});
+      {
+          // TODO(crbug.com/320965828): This feature is not supported on the iOS
+          // renderer side and disabled to avoid too many differences between
+          // the expectations.
+          features::kAutofillBetterLocalHeuristicPlaceholderSupport,
+          // TODO(crbug.com/40285735): Remove when launched.
+          features::kAutofillEnableEmailHeuristicOutsideForms,
+          // TODO(crbug.com/395831853): Remove once launched.
+          features::kAutofillEnableLoyaltyCardsFilling,
+          // TODO(crbug.com/360322019): kAutofillPageLanguageDetection needs to
+          // be disabled because the page language detection is an asynchronous
+          // process in the renderer. If the form parsing in the browser
+          // completes before the language detection triggers a second run with
+          // a known language, the results are different from results without
+          // such a second run: Form parsing with a known language applies fewer
+          // regular expressions than formparsing without a known language. It
+          // would be ideal if the browser could just wait until the page
+          // language detection is complete but at the moment the browser is
+          // only informed if a non-null language could be determined. See
+          // crbug.com/409067352. We disable page language detection to get a
+          // deterministic result until this is fixed.
+          features::kAutofillPageLanguageDetection,
+      });
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() = default;
