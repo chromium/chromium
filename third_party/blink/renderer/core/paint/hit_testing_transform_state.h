@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIT_TESTING_TRANSFORM_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_HIT_TESTING_TRANSFORM_STATE_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -44,10 +46,16 @@ class HitTestingTransformState {
  public:
   HitTestingTransformState(const gfx::PointF& p,
                            const gfx::QuadF& quad,
-                           const gfx::QuadF& area)
+                           const PhysicalRect& area)
       : last_planar_point_(p),
         last_planar_quad_(quad),
-        last_planar_area_(area) {}
+        // If the hit test area is "infinite", then mapping through the
+        // transform may produce an area that no longer contains the content
+        // (it gets shifted up and left). Preserve the infinite area in that
+        // case.
+        last_planar_area_(area != PhysicalRect(InfiniteIntRect())
+                              ? std::make_optional(gfx::QuadF(gfx::RectF(area)))
+                              : std::nullopt) {}
 
   HitTestingTransformState(const HitTestingTransformState&) = default;
   HitTestingTransformState& operator=(const HitTestingTransformState&) =
@@ -71,7 +79,7 @@ class HitTestingTransformState {
 
   gfx::PointF last_planar_point_;
   gfx::QuadF last_planar_quad_;
-  gfx::QuadF last_planar_area_;
+  std::optional<gfx::QuadF> last_planar_area_;
   gfx::Transform accumulated_transform_;
 };
 
