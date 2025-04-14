@@ -799,9 +799,11 @@ NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(
   is_8bit_ = string.Is8Bit();
 
   if (is_8bit_) {
-    charaters8_ = string.Characters8();
+    base::span<const LChar> chars = string.Span8();
+    charaters8_ = chars.data();
     offset_ = 0;
-    length_ = string.length();
+    // static_cast<> is safe because `chars` came from a StringView.
+    length_ = static_cast<unsigned>(chars.size());
     return;
   }
 

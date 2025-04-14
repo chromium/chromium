@@ -134,9 +134,10 @@ inline v8::Local<v8::String> V8String(v8::Isolate* isolate,
         isolate, impl);
   }
   if (string.Is8Bit()) {
-    return v8::String::NewFromOneByte(
-               isolate, reinterpret_cast<const uint8_t*>(string.Characters8()),
-               v8::NewStringType::kNormal, static_cast<int>(string.length()))
+    base::span<const LChar> chars = string.Span8();
+    return v8::String::NewFromOneByte(isolate, chars.data(),
+                                      v8::NewStringType::kNormal,
+                                      static_cast<int>(chars.size()))
         .ToLocalChecked();
   }
   return v8::String::NewFromTwoByte(isolate, string.SpanUint16().data(),
@@ -170,10 +171,10 @@ inline v8::Local<v8::String> V8AtomicString(v8::Isolate* isolate,
                                             const StringView& string) {
   DCHECK(isolate);
   if (string.Is8Bit()) {
-    return v8::String::NewFromOneByte(
-               isolate, reinterpret_cast<const uint8_t*>(string.Characters8()),
-               v8::NewStringType::kInternalized,
-               static_cast<int>(string.length()))
+    base::span<const LChar> chars = string.Span8();
+    return v8::String::NewFromOneByte(isolate, chars.data(),
+                                      v8::NewStringType::kInternalized,
+                                      static_cast<int>(chars.size()))
         .ToLocalChecked();
   }
   return v8::String::NewFromTwoByte(isolate, string.SpanUint16().data(),

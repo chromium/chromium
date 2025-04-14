@@ -17,10 +17,10 @@ namespace blink {
 v8_inspector::StringView ToV8InspectorStringView(const StringView& string) {
   if (string.IsNull())
     return v8_inspector::StringView();
-  if (string.Is8Bit())
-    return v8_inspector::StringView(
-        reinterpret_cast<const uint8_t*>(string.Characters8()),
-        string.length());
+  if (string.Is8Bit()) {
+    auto span8 = string.Span8();
+    return v8_inspector::StringView(span8.data(), span8.size());
+  }
   auto span16 = string.SpanUint16();
   return v8_inspector::StringView(span16.data(), span16.size());
 }
