@@ -154,13 +154,17 @@ class ZeroSuggestProviderTest : public testing::Test,
   }
 
   // An AutocompleteInput that gets Zero Prefix Suggestions on NTP.
-  AutocompleteInput ZeroPrefixInputForNTP(const bool is_prefetch) {
+  AutocompleteInput ZeroPrefixInputForNTP(
+      const bool is_prefetch,
+      const bool user_input_in_progress = false) {
     AutocompleteInput input(u"",
                             is_prefetch
                                 ? metrics::OmniboxEventProto::NTP_ZPS_PREFETCH
                                 : metrics::OmniboxEventProto::NTP_REALBOX,
                             TestSchemeClassifier());
-    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    input.set_focus_type(user_input_in_progress
+                             ? metrics::OmniboxFocusType::INTERACTION_DEFAULT
+                             : metrics::OmniboxFocusType::INTERACTION_FOCUS);
     return input;
   }
 
@@ -175,6 +179,7 @@ class ZeroSuggestProviderTest : public testing::Test,
   // An AutocompleteInput that gets Zero Prefix Suggestions on WEB.
   AutocompleteInput ZeroPrefixInputForWeb(
       const bool is_prefetch,
+      const bool user_input_in_progress = false,
       const std::string& input_url = "https://example.com/") {
     // On IOS WEB/SRP, input text is not empty.
     AutocompleteInput input(is_ios ? base::ASCIIToUTF16(input_url) : u"",
@@ -183,23 +188,9 @@ class ZeroSuggestProviderTest : public testing::Test,
                                 : metrics::OmniboxEventProto::OTHER,
                             TestSchemeClassifier());
     input.set_current_url(GURL(input_url));
-    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
-    return input;
-  }
-
-  // An AutocompleteInput that gets Zero Prefix Suggestions on SRP.
-  AutocompleteInput ZeroPrefixInputForSRP(
-      const bool is_prefetch,
-      const std::string& input_url = "https://www.google.com/search?q=foo") {
-    AutocompleteInput input(
-        // On IOS WEB/SRP, input text is not empty.
-        is_ios ? base::ASCIIToUTF16(input_url) : u"",
-        is_prefetch ? metrics::OmniboxEventProto::SRP_ZPS_PREFETCH
-                    : metrics::OmniboxEventProto::
-                          SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-        TestSchemeClassifier());
-    input.set_current_url(GURL(input_url));
-    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
+    input.set_focus_type(user_input_in_progress
+                             ? metrics::OmniboxFocusType::INTERACTION_DEFAULT
+                             : metrics::OmniboxFocusType::INTERACTION_FOCUS);
     return input;
   }
 
@@ -210,6 +201,25 @@ class ZeroSuggestProviderTest : public testing::Test,
                             TestSchemeClassifier());
     input.set_current_url(GURL(input_url));
     input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_DEFAULT);
+    return input;
+  }
+
+  // An AutocompleteInput that gets Zero Prefix Suggestions on SRP.
+  AutocompleteInput ZeroPrefixInputForSRP(
+      const bool is_prefetch,
+      const bool user_input_in_progress = false,
+      const std::string& input_url = "https://www.google.com/search?q=foo") {
+    AutocompleteInput input(
+        // On IOS WEB/SRP, input text is not empty.
+        is_ios ? base::ASCIIToUTF16(input_url) : u"",
+        is_prefetch ? metrics::OmniboxEventProto::SRP_ZPS_PREFETCH
+                    : metrics::OmniboxEventProto::
+                          SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
+        TestSchemeClassifier());
+    input.set_current_url(GURL(input_url));
+    input.set_focus_type(user_input_in_progress
+                             ? metrics::OmniboxFocusType::INTERACTION_DEFAULT
+                             : metrics::OmniboxFocusType::INTERACTION_FOCUS);
     return input;
   }
 
@@ -363,17 +373,23 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
 
 // Tests whether zero-suggest is allowed on NTP/Web/SRP with various external
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
+  using ResultType = ZeroSuggestProvider::ResultType;
+
   // Keep a reference to the Google default search provider.
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
   const TemplateURL* google_provider =
       template_url_service->GetDefaultSearchProvider();
 
   // Benchmark test for NTP.
-  auto test_ntp = [this]() {
-    const auto& input = ZeroPrefixInputForNTP(/*is_prefetch=*/false);
+  auto test_ntp = [this](bool user_input_in_progress = false,
+                         ResultType expected_result_type =
+                             ResultType::kRemoteNoURL) {
+    const auto& input = ZeroPrefixInputForNTP(
+        /*is_prefetch=*/false,
+        /*user_input_in_progress=*/user_input_in_progress);
     const auto [result_type, eligible] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL, result_type);
+    EXPECT_EQ(expected_result_type, result_type);
     return eligible;
   };
 
@@ -382,28 +398,36 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     const auto& input = ZeroPrefixInputForLens();
     const auto [result_type, eligible] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteNoURL, result_type);
+    EXPECT_EQ(ResultType::kRemoteNoURL, result_type);
     return eligible;
   };
 
   // Benchmark test for valid page URL.
-  auto test_other = [this]() {
-    const auto& input = ZeroPrefixInputForWeb(/*is_prefetch=*/false);
+  auto test_other = [this](bool user_input_in_progress = false,
+                           ResultType expected_result_type =
+                               ResultType::kRemoteSendURL) {
+    const auto& input = ZeroPrefixInputForWeb(
+        /*is_prefetch=*/false,
+        /*user_input_in_progress=*/user_input_in_progress);
     const auto [result_type, eligible] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL, result_type);
+    EXPECT_EQ(expected_result_type, result_type);
     return eligible;
   };
 
   // Benchmark test for Search Results Page URL.
-  auto test_srp = [this](const TemplateURL* template_url) {
+  auto test_srp = [this](const TemplateURL* template_url,
+                         bool user_input_in_progress = false,
+                         ResultType expected_result_type =
+                             ResultType::kRemoteSendURL) {
     const auto& input = ZeroPrefixInputForSRP(
         /*is_prefetch=*/false,
+        /*user_input_in_progress=*/user_input_in_progress,
         /*input_url= */
         template_url->GenerateSearchURL(SearchTermsData()).spec());
     const auto [result_type, eligible] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL, result_type);
+    EXPECT_EQ(expected_result_type, result_type);
     return eligible;
   };
 
@@ -414,26 +438,31 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     // Zero-suggest is generally not allowed for invalid or non-HTTP(S) URLs.
     AutocompleteInput on_focus_ineligible_url_input = ZeroPrefixInputForWeb(
         /*is_prefetch=*/false,
+        /*user_input_in_progress=*/false,
         /*input_url= */ "chrome://history");
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
+    EXPECT_EQ(std::make_pair(ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
                   client_.get(), on_focus_ineligible_url_input));
   }
   {
     // Zero-suggest is generally not allowed for non-empty inputs.
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
+    EXPECT_EQ(std::make_pair(ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
                   client_.get(), PrefixInputForNTP()));
   }
   {
     // Zero-suggest is generally not allowed for non-empty inputs.
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
+    EXPECT_EQ(std::make_pair(ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
                   client_.get(), PrefixInputForSRP()));
   }
   {
     // Zero-suggest request can be made on NTP.
     EXPECT_TRUE(test_ntp());
+
+    // Non-zero-prefix input should NOT result in zero-suggest request.
+    EXPECT_FALSE(test_ntp(/*user_input_in_progress=*/true,
+                          /*expected_result_type=*/ResultType::kNone));
   }
   {
     // Zero-suggest request can be made from Lens searchboxes.
@@ -443,10 +472,19 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
   {
     // Valid SRP URLs can be sent in the zero-suggest request.
     EXPECT_TRUE(test_srp(google_provider));
+
+    // Non-zero-prefix input should NOT result in a zero-suggest request.
+    EXPECT_FALSE(test_srp(google_provider,
+                          /*user_input_in_progress=*/true,
+                          /*expected_result_type=*/ResultType::kNone));
   }
   {
     // Valid page URLs can be sent in the zero-suggest request.
     EXPECT_TRUE(test_other());
+
+    // Non-zero-prefix input should NOT result in a zero-suggest request.
+    EXPECT_FALSE(test_other(/*user_input_in_progress=*/true,
+                            /*expected_result_type=*/ResultType::kNone));
   }
 
   // Deactivate URL data collection. This ensures that the page URL
