@@ -51,11 +51,6 @@ public class AdvancedProtectionTestRule extends ExternalResource {
         }
 
         @Override
-        public boolean hasJavascriptOptimizerPermission() {
-            return !mIsAdvancedProtectionRequestedByOs;
-        }
-
-        @Override
         public String getJavascriptOptimizerMessage(Context context) {
             return AdvancedProtectionTestRule.TEST_JAVASCRIPT_OPTIMIZER_MESSAGE;
         }

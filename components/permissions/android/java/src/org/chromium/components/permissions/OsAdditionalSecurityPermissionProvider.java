@@ -35,14 +35,6 @@ public abstract class OsAdditionalSecurityPermissionProvider {
     }
 
     /**
-     * Returns whether the operating system has granted permission to enable javascript optimizers.
-     * Implementations must allow querying from any thread.
-     */
-    public boolean hasJavascriptOptimizerPermission() {
-        return !isAdvancedProtectionRequestedByOs();
-    }
-
-    /**
      * Returns message to display in site settings explaining why the operating system has denied
      * the javascript-optimizer permission.
      */
