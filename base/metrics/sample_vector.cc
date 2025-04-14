@@ -591,6 +591,7 @@ SampleVector::CreateCountsStorageWhileLocked() {
 }
 
 PersistentSampleVector::PersistentSampleVector(
+    std::string_view name,
     uint64_t id,
     const BucketRanges* bucket_ranges,
     Metadata* meta,
@@ -610,6 +611,13 @@ PersistentSampleVector::PersistentSampleVector(
   // read-only. Only non-const methods (which assume that memory is read/write)
   // can do that.
   if (single_sample().IsDisabled() && !MountExistingCountsStorage()) {
+#if !BUILDFLAG(IS_NACL)
+    // TODO: crbug.com/410544723 - Remove crash keys and DumpWithoutCrashing
+    // once investigation is complete.
+    SCOPED_CRASH_KEY_STRING64("PSV", "name", name);
+    SCOPED_CRASH_KEY_NUMBER("PSV", "counts_ref",
+                            persistent_counts_.reference());
+#endif
     debug::DumpWithoutCrashing();
   }
 }

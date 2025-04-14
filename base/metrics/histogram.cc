@@ -639,11 +639,13 @@ Histogram::Histogram(DurableStringView durable_name,
                      HistogramSamples::Metadata* meta,
                      HistogramSamples::Metadata* logged_meta)
     : HistogramBase(durable_name) {
-  DCHECK(ranges) << histogram_name();
-  unlogged_samples_ = std::make_unique<PersistentSampleVector>(
-      HashMetricName(histogram_name()), ranges, meta, counts);
+  const auto name = histogram_name();
+  const auto id = HashMetricName(name);
+  DCHECK(ranges) << name;
+  unlogged_samples_ =
+      std::make_unique<PersistentSampleVector>(name, id, ranges, meta, counts);
   logged_samples_ = std::make_unique<PersistentSampleVector>(
-      unlogged_samples_->id(), ranges, logged_meta, logged_counts);
+      name, id, ranges, logged_meta, logged_counts);
 }
 
 Histogram::~Histogram() = default;
