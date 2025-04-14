@@ -47,6 +47,21 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // once again enabled).
   virtual void DisableLocalLogging() = 0;
 
+  // Enable local logging of DataChannel messages.
+  // Logs are saved to a user specific location, and are never removed by the
+  // application. Logging is done on a best-effort
+  // basis. An illegal file path, or one where we don't have the necessary
+  // permissions, will result in a failure. When DataChannel logging is enabled
+  // only a certain number of log files will be created, after which logging
+  // needs to be disabled and enabled again for logging to continue. If the
+  // number of active PeerConnections exceed the max number of logfiles that are
+  // allowed to be created when logging is enabled then there is no guarantee
+  // which PeerConnections will have their DataChannel traffic logged.
+  virtual void EnableDataChannelLogging(const base::FilePath& base_path) = 0;
+
+  // Disable DataChannel logging. Any active DataChannel logs are stopped.
+  virtual void DisableDataChannelLogging() = 0;
+
  protected:
   WebRtcEventLogger();
 };

@@ -23,22 +23,25 @@
 namespace webrtc_event_logging {
 
 #if BUILDFLAG(IS_ANDROID)
-const size_t kDefaultMaxLocalEventLogFileSizeBytes = 10000000;
+const size_t kDefaultMaxLocalEventLogFileSizeBytes = 10'000'000;
 const size_t kMaxNumberLocalWebRtcEventLogFiles = 3;
+const size_t kDefaultMaxLocalDataChannelFileSizeBytes = 10'000'000;
+const size_t kMaxNumberLocalWebRtcDataChannelLogFiles = 3;
 #else
-const size_t kDefaultMaxLocalEventLogFileSizeBytes = 60000000;
+const size_t kDefaultMaxLocalEventLogFileSizeBytes = 60'000'000;
 const size_t kMaxNumberLocalWebRtcEventLogFiles = 5;
+const size_t kDefaultMaxLocalDataChannelFileSizeBytes = 100'000'000;
+const size_t kMaxNumberLocalWebRtcDataChannelLogFiles = 5;
 #endif
 
 struct WebRtcLocalEventLogManager::LogFiles {
   std::unique_ptr<LogFileWriter> event_log;
+  std::unique_ptr<LogFileWriter> data_channel_log;
 };
 
 WebRtcLocalEventLogManager::WebRtcLocalEventLogManager(
     WebRtcLocalEventLogsObserver* observer)
-    : observer_(observer),
-      clock_for_testing_(nullptr),
-      event_log_max_size_bytes_(kDefaultMaxLocalEventLogFileSizeBytes) {
+    : observer_(observer), clock_for_testing_(nullptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DETACH_FROM_SEQUENCE(io_task_sequence_checker_);
 }
@@ -56,6 +59,7 @@ bool WebRtcLocalEventLogManager::OnPeerConnectionAdded(
   }
 
   MaybeStartEventLogFile(insertion_result.first);
+  MaybeStartDataChannelLogFile(insertion_result.first);
   return true;
 }
 
@@ -69,6 +73,7 @@ bool WebRtcLocalEventLogManager::OnPeerConnectionRemoved(
   }
 
   StopEventLogFileIfStarted(it);
+  StopDataChannelLogFileIfStarted(it);
   log_files_.erase(it);
   return true;
 }
@@ -78,16 +83,19 @@ bool WebRtcLocalEventLogManager::EnableEventLogging(
     size_t max_file_size_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_task_sequence_checker_);
 
-  if (!event_log_base_path_.empty()) {
+  if (event_log_state_.has_value()) {
     return false;
   }
 
-  event_log_base_path_ = base_path;
-
-  event_log_max_size_bytes_ =
+  std::optional<size_t> max_size_bytes =
       (max_file_size_bytes == kWebRtcEventLogManagerUnlimitedFileSize)
           ? std::optional<size_t>()
           : std::optional<size_t>(max_file_size_bytes);
+
+  event_log_state_.emplace(
+      base_path, max_size_bytes,
+      /*max_logs_active=*/kMaxNumberLocalWebRtcEventLogFiles,
+      /*max_logs_created=*/std::nullopt);
 
   for (auto it = log_files_.begin(); it != log_files_.end(); ++it) {
     MaybeStartEventLogFile(it);
@@ -99,17 +107,16 @@ bool WebRtcLocalEventLogManager::EnableEventLogging(
 bool WebRtcLocalEventLogManager::DisableEventLogging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_task_sequence_checker_);
 
-  if (event_log_base_path_.empty()) {
+  if (!event_log_state_.has_value()) {
     return false;
   }
 
   for (auto it = log_files_.begin(); it != log_files_.end(); ++it) {
     StopEventLogFileIfStarted(it);
   }
+  CHECK_EQ(event_log_state_->logs_active, 0U);
 
-  event_log_base_path_.clear();  // Marks local-logging as disabled.
-  event_log_max_size_bytes_ = kDefaultMaxLocalEventLogFileSizeBytes;
-
+  event_log_state_.reset();
   return true;
 }
 
@@ -130,6 +137,66 @@ bool WebRtcLocalEventLogManager::EventLogWrite(const PeerConnectionKey& key,
   return write_successful;
 }
 
+bool WebRtcLocalEventLogManager::EnableDataChannelLogging(
+    const base::FilePath& base_path,
+    size_t max_file_size_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_task_sequence_checker_);
+
+  if (data_channel_log_state_.has_value()) {
+    return false;
+  }
+
+  std::optional<size_t> max_size_bytes =
+      (max_file_size_bytes == kWebRtcEventLogManagerUnlimitedFileSize)
+          ? std::optional<size_t>()
+          : std::optional<size_t>(max_file_size_bytes);
+
+  data_channel_log_state_.emplace(
+      base_path, max_size_bytes,
+      /*max_logs_active=*/std::nullopt,
+      /*max_logs_created=*/kMaxNumberLocalWebRtcDataChannelLogFiles);
+
+  for (auto it = log_files_.begin(); it != log_files_.end(); ++it) {
+    MaybeStartDataChannelLogFile(it);
+  }
+
+  return true;
+}
+
+bool WebRtcLocalEventLogManager::DisableDataChannelLogging() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_task_sequence_checker_);
+
+  if (!data_channel_log_state_.has_value()) {
+    return false;
+  }
+
+  for (auto it = log_files_.begin(); it != log_files_.end(); ++it) {
+    StopDataChannelLogFileIfStarted(it);
+  }
+  CHECK_EQ(data_channel_log_state_->logs_active, 0U);
+
+  data_channel_log_state_.reset();
+  return true;
+}
+
+bool WebRtcLocalEventLogManager::DataChannelLogWrite(
+    const PeerConnectionKey& key,
+    const std::string& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(io_task_sequence_checker_);
+  auto it = log_files_.find(key);
+  if (it == log_files_.end() || it->second.data_channel_log == nullptr) {
+    return false;
+  }
+
+  const bool write_successful = it->second.data_channel_log->Write(message);
+
+  if (!write_successful || it->second.data_channel_log->MaxSizeReached()) {
+    StopDataChannelLogFileIfStarted(it);
+  }
+
+  return write_successful;
+}
+
 void WebRtcLocalEventLogManager::RenderProcessHostExitedDestroyed(
     int render_process_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(io_task_sequence_checker_);
@@ -138,6 +205,7 @@ void WebRtcLocalEventLogManager::RenderProcessHostExitedDestroyed(
   for (auto it = log_files_.begin(); it != log_files_.end();) {
     if (it->first.render_process_id == render_process_id) {
       StopEventLogFileIfStarted(it);
+      StopDataChannelLogFileIfStarted(it);
       it = log_files_.erase(it);
     } else {
       ++it;
@@ -152,23 +220,27 @@ void WebRtcLocalEventLogManager::SetClockForTesting(base::Clock* clock) {
 
 void WebRtcLocalEventLogManager::MaybeStartEventLogFile(
     LogFilesMap::iterator log_it) {
-  if (event_log_base_path_.empty() ||
-      num_event_logs_active_ >= kMaxNumberLocalWebRtcEventLogFiles ||
+  if (!event_log_state_.has_value()) {
+    return;
+  }
+
+  LogTypeState& state = *event_log_state_;
+  if (state.logs_active >= state.max_logs_active ||
       log_it->second.event_log != nullptr) {
     return;
   }
 
-  std::unique_ptr<LogFileWriter> log_file = CreateLogFile(
-      log_it->first, event_log_base_path_, event_log_max_size_bytes_);
+  std::unique_ptr<LogFileWriter> log_file =
+      CreateLogFile(log_it->first, state.base_path, state.max_size_bytes);
   if (!log_file) {
     return;
   }
 
   log_it->second.event_log = std::move(log_file);
-  ++num_event_logs_active_;
+  ++state.logs_active;
   if (observer_) {
-    observer_->OnLocalLogStarted(log_it->first,
-                                 log_it->second.event_log->path());
+    observer_->OnLocalEventLogStarted(log_it->first,
+                                      log_it->second.event_log->path());
   }
 }
 
@@ -179,9 +251,47 @@ void WebRtcLocalEventLogManager::StopEventLogFileIfStarted(
   }
 
   log_it->second.event_log.reset();
-  --num_event_logs_active_;
+  --event_log_state_->logs_active;
   if (observer_) {
-    observer_->OnLocalLogStopped(log_it->first);
+    observer_->OnLocalEventLogStopped(log_it->first);
+  }
+}
+
+void WebRtcLocalEventLogManager::MaybeStartDataChannelLogFile(
+    LogFilesMap::iterator log_it) {
+  if (!data_channel_log_state_.has_value()) {
+    return;
+  }
+
+  LogTypeState& state = *data_channel_log_state_;
+  if (state.logs_created >= state.max_logs_created ||
+      log_it->second.data_channel_log != nullptr) {
+    return;
+  }
+
+  std::unique_ptr<LogFileWriter> log_file =
+      CreateLogFile(log_it->first, state.base_path, state.max_size_bytes);
+  if (!log_file) {
+    return;
+  }
+
+  log_it->second.data_channel_log = std::move(log_file);
+  ++state.logs_created;
+  if (observer_) {
+    observer_->OnLocalDataChannelLogStarted(
+        log_it->first, log_it->second.data_channel_log->path());
+  }
+}
+
+void WebRtcLocalEventLogManager::StopDataChannelLogFileIfStarted(
+    LogFilesMap::iterator log_it) {
+  if (!log_it->second.data_channel_log) {
+    return;
+  }
+
+  log_it->second.data_channel_log.reset();
+  if (observer_) {
+    observer_->OnLocalDataChannelLogStopped(log_it->first);
   }
 }
 

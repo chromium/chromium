@@ -41,6 +41,13 @@ class WebRtcLocalEventLogManager final {
 
   bool EventLogWrite(const PeerConnectionKey& key, const std::string& message);
 
+  bool EnableDataChannelLogging(const base::FilePath& base_path,
+                                size_t max_file_size_bytes);
+  bool DisableDataChannelLogging();
+
+  bool DataChannelLogWrite(const PeerConnectionKey& key,
+                           const std::string& message);
+
   void RenderProcessHostExitedDestroyed(int render_process_id);
 
   // This function is public, but this entire class is a protected
@@ -49,8 +56,27 @@ class WebRtcLocalEventLogManager final {
   void SetClockForTesting(base::Clock* clock);
 
  private:
+  struct LogTypeState {
+    LogTypeState(const base::FilePath& base_path,
+                 std::optional<size_t> max_size_bytes,
+                 std::optional<size_t> max_logs_active,
+                 std::optional<size_t> max_logs_created)
+        : base_path(base_path),
+          max_size_bytes(max_size_bytes),
+          max_logs_active(max_logs_active),
+          max_logs_created(max_logs_created) {}
+    const base::FilePath base_path;
+    const std::optional<size_t> max_size_bytes;
+    const std::optional<size_t> max_logs_active;
+    const std::optional<size_t> max_logs_created;
+    size_t logs_active = 0;
+    size_t logs_created = 0;
+  };
+
   void MaybeStartEventLogFile(LogFilesMap::iterator log_it);
   void StopEventLogFileIfStarted(LogFilesMap::iterator);
+  void MaybeStartDataChannelLogFile(LogFilesMap::iterator log_it);
+  void StopDataChannelLogFileIfStarted(LogFilesMap::iterator);
 
   std::unique_ptr<LogFileWriter> CreateLogFile(
       const PeerConnectionKey& key,
@@ -84,16 +110,8 @@ class WebRtcLocalEventLogManager final {
   // Local log files, stored at the behest of the user (via WebRTCInternals).
   LogFilesMap log_files_;
 
-  // If |event_log_base_path_| is empty, event logging is disabled.
-  // If nonempty, event logging is enabled, and all event logs will be saved
-  // to this directory.
-  base::FilePath event_log_base_path_;
-
-  // The maximum size for local event logs, in bytes. If !has_value(), the value
-  // is unlimited.
-  std::optional<size_t> event_log_max_size_bytes_;
-
-  size_t num_event_logs_active_ = 0;
+  std::optional<LogTypeState> event_log_state_;
+  std::optional<LogTypeState> data_channel_log_state_;
 };
 
 }  // namespace webrtc_event_logging
