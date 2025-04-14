@@ -368,6 +368,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
     case CalculationOperator::kAcos:
     case CalculationOperator::kAtan:
     case CalculationOperator::kAbs:
+    case CalculationOperator::kSqrt:
     case CalculationOperator::kSign: {
       DCHECK_EQ(children.size(), 1u);
       const auto* pixels_and_percent =
@@ -387,6 +388,9 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         }
         return base::MakeRefCounted<CalculationExpressionNumberNode>(
             value > 0 ? 1 : -1);
+      } else if (op == CalculationOperator::kSqrt) {
+        return base::MakeRefCounted<CalculationExpressionNumberNode>(
+            std::sqrt(value));
       } else {
         if (ShouldConvertRad2DegForOperator(op) &&
             children.front()->IsNumber()) {
@@ -576,16 +580,19 @@ float CalculationExpressionOperationNode::Evaluate(
       return value;
     }
     case CalculationOperator::kAbs:
+    case CalculationOperator::kSqrt:
     case CalculationOperator::kSign: {
       DCHECK_EQ(children_.size(), 1u);
       const float value = children_.front()->Evaluate(max_value, input);
       if (operator_ == CalculationOperator::kAbs) {
         return std::abs(value);
-      } else {
+      } else if (operator_ == CalculationOperator::kSign) {
         if (value == 0 || std::isnan(value)) {
           return value;
         }
         return value > 0 ? 1 : -1;
+      } else {
+        return std::sqrt(value);
       }
     }
     case CalculationOperator::kCalcSize: {
@@ -695,6 +702,7 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kRem:
     case CalculationOperator::kHypot:
     case CalculationOperator::kAbs:
+    case CalculationOperator::kSqrt:
     case CalculationOperator::kSign:
     case CalculationOperator::kProgress:
     case CalculationOperator::kMediaProgress:
@@ -806,6 +814,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     case CalculationOperator::kRoundToZero:
     case CalculationOperator::kMod:
     case CalculationOperator::kRem:
+    case CalculationOperator::kSqrt:
     case CalculationOperator::kHypot:
     case CalculationOperator::kAbs: {
       DCHECK(children_.size());

@@ -30,6 +30,7 @@ enum class CSSMathOperator {
   kHypot,
   kAbs,
   kSign,
+  kSqrt,
   kProgress,
   kCalcSize,
   kMediaProgress,
