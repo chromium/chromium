@@ -81,6 +81,12 @@ public class AutofillImageFetcherTest {
         Bitmap treatedImageLarge =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_CARD_ART_IMAGE, cardIconSpecsLarge, true);
+        // Success histograms should be logged twice(once for each size) for both images.
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 4)
+                        .build();
 
         mImageFetcher.prefetchCardArtImages(
                 new GURL[] {validUrl1, validUrl2}, new int[] {ImageSize.SMALL, ImageSize.LARGE});
@@ -93,6 +99,34 @@ public class AutofillImageFetcherTest {
         assertTrue(treatedImageSmall.sameAs(cachedImages.get(cachedValidUrlSmall2.getSpec())));
         assertTrue(treatedImageLarge.sameAs(cachedImages.get(cachedValidUrlLarge1.getSpec())));
         assertTrue(treatedImageLarge.sameAs(cachedImages.get(cachedValidUrlLarge2.getSpec())));
+
+        expectedHistogram.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    public void testPrefetchImages_imageInCache_imageNotFetched() {
+        GURL validUrl = new GURL("https://www.google.com/valid-image-url");
+        CardIconSpecs cardIconSpecs =
+                CardIconSpecs.create(ContextUtils.getApplicationContext(), ImageSize.SMALL);
+        GURL cachedValidUrl =
+                AutofillUiUtils.getFifeIconUrlWithParams(
+                        validUrl, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
+        mImageFetcher.addImageToCacheForTesting(cachedValidUrl, TEST_CARD_ART_IMAGE);
+        // No histogram should be logged since no image fetching is done.
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Autofill.ImageFetcher.Result")
+                        .build();
+
+        mImageFetcher.prefetchCardArtImages(new GURL[] {validUrl}, new int[] {ImageSize.SMALL});
+        Map<String, Bitmap> cachedImages = mImageFetcher.getCachedImagesForTesting();
+
+        // Verify that the cache contains only the already cached image.
+        assertEquals(1, cachedImages.size());
+        assertTrue(TEST_CARD_ART_IMAGE.sameAs(cachedImages.get(cachedValidUrl.getSpec())));
+
+        expectedHistogram.assertExpected();
     }
 
     @Test
@@ -100,10 +134,18 @@ public class AutofillImageFetcherTest {
     public void testPrefetchCardArtImages_validUrl_unsuccessfulImageFetch() {
         mImageFetcher = new AutofillImageFetcher(new TestImageFetcher(null));
         GURL validUrl = new GURL("https://www.google.com/valid-image-url");
+        // Failure histogram should be logged since fetching was attempted but failed.
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 1)
+                        .build();
 
         mImageFetcher.prefetchCardArtImages(new GURL[] {validUrl}, new int[] {ImageSize.SMALL});
 
         assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());
+
+        expectedHistogram.assertExpected();
     }
 
     @Test
@@ -111,22 +153,37 @@ public class AutofillImageFetcherTest {
     public void testPrefetchCardArtImages_invalidOrEmptyUrl() {
         GURL invalidUrl = new GURL("invalid-image-url");
         GURL emptyUrl = new GURL("");
+        // No histogram should be logged since image fetching isn't attempted for invalid URLs.
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Autofill.ImageFetcher.Result")
+                        .build();
 
         mImageFetcher.prefetchCardArtImages(
                 new GURL[] {invalidUrl, emptyUrl}, new int[] {ImageSize.SMALL});
 
         assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());
+
+        expectedHistogram.assertExpected();
     }
 
     @Test
     @SmallTest
     public void testPrefetchCardArtImages_capitalOneStaticImageUrl_notFetched() {
         GURL capitalOneStaticImageUrl = new GURL(AutofillUiUtils.CAPITAL_ONE_ICON_URL);
+        // No histogram should be logged since image isn't fetched for Capital One's static card art
+        // URL.
+        HistogramWatcher expectedHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Autofill.ImageFetcher.Result")
+                        .build();
 
         mImageFetcher.prefetchCardArtImages(
                 new GURL[] {capitalOneStaticImageUrl}, new int[] {ImageSize.SMALL});
 
         assertTrue(mImageFetcher.getCachedImagesForTesting().isEmpty());
+
+        expectedHistogram.assertExpected();
     }
 
     @Test
