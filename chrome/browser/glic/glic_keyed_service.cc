@@ -258,6 +258,25 @@ base::CallbackListSubscription GlicKeyedService::AddFocusedTabChangedCallback(
 }
 
 base::CallbackListSubscription
+GlicKeyedService::AddFocusedTabInstanceChangedCallback(
+    FocusedTabInstanceChangedCallback callback) {
+  return focused_tab_manager_.AddFocusedTabInstanceChangedCallback(callback);
+}
+
+base::CallbackListSubscription
+GlicKeyedService::AddFocusedTabOrCandidateInstanceChangedCallback(
+    FocusedTabOrCandidateInstanceChangedCallback callback) {
+  return focused_tab_manager_.AddFocusedTabOrCandidateInstanceChangedCallback(
+      callback);
+}
+
+base::CallbackListSubscription
+GlicKeyedService::AddFocusedTabDataChangedCallback(
+    FocusedTabDataChangedCallback callback) {
+  return focused_tab_manager_.AddFocusedTabDataChangedCallback(callback);
+}
+
+base::CallbackListSubscription
 GlicKeyedService::AddContextAccessIndicatorStatusChangedCallback(
     ContextAccessIndicatorChangedCallback callback) {
   return context_access_indicator_callback_list_.Add(std::move(callback));

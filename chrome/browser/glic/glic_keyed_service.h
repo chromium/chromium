@@ -123,8 +123,17 @@ class GlicKeyedService : public KeyedService {
   void SetContextAccessIndicator(bool show);
   void NotifyWindowIntentToShow();
 
-  // Callback for changes to focused tab data.
+  // Callback for all changes to focused tab.
   using FocusedTabChangedCallback =
+      base::RepeatingCallback<void(FocusedTabData)>;
+  // Callback for changes to focused tab data.
+  using FocusedTabDataChangedCallback =
+      base::RepeatingCallback<void(const glic::mojom::TabData*)>;
+  // Callback for changes to the focused tab instance.
+  using FocusedTabInstanceChangedCallback =
+      base::RepeatingCallback<void(content::WebContents*)>;
+  // Callback for changes to the focused tab container or candidate instances.
+  using FocusedTabOrCandidateInstanceChangedCallback =
       base::RepeatingCallback<void(FocusedTabData)>;
   // Callback for changes to the context access indicator status.
   using ContextAccessIndicatorChangedCallback =
@@ -139,6 +148,26 @@ class GlicKeyedService : public KeyedService {
   // called with nullptr as the supplied WebContents argument.
   base::CallbackListSubscription AddFocusedTabChangedCallback(
       FocusedTabChangedCallback callback);
+
+  // Callback for changes to either the focused tab or the focused tab candidate
+  // instances. If no tab is in focus an error reason is returned indicating
+  // why and maybe a tab candidate with details as to why it cannot be focused.
+  base::CallbackListSubscription
+  AddFocusedTabOrCandidateInstanceChangedCallback(
+      FocusedTabOrCandidateInstanceChangedCallback callback);
+
+  // Callback for changes to the `WebContents` comprising the focused tab. Only
+  // fired when the `WebContents` for the focused tab changes to/from nullptr or
+  // to different `WebContents` instance.
+  base::CallbackListSubscription AddFocusedTabInstanceChangedCallback(
+      FocusedTabInstanceChangedCallback callback);
+
+  // Callback for changes to the tab data representation of the focused tab.
+  // This includes any event that changes tab data -- e.g. favicon/title change
+  // events (where the container does not change), as well as container changed
+  // events.
+  base::CallbackListSubscription AddFocusedTabDataChangedCallback(
+      FocusedTabDataChangedCallback callback);
 
   // Registers a callback to be called any time the context access indicator
   // status changes. This is used to update UI effects on the focused tab

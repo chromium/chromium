@@ -289,6 +289,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::BindRepeating(&GlicWebClientHandler::OnFocusedTabChanged,
                             base::Unretained(this)));
 
+    focus_data_changed_subscription_ =
+        glic_service_->AddFocusedTabDataChangedCallback(
+            base::BindRepeating(&GlicWebClientHandler::OnFocusedTabDataChanged,
+                                base::Unretained(this)));
+
     browser_attach_observation_ = ObserveBrowserForAttachment(profile_, this);
 
     system_permission_settings_observation_ =
@@ -720,21 +725,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnFocusedTabChanged(FocusedTabData focused_tab_data) {
-    focused_tab_data_observer_ = std::make_unique<TabDataObserver>(
-        focused_tab_data.focus(),
-        /*disconnect_on_primary_page_changed=*/true,
-        base::BindRepeating(&GlicWebClientHandler::FocusedTabDataChanged,
-                            base::Unretained(this)));
     web_client_->NotifyFocusedTabChanged(
         CreateFocusedTabData(focused_tab_data));
   }
 
-  void FocusedTabDataChanged(glic::mojom::TabDataPtr tab_data) {
+  void OnFocusedTabDataChanged(const glic::mojom::TabData* tab_data) {
     if (!tab_data) {
       return;
     }
     web_client_->NotifyFocusedTabChanged(
-        glic::mojom::FocusedTabData::NewFocusedTab(std::move(tab_data)));
+        glic::mojom::FocusedTabData::NewFocusedTab(tab_data->Clone()));
   }
 
   PrefChangeRegistrar pref_change_registrar_;
@@ -746,6 +746,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   ActiveStateCalculator active_state_calculator_;
   BrowserIsOpenCalculator browser_is_open_calculator_;
   base::CallbackListSubscription focus_changed_subscription_;
+  base::CallbackListSubscription focus_data_changed_subscription_;
   std::unique_ptr<TabDataObserver> focused_tab_data_observer_;
   mojo::Receiver<glic::mojom::WebClientHandler> receiver_;
   mojo::Remote<glic::mojom::WebClient> web_client_;

@@ -347,8 +347,12 @@ class ApiTests extends ApiTestFixtureBase {
     let focus3 = await sequence.next();
 
     // After a navigation occurs in a new tab, there could first exist a
-    // transitory states where the focus is not yet available.
-    while (focus3.hasNoFocus) {
+    // transitory states where the focus is not yet available or still previous
+    // page.
+    while (focus3.hasNoFocus ||
+           (!!focus3.hasFocus &&
+            focus3.hasFocus.tabData.url.endsWith(
+                'scrollable_page_with_content.html'))) {
       focus3 = await sequence.next();
     }
 
@@ -358,7 +362,6 @@ class ApiTests extends ApiTestFixtureBase {
         focus3.hasFocus.tabData.url.endsWith('glic/test.html'),
         `url=${focus3.hasFocus.tabData.url}`);
     assertFalse(!!focus3.hasNoFocus);
-    assertTrue(sequence.isEmpty());
   }
 
   async testGetFocusedTabStateV2BrowserClosed() {
