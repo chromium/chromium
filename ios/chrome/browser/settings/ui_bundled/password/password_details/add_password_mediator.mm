@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_details_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_mediator_delegate.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_metrics.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/add_password_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "net/base/apple/url_conversions.h"
@@ -153,8 +154,9 @@ bool CheckForDuplicates(
 
   if (password_manager::features::
           IsSuggestStrongPasswordInAddPasswordEnabled()) {
-    base::UmaHistogramBoolean("PasswordManager.SavedPasswordIsGenerated",
-                              [password isEqualToString:_suggestedPassword]);
+    base::UmaHistogramBoolean(
+        kPasswordManagerPasswordSettingsiOSSavedPasswordIsGenerated,
+        [password isEqualToString:_suggestedPassword]);
   }
 
   credential.note = SysNSStringToUTF16(note);
