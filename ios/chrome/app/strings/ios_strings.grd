@@ -3205,6 +3205,13 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_OVERLAY_ONBOARDING_TITLE" desc="The title for the lens overlay onboarding consent dialog. [iOS only].">
         Search anything on your screen with Google Lens
       </message>
+      <message name="IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_HINT" desc="Accessibility hint for the bottom sheet grabber in Lens Overlay. Read by Text To Speech [iOS only].">
+        Readjust the height of the sheet
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_SHEET_GRABBER_ACCESSIBILITY_LABEL" desc="Accessibility label for the bottom sheet grabber in Lens Overlay. Read by Text To Speech [iOS only]."
+        meaning="Voice Over will read this to the user followed by 'Button' when the grabber is focused.">
+        Sheet grabber
+      </message>
       <message name="IDS_IOS_LENS_OVERLAY_SPEEDBUMP_MENU_CAMERA" desc="The label displayed in the speedbump menu that leads to the camera search option.">
         Search with camera
       </message>
