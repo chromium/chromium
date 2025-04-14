@@ -99,15 +99,15 @@ void CrashpadDatabaseManager::LogPendingCrashpadReports() {
   LogCrashReports(pending_reports_, "Pending");
 }
 
-void CrashpadDatabaseManager::CleanupCompletedCrashpadReports() {
+bool CrashpadDatabaseManager::CleanupCompletedCrashpadReports() {
   if (!database_) {
     logger_->LogError("Crashpad database has not been initialized");
-    return;
+    return false;
   }
 
   CleanupCrashReports(completed_reports_);
   // Reload the completed reports since we may have deleted some entries.
-  LoadCompletedReports();
+  return LoadCompletedReports();
 }
 
 // private

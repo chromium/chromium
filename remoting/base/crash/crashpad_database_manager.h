@@ -38,7 +38,7 @@ class CrashpadDatabaseManager {
 
   void LogCompletedCrashpadReports();
   void LogPendingCrashpadReports();
-  void CleanupCompletedCrashpadReports();
+  bool CleanupCompletedCrashpadReports();
 
  private:
   bool LoadCompletedReports();
