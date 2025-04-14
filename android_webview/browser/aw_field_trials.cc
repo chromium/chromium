@@ -309,4 +309,8 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Partitioned :visited links history is not supported on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
+
+  // Disable draw cutout edge-to-edge on WebView. Safe area insets are not
+  // handled correctly when WebView is drawing edge-to-edge.
+  aw_feature_overrides.DisableFeature(features::kDrawCutoutEdgeToEdge);
 }
