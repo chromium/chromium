@@ -141,11 +141,29 @@ class RealtimeReportingClientBase : public KeyedService,
   // with CBCM and the appropriate policies are enabled.
   void InitRealtimeReportingClient(const ReportingSettings& settings);
 
+  void OnIpAddressesFetched(
+      ::chrome::cros::reporting::proto::Event event,
+      policy::CloudPolicyClient* client,
+      const ReportingSettings& settings,
+      std::vector<std::string> ip_addresses);
+
   // Prepares information required by CloudPolicyClient::UploadSecurityEvent()
   // and calls it.
   void UploadSecurityEvent(::chrome::cros::reporting::proto::Event event,
                            policy::CloudPolicyClient* client,
                            const ReportingSettings& settings);
+
+  void FinishUploadSecurityEvent(::chrome::cros::reporting::proto::Event event,
+                                 policy::CloudPolicyClient* client,
+                                 const ReportingSettings& settings);
+
+  void OnIpAddressesFetchedDeprecated(
+      base::Value::Dict event,
+      policy::CloudPolicyClient* client,
+      std::string name,
+      const ReportingSettings& settings,
+      base::Time time,
+      std::vector<std::string> ip_addresses);
 
   // Prepares information required by
   // CloudPolicyClient::UploadSecurityEventReportDeprecated() and calls it.
@@ -155,6 +173,13 @@ class RealtimeReportingClientBase : public KeyedService,
                                            std::string name,
                                            const ReportingSettings& settings,
                                            base::Time time);
+
+  void FinishUploadSecurityEventReportDeprecated(
+      base::Value::Dict event,
+      policy::CloudPolicyClient* client,
+      std::string name,
+      const ReportingSettings& settings,
+      base::Time time);
 
   const std::string GetProfilePolicyClientDescription();
 

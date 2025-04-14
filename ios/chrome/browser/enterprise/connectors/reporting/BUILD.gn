@@ -54,6 +54,7 @@ source_set("unit_tests") {
     "//components/policy/core/common",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
+    "//components/safe_browsing/core/common",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync_preferences",

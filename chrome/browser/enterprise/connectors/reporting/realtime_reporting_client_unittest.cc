@@ -26,6 +26,7 @@
 #include "components/enterprise/connectors/core/reporting_service_settings.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/realtime_reporting_job_configuration.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -113,9 +114,21 @@ class RealtimeReportingClientOidcTest : public RealtimeReportingClientTestBase {
 
 class RealtimeReportingClientUmaTest
     : public RealtimeReportingClientTestBase,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  bool is_profile_reporting() { return GetParam(); }
+  RealtimeReportingClientUmaTest() {
+    if (local_ip_addresses_enabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          safe_browsing::kLocalIpAddressInEvents);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          safe_browsing::kLocalIpAddressInEvents);
+    }
+  }
+
+  bool is_profile_reporting() { return std::get<0>(GetParam()); }
+
+  bool local_ip_addresses_enabled() { return std::get<1>(GetParam()); }
 
   void SetUp() override {
     RealtimeReportingClientTestBase::SetUp();
@@ -127,7 +140,8 @@ class RealtimeReportingClientUmaTest
  protected:
   base::HistogramTester histogram_;
   raw_ptr<RealtimeReportingClient> reporting_client_ = nullptr;
-  policy::CloudPolicyClient::ResultCallback upload_callback;
+  policy::CloudPolicyClient::ResultCallback upload_callback_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadSucceeds) {
@@ -146,13 +160,20 @@ TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadSucceeds) {
   settings.per_profile = is_profile_reporting();
   base::Value::Dict event;
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce(MoveArg<2>(&upload_callback));
-
+      .WillOnce(testing::Invoke(
+          [&](bool include_device_info, base::Value::Dict&& report,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            upload_callback_ = std::move(callback);
+            run_loop.Quit();
+          }));
   reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
                                          std::move(settings), std::move(event));
+  run_loop.Run();
 
-  std::move(upload_callback)
+  ASSERT_TRUE(upload_callback_);
+  std::move(upload_callback_)
       .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
 
   histogram_.ExpectUniqueSample(
@@ -190,13 +211,21 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadSucceeds) {
                 kBrowserExtensionInstallEvent,
             extension_install_event.event_case());
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
-      .WillOnce(MoveArg<2>(&upload_callback));
-
+      .WillOnce(testing::Invoke(
+          [&](bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            upload_callback_ = std::move(callback);
+            run_loop.Quit();
+          }));
   reporting_client_->ReportEvent(std::move(extension_install_event),
                                  std::move(settings));
+  run_loop.Run();
 
-  std::move(upload_callback)
+  ASSERT_TRUE(upload_callback_);
+  std::move(upload_callback_)
       .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_SUCCESS));
 
   histogram_.ExpectUniqueSample(
@@ -221,13 +250,20 @@ TEST_P(RealtimeReportingClientUmaTest, TestDeprecatedUmaEventUploadFails) {
   settings.per_profile = is_profile_reporting();
   base::Value::Dict event;
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEventReport(_, _, _))
-      .WillOnce(MoveArg<2>(&upload_callback));
-
+      .WillOnce(testing::Invoke(
+          [&](bool include_device_info, base::Value::Dict&& report,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            upload_callback_ = std::move(callback);
+            run_loop.Quit();
+          }));
   reporting_client_->ReportRealtimeEvent(kExtensionInstallEvent,
                                          std::move(settings), std::move(event));
+  run_loop.Run();
 
-  std::move(upload_callback)
+  ASSERT_TRUE(upload_callback_);
+  std::move(upload_callback_)
       .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_REQUEST_FAILED));
 
   histogram_.ExpectUniqueSample(
@@ -265,13 +301,21 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
                 kBrowserExtensionInstallEvent,
             extension_install_event.event_case());
 
+  base::RunLoop run_loop;
   EXPECT_CALL(*client_.get(), UploadSecurityEvent(_, _, _))
-      .WillOnce(MoveArg<2>(&upload_callback));
-
+      .WillOnce(testing::Invoke(
+          [&](bool include_device_info,
+              ::chrome::cros::reporting::proto::UploadEventsRequest&& request,
+              policy::CloudPolicyClient::ResultCallback callback) {
+            upload_callback_ = std::move(callback);
+            run_loop.Quit();
+          }));
   reporting_client_->ReportEvent(std::move(extension_install_event),
                                  std::move(settings));
+  run_loop.Run();
 
-  std::move(upload_callback)
+  ASSERT_TRUE(upload_callback_);
+  std::move(upload_callback_)
       .Run(policy::CloudPolicyClient::Result(policy::DM_STATUS_REQUEST_FAILED));
 
   histogram_.ExpectUniqueSample(
@@ -280,7 +324,11 @@ TEST_P(RealtimeReportingClientUmaTest, TestUmaEventUploadFails) {
   histogram_.ExpectTotalCount("Enterprise.ReportingEventUploadSuccess", 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, RealtimeReportingClientUmaTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RealtimeReportingClientUmaTest,
+    testing::Combine(/* is_profile_reporting */ testing::Bool(),
+                     /* local_ip_addresses_enabled */ testing::Bool()));
 
 TEST_F(RealtimeReportingClientTestBase,
        TestEventNameToUmaEnumMapIncludesAllEvents) {
