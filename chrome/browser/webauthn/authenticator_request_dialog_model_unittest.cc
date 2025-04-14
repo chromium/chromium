@@ -321,6 +321,12 @@ const device::DiscoverableCredentialMetadata kCred1FromICloudKeychain(
     {4},
     kUser1,
     /*provider_name=*/std::nullopt);
+const device::DiscoverableCredentialMetadata kCred1From3p(
+    device::AuthenticatorType::kICloudKeychain,
+    "rp.com",
+    {4},
+    kUser1,
+    "Bitwarden");
 const device::DiscoverableCredentialMetadata kCred1FromChromeOS(
     device::AuthenticatorType::kChromeOS,
     "rp.com",
@@ -2969,6 +2975,34 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     EXPECT_EQ(passkey.source(),
               password_manager::PasskeyCredential::Source::kAndroidPhone);
   }
+}
+
+// Tests that iCloud Keychain passkeys are listed in conditional UI with the
+// correct label.
+// Regression test for crbug.com/409806800.
+TEST_F(AuthenticatorRequestDialogControllerTest,
+       ListICloudKeychainPasskeysInConditionalUI) {
+  NavigateAndCommit(GURL("rp.com"));
+
+  ChromeWebAuthnCredentialsDelegate* delegate =
+      ChromeWebAuthnCredentialsDelegateFactory::GetFactory(web_contents())
+          ->GetDelegateForFrame(web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(delegate);
+
+  TransportAvailabilityInfo transports_info;
+  transports_info.request_type = device::FidoRequestType::kGetAssertion;
+  transports_info.recognized_credentials = {kCred1From3p};
+  auto model =
+      base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
+  AuthenticatorRequestDialogController controller(model.get(), main_rfh());
+  controller.SetUIPresentation(UIPresentation::kAutofill);
+  controller.StartFlow(transports_info, {});
+
+  const std::vector<password_manager::PasskeyCredential>* autofill_passkeys =
+      delegate->GetPasskeys().value();
+  ASSERT_TRUE(autofill_passkeys);
+  EXPECT_EQ(autofill_passkeys->size(), 1u);
+  EXPECT_EQ(autofill_passkeys->at(0).GetAuthenticatorLabel(), u"Bitwarden");
 }
 
 TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
