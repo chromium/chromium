@@ -183,6 +183,7 @@ if (is_android) {
       "//chrome/browser/tabmodel:test_support_java",
       "//chrome/browser/tabmodel:test_support_java",
       "//chrome/browser/tabmodel/internal:java",
+      "//chrome/browser/tabwindow:java",
       "//chrome/browser/thumbnail:java",
       "//chrome/browser/ui/android/appmenu:java",
       "//chrome/browser/ui/android/appmenu:java",

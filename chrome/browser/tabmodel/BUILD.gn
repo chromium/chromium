@@ -67,7 +67,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabReparentingParams.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabUngrouper.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabUngrouperFactory.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java",
   ]
   deps = [
     "//base:base_java",
@@ -77,7 +76,6 @@ android_library("java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group_sync:factory_java",
     "//chrome/browser/tab_group_sync:features_java",
-    "//chrome/browser/ui/android/multiwindow:java",
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/external_intents/android:java",
@@ -101,10 +99,7 @@ android_library("java") {
 android_library_factory("factory_java") {
   deps = [ ":java" ]
 
-  sources = [
-    "internal/android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerFactory.java",
-    "internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerFactory.java",
-  ]
+  sources = [ "internal/android/java/src/org/chromium/chrome/browser/tabmodel/AsyncTabParamsManagerFactory.java" ]
 }
 
 robolectric_library("junit") {
@@ -119,7 +114,6 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtilsUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImplUnitTest.java",
   ]
 
   deps = [

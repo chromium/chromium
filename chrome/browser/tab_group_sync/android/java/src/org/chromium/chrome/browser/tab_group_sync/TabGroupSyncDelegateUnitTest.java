@@ -19,7 +19,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncDelegate.Deps;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
 /** Unit tests for the {@link TabGroupSyncDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)

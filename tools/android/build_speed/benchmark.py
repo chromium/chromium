@@ -172,14 +172,14 @@ _BENCHMARKS = [
         from_string='INVALID_WINDOW_INDEX = -1',
         to_string='INVALID_WINDOW_INDEX = -<sub>',
         change_file=
-        'chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java',  # pylint: disable=line-too-long
+        'chrome/browser/tabwindow/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManager.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='module_internal_nosig',
         from_string='"TabModelSelector',
         to_string='"DifferentUnique<sub>String',
         change_file=
-        'chrome/browser/tabmodel/internal/android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
+        'chrome/browser/tabwindow/internal/android/java/src/org/chromium/chrome/browser/tabwindow/TabWindowManagerImpl.java',  # pylint: disable=line-too-long
     ),
     Benchmark(
         name='base_nosig',

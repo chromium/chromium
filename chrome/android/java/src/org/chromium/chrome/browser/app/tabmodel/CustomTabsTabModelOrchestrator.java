@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 import android.content.Context;
 
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;

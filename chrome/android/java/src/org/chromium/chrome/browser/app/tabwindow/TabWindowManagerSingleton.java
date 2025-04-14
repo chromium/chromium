@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.app.tabmodel;
+package org.chromium.chrome.browser.app.tabwindow;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
+import org.chromium.chrome.browser.app.tabmodel.DefaultTabModelSelectorFactory;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
-import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.chrome.browser.tabmodel.TabWindowManagerFactory;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tabwindow.TabWindowManagerFactory;
 
 /** Glue-level singleton instance of {@link TabWindowManager}. */
 public class TabWindowManagerSingleton {
@@ -36,8 +38,9 @@ public class TabWindowManagerSingleton {
     }
 
     /**
-     * Allows overriding the default {@link TabModelSelectorFactory} with another one.  Typically
-     * for testing.
+     * Allows overriding the default {@link TabModelSelectorFactory} with another one. Typically for
+     * testing.
+     *
      * @param factory A {@link TabModelSelectorFactory} instance.
      */
     public static void setTabModelSelectorFactoryForTesting(TabModelSelectorFactory factory) {

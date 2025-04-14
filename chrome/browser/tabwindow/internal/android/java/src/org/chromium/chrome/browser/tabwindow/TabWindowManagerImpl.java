@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tabmodel;
+package org.chromium.chrome.browser.tabwindow;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -32,7 +32,16 @@ import org.chromium.chrome.browser.multiwindow.WindowId;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.AsyncTabParams;
+import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
+import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager.Observer;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -464,8 +473,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
         @Nullable TabModelSelector tabModelSelector = getTabModelSelectorById(windowId);
         if (tabModelSelector == null) return null;
 
-        @Nullable
-        TabGroupModelFilter tabGroupModelFilter =
+        @Nullable TabGroupModelFilter tabGroupModelFilter =
                 tabModelSelector
                         .getTabGroupModelFilterProvider()
                         .getTabGroupModelFilter(isIncognito);

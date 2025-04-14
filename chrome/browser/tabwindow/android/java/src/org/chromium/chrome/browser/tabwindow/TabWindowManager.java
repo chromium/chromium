@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tabmodel;
+package org.chromium.chrome.browser.tabwindow;
 
 import android.app.Activity;
 import android.util.Pair;
@@ -15,7 +15,11 @@ import org.chromium.chrome.browser.multiwindow.WindowId;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -35,6 +39,7 @@ import java.util.List;
  */
 @NullMarked
 public interface TabWindowManager {
+
     /**
      * An index that represents the invalid state (i.e. when the window wasn't found in the list).
      */

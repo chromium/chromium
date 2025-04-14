@@ -10,7 +10,7 @@ import org.junit.runners.model.InitializationError;
 import org.robolectric.TestLifecycle;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.ui.display.DisplayAndroidManager;
