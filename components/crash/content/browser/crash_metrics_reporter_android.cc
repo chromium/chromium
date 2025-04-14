@@ -18,20 +18,6 @@
 namespace crash_reporter {
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class BindingStateCombo {
-  kNoWaivedNoModerateNoStrong = 0,
-  kNoWaivedNoModerateHasStrong = 1,
-  kNoWaivedHasModerateNoStrong = 2,
-  kNoWaivedHasModerateHasStrong = 3,
-  kHasWaivedNoModerateNoStrong = 4,
-  kHasWaivedNoModerateHasStrong = 5,
-  kHasWaivedHasModerateNoStrong = 6,
-  kHasWaivedHasModerateHasStrong = 7,
-  kMaxValue = kHasWaivedHasModerateHasStrong
-};
-
 void ReportCrashCount(CrashMetricsReporter::ProcessedCrashCounts crash_type,
                       CrashMetricsReporter::ReportedCrashTypeSet* counts) {
   UMA_HISTOGRAM_ENUMERATION("Stability.Android.ProcessedCrashCounts",
