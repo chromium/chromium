@@ -16,6 +16,11 @@
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.gen.h"
 
+namespace base {
+template <typename T>
+class NoDestructor;
+}
+
 namespace tracing {
 
 // A class that emits track descriptors for Chrome processes and threads.

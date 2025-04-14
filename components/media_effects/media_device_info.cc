@@ -5,6 +5,7 @@
 #include "components/media_effects/media_device_info.h"
 
 #include "base/auto_reset.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/video_capture_service.h"

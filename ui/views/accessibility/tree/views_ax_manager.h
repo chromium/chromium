@@ -25,6 +25,11 @@ namespace aura {
 class Window;
 }  // namespace aura
 
+namespace base {
+template <typename T>
+class NoDestructor;
+}
+
 namespace ui {
 struct AXEvent;
 }

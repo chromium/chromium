@@ -13,6 +13,11 @@
 #include "base/trace_event/typed_macros.h"
 #include "third_party/perfetto/include/perfetto/tracing/internal/track_event_internal.h"
 
+namespace base {
+template <typename T>
+class NoDestructor;
+}
+
 namespace tracing {
 
 // A class that accompanies TraceEventDataSource to record some additional

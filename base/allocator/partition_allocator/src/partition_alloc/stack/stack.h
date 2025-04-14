@@ -20,6 +20,11 @@
 
 namespace partition_alloc::internal {
 
+namespace base {
+template <typename T>
+class NoDestructor;
+}
+
 // Returns the current stack pointer.
 // TODO(bikineev,1202644): Remove this once base/stack_util.h lands.
 PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t* GetStackPointer();
