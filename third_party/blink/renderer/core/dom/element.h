@@ -1138,9 +1138,14 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // the element supports this attribute. For example, `interesttarget` is not
   // allowed on a `<div>`.
   virtual Element* InterestTargetElement() const { return nullptr; }
-  // Returns true if this element is an interest invoker that currently "has
-  // interest".
-  bool HasInterest();
+  enum class InterestState {
+    kNoInterest,
+    kPartialInterest,
+    kFullInterest,
+  };
+  // Returns the current state of "interest" in an element that is an interest
+  // invoker.
+  InterestState GetInterestState();
 
   // The implementations of |innerText()| and |GetInnerTextWithoutUpdate()| are
   // found in "element_inner_text.cc".
@@ -2151,14 +2156,29 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   bool IsStyleAttributeChangeAllowed(const AtomicString& style_string);
 
   // These schedule interest gained/lost events, for `interesttarget` invokers.
-  void ScheduleInterestGainedTask();
+  void ScheduleInterestGainedTask(InterestState);
   void ScheduleInterestLostTask();
   // This returns the active interest invoker for which this element is the
   // target.
   Element* GetInterestInvoker() const;
   static bool GainOrLoseInterest(Element* invoker,
                                  Element* target,
-                                 bool interest_gained);
+                                 InterestState new_state);
+  enum class InterestTargetSource {
+    // This element was hovered.
+    kHover,
+    // This element was de-hovered.
+    kDeHover,
+    // This element was focused.
+    kFocus,
+    // This element was blurred.
+    kBlur,
+    // (Recursive call only) Inclusive ancestor chain of an element focused.
+    kFocusElementChain,
+    // (Recursive call only) Inclusive ancestor chain of an element blurred.
+    kBlurElementChain,
+  };
+  void HandleInterestTargetHoverOrFocus(InterestTargetSource source);
 
   // Highlight pseudos inherit all properties from the corresponding highlight
   // in the parent, but virtually all existing content uses universal rules

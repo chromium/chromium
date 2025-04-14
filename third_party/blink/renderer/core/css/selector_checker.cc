@@ -1857,7 +1857,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoHasInterest:
       DCHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled(
           element.GetDocument().GetExecutionContext()));
-      return element.HasInterest();
+      return element.GetInterestState() != Element::InterestState::kNoInterest;
     case CSSSelector::kPseudoHasSlotted:
       DCHECK(RuntimeEnabledFeatures::CSSPseudoHasSlottedEnabled());
       if (auto* slot = DynamicTo<HTMLSlotElement>(element)) {
