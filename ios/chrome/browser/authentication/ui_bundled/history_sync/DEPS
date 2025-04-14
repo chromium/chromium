@@ -1,9 +1,5 @@
-include_rules = [
-  "+ios/chrome/browser/feature_engagement",
-]
-
 specific_include_rules = {
-  "signin_coordinator\.h": [
+  "history_sync_popup_coordinator\.*": [
     "+ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
   ],
 }

@@ -2,3 +2,9 @@ include_rules = [
   "+ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h",
   "+components/trusted_vault/trusted_vault_server_constants.h",
 ]
+
+specific_include_rules = {
+  "account_menu_coordinator\.mm": [
+    "+ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
+  ],
+}

@@ -16,6 +16,10 @@ include_rules = [
   # To avoid includes from web::HttpServer since it is deprecated. Reference
   # to crbug.com/708307.
   "-ios/web/public/test/http_server/http_server.h",
+
+  # InterruptibleChromeCoordinator is deprecated.
+  # TODO(crbug.com/381444097) Remove this file
+  "-ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
 ]
 
 specific_include_rules = {

@@ -1,3 +1,9 @@
 include_rules = [
   "+components/trusted_vault/trusted_vault_server_constants.h",
 ]
+
+specific_include_rules = {
+  "trusted_vault_reauthentication_coordinator*\.*": [
+    "+ios/chrome/browser/authentication/ui_bundled/signin/interruptible_chrome_coordinator.h",
+  ],
+}
