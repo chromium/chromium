@@ -14,16 +14,19 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_views_helpers.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -336,8 +339,13 @@ void FileSystemAccessUsageBubbleView::ShowBubble(
       button_provider->GetAnchorView(std::nullopt), web_contents, origin,
       std::move(usage));
 
-  bubble_->SetHighlightedButton(button_provider->GetPageActionIconView(
-      PageActionIconType::kFileSystemAccess));
+  if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
+    bubble_->SetHighlightedButton(
+        button_provider->GetPageActionView(kActionShowFileSystemAccess));
+  } else {
+    bubble_->SetHighlightedButton(button_provider->GetPageActionIconView(
+        PageActionIconType::kFileSystemAccess));
+  }
   views::BubbleDialogDelegateView::CreateBubble(bubble_);
 
   bubble_->ShowForReason(DisplayReason::USER_GESTURE,
@@ -399,6 +407,13 @@ std::u16string FileSystemAccessUsageBubbleView::GetAccessibleWindowTitle()
   // Don't crash if the web_contents is destroyed/unloaded.
   if (!browser) {
     return {};
+  }
+
+  if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
+    return BrowserView::GetBrowserViewForBrowser(browser)
+        ->toolbar_button_provider()
+        ->GetPageActionView(kActionShowFileSystemAccess)
+        ->GetTooltipText();
   }
 
   return BrowserView::GetBrowserViewForBrowser(browser)

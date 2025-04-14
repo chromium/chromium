@@ -37,6 +37,7 @@
 
 class HostContentSettingsMap;
 class OneTimePermissionsTracker;
+class FileSystemAccessPageActionController;
 enum ContentSetting;
 
 namespace content {
@@ -562,6 +563,9 @@ class ChromeFileSystemAccessPermissionContext
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       install_manager_observation_{this};
+
+  // Updates the File System Access page action icon for the given tab.
+  void UpdatePageAction(FileSystemAccessPageActionController* controller);
 #endif
 
   // Number of custom IDs an origin can specify.
