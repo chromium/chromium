@@ -2128,13 +2128,19 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
 
     case CommandAddToSplit: {
       CHECK(base::FeatureList::IsEnabled(features::kSideBySide));
+      bool split_view_ntp_created = false;
       if (context_index == active_index()) {
         delegate()->AddTabAt(GURL(chrome::kChromeUISplitViewNewTabPageURL),
                              context_index + 1, false,
                              GetTabGroupForTab(context_index));
         context_index += 1;
+        split_view_ntp_created = true;
       }
       AddToNewSplit({context_index}, tabs::SplitTabLayout::kHorizontal);
+      // Activate the split view NTP if available.
+      if (split_view_ntp_created) {
+        ActivateTabAt(context_index);
+      }
       break;
     }
 

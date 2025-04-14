@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/login/login_tab_helper.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -116,8 +117,9 @@ bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
   }
 
   const auto is_ntp = [](const GURL& url) {
-    return url.SchemeIs(content::kChromeUIScheme) &&
-           url.host() == chrome::kChromeUINewTabHost;
+    return (url.SchemeIs(content::kChromeUIScheme) &&
+            url.host() == chrome::kChromeUINewTabHost) ||
+           url.spec() == chrome::kChromeUISplitViewNewTabPageURL;
   };
 
   GURL url = entry->GetURL();

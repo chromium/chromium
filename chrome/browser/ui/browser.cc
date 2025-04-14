@@ -2272,6 +2272,10 @@ bool Browser::ShouldFocusLocationBarByDefault(WebContents* source) {
          virtual_url.host_piece() == chrome::kChromeUINewTabHost)) {
       return true;
     }
+
+    if (url.spec() == chrome::kChromeUISplitViewNewTabPageURL) {
+      return true;
+    }
   }
 
   return search::NavEntryIsInstantNTP(source, entry);
