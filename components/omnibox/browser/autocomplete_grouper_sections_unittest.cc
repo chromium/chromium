@@ -43,13 +43,22 @@ TEST(AutocompleteGrouperSectionsTest, Section) {
    public:
     // Up to 1 item of the following types.
     explicit TestSection(omnibox::GroupConfigMap& group_configs)
-        : Section(1,
-                  {
-                      {1, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS},
-                      {1, omnibox::GROUP_PREVIOUS_SEARCH_RELATED},
-                  },
-                  group_configs,
-                  omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
+        : Section(
+              1,
+              {
+                  Group(
+                      1,
+                      {
+                          {omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS,
+                           1},
+                      }),
+                  Group(1,
+                        {
+                            {omnibox::GROUP_PREVIOUS_SEARCH_RELATED, 1},
+                        }),
+              },
+              group_configs,
+              omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
   };
 
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
@@ -79,15 +88,31 @@ TEST(AutocompleteGrouperGroupsTest, ZpsSection) {
    public:
     // Up to 2 items of the following types.
     explicit TestZpsSection(omnibox::GroupConfigMap& group_configs)
-        : ZpsSection(2,
-                     {
-                         {1, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX},
-                         {1, omnibox::GROUP_MOBILE_CLIPBOARD},
-                         {1, omnibox::GROUP_MOBILE_MOST_VISITED},
-                         {1, omnibox::GROUP_VISITED_DOC_RELATED},
-                         {1, omnibox::GROUP_RELATED_QUERIES},
-                     },
-                     group_configs) {}
+        : ZpsSection(
+              2,
+              {
+                  Group(1,
+                        {
+                            {omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX, 1},
+                        }),
+                  Group(1,
+                        {
+                            {omnibox::GROUP_MOBILE_CLIPBOARD, 1},
+                        }),
+                  Group(1,
+                        {
+                            {omnibox::GROUP_MOBILE_MOST_VISITED, 1},
+                        }),
+                  Group(1,
+                        {
+                            {omnibox::GROUP_VISITED_DOC_RELATED, 1},
+                        }),
+                  Group(1,
+                        {
+                            {omnibox::GROUP_RELATED_QUERIES, 1},
+                        }),
+              },
+              group_configs) {}
   };
 
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {

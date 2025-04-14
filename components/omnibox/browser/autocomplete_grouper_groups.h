@@ -28,11 +28,11 @@ class Group {
   };
   using GroupIdLimitsAndCounts = std::map<omnibox::GroupId, LimitAndCount>;
 
-  Group(size_t limit,
-        GroupIdLimitsAndCounts group_id_limits_and_counts,
-        bool is_default = false);
-  // Construct a `Group` with just 1 `GroupId`.
-  Group(size_t limit, omnibox::GroupId group_id);
+  // Explicit to prevent uniform initialization (with curly braces {}) from
+  // hiding the constructor call.
+  explicit Group(size_t limit,
+                 std::map<omnibox::GroupId, size_t> group_id_limits,
+                 bool is_default = false);
   Group(const Group& group);
   Group& operator=(const Group& group);
   virtual ~Group();
