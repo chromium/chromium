@@ -6,13 +6,25 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.text.TextUtils;
+
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.SavedTabGroup;
+import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.LoadUrlParams;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /** Helper class to handle tab groups related utilities. */
 @NullMarked
@@ -116,5 +128,46 @@ public class TabGroupUtils {
             tabGroupModelFilter.setTabGroupCollapsed(
                     rootId, tabGroupCollapsed, /* animate= */ false);
         }
+    }
+
+    /**
+     * Checks to see if any tab in a list of tabs is in a tab group.
+     *
+     * @param tabModel The {@link TabModel} that owns the tabs.
+     * @param tabs The list of tabs to be checked.
+     * @param destGroupId The group id of the destination . If not null, then tabs with the same
+     *     group will be allowed.
+     */
+    public static boolean areAnyTabsPartOfSharedGroup(
+            TabModel tabModel, List<Tab> tabs, @Nullable Token destGroupId) {
+        Profile profile = tabModel.getProfile();
+        if (profile == null
+                || profile.isOffTheRecord()
+                || !TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
+            return false;
+        }
+        TabGroupSyncService tabGroupSyncService =
+                assumeNonNull(TabGroupSyncServiceFactory.getForProfile(profile));
+
+        Set<Token> visitedGroups = new HashSet<>();
+        for (Tab tab : tabs) {
+            Token groupId = tab.getTabGroupId();
+            if (groupId == null
+                    || Objects.equals(groupId, destGroupId)
+                    || visitedGroups.contains(groupId)) {
+                continue;
+            }
+            visitedGroups.add(groupId);
+
+            LocalTabGroupId localTabGroupId = new LocalTabGroupId(groupId);
+            SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
+            if (savedTabGroup == null) continue;
+
+            @Nullable String collaborationId = savedTabGroup.collaborationId;
+            if (!TextUtils.isEmpty(collaborationId)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

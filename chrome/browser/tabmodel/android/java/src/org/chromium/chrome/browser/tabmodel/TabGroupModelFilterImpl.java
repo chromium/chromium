@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
 import static org.chromium.chrome.browser.tabmodel.TabList.INVALID_TAB_INDEX;
 
 import android.util.Pair;
@@ -254,6 +255,9 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 : "Attempting to merge groups from different model";
 
         List<Tab> tabsToMerge = getRelatedTabList(sourceTabId);
+        if (areAnyTabsPartOfSharedGroup(mTabModel, tabsToMerge, destinationTab.getTabGroupId())) {
+            return;
+        }
         int destinationIndexInTabModel = getTabModelDestinationIndex(destinationTab);
 
         if (!skipUpdateTabModel && needToUpdateTabModel(tabsToMerge, destinationIndexInTabModel)) {
@@ -361,6 +365,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         List<Tab> tabsToMerge = new ArrayList<>();
         tabsToMerge.addAll(tabs);
         tabsToMerge.add(destinationTab);
+
+        if (areAnyTabsPartOfSharedGroup(mTabModel, tabs, destinationTab.getTabGroupId())) return;
         boolean willMergingCreateNewGroup = willMergingCreateNewGroup(tabsToMerge);
 
         List<Tab> mergedTabs = new ArrayList<>();
