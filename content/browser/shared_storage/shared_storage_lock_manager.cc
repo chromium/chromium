@@ -5,6 +5,7 @@
 #include "content/browser/shared_storage/shared_storage_lock_manager.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/services/storage/shared_storage/shared_storage_database.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/shared_storage/shared_storage_runtime_manager.h"

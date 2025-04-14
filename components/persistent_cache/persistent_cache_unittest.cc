@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/persistent_cache/backend_params.h"
 #include "components/persistent_cache/mock/mock_backend_impl.h"
 #include "components/persistent_cache/sqlite/sqlite_backend_impl.h"
