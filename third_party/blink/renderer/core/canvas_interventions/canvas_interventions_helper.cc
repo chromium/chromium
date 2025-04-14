@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/core/canvas_interventions/noise_hash.h"
@@ -103,6 +104,7 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
     CanvasRenderingContext* rendering_context,
     ExecutionContext* execution_context,
     scoped_refptr<StaticBitmapImage>& snapshot) {
+  base::TimeTicks start_time = base::TimeTicks::Now();
   CHECK(snapshot);
 
   if (!ShouldApplyNoise(rendering_context, snapshot, execution_context)) {
@@ -164,6 +166,15 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
       "please file a bug at https://issues.chromium.org/issues/"
       "new?component=1456351&title=Canvas%20noise%20breakage. This "
       "feature can be disabled through chrome://flags/#enable-canvas-noise"));
+
+  base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time;
+
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "FingerprintingProtection.CanvasNoise.NoiseDuration", elapsed_time,
+      base::Microseconds(50), base::Milliseconds(10), 50);
+  UMA_HISTOGRAM_COUNTS_1M(
+      "FingerprintingProtection.CanvasNoise.NoisedCanvasSize",
+      pixmap_to_noise.width() * pixmap_to_noise.height());
 
   return true;
 }

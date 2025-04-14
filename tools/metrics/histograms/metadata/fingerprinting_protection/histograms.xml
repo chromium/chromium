@@ -47,6 +47,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FingerprintingProtection.CanvasNoise.NoisedCanvasSize"
+    units="pixels" expires_after="2025-12-14">
+  <owner>tov@chromium.org</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>johnykim@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <summary>
+    Records the size (number of pixels) of the canvases that were noised upon
+    readback. This is recorded every time that noise was added to a canvas, for
+    all the different readback APIs.
+  </summary>
+</histogram>
+
+<histogram name="FingerprintingProtection.CanvasNoise.NoiseDuration"
+    units="microseconds" expires_after="2025-12-14">
+  <owner>tov@chromium.org</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>johnykim@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <summary>
+    Records the time it took to add noise to the canvas upon readback. This
+    reflects the total time of intervention. This is recorded every time that
+    noise is added to a canvas, for all the different readback APIs.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to exclude clients
+    with low-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.DocumentLoad.RulesetIsAvailable"
     enum="BooleanAvailable" expires_after="2025-10-10">
   <owner>rizvis@google.com</owner>

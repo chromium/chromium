@@ -36,6 +36,10 @@ namespace {
 
 constexpr char kNoiseReasonMetricName[] =
     "FingerprintingProtection.CanvasNoise.InterventionReason";
+constexpr char kNoiseDurationMetricName[] =
+    "FingerprintingProtection.CanvasNoise.NoiseDuration";
+constexpr char kCanvasSizeMetricName[] =
+    "FingerprintingProtection.CanvasNoise.NoisedCanvasSize";
 
 }  // namespace
 
@@ -236,6 +240,10 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotNoiseWhenCanvasInterventionsEnabled) {
   histogram_tester.ExpectUniqueSample(
       kNoiseReasonMetricName,
       static_cast<int>(CanvasNoiseReason::kAllConditionsMet), 1);
+  histogram_tester.ExpectTotalCount(kNoiseDurationMetricName, 1);
+  histogram_tester.ExpectUniqueSample(
+      kCanvasSizeMetricName, CanvasElement().width() * CanvasElement().height(),
+      1);
   EXPECT_NE(snapshot_copy, snapshot);
 }
 
@@ -257,6 +265,8 @@ TEST_F(CanvasNoiseTest,
   histogram_tester.ExpectUniqueSample(
       kNoiseReasonMetricName,
       static_cast<int>(CanvasNoiseReason::kNotEnabledInMode), 1);
+  histogram_tester.ExpectTotalCount(kNoiseDurationMetricName, 0);
+  histogram_tester.ExpectTotalCount(kCanvasSizeMetricName, 0);
   EXPECT_EQ(snapshot_copy, snapshot);
 }
 
@@ -277,6 +287,8 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDoesNotNoiseForCpuCanvas) {
                                                              window, snapshot));
   histogram_tester.ExpectUniqueSample(
       kNoiseReasonMetricName, static_cast<int>(CanvasNoiseReason::kNoGpu), 1);
+  histogram_tester.ExpectTotalCount(kNoiseDurationMetricName, 0);
+  histogram_tester.ExpectTotalCount(kCanvasSizeMetricName, 0);
   EXPECT_EQ(snapshot_copy, snapshot);
 }
 
@@ -368,6 +380,8 @@ TEST_F(CanvasNoiseTest, TriggerOnFillWithPath2DNoNoise) {
   histogram_tester.ExpectUniqueSample(
       kNoiseReasonMetricName, static_cast<int>(CanvasNoiseReason::kNoTrigger),
       1);
+  histogram_tester.ExpectTotalCount(kNoiseDurationMetricName, 0);
+  histogram_tester.ExpectTotalCount(kCanvasSizeMetricName, 0);
   ExpectInterventionDidNotHappen();
 }
 
