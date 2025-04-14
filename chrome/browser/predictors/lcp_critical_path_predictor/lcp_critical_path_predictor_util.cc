@@ -816,6 +816,8 @@ ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
   std::vector<std::string> lcp_element_locators =
       PredictLcpElementLocators(lcpp_stat.lcp_element_locator_stat(),
                                 kConfidenceThreshold, kTotalFrequencyThreshold);
+  std::vector<std::string> lcp_element_locators_all =
+      PredictLcpElementLocators(lcpp_stat.lcp_element_locator_stat_all());
   std::vector<GURL> lcp_influencer_scripts =
       PredictLcpInfluencerScripts(lcpp_stat);
   std::vector<GURL> fetched_fonts = PredictFetchedFontUrls(lcpp_stat);
@@ -823,13 +825,13 @@ ConvertLcppStatToLCPCriticalPathPredictorNavigationTimeHint(
       PredictPreconnectableOrigins(lcpp_stat);
   std::vector<GURL> unused_preloads = PredictUnusedPreloads(lcpp_stat);
 
-  if (!lcp_element_locators.empty() || !lcp_influencer_scripts.empty() ||
-      !fetched_fonts.empty() || !preconnect_origins.empty() ||
-      !unused_preloads.empty()) {
+  if (!lcp_element_locators.empty() || !lcp_element_locators_all.empty() ||
+      !lcp_influencer_scripts.empty() || !fetched_fonts.empty() ||
+      !preconnect_origins.empty() || !unused_preloads.empty()) {
     return blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
-        std::move(lcp_element_locators), std::move(lcp_influencer_scripts),
-        std::move(fetched_fonts), std::move(preconnect_origins),
-        std::move(unused_preloads), false);
+        std::move(lcp_element_locators), std::move(lcp_element_locators_all),
+        std::move(lcp_influencer_scripts), std::move(fetched_fonts),
+        std::move(preconnect_origins), std::move(unused_preloads), false);
   }
   return std::nullopt;
 }
@@ -850,9 +852,10 @@ ConvertLcppStringFrequencyStatDataToConfidenceStringPairs(
 
 std::vector<std::string> PredictLcpElementLocators(
     const predictors::LcpElementLocatorStat& stat,
-    const double confidence_threshold,
-    const double total_frequency_threshold) {
-  if (SumOfFrequency(stat) < total_frequency_threshold) {
+    const std::optional<double>& confidence_threshold,
+    const std::optional<double>& total_frequency_threshold) {
+  if (total_frequency_threshold &&
+      SumOfFrequency(stat) < *total_frequency_threshold) {
     return {};
   }
   std::vector<std::pair<double, std::string>>
@@ -862,7 +865,7 @@ std::vector<std::string> PredictLcpElementLocators(
   lcp_element_locators.reserve(lcp_element_locators_with_confidence.size());
   for (auto& [confidence, lcp_element_locator] :
        lcp_element_locators_with_confidence) {
-    if (confidence < confidence_threshold) {
+    if (confidence_threshold && confidence < *confidence_threshold) {
       break;
     }
     lcp_element_locators.push_back(std::move(lcp_element_locator));

@@ -3365,7 +3365,8 @@ void WebLocalFrameImpl::SetLCPPHint(
     return;
   }
 
-  lcpp->set_lcp_element_locators(hint->lcp_element_locators);
+  lcpp->set_lcp_element_locators(hint->lcp_element_locators,
+                                 hint->lcp_element_locators_all);
 
   HashSet<KURL> lcp_influencer_scripts;
   for (auto& url : hint->lcp_influencer_scripts) {

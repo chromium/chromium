@@ -215,7 +215,7 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
     CHECK_IS_TEST();
     if (!hint) {
       hint = blink::mojom::LCPCriticalPathPredictorNavigationTimeHint(
-          {}, {}, {}, {}, {}, /*for_testing=*/false);
+          {}, {}, {}, {}, {}, {}, /*for_testing=*/false);
     }
     hint->for_testing = true;
   }
