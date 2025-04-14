@@ -75,7 +75,12 @@ class EmulationHandler : public DevToolsDomainHandler,
 
   Response SetGeolocationOverride(std::optional<double> latitude,
                                   std::optional<double> longitude,
-                                  std::optional<double> accuracy) override;
+                                  std::optional<double> accuracy,
+                                  std::optional<double> altitude,
+                                  std::optional<double> altitude_accuracy,
+                                  std::optional<double> heading,
+                                  std::optional<double> speed
+                            ) override;
   Response ClearGeolocationOverride() override;
 
   Response SetEmitTouchEventsForMouse(

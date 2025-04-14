@@ -544,7 +544,12 @@ Response EmulationHandler::ClearIdleOverride() {
 Response EmulationHandler::SetGeolocationOverride(
     std::optional<double> latitude,
     std::optional<double> longitude,
-    std::optional<double> accuracy) {
+    std::optional<double> accuracy,
+    std::optional<double> altitude,
+    std::optional<double> altitude_accuracy,
+    std::optional<double> heading,
+    std::optional<double> speed
+) {
   if (!host_)
     return Response::InternalError();
 
@@ -555,6 +560,18 @@ Response EmulationHandler::SetGeolocationOverride(
     position->latitude = latitude.value();
     position->longitude = longitude.value();
     position->accuracy = accuracy.value();
+    if (altitude.has_value()) {
+      position->altitude = altitude.value();
+    }
+    if (altitude_accuracy.has_value()) {
+      position->altitude_accuracy = altitude_accuracy.value();
+    }
+    if (heading.has_value()) {
+      position->heading = heading.value();
+    }
+    if (speed.has_value()) {
+      position->speed = speed.value();
+    }
     position->timestamp = base::Time::Now();
     if (!device::ValidateGeoposition(*position)) {
       return Response::ServerError("Invalid geolocation");

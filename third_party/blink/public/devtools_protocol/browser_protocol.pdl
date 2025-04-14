@@ -4676,8 +4676,8 @@ domain Emulation
         protanopia
         tritanopia
 
-  # Overrides the Geolocation Position or Error. Omitting any of the parameters emulates position
-  # unavailable.
+  # Overrides the Geolocation Position or Error. Omitting latitude, longitude or
+  # accuracy emulates position unavailable.
   command setGeolocationOverride
     parameters
       # Mock latitude
@@ -4686,6 +4686,14 @@ domain Emulation
       optional number longitude
       # Mock accuracy
       optional number accuracy
+      # Mock altitude
+      optional number altitude
+      # Mock altitudeAccuracy
+      optional number altitudeAccuracy
+      # Mock heading
+      optional number heading
+      # Mock speed
+      optional number speed
 
   experimental command getOverriddenSensorInformation
     parameters
