@@ -6530,6 +6530,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.LoadUrl.FailureScheme" enum="WebViewUrlScheme"
+    expires_after="2026-03-01">
+  <owner>peconn@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the scheme for calls to loadUrl that have failed (they will have
+    recorded Android.WebView.LoadUrl.Success == false). Logged once per call to
+    loadUrl.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.LoadUrl.Success" enum="BooleanSuccess"
     expires_after="2026-03-01">
   <owner>peconn@chromium.org</owner>
