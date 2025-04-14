@@ -1508,9 +1508,11 @@ static bool IsConstexpr(const clang::DeclaratorDecl* decl) {
   return false;
 }
 
-static bool IsStaticLocal(const clang::DeclaratorDecl* decl) {
+static bool IsStaticLocalOrStaticStorageClass(
+    const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
-    return var_decl->isStaticLocal();
+    return var_decl->isStaticLocal() ||
+           var_decl->getStorageClass() == clang::SC_Static;
   }
   return false;
 }
@@ -1588,7 +1590,7 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   if (IsConstexpr(array_decl)) {
     qualifier_string << "constexpr ";
   }
-  if (IsStaticLocal(array_decl)) {
+  if (IsStaticLocalOrStaticStorageClass(array_decl)) {
     qualifier_string << "static ";
   }
 
