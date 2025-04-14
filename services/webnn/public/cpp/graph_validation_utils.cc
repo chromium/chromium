@@ -549,6 +549,31 @@ ValidateBatchNormalizationAndInferOutput(
   return input;
 }
 
+base::expected<OperandDescriptor, std::string> ValidateCastAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    OperandDataType output_data_type,
+    std::string_view label) {
+  // Validate input operand.
+  if (!context_properties.data_type_limits.cast_input.Supports(input)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentError(
+                   input, context_properties.data_type_limits.cast_input)));
+  }
+
+  // Validate output data type.
+  if (!context_properties.data_type_limits.cast_input.data_types.Has(
+          output_data_type)) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedOpOutputTypeError(
+                   output_data_type,
+                   context_properties.data_type_limits.cast_input.data_types)));
+  }
+
+  return OperandDescriptor::Create(context_properties, output_data_type,
+                                   input.shape(), label);
+}
+
 base::expected<OperandDescriptor, std::string> ValidateConcatAndInferOutput(
     const ContextProperties& context_properties,
     const std::vector<OperandDescriptor>& inputs,

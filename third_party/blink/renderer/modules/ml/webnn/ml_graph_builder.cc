@@ -1687,10 +1687,11 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
           FromBlinkDataType(desc->dataType().AsEnum()), desc->shape(),
           webnn::GetErrorLabelPrefix("constant")));
 
+  webnn::OperandDataType data_type = descriptor.data_type();
   if (buffer->IsArrayBufferViewAllowShared()) {
-    if (GetArrayBufferViewType(descriptor.data_type()) !=
+    if (GetArrayBufferViewType(data_type) !=
         buffer->GetAsArrayBufferViewAllowShared().Get()->GetType()) {
-      if (descriptor.data_type() == webnn::OperandDataType::kFloat16 &&
+      if (data_type == webnn::OperandDataType::kFloat16 &&
           buffer->GetAsArrayBufferViewAllowShared().Get()->GetType() ==
               DOMArrayBufferView::ViewType::kTypeUint16) {
         // Passing a Uint16Array when the data type is float16 was supported
@@ -1718,11 +1719,9 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
     return nullptr;
   }
 
-  if (!ml_context_->GetProperties().data_type_limits.constant.Has(
-          descriptor.data_type())) {
+  if (!ml_context_->GetProperties().data_type_limits.constant.Has(data_type)) {
     exception_state.ThrowTypeError(String(webnn::NotSupportedConstantTypeError(
-        descriptor.data_type(),
-        ml_context_->GetProperties().data_type_limits.constant)));
+        data_type, ml_context_->GetProperties().data_type_limits.constant)));
     return nullptr;
   }
 
@@ -1737,7 +1736,7 @@ MLOperand* MLGraphBuilder::constant(ScriptState* script_state,
           .c_str());
   mojo_base::BigBuffer constant_data = mojo_base::BigBuffer(bytes);
   scoped_trace.AddStep("post mojo message: CreatePendingConstant");
-  remote_->CreatePendingConstant(constant->handle(), descriptor.data_type(),
+  remote_->CreatePendingConstant(constant->handle(), data_type,
                                  std::move(constant_data));
   return constant;
 }
@@ -2020,35 +2019,12 @@ MLOperand* MLGraphBuilder::cast(MLOperand* input,
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
-  const std::string label = options->label().Utf8();
-
-  if (!ml_context_->GetProperties().data_type_limits.cast_input.Supports(
-          input->Descriptor())) {
-    exception_state.ThrowTypeError(
-        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedInputArgumentError(
-            input->Descriptor(),
-            ml_context_->GetProperties().data_type_limits.cast_input)));
-    return nullptr;
-  }
-
-  const webnn::OperandDataType cast_data_type =
-      FromBlinkDataType(output_data_type.AsEnum());
-
-  if (!ml_context_->GetProperties().data_type_limits.cast_input.data_types.Has(
-          cast_data_type)) {
-    exception_state.ThrowTypeError(
-        String::FromUTF8(webnn::GetErrorLabelPrefix(label)) +
-        String(NotSupportedOpOutputTypeError(
-            cast_data_type, ml_context_->GetProperties()
-                                .data_type_limits.cast_input.data_types)));
-    return nullptr;
-  }
-
   ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
       webnn::OperandDescriptor output_descriptor,
-      webnn::OperandDescriptor::Create(ml_context_->GetProperties(),
-                                       cast_data_type, input->Shape(), label));
+      webnn::ValidateCastAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(),
+          FromBlinkDataType(output_data_type.AsEnum()),
+          options->label().Utf8()));
 
   auto* cast = MakeGarbageCollected<MLOperator>(
       this, blink_mojom::Operation::Tag::kElementWiseUnary, options,
@@ -2320,19 +2296,19 @@ MLOperand* MLGraphBuilder::gruCell(MLOperand* input,
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
-  auto validated_output = webnn::ValidateGruCellAndInferOutput(
-      ml_context_->GetProperties(), input->Descriptor(), weight->Descriptor(),
-      recurrent_weight->Descriptor(), hidden_state->Descriptor(), hidden_size,
-      ConvertToGruCellAttributes(this, options));
-  if (!validated_output.has_value()) {
-    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
-    return {};
-  }
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor validated_output,
+      webnn::ValidateGruCellAndInferOutput(
+          ml_context_->GetProperties(), input->Descriptor(),
+          weight->Descriptor(), recurrent_weight->Descriptor(),
+          hidden_state->Descriptor(), hidden_size,
+          ConvertToGruCellAttributes(this, options)));
+
   auto* gru_cell =
       MakeGarbageCollected<MLGruCellOperator>(this, hidden_size, options);
 
   MLOperand* output =
-      MLOperand::CreateOutput(this, *std::move(validated_output), gru_cell);
+      MLOperand::CreateOutput(this, std::move(validated_output), gru_cell);
 
   gru_cell->Connect(std::move(inputs), {output});
   return output;

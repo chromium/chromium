@@ -416,6 +416,15 @@ base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
         const OperandDescriptor& variance,
         const BatchNormalizationAttributes& attributes);
 
+// Validate and infer output information of cast operator defined
+// in WebIDL here https://www.w3.org/TR/webnn/#api-mlgraphbuilder-cast.
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateCastAndInferOutput(const ContextProperties& context_properties,
+                               const OperandDescriptor& input,
+                               OperandDataType output_data_type,
+                               std::string_view label);
+
 // Validate concat operator defined in WebIDL here
 // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-concat
 base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(

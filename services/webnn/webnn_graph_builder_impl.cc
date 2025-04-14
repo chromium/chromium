@@ -706,14 +706,16 @@ bool OperationValidationContext::ValidateCastOperation(
     // The unary operator is invalid.
     return false;
   }
-  if (!std::ranges::equal(output->descriptor.shape(),
-                          input->descriptor.shape())) {
-    // The output shape is not expected.
+
+  const base::expected<OperandDescriptor, std::string> validated_output =
+      ValidateCastAndInferOutput(*context_properties_, input->descriptor,
+                                 output->descriptor.data_type(),
+                                 operation.label);
+
+  if (!validated_output.has_value()) {
     return false;
   }
-
-  if (!context_properties_->data_type_limits.cast_input.SupportsAll(
-          {input->descriptor, output->descriptor})) {
+  if (validated_output != output->descriptor) {
     return false;
   }
 
