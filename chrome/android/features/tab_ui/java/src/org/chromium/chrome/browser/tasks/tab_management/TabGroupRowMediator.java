@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import android.content.Context;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.util.Supplier;
 
@@ -182,8 +183,14 @@ class TabGroupRowMediator {
         } else if (sharedState == GroupSharedState.HAS_OTHER_USERS) {
             mPropertyModel.set(TabGroupRowProperties.DISPLAY_AS_SHARED, true);
             if (mSharedImageTilesCoordinator == null) {
+                @ColorInt
+                int backgroundColor =
+                        TabUiThemeProvider.getTabGridDialogBackgroundColor(
+                                mContext, /* isIncognito= */ false);
                 SharedImageTilesConfig config =
-                        new SharedImageTilesConfig.Builder(mContext).build();
+                        new SharedImageTilesConfig.Builder(mContext)
+                                .setBackgroundColor(backgroundColor)
+                                .build();
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
                                 mContext, config, mDataSharingService, mCollaborationService);

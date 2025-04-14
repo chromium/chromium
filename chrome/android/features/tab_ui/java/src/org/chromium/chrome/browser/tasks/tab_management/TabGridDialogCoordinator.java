@@ -182,7 +182,6 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                 SharedImageTilesConfig config =
                         new SharedImageTilesConfig.Builder(activity)
                                 .setBorderColor(backgroundColor)
-                                .setBackgroundColor(backgroundColor)
                                 .build();
                 mSharedImageTilesCoordinator =
                         new SharedImageTilesCoordinator(
