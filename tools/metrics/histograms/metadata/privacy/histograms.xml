@@ -1290,6 +1290,21 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
   </summary>
 </histogram>
 
+<histogram name="PrivacySandbox.Attestations.LoadAPKAssetStatus"
+    enum="PrivacySandboxAttestationLoadAPKAssetStatus"
+    expires_after="2025-09-30">
+  <owner>shivanisha@chromium.org</owner>
+  <owner>xiaochenzh@chromium.org</owner>
+  <summary>
+    This histogram is only recorded on Android. It is only recorded if feature
+    `PrivacySandboxAttestationsLoadFromAPKAsset` is enabled. It records the
+    loading status of Privacy Sandbox attestations component from Android APK
+    assets. The loading will be aborted when an error is encountered. The
+    recorded status can be either success or failure with reasons per loading
+    attempt.
+  </summary>
+</histogram>
+
 <histogram name="PrivacySandbox.Attestations.Parsing.Status"
     enum="PrivacySandboxAttestationParsingStatus" expires_after="2025-09-14">
   <owner>shivanisha@chromium.org</owner>

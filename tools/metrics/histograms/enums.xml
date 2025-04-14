@@ -22955,6 +22955,15 @@ Called by update_net_error_codes.py.-->
   <int value="13" label="Attestations file not present"/>
 </enum>
 
+<enum name="PrivacySandboxAttestationLoadAPKAssetStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to open the attestations list from APK assets"/>
+  <int value="2"
+      label="Fail to create a memory mapped file of the attestations list
+             from APK assets"/>
+  <int value="3" label="Fail to parse the content of the attestations list"/>
+</enum>
+
 <enum name="PrivacySandboxAttestationParsingStatus">
   <int value="0" label="Success"/>
   <int value="1" label="NotNewerVersion"/>
