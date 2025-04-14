@@ -351,6 +351,7 @@ source_set("eg2_tests") {
   sources = [
     "shared_tab_groups_egtest.mm",
     "shared_tab_groups_panel_egtest.mm",
+    "shared_tab_groups_signin_egtest.mm",
     "tab_group_sync_egtest.mm",
     "tab_group_sync_signin_egtest.mm",
     "tab_groups_egtest.mm",
@@ -377,6 +378,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
     "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:switches",
