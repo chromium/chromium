@@ -13,10 +13,12 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Helper class to handle tab group color picker related utilities. */
+@NullMarked
 public class TabGroupColorPickerUtils {
     /**
      * Get the color corresponding to the color id that is passed in. Adjust the color depending on
