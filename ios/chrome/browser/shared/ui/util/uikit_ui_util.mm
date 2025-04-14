@@ -53,6 +53,40 @@ void MaybeSetUILabelScaledFont(BOOL maybe, UILabel* label, UIFont* font) {
   }
 }
 
+UIFont* PreferredFontForTextStyle(UIFontTextStyle style,
+                                  std::optional<UIFontWeight> weight,
+                                  std::optional<CGFloat> max_size) {
+  // Fallback to using the simpler method if no weight or max_size was given.
+  if (!weight.has_value() && !max_size.has_value()) {
+    return [UIFont preferredFontForTextStyle:style];
+  }
+
+  // Get a "base font", with the given style and weight.
+  UITraitCollection* default_traits =
+      [UITraitCollection traitCollectionWithPreferredContentSizeCategory:
+                             UIContentSizeCategoryLarge];
+  UIFont* base_font;
+  if (weight.has_value()) {
+    UIFontDescriptor* descriptor =
+        [UIFontDescriptor preferredFontDescriptorWithTextStyle:style
+                                 compatibleWithTraitCollection:default_traits];
+    base_font = [UIFont systemFontOfSize:descriptor.pointSize
+                                  weight:weight.value()];
+  } else {
+    base_font = [UIFont preferredFontForTextStyle:style
+                    compatibleWithTraitCollection:default_traits];
+  }
+
+  // Return a scaled version of the base font, that can be adjusted
+  // automatically by setting adjustsFontForContentSizeCategory.
+  UIFontMetrics* metrics = [UIFontMetrics metricsForTextStyle:style];
+  if (max_size.has_value()) {
+    return [metrics scaledFontForFont:base_font
+                     maximumPointSize:max_size.value()];
+  }
+  return [metrics scaledFontForFont:base_font];
+}
+
 void SetUITextFieldScaledFont(UITextField* textField, UIFont* font) {
   textField.font = [[UIFontMetrics defaultMetrics] scaledFontForFont:font];
   textField.adjustsFontForContentSizeCategory = YES;
