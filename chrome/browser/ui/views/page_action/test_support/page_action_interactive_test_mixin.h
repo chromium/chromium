@@ -8,6 +8,8 @@
 #include <concepts>
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/state_observer.h"
@@ -16,9 +18,9 @@ DECLARE_STATE_IDENTIFIER_VALUE(ui::test::PollingStateObserver<bool>,
                                kPageActionButtonVisible);
 
 // Template usable as a mixin class for any Page Action tests extending
-// InProcessBrowserTest.
+// InteractiveBrowserTestApi.
 template <typename T>
-  requires(std::derived_from<T, InteractiveBrowserTest>)
+  requires(std::derived_from<T, InteractiveBrowserTestApi>)
 class PageActionInteractiveTestMixin : public T {
  public:
   template <class... Args>

@@ -774,6 +774,7 @@ static_library("test_support") {
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
       "//chrome/browser/ui/find_bar",
+      "//chrome/browser/ui/views/page_action:page_action",
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/browser/ui/webui/top_chrome",
