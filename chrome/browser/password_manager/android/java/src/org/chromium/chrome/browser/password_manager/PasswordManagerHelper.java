@@ -33,7 +33,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
@@ -269,7 +268,6 @@ public class PasswordManagerHelper {
         }
     }
 
-    @NullUnmarked
     private void showPasswordSettingsPreLoginDbDeprecation(
             Context context,
             @ManagePasswordsReferrer int referrer,
@@ -322,12 +320,14 @@ public class PasswordManagerHelper {
                 return;
             }
 
-            // NullUnmarked reason: If syncService.getAccountInfo() returns null, we use
-            // getAccountSettingsIntent to create an Intent with a null accountName.
-            String accountName =
-                    (syncService != null)
-                            ? CoreAccountInfo.getEmailFrom(syncService.getAccountInfo())
-                            : "";
+            String accountName = "";
+            if (syncService != null) {
+                CoreAccountInfo accountInfo = syncService.getAccountInfo();
+                if (accountInfo != null) {
+                    accountName = CoreAccountInfo.getEmailFrom(accountInfo);
+                }
+            }
+
             // TODO(crbug.com/40948486): Find an alternative to account settings intent.
             credentialManagerLauncher.getAccountSettingsIntent(
                     accountName,
