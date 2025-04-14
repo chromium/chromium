@@ -116,10 +116,6 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
   FakeLocalRecoveryFactor& operator=(const FakeLocalRecoveryFactor&) = delete;
   ~FakeLocalRecoveryFactor() override = default;
 
-  LocalRecoveryFactorType GetRecoveryFactorType() const override {
-    return LocalRecoveryFactorType::kPhysicalDevice;
-  }
-
   void AttemptRecovery(
       TrustedVaultThrottlingConnection* connection,
       AttemptRecoveryCallback callback,
@@ -146,8 +142,6 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
 
     recovery_callback_ = std::move(callback);
   }
-
-  bool IsRegistered() override { return is_registered_; }
 
   void MarkAsNotRegistered() override { is_registered_ = false; }
 
@@ -197,6 +191,8 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
           kAttemptingRegistrationWithNewKeyPair;
     }
   }
+
+  bool IsRegistered() const { return is_registered_; }
 
   bool ExpectAttemptRecovery() const { return attempt_recovery_was_called_; }
 
@@ -261,9 +257,6 @@ class ForwardingLocalRecoveryFactor : public LocalRecoveryFactor {
       const ForwardingLocalRecoveryFactor&) = delete;
   ~ForwardingLocalRecoveryFactor() override = default;
 
-  LocalRecoveryFactorType GetRecoveryFactorType() const override {
-    return delegate_->GetRecoveryFactorType();
-  }
   void AttemptRecovery(
       TrustedVaultThrottlingConnection* connection,
       AttemptRecoveryCallback callback,
@@ -271,7 +264,6 @@ class ForwardingLocalRecoveryFactor : public LocalRecoveryFactor {
     delegate_->AttemptRecovery(connection, std::move(callback),
                                std::move(failure_callback));
   }
-  bool IsRegistered() override { return delegate_->IsRegistered(); }
   void MarkAsNotRegistered() override { delegate_->MarkAsNotRegistered(); }
   void ClearRegistrationAttemptInfo(const GaiaId& gaia_id) override {
     delegate_->ClearRegistrationAttemptInfo(gaia_id);
@@ -384,12 +376,6 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
   FakeLocalRecoveryFactor* GetOrCreateRecoveryFactor(
       const std::optional<CoreAccountInfo>& account) {
     return local_recovery_factors_factory_->GetOrCreateRecoveryFactor(account);
-  }
-
-  std::string GetRecoveryFactorTypeForUMA(
-      FakeLocalRecoveryFactor* recovery_factor) {
-    return GetLocalRecoveryFactorNameForUma(
-        recovery_factor->GetRecoveryFactorType());
   }
 
   StandaloneTrustedVaultBackend* backend() { return backend_.get(); }
@@ -780,17 +766,13 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
   SetPrimaryAccountWithUnknownAuthError(account_info);
 
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DeviceRegistered." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+      "TrustedVault.DeviceRegistered." + security_domain_name_for_uma(),
       /*sample=*/false,
       /*expected_bucket_count=*/1);
 
@@ -801,8 +783,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRegisterDevice) {
   EXPECT_TRUE(GetOrCreateRecoveryFactor(account_info)->IsRegistered());
   histogram_tester.ExpectUniqueSample(
       /*name=*/"TrustedVault.DeviceRegistrationOutcome." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+          security_domain_name_for_uma(),
       /*sample=*/TrustedVaultDeviceRegistrationOutcomeForUMA::kSuccess,
       /*expected_bucket_count=*/1);
 }
@@ -865,9 +846,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
           TrustedVaultRegistrationStatus::kPersistentAccessTokenFetchError,
           kLastKeyVersion, true);
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair,
@@ -885,9 +864,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // The second attempt should NOT have logged the histogram, following the
   // histogram's definition that it should be logged once.
   histogram_tester2.ExpectTotalCount(
-      "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*expected_count=*/0);
 }
 
@@ -906,9 +883,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_TRUE(
       GetOrCreateRecoveryFactor(account_info)->MaybeRegisterWasCalled());
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::
           kAttemptingRegistrationWithNewKeyPair,
@@ -928,9 +903,7 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldRecordLocalKeysAreStale) {
   SetPrimaryAccountWithUnknownAuthError(account_info);
 
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kLocalKeysAreStale,
       /*expected_bucket_count=*/1);
@@ -986,9 +959,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_TRUE(
       GetOrCreateRecoveryFactor(account_info)->MaybeRegisterWasCalled());
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kThrottledClientSide,
       /*expected_bucket_count=*/1);
@@ -1016,8 +987,7 @@ TEST_F(StandaloneTrustedVaultBackendTest,
 
   histogram_tester.ExpectUniqueSample(
       /*name=*/"TrustedVault.DeviceRegistrationOutcome." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+          security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationOutcomeForUMA::
           kTransientAccessTokenFetchError,
@@ -1245,6 +1215,17 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   StoreKeysAndMimicDeviceRegistration({kVaultKey}, kLastKeyVersion,
                                       account_info);
 
+  // TODO(crbug.com/398160323): Make UMA logging in
+  // StandaloneTrustedVaultBackend independent of local recovery factor specific
+  // proto messages.
+  trusted_vault_pb::LocalTrustedVault vault =
+      file_access()->GetStoredLocalTrustedVault();
+  ASSERT_EQ(vault.user_size(), 1);
+  vault.mutable_user(0)
+      ->mutable_local_device_registration_info()
+      ->set_device_registered(true);
+  file_access()->SetStoredLocalTrustedVault(vault);
+
   // Mimic restart to be able to test histogram recording.
   ResetBackend();
 
@@ -1253,16 +1234,12 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   EXPECT_TRUE(
       GetOrCreateRecoveryFactor(account_info)->MaybeRegisterWasCalled());
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DeviceRegistrationState." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+      "TrustedVault.DeviceRegistrationState." + security_domain_name_for_uma(),
       /*sample=*/
       TrustedVaultDeviceRegistrationStateForUMA::kAlreadyRegisteredV1,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectUniqueSample(
-      "TrustedVault.DeviceRegistered." +
-          GetRecoveryFactorTypeForUMA(GetOrCreateRecoveryFactor(account_info)) +
-          "." + security_domain_name_for_uma(),
+      "TrustedVault.DeviceRegistered." + security_domain_name_for_uma(),
       /*sample=*/true,
       /*expected_bucket_count=*/1);
 }

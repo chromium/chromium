@@ -363,7 +363,7 @@ void StandaloneTrustedVaultBackend::StoreKeys(
   }
 
   storage_->WriteDataToDisk();
-  MaybeRegisterLocalRecoveryFactors();
+  MaybeRegisterDevice();
 }
 
 void StandaloneTrustedVaultBackend::SetPrimaryAccount(
@@ -382,7 +382,7 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
     if (PersistentAuthErrorWasResolved(previous_refresh_token_error_state,
                                        refresh_token_error_state_)) {
       MaybeProcessPendingTrustedRecoveryMethod();
-      MaybeRegisterLocalRecoveryFactors();
+      MaybeRegisterDevice();
 
       CHECK(degraded_recoverability_handler_);
       degraded_recoverability_handler_->HintDegradedRecoverabilityChanged(
@@ -432,7 +432,20 @@ void StandaloneTrustedVaultBackend::SetPrimaryAccount(
   }
   pending_get_is_recoverability_degraded_.reset();
 
-  MaybeRegisterLocalRecoveryFactors();
+  const std::optional<TrustedVaultDeviceRegistrationStateForUMA>
+      registration_state = MaybeRegisterDevice();
+
+  if (registration_state.has_value() &&
+      !device_registration_state_recorded_to_uma_) {
+    device_registration_state_recorded_to_uma_ = true;
+    base::UmaHistogramBoolean(
+        "TrustedVault.DeviceRegistered." +
+            GetSecurityDomainNameForUma(security_domain_id_),
+        per_user_vault->local_device_registration_info().device_registered());
+    RecordTrustedVaultDeviceRegistrationState(security_domain_id_,
+                                              *registration_state);
+  }
+
   MaybeProcessPendingTrustedRecoveryMethod();
 }
 
@@ -588,7 +601,7 @@ void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
   // resetting primary account, this is not the case for Chrome OS and Butter
   // mode. Trigger device registration attempt immediately as it can succeed in
   // these cases.
-  MaybeRegisterLocalRecoveryFactors();
+  MaybeRegisterDevice();
 }
 
 std::optional<CoreAccountInfo>
@@ -636,44 +649,31 @@ void StandaloneTrustedVaultBackend::ResetLocalRecoveryFactors() {
           storage_.get(), primary_account_);
 }
 
-void StandaloneTrustedVaultBackend::MaybeRegisterLocalRecoveryFactors() {
+std::optional<TrustedVaultDeviceRegistrationStateForUMA>
+StandaloneTrustedVaultBackend::MaybeRegisterDevice() {
   // TODO(crbug.com/40255601): in case of transient failure this function is
   // likely to be not called until the browser restart; implement retry logic.
   if (!connection_) {
     // Feature disabled.
-    return;
+    return std::nullopt;
   }
 
   if (!primary_account_.has_value()) {
     // Device registration is supported only for |primary_account_|.
-    return;
+    return std::nullopt;
   }
 
-  const bool should_record_metrics =
-      !device_registration_state_recorded_to_uma_;
-  for (auto& factor : local_recovery_factors_) {
-    // Unretained because |this| outlives |local_recovery_factors_| (and
-    // destroying |local_recovery_factors_| cancels all callbacks).
-    const std::optional<TrustedVaultDeviceRegistrationStateForUMA>
-        registration_state = factor->MaybeRegister(
-            connection_.get(),
-            base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
-                           base::Unretained(this),
-                           factor->GetRecoveryFactorType()));
-
-    if (registration_state.has_value() && should_record_metrics) {
-      device_registration_state_recorded_to_uma_ = true;
-      base::UmaHistogramBoolean(
-          base::StrCat({"TrustedVault.DeviceRegistered.",
-                        GetLocalRecoveryFactorNameForUma(
-                            factor->GetRecoveryFactorType()),
-                        ".", GetSecurityDomainNameForUma(security_domain_id_)}),
-          factor->IsRegistered());
-      RecordTrustedVaultDeviceRegistrationState(factor->GetRecoveryFactorType(),
-                                                security_domain_id_,
-                                                *registration_state);
-    }
-  }
+  // TODO(crbug.com/398160323): support all local recovery factors. This will
+  // require a refactoring of how registration outcomes are reported to UMA.
+  // Also, MaybeRegisterDevice() should then be renamed to something more
+  // generic.
+  CHECK_EQ(local_recovery_factors_.size(), 1u);
+  // Unretained because |this| outlives |local_recovery_factors_| (and
+  // destroying |local_recovery_factors_| cancels all callbacks).
+  return local_recovery_factors_[0]->MaybeRegister(
+      connection_.get(),
+      base::BindOnce(&StandaloneTrustedVaultBackend::OnDeviceRegistered,
+                     base::Unretained(this)));
 }
 
 void StandaloneTrustedVaultBackend::MaybeProcessPendingTrustedRecoveryMethod() {
@@ -697,7 +697,6 @@ void StandaloneTrustedVaultBackend::MaybeProcessPendingTrustedRecoveryMethod() {
 }
 
 void StandaloneTrustedVaultBackend::OnDeviceRegistered(
-    LocalRecoveryFactorType local_recovery_factor_type,
     TrustedVaultRegistrationStatus status,
     int key_version,
     bool had_local_keys) {
@@ -710,7 +709,7 @@ void StandaloneTrustedVaultBackend::OnDeviceRegistered(
   DCHECK(per_user_vault);
 
   RecordTrustedVaultDeviceRegistrationOutcome(
-      local_recovery_factor_type, security_domain_id_,
+      security_domain_id_,
       GetDeviceRegistrationOutcomeForUMAFromResponse(status));
 
   switch (status) {

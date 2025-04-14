@@ -16,12 +16,6 @@
 
 namespace trusted_vault {
 
-// Type of a LocalRecoveryFactor. Overwritten by sub-classes according to how
-// they manage recovery keys locally.
-enum class LocalRecoveryFactorType {
-  kPhysicalDevice,
-};
-
 // Interface for a local recovery factor.
 // Classes that implement this interface are used by
 // StandaloneTrustedVaultBackend to retrieve keys without user interaction when
@@ -48,16 +42,11 @@ class LocalRecoveryFactor {
   LocalRecoveryFactor& operator=(const LocalRecoveryFactor&) = delete;
   virtual ~LocalRecoveryFactor() = default;
 
-  // Returns the type of this local recovery factor.
-  virtual LocalRecoveryFactorType GetRecoveryFactorType() const = 0;
-
   // Attempts a key recovery.
   virtual void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
                                AttemptRecoveryCallback cb,
                                AttemptRecoveryFailureCallback failure_cb) = 0;
 
-  // Returns whether the recovery factor is marked as registered.
-  virtual bool IsRegistered() = 0;
   // Marks the recovery factor as not registered, which makes it eligible for
   // future registration attempts.
   virtual void MarkAsNotRegistered() = 0;

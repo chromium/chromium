@@ -4,7 +4,6 @@
 
 #import "ios/web_view/public/cwv_trusted_vault_utils.h"
 
-#import "components/trusted_vault/local_recovery_factor.h"
 #import "components/trusted_vault/trusted_vault_histograms.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 
@@ -42,7 +41,6 @@ CWVConvertTrustedVaultState(CWVTrustedVaultState state) {
 
 + (void)logTrustedVaultDidUpdateState:(CWVTrustedVaultState)state {
   trusted_vault::RecordTrustedVaultDeviceRegistrationState(
-      trusted_vault::LocalRecoveryFactorType::kPhysicalDevice,
       trusted_vault::SecurityDomainId::kChromeSync,
       CWVConvertTrustedVaultState(state));
 }
