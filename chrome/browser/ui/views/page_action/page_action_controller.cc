@@ -65,12 +65,12 @@ void PageActionController::ShowSuggestionChip(actions::ActionId action_id,
                                               SuggestionChipConfig config) {
   PageActionModelInterface& model = FindPageActionModel(action_id);
   model.SetShouldAnimateChip(PassKey(), config.should_animate);
-  model.SetShowSuggestionChip(PassKey(), /*show_suggestion_chip=*/true);
+  model.SetShowSuggestionChip(PassKey(), /*show=*/true);
 }
 
 void PageActionController::HideSuggestionChip(actions::ActionId action_id) {
-  FindPageActionModel(action_id).SetShowSuggestionChip(
-      PassKey(), /*show_suggestion_chip=*/false);
+  FindPageActionModel(action_id).SetShowSuggestionChip(PassKey(),
+                                                       /*show=*/false);
 }
 
 void PageActionController::ActionItemChanged(
