@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -33,14 +34,17 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   // The Browser's WebStateList.
   base::WeakPtr<WebStateList> _webStateList;
   raw_ptr<signin::IdentityManager> _identityManager;
+  raw_ptr<AuthenticationService> _authService;
 }
 
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
-                     identityManager:(signin::IdentityManager*)identityManager {
+                     identityManager:(signin::IdentityManager*)identityManager
+                         authService:(AuthenticationService*)authService {
   if ((self = [super init])) {
     CHECK(webStateList);
     _webStateList = webStateList->AsWeakPtr();
     _identityManager = identityManager;
+    _authService = authService;
   }
   return self;
 }
@@ -60,19 +64,24 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 // Checks if Explain With Gemini can be performed.
 - (BOOL)canPerformExplainWithGemini {
-  // TODO(crbug.com/408000561): Only show for some users.
-  if (![self checkAgeCondition]) {
-    return NO;
-  };
   CHECK(ExplainGeminiEditMenuPosition() !=
         PositionForExplainGeminiEditMenu::kDisabled);
+  if (![self isSignIn] || ![self isAccountEligibleForModelExecution] ||
+      [self isManagedAccount]) {
+    return NO;
+  };
   WebSelectionTabHelper* tabHelper = [self webSelectionTabHelper];
   return tabHelper && tabHelper->CanRetrieveSelectedText() &&
          self.applicationCommandHandler;
 }
 
-// Checks if the user is signIn and is 18+ years old.
-- (BOOL)checkAgeCondition {
+// Returns YES if the user is signIn.
+- (BOOL)isSignIn {
+  return _authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+}
+
+// Returns YES if account is eligible for model execution.
+- (BOOL)isAccountEligibleForModelExecution {
   if (!_identityManager) {
     return NO;
   }
@@ -85,6 +94,14 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
   return capabilities.can_use_model_execution_features() ==
          signin::Tribool::kTrue;
+}
+
+// Returns YES if the account is managed.
+- (BOOL)isManagedAccount {
+  if (!_identityManager) {
+    return NO;
+  }
+  return _authService->HasPrimaryIdentityManaged(signin::ConsentLevel::kSignin);
 }
 
 // Returns the title of button Explain With Gemini.

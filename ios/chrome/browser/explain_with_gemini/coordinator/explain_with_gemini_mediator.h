@@ -9,6 +9,7 @@
 
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/explain_with_gemini/coordinator/explain_with_gemini_delegate.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 
 @protocol ApplicationCommands;
 
@@ -25,6 +26,7 @@ class WebStateList;
 // BrowserContainer that owns this mediator.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                      identityManager:(signin::IdentityManager*)identityManager
+                         authService:(AuthenticationService*)authService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

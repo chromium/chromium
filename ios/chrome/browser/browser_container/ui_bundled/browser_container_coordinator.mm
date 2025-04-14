@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "url/gurl.h"
 
@@ -138,7 +139,9 @@
       !incognito) {
     _explainWithGeminiMediator = [[ExplainWithGeminiMediator alloc]
         initWithWebStateList:webStateList
-             identityManager:IdentityManagerFactory::GetForProfile(profile)];
+             identityManager:IdentityManagerFactory::GetForProfile(profile)
+                 authService:AuthenticationServiceFactory::GetForProfile(
+                                 profile)];
 
     _explainWithGeminiMediator.applicationCommandHandler =
         applicationCommandsHandler;
