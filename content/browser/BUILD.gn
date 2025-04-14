@@ -2846,17 +2846,6 @@ source_set("browser") {
     ]
   } else if (is_ios) {
     sources += [
-      "date_time_chooser/ios/date_time_chooser_coordinator.h",
-      "date_time_chooser/ios/date_time_chooser_coordinator.mm",
-      "date_time_chooser/ios/date_time_chooser_delegate.h",
-      "date_time_chooser/ios/date_time_chooser_ios.h",
-      "date_time_chooser/ios/date_time_chooser_ios.mm",
-      "date_time_chooser/ios/date_time_chooser_mediator.h",
-      "date_time_chooser/ios/date_time_chooser_mediator.mm",
-      "date_time_chooser/ios/date_time_chooser_util.h",
-      "date_time_chooser/ios/date_time_chooser_util.mm",
-      "date_time_chooser/ios/date_time_chooser_view_controller.h",
-      "date_time_chooser/ios/date_time_chooser_view_controller.mm",
       "devtools/protocol/native_input_event_builder_ios.mm",
       "renderer_host/begin_frame_source_ios.h",
       "renderer_host/begin_frame_source_ios.mm",
@@ -2879,8 +2868,21 @@ source_set("browser") {
       "web_contents/web_contents_view_ios.mm",
     ]
 
-    if (target_platform != "tvos") {
-      sources += [ "child_process_launcher_helper_ios.mm" ]
+    if (target_platform == "iphoneos") {
+      sources += [
+        "child_process_launcher_helper_ios.mm",
+        "date_time_chooser/ios/date_time_chooser_coordinator.h",
+        "date_time_chooser/ios/date_time_chooser_coordinator.mm",
+        "date_time_chooser/ios/date_time_chooser_delegate.h",
+        "date_time_chooser/ios/date_time_chooser_ios.h",
+        "date_time_chooser/ios/date_time_chooser_ios.mm",
+        "date_time_chooser/ios/date_time_chooser_mediator.h",
+        "date_time_chooser/ios/date_time_chooser_mediator.mm",
+        "date_time_chooser/ios/date_time_chooser_util.h",
+        "date_time_chooser/ios/date_time_chooser_util.mm",
+        "date_time_chooser/ios/date_time_chooser_view_controller.h",
+        "date_time_chooser/ios/date_time_chooser_view_controller.mm",
+      ]
       frameworks += [ "BrowserEngineKit.framework" ]
     } else {
       sources += [
