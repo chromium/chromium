@@ -149,7 +149,8 @@ class InteractiveTestApi {
   [[nodiscard]] StepBuilder SelectTab(
       ElementSpecifier tab_collection,
       size_t tab_index,
-      InputType input_type = InputType::kDontCare);
+      InputType input_type = InputType::kDontCare,
+      std::optional<size_t> expected_index_after_selection = std::nullopt);
   [[nodiscard]] StepBuilder SelectDropdownItem(
       ElementSpecifier collection,
       size_t item,

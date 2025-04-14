@@ -17,10 +17,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_lifecycle_unit_source.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -28,6 +31,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -60,6 +64,7 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
@@ -323,6 +328,12 @@ bool BrowserTabStripController::IsTabPinned(int model_index) const {
 
 void BrowserTabStripController::SelectTab(int model_index,
                                           const ui::Event& event) {
+  // When selecting a split tab, activate the most recently focused tab in the
+  // split.
+  if (tabstrip_->tab_at(model_index)->split().has_value()) {
+    model_index = GetIndexOfLastFocusedTabInSplit(model_index);
+  }
+
   std::unique_ptr<viz::PeakGpuMemoryTracker> tracker =
       content::PeakGpuMemoryTrackerFactory::Create(
           viz::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
@@ -1009,4 +1020,26 @@ void BrowserTabStripController::OnDiscardRingTreatmentEnabledChanged() {
     tabstrip_->tab_at(tab_index)->SetShouldShowDiscardIndicator(
         should_show_discard_indicator_);
   }
+}
+
+int BrowserTabStripController::GetIndexOfLastFocusedTabInSplit(
+    int model_index) {
+  const std::vector<tabs::TabInterface*> split_tabs =
+      browser()
+          ->tab_strip_model()
+          ->GetSplitData(tabstrip_->tab_at(model_index)->split().value())
+          ->ListTabs();
+
+  tabs::TabInterface* recently_active = *std::max_element(
+      split_tabs.begin(), split_tabs.end(),
+      [](tabs::TabInterface* a, tabs::TabInterface* b) {
+        auto get_last_focused_time_for_tab = [](const tabs::TabInterface* tab) {
+          return resource_coordinator::TabLifecycleUnitSource::
+              GetTabLifecycleUnitExternal(tab->GetContents())
+                  ->GetLastFocusedTime();
+        };
+        return get_last_focused_time_for_tab(a) >
+               get_last_focused_time_for_tab(b);
+      });
+  return browser()->tab_strip_model()->GetIndexOfTab(recently_active);
 }

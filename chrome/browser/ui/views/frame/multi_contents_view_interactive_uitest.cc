@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -20,6 +21,7 @@
 #include "ui/views/test/views_test_utils.h"
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTab);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
 
 class MultiContentsViewUiTest : public InteractiveBrowserTest {
  public:
@@ -184,4 +186,18 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, InsetsOnlyInSplit) {
         return contents_and_resize_width <
                multi_contents_view()->bounds().width();
       }));
+}
+
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       ActivatesMostRecentlyActiveTabInSplit) {
+  RunTestSequence(
+      EnterSplitView(),
+      CheckResult([this]() { return tab_strip_model()->active_index(); }, 0),
+      AddInstrumentedTab(kSecondTab, GURL(chrome::kChromeUISettingsURL), 2),
+      CheckResult([this]() { return tab_strip_model()->active_index(); }, 2),
+      // Since tab 0 and 1 are part of a split view and tab 0 was the most
+      // recently focused half of the split it should become the active tab, but
+      // both tabs will be visible.
+      SelectTab(kTabStripElementId, 1, InputType::kMouse, 0),
+      CheckResult([this]() { return tab_strip_model()->active_index(); }, 0));
 }
