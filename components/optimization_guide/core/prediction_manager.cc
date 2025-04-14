@@ -811,7 +811,7 @@ void PredictionManager::OnPredictionModelOverrideLoaded(
   const bool is_available = prediction_model != nullptr;
   VLOG(0) << "Loading override for "
           << proto::OptimizationTarget_Name(optimization_target)
-          << (is_available ? "succeeded" : "failed");
+          << (is_available ? " succeeded" : " failed");
   OnLoadPredictionModel(optimization_target,
                         /*record_availability_metrics=*/false,
                         std::move(prediction_model));

@@ -69,7 +69,12 @@ chromium-metrics-reviews@google.com.
       summary="Contextual Page Action: Show price tracking"/>
   <variant name="ExperimentalEmbedder"
       summary="Embedder for performance experiments"/>
-  <variant name="GeolocationPermissions" summary="Geolocation permissions"/>
+  <variant name="GeolocationPermissions"
+      summary="Permissions: Use permissions historic data to decide on
+               relevance for a Geolocation permission request"/>
+  <variant name="GeolocationPermissionsV3"
+      summary="Permissions: Use snapshot to decide on relevance for a
+               Geolocation permission request"/>
   <variant name="LanguageDetection" summary="Language detection"/>
   <variant name="ModelExecutionFeatureHistoryQueryIntent"
       summary="Model Execution Feature: History Query Intent"/>
@@ -90,7 +95,12 @@ chromium-metrics-reviews@google.com.
       summary="New Tab Page History Clusters Module Ranking"/>
   <variant name="NotificationContentDetection"
       summary="Notification Content Detection"/>
-  <variant name="NotificationPermissions" summary="Notification permissions"/>
+  <variant name="NotificationPermissions"
+      summary="Permissions: Use permissions historic data to decide on
+               relevance for a Notification permission request"/>
+  <variant name="NotificationPermissionsV3"
+      summary="Permissions: Use snapshot to decide on relevance for a
+               Notification permission request"/>
   <variant name="OmniboxOnDeviceTailSuggest"
       summary="Omnibox on device tail suggest"/>
   <variant name="OmniboxUrlScoring" summary="Omnibox Url scoring"/>

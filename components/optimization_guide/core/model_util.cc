@@ -147,6 +147,10 @@ std::string GetStringNameForOptimizationTarget(
       return "ExperimentalEmbedder";
     case proto::OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER:
       return "SegmentationFedCmUser";
+    case proto::OPTIMIZATION_TARGET_GEOLOCATION_IMAGE_PERMISSION_RELEVANCE:
+      return "GeolocationPermissionsV3";
+    case proto::OPTIMIZATION_TARGET_NOTIFICATION_IMAGE_PERMISSION_RELEVANCE:
+      return "NotificationPermissionsV3";
       // Whenever a new value is added, make sure to add it to the OptTarget
       // variant list in
       // //tools/metrics/histograms/metadata/optimization/histograms.xml.
