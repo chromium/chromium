@@ -64,59 +64,69 @@ class PathBuilder {
   std::unique_ptr<protocol::ListValue> Release() { return std::move(path_); }
 
   void AppendPath(const Path& path, float scale) {
-    Path transform_path(path);
-    transform_path.Transform(AffineTransform().Scale(scale));
-    transform_path.Apply(this, &PathBuilder::AppendPathElement);
+    ApplyInfo apply_info{this, scale};
+    path.Apply(&apply_info, &PathBuilder::AppendPathElement);
   }
 
  protected:
   virtual gfx::PointF TranslatePoint(const gfx::PointF& point) { return point; }
 
  private:
-  static void AppendPathElement(void* path_builder,
-                                const PathElement& path_element) {
-    static_cast<PathBuilder*>(path_builder)->AppendPathElement(path_element);
+  struct ApplyInfo {
+    STACK_ALLOCATED();
+
+   public:
+    PathBuilder* builder;
+    float scale;
+  };
+
+  static void AppendPathElement(void* info, const PathElement& path_element) {
+    const ApplyInfo* apply_info = static_cast<ApplyInfo*>(info);
+    apply_info->builder->AppendPathElement(path_element, apply_info->scale);
   }
 
-  void AppendPathElement(const PathElement&);
+  void AppendPathElement(const PathElement&, float scale);
   void AppendPathCommandAndPoints(const char* command,
-                                  base::span<const gfx::PointF> points);
+                                  base::span<const gfx::PointF> points,
+                                  float scale);
 
   std::unique_ptr<protocol::ListValue> path_;
 };
 
 void PathBuilder::AppendPathCommandAndPoints(
     const char* command,
-    base::span<const gfx::PointF> points) {
+    base::span<const gfx::PointF> points,
+    float scale) {
   path_->pushValue(protocol::StringValue::create(command));
   for (const auto& orig_point : points) {
-    gfx::PointF point = TranslatePoint(orig_point);
+    gfx::PointF point = TranslatePoint(gfx::ScalePoint(orig_point, scale));
     path_->pushValue(protocol::FundamentalValue::create(point.x()));
     path_->pushValue(protocol::FundamentalValue::create(point.y()));
   }
 }
 
-void PathBuilder::AppendPathElement(const PathElement& path_element) {
+void PathBuilder::AppendPathElement(const PathElement& path_element,
+                                    float scale) {
   switch (path_element.type) {
     // The points member will contain 1 value.
     case kPathElementMoveToPoint:
-      AppendPathCommandAndPoints("M", path_element.points);
+      AppendPathCommandAndPoints("M", path_element.points, scale);
       break;
     // The points member will contain 1 value.
     case kPathElementAddLineToPoint:
-      AppendPathCommandAndPoints("L", path_element.points);
+      AppendPathCommandAndPoints("L", path_element.points, scale);
       break;
     // The points member will contain 3 values.
     case kPathElementAddCurveToPoint:
-      AppendPathCommandAndPoints("C", path_element.points);
+      AppendPathCommandAndPoints("C", path_element.points, scale);
       break;
     // The points member will contain 2 values.
     case kPathElementAddQuadCurveToPoint:
-      AppendPathCommandAndPoints("Q", path_element.points);
+      AppendPathCommandAndPoints("Q", path_element.points, scale);
       break;
     // The points member will contain no values.
     case kPathElementCloseSubpath:
-      AppendPathCommandAndPoints("Z", path_element.points);
+      AppendPathCommandAndPoints("Z", path_element.points, scale);
       break;
   }
 }

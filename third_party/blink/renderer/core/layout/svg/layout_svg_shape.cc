@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/paint/svg_shape_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -472,8 +473,11 @@ void LayoutSVGShape::UpdateNonScalingStrokeData() {
 
   // For non-scaling-stroke we need to have a Path representation, so
   // create one here if needed.
-  rare_data.non_scaling_stroke_path_ = EnsurePath();
-  rare_data.non_scaling_stroke_path_.Transform(transform);
+  const Path& path = EnsurePath();
+  rare_data.non_scaling_stroke_path_ =
+      transform.IsIdentity()
+          ? path
+          : PathBuilder(path).Transform(transform).Finalize();
 }
 
 void LayoutSVGShape::Paint(const PaintInfo& paint_info) const {

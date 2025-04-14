@@ -150,7 +150,6 @@ class PLATFORM_EXPORT Path {
   const SkPath& GetSkPath() const { return path_; }
 
   void Apply(void* info, PathApplierFunction) const;
-  Path& Transform(const AffineTransform&);
 
   // Utility factories for simple shapes.
   static Path MakeRect(const gfx::RectF&);

@@ -35,6 +35,7 @@
 
 namespace blink {
 
+class AffineTransform;
 class DOMPointInit;
 class Path;
 class PathBuilder;
@@ -51,7 +52,7 @@ class SVGGeometryElement : public SVGGraphicsElement {
   bool isPointInFill(const DOMPointInit*) const;
   bool isPointInStroke(const DOMPointInit*) const;
 
-  Path ToClipPath() const;
+  Path ToClipPath(const AffineTransform* clip_transform = nullptr) const;
 
   SVGAnimatedNumber* pathLength() const { return path_length_.Get(); }
 

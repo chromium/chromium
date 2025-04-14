@@ -46,7 +46,6 @@
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -227,11 +226,6 @@ void Path::Apply(void* info, PathApplierFunction function) const {
     }
     function(info, path_element);
   }
-}
-
-Path& Path::Transform(const AffineTransform& xform) {
-  path_.transform(xform.ToSkMatrix());
-  return *this;
 }
 
 float Path::length() const {
