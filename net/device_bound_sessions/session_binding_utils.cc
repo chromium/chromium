@@ -135,24 +135,6 @@ std::optional<std::string> CreateKeyRegistrationHeaderAndPayload(
                                                  payload);
 }
 
-std::optional<std::string> CreateKeyAssertionHeaderAndPayload(
-    crypto::SignatureVerifier::SignatureAlgorithm algorithm,
-    base::span<const uint8_t> pubkey,
-    std::string_view client_id,
-    std::string_view challenge,
-    const GURL& destination_url,
-    std::string_view name_space) {
-  auto payload = base::Value::Dict()
-                     .Set("sub", client_id)
-                     .Set("aud", destination_url.spec())
-                     .Set("jti", challenge)
-                     .Set("iss", Base64UrlEncode(base::as_string_view(
-                                     crypto::SHA256Hash(pubkey))))
-                     .Set("namespace", name_space);
-  return CreateHeaderAndPayloadWithCustomPayload(
-      algorithm, "DEVICE_BOUND_SESSION_CREDENTIALS_ASSERTION", payload);
-}
-
 std::optional<std::string> AppendSignatureToHeaderAndPayload(
     std::string_view header_and_payload,
     crypto::SignatureVerifier::SignatureAlgorithm algorithm,
