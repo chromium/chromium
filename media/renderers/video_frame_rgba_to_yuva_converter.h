@@ -5,6 +5,8 @@
 #ifndef MEDIA_RENDERERS_VIDEO_FRAME_RGBA_TO_YUVA_CONVERTER_H_
 #define MEDIA_RENDERERS_VIDEO_FRAME_RGBA_TO_YUVA_CONVERTER_H_
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
