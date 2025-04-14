@@ -33,7 +33,7 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   static base::expected<MLOperand*, String> ValidateAndCreateInput(
       const webnn::ContextProperties& context_properties,
       MLGraphBuilder* builder,
-      V8MLOperandDataType::Enum data_type,
+      V8MLOperandDataType::Enum v8_data_type,
       Vector<uint32_t> shape,
       String name);
   // Similar to the methods above, but since we're passed `descriptor` we can
