@@ -157,7 +157,7 @@ BASE_FEATURE(kEnterprisePasswordReuseUiRefresh,
 
 BASE_FEATURE(kEnterpriseRealTimeUrlCheckOnAndroid,
              "EnterpriseRealTimeUrlCheckOnAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEsbAiStringUpdate,
              "EsbAiStringUpdate",
