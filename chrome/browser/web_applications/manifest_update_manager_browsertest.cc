@@ -4212,7 +4212,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   OverrideScopeExtensions(R"(
           [
             {
-              "type": "origin", "value": "https://extension.com"
+              "type": "origin", "origin": "https://extension.com"
             }
           ]
       )");
@@ -4251,7 +4251,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   OverrideScopeExtensions(R"(
           [
             {
-              "type": "origin", "value": "https://extension.com"
+              "type": "origin", "origin": "https://extension.com"
             }
           ]
       )");
@@ -4276,7 +4276,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   OverrideScopeExtensions(R"(
           [
             {
-              "type": "origin", "value": "https://extension.com"
+              "type": "origin", "origin": "https://extension.com"
             }
           ]
       )");
@@ -4309,7 +4309,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   OverrideScopeExtensions(R"(
           [
             {
-              "type": "origin", "value": "https://extension_1.com"
+              "type": "origin", "origin": "https://extension_1.com"
             }
           ]
       )");
@@ -4331,7 +4331,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   OverrideScopeExtensions(R"(
           [
             {
-              "type": "origin", "value": "https://extension_2.com"
+              "type": "origin", "origin": "https://extension_2.com"
             }
           ]
       )");
@@ -4359,7 +4359,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   OverrideScopeExtensions(R"(
           [
             {
-              "type": "origin", "value": "https://extension.com"
+              "type": "origin", "origin": "https://extension.com"
             }
           ]
       )");
@@ -4393,7 +4393,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   OverrideScopeExtensions(R"(
           [
             {
-              "type": "origin", "value": "https://extension.com"
+              "type": "origin", "origin": "https://extension.com"
             }
           ]
       )");
@@ -4428,7 +4428,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ScopeExtensions,
   OverrideScopeExtensions(R"(
           [
             {
-              "type": "origin", "value": "https://extension.com"
+              "type": "origin", "origin": "https://extension.com"
             }
           ]
       )");

@@ -3359,7 +3359,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type" : "origin", "value" : "https://foo.com"
+              "type" : "origin", "origin" : "https://foo.com"
             }
           ]
         })");
@@ -3376,7 +3376,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "invalid_field", "value": "https://foo.com"
+              "type": "invalid_field", "origin": "https://foo.com"
             }
           ]
         })");
@@ -3392,7 +3392,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "value": "https://foo.com"
+              "origin": "https://foo.com"
             }
           ]
         })");
@@ -3401,13 +3401,13 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
         "scope_extensions entry ignored, required properties 'type' and "
-        "'value' "
+        "'origin' "
         "are missing.",
         errors()[0]);
     EXPECT_EQ(0u, scope_extensions.size());
   }
 
-  // Scope extension missing `value` key
+  // Scope extension missing `origin` key
   {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
@@ -3421,7 +3421,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     ASSERT_EQ(1u, GetErrorCount());
     EXPECT_EQ(
         "scope_extensions entry ignored, required properties 'type' and "
-        "'value' "
+        "'origin' "
         "are missing.",
         errors()[0]);
     EXPECT_EQ(0u, scope_extensions.size());
@@ -3432,7 +3432,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "site", "value": "http://foo.com"
+              "type": "site", "origin": "http://foo.com"
             }
           ]
         })");
@@ -3448,14 +3448,14 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": 7
+              "type": "origin", "origin": 7
             }
           ]
         })");
     auto& scope_extensions = manifest->scope_extensions;
 
     EXPECT_EQ(2u, GetErrorCount());
-    EXPECT_EQ("property 'value' ignored, type string expected.", errors()[0]);
+    EXPECT_EQ("property 'origin' ignored, type string expected.", errors()[0]);
     EXPECT_EQ(0u, scope_extensions.size());
   }
 
@@ -3464,7 +3464,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "http://foo.com"
+              "type": "origin", "origin": "http://foo.com"
             }
           ]
         })");
@@ -3483,7 +3483,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https:///////"
+              "type": "origin", "origin": "https:///////"
             }
           ]
         })");
@@ -3502,10 +3502,10 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://foo.com"
+              "type": "origin", "origin": "https://foo.com"
             },
             {
-              "type": "origin", "value": "https://bar.com"
+              "type": "origin", "origin": "https://bar.com"
             }
           ]
         })");
@@ -3524,7 +3524,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://foo.com"
+              "type": "origin", "origin": "https://foo.com"
             },
             []
           ]
@@ -3559,10 +3559,10 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://foo.com"
+              "type": "origin", "origin": "https://foo.com"
             },
             {
-              "type": "origin", "value": "about:"
+              "type": "origin", "origin": "about:"
             }
           ]
         })");
@@ -3583,7 +3583,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://co.uk"
+              "type": "origin", "origin": "https://co.uk"
             }
           ]
         })");
@@ -3602,7 +3602,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://*.foo.com"
+              "type": "origin", "origin": "https://*.foo.com"
             }
           ]
         })");
@@ -3620,7 +3620,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://*foo.com"
+              "type": "origin", "origin": "https://*foo.com"
             }
           ]
         })");
@@ -3638,7 +3638,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://*."
+              "type": "origin", "origin": "https://*."
             }
           ]
         })");
@@ -3657,7 +3657,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://*.com"
+              "type": "origin", "origin": "https://*.com"
             }
           ]
         })");
@@ -3676,7 +3676,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://*.foo"
+              "type": "origin", "origin": "https://*.foo"
             }
           ]
         })");
@@ -3695,7 +3695,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://*.co.uk"
+              "type": "origin", "origin": "https://*.co.uk"
             }
           ]
         })");
@@ -3714,7 +3714,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://*.glitch.me"
+              "type": "origin", "origin": "https://*.glitch.me"
             }
           ]
         })");
@@ -3732,7 +3732,7 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
     auto& manifest = ParseManifest(R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://192.168.0.1:8888"
+              "type": "origin", "origin": "https://192.168.0.1:8888"
             }
           ]
         })");
@@ -3754,37 +3754,37 @@ TEST_F(ManifestParserTest, ScopeExtensionParseRules) {
         R"({
           "scope_extensions": [
             {
-              "type": "origin", "value": "https://192.168.0.1:8001"
+              "type": "origin", "origin": "https://192.168.0.1:8001"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8002"
+              "type": "origin", "origin": "https://192.168.0.1:8002"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8003"
+              "type": "origin", "origin": "https://192.168.0.1:8003"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8004"
+              "type": "origin", "origin": "https://192.168.0.1:8004"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8005"
+              "type": "origin", "origin": "https://192.168.0.1:8005"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8006"
+              "type": "origin", "origin": "https://192.168.0.1:8006"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8007"
+              "type": "origin", "origin": "https://192.168.0.1:8007"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8008"
+              "type": "origin", "origin": "https://192.168.0.1:8008"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8009"
+              "type": "origin", "origin": "https://192.168.0.1:8009"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8010"
+              "type": "origin", "origin": "https://192.168.0.1:8010"
             },
             {
-              "type": "origin", "value": "https://192.168.0.1:8011"
+              "type": "origin", "origin": "https://192.168.0.1:8011"
             }
           ]
         })");
