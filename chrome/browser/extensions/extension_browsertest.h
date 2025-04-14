@@ -83,9 +83,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
   const Extension* LoadAndLaunchApp(const base::FilePath& path,
                                     bool uses_guest_view = false);
 
-  // Launches |extension| as a window and returns the browser.
-  Browser* LaunchAppBrowser(const Extension* extension);
-
   // |expected_change| indicates how many extensions should be installed (or
   // disabled, if negative).
   // 1 means you expect a new install, 0 means you expect an upgrade, -1 means

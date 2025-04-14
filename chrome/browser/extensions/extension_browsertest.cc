@@ -32,7 +32,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
@@ -195,10 +194,6 @@ const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
   app_loaded_observer.Wait();
 
   return app;
-}
-
-Browser* ExtensionBrowserTest::LaunchAppBrowser(const Extension* extension) {
-  return browsertest_util::LaunchAppBrowser(profile(), extension);
 }
 
 const Extension* ExtensionBrowserTest::UpdateExtensionWaitForIdle(
