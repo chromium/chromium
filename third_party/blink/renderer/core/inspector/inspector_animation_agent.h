@@ -121,7 +121,7 @@ class CORE_EXPORT InspectorAnimationAgent final
   // when a blink::Animation instance is updated.
   HeapHashMap<String, Member<AnimationSnapshot>> id_to_animation_snapshot_;
   // Keeps track of the blink::Animation instances by their ids.
-  HeapHashMap<String, Member<blink::Animation>> id_to_animation_;
+  HeapHashMap<String, WeakMember<blink::Animation>> id_to_animation_;
   bool is_cloning_;
   HashSet<String> cleared_animations_;
   InspectorAgentState::Boolean enabled_;

@@ -598,6 +598,10 @@ void InspectorAnimationAgent::NotifyAnimationUpdated(
   }
 
   notify_animation_updated_tasks_.erase(animation_id);
+  if (!id_to_animation_.Contains(animation_id)) {
+    return;
+  }
+
   blink::Animation* animation = id_to_animation_.at(animation_id);
   if (!animation) {
     return;
