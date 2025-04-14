@@ -29,7 +29,6 @@ import json
 import logging
 import os
 import shlex
-import shutil
 import subprocess
 import sys
 
@@ -58,14 +57,6 @@ _VALID_TYPES = (
 )
 
 
-def _resolve_ninja():
-  # Prefer the version on PATH, but fallback to known version if PATH doesn't
-  # have one (e.g. on bots).
-  if shutil.which('ninja') is None:
-    return os.path.join(_SRC_ROOT, 'third_party', 'ninja', 'ninja')
-  return 'ninja'
-
-
 def _compile(output_dir, args, quiet=False):
   cmd = gn_helpers.CreateBuildCommand(output_dir) + args
   logging.info('Running: %s', shlex.join(cmd))
@@ -77,18 +68,13 @@ def _compile(output_dir, args, quiet=False):
 
 def _query_for_build_config_targets(output_dir):
   # Query ninja rather than GN since it's faster.
-  # Use ninja rather than autoninja to avoid extra output if user has set the
-  # NINJA_SUMMARIZE_BUILD environment variable.
-  if not os.path.exists(os.path.join(output_dir, '.ninja_deps')):
-    cmd = [_resolve_ninja(), '-C', output_dir, '-t', 'targets']
-  else:
-    cmd = [
-        os.path.join(_SRC_ROOT, 'third_party', 'siso', 'cipd', 'siso'), 'query',
-        'targets', '-C', output_dir
-    ]
+  cmd = [
+      os.path.join(_SRC_ROOT, 'third_party', 'siso', 'cipd', 'siso'), 'query',
+      'targets', '-C', output_dir
+  ]
   logging.info('Running: %r', cmd)
   try:
-    ninja_output = subprocess.run(cmd,
+    query_output = subprocess.run(cmd,
                                   check=True,
                                   capture_output=True,
                                   encoding='ascii').stdout
@@ -99,7 +85,7 @@ def _query_for_build_config_targets(output_dir):
   ret = []
   SUFFIX = '__build_config_crbug_908819'
   SUFFIX_LEN = len(SUFFIX)
-  for line in ninja_output.splitlines():
+  for line in query_output.splitlines():
     ninja_target = line.rsplit(':', 1)[0]
     # Ignore root aliases by ensuring a : exists.
     if ':' in ninja_target and ninja_target.endswith(SUFFIX):
