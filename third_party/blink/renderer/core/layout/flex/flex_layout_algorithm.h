@@ -92,8 +92,11 @@ class CORE_EXPORT FlexLayoutAlgorithm
   //   intersection points for the cross gap before the item.
   // - `main_intersections_before_current_line` is the main axis gap
   //   intersection points for the main gap before the item.
-  // - `item_cross_intersection` is the cross axis gap intersection point being
-  // computed for the current item.
+  // - `main_intersection_offset` is the  main axis offset of cross axis gap
+  //    intersection point being computed for the current item. It will be the
+  //    same for all items in the line.
+  // - `cross_intersection_offset` is the cross axis offset of the main axis gap
+  //    intersection point being computed for the current item.
   // TODO(javiercon): Consider refactoring this code to be able to be reused for
   // masonry, by abstracting away the flex-specific logic.
   void BuildGapIntersectionPointsForCurrentItem(
@@ -108,7 +111,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
       const FlexLine& flex_line,
       wtf_size_t num_lines,
       bool is_last_item_in_line,
-      GapIntersection& item_cross_intersection,
+      LayoutUnit main_intersection_offset,
       Vector<GapIntersection>& main_intersections_after_current_line,
       Vector<GapIntersection>& item_cross_intersections_list);
   void PopulateMainAxisGapIntersectionsForFirstItem(
@@ -116,19 +119,19 @@ class CORE_EXPORT FlexLayoutAlgorithm
       wtf_size_t num_lines,
       Vector<GapIntersection>& main_intersections_after_current_line);
   void PopulateMainAxisGapIntersectionsForLastItem(
-      LayoutUnit cross_axis_block_offset,
+      LayoutUnit cross_intersection_offset,
       Vector<GapIntersection>& main_intersections_after_current_line);
   void PopulateGapIntersectionsForMiddleItem(
       const HeapVector<FlexLine>& flex_lines,
       bool is_last_item_in_line,
       size_t flex_line_index,
-      GapIntersection& item_cross_intersection,
+      LayoutUnit main_intersection_offset,
       Vector<GapIntersection>& main_intersections_before_current_line,
       Vector<GapIntersection>& main_intersections_after_current_line,
       Vector<GapIntersection>& item_cross_intersections_list);
   void PopulateGapIntersectionsForLastLine(
       const FlexLine& flex_line,
-      GapIntersection& item_cross_intersection,
+      LayoutUnit main_intersection_offset,
       Vector<GapIntersection>& main_intersections_before_current_line,
       Vector<GapIntersection>& item_cross_intersections_list);
 

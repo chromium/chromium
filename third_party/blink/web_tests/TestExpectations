@@ -6216,8 +6216,6 @@ crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/anim
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/web-animations/animation-model/animation-types/interpolation-per-property-001.html [ Crash Failure Timeout ]
 # These tests are failing due to some Paint issue on overflow cases:
 crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-gaps/tentative/flex/flex-gap-decorations-008.html [ Failure ]
-# This test is failing due to a bug in the Column flex direction, will address in followup CL.
-crbug.com/357648037 virtual/css-gap-decorations/external/wpt/css/css-gaps/tentative/flex/flex-gap-decorations-015.html [ Failure ]
 ### End of tests failing with CSSGapDecorations Enabled
 
 # I think these are just test issues, but at least the scrollbars are related:

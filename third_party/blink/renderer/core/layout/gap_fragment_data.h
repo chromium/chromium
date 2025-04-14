@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/style/grid_enums.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -32,6 +33,21 @@ class GapIntersection {
   GapIntersection() = default;
   GapIntersection(LayoutUnit inline_offset, LayoutUnit block_offset)
       : inline_offset(inline_offset), block_offset(block_offset) {}
+
+  GapIntersection(LayoutUnit inline_offset,
+                  LayoutUnit block_offset,
+                  bool is_at_edge_of_container)
+      : inline_offset(inline_offset),
+        block_offset(block_offset),
+        is_at_edge_of_container(is_at_edge_of_container) {}
+
+  // TODO(javiercon): Add a `verbose` boolean parameter, and if it's true print
+  // more information about the intersection, such as `is_blocked_before`,
+  // `is_blocked_after`, etc.
+  WTF::String ToString() const {
+    return WTF::String(inline_offset.ToString()) + ", " +
+           WTF::String(block_offset.ToString());
+  }
 
   LayoutUnit inline_offset;
   LayoutUnit block_offset;
