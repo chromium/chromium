@@ -332,11 +332,27 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   // Fills in fields in |RTLookupRequest|.  |url| is expected to be already
   // sanitized.
-  std::unique_ptr<RTLookupRequest> FillRequestProto(
+  void StartFillingRequestProto(
       const GURL& url,
       bool is_sampled_report,
       SessionID tab_id,
-      std::optional<internal::ReferringAppInfo> referring_app_info);
+      std::optional<internal::ReferringAppInfo> referring_app_info,
+      base::OnceCallback<void(std::unique_ptr<RTLookupRequest>)> callback);
+
+  // Called when the IP addresses are fetched and adds them to the request.
+  void OnIpAddressesFetched(
+      std::unique_ptr<RTLookupRequest> request,
+      base::OnceCallback<void(std::unique_ptr<RTLookupRequest>)> callback,
+      std::vector<std::string> ip_addresses);
+
+  // Called when the request proto is filled and ready to be sent.
+  void OnRequestProtoFilled(
+      const GURL& sanitized_url,
+      const std::string& access_token_string,
+      RTLookupResponseCallback response_callback,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      bool is_sampled_report,
+      std::unique_ptr<RTLookupRequest> request);
 
   // Logs |request| and |oauth_token| on any open
   // chrome://safe-browsing pages. Returns a token that can be passed

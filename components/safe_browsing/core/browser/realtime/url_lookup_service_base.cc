@@ -7,12 +7,14 @@
 #include <memory>
 
 #include "base/base64url.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -406,43 +408,12 @@ void RealTimeUrlLookupServiceBase::MaybeSendRequest(
     return;
   }
 
-  std::unique_ptr<RTLookupRequest> request = FillRequestProto(
-      sanitized_url, is_sampled_report, tab_id, std::move(referring_app_info));
-  RecordRequestPopulationWithAndWithoutSuffix(
-      "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
-      request->population().user_population());
-  RecordCount100WithAndWithoutSuffix(
-      "SafeBrowsing.RT.Request.ReferrerChainLength", GetMetricSuffix(),
-      request->referrer_chain().size());
-  // Track sampled and full report
-  base::UmaHistogramBoolean("SafeBrowsing.RT.SampledRequestSent",
-                            is_sampled_report);
-
-  std::string req_data;
-  request->SerializeToString(&req_data);
-
-  auto resource_request = GetResourceRequest();
-  if (!access_token_string.empty()) {
-    LogAuthenticatedCookieResets(
-        *resource_request,
-        SafeBrowsingAuthenticatedEndpoint::kRealtimeUrlLookup);
-    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
-                                                  access_token_string);
-  }
-  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.HasTokenInRequest",
-                                    GetMetricSuffix(),
-                                    !access_token_string.empty());
-
-  MaybeLogLastProtegoPingTimeToPrefs(!access_token_string.empty());
-  std::optional<int> webui_token =
-      LogLookupRequest(*request, access_token_string);
-
-  // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
-  // just below.
-  SendRequestInternal(
-      sanitized_url, std::move(resource_request), req_data, access_token_string,
-      std::move(response_callback), callback_task_runner,
-      request->population().user_population(), is_sampled_report, webui_token);
+  StartFillingRequestProto(
+      sanitized_url, is_sampled_report, tab_id, std::move(referring_app_info),
+      base::BindOnce(&RealTimeUrlLookupServiceBase::OnRequestProtoFilled,
+                     GetWeakPtr(), sanitized_url, access_token_string,
+                     std::move(response_callback),
+                     std::move(callback_task_runner), is_sampled_report));
 }
 
 void RealTimeUrlLookupServiceBase::SendRequestInternal(
@@ -601,11 +572,13 @@ RealTimeUrlLookupServiceBase::GetResourceRequest() {
   return resource_request;
 }
 
-std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
+void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
     const GURL& url,
     bool is_sampled_report,
     SessionID tab_id,
-    std::optional<internal::ReferringAppInfo> referring_app_info) {
+    std::optional<internal::ReferringAppInfo> referring_app_info,
+    base::OnceCallback<void(std::unique_ptr<RTLookupRequest>)>
+        request_callback) {
   auto request = std::make_unique<RTLookupRequest>();
   request->set_url(url.spec());
   request->set_lookup_type(RTLookupRequest::NAVIGATION);
@@ -624,30 +597,6 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     *request->mutable_referring_app_info() =
         std::move(referring_app_info_proto);
     MaybeFillReferringWebApk(*referring_app_info, *request);
-  }
-  std::optional<std::string> dm_token_string = GetDMTokenString();
-  if (dm_token_string.has_value()) {
-    request->set_dm_token(dm_token_string.value());
-
-    std::string email = GetUserEmail();
-    if (!email.empty()) {
-      request->set_email(std::move(email));
-    }
-
-    // Check for the profile token here because we want to avoid cases where the
-    // value is populated in the non-enterprise case.
-    std::string profile_dm_token = GetProfileDMTokenString();
-    if (!profile_dm_token.empty()) {
-      request->set_profile_dm_token(std::move(profile_dm_token));
-    }
-
-    // The IP addresses are only needed for enterprise requests.
-    if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
-      for (const auto& ip_address :
-           enterprise_connectors::GetLocalIpAddresses()) {
-        request->add_local_ips(ip_address);
-      }
-    }
   }
 
   std::string browser_dm_token = GetBrowserDMTokenString();
@@ -693,7 +642,88 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
         &token);
   }
 
-  return request;
+  std::optional<std::string> dm_token_string = GetDMTokenString();
+  if (dm_token_string.has_value()) {
+    request->set_dm_token(dm_token_string.value());
+
+    std::string email = GetUserEmail();
+    if (!email.empty()) {
+      request->set_email(std::move(email));
+    }
+
+    // Check for the profile token here because we want to avoid cases where the
+    // value is populated in the non-enterprise case.
+    std::string profile_dm_token = GetProfileDMTokenString();
+    if (!profile_dm_token.empty()) {
+      request->set_profile_dm_token(std::move(profile_dm_token));
+    }
+
+    // The IP addresses are only needed for enterprise requests.
+    if (base::FeatureList::IsEnabled(safe_browsing::kLocalIpAddressInEvents)) {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+          base::BindOnce(&enterprise_connectors::GetLocalIpAddresses),
+          base::BindOnce(&RealTimeUrlLookupServiceBase::OnIpAddressesFetched,
+                         GetWeakPtr(), std::move(request),
+                         std::move(request_callback)));
+      return;
+    }
+  }
+  std::move(request_callback).Run(std::move(request));
+}
+
+void RealTimeUrlLookupServiceBase::OnIpAddressesFetched(
+    std::unique_ptr<RTLookupRequest> request,
+    base::OnceCallback<void(std::unique_ptr<RTLookupRequest>)> callback,
+    std::vector<std::string> ip_addresses) {
+  for (const std::string& ip_address : ip_addresses) {
+    request->add_local_ips(ip_address);
+  }
+  std::move(callback).Run(std::move(request));
+}
+
+void RealTimeUrlLookupServiceBase::OnRequestProtoFilled(
+    const GURL& sanitized_url,
+    const std::string& access_token_string,
+    RTLookupResponseCallback response_callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    bool is_sampled_report,
+    std::unique_ptr<RTLookupRequest> request) {
+  RecordRequestPopulationWithAndWithoutSuffix(
+      "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
+      request->population().user_population());
+  RecordCount100WithAndWithoutSuffix(
+      "SafeBrowsing.RT.Request.ReferrerChainLength", GetMetricSuffix(),
+      request->referrer_chain().size());
+  // Track sampled and full report
+  base::UmaHistogramBoolean("SafeBrowsing.RT.SampledRequestSent",
+                            is_sampled_report);
+
+  std::string req_data;
+  request->SerializeToString(&req_data);
+
+  auto resource_request = GetResourceRequest();
+  if (!access_token_string.empty()) {
+    LogAuthenticatedCookieResets(
+        *resource_request,
+        SafeBrowsingAuthenticatedEndpoint::kRealtimeUrlLookup);
+    SetAccessTokenAndClearCookieInResourceRequest(resource_request.get(),
+                                                  access_token_string);
+  }
+  RecordBooleanWithAndWithoutSuffix("SafeBrowsing.RT.HasTokenInRequest",
+                                    GetMetricSuffix(),
+                                    !access_token_string.empty());
+
+  MaybeLogLastProtegoPingTimeToPrefs(!access_token_string.empty());
+  std::optional<int> webui_token =
+      LogLookupRequest(*request, access_token_string);
+
+  // NOTE: Pass |callback_task_runner| by copying it here as it's also needed
+  // just below.
+  SendRequestInternal(
+      sanitized_url, std::move(resource_request), req_data, access_token_string,
+      std::move(response_callback), callback_task_runner,
+      request->population().user_population(), is_sampled_report, webui_token);
 }
 
 std::optional<int> RealTimeUrlLookupServiceBase::LogLookupRequest(
