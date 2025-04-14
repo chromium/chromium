@@ -21,6 +21,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.RegistrationPolicyAlwaysRegister;
@@ -174,6 +175,7 @@ public class CronetLibraryLoader {
                         implVersion,
                         System.getProperty("os.arch"));
                 setNativeLoggingLevel();
+                TraceEvent.onNativeTracingReady();
                 sWaitForLibLoad.open();
                 sInitialized = true;
                 return true;
