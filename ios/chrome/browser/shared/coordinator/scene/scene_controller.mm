@@ -756,13 +756,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
 
 - (void)sceneState:(SceneState*)sceneState
     hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts {
-  // Do not process the URLContextsToOpen because other observers may be
-  // interested in them but processing them means clearing them. Post a task to
-  // process them after a delay.
-  __weak __typeof(self) weakSelf = self;
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [weakSelf handleURLContextsToOpen];
-  });
+  [self handleURLContextsToOpen];
 }
 
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
