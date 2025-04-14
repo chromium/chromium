@@ -23,8 +23,10 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_log.h"
+#include "media/base/media_switches.h"
 #include "media/base/seekable_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_request_headers.h"
@@ -70,7 +72,8 @@ static bool CorrectAcceptEncoding(const WebURLRequest& request) {
 
 class ResourceMultiBufferDataProviderTest : public testing::Test {
  public:
-  ResourceMultiBufferDataProviderTest() {
+  ResourceMultiBufferDataProviderTest()
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     for (int i = 0; i < kDataSize; ++i) {
       data_[i] = i;
     }
@@ -320,6 +323,64 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestRedirectedPartialResponse) {
   Redirect(kHttpRedirect);
   PartialResponse(2048, 4096, 32000);
   StopWhenLoad();
+}
+
+// Tests stale reporting works properly.
+TEST_F(ResourceMultiBufferDataProviderTest, TestStaleTimer) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      media::kMultiBufferNeverDefer};
+  Initialize(kHttpUrl, 0);
+  Start();
+  PartialResponse(0, 2048, 32000);
+  loader_->SetDeferred(true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(loader_->IsStale());
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 1u);
+  loader_ = nullptr;
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 0u);
+}
+
+// Tests stale reporting clears properly.
+TEST_F(ResourceMultiBufferDataProviderTest, TestStaleTimerClear) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      media::kMultiBufferNeverDefer};
+  Initialize(kHttpUrl, 0);
+  Start();
+  PartialResponse(0, 2048, 32000);
+  loader_->SetDeferred(true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(loader_->IsStale());
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 1u);
+  loader_->SetDeferred(false);
+  task_environment_.FastForwardUntilNoTasksRemain();
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 1u);
+}
+
+// Tests stale reporting doesn't extend forever on repeated deferrals.
+TEST_F(ResourceMultiBufferDataProviderTest, TestStaleTimerFinite) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      media::kMultiBufferNeverDefer};
+  Initialize(kHttpUrl, 0);
+  Start();
+  PartialResponse(0, 2048, 32000);
+  loader_->SetDeferred(true);
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(loader_->IsStale());
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 1u);
+
+  constexpr auto kInterval = base::Milliseconds(250);
+  base::TimeDelta elapsed;
+
+  auto local_loader = loader_.ExtractAsDangling();
+  while (url_data_->multibuffer()->writer_index_size_for_testing() > 0 &&
+         elapsed < base::Seconds(5)) {
+    local_loader->SetDeferred(true);
+    task_environment_.FastForwardBy(kInterval);
+    elapsed += kInterval;
+  }
+
+  EXPECT_EQ(url_data_->multibuffer()->writer_index_size_for_testing(), 0u);
 }
 
 }  // namespace blink

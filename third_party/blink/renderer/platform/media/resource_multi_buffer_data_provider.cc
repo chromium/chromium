@@ -165,8 +165,23 @@ scoped_refptr<media::DataBuffer> ResourceMultiBufferDataProvider::Read() {
 }
 
 void ResourceMultiBufferDataProvider::SetDeferred(bool deferred) {
-  if (active_loader_)
+  if (active_loader_) {
     active_loader_->SetDefersLoading(deferred);
+  }
+
+  if (deferred) {
+    if (!cleanup_timer_.IsRunning()) {
+      // Note: Timeout chosen based on Slow 4G dev tools speed preset to ensure
+      // that preloading a paused ~3mb 720p video (tulip2.vp9.webm) opens only
+      // two network connections instead of 3.
+      cleanup_timer_.Start(
+          FROM_HERE, base::Seconds(1),
+          WTF::BindOnce(&ResourceMultiBufferDataProvider::SetStale,
+                        weak_factory_.GetWeakPtr()));
+    }
+  } else {
+    cleanup_timer_.Stop();
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -494,6 +509,10 @@ void ResourceMultiBufferDataProvider::DidFail(const WebURLError& error) {
   }
 }
 
+bool ResourceMultiBufferDataProvider::IsStale() const {
+  return is_stale_;
+}
+
 void ResourceMultiBufferDataProvider::Invalidate() {
   invalidated_ = true;
 }
@@ -584,6 +603,11 @@ bool ResourceMultiBufferDataProvider::VerifyPartialResponse(
   bytes_to_discard_ = byte_pos() - first_byte_position;
 
   return true;
+}
+
+void ResourceMultiBufferDataProvider::SetStale() {
+  is_stale_ = true;
+  url_data_->multibuffer()->OnDataProviderEvent(this);
 }
 
 }  // namespace blink

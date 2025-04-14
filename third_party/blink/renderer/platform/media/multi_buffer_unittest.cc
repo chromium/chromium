@@ -126,6 +126,8 @@ class FakeMultiBufferDataProvider : public MultiBuffer::DataProvider {
     return ret;
   }
 
+  bool IsStale() const final { return false; }
+
   void Invalidate() final { NOTREACHED(); }
 
  private:

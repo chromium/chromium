@@ -543,9 +543,8 @@ BASE_FEATURE(kMemoryPressureBasedSourceBufferGC,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Forces SuggestProviderState() to only suggest deferring when range requests
-// aren't supported. Will cause us to buffer up to preload then release the
-// loader -- creating a new one to refill beyond the preload amount. Increases
-// the number of network connections used during loading, but may prevent hangs.
+// aren't supported and the underlying provider considers itself stale. The
+// stale state is set if the provider has been in a deferred state for > 1 sec.
 BASE_FEATURE(kMultiBufferNeverDefer,
              "MultiBufferNeverDefer",
              base::FEATURE_DISABLED_BY_DEFAULT);

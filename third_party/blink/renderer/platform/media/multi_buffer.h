@@ -130,6 +130,9 @@ class PLATFORM_EXPORT MultiBuffer {
     // It's ok if the effect is not immediate.
     virtual void SetDeferred(bool deferred) = 0;
 
+    // Ask the provider if it has been deferred too long.
+    virtual bool IsStale() const = 0;
+
     // Invalidates this data provider. Used during teardown to stop any pending
     // read events from beginning.
     virtual void Invalidate() = 0;
@@ -306,6 +309,8 @@ class PLATFORM_EXPORT MultiBuffer {
   // Stops all existing writers.
   void StopWriters();
 
+  size_t writer_index_size_for_testing() const { return writer_index_.size(); }
+
  protected:
   // Create a new writer at |pos| and return it.
   // Users needs to implemement this method.
@@ -338,7 +343,7 @@ class PLATFORM_EXPORT MultiBuffer {
   void ReleaseBlocks(const std::vector<MultiBufferBlockId>& blocks);
 
   // Figure out what state a writer at |pos| should be in.
-  ProviderState SuggestProviderState(const BlockId& pos) const;
+  ProviderState SuggestProviderState(const BlockId& pos, bool is_stale) const;
 
   // Returns true if a writer at |pos| is colliding with
   // output of another writer.

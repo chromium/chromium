@@ -352,7 +352,8 @@ std::unique_ptr<MultiBuffer::DataProvider> MultiBuffer::RemoveProvider(
 }
 
 MultiBuffer::ProviderState MultiBuffer::SuggestProviderState(
-    const BlockId& pos) const {
+    const BlockId& pos,
+    bool is_stale) const {
   MultiBufferBlockId next_reader_pos = ClosestNextEntry(readers_, pos);
   if (next_reader_pos != std::numeric_limits<MultiBufferBlockId>::max() &&
       (next_reader_pos - pos <= kMaxWaitForWriterOffset || !RangeSupported())) {
@@ -364,6 +365,13 @@ MultiBuffer::ProviderState MultiBuffer::SuggestProviderState(
     }
   }
 
+  // When kMultiBufferNeverDefer is enabled, providers will submit themselves
+  // for cleanup after being deferred for too long.
+  if (base::FeatureList::IsEnabled(media::kMultiBufferNeverDefer)) {
+    return is_stale && RangeSupported() ? ProviderStateDead
+                                        : ProviderStateDefer;
+  }
+
   MultiBufferBlockId previous_reader_pos =
       ClosestPreviousEntry(readers_, pos - 1);
   if (previous_reader_pos != std::numeric_limits<MultiBufferBlockId>::min() &&
@@ -372,10 +380,6 @@ MultiBuffer::ProviderState MultiBuffer::SuggestProviderState(
     MultiBufferBlockId previous_writer_pos =
         ClosestPreviousEntry(writer_index_, pos - 1);
     if (previous_writer_pos < previous_reader_pos) {
-      if (base::FeatureList::IsEnabled(media::kMultiBufferNeverDefer) &&
-          RangeSupported()) {
-        return ProviderStateDead;
-      }
       return ProviderStateDefer;
     }
   }
@@ -446,7 +450,7 @@ void MultiBuffer::OnDataProviderEvent(DataProvider* provider_tmp) {
   // readers to seek or self-destruct and clean up any associated writers.
   auto i = writer_index_.find(pos);
   if (i != writer_index_.end() && i->second.get() == provider_tmp) {
-    switch (SuggestProviderState(pos)) {
+    switch (SuggestProviderState(pos, provider_tmp->IsStale())) {
       case ProviderStateLoad:
         // Not sure we actually need to do this
         provider_tmp->SetDeferred(false);
