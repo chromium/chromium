@@ -34,6 +34,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FingerprintingProtection.CanvasNoise.InterventionReason"
+    units="bitmask" expires_after="2025-12-14">
+  <owner>tov@chromium.org</owner>
+  <owner>antoniosartori@chromium.org</owner>
+  <owner>johnykim@google.com</owner>
+  <owner>rizvis@google.com</owner>
+  <summary>
+    Records the reason why noise was, or was not, added to the canvas upon
+    readback. The result is a bitmask of CanvasNoiseReason. This is recorded
+    with every readback that happens.
+  </summary>
+</histogram>
+
 <histogram name="FingerprintingProtection.DocumentLoad.RulesetIsAvailable"
     enum="BooleanAvailable" expires_after="2025-10-10">
   <owner>rizvis@google.com</owner>

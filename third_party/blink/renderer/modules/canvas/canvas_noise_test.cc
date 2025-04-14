@@ -7,6 +7,7 @@
 #include <initializer_list>
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "components/viz/test/test_context_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/fingerprinting_protection/canvas_noise_token.h"
@@ -30,6 +31,13 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
+
+namespace {
+
+constexpr char kNoiseReasonMetricName[] =
+    "FingerprintingProtection.CanvasNoise.InterventionReason";
+
+}  // namespace
 
 namespace blink {
 
@@ -212,6 +220,7 @@ class CanvasNoiseTest : public PageTestBase {
 };
 
 TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotNoiseWhenCanvasInterventionsEnabled) {
+  base::HistogramTester histogram_tester;
   auto* window = GetFrame().DomWindow();
   // Enable CanvasInterventions.
   window->GetRuntimeFeatureStateOverrideContext()
@@ -224,11 +233,15 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotNoiseWhenCanvasInterventionsEnabled) {
 
   EXPECT_TRUE(CanvasInterventionsHelper::MaybeNoiseSnapshot(Context2D(), window,
                                                             snapshot));
+  histogram_tester.ExpectUniqueSample(
+      kNoiseReasonMetricName,
+      static_cast<int>(CanvasNoiseReason::kAllConditionsMet), 1);
   EXPECT_NE(snapshot_copy, snapshot);
 }
 
 TEST_F(CanvasNoiseTest,
        MaybeNoiseSnapshotDoesNotNoiseWhenCanvasInterventionsDisabled) {
+  base::HistogramTester histogram_tester;
   auto* window = GetFrame().DomWindow();
   // Disable CanvasInterventions.
   window->GetRuntimeFeatureStateOverrideContext()
@@ -241,11 +254,15 @@ TEST_F(CanvasNoiseTest,
 
   EXPECT_FALSE(CanvasInterventionsHelper::MaybeNoiseSnapshot(Context2D(),
                                                              window, snapshot));
+  histogram_tester.ExpectUniqueSample(
+      kNoiseReasonMetricName,
+      static_cast<int>(CanvasNoiseReason::kNotEnabledInMode), 1);
   EXPECT_EQ(snapshot_copy, snapshot);
 }
 
 TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDoesNotNoiseForCpuCanvas) {
   CanvasElement().DisableAcceleration();
+  base::HistogramTester histogram_tester;
   auto* window = GetFrame().DomWindow();
   // Enable CanvasInterventions.
   window->GetRuntimeFeatureStateOverrideContext()
@@ -258,6 +275,8 @@ TEST_F(CanvasNoiseTest, MaybeNoiseSnapshotDoesNotNoiseForCpuCanvas) {
 
   EXPECT_FALSE(CanvasInterventionsHelper::MaybeNoiseSnapshot(Context2D(),
                                                              window, snapshot));
+  histogram_tester.ExpectUniqueSample(
+      kNoiseReasonMetricName, static_cast<int>(CanvasNoiseReason::kNoGpu), 1);
   EXPECT_EQ(snapshot_copy, snapshot);
 }
 
@@ -332,6 +351,7 @@ TEST_F(CanvasNoiseTest, TriggerOnStrokeText) {
 }
 
 TEST_F(CanvasNoiseTest, TriggerOnFillWithPath2DNoNoise) {
+  base::HistogramTester histogram_tester;
   V8TestingScope scope;
   Path2D* canvas_path = Path2D::Create(GetScriptState());
   canvas_path->lineTo(10, 10);
@@ -339,6 +359,15 @@ TEST_F(CanvasNoiseTest, TriggerOnFillWithPath2DNoNoise) {
   canvas_path->closePath();
   Context2D()->fill(canvas_path);
   EXPECT_FALSE(canvas_path->HasTriggerForIntervention());
+  scoped_refptr<StaticBitmapImage> snapshot =
+      Context2D()->GetImage(FlushReason::kTesting);
+  scoped_refptr<StaticBitmapImage> snapshot_copy = snapshot;
+
+  EXPECT_FALSE(CanvasInterventionsHelper::MaybeNoiseSnapshot(
+      Context2D(), GetFrame().DomWindow(), snapshot));
+  histogram_tester.ExpectUniqueSample(
+      kNoiseReasonMetricName, static_cast<int>(CanvasNoiseReason::kNoTrigger),
+      1);
   ExpectInterventionDidNotHappen();
 }
 
