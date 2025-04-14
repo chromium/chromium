@@ -253,6 +253,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
+import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
@@ -4020,9 +4021,27 @@ public class ChromeTabbedActivity extends ChromeActivity {
         }
     }
 
+    @Override
+    protected void applyThemeOverlays() {
+        // Apply the theme overlay before applying dynamic colors in the super's call. The order
+        // ensures the color attributes for dynamic colors are not overridden by the overlay.
+        if (ThemeModuleUtils.isEnabled()) {
+            int themeModuleOverlay = ThemeModuleUtils.getProviderInstance().getThemeOverlay();
+            if (themeModuleOverlay != 0) {
+                applySingleThemeOverlay(themeModuleOverlay);
+            }
+        }
+
+        super.applyThemeOverlays();
+
+        // Theme overlay for the Hub buttons
+        applySingleThemeOverlay(R.style.HubToolbarActionButtonStyleOverlay_Baseline);
+    }
+
     /**
      * Reports that a new tab launcher shortcut was selected or an action equivalent to a shortcut
      * was performed.
+     *
      * @param isIncognito Whether the shortcut or action created a new incognito tab.
      */
     @RequiresApi(Build.VERSION_CODES.N_MR1)
