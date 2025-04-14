@@ -355,7 +355,7 @@ public class ConditionWaiter {
      * @param elements The elements to process (i.e. create ConditionWaits for).
      * @return the created {@link ConditionWait}s.
      */
-    private List<ConditionWait> createEnterConditionWaits(Elements elements) {
+    private List<ConditionWait> createEnterConditionWaits(BaseElements elements) {
         final List<ConditionWait> newWaits = new ArrayList<>();
         for (Element<?> element : elements.getElements()) {
             @Nullable Condition enterCondition = element.getEnterCondition();
@@ -403,7 +403,7 @@ public class ConditionWaiter {
 
             mWaits.addAll(nextBatch);
 
-            Elements newElements = fabricateElements(newFactories);
+            BaseElements newElements = fabricateElements(newFactories);
             nextBatch = createEnterConditionWaits(newElements);
 
             for (ConditionWait wait : nextBatch) {
@@ -433,8 +433,8 @@ public class ConditionWaiter {
         return anyCriteriaMissing;
     }
 
-    private Elements fabricateElements(List<ElementFactory> factories) {
-        Elements newElements = new Elements();
+    private BaseElements fabricateElements(List<ElementFactory> factories) {
+        BaseElements newElements = new BaseElements();
         for (ElementFactory factory : factories) {
             newElements.addAll(factory.processDelayedDeclarations());
         }

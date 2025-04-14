@@ -240,8 +240,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
 
     /** Get the menu list {@link ListView}. */
     public ListView getView() {
-        assertSuppliersCanBeUsed();
-        return (ListView) mMenuList.get();
+        return (ListView) mMenuList.getChecked();
     }
 
     /** Verify that the menu model has the expected menu item ids and nothing beyond them. */

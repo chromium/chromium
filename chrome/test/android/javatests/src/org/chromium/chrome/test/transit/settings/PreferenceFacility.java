@@ -48,7 +48,6 @@ public class PreferenceFacility extends Facility<SettingsStation<?>> {
      * @return The preference's view.
      */
     public View getPrefView() {
-        assertSuppliersCanBeUsed();
-        return mPrefView.get();
+        return mPrefView.getChecked();
     }
 }

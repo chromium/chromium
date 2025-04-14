@@ -53,10 +53,6 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
         return mIsIncognito;
     }
 
-    public SearchActivity getSearchActivity() {
-        return mActivityElement.get();
-    }
-
     public void focusAndDropSoftKeyboard() {
         maybeInitSearchUtils();
         mOmniboxTestUtils.requestFocus();
@@ -110,7 +106,7 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
 
     private void maybeInitSearchUtils() {
         if (mOmniboxTestUtils == null) {
-            mOmniboxTestUtils = new OmniboxTestUtils(getSearchActivity());
+            mOmniboxTestUtils = new OmniboxTestUtils(getActivity());
         }
     }
 }

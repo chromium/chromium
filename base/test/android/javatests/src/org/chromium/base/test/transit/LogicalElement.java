@@ -20,9 +20,9 @@ import java.util.function.Function;
  *
  * <p>The logical expression is passed in as a |checkFunction|.
  *
- * <p>LogicalElements should be declared by calling {@link
- * Elements.Builder#declareLogicalElement(LogicalElement)} passing in an instance created by one of
- * the factory methods here such as {@link #uiThreadLogicalElement(String, Function, Supplier)}.
+ * <p>LogicalElements should be declared by calling {@link Elements.Builder#declareElement(Element)}
+ * passing in an instance created by one of the factory methods here such as {@link
+ * #uiThreadLogicalElement(String, Function, Supplier)}.
  *
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the LogicalElement is
  * in the right state.

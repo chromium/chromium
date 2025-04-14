@@ -699,6 +699,7 @@ if (is_android) {
 
     sources = [
       "android/javatests/src/org/chromium/base/test/transit/ActivityElement.java",
+      "android/javatests/src/org/chromium/base/test/transit/BaseElements.java",
       "android/javatests/src/org/chromium/base/test/transit/BatchedPublicTransitRule.java",
       "android/javatests/src/org/chromium/base/test/transit/CallbackCondition.java",
       "android/javatests/src/org/chromium/base/test/transit/CarryOn.java",

@@ -37,7 +37,7 @@ public class TripUnitTest {
         @Override
         public void declareElements(Elements.Builder elements) {
             super.declareElements(elements);
-            elements.declareLogicalElement(
+            elements.declareElement(
                     LogicalElement.instrumentationThreadLogicalElement(
                             "LogicalElement 1, always True", () -> Condition.fulfilled()));
             elements.declareEnterCondition(
@@ -50,7 +50,7 @@ public class TripUnitTest {
             elements.declareElementFactory(
                     mOuterCondition,
                     (nestedElements) -> {
-                        nestedElements.declareLogicalElement(
+                        nestedElements.declareElement(
                                 LogicalElement.instrumentationThreadLogicalElement(
                                         "LogicalElement 2, always True",
                                         () -> Condition.fulfilled()));
@@ -66,7 +66,7 @@ public class TripUnitTest {
                         nestedElements.declareElementFactory(
                                 mInnerCondition,
                                 (nestedNestedElements) -> {
-                                    nestedNestedElements.declareLogicalElement(
+                                    nestedNestedElements.declareElement(
                                             LogicalElement.instrumentationThreadLogicalElement(
                                                     "LogicalElement 3, always True",
                                                     () -> Condition.fulfilled()));

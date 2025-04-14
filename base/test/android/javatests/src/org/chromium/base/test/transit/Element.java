@@ -5,6 +5,7 @@
 package org.chromium.base.test.transit;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -18,6 +19,7 @@ import java.util.Set;
 @NullMarked
 public abstract class Element<ProductT extends @Nullable Object> implements Supplier<ProductT> {
     private final String mId;
+    protected ConditionalState mOwner;
     private boolean mExitConditionCreated;
     private @Nullable ConditionWithResult<ProductT> mEnterCondition;
     private @Nullable Condition mExitCondition;
@@ -30,6 +32,11 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
         mId = id;
     }
 
+    @Initializer
+    void bind(ConditionalState owner) {
+        mOwner = owner;
+    }
+
     /** Must create an ENTER Condition to ensure the element is present in the ConditionalState. */
     public abstract ConditionWithResult<ProductT> createEnterCondition();
 
@@ -39,11 +46,25 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
      */
     public abstract @Nullable Condition createExitCondition();
 
+    // Supplier implementation
     @Override
     public @Nullable ProductT get() {
         return getEnterCondition().get();
     }
 
+    /**
+     * @return the product of the element (View, Activity, etc.)
+     * @throws AssertionError if the element is in a ConditionalState that's neither ACTIVE nor
+     *     TRANSITIONING_FROM, or if the element has no value.
+     */
+    public ProductT getChecked() {
+        mOwner.assertSuppliersCanBeUsed();
+        ProductT product = get();
+        assert product != null : "Element " + this + " has no value";
+        return product;
+    }
+
+    // Supplier implementation
     @Override
     public boolean hasValue() {
         return getEnterCondition().hasValue();

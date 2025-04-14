@@ -22,10 +22,10 @@ import java.util.List;
  *
  * <p>A transit-layer class should be derived from it and instantiated.
  *
- * <p>As a {@link ConditionalState}, it has a defined lifecycle and must declare {@link Elements}
+ * <p>As a {@link ConditionalState}, it has a defined lifecycle and must declare {@link Element}s
  * that determine its enter and exit {@link Condition}s.
  *
- * <p>Transitions should be done with {@link Trip#travelSync(Station, Station, Trigger)}. The
+ * <p>Transitions should be done with {@link Station#travelToSync(Station, Trigger)}. The
  * transit-layer derived class should expose screen-specific methods for the test-layer to use.
  *
  * @param <HostActivity> The activity this station is associate to.
@@ -335,9 +335,6 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     public HostActivity getActivity() {
         assert mActivityElement != null
                 : "Requesting an ActivityElement for a station with no host activity.";
-        assertSuppliersCanBeUsed();
-        HostActivity hostActivity = mActivityElement.get();
-        assert hostActivity != null : "ActivityElement should have an Activity";
-        return hostActivity;
+        return mActivityElement.getChecked();
     }
 }

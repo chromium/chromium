@@ -15,7 +15,7 @@ import org.chromium.build.annotations.NullMarked;
  * class should be derived from it and instantiated. It should expose facility-specific methods for
  * the test-layer to use.
  *
- * <p>As a {@link ConditionalState}, it has a defined lifecycle and must declare {@link Elements}
+ * <p>As a {@link ConditionalState}, it has a defined lifecycle and must declare {@link Element}s
  * that determine its enter and exit {@link Condition}s.
  *
  * <p>Leaving the host {@link Station} causes this state to be left as well, and exit {@link

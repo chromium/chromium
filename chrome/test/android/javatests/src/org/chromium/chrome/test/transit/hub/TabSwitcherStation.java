@@ -236,7 +236,7 @@ public abstract class TabSwitcherStation extends HubBaseStation {
 
     /** Verify the tab switcher card count. */
     public void verifyTabSwitcherCardCount(int count) {
-        assertEquals(((ViewGroup) mRecyclerViewElement.get()).getChildCount(), count);
+        assertEquals(((ViewGroup) mRecyclerViewElement.getChecked()).getChildCount(), count);
     }
 
     public ViewElement getRecyclerViewElement() {
