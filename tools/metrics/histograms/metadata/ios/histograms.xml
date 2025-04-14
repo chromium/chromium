@@ -5591,7 +5591,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.Group.DragOrigin"
-    enum="IOSTabSwitcherDragOrigin" expires_after="2025-04-10">
+    enum="IOSTabSwitcherDragOrigin" expires_after="2026-04-10">
   <owner>alionadangla@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
   <summary>
@@ -5694,7 +5694,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpentOpeningExistingTab" units="ms"
-    expires_after="2025-11-17">
+    expires_after="2026-11-17">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
