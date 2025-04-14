@@ -45,6 +45,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/install_prefs_helper.h"
@@ -434,10 +435,8 @@ void ExtensionAppsBase::Uninstall(const std::string& app_id,
   }
 
   std::u16string error;
-  extensions::ExtensionSystem::Get(profile())
-      ->extension_service()
-      ->UninstallExtension(
-          app_id, GetExtensionUninstallReason(uninstall_source), &error);
+  extensions::ExtensionRegistrar::Get(profile())->UninstallExtension(
+      app_id, GetExtensionUninstallReason(uninstall_source), &error);
 
   if (!report_abuse) {
     return;

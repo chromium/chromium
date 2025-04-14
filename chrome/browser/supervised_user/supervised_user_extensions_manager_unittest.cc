@@ -520,7 +520,7 @@ TEST_P(SupervisedUserExtensionsManagerTest, RevokeLocalApproval) {
       registry()->enabled_extensions().Contains(locally_approved_extn1->id()));
 
   // Uninstalling the extension also removes the local approval.
-  ASSERT_TRUE(service()->UninstallExtension(
+  ASSERT_TRUE(registrar()->UninstallExtension(
       locally_approved_extn1->id(), extensions::UNINSTALL_REASON_FOR_TESTING,
       nullptr));
   EXPECT_FALSE(

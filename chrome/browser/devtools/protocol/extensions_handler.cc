@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/api/storage/storage_utils.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 
@@ -228,12 +229,10 @@ void ExtensionsHandler::Uninstall(const protocol::String& id,
 
   std::u16string error;
   bool initiated =
-      extensions::ExtensionSystem::Get(context)
-          ->extension_service()
-          ->UninstallExtension(
-              id, extensions::UNINSTALL_REASON_USER_INITIATED, &error,
-              base::BindOnce(&ExtensionsHandler::OnUninstalled,
-                             weak_factory_.GetWeakPtr(), std::move(callback)));
+      extensions::ExtensionRegistrar::Get(context)->UninstallExtension(
+          id, extensions::UNINSTALL_REASON_USER_INITIATED, &error,
+          base::BindOnce(&ExtensionsHandler::OnUninstalled,
+                         weak_factory_.GetWeakPtr(), std::move(callback)));
   if (!initiated) {
     std::move(callback)->sendFailure(protocol::Response::ServerError(
         "Uninstall failed. Reason: " + base::UTF16ToUTF8(error)));

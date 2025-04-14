@@ -54,6 +54,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/app_sorting.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -600,10 +601,8 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   {
     extensions::TestExtensionRegistryObserver uninstall_observer(
         extensions::ExtensionRegistry::Get(profile()), kExtensionId);
-    extensions::ExtensionSystem::Get(profile())
-        ->extension_service()
-        ->UninstallExtension(kExtensionId,
-                             extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+    extensions::ExtensionRegistrar::Get(profile())->UninstallExtension(
+        kExtensionId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
     uninstall_observer.WaitForExtensionUninstalled();
     EXPECT_FALSE(IsWebAppInstalled());
     EXPECT_FALSE(IsExtensionAppInstalled());

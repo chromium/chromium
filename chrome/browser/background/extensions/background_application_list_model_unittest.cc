@@ -189,28 +189,28 @@ TEST_F(BackgroundApplicationListModelTest, DISABLED_ExplicitTest) {
 
   // Remove in FIFO order.
   ASSERT_FALSE(IsBackgroundApp(*ext1.get()));
-  service()->UninstallExtension(ext1->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
+  registrar()->UninstallExtension(
+      ext1->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   ASSERT_EQ(4U, registry()->enabled_extensions().size());
   ASSERT_EQ(2U, model()->size());
   ASSERT_TRUE(IsBackgroundApp(*bgapp1.get()));
-  service()->UninstallExtension(bgapp1->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
+  registrar()->UninstallExtension(
+      bgapp1->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   ASSERT_EQ(3U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
   ASSERT_FALSE(IsBackgroundApp(*ext2.get()));
-  service()->UninstallExtension(ext2->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
+  registrar()->UninstallExtension(
+      ext2->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   ASSERT_EQ(2U, registry()->enabled_extensions().size());
   ASSERT_EQ(1U, model()->size());
   ASSERT_TRUE(IsBackgroundApp(*bgapp2.get()));
-  service()->UninstallExtension(bgapp2->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
+  registrar()->UninstallExtension(
+      bgapp2->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   ASSERT_EQ(1U, registry()->enabled_extensions().size());
   ASSERT_EQ(0U, model()->size());
   ASSERT_FALSE(IsBackgroundApp(*ext3.get()));
-  service()->UninstallExtension(ext3->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
+  registrar()->UninstallExtension(
+      ext3->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   ASSERT_EQ(0U, registry()->enabled_extensions().size());
   ASSERT_EQ(0U, model()->size());
 }
@@ -348,6 +348,7 @@ void AddExtension(extensions::ExtensionService* service,
 }
 
 void RemoveExtension(extensions::ExtensionService* service,
+                     extensions::ExtensionRegistrar* registrar,
                      ExtensionCollection* extensions,
                      BackgroundApplicationListModel* model,
                      size_t* expected,
@@ -377,8 +378,8 @@ void RemoveExtension(extensions::ExtensionService* service,
     extensions->erase(cursor);
     --*count;
     ASSERT_EQ(*count, extensions->size());
-    service->UninstallExtension(extension->id(),
-                                extensions::UNINSTALL_REASON_FOR_TESTING, NULL);
+    registrar->UninstallExtension(
+        extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
     ASSERT_EQ(*count, registry->enabled_extensions().size());
     ASSERT_EQ(*expected, model->size());
   }
@@ -445,7 +446,8 @@ TEST_F(BackgroundApplicationListModelTest, RandomTest) {
         AddExtension(service(), &extensions, model(), &expected, &count);
         break;
       case 1:
-        RemoveExtension(service(), &extensions, model(), &expected, &count);
+        RemoveExtension(service(), registrar(), &extensions, model(), &expected,
+                        &count);
         break;
       case 2:
         TogglePermission(service(), &extensions, model(), &expected, &count);

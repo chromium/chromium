@@ -322,12 +322,12 @@ class ExtensionPolicyTest : public ExtensionPolicyTestBase {
   void UninstallExtension(const std::string& id, bool expect_success) {
     if (expect_success) {
       extensions::TestExtensionRegistryObserver observer(extension_registry());
-      extension_service()->UninstallExtension(
+      extension_registrar()->UninstallExtension(
           id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
       observer.WaitForExtensionUninstalled();
     } else {
       extensions::TestExtensionRegistryObserver observer(extension_registry());
-      extension_service()->UninstallExtension(
+      extension_registrar()->UninstallExtension(
           id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
       observer.WaitForExtensionUninstallationDenied();
     }
