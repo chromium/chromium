@@ -99,6 +99,13 @@
 #define IDC_VISIT_DESKTOP_OF_LRU_USER_LAST IDC_VISIT_DESKTOP_OF_LRU_USER_5
 #endif
 
+// Tab group Commands
+#define IDC_ADD_NEW_TAB_TO_GROUP      34100
+#define IDC_CREATE_NEW_TAB_GROUP      34101
+#define IDC_FOCUS_NEXT_TAB_GROUP      34102
+#define IDC_FOCUS_PREV_TAB_GROUP      34103
+#define IDC_CLOSE_TAB_GROUP           34104
+
 // Page-related commands
 #define IDC_BOOKMARK_THIS_TAB           35000
 #define IDC_BOOKMARK_ALL_TABS           35001
@@ -137,9 +144,8 @@
 #define IDC_SHOW_PAYMENT_METHODS        35042
 #define IDC_SHOW_ADDRESSES              35043
 #define IDC_ORGANIZE_TABS               35044
-#define IDC_CREATE_NEW_TAB_GROUP        35045
-#define IDC_DECLUTTER_TABS              35046
-#define IDC_SEND_SHARED_TAB_GROUP_FEEDBACK 35047
+#define IDC_DECLUTTER_TABS              35045
+#define IDC_SEND_SHARED_TAB_GROUP_FEEDBACK 35046
 
 // Page-manipulation commands that target a specified tab, which may not be the
 // active one.

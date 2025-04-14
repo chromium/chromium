@@ -150,7 +150,21 @@ void MoveGroupToExistingWindow(Browser* source,
 void MuteSite(Browser* browser);
 void PinTab(Browser* browser);
 void GroupTab(Browser* browser);
+
+// Tab group commands
+// Creates a new tab at the end of the active tab's group.
+void AddNewTabToGroup(Browser* browser);
+// Creates a new tab group at the end of the tab strip.
 void CreateNewTabGroup(Browser* browser);
+// Closes the entire tab group the active tab is in.
+void CloseTabGroup(Browser* browser);
+// Finds the next tab group that isn't the current one in the tab strip and
+// activates the first tab in the group.
+void FocusNextTabGroup(Browser* browser);
+// Finds the previous tab group that isn't the current one in the tabstrip and
+// activates the first tab in the group.
+void FocusPreviousTabGroup(Browser* browser);
+
 void MuteSiteForKeyboardFocusedTab(Browser* browser);
 bool HasKeyboardFocusedTab(const Browser* browser);
 void PinKeyboardFocusedTab(Browser* browser);

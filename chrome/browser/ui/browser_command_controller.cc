@@ -14,6 +14,7 @@
 #include "base/debug/profiler.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
@@ -58,6 +59,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -1000,8 +1002,28 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_WINDOW_GROUP_TAB:
       GroupTab(browser_);
       break;
+    case IDC_FOCUS_NEXT_TAB_GROUP:
+      if (base::i18n::IsRTL()) {
+        FocusPreviousTabGroup(browser_);
+      } else {
+        FocusNextTabGroup(browser_);
+      }
+      break;
+    case IDC_FOCUS_PREV_TAB_GROUP:
+      if (base::i18n::IsRTL()) {
+        FocusNextTabGroup(browser_);
+      } else {
+        FocusPreviousTabGroup(browser_);
+      }
+      break;
+    case IDC_CLOSE_TAB_GROUP:
+      CloseTabGroup(browser_);
+      break;
     case IDC_CREATE_NEW_TAB_GROUP:
       CreateNewTabGroup(browser_);
+      break;
+    case IDC_ADD_NEW_TAB_TO_GROUP:
+      AddNewTabToGroup(browser_);
       break;
     case IDC_WINDOW_CLOSE_TABS_TO_RIGHT:
       CloseTabsToRight(browser_);
@@ -1292,6 +1314,13 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_RELOAD_BYPASSING_CACHE, can_reload);
   command_updater_.UpdateCommandEnabled(IDC_RELOAD_CLEARING_CACHE, can_reload);
 
+  // Tab group commands
+  command_updater_.UpdateCommandEnabled(IDC_ADD_NEW_TAB_TO_GROUP, true);
+  command_updater_.UpdateCommandEnabled(IDC_CREATE_NEW_TAB_GROUP, true);
+  command_updater_.UpdateCommandEnabled(IDC_FOCUS_NEXT_TAB_GROUP, true);
+  command_updater_.UpdateCommandEnabled(IDC_FOCUS_PREV_TAB_GROUP, true);
+  command_updater_.UpdateCommandEnabled(IDC_CLOSE_TAB_GROUP, true);
+
   // Window management commands
   command_updater_.UpdateCommandEnabled(IDC_CLOSE_WINDOW, true);
   command_updater_.UpdateCommandEnabled(
@@ -1304,7 +1333,6 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
   command_updater_.UpdateCommandEnabled(IDC_ORGANIZE_TABS, true);
-  command_updater_.UpdateCommandEnabled(IDC_CREATE_NEW_TAB_GROUP, true);
   command_updater_.UpdateCommandEnabled(IDC_DECLUTTER_TABS, true);
 #if BUILDFLAG(IS_CHROMEOS)
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_MULTITASK_MENU, true);
