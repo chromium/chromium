@@ -45,6 +45,7 @@ import org.chromium.net.NetworkChangeNotifierAutoDetect.ConnectivityManagerDeleg
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.httpflags.BaseFeature;
 import org.chromium.net.httpflags.FlagValue;
+import org.chromium.net.httpflags.HttpFlagsLoader;
 import org.chromium.net.impl.CronetEngineBuilderImpl;
 import org.chromium.net.impl.CronetExceptionImpl;
 import org.chromium.net.impl.CronetLibraryLoader;
@@ -177,7 +178,7 @@ public class CronetUrlRequestContextTest {
                 .setHttpFlags(
                         org.chromium.net.httpflags.Flags.newBuilder()
                                 .putFlags(
-                                        CronetLibraryLoader.LOG_FLAG_NAME,
+                                        HttpFlagsLoader.LOG_FLAG_NAME,
                                         FlagValue.newBuilder()
                                                 .addConstrainedValues(constrainedValueBuilder)
                                                 .build())
@@ -193,19 +194,31 @@ public class CronetUrlRequestContextTest {
         callback.blockForDone();
     }
 
+    private void getHttpFlagsFromAPIWhileExpectingLog(String startMarker) throws Exception {
+        runActionWhileExpectingLog(
+                startMarker,
+                true,
+                () -> HttpFlagsForApi.getHttpFlags(mTestRule.getTestFramework().getContext()));
+    }
+
     private void runRequestWhileExpectingLog(String marker, boolean shouldBeLogged)
+            throws Exception {
+        runActionWhileExpectingLog(marker, shouldBeLogged, () -> runOneRequest());
+    }
+
+    private void runActionWhileExpectingLog(String marker, boolean shouldBeLogged, Runnable action)
             throws Exception {
         try (LogcatCapture logcatSink =
                 new LogcatCapture(
                         Arrays.asList(
-                                Log.normalizeTag(CronetLibraryLoader.TAG + ":I"),
+                                Log.normalizeTag(HttpFlagsLoader.TAG + ":I"),
                                 Log.normalizeTag(TAG + ":I"),
                                 "chromium:I"))) {
-            // Use the engine at least once to ensure we do not race against Cronet initialization.
-            runOneRequest();
+            // Run the action that should do printing to logcat.
+            action.run();
 
             String stopMarker = UUID.randomUUID().toString();
-            Log.i(TAG, "%s --- ENGINE STARTED ---", stopMarker);
+            Log.i(TAG, "%s --- STOP MARKER ---", stopMarker);
 
             if (shouldBeLogged) {
                 while (true) {
@@ -236,6 +249,20 @@ public class CronetUrlRequestContextTest {
         String marker = UUID.randomUUID().toString();
         setLogFlag(marker, /* appId= */ null, /* minVersion= */ null);
         runRequestWhileExpectingLog(marker, /* shouldBeLogged= */ true);
+    }
+
+    @Test
+    @SmallTest
+    @IgnoreFor(
+            implementations = {CronetImplementation.FALLBACK, CronetImplementation.AOSP_PLATFORM},
+            reason =
+                    "HTTP flags are only supported on native Cronet for now. "
+                            + "crbug.com/1495401: Emulator image does not have HttpFlags code yet")
+    public void testHttpFlagsAreLoadedFromAPI() throws Exception {
+        setReadHttpFlagsInManifest(true);
+        String marker = UUID.randomUUID().toString();
+        setLogFlag(marker, /* appId= */ null, /* minVersion= */ null);
+        getHttpFlagsFromAPIWhileExpectingLog(marker);
     }
 
     @Test

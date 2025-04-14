@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.net.impl.CronetManifest;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,19 +55,23 @@ public final class HttpFlagsLoader {
     @VisibleForTesting static final String FLAGS_FILE_DIR_NAME = "app_httpflags";
     @VisibleForTesting static final String FLAGS_FILE_NAME = "flags.binarypb";
 
-    private static final String TAG = "HttpFlagsLoader";
+    @VisibleForTesting public static final String TAG = "HttpFlagsLoader";
+    private static ResolvedFlags sHttpFlags;
+    private static String sVersion;
+    private static final Object sLock = new Object();
+    @VisibleForTesting public static final String LOG_FLAG_NAME = "Cronet_log_me";
 
     /**
      * Locates and loads the HTTP flags file from the host system.
      *
-     * Note that this is an expensive call.
+     * <p>Note that this is an expensive call.
      *
      * @return The contents of the flags file, or null if the flags file could not be loaded for any
-     * reason. In the latter case, the callee will take care of logging the failure.
-     *
+     *     reason. In the latter case, the callee will take care of logging the failure.
      * @see ResolvedFlags
      */
     @Nullable
+    @VisibleForTesting
     public static Flags load(Context context) {
         try {
             ApplicationInfo providerApplicationInfo = getProviderApplicationInfo(context);
@@ -87,6 +92,51 @@ public final class HttpFlagsLoader {
         } catch (RuntimeException exception) {
             Log.i(TAG, "Unable to load HTTP flags file", exception);
             return null;
+        }
+    }
+
+    /**
+     * Fetches and caches the available httpflags for the version provided
+     *
+     * <p>Never returns null: if HTTP flags were not loaded, will return an empty set of flags.
+     *
+     * <p>Changing the context will not invalidate the cache. Once the httpflags has been loaded
+     * then it will be cached indefinitely.
+     */
+    public static ResolvedFlags getHttpFlags(
+            Context context, String version, boolean isLoadedFromApi) {
+        synchronized (sLock) {
+            assert (sHttpFlags == null) == (sVersion == null);
+            if (sVersion != null && !version.equals(sVersion)) {
+                throw new IllegalStateException(
+                        "getHttpFlags() called multiple times with different versions");
+            }
+            if (sHttpFlags != null) return sHttpFlags;
+            sVersion = version;
+            try (var loadingHttpFlagsTraceEvent =
+                    ScopedSysTraceEvent.scoped("HttpFlagsLoader#getHttpFlags loading flags")) {
+                Flags flags;
+                if (!CronetManifest.shouldReadHttpFlags(context)) {
+                    Log.d(TAG, "Not loading HTTP flags because they are disabled in the manifest");
+                    flags = null;
+                } else {
+                    flags = HttpFlagsLoader.load(context);
+                }
+                sHttpFlags =
+                        ResolvedFlags.resolve(
+                                flags != null ? flags : Flags.newBuilder().build(),
+                                context.getPackageName(),
+                                version);
+                ResolvedFlags.Value logMe = sHttpFlags.flags().get(LOG_FLAG_NAME);
+                if (logMe != null) {
+                    Log.i(
+                            TAG,
+                            "HTTP flags log line (%s): %s",
+                            isLoadedFromApi ? "API" : "Impl",
+                            logMe.getStringValue());
+                }
+                return sHttpFlags;
+            }
         }
     }
 

@@ -223,13 +223,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
             }
         }
 
-        public void onInitThreadDone(CronetLibraryLoader.CronetInitializedInfo libraryLoaderInfo) {
-            mCronetInitializedInfo.httpFlagsLatencyMillis =
-                    libraryLoaderInfo.httpFlagsLatencyMillis;
-            mCronetInitializedInfo.httpFlagsSuccessful = libraryLoaderInfo.httpFlagsSuccessful;
-            mCronetInitializedInfo.httpFlagsNames = libraryLoaderInfo.httpFlagsNames;
-            mCronetInitializedInfo.httpFlagsValues = libraryLoaderInfo.httpFlagsValues;
-
+        public void onInitThreadDone() {
             int elapsedTime = getElapsedTime();
             synchronized (mCronetInitializedInfo) {
                 assert mCronetInitializedInfo.engineAsyncLatencyMillis < 0;
@@ -355,8 +349,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                                 // would artificially inflate this latency. This is probably fine
                                 // since this is unlikely to happen and even if it did happen, it
                                 // would likely have a negligible impact on the metrics.
-                                cronetInitializedInfoLogger.onInitThreadDone(
-                                        CronetLibraryLoader.getCronetInitializedInfo());
+                                cronetInitializedInfoLogger.onInitThreadDone();
                             }
                         }
                     });
@@ -408,11 +401,11 @@ public class CronetUrlRequestContext extends CronetEngineBase {
     private static RequestContextConfigOptions createRequestContextConfigOptions(
             CronetEngineBuilderImpl engineBuilder) {
         var networkThreadPriorityFlagValue =
-                CronetLibraryLoader.getHttpFlags()
+                HttpFlagsForImpl.getHttpFlags()
                         .flags()
                         .get(OVERRIDE_NETWORK_THREAD_PRIORITY_FLAG_NAME);
         var alwaysEnableBrotliFlagValue =
-                CronetLibraryLoader.getHttpFlags().flags().get(ALWAYS_ENABLE_BROTLI_FLAG_NAME);
+                HttpFlagsForImpl.getHttpFlags().flags().get(ALWAYS_ENABLE_BROTLI_FLAG_NAME);
         boolean alwaysEnableBrotli =
                 alwaysEnableBrotliFlagValue != null
                         ? alwaysEnableBrotliFlagValue.getBoolValue()

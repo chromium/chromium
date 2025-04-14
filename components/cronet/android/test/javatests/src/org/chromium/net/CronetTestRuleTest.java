@@ -33,8 +33,8 @@ import org.chromium.net.CronetTestRule.IntFlag;
 import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.CronetTestRule.RequiresMinApi;
 import org.chromium.net.CronetTestRule.StringFlag;
-import org.chromium.net.impl.CronetLibraryLoader;
 import org.chromium.net.impl.CronetUrlRequestContext;
+import org.chromium.net.impl.HttpFlagsForImpl;
 import org.chromium.net.impl.JavaCronetEngine;
 
 /** Tests features of CronetTestRule. */
@@ -187,30 +187,18 @@ public class CronetTestRuleTest {
             })
     public void testHttpFlagsAreCorrectlyApplied() {
         assertThat(
-                        CronetLibraryLoader.getHttpFlags()
+                        HttpFlagsForImpl.getHttpFlags()
                                 .flags()
                                 .get("random_string_flag")
                                 .getStringValue())
                 .isEqualTo("some_message_value");
-        assertThat(CronetLibraryLoader.getHttpFlags().flags().get("random_int_flag").getIntValue())
+        assertThat(HttpFlagsForImpl.getHttpFlags().flags().get("random_int_flag").getIntValue())
                 .isEqualTo(123456789012345L);
-        assertThat(
-                        CronetLibraryLoader.getHttpFlags()
-                                .flags()
-                                .get("random_bool_flag")
-                                .getBoolValue())
+        assertThat(HttpFlagsForImpl.getHttpFlags().flags().get("random_bool_flag").getBoolValue())
                 .isEqualTo(true);
-        assertThat(
-                        CronetLibraryLoader.getHttpFlags()
-                                .flags()
-                                .get("random_float_flag")
-                                .getFloatValue())
+        assertThat(HttpFlagsForImpl.getHttpFlags().flags().get("random_float_flag").getFloatValue())
                 .isEqualTo(0.123456f);
-        assertThat(
-                        CronetLibraryLoader.getHttpFlags()
-                                .flags()
-                                .get("random_bytes_flag")
-                                .getBytesValue())
+        assertThat(HttpFlagsForImpl.getHttpFlags().flags().get("random_bytes_flag").getBytesValue())
                 .isEqualTo(ByteString.copyFrom(new byte[] {'a', 'b', 'c'}));
     }
 }

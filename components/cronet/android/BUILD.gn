@@ -281,6 +281,9 @@ cronet_shared_java_deps_to_package = [
   ":cronet_stats_log_java",
   "//base:metrics_ScopedSysTraceEvent_java",
   "//build/android:build_java",
+  ":base_feature_overrides_java_proto",
+  ":flags_java_proto",
+  "//base:log_java",
 ]
 
 # Common Cronet code that is used in Cronet API *and* implementations.
@@ -294,6 +297,9 @@ cronet_shared_java_deps_to_package = [
 android_library("cronet_shared_java") {
   srcjar_deps = [ ":url_request_close_source_java" ]
   sources = [
+    "java/src/org/chromium/net/httpflags/BaseFeature.java",
+    "java/src/org/chromium/net/httpflags/HttpFlagsLoader.java",
+    "java/src/org/chromium/net/httpflags/ResolvedFlags.java",
     "java/src/org/chromium/net/impl/CronetLogger.java",
     "java/src/org/chromium/net/impl/CronetLoggerFactory.java",
     "java/src/org/chromium/net/impl/CronetManifest.java",
@@ -308,8 +314,10 @@ android_library("cronet_shared_java") {
 
   # Adding deps here won't include those deps in the cronet_shared_java.jar.
   # Please add to cronet_shared_java_deps_to_package instead.
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ] +
-         cronet_shared_java_deps_to_package
+  deps = [
+           "//third_party/android_deps:protobuf_lite_runtime_java",
+           "//third_party/androidx:androidx_annotation_annotation_java",
+         ] + cronet_shared_java_deps_to_package
 
   proguard_configs =
       [ "//components/cronet/android/cronet_shared_proguard.cfg" ]
@@ -337,6 +345,7 @@ android_library("cronet_api_java") {
     "api/src/org/chromium/net/ExperimentalCronetEngine.java",
     "api/src/org/chromium/net/ExperimentalOptionsTranslator.java",
     "api/src/org/chromium/net/ExperimentalUrlRequest.java",
+    "api/src/org/chromium/net/HttpFlagsForApi.java",
     "api/src/org/chromium/net/ICronetEngineBuilder.java",
     "api/src/org/chromium/net/InlineExecutionProhibitedException.java",
     "api/src/org/chromium/net/NetworkException.java",
@@ -355,6 +364,7 @@ android_library("cronet_api_java") {
   deps = [
     ":api_version",
     ":cronet_shared_java",
+    "//base:log_java",
     "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -414,6 +424,7 @@ android_library("cronet_impl_common_java") {
     "java/src/org/chromium/net/impl/CronetEngineBuilderImpl.java",
     "java/src/org/chromium/net/impl/CronetExceptionImpl.java",
     "java/src/org/chromium/net/impl/CronetMetrics.java",
+    "java/src/org/chromium/net/impl/HttpFlagsForImpl.java",
     "java/src/org/chromium/net/impl/NetworkExceptionImpl.java",
     "java/src/org/chromium/net/impl/Preconditions.java",
     "java/src/org/chromium/net/impl/QuicExceptionImpl.java",
@@ -433,6 +444,7 @@ android_library("cronet_impl_common_java") {
     ":cronet_api_java",
     ":cronet_shared_java",
     ":impl_version",
+    "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -529,11 +541,18 @@ cronet_impl_native_java_srcjar_deps = [
 
 cronet_impl_native_java_deps_to_package = [
   ":cronet_urlconnection_impl_java",
-  ":base_feature_overrides_java_proto",
-  ":flags_java_proto",
   ":request_context_config_java_proto",
-  "//base:base_java",
   "//base/version_info/android:version_constants_java",
+  "//base:tasks_java",
+  "//base:metrics_ScopedSysTraceEvent_java",
+  "//base:build_info_java",
+  "//base:android_info_java",
+  "//base:command_line_java",
+  "//base:time_utils_java",
+  "//base:jni_utils_java",
+  "//base:wrapped_class_loader_java",
+  "//base:metrics_java",
+  "//base:bundle_utils_java",
   "//third_party/jni_zero:jni_zero_java",
   "//net/android:net_java",
   "//url:url_java",
@@ -542,9 +561,6 @@ cronet_impl_native_java_deps_to_package = [
 # cronet_impl_native_java.jar - native implementation of the Cronet engine.
 android_library("cronet_impl_native_java") {
   sources = [
-    "java/src/org/chromium/net/httpflags/BaseFeature.java",
-    "java/src/org/chromium/net/httpflags/HttpFlagsLoader.java",
-    "java/src/org/chromium/net/httpflags/ResolvedFlags.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
     "java/src/org/chromium/net/impl/CronetBidirectionalStream.java",
     "java/src/org/chromium/net/impl/CronetLibraryLoader.java",
@@ -560,9 +576,12 @@ android_library("cronet_impl_native_java") {
   # Adding deps here won't include those deps in the cronet_impl_native_java.jar.
   # Please add to cronet_impl_native_java_deps_to_package instead.
   deps = [
+    ":base_feature_overrides_java_proto",
     ":cronet_api_java",
     ":cronet_impl_common_java",
     ":cronet_shared_java",
+    ":flags_java_proto",
+    "//base:log_java",
     "//build/android:build_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
@@ -1286,7 +1305,19 @@ cronet_javatests_deps_to_package = [
   ":cronet_common_javatests",
   ":cronet_test_apk_java",
   ":flags_java_proto",
-  "//base:base_java",
+  "//base:build_info_java",
+  "//base:log_java",
+  "//base:metrics_java",
+  "//base:path_utils_java",
+  "//base:resetters_java",
+  "//base:supplier_java",
+  "//base:lifetime_java",
+  "//base:features_java",
+  "//base:file_utils_java",
+  "//base:callback_java",
+  "//base:activity_state_java",
+  "//base:command_line_init_utils_java",
+  "//base:clang_profiler_java",
   "//base:base_java_test_support",
   "//net/android:embedded_test_server_aidl_java",
   "//net/android:net_java",
@@ -1449,7 +1480,6 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
            # This is used by base_test utility classes, proguard complains about missing classes
            # but in reality, we don't even use those classes at all.
            "//third_party/android_deps:espresso_java",
-           "//third_party/android_deps:protobuf_lite_runtime_java",
            "//third_party/android_sdk:android_test_mock_java",
 
            # This is used by base_test utility classes, proguard complains about missing classes

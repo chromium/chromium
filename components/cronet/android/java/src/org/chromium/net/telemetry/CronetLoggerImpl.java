@@ -15,7 +15,6 @@ import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.net.ConnectionCloseSource;
 import org.chromium.net.impl.CronetLogger;
 
-import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -85,10 +84,10 @@ public class CronetLoggerImpl extends CronetLogger {
                     info.cronetInitializationRef,
                     info.engineCreationLatencyMillis,
                     info.engineAsyncLatencyMillis,
-                    info.httpFlagsLatencyMillis,
-                    OptionalBoolean.fromBoolean(info.httpFlagsSuccessful).getValue(),
-                    longListToLongArray(info.httpFlagsNames),
-                    longListToLongArray(info.httpFlagsValues),
+                    /* httpflagsLatency*/ -1,
+                    /* httpFlagsLoadedSuccessfully*/ OptionalBoolean.UNSET.getValue(),
+                    /* httpFlagsKeys*/ new long[] {},
+                    /* httpFlagsValues*/ new long[] {},
                     info.cronetImplVersion,
                     convertToProtoCronetEngineCreatedSource(info.source),
                     Process.myUid());
@@ -341,15 +340,5 @@ public class CronetLoggerImpl extends CronetLogger {
             default:
                 throw new IllegalArgumentException("Expected httpCacheMode to range from 0 to 3");
         }
-    }
-
-    // Shamelessly copy-pasted from //base/android/java/src/org/chromium/base/CollectionUtil.java
-    // to avoid adding a large dependency on //base.
-    private static long[] longListToLongArray(List<Long> list) {
-        long[] array = new long[list.size()];
-        for (int i = 0; i < list.size(); i++) {
-            array[i] = list.get(i);
-        }
-        return array;
     }
 }
