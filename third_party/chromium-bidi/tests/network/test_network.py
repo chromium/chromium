@@ -89,7 +89,7 @@ async def test_network_before_request_sent_event_emitted_with_url_fragment(
             }
         })
 
-    resp = await read_JSON_message(websocket)
+    resp = await wait_for_event(websocket, "network.beforeRequestSent")
 
     assert resp == AnyExtending({
         'type': 'event',

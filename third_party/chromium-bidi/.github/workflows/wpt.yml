@@ -216,12 +216,21 @@ jobs:
           find ./wpt_artifacts/
           -name "wptreport-interop.${{ matrix.kind }}-${{ matrix.head }}*.json"
           -exec npm run wpt -- --wpt-report {} \;
-      - name: Move updated expectations
-        # Move the expectations from the current config to a separate directory to
-        # upload them to artifacts.
+      - name: Determine source metadata directory name
+        id: paths
         run: |
-          mkdir -p ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}
-          mv ./wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/* ./artifacts/updated-wpt-metadata/${{ matrix.kind }}/${{ matrix.head }}/
+          if [[ "${{ matrix.kind }}" == "cd" ]]; then
+            echo "src_dir_name=chromedriver/${{ matrix.head }}" >> $GITHUB_OUTPUT
+          else
+            echo "src_dir_name=mapper/${{ matrix.head }}" >> $GITHUB_OUTPUT
+          fi
+      - name:
+          Move updated expectations
+          # Move the expectations from the current config to a separate directory to
+          # upload them to artifacts.
+        run: |
+          mkdir -p ./artifacts/updated-wpt-metadata/${{ steps.paths.outputs.src_dir_name }}
+          mv ./wpt-metadata/${{ steps.paths.outputs.src_dir_name }}/* ./artifacts/updated-wpt-metadata/${{ steps.paths.outputs.src_dir_name }}/
       - name: Upload artifacts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
