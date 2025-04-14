@@ -1918,12 +1918,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return ScrollsOverflowX() || ScrollsOverflowY();
   }
 
-  // Returns true if the element is HTML inert, or if 'interactivity' computes
-  // to 'inert'.
-  bool IsInert() const {
-    return IsHTMLInert() || Interactivity() == EInteractivity::kInert;
-  }
-
   // Visibility utility functions.
   bool VisibleToHitTesting() const {
     return Visibility() == EVisibility::kVisible &&
