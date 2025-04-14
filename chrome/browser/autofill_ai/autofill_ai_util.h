@@ -13,8 +13,6 @@ class WebContents;
 
 namespace autofill_ai {
 
-bool IsUserEligible(Profile* profile);
-
 // The Autofill Ai page is shown only if the user is eligible or if they have
 // any entity instances saved.
 bool CanShowAutofillAiPageInSettings(Profile* profile,
