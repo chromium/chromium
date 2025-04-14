@@ -90,6 +90,7 @@ HistogramBase::HistogramBase(DurableStringView name)
     : histogram_name_(name->data()),
       histogram_name_length_(base::saturated_cast<uint16_t>(name->length())),
       flags_(kNoFlags) {
+  DCHECK(!name->empty());
   DCHECK_LT(name->length(), static_cast<size_t>(UINT16_MAX));
 }
 
