@@ -907,6 +907,7 @@ enum CSSSampleId {
     kPrintColorAdjust = 848,
     kColumnHeight = 849,
     kColumnWrap = 850,
+    kRuleColor = 851,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

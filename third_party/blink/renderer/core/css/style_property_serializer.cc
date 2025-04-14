@@ -660,6 +660,8 @@ String StylePropertySerializer::SerializeShorthand(
       return GetLayeredShorthandValue(maskPositionShorthand());
     case CSSPropertyID::kMask:
       return GetLayeredShorthandValue(maskShorthand());
+    case CSSPropertyID::kRuleColor:
+      return GetShorthandValueForBidirectionalGapRules(ruleColorShorthand());
     case CSSPropertyID::kTextBox:
       return TextBoxValue();
     case CSSPropertyID::kTextEmphasis:
@@ -1892,6 +1894,30 @@ String StylePropertySerializer::GetShorthandValue(
     }
     result.Append(value_text);
   }
+  return result.ReleaseString();
+}
+
+String StylePropertySerializer::GetShorthandValueForBidirectionalGapRules(
+    const StylePropertyShorthand& shorthand) const {
+  DCHECK(shorthand.length() == 2u);
+
+  StringBuilder result;
+  const CSSValue* column_rule_data =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* row_rule_data =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+
+  // The `rule-color` shorthand is bi-directional, so the values should be
+  // equivalent.
+  //
+  // https://drafts.csswg.org/css-gaps-1/#propdef-rule-color
+  if (!base::ValuesEquivalent(column_rule_data, row_rule_data)) {
+    return String();
+  }
+  if (!column_rule_data->IsInitialValue()) {
+    result.Append(column_rule_data->CssText());
+  }
+
   return result.ReleaseString();
 }
 

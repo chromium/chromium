@@ -41,7 +41,7 @@ void CSSRepeatValue::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 bool CSSRepeatValue::Equals(const CSSRepeatValue& other) const {
-  return repetitions_ == other.repetitions_ && values_ == other.values_;
+  return repetitions_ == other.repetitions_ && values_->Equals(other.Values());
 }
 
 }  // namespace blink::cssvalue
