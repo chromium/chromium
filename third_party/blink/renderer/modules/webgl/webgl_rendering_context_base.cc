@@ -131,6 +131,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/image_extractor.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image_transform.h"
@@ -5803,6 +5804,15 @@ void WebGLRenderingContextBase::TexImageHelperHTMLImageElement(
   if (have_svg_image || !image_for_render->HasDefaultOrientation()) {
     if (have_svg_image && canvas()) {
       UseCounter::Count(canvas()->GetDocument(), WebFeature::kSVGInWebGL);
+    }
+    // If the SVG image doesn't have natural width/height, we need to resolve
+    // against a default object size. This is 300x150 for legacy reasons.
+    // Maybe it should be the resolved destination size?.
+    if (have_svg_image) {
+      SourceImageStatus status;
+      image_for_render = image->GetSourceImageForCanvas(
+          FlushReason::kWebGLTexImage, &status, gfx::SizeF(300, 150),
+          kDontChangeAlpha);
     }
     // DrawImageIntoBuffer always respects orientation
     image_for_render = DrawImageIntoBufferForTexImage(
