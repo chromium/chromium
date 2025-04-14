@@ -77,12 +77,20 @@ chromium-metrics-reviews@google.com.
   <variant name="Vulkan.CompileShaderToSPIRV"/>
   <variant name="Vulkan.CreateComputePipelines"/>
   <variant name="Vulkan.CreateGraphicsPipelines"/>
+  <variant name="Vulkan.CreateShaderModule"/>
 </variants>
 
 <variants name="WebGPUModule">
   <variant name="ComputePipeline"/>
   <variant name="RenderPipeline"/>
   <variant name="ShaderModule"/>
+</variants>
+
+<variants name="WebGPUShaderTiming">
+  <variant name="GenerateSPIRV"/>
+  <variant name="ProgramToIR"/>
+  <variant name="SingleEntryPoint"/>
+  <variant name="SubstituteOverrides"/>
 </variants>
 
 <histogram name="ConfigureDisplays.External.Modeset.AttemptSucceeded"
@@ -1483,6 +1491,20 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="AdapterType" variants="WebGPUAdapterType"/>
   <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+</histogram>
+
+<histogram name="GPU.{GraphiteDawnOrWebGPU}.ShaderModule{ShaderTiming}"
+    units="microseconds" expires_after="2026-06-09">
+  <owner>petermcneeley@google.com</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Tracks the amount of time in microseconds it takes for a call to
+    ShaderModule{ShaderTiming} to complete, excluding when the result is found
+    in frontend cache. Recorded only for clients that support high-resolution
+    clocks.
+  </summary>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+  <token key="ShaderTiming" variants="WebGPUShaderTiming"/>
 </histogram>
 
 <histogram name="GPU.{GraphiteDawnOrWebGPU}.Support" enum="WebGPUSupport"
