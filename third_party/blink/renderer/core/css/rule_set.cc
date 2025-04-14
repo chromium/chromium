@@ -254,7 +254,71 @@ void RuleSet::AddToRuleSet(HeapVector<RuleData>& rules,
   need_compaction_ = true;
 }
 
-static void ExtractSelectorValues(const CSSSelector* selector,
+namespace {
+
+// Pseudo elements that should stop extracting bucketing information
+// from selector after themselves, as they allow some pseudo classes after them
+// in selector, which can confuse bucketing (for now, if you have to add a new
+// PseudoType here, the rule is: if it creates a PseudoElement object - return
+// true, otherwise - return false).
+bool ShouldStopExtractingAtPseudoElement(
+    const CSSSelector::PseudoType& pseudo_type) {
+  switch (pseudo_type) {
+    case CSSSelector::kPseudoCheckMark:
+    case CSSSelector::kPseudoPickerIcon:
+    case CSSSelector::kPseudoFirstLetter:
+    case CSSSelector::kPseudoScrollButton:
+    case CSSSelector::kPseudoScrollMarker:
+    case CSSSelector::kPseudoAfter:
+    case CSSSelector::kPseudoBefore:
+    case CSSSelector::kPseudoBackdrop:
+    case CSSSelector::kPseudoMarker:
+    case CSSSelector::kPseudoColumn:
+    case CSSSelector::kPseudoViewTransition:
+    case CSSSelector::kPseudoViewTransitionGroup:
+    case CSSSelector::kPseudoViewTransitionImagePair:
+    case CSSSelector::kPseudoViewTransitionNew:
+    case CSSSelector::kPseudoViewTransitionOld:
+    case CSSSelector::kPseudoScrollMarkerGroup:
+      return true;
+    case CSSSelector::kPseudoCue:
+    case CSSSelector::kPseudoFirstLine:
+    case CSSSelector::kPseudoSelection:
+    case CSSSelector::kPseudoScrollbar:
+    case CSSSelector::kPseudoScrollbarButton:
+    case CSSSelector::kPseudoScrollbarCorner:
+    case CSSSelector::kPseudoScrollbarThumb:
+    case CSSSelector::kPseudoScrollbarTrack:
+    case CSSSelector::kPseudoScrollbarTrackPiece:
+    case CSSSelector::kPseudoSlotted:
+    case CSSSelector::kPseudoPart:
+    case CSSSelector::kPseudoResizer:
+    case CSSSelector::kPseudoSearchText:
+    case CSSSelector::kPseudoTargetText:
+    case CSSSelector::kPseudoHighlight:
+    case CSSSelector::kPseudoSpellingError:
+    case CSSSelector::kPseudoGrammarError:
+    case CSSSelector::kPseudoPlaceholder:
+    case CSSSelector::kPseudoFileSelectorButton:
+    case CSSSelector::kPseudoDetailsContent:
+    case CSSSelector::kPseudoPicker:
+    case CSSSelector::kPseudoWebKitCustomElement:
+    case CSSSelector::kPseudoBlinkInternalElement:
+      return false;
+    default:
+      NOTREACHED()
+          << "Don't forget to add new pseudo element type in this switch "
+          << static_cast<wtf_size_t>(pseudo_type);
+  }
+}
+
+}  // namespace
+
+// The return value indicates if extracting can continue
+// or should be stopped due to reaching some pseudo element
+// that doesn't allow extracting bucketing rules after itself
+// in selector.
+static bool ExtractSelectorValues(const CSSSelector* selector,
                                   const StyleScope* style_scope,
                                   AtomicString& id,
                                   AtomicString& class_name,
@@ -277,17 +341,18 @@ static void ExtractSelectorValues(const CSSSelector* selector,
     case CSSSelector::kTag:
       tag_name = selector->TagQName().LocalName();
       break;
-    case CSSSelector::kPseudoClass:
     case CSSSelector::kPseudoElement:
+      // TODO(403505399): We shouldn't allow bucketing of pseudo classes
+      // after pseudo elements for now, as it confuses bucketing.
+      if (ShouldStopExtractingAtPseudoElement(selector->GetPseudoType())) {
+        return false;
+      }
+      [[fallthrough]];
+    case CSSSelector::kPseudoClass:
     case CSSSelector::kPagePseudoClass:
       // Must match the cases in RuleSet::FindBestRuleSetAndAdd.
       switch (selector->GetPseudoType()) {
         case CSSSelector::kPseudoFocus:
-          if (pseudo_type == CSSSelector::kPseudoScrollMarker ||
-              pseudo_type == CSSSelector::kPseudoScrollButton) {
-            break;
-          }
-          [[fallthrough]];
         case CSSSelector::kPseudoCue:
         case CSSSelector::kPseudoLink:
         case CSSSelector::kPseudoVisited:
@@ -302,8 +367,6 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoSlotted:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
-        case CSSSelector::kPseudoScrollMarker:
-        case CSSSelector::kPseudoScrollButton:
           pseudo_type = selector->GetPseudoType();
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
@@ -337,10 +400,11 @@ static void ExtractSelectorValues(const CSSSelector* selector,
           // check below, satisfying the assumptions of FindBestRuleSetAndAdd.
           if (selector_list &&
               CSSSelectorList::IsSingleComplexSelector(*selector_list)) {
-            ExtractSelectorValues(selector_list, style_scope, id, class_name,
-                                  attr_name, attr_value, is_exact_attr,
-                                  custom_pseudo_element_name, tag_name,
-                                  part_name, picker_name, pseudo_type);
+            bool should_continue = ExtractSelectorValues(
+                selector_list, style_scope, id, class_name, attr_name,
+                attr_value, is_exact_attr, custom_pseudo_element_name, tag_name,
+                part_name, picker_name, pseudo_type);
+            CHECK(should_continue);
           }
           break;
         }
@@ -355,10 +419,11 @@ static void ExtractSelectorValues(const CSSSelector* selector,
               style_scope ? style_scope->From() : nullptr;
           if (selector_list &&
               CSSSelectorList::IsSingleComplexSelector(*selector_list)) {
-            ExtractSelectorValues(selector_list, style_scope, id, class_name,
-                                  attr_name, attr_value, is_exact_attr,
-                                  custom_pseudo_element_name, tag_name,
-                                  part_name, picker_name, pseudo_type);
+            bool should_continue = ExtractSelectorValues(
+                selector_list, style_scope, id, class_name, attr_name,
+                attr_value, is_exact_attr, custom_pseudo_element_name, tag_name,
+                part_name, picker_name, pseudo_type);
+            CHECK(should_continue);
           }
           break;
         }
@@ -384,6 +449,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
     default:
       break;
   }
+  return true;
 }
 
 // For a (possibly compound) selector, extract the values used for determining
@@ -406,9 +472,12 @@ static const CSSSelector* ExtractBestSelectorValues(
   const CSSSelector* it = &component;
   for (; it && it->Relation() == CSSSelector::kSubSelector;
        it = it->NextSimpleSelector()) {
-    ExtractSelectorValues(it, style_scope, id, class_name, attr_name,
-                          attr_value, is_exact_attr, custom_pseudo_element_name,
-                          tag_name, part_name, picker_name, pseudo_type);
+    if (!ExtractSelectorValues(it, style_scope, id, class_name, attr_name,
+                               attr_value, is_exact_attr,
+                               custom_pseudo_element_name, tag_name, part_name,
+                               picker_name, pseudo_type)) {
+      return it;
+    }
   }
   if (it) {
     ExtractSelectorValues(it, style_scope, id, class_name, attr_name,
