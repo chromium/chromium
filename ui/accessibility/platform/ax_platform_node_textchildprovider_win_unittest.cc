@@ -5,9 +5,7 @@
 #include "ui/accessibility/platform/ax_platform_node_textchildprovider_win.h"
 
 #include "base/compiler_specific.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
@@ -131,8 +129,6 @@ class AXPlatformNodeTextChildProviderTest : public AXPlatformNodeWinTest {
   ComPtr<ITextChildProvider> nontext_child_of_nontext_text_child_provider_;
   ComPtr<ITextChildProvider> text_child_of_nontext_text_child_provider_;
   ComPtr<ITextChildProvider> text_child_of_text_text_child_provider_;
-
-  base::test::ScopedFeatureList scoped_feature_list_{features::kUiaProvider};
 };
 
 // ITextChildProvider::TextContainer Tests

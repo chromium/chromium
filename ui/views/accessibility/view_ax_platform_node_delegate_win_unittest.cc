@@ -113,8 +113,6 @@ class ViewAXPlatformNodeDelegateWinTest : public ViewsTestBase {
                                                    IID_PPV_ARGS(&result))));
     return result;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_{features::kUiaProvider};
 };
 
 TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
