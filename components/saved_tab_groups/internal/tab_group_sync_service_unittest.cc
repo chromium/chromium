@@ -2059,6 +2059,39 @@ TEST_F(TabGroupSyncServiceTest, ShouldRunCallbackOnMakeTabGroupShared) {
   WaitForPostedTasks();
 }
 
+TEST_F(TabGroupSyncServiceTest,
+       MakeTabGroupShared_ShouldWaitForInitialMergeCompletion) {
+  ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
+  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
+
+  base::MockCallback<TabGroupSyncService::TabGroupSharingCallback>
+      mock_callback;
+
+  // Mimic the state where we receive a MakeTabGroupShared call while user
+  // hasn't completed sign-in.
+  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
+      .WillRepeatedly(Return(""));
+  tab_group_sync_service_->MakeTabGroupShared(
+      local_group_id_1_, "collaboration", mock_callback.Get());
+  WaitForPostedTasks();
+  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
+
+  // Mimic initial merge completion.
+  EXPECT_CALL(*mock_shared_processor(), TrackedAccountId())
+      .WillRepeatedly(Return("some_gaia"));
+  model_->OnSyncBridgeUpdateTypeChanged(SyncBridgeUpdateType::kDefaultState);
+  WaitForPostedTasks();
+  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
+
+  // Simulate the group to be committed to the server, which will invoke the
+  // client callback.
+  EXPECT_CALL(mock_callback,
+              Run(TabGroupSyncService::TabGroupSharingResult::kSuccess));
+  model_->MarkTransitionedToShared(
+      model_->GetSharedTabGroupsOnly().front()->saved_guid());
+  WaitForPostedTasks();
+}
+
 TEST_F(TabGroupSyncServiceTest, ShouldIgnoreUpdatesWhileTransitioningToShared) {
   ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
   ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
@@ -2121,21 +2154,6 @@ TEST_F(TabGroupSyncServiceTest, ShouldTimeoutOnMakeTabGroupShared) {
   ASSERT_TRUE(tab_group_sync_service_->GetGroup(local_group_id_1_).has_value());
   EXPECT_EQ(group_1_.saved_guid(),
             tab_group_sync_service_->GetGroup(local_group_id_1_)->saved_guid());
-}
-
-TEST_F(TabGroupSyncServiceTest, ShouldNotWaitForCommittingWithoutCallback) {
-  ASSERT_EQ(group_1_.saved_tabs().size(), 1u);
-  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), IsEmpty());
-
-  tab_group_sync_service_->MakeTabGroupShared(
-      local_group_id_1_, "collaboration",
-      TabGroupSyncService::TabGroupSharingCallback());
-  WaitForPostedTasks();
-  ASSERT_THAT(model_->GetSharedTabGroupsOnly(), SizeIs(1));
-
-  const SavedTabGroup* shared_group = model_->GetSharedTabGroupsOnly().front();
-  EXPECT_FALSE(shared_group->is_transitioning_to_shared());
-  EXPECT_TRUE(shared_group->local_group_id().has_value());
 }
 
 TEST_F(TabGroupSyncServiceTest, AboutToUnShareTabGroup) {
