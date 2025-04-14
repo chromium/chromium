@@ -15,7 +15,7 @@
 namespace remoting::protocol {
 
 WebrtcAudioSinkAdapter::WebrtcAudioSinkAdapter(
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> stream,
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream,
     base::WeakPtr<AudioStub> audio_stub)
     : task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       audio_stub_(audio_stub),

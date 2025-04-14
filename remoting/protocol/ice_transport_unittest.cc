@@ -122,7 +122,7 @@ class IceTransportTest : public testing::Test {
   void InitializeConnection() {
     webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
-    rtc::SocketFactory* socket_factory =
+    webrtc::SocketFactory* socket_factory =
         webrtc::ThreadWrapper::current()->SocketServer();
     host_transport_ = std::make_unique<IceTransport>(
         base::MakeRefCounted<TransportContext>(

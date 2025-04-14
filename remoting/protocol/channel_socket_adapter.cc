@@ -19,13 +19,13 @@
 namespace remoting::protocol {
 
 TransportChannelSocketAdapter::TransportChannelSocketAdapter(
-    cricket::IceTransportInternal* ice_transport)
+    webrtc::IceTransportInternal* ice_transport)
     : channel_(ice_transport) {
   DCHECK(channel_);
 
   channel_->RegisterReceivedPacketCallback(
-      this, [&](rtc::PacketTransportInternal* transport,
-                const rtc::ReceivedPacket& packet) {
+      this, [&](webrtc::PacketTransportInternal* transport,
+                const webrtc::ReceivedIpPacket& packet) {
         OnNewPacket(transport, packet);
       });
   channel_->SignalWritableState.connect(
@@ -87,7 +87,7 @@ int TransportChannelSocketAdapter::Send(
   }
 
   int result;
-  rtc::PacketOptions options;
+  webrtc::AsyncSocketPacketOptions options;
   if (channel_->writable()) {
     result = channel_->SendPacket(buffer->data(), buffer_size, options);
     if (result < 0) {
@@ -140,8 +140,8 @@ void TransportChannelSocketAdapter::Close(int error_code) {
 }
 
 void TransportChannelSocketAdapter::OnNewPacket(
-    rtc::PacketTransportInternal* transport,
-    const rtc::ReceivedPacket& packet) {
+    webrtc::PacketTransportInternal* transport,
+    const webrtc::ReceivedIpPacket& packet) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(transport, channel_);
   if (!read_callback_.is_null()) {
@@ -168,11 +168,11 @@ void TransportChannelSocketAdapter::OnNewPacket(
 }
 
 void TransportChannelSocketAdapter::OnWritableState(
-    rtc::PacketTransportInternal* transport) {
+    webrtc::PacketTransportInternal* transport) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Try to send the packet if there is a pending write.
   if (!write_callback_.is_null()) {
-    rtc::PacketOptions options;
+    webrtc::AsyncSocketPacketOptions options;
     int result = channel_->SendPacket(write_buffer_->data(), write_buffer_size_,
                                       options);
     if (result < 0) {
@@ -189,7 +189,7 @@ void TransportChannelSocketAdapter::OnWritableState(
 }
 
 void TransportChannelSocketAdapter::OnChannelDestroyed(
-    cricket::IceTransportInternal* channel) {
+    webrtc::IceTransportInternal* channel) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK_EQ(channel, channel_);
   Close(net::ERR_CONNECTION_ABORTED);

@@ -313,10 +313,10 @@ void WebrtcVideoStream::Start(
   DCHECK(peer_connection_);
 
   std::string stream_name = StreamNameForId(screen_id);
-  video_track_source_ = new rtc::RefCountedObject<WebrtcVideoTrackSource>(
+  video_track_source_ = new webrtc::RefCountedObject<WebrtcVideoTrackSource>(
       base::BindRepeating(&WebrtcVideoStream::OnSinkAddedOrUpdated,
                           weak_factory_.GetWeakPtr()));
-  rtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
+  webrtc::scoped_refptr<webrtc::VideoTrackInterface> video_track =
       peer_connection_factory->CreateVideoTrack(video_track_source_,
                                                 stream_name);
 
@@ -528,7 +528,8 @@ void WebrtcVideoStream::OnEncodedFrameSent(
   video_stats_dispatcher_->OnVideoFrameStats(result.frame_id, stats);
 }
 
-void WebrtcVideoStream::OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants) {
+void WebrtcVideoStream::OnSinkAddedOrUpdated(
+    const webrtc::VideoSinkWants& wants) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   auto framerate = wants.max_framerate_fps;

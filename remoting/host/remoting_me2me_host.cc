@@ -2107,8 +2107,8 @@ int HostProcessMain() {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   if (cmd_line->HasSwitch(kWebRtcTraceEventFile)) {
-    rtc::tracing::SetupInternalTracer();
-    rtc::tracing::StartInternalCapture(
+    webrtc::tracing::SetupInternalTracer();
+    webrtc::tracing::StartInternalCapture(
         cmd_line->GetSwitchValuePath(kWebRtcTraceEventFile)
             .AsUTF8Unsafe()
             .c_str());
@@ -2169,7 +2169,7 @@ int HostProcessMain() {
   base::ThreadPoolInstance::Get()->Shutdown();
 
   if (cmd_line->HasSwitch(kWebRtcTraceEventFile)) {
-    rtc::tracing::ShutdownInternalTracer();
+    webrtc::tracing::ShutdownInternalTracer();
   }
 
   return exit_code;

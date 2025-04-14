@@ -134,11 +134,10 @@ struct IceTransportInfo {
   ~IceTransportInfo();
   struct NamedCandidate {
     NamedCandidate() = default;
-    NamedCandidate(const std::string& name,
-                   const cricket::Candidate& candidate);
+    NamedCandidate(const std::string& name, const webrtc::Candidate& candidate);
 
     std::string name;
-    cricket::Candidate candidate;
+    webrtc::Candidate candidate;
   };
 
   struct IceCredentials {

@@ -35,10 +35,10 @@ const int kTestDataSize = 4;
 const int kTestError = -32123;
 }  // namespace
 
-class IceTransportForTest : public cricket::MockIceTransport {
+class IceTransportForTest : public webrtc::MockIceTransport {
  public:
   // Exposed for testing.
-  using rtc::PacketTransportInternal::NotifyPacketReceived;
+  using webrtc::PacketTransportInternal::NotifyPacketReceived;
 };
 
 class TransportChannelSocketAdapterTest : public testing::Test {
@@ -70,8 +70,9 @@ TEST_F(TransportChannelSocketAdapterTest, Read) {
   int result = target_->Recv(buffer.get(), kBufferSize, callback_);
   ASSERT_EQ(net::ERR_IO_PENDING, result);
 
-  channel_.NotifyPacketReceived(rtc::ReceivedPacket(
-      rtc::MakeArrayView(kTestData, kTestDataSize), rtc::SocketAddress()));
+  channel_.NotifyPacketReceived(
+      webrtc::ReceivedIpPacket(webrtc::MakeArrayView(kTestData, kTestDataSize),
+                               webrtc::SocketAddress()));
   EXPECT_EQ(kTestDataSize, callback_result_);
 }
 

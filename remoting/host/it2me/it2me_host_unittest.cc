@@ -412,7 +412,8 @@ void It2MeHostTest::StartHost() {
   dialog_factory_ = dialog_factory.get();
 
   protocol::IceConfig ice_config;
-  ice_config.stun_servers.push_back(rtc::SocketAddress(kTestStunServer, 100));
+  ice_config.stun_servers.push_back(
+      webrtc::SocketAddress(kTestStunServer, 100));
   ice_config.expiration_time = base::Time::Now() + base::Hours(2);
 
   auto fake_signal_strategy =

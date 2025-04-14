@@ -28,7 +28,7 @@ class StreamPacketProcessor;
 // An AsyncPacketSocket implementation that runs on top of a StreamSocket. It is
 // usually used for TCP connections.
 // TODO(yuweih): Write unittest
-class StreamPacketSocket final : public rtc::AsyncPacketSocket {
+class StreamPacketSocket final : public webrtc::AsyncPacketSocket {
  public:
   StreamPacketSocket();
   ~StreamPacketSocket() override;
@@ -43,37 +43,37 @@ class StreamPacketSocket final : public rtc::AsyncPacketSocket {
 
   // Initializes the packet socket for client TCP connection. Returns true if
   // the initialization succeeds.
-  bool InitClientTcp(const rtc::SocketAddress& local_address,
-                     const rtc::SocketAddress& remote_address,
-                     const rtc::PacketSocketTcpOptions& tcp_options);
+  bool InitClientTcp(const webrtc::SocketAddress& local_address,
+                     const webrtc::SocketAddress& remote_address,
+                     const webrtc::PacketSocketTcpOptions& tcp_options);
 
-  // rtc::AsyncPacketSocket interface.
-  rtc::SocketAddress GetLocalAddress() const override;
-  rtc::SocketAddress GetRemoteAddress() const override;
+  // webrtc::AsyncPacketSocket interface.
+  webrtc::SocketAddress GetLocalAddress() const override;
+  webrtc::SocketAddress GetRemoteAddress() const override;
   int Send(const void* data,
            size_t data_size,
-           const rtc::PacketOptions& options) override;
+           const webrtc::AsyncSocketPacketOptions& options) override;
   int SendTo(const void* data,
              size_t data_size,
-             const rtc::SocketAddress& address,
-             const rtc::PacketOptions& options) override;
+             const webrtc::SocketAddress& address,
+             const webrtc::AsyncSocketPacketOptions& options) override;
   int Close() override;
   State GetState() const override;
-  int GetOption(rtc::Socket::Option option, int* value) override;
-  int SetOption(rtc::Socket::Option option, int value) override;
+  int GetOption(webrtc::Socket::Option option, int* value) override;
+  int SetOption(webrtc::Socket::Option option, int value) override;
   int GetError() const override;
   void SetError(int error) override;
 
  private:
   struct PendingPacket {
     PendingPacket(scoped_refptr<net::DrainableIOBuffer> data,
-                  rtc::PacketOptions options);
+                  webrtc::AsyncSocketPacketOptions options);
     PendingPacket(const PendingPacket&);
     PendingPacket(PendingPacket&&);
     ~PendingPacket();
 
     scoped_refptr<net::DrainableIOBuffer> data;
-    rtc::PacketOptions options;
+    webrtc::AsyncSocketPacketOptions options;
   };
 
   void OnConnectCompleted(int result);
@@ -106,11 +106,11 @@ class StreamPacketSocket final : public rtc::AsyncPacketSocket {
 
   State state_ = STATE_CLOSED;
 
-  // This is errno, not the net error code, which is what rtc::AsyncPacketSocket
-  // accepts.
-  // Unlike //net classes, rtc::AsyncPacketSocket methods don't return the error
-  // code. For error, they generally return -1 and expect the caller to call
-  // GetError() to know the reason.
+  // This is errno, not the net error code, which is what
+  // webrtc::AsyncPacketSocket accepts. Unlike //net classes,
+  // webrtc::AsyncPacketSocket methods don't return the error code. For error,
+  // they generally return -1 and expect the caller to call GetError() to know
+  // the reason.
   int error_ = 0;
 };
 

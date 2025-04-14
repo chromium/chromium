@@ -19,13 +19,13 @@ PortAllocatorFactory::CreatePortAllocatorResult
 ChromiumPortAllocatorFactory::CreatePortAllocator(
     scoped_refptr<TransportContext> transport_context,
     base::WeakPtr<SessionOptionsProvider> session_options_provider) {
-  rtc::SocketFactory* socket_factory = transport_context->socket_factory();
+  webrtc::SocketFactory* socket_factory = transport_context->socket_factory();
   DCHECK(socket_factory);
   CreatePortAllocatorResult result;
   webrtc::Environment webrtc_env = WebRtcEnvironment();
   auto allocator = std::make_unique<PortAllocator>(
       webrtc_env,
-      std::make_unique<rtc::BasicNetworkManager>(webrtc_env, socket_factory),
+      std::make_unique<webrtc::BasicNetworkManager>(webrtc_env, socket_factory),
       std::make_unique<ChromiumPacketSocketFactory>(session_options_provider),
       transport_context);
   result.apply_network_settings = base::BindOnce(

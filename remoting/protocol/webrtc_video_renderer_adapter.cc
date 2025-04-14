@@ -41,7 +41,7 @@ std::unique_ptr<webrtc::DesktopFrame> ConvertYuvToRgb(
   auto yuv_to_rgb_function = (pixel_format == FrameConsumer::FORMAT_BGRA)
                                  ? &libyuv::I420ToARGB
                                  : &libyuv::I420ToABGR;
-  rtc::scoped_refptr<const webrtc::I420BufferInterface> i420_frame =
+  webrtc::scoped_refptr<const webrtc::I420BufferInterface> i420_frame =
       yuv_frame->ToI420();
   yuv_to_rgb_function(i420_frame->DataY(), i420_frame->StrideY(),
                       i420_frame->DataU(), i420_frame->StrideU(),
@@ -79,7 +79,7 @@ WebrtcVideoRendererAdapter::~WebrtcVideoRendererAdapter() {
 }
 
 void WebrtcVideoRendererAdapter::SetMediaStream(
-    rtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream) {
+    webrtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream) {
   DCHECK_EQ(media_stream->id(), label());
 
   media_stream_ = std::move(media_stream);
@@ -93,7 +93,7 @@ void WebrtcVideoRendererAdapter::SetMediaStream(
     LOG(WARNING) << "Received media stream with multiple video tracks.";
   }
 
-  video_tracks[0]->AddOrUpdateSink(this, rtc::VideoSinkWants());
+  video_tracks[0]->AddOrUpdateSink(this, webrtc::VideoSinkWants());
 }
 
 void WebrtcVideoRendererAdapter::SetVideoStatsChannel(
@@ -105,7 +105,7 @@ void WebrtcVideoRendererAdapter::SetVideoStatsChannel(
 }
 
 void WebrtcVideoRendererAdapter::OnFrame(const webrtc::VideoFrame& frame) {
-  if (frame.timestamp_us() > rtc::TimeMicros()) {
+  if (frame.timestamp_us() > webrtc::TimeMicros()) {
     // The host sets playout delay to 0, so all incoming frames are expected to
     // be rendered as so as they are received.
     NOTREACHED() << "Received frame with playout delay greater than 0.";

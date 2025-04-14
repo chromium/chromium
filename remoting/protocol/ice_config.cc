@@ -202,17 +202,17 @@ bool IceConfig::AddStunServer(std::string_view url) {
 bool IceConfig::AddServer(std::string_view url,
                           const std::string& username,
                           const std::string& password) {
-  cricket::ProtocolType turn_transport_type = cricket::PROTO_LAST;
+  webrtc::ProtocolType turn_transport_type = webrtc::PROTO_LAST;
 
   const char kTcpTransportSuffix[] = "?transport=tcp";
   const char kUdpTransportSuffix[] = "?transport=udp";
   if (base::EndsWith(url, kTcpTransportSuffix,
                      base::CompareCase::INSENSITIVE_ASCII)) {
-    turn_transport_type = cricket::PROTO_TCP;
+    turn_transport_type = webrtc::PROTO_TCP;
     url.remove_suffix(strlen(kTcpTransportSuffix));
   } else if (base::EndsWith(url, kUdpTransportSuffix,
                             base::CompareCase::INSENSITIVE_ASCII)) {
-    turn_transport_type = cricket::PROTO_UDP;
+    turn_transport_type = webrtc::PROTO_UDP;
     url.remove_suffix(strlen(kUdpTransportSuffix));
   }
 
@@ -237,8 +237,8 @@ bool IceConfig::AddServer(std::string_view url,
     if (port == -1) {
       port = kDefaultStunTurnPort;
     }
-    if (turn_transport_type == cricket::PROTO_LAST) {
-      turn_transport_type = cricket::PROTO_UDP;
+    if (turn_transport_type == webrtc::PROTO_LAST) {
+      turn_transport_type = webrtc::PROTO_UDP;
     }
     turn_servers.emplace_back(host, port, username, password,
                               turn_transport_type, false);
@@ -246,8 +246,8 @@ bool IceConfig::AddServer(std::string_view url,
     if (port == -1) {
       port = kDefaultTurnsPort;
     }
-    if (turn_transport_type == cricket::PROTO_LAST) {
-      turn_transport_type = cricket::PROTO_TCP;
+    if (turn_transport_type == webrtc::PROTO_LAST) {
+      turn_transport_type = webrtc::PROTO_TCP;
     }
     turn_servers.emplace_back(host, port, username, password,
                               turn_transport_type, true);

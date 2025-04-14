@@ -35,7 +35,7 @@ struct ClientFrameStats;
 struct HostFrameStats;
 
 class WebrtcVideoRendererAdapter
-    : public rtc::VideoSinkInterface<webrtc::VideoFrame>,
+    : public webrtc::VideoSinkInterface<webrtc::VideoFrame>,
       public VideoStatsStub,
       public ClientVideoStatsDispatcher::EventHandler {
  public:
@@ -51,10 +51,10 @@ class WebrtcVideoRendererAdapter
   std::string label() const { return label_; }
 
   void SetMediaStream(
-      rtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream);
+      webrtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream);
   void SetVideoStatsChannel(std::unique_ptr<MessagePipe> message_pipe);
 
-  // rtc::VideoSinkInterface implementation.
+  // webrtc::VideoSinkInterface implementation.
   void OnFrame(const webrtc::VideoFrame& frame) override;
 
  private:
@@ -77,7 +77,7 @@ class WebrtcVideoRendererAdapter
 
   std::string label_;
 
-  rtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream_;
+  webrtc::scoped_refptr<webrtc::MediaStreamInterface> media_stream_;
   raw_ptr<VideoRenderer> video_renderer_;
 
   std::unique_ptr<ClientVideoStatsDispatcher> video_stats_dispatcher_;

@@ -24,7 +24,7 @@ scoped_refptr<net::IOBufferWithSize> SerializeAndFrameMessage(
   size_t size = msg.ByteSizeLong() + kExtraBytes;
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(size);
-  rtc::SetBE32(buffer->data(), msg.GetCachedSize());
+  webrtc::SetBE32(buffer->data(), msg.GetCachedSize());
   msg.SerializeWithCachedSizesToArray(buffer->bytes() + kExtraBytes);
   return buffer;
 }

@@ -19,8 +19,8 @@ namespace remoting::protocol {
 
 PortAllocator::PortAllocator(
     const webrtc::Environment& webrtc_env,
-    std::unique_ptr<rtc::NetworkManager> network_manager,
-    std::unique_ptr<rtc::PacketSocketFactory> socket_factory,
+    std::unique_ptr<webrtc::NetworkManager> network_manager,
+    std::unique_ptr<webrtc::PacketSocketFactory> socket_factory,
     scoped_refptr<TransportContext> transport_context)
     : BasicPortAllocator(webrtc_env,
                          network_manager.get(),
@@ -42,16 +42,16 @@ void PortAllocator::ApplyNetworkSettings(
   // PORTALLOCATOR_DISABLE_COSTLY_NETWORKS, but this is unreliable on iOS and
   // may end up removing mobile networks when no WiFi is available. We may want
   // to add this flag only if there is WiFi interface.
-  int flags = cricket::PORTALLOCATOR_DISABLE_TCP |
-              cricket::PORTALLOCATOR_ENABLE_IPV6 |
-              cricket::PORTALLOCATOR_ENABLE_IPV6_ON_WIFI;
+  int flags = webrtc::PORTALLOCATOR_DISABLE_TCP |
+              webrtc::PORTALLOCATOR_ENABLE_IPV6 |
+              webrtc::PORTALLOCATOR_ENABLE_IPV6_ON_WIFI;
 
   if (!(network_settings.flags & NetworkSettings::NAT_TRAVERSAL_STUN)) {
-    flags |= cricket::PORTALLOCATOR_DISABLE_STUN;
+    flags |= webrtc::PORTALLOCATOR_DISABLE_STUN;
   }
 
   if (!(network_settings.flags & NetworkSettings::NAT_TRAVERSAL_RELAY)) {
-    flags |= cricket::PORTALLOCATOR_DISABLE_RELAY;
+    flags |= webrtc::PORTALLOCATOR_DISABLE_RELAY;
   }
 
   set_flags(flags);
@@ -61,7 +61,7 @@ void PortAllocator::ApplyNetworkSettings(
   network_settings_applied_ = true;
 }
 
-cricket::PortAllocatorSession* PortAllocator::CreateSessionInternal(
+webrtc::PortAllocatorSession* PortAllocator::CreateSessionInternal(
     std::string_view content_name,
     int component,
     std::string_view ice_username_fragment,
@@ -90,8 +90,8 @@ PortAllocatorSession::~PortAllocatorSession() = default;
 
 void PortAllocatorSession::GetPortConfigurations() {
   // Don't need to make ICE config request if both STUN and Relay are disabled.
-  if ((flags() & cricket::PORTALLOCATOR_DISABLE_STUN) &&
-      (flags() & cricket::PORTALLOCATOR_DISABLE_RELAY)) {
+  if ((flags() & webrtc::PORTALLOCATOR_DISABLE_STUN) &&
+      (flags() & webrtc::PORTALLOCATOR_DISABLE_RELAY)) {
     HOST_LOG << "Skipping ICE Config request as STUN and RELAY are disabled";
     OnIceConfig(IceConfig());
   } else {
@@ -105,15 +105,15 @@ void PortAllocatorSession::OnIceConfig(const IceConfig& ice_config) {
   ConfigReady(GetPortConfiguration());
 }
 
-std::unique_ptr<cricket::PortConfiguration>
+std::unique_ptr<webrtc::PortConfiguration>
 PortAllocatorSession::GetPortConfiguration() {
-  cricket::ServerAddresses stun_servers;
+  webrtc::ServerAddresses stun_servers;
   for (const auto& host : ice_config_.stun_servers) {
     stun_servers.insert(host);
   }
 
-  std::unique_ptr<cricket::PortConfiguration> config(
-      new cricket::PortConfiguration(stun_servers, username(), password()));
+  std::unique_ptr<webrtc::PortConfiguration> config(
+      new webrtc::PortConfiguration(stun_servers, username(), password()));
 
   if (relay_enabled()) {
     for (const auto& turn_server : ice_config_.turn_servers) {

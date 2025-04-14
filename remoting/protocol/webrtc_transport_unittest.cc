@@ -97,9 +97,9 @@ class TestTransportEventHandler : public WebrtcTransport::EventHandler {
     }
   }
   void OnWebrtcTransportMediaStreamAdded(
-      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {}
+      webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {}
   void OnWebrtcTransportMediaStreamRemoved(
-      rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {}
+      webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override {}
   void OnWebrtcTransportRouteChanged(const TransportRoute& route) override {}
 
  private:

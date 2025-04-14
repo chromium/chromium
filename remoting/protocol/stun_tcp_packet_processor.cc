@@ -125,9 +125,9 @@ scoped_refptr<net::IOBufferWithSize> StunTcpPacketProcessor::Unpack(
 void StunTcpPacketProcessor::ApplyPacketOptions(
     uint8_t* data,
     size_t data_size,
-    const rtc::PacketTimeUpdateParams& packet_time_params) const {
-  cricket::ApplyPacketOptions(data, data_size, packet_time_params,
-                              rtc::TimeMicros());
+    const webrtc::PacketTimeUpdateParams& packet_time_params) const {
+  webrtc::ApplyPacketOptions(data, data_size, packet_time_params,
+                             webrtc::TimeMicros());
 }
 
 }  // namespace remoting::protocol

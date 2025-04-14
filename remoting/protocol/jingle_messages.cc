@@ -60,7 +60,7 @@ const NameMapElement<JingleMessage::Reason> kReasons[] = {
 // used them from the start. So in order to remain backwards compatible,
 // we check specifically for those types and override the candidate type name
 // in those cases.
-std::string_view GetLegacyTypeName(const cricket::Candidate& c) {
+std::string_view GetLegacyTypeName(const webrtc::Candidate& c) {
   if (c.is_local()) {
     return "local";
   }
@@ -143,7 +143,7 @@ bool ParseIceCandidate(const jingle_xmpp::XmlElement* element,
   // deprecated.
   candidate->candidate = {candidate->candidate.component(),
                           protocol,
-                          rtc::SocketAddress(address, port),
+                          webrtc::SocketAddress(address, port),
                           priority,
                           candidate->candidate.username(),
                           candidate->candidate.password(),
@@ -563,7 +563,7 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessageReply::ToXml(
 
 IceTransportInfo::NamedCandidate::NamedCandidate(
     const std::string& name,
-    const cricket::Candidate& candidate)
+    const webrtc::Candidate& candidate)
     : name(name), candidate(candidate) {}
 
 IceTransportInfo::IceCredentials::IceCredentials(std::string channel,
