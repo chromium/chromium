@@ -21,6 +21,7 @@
 #include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/token.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"

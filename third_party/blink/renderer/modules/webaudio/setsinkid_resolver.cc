@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/setsinkid_resolver.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_audiosinkinfo_string.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"

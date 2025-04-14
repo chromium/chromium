@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_thread.h"
 #include "media/audio/audio_thread_hang_monitor.h"
