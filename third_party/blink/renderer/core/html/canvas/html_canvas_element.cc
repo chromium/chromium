@@ -1986,9 +1986,9 @@ void HTMLCanvasElement::UpdateMemoryUsage() {
 
   if (!IsRenderingContext2D() && !IsWebGL())
     return;
-  if (ResourceProvider()) {
+  if (const CanvasResourceProvider* provider = ResourceProvider()) {
     non_gpu_buffer_count++;
-    if (IsAccelerated()) {
+    if (provider->IsAccelerated()) {
       // The number of internal GPU buffers vary between one (stable
       // non-displayed state) and three (triple-buffered animations).
       // Adding 2 is a pessimistic but relevant estimate.
