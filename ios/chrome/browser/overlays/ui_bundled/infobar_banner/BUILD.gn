@@ -57,6 +57,7 @@ source_set("mediators") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
+    "//ios/chrome/browser/shared/public/commands",
   ]
 }
 

@@ -10,14 +10,45 @@ source_set("coordinator") {
     "non_modal_signin_promo_mediator.mm",
   ]
   deps = [
+    "//base",
     "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/signin_promo",
+    "//ios/chrome/browser/infobars/ui_bundled/banners",
+    "//ios/chrome/browser/infobars/ui_bundled/coordinators",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ui/base",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "non_modal_signin_promo_mediator_unittest.mm" ]
+
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/browser/shared/model/application_context:application_context",
+    "//ios/chrome/browser/shared/model/profile/test:test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
 }
