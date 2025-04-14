@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-// Mutator protocol for the UI layer to communicate to the
-// HomeCustomizationMediator.
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
+
 @protocol HomeCustomizationMutator;
 
 // Represents a mini preview of how the NTP will look with a particular
@@ -19,6 +19,10 @@
 
 // Mutator for communicating with the HomeCustomizationMediator.
 @property(nonatomic, weak) id<HomeCustomizationMutator> mutator;
+
+// Configures the cell using the given background customization configuration.
+- (void)configureWithBackgroundOption:
+    (BackgroundCustomizationConfiguration*)backgroundConfiguration;
 
 @end
 

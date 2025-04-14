@@ -15,19 +15,19 @@ const CGFloat kVerticalListCellHeight = 74;
 
 // The height of a compact background cell in a horizontal collection view
 // section.
-const CGFloat kCompactBackgroundCellHeight = 107;
+const CGFloat kCompactBackgroundCellHeight = 108;
 
 // The height of a regular background cell in an horizontal collection view
 // section.
-const CGFloat kRegularBackgroundCellHeight = 177;
+const CGFloat kRegularBackgroundCellHeight = 201;
 
 // The width of a compact background cell in an horizontal collection view
 // section.
-const CGFloat kCompactBackgroundCellWidth = 86;
+const CGFloat kCompactBackgroundCellWidth = 100;
 
 // The width of a regular background cell in an horizontal collection view
 // section.
-const CGFloat kRegularBackgroundCellWidth = 161;
+const CGFloat kRegularBackgroundCellWidth = 190;
 
 // The horizontal spacing between the cell and each side of the vertical
 // collection view.
@@ -39,10 +39,13 @@ const CGFloat kHorizontalListHorizontalPadding = 20;
 
 // The vertical spacing between the cell and the top/bottom of the horizontal
 // collection view.
-const CGFloat kHorizontalListVerticalPadding = 16;
+const CGFloat kHorizontalListVerticalPadding = 28;
 
 // The vertical spacing between cells.
-const CGFloat kSpacingBetweenCells = 10;
+const CGFloat kVerticalSpacingBetweenCells = 10;
+
+// The horizontal spacing between cells.
+const CGFloat kHorizontalSpacingBetweenCells = 0;
 
 // The vertical spacing below the header.
 const CGFloat kSpacingBelowHeader = 10;
@@ -105,13 +108,12 @@ const CGFloat kSpacingBelowHeader = 10;
 - (NSCollectionLayoutSection*)backgroundCellSectionForLayoutEnvironment:
     (id<NSCollectionLayoutEnvironment>)layoutEnvironment {
   BOOL isCompactHeight = IsCompactHeight(layoutEnvironment.traitCollection);
-  BOOL isCompactWidth = IsCompactWidth(layoutEnvironment.traitCollection);
 
   NSCollectionLayoutSize* itemSize = [NSCollectionLayoutSize
       sizeWithWidthDimension:
           [NSCollectionLayoutDimension
-              estimatedDimension:isCompactWidth ? kCompactBackgroundCellWidth
-                                                : kRegularBackgroundCellWidth]
+              estimatedDimension:isCompactHeight ? kRegularBackgroundCellWidth
+                                                 : kCompactBackgroundCellWidth]
              heightDimension:
                  [NSCollectionLayoutDimension
                      estimatedDimension:isCompactHeight
@@ -132,11 +134,11 @@ const CGFloat kSpacingBelowHeader = 10;
   section.orthogonalScrollingBehavior =
       UICollectionLayoutSectionOrthogonalScrollingBehaviorContinuous;
 
-  section.interGroupSpacing = kSpacingBetweenCells;
+  section.interGroupSpacing = kHorizontalSpacingBetweenCells;
 
   section.contentInsets = NSDirectionalEdgeInsetsMake(
-      0, kHorizontalListHorizontalPadding, kHorizontalListVerticalPadding,
-      kHorizontalListHorizontalPadding);
+      -kSpacingBelowHeader, kHorizontalListHorizontalPadding,
+      kHorizontalListVerticalPadding, kHorizontalListHorizontalPadding);
 
   return section;
 }
@@ -165,7 +167,7 @@ const CGFloat kSpacingBelowHeader = 10;
 
   // Adds spacing between cells, as well as content insets so that the cells
   // have the correct width.
-  section.interGroupSpacing = kSpacingBetweenCells;
+  section.interGroupSpacing = kVerticalSpacingBetweenCells;
   section.contentInsets = NSDirectionalEdgeInsetsMake(
       [self doesPageHaveHeader] ? kSpacingBelowHeader : 0,
       kVerticalListHorizontalPadding, 0, kVerticalListHorizontalPadding);

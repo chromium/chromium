@@ -4,11 +4,15 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
 
+#import "base/i18n/number_formatting.h"
 #import "base/memory/raw_ptr.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/set_up_list/utils.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_navigation_delegate.h"
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_consumer.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_consumer.h"
@@ -52,6 +56,19 @@
        [self isModuleEnabledForType:CustomizationToggleType::kDiscover]});
 
   [self.mainPageConsumer populateToggles:toggleMap];
+
+  if (IsNTPBackgroundCustomizationEnabled()) {
+    NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*
+        backgroundCustomizationConfigurationMap =
+            [NSMutableDictionary dictionary];
+
+    // TODO(crbug.com/408243803): fetch background customization
+    // configurations and fill the `backgroundCustomizationConfigurationMap` and
+    // `selectedBackgroundId`.
+    [self.mainPageConsumer populateBackgroundCustomizationConfigurations:
+                               backgroundCustomizationConfigurationMap
+                                                    selectedBackgroundId:nil];
+  }
 }
 
 - (void)configureDiscoverPageData {
@@ -244,6 +261,11 @@
 
 - (void)dismissMenuPage {
   [self.navigationDelegate dismissMenuPage];
+}
+
+- (void)applyBackgroundForConfiguration:
+    (BackgroundCustomizationConfiguration*)backgroundConfiguration {
+  // TODO(crbug.com/408243803): apply NTP background configuration to NTP.
 }
 
 @end

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_cell+subclassing.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -16,38 +17,38 @@ const CGFloat kSymbolAddBackgroundPointSize = 12;
 
 @implementation HomeCustomizationBackgroundPickerCell
 
-- (instancetype)initWithFrame:(CGRect)frame {
-  self = [super initWithFrame:frame];
-  if (self) {
-    self.backgroundColor = [UIColor colorNamed:kGrey200Color];
+- (void)willMoveToSuperview:(UIView*)newSuperview {
+  [super willMoveToSuperview:newSuperview];
 
-    UIImage* plusIcon = SymbolWithPalette(
-        CustomSymbolWithPointSize(kPlusCircleFillSymbol,
-                                  kSymbolAddBackgroundPointSize),
-        @[
-          // The color of the 'plus'.
-          [UIColor whiteColor],
-          // The filling color of the circle.
-          [UIColor colorNamed:kBlueColor]
-        ]);
+  self.innerContentView.backgroundColor = [UIColor colorNamed:kGrey200Color];
+  self.borderWrapperView.layer.borderColor = nil;
+  self.borderWrapperView.layer.borderWidth = 0;
 
-    UIButton* addButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [addButton
-        setImage:[plusIcon
-                     imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
-        forState:UIControlStateNormal];
+  UIImage* plusIcon = SymbolWithPalette(
+      CustomSymbolWithPointSize(kPlusCircleFillSymbol,
+                                kSymbolAddBackgroundPointSize),
+      @[
+        // The color of the 'plus'.
+        [UIColor whiteColor],
+        // The filling color of the circle.
+        [UIColor colorNamed:kBlueColor]
+      ]);
 
-    addButton.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.contentView addSubview:addButton];
+  UIButton* addButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [addButton
+      setImage:[plusIcon
+                   imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+      forState:UIControlStateNormal];
 
-    [NSLayoutConstraint activateConstraints:@[
-      [addButton.centerXAnchor
-          constraintEqualToAnchor:self.contentView.centerXAnchor],
-      [addButton.centerYAnchor
-          constraintEqualToAnchor:self.contentView.centerYAnchor],
-    ]];
-  }
-  return self;
+  addButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.innerContentView addSubview:addButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [addButton.centerXAnchor
+        constraintEqualToAnchor:self.innerContentView.centerXAnchor],
+    [addButton.centerYAnchor
+        constraintEqualToAnchor:self.innerContentView.centerYAnchor],
+  ]];
 }
 
 @end

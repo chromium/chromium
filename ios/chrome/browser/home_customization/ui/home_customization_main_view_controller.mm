@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 
-#import <map>
-
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/home_customization/model/background_customization_configuration.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_cell.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_collection_configurator.h"
@@ -39,6 +39,14 @@
 
   // Registration for the background picker cell.
   UICollectionViewCellRegistration* _backgroundPickerCellRegistration;
+
+  // Contains the options the HomeCustomizationBackgroundCell will use to set a
+  // background on the NTP.
+  NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*
+      _backgroundCustomizationConfigurationMap;
+
+  // The id of the selected background cell.
+  NSString* _selectedBackgroundId;
 }
 
 // Synthesized from HomeCustomizationViewControllerProtocol.
@@ -79,7 +87,7 @@
                                   NSString* itemIdentifier) {
              CustomizationToggleType toggleType =
                  (CustomizationToggleType)[itemIdentifier integerValue];
-             BOOL enabled = self.toggleMap.at(toggleType);
+             BOOL enabled = weakSelf.toggleMap.at(toggleType);
              [cell configureCellWithType:toggleType enabled:enabled];
              cell.mutator = weakSelf.mutator;
            }];
@@ -90,6 +98,18 @@
              configurationHandler:^(HomeCustomizationBackgroundCell* cell,
                                     NSIndexPath* indexPath,
                                     NSString* itemIdentifier) {
+               __strong __typeof(weakSelf) strongSelf = weakSelf;
+               BackgroundCustomizationConfiguration* backgroundConfiguration =
+                   strongSelf->_backgroundCustomizationConfigurationMap
+                       [itemIdentifier];
+               [cell configureWithBackgroundOption:backgroundConfiguration];
+               if ([itemIdentifier
+                       isEqualToString:strongSelf->_selectedBackgroundId]) {
+                 [weakSelf.collectionView
+                     selectItemAtIndexPath:indexPath
+                                  animated:NO
+                            scrollPosition:UICollectionViewScrollPositionNone];
+               }
                cell.mutator = weakSelf.mutator;
              }];
 
@@ -113,8 +133,9 @@
     // Create background customization section and add items to it.
     [snapshot
         appendSectionsWithIdentifiers:@[ kCustomizationSectionBackground ]];
-    [snapshot appendItemsWithIdentifiers:[self identifiersForBackgroundCells:
-                                                   kNumberOfRecentBackgrounds]
+    [snapshot appendItemsWithIdentifiers:
+                  [self identifiersForBackgroundCells:
+                            _backgroundCustomizationConfigurationMap]
                intoSectionWithIdentifier:kCustomizationSectionBackground];
     [snapshot appendItemsWithIdentifiers:@[ kBackgroundPickerCellIdentifier ]
                intoSectionWithIdentifier:kCustomizationSectionBackground];
@@ -185,6 +206,17 @@
   return nil;
 }
 
+- (BOOL)collectionView:(UICollectionView*)collectionView
+    shouldSelectItemAtIndexPath:(NSIndexPath*)indexPath {
+  CustomizationSection* section =
+      [self.diffableDataSource snapshot].sectionIdentifiers[indexPath.section];
+  NSString* itemIdentifier =
+      [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
+
+  return [section isEqualToString:kCustomizationSectionBackground] &&
+         ![itemIdentifier isEqualToString:kBackgroundPickerCellIdentifier];
+}
+
 #pragma mark - HomeCustomizationMainConsumer
 
 - (void)populateToggles:(std::map<CustomizationToggleType, BOOL>)toggleMap {
@@ -203,19 +235,43 @@
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
+- (void)
+    populateBackgroundCustomizationConfigurations:
+        (NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*)
+            backgroundCustomizationConfigurationMap
+                             selectedBackgroundId:
+                                 (NSString*)selectedBackgroundId {
+  _backgroundCustomizationConfigurationMap =
+      backgroundCustomizationConfigurationMap;
+  _selectedBackgroundId = selectedBackgroundId;
+
+  // Recreate the snapshot with the new items to take into account all the
+  // changes of items presence (add/remove).
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
+      [self dataSnapshot];
+
+  // Reconfigure all present items to ensure that they are updated in case their
+  // content changed.
+  [snapshot reconfigureItemsWithIdentifiers:
+                [self identifiersForBackgroundCells:
+                          _backgroundCustomizationConfigurationMap]];
+
+  [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
 #pragma mark - Helpers
 
 // Returns an array of identifiers for the background options, which can be used
 // by the snapshot.
-- (NSArray*)identifiersForBackgroundCells:(NSInteger)numberOfBackgrounds {
+- (NSArray<NSString*>*)identifiersForBackgroundCells:
+    (NSMutableDictionary<NSString*, BackgroundCustomizationConfiguration*>*)
+        backgroundCustomizationConfigurationMap {
   NSMutableArray<NSString*>* identifiers = [[NSMutableArray alloc] init];
-  for (int i = 0; i < numberOfBackgrounds; i++) {
-    [identifiers
-        addObject:[NSString
-                      stringWithFormat:@"%@%d", kBackgroundCellIdentifier, i]];
+  for (NSString* key in backgroundCustomizationConfigurationMap) {
+    [identifiers addObject:key];
   }
 
-  return identifiers;
+  return [identifiers copy];
 }
 
 // Returns an array of identifiers for a map of toggle types, which can be
