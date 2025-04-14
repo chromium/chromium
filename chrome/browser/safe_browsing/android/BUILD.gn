@@ -169,7 +169,10 @@ android_library("javatests") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionMediatorTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/AdvancedProtectionStatusManagerAndroidBridgeTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java_test_support",
