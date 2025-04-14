@@ -33,22 +33,15 @@
 
 namespace media {
 
-enum class HlsFallbackImplementation {
-  kNone,
-  kMediaPlayer,
-  kBuiltinHlsPlayer,
-};
-
 // This class manages both an implementation of media::Demuxer and of
-// media::DataSource. DataSource, in particular may be null, since both MSE
-// playback and Android's MediaPlayerRenderer do not make use of it. In the
-// case that DataSource is present, these objects should have a similar
-// lifetime, and both must be destroyed on the media thread, so owning them
-// together makes sense. Additionally, the demuxer or data source can change
-// during the lifetime of the player that owns them, so encapsulating that
-// change logic separately lets the media player impl (WMPI) be a bit simpler,
-// and dedicate a higher percentage of its complexity to managing playback
-// state.
+// media::DataSource. DataSource, in particular may be null, since MSE playback
+// does not make use of it. In the case that DataSource is present, these
+// objects should have a similar lifetime, and both must be destroyed on the
+// media thread, so owning them together makes sense. Additionally, the demuxer
+// or data source can change during the lifetime of the player that owns them,
+// so encapsulating that change logic separately lets the media player impl
+// (WMPI) be a bit simpler, and dedicate a higher percentage of its complexity
+// to managing playback state.
 class MEDIA_EXPORT DemuxerManager {
  public:
   class Client {
@@ -117,10 +110,10 @@ class MEDIA_EXPORT DemuxerManager {
   void OnPipelineError(PipelineStatus error);
   void SetLoadedUrl(GURL url);
   const GURL& LoadedUrl() const;
-#if BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_HLS_DEMUXER)
   void PopulateHlsHistograms(bool cryptographic_url);
   PipelineStatus SelectHlsFallbackMechanism(bool cryptographic_url);
-#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
   void DisallowFallback();
 
   // Methods that help manage demuxers
@@ -138,10 +131,6 @@ class MEDIA_EXPORT DemuxerManager {
       bool needs_first_frame,
       DemuxerCreatedCB on_demuxer_created,
       base::flat_map<std::string, std::string> headers);
-
-#if BUILDFLAG(IS_ANDROID)
-  void SetAllowMediaPlayerRendererCredentials(bool allow);
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Methods that help manage or access |data_source_|
   DataSource* GetDataSourceForTesting() const;
@@ -184,12 +173,6 @@ class MEDIA_EXPORT DemuxerManager {
   void RemoveMediaTrack(const media::MediaTrack&);
 #endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
-#if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<media::Demuxer> CreateMediaUrlDemuxer(
-      bool hls_content,
-      base::flat_map<std::string, std::string> headers);
-#endif  // BUILDFLAG(IS_ANDROID)
-
   void SetDemuxer(std::unique_ptr<Demuxer> demuxer);
 
   // Memory pressure listener specifically for when using ChunkDemuxer.
@@ -223,8 +206,7 @@ class MEDIA_EXPORT DemuxerManager {
   // SourceBuffer append (slower, but MSE spec compliant).
   bool enable_instant_source_buffer_gc_ = false;
 
-  // Used for MediaUrlDemuxer when playing HLS content, as well as
-  // FFmpegDemuxer in most cases. Also used for creating MemoryDataSource
+  // Used for FFmpegDemuxer in most cases and for creating MemoryDataSource
   // objects.
   // Note: this may be very large, take care when making copies.
   GURL loaded_url_;
@@ -250,13 +232,7 @@ class MEDIA_EXPORT DemuxerManager {
   // RAII member for notifying demuxers of memory pressure.
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
 
-#if BUILDFLAG(IS_ANDROID)
-  // Used to determine whether to allow credentials or not for
-  // MediaPlayerRenderer.
-  bool allow_media_player_renderer_credentials_ = false;
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  HlsFallbackImplementation hls_fallback_ = HlsFallbackImplementation::kNone;
+  bool hls_fallback_ = false;
 
   // Are we allowed to switch demuxer mid-stream when fallback error codes
   // are encountered
