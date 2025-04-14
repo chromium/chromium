@@ -158,7 +158,7 @@ DiscountInfo CreateValidDiscountInfo(const std::string& detail,
                                      const std::string& discount_code,
                                      int64_t id,
                                      bool is_merchant_wide,
-                                     double expiry_time_sec,
+                                     std::optional<double> expiry_time_sec,
                                      DiscountClusterType cluster_type) {
   DiscountInfo discount_info;
 
@@ -169,7 +169,9 @@ DiscountInfo CreateValidDiscountInfo(const std::string& detail,
   discount_info.discount_code = discount_code;
   discount_info.id = id;
   discount_info.is_merchant_wide = is_merchant_wide;
-  discount_info.expiry_time_sec = expiry_time_sec;
+  if (expiry_time_sec.has_value()) {
+    discount_info.expiry_time_sec = expiry_time_sec;
+  }
 
   return discount_info;
 }

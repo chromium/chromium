@@ -33,6 +33,7 @@ OldCookieControlsBubbleViewTest.*
 CryptoModulePasswordDialogTest.*
 *DataControlsDialogUiTest.*
 DeepScanningFailureModalDialogTest.*
+DiscountBubbleViewBrowserTest.*
 *DiceWebSigninInterceptionBubblePixelTest.InvokeUi_*
 *DiceWebSigninInterceptionBubbleV1SyncPromoPixelTest.InvokeUi_*
 *DiceWebSigninInterceptionBubbleV2PixelTest.InvokeUi_*
