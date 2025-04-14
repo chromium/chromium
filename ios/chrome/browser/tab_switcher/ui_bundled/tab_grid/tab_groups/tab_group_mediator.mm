@@ -628,6 +628,10 @@ constexpr CGFloat kActivityLabelAvatarSize = 16;
       [self addObservationForWebState:insertChange.inserted_web_state()];
       break;
     }
+    case WebStateListChange::Type::kGroupCreate: {
+      // Don't show tab group when created.
+      break;
+    }
     default:
       [super didChangeWebStateList:webStateList change:change status:status];
       break;
