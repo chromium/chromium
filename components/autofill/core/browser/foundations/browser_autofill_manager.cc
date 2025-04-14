@@ -2648,11 +2648,6 @@ AutofillField* BrowserAutofillManager::GetAutofillField(
   return autofill_field;
 }
 
-autofill_metrics::CreditCardFormEventLogger&
-BrowserAutofillManager::GetCreditCardFormEventLogger() {
-  return metrics_->credit_card_form_event_logger;
-}
-
 std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormData& form,
     const FormStructure& form_structure,

@@ -46,13 +46,6 @@ CreditCardFormEventLogger::CreditCardFormEventLogger(
 
 CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 
-void CreditCardFormEventLogger::OnBnplSuggestionShown() {
-  if (!has_logged_bnpl_suggestion_shown_) {
-    LogBnplFormEvent(BnplFormEvent::kBnplSuggestionShownOnce);
-    has_logged_bnpl_suggestion_shown_ = true;
-  }
-}
-
 void CreditCardFormEventLogger::OnDidFetchSuggestion(
     const std::vector<Suggestion>& suggestions,
     bool with_offer,

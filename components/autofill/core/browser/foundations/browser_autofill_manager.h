@@ -291,8 +291,9 @@ class BrowserAutofillManager : public AutofillManager {
       const FormGlobalId& form_id,
       const FieldGlobalId& field_id) const;
 
-  virtual autofill_metrics::CreditCardFormEventLogger&
-  GetCreditCardFormEventLogger();
+  autofill_metrics::CreditCardFormEventLogger& GetCreditCardFormEventLogger() {
+    return metrics_->credit_card_form_event_logger;
+  }
 
  protected:
   // Returns the card image for `credit_card`. If the `credit_card` has a card

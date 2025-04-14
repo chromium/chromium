@@ -142,16 +142,6 @@ TEST_P(BnplMetricsTest, LogBnplIssuerSelection) {
       GetEnumForIssuerId(issuer_id), /*expected_bucket_count=*/1);
 }
 
-TEST_F(BnplMetricsTest, LogBnplAddedOnUpdateSuggestion) {
-  base::HistogramTester histogram_tester;
-
-  LogBnplFormEvent(BnplFormEvent::kBnplSuggestionShownOnce);
-
-  histogram_tester.ExpectBucketCount("Autofill.FormEvents.CreditCard.Bnpl",
-                                     BnplFormEvent::kBnplSuggestionShownOnce,
-                                     1);
-}
-
 TEST_P(BnplMetricsTest, LogBnplPopupWindowShown) {
   base::HistogramTester histogram_tester;
   std::string_view issuer_id = GetBnplIssuerId();

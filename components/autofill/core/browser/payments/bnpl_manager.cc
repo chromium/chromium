@@ -20,7 +20,6 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/autofill_optimization_guide.h"
-#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -450,8 +449,6 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
   // suggestion list.
   std::get<1>(*suggestions_shown_response)
       .Run(update_suggestions_result.suggestions, trigger_source);
-  browser_autofill_manager_->GetCreditCardFormEventLogger()
-      .OnBnplSuggestionShown();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

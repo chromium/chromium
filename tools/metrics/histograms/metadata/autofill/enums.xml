@@ -2987,7 +2987,8 @@ Called by update_autofill_enums.py.-->
 
 <enum name="BnplFormEvent">
   <int value="0" label="Suggestions shown (once)"/>
-  <int value="1" label="A Buy Now Pay Later suggestion was shown (once)"/>
+<!-- Temporary note: Enum value '1' is reserved for SuggestionsAddOnUpdateSuggestion -->
+
   <int value="2" label="Suggestion accepted (once)"/>
   <int value="3" label="Form filled with Affirm VCN (once)"/>
   <int value="4" label="Form filled with Zip VCN (once)"/>
