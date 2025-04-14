@@ -16,6 +16,7 @@
 #include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
+#include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/value_store/value_store_factory_impl.h"
@@ -282,7 +283,8 @@ ContentVerifier* DesktopAndroidExtensionSystem::content_verifier() {
 std::unique_ptr<ExtensionSet>
 DesktopAndroidExtensionSystem::GetDependentExtensions(
     const Extension* extension) {
-  return std::make_unique<ExtensionSet>();
+  return SharedModuleService::Get(browser_context_)
+      ->GetDependentExtensions(extension);
 }
 
 void DesktopAndroidExtensionSystem::InstallUpdate(
