@@ -14,11 +14,14 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/process_manager.h"
+#include "extensions/browser/process_map.h"
 #include "extensions/browser/script_injection_tracker.h"
 #include "extensions/browser/ui_util.h"
 #include "extensions/common/extension.h"
@@ -118,6 +121,46 @@ bool CanCrossIncognito(const Extension* extension,
   CHECK(extension);
   return IsIncognitoEnabled(extension->id(), context) &&
          !IncognitoInfo::IsSplitMode(extension);
+}
+
+bool IsExtensionIdle(const std::string& extension_id,
+                     content::BrowserContext* context) {
+  std::vector<std::string> ids_to_check;
+  ids_to_check.push_back(extension_id);
+
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  if (extension && extension->is_shared_module()) {
+    // We have to check all the extensions that use this shared module for idle
+    // to tell whether it is really 'idle'.
+    std::unique_ptr<ExtensionSet> dependents =
+        ExtensionSystem::Get(context)->GetDependentExtensions(extension);
+    for (const auto& dependent : *dependents) {
+      ids_to_check.push_back(dependent->id());
+    }
+  }
+
+  ProcessManager* process_manager = ProcessManager::Get(context);
+  ProcessMap* process_map = ProcessMap::Get(context);
+  for (const auto& id : ids_to_check) {
+    ExtensionHost* host = process_manager->GetBackgroundHostForExtension(id);
+    if (host) {
+      return false;
+    }
+
+    if (!process_manager->GetRenderFrameHostsForExtension(id).empty()) {
+      return false;
+    }
+
+    // TODO(devlin): We can probably remove the checks above (for background
+    // hosts and frame hosts). If an extension has any active frames, it should
+    // have a dedicated process.
+    if (process_map->ExtensionHasProcess(id)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool IsPromptingEnabled() {

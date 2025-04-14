@@ -4,11 +4,11 @@
 
 #include "chrome/browser/extensions/update_install_gate.h"
 
-#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 
@@ -43,9 +43,7 @@ InstallGate::Action UpdateInstallGate::ShouldDelay(const Extension* extension,
                : INSTALL;
   } else {
     // Delay installation if the extension is not idle.
-    return !extensions::util::IsExtensionIdle(extension->id(), profile_)
-               ? DELAY
-               : INSTALL;
+    return !util::IsExtensionIdle(extension->id(), profile_) ? DELAY : INSTALL;
   }
 }
 

@@ -55,6 +55,11 @@ bool IsIncognitoEnabled(const ExtensionId& extension_id,
 bool CanCrossIncognito(const Extension* extension,
                        content::BrowserContext* context);
 
+// Returns true if the extension associated with `extension_id` is idle and it
+// is safe to perform actions such as updating.
+bool IsExtensionIdle(const ExtensionId& extension_id,
+                     content::BrowserContext* browser_context);
+
 // Returns true if prompting for external extensions is enabled.
 bool IsPromptingEnabled();
 
