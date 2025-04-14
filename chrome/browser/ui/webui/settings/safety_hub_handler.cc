@@ -178,12 +178,8 @@ SafetyHubHandler::SafetyHubHandler(Profile* profile)
     : profile_(profile), clock_(base::DefaultClock::GetInstance()) {
   prefs_observation_.Observe(ExtensionPrefs::Get(profile_));
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
-  auto* build_state = g_browser_process->GetBuildState();
-  build_state->AddObserver(this);
 }
-SafetyHubHandler::~SafetyHubHandler() {
-  g_browser_process->GetBuildState()->RemoveObserver(this);
-}
+SafetyHubHandler::~SafetyHubHandler() = default;
 
 // static
 std::unique_ptr<SafetyHubHandler> SafetyHubHandler::GetForProfile(
@@ -525,13 +521,6 @@ void SafetyHubHandler::HandleGetVersionCardData(const base::Value::List& args) {
 
   ResolveJavascriptCallback(callback_id,
                             base::Value(safety_hub::GetVersionCardData()));
-}
-
-void SafetyHubHandler::OnUpdate(const BuildState* build_state) {
-  AllowJavascript();
-
-  FireWebUIListener("chrome-version-maybe-changed",
-                    safety_hub::GetVersionCardData());
 }
 
 void SafetyHubHandler::HandleGetSafetyHubEntryPointData(
