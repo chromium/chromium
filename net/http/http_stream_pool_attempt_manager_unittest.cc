@@ -118,6 +118,10 @@ class Preconnector {
     key_builder_.set_destination(destination);
   }
 
+  explicit Preconnector(const HttpStreamKey& key) {
+    key_builder_.from_key(key);
+  }
+
   Preconnector(const Preconnector&) = delete;
   Preconnector& operator=(const Preconnector&) = delete;
 
@@ -4258,6 +4262,50 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ResumeMultiplePausedJobsAndFailAgain) {
                 Optional(IsError(ERR_CONNECTION_RESET)));
     requesters[i]->ResetRequest();
   }
+}
+
+// Regression test for crbug.com/406932139. When a request (job) is resumed,
+// it should handle an existing SpdySession if exists.
+TEST_F(HttpStreamPoolAttemptManagerTest, ResumePausedJobExistingSpdySession) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v6("2001:db8::1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto failed_data = std::make_unique<SequencedSocketData>();
+  failed_data->set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(failed_data.get());
+
+  HttpStreamKey stream_key = StreamKeyBuilder(kDefaultDestination).Build();
+
+  // The first request fails.
+  StreamRequester failing_requester(stream_key);
+  failing_requester.RequestStream(pool());
+  failing_requester.WaitForResult();
+  EXPECT_THAT(failing_requester.result(),
+              Optional(IsError(ERR_CONNECTION_RESET)));
+
+  // These request/preconnect are paused as the previous request failed and
+  // isn't destroyed yet.
+  StreamRequester requester(stream_key);
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+  Preconnector preconnector(stream_key);
+  preconnector.Preconnect(pool());
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  // Simulate creating a SpdySession before resuming the paused
+  // request/preconnect.
+  CreateFakeSpdySession(stream_key);
+
+  // Destroy the first request to resume the paused request/preconnect.
+  failing_requester.ResetRequest();
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoHTTP2);
+  preconnector.WaitForResult();
+  EXPECT_THAT(preconnector.result(), Optional(IsOk()));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, ReleaseStreamWhileFailing) {

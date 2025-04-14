@@ -26,6 +26,7 @@
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
+#include "net/spdy/spdy_http_stream.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -175,6 +176,30 @@ void HttpStreamPool::Job::Resume() {
         job_net_log_.source().AddToEventParameters(dict);
         return dict;
       });
+
+  // There might be an existing SpdySession after resuming `this`.
+  // TODO(crbug.com/406932139): Check existing QuicSession too.
+  base::WeakPtr spdy_session = group_->pool()->FindAvailableSpdySession(
+      group_->stream_key(), group_->spdy_session_key(),
+      delegate_->enable_ip_based_pooling(), request_net_log_);
+  if (spdy_session) {
+    if (IsPreconnect()) {
+      // Using PostTask to avoid a dangling pointer. Calling
+      // `delegate_->OnPreconnectComplete()` deletes `this` synchronously.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&Job::OnPreconnectComplete,
+                                    weak_ptr_factory_.GetWeakPtr(), OK));
+    } else {
+      auto http_stream = std::make_unique<SpdyHttpStream>(
+          spdy_session, request_net_log_.source(),
+          group_->http_network_session()
+              ->spdy_session_pool()
+              ->GetDnsAliasesForSessionKey(group_->spdy_session_key()));
+      delegate_->OnStreamReady(this, std::move(http_stream),
+                               NextProto::kProtoHTTP2);
+    }
+    return;
+  }
 
   StartInternal();
 }
