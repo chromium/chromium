@@ -441,7 +441,7 @@ TEST_F(ExtensionAppTest, DisableAndEnable) {
 }
 
 TEST_F(ExtensionAppTest, Uninstall) {
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   EXPECT_EQ((std::vector<std::string>{"Hosted App", "Packaged App 1"}),
             GetModelContent(model_updater_.get()));
@@ -455,7 +455,7 @@ TEST_F(ExtensionAppTest, UninstallTerminatedApp) {
   // Simulate an app termination.
   service_->TerminateExtension(kPackagedApp2Id);
 
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   EXPECT_EQ((std::vector<std::string>{"Hosted App", "Packaged App 1"}),
             GetModelContent(model_updater_.get()));

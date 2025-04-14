@@ -343,7 +343,7 @@ class TestKioskLoaderVisitor
     }
 
     for (const auto& extension_id : removed_extensions) {
-      extension_service_->UninstallExtension(
+      extension_registrar_->UninstallExtension(
           extension_id,
           extensions::UNINSTALL_REASON_ORPHANED_EXTERNAL_EXTENSION, nullptr);
     }

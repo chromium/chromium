@@ -35,8 +35,9 @@ void AccessibilityExtensionLoader::SetBrowserContext(
   content::BrowserContext* prev_browser_context = browser_context_;
   browser_context_ = browser_context;
 
-  if (!loaded_)
+  if (!loaded_) {
     return;
+  }
 
   // If the extension was loaded on the previous browser context (which isn't
   // the current browser context), unload it there.
@@ -57,8 +58,9 @@ void AccessibilityExtensionLoader::Load(
     base::OnceClosure done_cb) {
   browser_context_ = browser_context;
 
-  if (loaded_)
+  if (loaded_) {
     return;
+  }
 
   loaded_ = true;
   LoadExtension(browser_context_, std::move(done_cb));
@@ -114,17 +116,16 @@ void AccessibilityExtensionLoader::ReinstallExtensionForKiosk(
     content::BrowserContext* browser_context,
     base::OnceClosure done_cb) {
   DCHECK(was_reset_for_kiosk_);
-
-  auto* extension_service =
-      extensions::ExtensionSystem::Get(browser_context)->extension_service();
   std::u16string error;
-  extension_service->UninstallExtension(
-      extension_id_, extensions::UninstallReason::UNINSTALL_REASON_REINSTALL,
-      &error);
+  extensions::ExtensionRegistrar::Get(browser_context)
+      ->UninstallExtension(
+          extension_id_,
+          extensions::UninstallReason::UNINSTALL_REASON_REINSTALL, &error);
   extensions::ComponentLoader::Get(browser_context)->Reload(extension_id_);
 
-  if (done_cb)
+  if (done_cb) {
     std::move(done_cb).Run();
+  }
 }
 
 void AccessibilityExtensionLoader::UnloadExtension(

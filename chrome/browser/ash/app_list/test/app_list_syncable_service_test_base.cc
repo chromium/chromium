@@ -62,8 +62,8 @@ void AppListSyncableServiceTestBase::InstallExtension(
 }
 
 void AppListSyncableServiceTestBase::RemoveExtension(const std::string& id) {
-  service()->UninstallExtension(id, extensions::UNINSTALL_REASON_FOR_TESTING,
-                                nullptr);
+  registrar()->UninstallExtension(id, extensions::UNINSTALL_REASON_FOR_TESTING,
+                                  nullptr);
 
   // Allow async callbacks to run.
   base::RunLoop().RunUntilIdle();

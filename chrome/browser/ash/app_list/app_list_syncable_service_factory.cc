@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
+#include "extensions/browser/extension_registrar_factory.h"
+#include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -79,6 +81,10 @@ AppListSyncableServiceFactory::AppListSyncableServiceFactory()
   dependent_factories.insert(apps::AppServiceProxyFactory::GetInstance());
   dependent_factories.insert(
       ash::FileSuggestKeyedServiceFactory::GetInstance());
+  dependent_factories.insert(
+      extensions::ExtensionRegistrarFactory::GetInstance());
+  dependent_factories.insert(
+      extensions::ExtensionRegistryFactory::GetInstance());
   for (auto* dependent_factory : dependent_factories)
     DependsOn(dependent_factory);
 }

@@ -88,7 +88,7 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
   }
 
   void RemoveExtension(const Extension* extension) {
-    service()->UninstallExtension(
+    registrar()->UninstallExtension(
         extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   }
 

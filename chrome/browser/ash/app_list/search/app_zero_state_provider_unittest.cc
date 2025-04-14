@@ -84,11 +84,11 @@ TEST_F(AppZeroStateProviderTest, FetchRecommendations) {
 TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   // Disable the pre-installed high-priority extensions. This test simulates
   // a brand new profile being added to a device, and should not include these.
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   base::RunLoop().RunUntilIdle();
@@ -176,11 +176,11 @@ TEST_F(AppZeroStateProviderTest, FetchUnlaunchedRecommendations) {
 
 TEST_F(AppZeroStateProviderTest, HideNotShownInLauncher) {
   // Disable the pre-installed high-priority extensions.
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kHostedAppId, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp1Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
-  service_->UninstallExtension(
+  registrar()->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   // Install two apps, one which is hidden and one shown in the launcher.
