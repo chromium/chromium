@@ -114,7 +114,7 @@ bool IsAccessibilityLanguageDetectionEnabled() {
 
 BASE_FEATURE(kExtensionManifestV3NetworkSpeechSynthesis,
              "ExtensionManifestV3NetworkSpeechSynthesis",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsExtensionManifestV3NetworkSpeechSynthesisEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kExtensionManifestV3NetworkSpeechSynthesis);

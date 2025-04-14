@@ -9670,23 +9670,6 @@
             ]
         }
     ],
-    "ExtensionManifestV3NetworkSpeechSynthesis": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExtensionManifestV3NetworkSpeechSynthesis"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExtensionsCollapseMainMenu": [
         {
             "platforms": [
