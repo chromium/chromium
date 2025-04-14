@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/data_sharing/model/data_sharing_tab_helper.h"
 
 #import "base/check.h"
+#import "components/collaboration/internal/metrics.h"
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/data_sharing/model/ios_share_url_interception_context.h"
@@ -53,6 +54,10 @@ void DataSharingTabHelper::ShouldAllowRequest(
 
     CHECK(current_browser, base::NotFatalUntil::M138);
 
+    collaboration::metrics::RecordJoinPageTransitionType(
+        data_sharing_service->GetLogger(), request_info.transition_type);
+    // TODO(crbug.com/409825122): Avoid calling
+    // HandleShareURLNavigationIntercepted for some navigation cases.
     auto context =
         std::make_unique<data_sharing::IOSShareURLInterceptionContext>(
             current_browser);

@@ -15,6 +15,7 @@ source_set("model") {
   ]
   deps = [
     ":context",
+    "//components/collaboration/internal:core_internal",
     "//components/data_sharing/internal",
     "//components/data_sharing/public",
     "//ios/chrome/app:tests_hook",
