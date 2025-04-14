@@ -137,8 +137,7 @@ class ProcessorEntityTracker {
   // Creates a new processor entity (must not be deleted outside current
   // object).
   ProcessorEntity* AddInternal(const std::string& storage_key,
-                               const EntityData& data,
-                               int64_t server_version);
+                               const EntityData& data);
 
   // A map of client tag hash to sync entities known to this tracker. This
   // should contain entries and metadata, although the entities may not always
