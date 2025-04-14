@@ -40,6 +40,14 @@ class StoragePartition;
 class GURL;
 class BoundSessionParamsStorage;
 
+// Enables bound sessions marked with "wsbeta" flag even when the main
+// `switches::kBoundSessionCredentialsEnabled` feature is disabled.
+BASE_DECLARE_FEATURE(kEnableBoundSessionCredentialsWsbetaBypass);
+
+// Enables the maintenance of bound sessions stored on disk even after the main
+// `switches::kBoundSessionCredentialsEnabled` feature gets disabled.
+BASE_DECLARE_FEATURE(kEnableBoundSessionCredentialsContinuity);
+
 class BoundSessionCookieRefreshServiceImpl
     : public BoundSessionCookieRefreshService,
       public BoundSessionCookieController::Delegate,
