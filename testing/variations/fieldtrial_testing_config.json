@@ -2894,6 +2894,31 @@
             ]
         }
     ],
+    "AvoidUnnecessaryBeforeUnloadCheckSync": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "DumpWithoutCrashing"
+                    },
+                    "enable_features": [
+                        "AvoidUnnecessaryBeforeUnloadCheckSync"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidUnnecessaryForcedLayoutMeasurements": [
         {
             "platforms": [
@@ -20705,22 +20730,6 @@
                         "ArcRoundedWindowCompat",
                         "FeatureManagementRoundedWindows",
                         "RoundedWindows"
-                    ]
-                }
-            ]
-        }
-    ],
-    "RunBeforeUnloadClosureOnStackInvestigation": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RunBeforeUnloadClosureOnStackInvestigation"
                     ]
                 }
             ]
