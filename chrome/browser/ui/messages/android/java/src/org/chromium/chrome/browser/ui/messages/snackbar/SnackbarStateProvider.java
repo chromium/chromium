@@ -6,6 +6,10 @@ package org.chromium.chrome.browser.ui.messages.snackbar;
 
 import androidx.annotation.ColorInt;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+@NullMarked
 public interface SnackbarStateProvider {
     /** An observer to be notified of changes to the overlay panel. */
     interface Observer {
@@ -15,7 +19,7 @@ public interface SnackbarStateProvider {
          * @param isShowing True if a snackbar is currently shown, false otherwise.
          * @param color The color of the current {@link Snackbar}.
          */
-        default void onSnackbarStateChanged(boolean isShowing, @ColorInt Integer color) {}
+        default void onSnackbarStateChanged(boolean isShowing, @Nullable @ColorInt Integer color) {}
     }
 
     /**

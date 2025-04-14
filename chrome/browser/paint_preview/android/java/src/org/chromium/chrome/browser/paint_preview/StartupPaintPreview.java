@@ -166,13 +166,13 @@ public class StartupPaintPreview implements PlayerManager.Listener {
             mSnackbarController =
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             mShowingSnackbar = false;
                             remove(ExitCause.SNACK_BAR_ACTION);
                         }
 
                         @Override
-                        public void onDismissNoAction(Object actionData) {
+                        public void onDismissNoAction(@Nullable Object actionData) {
                             mShowingSnackbar = false;
                         }
                     };
@@ -189,7 +189,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         snackbar.setAction(
                 resources.getString(R.string.paint_preview_startup_upgrade_snackbar_action), null);
         snackbar.setDuration(SNACKBAR_DURATION_MS);
-        SnackbarManagerProvider.from(mTab.getWindowAndroid()).showSnackbar(snackbar);
+        snackbarManager.showSnackbar(snackbar);
         mShowingSnackbar = true;
         mSnackbarShownCount++;
     }

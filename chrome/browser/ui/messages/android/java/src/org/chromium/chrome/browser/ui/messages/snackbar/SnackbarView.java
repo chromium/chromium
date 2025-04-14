@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
@@ -24,9 +26,10 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 import androidx.core.view.ViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.ui.messages.R;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
@@ -43,10 +46,11 @@ import org.chromium.ui.interpolators.Interpolators;
  */
 // TODO (jianli): Change this class and its methods back to package protected after the offline
 // indicator experiment is done.
+@NullMarked
 public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private static final int MAX_LINES = 5;
 
-    private final WindowAndroid mWindowAndroid;
+    private final @Nullable WindowAndroid mWindowAndroid;
     protected final ViewGroup mContainerView;
     protected final ViewGroup mSnackbarView;
     protected final TemplatePreservingTextView mMessageView;
@@ -54,8 +58,8 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
     private final ImageView mProfileImageView;
     private final int mAnimationDuration;
     private final boolean mIsTablet;
-    @Nullable private final EdgeToEdgeSupplier mEdgeToEdgeSupplier;
-    @Nullable private final EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+    private final @Nullable EdgeToEdgeSupplier mEdgeToEdgeSupplier;
+    private final @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
     private ViewGroup mOriginalParent;
     protected ViewGroup mParent;
     protected Snackbar mSnackbar;
@@ -191,6 +195,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         if (!SnackbarManager.isFloatingSnackbarEnabled()) {
             // We do not use mEdgeToEdgePadAdjuster if FloatingSnackbar is enabled.
             if (mEdgeToEdgeSupplier != null) {
+                assumeNonNull(mEdgeToEdgePadAdjuster);
                 mEdgeToEdgeSupplier.registerAdjuster(mEdgeToEdgePadAdjuster);
             }
         }
@@ -467,7 +472,7 @@ public class SnackbarView implements InsetObserver.WindowInsetObserver {
         return mSnackbarView;
     }
 
-    public EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
+    public @Nullable EdgeToEdgePadAdjuster getEdgeToEdgePadAdjusterForTesting() {
         return mEdgeToEdgePadAdjuster;
     }
 }
