@@ -3094,6 +3094,7 @@ target(_test_target_type, "net_unittests") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
     "//third_party/anonymous_tokens:anonymous_tokens_tests",
+    "//third_party/perfetto:perfetto_test_support",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/simdutf:simdutf",
     "//third_party/zlib",

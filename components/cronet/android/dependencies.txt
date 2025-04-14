@@ -8,6 +8,7 @@
 //base/third_party/double_conversion
 //base/third_party/icu
 //base/third_party/superfasthash
+//base/tracing/protos
 //base/version_info/android
 //build
 //build/android
@@ -62,6 +63,7 @@
 //third_party/llvm-libc
 //third_party/metrics_proto
 //third_party/modp_b64
+//third_party/perfetto
 //third_party/protobuf
 //third_party/rust
 //third_party/simdutf

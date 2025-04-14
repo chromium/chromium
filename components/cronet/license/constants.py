@@ -16,6 +16,7 @@ def create_license_post_processing(*args: Mapper) -> Callable:
   return __update_metadata
 
 RAW_LICENSE_TO_FORMATTED_DETAILS = {
+    "blessing": ("blessing", LicenseType.UNENCUMBERED, "SPDX-license-identifier-blessing"),
     "BSD": ("BSD", LicenseType.NOTICE, "SPDX-license-identifier-BSD"),
     "BSD-2-Clause": ("BSD_2_CLAUSE", LicenseType.NOTICE, "SPDX-license-identifier-BSD-2-Clause"),
     "BSD 3-Clause": (

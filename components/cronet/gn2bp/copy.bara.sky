@@ -102,6 +102,7 @@ origin_files = glob([
     # "third_party/zlib/**",
     "url/third_party/mozilla/**",
     "third_party/simdutf/**",
+    "third_party/perfetto/**",
   ]) + glob([
     "third_party/compiler-rt/**",
   ]) - glob([

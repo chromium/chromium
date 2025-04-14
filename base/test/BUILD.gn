@@ -210,7 +210,11 @@ static_library("test_support") {
     "//third_party/libxml:xml_reader",
   ]
 
-  if (enable_base_tracing) {
+  # Cronet doesn't need the Perfetto test support stuff. This dependency is
+  # problematic for Cronet because of targets like
+  #   //third_party/perfetto/src/trace_processor/perfetto_sql/stdlib:stdlib_generated_file
+  # that would require special support in gn2bp (AOSP Cronet).
+  if (enable_base_tracing && !is_cronet_build) {
     public_deps += [ "//third_party/perfetto:perfetto_test_support" ]
     public_deps += [ ":test_trace_processor" ]
     sources += [
