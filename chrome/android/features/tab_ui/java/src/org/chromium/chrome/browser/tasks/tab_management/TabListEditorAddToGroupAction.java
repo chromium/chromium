@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
+
 import android.app.Activity;
 import android.graphics.drawable.Drawable;
 
@@ -20,7 +22,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator.TabGroupCreationCallback;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -117,11 +121,16 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
 
     @Override
     public void onSelectionStateChange(List<Integer> tabIds) {
+        TabGroupModelFilter filter = getTabGroupModelFilter();
+        TabModel tabModel = filter.getTabModel();
+        List<Tab> tabs = TabModelUtils.getTabsById(tabIds, tabModel, false);
         int numTabs =
                 editorSupportsActionOnRelatedTabs()
-                        ? getTabCountIncludingRelatedTabs(getTabGroupModelFilter(), tabIds)
+                        ? getTabCountIncludingRelatedTabs(filter, tabIds)
                         : tabIds.size();
-        setEnabledAndItemCount(!tabIds.isEmpty(), numTabs);
+
+        setEnabledAndItemCount(
+                !areAnyTabsPartOfSharedGroup(tabModel, tabs, null) && !tabIds.isEmpty(), numTabs);
     }
 
     @Override
@@ -129,11 +138,10 @@ public class TabListEditorAddToGroupAction extends TabListEditorAction {
         assert !tabs.isEmpty() : "Add tab to group action should not be enabled for no tabs.";
         BottomSheetController controller = getActionDelegate().getBottomSheetController();
         TabGroupModelFilter filter = getTabGroupModelFilter();
-        Tab destinationTab = tabs.get(0);
-        Profile profile = destinationTab.getProfile();
 
+        Tab destinationTab = tabs.get(0);
         if (hasTabGroups()) {
-            showBottomSheet(tabs, filter, profile, controller);
+            showBottomSheet(tabs, filter, destinationTab.getProfile(), controller);
             RecordUserAction.record("TabGroupParity.TabListEditorMenuActions.GroupsExist");
         } else {
             createNewTabGroup(tabs, filter, destinationTab);
