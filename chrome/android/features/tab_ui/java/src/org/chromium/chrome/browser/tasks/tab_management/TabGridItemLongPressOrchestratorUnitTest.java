@@ -15,9 +15,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
+import android.view.ViewConfiguration;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -39,6 +42,12 @@ import org.chromium.ui.util.RunnableTimer;
 /** Unit tests for {@link TabGridItemLongPressOrchestrator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGridItemLongPressOrchestratorUnitTest {
+    private static class MockViewHolder extends ViewHolder {
+        public MockViewHolder(@NonNull View itemView) {
+            super(itemView);
+        }
+    }
+
     private static final float LONG_PRESS_DP_CANCEL_THRESHOLD = 8.f;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -50,11 +59,12 @@ public class TabGridItemLongPressOrchestratorUnitTest {
     @Mock private View mCardView;
     @Mock private RunnableTimer mTimer;
 
-    private static final long TIMER_DURATION = 200L;
+    private static final long TIMER_DURATION = ViewConfiguration.getLongPressTimeout();
     private static final int TAB_ID = 1;
     private static final int TAB_INDEX = 0;
 
     private final Supplier<RecyclerView> mRecyclerViewSupplier = () -> mRecyclerView;
+    private ViewHolder mViewHolder;
     private TabGridItemLongPressOrchestrator mOrchestrator;
 
     @Before
@@ -68,6 +78,8 @@ public class TabGridItemLongPressOrchestratorUnitTest {
         when(mModel.size()).thenReturn(1);
         when(mModel.indexFromTabId(TAB_ID)).thenReturn(TAB_INDEX);
         when(mRecyclerView.getChildAt(TAB_INDEX)).thenReturn(mCardView);
+        mViewHolder = new MockViewHolder(mCardView);
+        when(mRecyclerView.findViewHolderForAdapterPosition(TAB_INDEX)).thenReturn(mViewHolder);
         when(mOnLongPressListener.onLongPressEvent(anyInt(), any())).thenReturn(mCancelListener);
 
         mOrchestrator =
@@ -142,11 +154,9 @@ public class TabGridItemLongPressOrchestratorUnitTest {
 
     @Test
     public void testProcessChildDisplacement_belowThreshold() {
-        enableForceLongPresses();
-
         mOrchestrator.onSelectedChanged(TAB_INDEX, ItemTouchHelper.ACTION_STATE_DRAG);
         verify(mTimer).startTimer(eq(TIMER_DURATION), any(Runnable.class));
-        verify(mOnLongPressListener).onLongPressEvent(TAB_ID, mCardView);
+        verify(mOnLongPressListener, never()).onLongPressEvent(TAB_ID, mCardView);
 
         mOrchestrator.processChildDisplacement(
                 LONG_PRESS_DP_CANCEL_THRESHOLD * LONG_PRESS_DP_CANCEL_THRESHOLD - 1.f);
@@ -166,6 +176,7 @@ public class TabGridItemLongPressOrchestratorUnitTest {
 
         mOrchestrator.processChildDisplacement(
                 LONG_PRESS_DP_CANCEL_THRESHOLD * LONG_PRESS_DP_CANCEL_THRESHOLD + 1.f);
+        verify(mRecyclerView).findViewHolderForAdapterPosition(TAB_INDEX);
         verify(mCancelListener).cancelLongPress();
 
         // We cancel before setting the timer and once on idle. So this should be invoked exactly
