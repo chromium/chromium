@@ -63,8 +63,8 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
        autofill::features::kAutofillAcrossIframesIos,
        autofill::features::kAutofillAcrossIframesIosThrottling,
        autofill::features::kAutofillDisallowSlashDotLabels,
-       kAutofillFixPaymentSheetSpam,
-       kAutofillCorrectUserEditedBitInParsedField},
+       kAutofillFixPaymentSheetSpam, kAutofillCorrectUserEditedBitInParsedField,
+       kAutofillAllowDefaultPreventedSubmission},
       /* disabled_features= */ {});
 
   AutofillFormFeaturesInjector injector(&fake_web_state_,
@@ -87,7 +87,9 @@ TEST_F(AutofillFormInjectorTest, InjectFlagsWebFrames) {
                     u"__gCrWeb.autofill_form_features."
                     u"setAutofillFixPaymentSheetSpam(true);",
                     u"__gCrWeb.autofill_form_features."
-                    u"setAutofillCorrectUserEditedBitInParsedField(true);"));
+                    u"setAutofillCorrectUserEditedBitInParsedField(true);",
+                    u"__gCrWeb.autofill_form_features."
+                    u"setAutofillAllowDefaultPreventedSubmission(true);"));
   }
 }
 

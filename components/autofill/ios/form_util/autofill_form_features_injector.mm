@@ -63,6 +63,11 @@ void SetAutofillFormFeatureFlags(WebFrame* web_frame) {
       ->SetAutofillCorrectUserEditedBitInParsedField(
           web_frame, base::FeatureList::IsEnabled(
                          kAutofillCorrectUserEditedBitInParsedField));
+
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillAllowDefaultPreventedFormSubmission(
+          web_frame, base::FeatureList::IsEnabled(
+                         kAutofillAllowDefaultPreventedSubmission));
 }
 
 AutofillFormFeaturesInjector::~AutofillFormFeaturesInjector() = default;

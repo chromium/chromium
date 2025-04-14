@@ -57,6 +57,14 @@ instead of using true by default.
 let autofillCorrectUserEditedBitInParsedField: boolean = false;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_correct_user_edited_bit_in_parsed_field)
 
+// LINT.IfChange(autofill_allow_default_prevented_submission)
+/**
+Allows detecting form submissions that are `defaultPrevented` by the page
+content.
+*/
+let autofillAllowDefaultPreventedSubmission: boolean = false;
+// LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_allow_default_prevented_submission)
+
 /**
  * @see autofillAcrossIframes
  */
@@ -141,7 +149,22 @@ function isAutofillCorrectUserEditedBitInParsedField(): boolean {
   return autofillCorrectUserEditedBitInParsedField;
 }
 
-// Expose globally via `gCrWebLegacy` instead of `export` to ensure state (feature
+
+/**
+ * @see autofillAllowDefaultPreventedSubmission
+ */
+function setAutofillAllowDefaultPreventedSubmission(enabled: boolean): void {
+  autofillAllowDefaultPreventedSubmission = enabled;
+}
+
+/**
+ * @see autofillAllowDefaultPreventedSubmission
+ */
+function isAutofillAllowDefaultPreventedSubmission(): boolean {
+  return autofillAllowDefaultPreventedSubmission;
+}
+
+// Expose globally via `gCrWeb` instead of `export` to ensure state (feature
 // on/off) is maintained across imports.
 gCrWebLegacy.autofill_form_features = {
   setAutofillAcrossIframes,
@@ -156,4 +179,6 @@ gCrWebLegacy.autofill_form_features = {
   isAutofillFixPaymentSheetSpamEnabled,
   setAutofillCorrectUserEditedBitInParsedField,
   isAutofillCorrectUserEditedBitInParsedField,
+  setAutofillAllowDefaultPreventedSubmission,
+  isAutofillAllowDefaultPreventedSubmission,
 };

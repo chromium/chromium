@@ -48,6 +48,10 @@ class AutofillFormFeaturesJavaScriptFeature : public web::JavaScriptFeature {
   void SetAutofillCorrectUserEditedBitInParsedField(web::WebFrame* frame,
                                                     bool enabled);
 
+  // Enables/disables allowing `defaultPrevented` form submission in Autofill.
+  void SetAutofillAllowDefaultPreventedFormSubmission(web::WebFrame* frame,
+                                                      bool enabled);
+
  private:
   friend class base::NoDestructor<AutofillFormFeaturesJavaScriptFeature>;
 

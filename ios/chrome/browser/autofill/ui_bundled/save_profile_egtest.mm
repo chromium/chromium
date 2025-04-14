@@ -40,6 +40,7 @@ namespace {
 // URLs of the test pages.
 constexpr char kProfileForm[] = "/autofill_smoke_test.html";
 constexpr char kXframeFormPage[] = "/xhr_xframe_submit.html";
+constexpr char kFullAddressFormPage[] = "/full_address_form.html";
 
 // Ids of fields in the form.
 constexpr char kFormElementName[] = "form_name";
@@ -53,6 +54,11 @@ constexpr base::TimeDelta kTypingCoolDownPeriod = base::Milliseconds(50);
 
 // Email value used by the tests.
 constexpr char kEmail[] = "foo1@gmail.com";
+
+struct FullAddressFormPageParams {
+  // True if the submission should be default prevented.
+  bool default_prevented = false;
+};
 
 // Matcher for the banner button.
 id<GREYMatcher> BannerButtonMatcher() {
@@ -203,6 +209,17 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
     config.features_enabled.push_back(kAutofillFixXhrForXframe);
   }
 
+  if ([self isRunningTest:@selector
+            (testSubmissionDetection_defaultPrevented_whenAllowed)]) {
+    config.features_enabled.push_back(kAutofillAllowDefaultPreventedSubmission);
+  }
+
+  if ([self isRunningTest:@selector
+            (testSubmissionDetection_defaultPrevented_whenNotAllowed)]) {
+    config.features_disabled.push_back(
+        kAutofillAllowDefaultPreventedSubmission);
+  }
+
   return config;
 }
 
@@ -269,6 +286,29 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   // Ensure profile is saved locally.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
                   @"Profile should have been saved.");
+}
+
+// Loads, fills, and submits the full address form.
+- (void)loadAndSubmitFullAddressFormWithParams:
+    (FullAddressFormPageParams)params {
+  // Start server.
+  GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
+
+  // Get the URL for the served test page with the query parameters for setting
+  // it up.
+  const GURL baseURL = self.testServer->GetURL(kFullAddressFormPage);
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(params.default_prevented ? "preventDefault" : "");
+  const GURL fullURL = baseURL.ReplaceComponents(replacements);
+
+  // Load the URL and wait for its content to be loaded.
+  [ChromeEarlGrey loadURL:fullURL];
+
+  // Call the helper function embedded in the page content to fill the form.
+  [ChromeEarlGrey evaluateJavaScriptForSideEffect:@"FillForm();"];
+
+  // Submit the form via the dedicated <button>.
+  [ChromeEarlGrey tapWebStateElementWithID:@"submit-button"];
 }
 
 // Focuses on the name field and initiates autofill on the form with the saved
@@ -736,6 +776,55 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
       assertWithMatcher:grey_enabled()];
 
   // Sign out.
+  [SigninEarlGrey signOut];
+}
+
+// Tests that submission is detected hence the infobar is displayed when the
+// "form" event behind the submission is `defaultPrevented` while the
+// corresponding feature allows it.
+- (void)testSubmissionDetection_defaultPrevented_whenAllowed {
+  // Sign-in so the profile can be saved into the account.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Submit the form with `defaultPrevented` not considered.
+  FullAddressFormPageParams params{.default_prevented = true};
+  [self loadAndSubmitFullAddressFormWithParams:params];
+
+  // Wait on the infobar to be displayed after submission.
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+
+  // Accept the banner to save the profile.
+  [[EarlGrey selectElementWithMatcher:BannerButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Wait for the save profile dialog to appear.
+  [ChromeEarlGrey waitForMatcher:ModalButtonMatcher()];
+
+  // Save the profile.
+  [[EarlGrey selectElementWithMatcher:ModalButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Ensure profile is saved.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been saved.");
+
+  [SigninEarlGrey signOut];
+}
+
+// Tests that submission isn't detected hence the infobar isn't displayed when
+// the "form" event behind the submission is `defaultPrevented` while the
+// corresponding feature doesn't allows it.
+- (void)testSubmissionDetection_defaultPrevented_whenNotAllowed {
+  // Sign-in so the profile would be saved into the account.
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Submit the form with `defaultPrevented` considered.
+  FullAddressFormPageParams params{.default_prevented = true};
+  [self loadAndSubmitFullAddressFormWithParams:params];
+
+  // Make sure the infobar isn't displayed.
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+
   [SigninEarlGrey signOut];
 }
 

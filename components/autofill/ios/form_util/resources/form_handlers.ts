@@ -158,10 +158,20 @@ function formActivity(evt: Event): void {
 
 
 /**
- * Capture form submit actions.
+ * Capture form submit actions. Allow default prevented events (when the feature
+ * is enabled) since handling form submission doesn't interfere with the web
+ * content.
  */
 function submitHandler(evt: Event): void {
-  if (evt['defaultPrevented']) return;
+  const allowDefaultPrevented =
+      gCrWebLegacy.autofill_form_features
+          .isAutofillAllowDefaultPreventedSubmission();
+  // Ignore the submission if it was preventDefault()ed by the content AND
+  // `defaultPrevented` isn't allowed as a feature by Autofill.
+  if (evt['defaultPrevented'] && !allowDefaultPrevented) {
+    return;
+  }
+
   if (!evt.target || (evt.target as Element).tagName !== 'FORM') {
     return;
   }

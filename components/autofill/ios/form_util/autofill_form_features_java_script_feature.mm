@@ -88,4 +88,13 @@ void AutofillFormFeaturesJavaScriptFeature::
       base::Value::List().Append(enabled));
 }
 
+void AutofillFormFeaturesJavaScriptFeature::
+    SetAutofillAllowDefaultPreventedFormSubmission(web::WebFrame* frame,
+                                                   bool enabled) {
+  CHECK(frame);
+  frame->CallJavaScriptFunction(
+      "autofill_form_features.setAutofillAllowDefaultPreventedSubmission",
+      base::Value::List().Append(enabled));
+}
+
 }  // namespace autofill
