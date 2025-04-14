@@ -225,6 +225,28 @@ TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithAllowSetting) {
       url_, site_for_cookies_, origin_, net::CookieSettingOverrides()));
 }
 
+TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithNonNoncePartitionKey) {
+  CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(url_);
+
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      cookie_partition_key));
+}
+
+TEST_F(CookieSettingsBaseTest, CookieAccessNotAllowedWithNoncePartitionKey) {
+  CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(
+          url_, net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create());
+
+  EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      cookie_partition_key));
+}
+
 TEST_F(CookieSettingsBaseTest, ThirdPartyCookiesOverriden) {
   const GURL kThirdPartyURL = GURL("https://3p.com");
 

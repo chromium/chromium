@@ -9314,6 +9314,8 @@ TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   const base::UnguessableToken nonce2 = base::UnguessableToken::Create();
   ResourceRequest request;
   request.url = server_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
 
   // A nonced network request should initially succeed.
   {
@@ -9399,6 +9401,8 @@ TEST_F(NetworkContextTest,
   ResourceRequest request;
   GURL test_url = test_server.GetURL("/hung");
   request.url = test_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
 
   // Exempt `test_url` from network revocation for irrelevant `nonce2`.
   // This will show that exemptions for unrelated nonces are ignored.
@@ -9459,6 +9463,8 @@ TEST_F(NetworkContextTest,
   ResourceRequest request;
   GURL test_url = test_server.GetURL("/hung");
   request.url = test_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
 
   mojo::Remote<mojom::URLLoaderFactory> loader_factory;
   mojom::URLLoaderFactoryParamsPtr params =
@@ -9512,6 +9518,8 @@ TEST_F(NetworkContextTest,
   ResourceRequest request;
   GURL test_url = test_server.GetURL("/echoheader?foo");
   request.url = test_url;
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
 
   // Exempt `test_url` from network revocation for `nonce`.
   base::test::TestFuture<void> exempted;
@@ -9569,6 +9577,8 @@ TEST_F(NetworkContextTest,
   const base::UnguessableToken nonce2 = base::UnguessableToken::Create();
   ResourceRequest request;
   request.url = test_server.GetURL("/echoheader?foo");
+  request.permissions_policy =
+      *CreateStorageAccessPermissionsPolicy(request.url);
 
   mojo::Remote<mojom::URLLoaderFactory> loader_factory;
   mojom::URLLoaderFactoryParamsPtr params =

@@ -13,6 +13,7 @@
 #include "base/types/optional_ref.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
@@ -264,13 +265,27 @@ class CookieSettingsBase {
       net::CookieSourceScheme scheme) const;
 
   // Returns true if the page identified by (`url`, `site_for_cookies`,
-  // `top_frame_origin`) is allowed to access (i.e., read or write) cookies.
-  // `site_for_cookies` is used to determine third-party-ness of `url`.
-  // `top_frame_origin` is used to check if there are any content_settings
-  // exceptions. `top_frame_origin` should at least be specified when
-  // `site_for_cookies` is non-empty.
+  // `top_frame_origin`, `cookie_partition_key`) is allowed to access (i.e.,
+  // read or write) cookies. `site_for_cookies` is used to determine
+  // third-party-ness of `url`. `top_frame_origin` is used to check if there are
+  // any content_settings exceptions. `top_frame_origin` should at least be
+  // specified when `site_for_cookies` is non-empty. `cookie_partition_key` is
+  // used to determine if unpartitioned cookie access should be blocked based on
+  // the this particular CookiePartitionKey (e.g. Fenced Frame and
+  // Credentialless iframes have nonce partition keys and their access should be
+  // blocked).
   //
   // This may be called on any thread.
+  bool IsFullCookieAccessAllowed(
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides,
+      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
+      CookieSettingWithMetadata* cookie_settings = nullptr) const;
+
+  // TODO(https://crbug.com/399826579): Remove this overload and migrate all
+  // callsites to signature above
   bool IsFullCookieAccessAllowed(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
@@ -394,7 +409,9 @@ class CookieSettingsBase {
       const net::SiteForCookies& site_for_cookies,
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides,
+      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
       base::optional_ref<const network::PermissionsPolicy> permissions_policy)
+
       const;
 
  protected:

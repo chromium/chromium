@@ -868,6 +868,22 @@ void CorsURLLoader::CancelRequestIfNonceMatchesAndUrlNotExempted(
   }
 }
 
+std::optional<net::cookie_util::StorageAccessStatus>
+CorsURLLoader::GetStorageAccessStatus() {
+  if (isolation_info_.network_isolation_key().GetNonce()) {
+    return net::cookie_util::StorageAccessStatus::kNone;
+  }
+
+  return context_->cookie_manager()->cookie_settings().GetStorageAccessStatus(
+      request_.url, request_.site_for_cookies,
+      isolation_info_.top_frame_origin(),
+      url_loader_util::CalculateCookieSettingOverrides(
+          factory_cookie_setting_overrides_, devtools_cookie_setting_overrides_,
+          request_,
+          /*emit_metrics=*/false),
+      /*cookie_partition_key=*/std::nullopt, request_.permissions_policy);
+}
+
 void CorsURLLoader::StartRequest() {
   TRACE_EVENT("loading", "CorsURLLoader::StartRequest",
               net::NetLogWithSourceToFlow(net_log_));
@@ -893,14 +909,7 @@ void CorsURLLoader::StartRequest() {
             ->cookie_settings()
             .IsStorageAccessHeadersEnabled(
                 request_.url, isolation_info_.top_frame_origin()) &&
-        context_->cookie_manager()->cookie_settings().GetStorageAccessStatus(
-            request_.url, request_.site_for_cookies,
-            isolation_info_.top_frame_origin(),
-            url_loader_util::CalculateCookieSettingOverrides(
-                factory_cookie_setting_overrides_,
-                devtools_cookie_setting_overrides_, request_,
-                /*emit_metrics=*/false),
-            request_.permissions_policy) ==
+        GetStorageAccessStatus() ==
             net::cookie_util::StorageAccessStatus::kInactive) {
       // Lower layers will add the Sec-Fetch-Storage-Access header, and the
       // server may respond with a "retry" header. The server needs to know the

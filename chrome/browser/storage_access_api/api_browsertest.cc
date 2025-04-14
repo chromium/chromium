@@ -441,8 +441,10 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
   }
 
   void NavigateToPageWithFrame(std::string_view host,
-                               Browser* browser_ptr = nullptr) {
-    GURL main_url(https_server_.GetURL(host, "/iframe.html"));
+                               Browser* browser_ptr = nullptr,
+                               bool credentialless = false) {
+    GURL main_url(https_server_.GetURL(
+        host, credentialless ? "/iframe_credentialless.html" : "/iframe.html"));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         browser_ptr ? browser_ptr : browser(), main_url));
   }
@@ -3468,6 +3470,20 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest, RequestHeadersNone) {
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
+  NavigateFrameTo(GetURL(kHostB));
+  EXPECT_THAT(ObservedRequestHeaders(),
+              Contains(Pair("/", IsSupersetOf<HeaderMapMatchers>({
+                                     Pair("Host", StartsWith(kHostB)),
+                                     Pair(kSecFetchStorageAccess, "none"),
+                                 }))));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       RequestHeadersCredentiallessFrame) {
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA, /*browser_ptr=*/nullptr,
+                          /*credentialless=*/true);
   NavigateFrameTo(GetURL(kHostB));
   EXPECT_THAT(ObservedRequestHeaders(),
               Contains(Pair("/", IsSupersetOf<HeaderMapMatchers>({

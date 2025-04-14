@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
@@ -147,6 +148,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       bool tainted);
 
  private:
+  // Helper function to get the `StorageAccessStatus` for the current `request_`
+  // and `isolation_info_`.
+  std::optional<net::cookie_util::StorageAccessStatus> GetStorageAccessStatus();
+
   void StartRequest();
 
   // Helper for `OnPreflightRequestComplete()`.

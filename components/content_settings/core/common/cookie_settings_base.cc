@@ -385,7 +385,13 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
     const net::SiteForCookies& site_for_cookies,
     base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides,
+    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
     CookieSettingWithMetadata* cookie_settings) const {
+  if (cookie_partition_key.has_value() &&
+      cookie_partition_key->ForbidsUnpartitionedCookieAccess()) {
+    return false;
+  }
+
   CookieSettingWithMetadata setting = GetCookieSettingInternal(
       url, site_for_cookies,
       GetFirstPartyURL(site_for_cookies, top_frame_origin.as_ptr()), overrides,
@@ -396,6 +402,17 @@ bool CookieSettingsBase::IsFullCookieAccessAllowed(
   }
 
   return IsAllowed(setting.cookie_setting());
+}
+
+bool CookieSettingsBase::IsFullCookieAccessAllowed(
+    const GURL& url,
+    const net::SiteForCookies& site_for_cookies,
+    base::optional_ref<const url::Origin> top_frame_origin,
+    net::CookieSettingOverrides overrides,
+    CookieSettingWithMetadata* cookie_settings) const {
+  return IsFullCookieAccessAllowed(
+      url, site_for_cookies, top_frame_origin, overrides,
+      /*cookie_partition_key=*/std::nullopt, cookie_settings);
 }
 
 bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
@@ -831,13 +848,15 @@ CookieSettingsBase::GetStorageAccessStatus(
     const net::SiteForCookies& site_for_cookies,
     base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides,
+    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
     base::optional_ref<const network::PermissionsPolicy> permissions_policy)
+
     const {
   if (!IsThirdPartyRequest(url, site_for_cookies)) {
     return std::nullopt;
   }
   if (IsFullCookieAccessAllowed(url, site_for_cookies, top_frame_origin,
-                                overrides)) {
+                                overrides, cookie_partition_key)) {
     return net::cookie_util::StorageAccessStatus::kActive;
   }
   if (IsEligibleForStorageAccess(overrides)) {
@@ -850,7 +869,8 @@ CookieSettingsBase::GetStorageAccessStatus(
   if (IsFullCookieAccessAllowed(
           url, site_for_cookies, top_frame_origin,
           base::Union(overrides, {net::CookieSettingOverride::
-                                      kStorageAccessGrantEligibleViaHeader}))) {
+                                      kStorageAccessGrantEligibleViaHeader}),
+          cookie_partition_key)) {
     return net::cookie_util::StorageAccessStatus::kInactive;
   }
   return net::cookie_util::StorageAccessStatus::kNone;
