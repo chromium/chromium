@@ -46,6 +46,8 @@
 // refactored.
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 
+using collaboration::messaging::PersistentNotificationType;
+
 namespace {
 
 using ScopedTabGroupSyncObservation =
@@ -397,26 +399,54 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 // Gets messages to indicate that the shared tab group has changed and the user
 // has not seen it yet and keeps the necessary information from the messages.
 - (void)fetchMessagesForGroup {
-  if (!_messagingService || !_messagingService->IsInitialized()) {
+  if (!_messagingService || !_messagingService->IsInitialized() ||
+      !self.webStateList) {
     return;
   }
 
-  std::vector<collaboration::messaging::PersistentMessage> messages =
-      _messagingService->GetMessages(
-          collaboration::messaging::PersistentNotificationType::
-              DIRTY_TAB_GROUP);
-
-  for (auto& message : messages) {
-    if (!message.attribution.tab_group_metadata.has_value()) {
-      continue;
+  for (const TabGroup* tabGroup : self.webStateList->GetGroups()) {
+    tab_groups::LocalTabGroupID groupID = tabGroup->tab_group_id();
+    if ([self hasNotificationsForGroup:groupID]) {
+      _dirtyGroups.insert(groupID);
     }
-    collaboration::messaging::TabGroupMessageMetadata group_data =
-        message.attribution.tab_group_metadata.value();
-    if (!group_data.local_tab_group_id.has_value()) {
-      continue;
-    }
-    _dirtyGroups.insert(group_data.local_tab_group_id.value());
   }
+}
+
+// Returns whether there are notifications to be displayed for `groupID`.
+- (BOOL)hasNotificationsForGroup:(tab_groups::LocalTabGroupID)groupID {
+  std::vector<collaboration::messaging::PersistentMessage> messages =
+      _messagingService->GetMessagesForGroup(
+          groupID,
+          collaboration::messaging::PersistentNotificationType::DIRTY_TAB);
+
+  for (auto const& message : messages) {
+    if (!message.attribution.tab_metadata.has_value()) {
+      continue;
+    }
+
+    if (message.collaboration_event ==
+            collaboration::messaging::CollaborationEvent::TAB_ADDED ||
+        message.collaboration_event ==
+            collaboration::messaging::CollaborationEvent::TAB_UPDATED) {
+      return YES;
+    }
+  }
+
+  messages = _messagingService->GetMessagesForGroup(
+      groupID,
+      collaboration::messaging::PersistentNotificationType::TOMBSTONED);
+
+  for (auto const& message : messages) {
+    if (!message.attribution.tab_metadata.has_value()) {
+      continue;
+    }
+
+    if (message.collaboration_event ==
+        collaboration::messaging::CollaborationEvent::TAB_REMOVED) {
+      return YES;
+    }
+  }
+  return NO;
 }
 
 // Reconfigures a group cell specified by `localTabGroupID`.
@@ -441,6 +471,13 @@ constexpr CGFloat kFacePileAvatarSize = 16;
         browser, TabsCloser::ClosePolicy::kRegularTabs);
   } else {
     _tabsCloser.reset();
+  }
+}
+
+- (void)setWebStateList:(WebStateList*)webStateList {
+  [super setWebStateList:webStateList];
+  if (webStateList) {
+    [self fetchMessagesForGroup];
   }
 }
 
@@ -485,8 +522,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   CHECK(_messagingService);
   CHECK(_messagingService->IsInitialized());
 
-  if (message.type !=
-      collaboration::messaging::PersistentNotificationType::DIRTY_TAB_GROUP) {
+  if (message.type != PersistentNotificationType::DIRTY_TAB_GROUP) {
     return;
   }
   if (!message.attribution.tab_group_metadata.has_value()) {
@@ -519,7 +555,11 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   }
   tab_groups::LocalTabGroupID localTabGroupID =
       group_data.local_tab_group_id.value();
-  _dirtyGroups.erase(localTabGroupID);
+  if ([self hasNotificationsForGroup:localTabGroupID]) {
+    _dirtyGroups.insert(localTabGroupID);
+  } else {
+    _dirtyGroups.erase(localTabGroupID);
+  }
 
   [self reconfigureGroup:localTabGroupID];
 }
