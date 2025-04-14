@@ -35,6 +35,7 @@ class Profile;
 class AutocompleteResult;
 
 namespace content {
+class PreloadingData;
 class WebContents;
 }
 
@@ -308,5 +309,7 @@ GURL GetPrefetchUrlFromMatch(
 GURL GetPrerenderUrlFromMatch(
     const TemplateURLRef::SearchTermsArgs& search_terms_args_from_match,
     TemplateURLService& template_url_service);
+
+void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data);
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_H_

@@ -29,6 +29,7 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/search_preload/search_preload_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/ui_thread_search_terms_data.h"
@@ -57,27 +58,6 @@
 using omnibox::mojom::NavigationPredictor;
 
 namespace {
-void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data) {
-  constexpr content::PreloadingPredictor kPredictors[] = {
-      chrome_preloading_predictor::kDefaultSearchEngine,
-      chrome_preloading_predictor::kOmniboxSearchSuggestDefaultMatch,
-      chrome_preloading_predictor::kOmniboxMousePredictor,
-      chrome_preloading_predictor::kOmniboxSearchPredictor,
-      chrome_preloading_predictor::kOmniboxTouchDownPredictor};
-  for (const auto& predictor : kPredictors) {
-    preloading_data->SetIsNavigationInDomainCallback(
-        predictor,
-        base::BindRepeating(
-            [](content::NavigationHandle* navigation_handle) -> bool {
-              auto transition_type = navigation_handle->GetPageTransition();
-              return (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) &&
-                     ui::PageTransitionCoreTypeIs(
-                         transition_type,
-                         ui::PageTransition::PAGE_TRANSITION_GENERATED) &&
-                     ui::PageTransitionIsNewNavigation(transition_type);
-            }));
-  }
-}
 
 // Recomputes the destination URL for |match| with the updated prefetch
 // information (does not modify |destination_url|). Passing true to
@@ -234,6 +214,28 @@ GURL GetPrerenderUrlFromMatch(
                                 /*prefetch_param=*/"");
 }
 
+void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data) {
+  constexpr content::PreloadingPredictor kPredictors[] = {
+      chrome_preloading_predictor::kDefaultSearchEngine,
+      chrome_preloading_predictor::kOmniboxSearchSuggestDefaultMatch,
+      chrome_preloading_predictor::kOmniboxMousePredictor,
+      chrome_preloading_predictor::kOmniboxSearchPredictor,
+      chrome_preloading_predictor::kOmniboxTouchDownPredictor};
+  for (const auto& predictor : kPredictors) {
+    preloading_data->SetIsNavigationInDomainCallback(
+        predictor,
+        base::BindRepeating(
+            [](content::NavigationHandle* navigation_handle) -> bool {
+              auto transition_type = navigation_handle->GetPageTransition();
+              return (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) &&
+                     ui::PageTransitionCoreTypeIs(
+                         transition_type,
+                         ui::PageTransition::PAGE_TRANSITION_GENERATED) &&
+                     ui::PageTransitionIsNewNavigation(transition_type);
+            }));
+  }
+}
+
 struct SearchPrefetchService::SearchPrefetchServingReasonRecorder {
  public:
   explicit SearchPrefetchServingReasonRecorder(bool for_prerender)
@@ -261,6 +263,7 @@ void SearchPrefetchService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 SearchPrefetchService::SearchPrefetchService(Profile* profile)
     : profile_(profile) {
   CHECK(!profile_->IsOffTheRecord() || IsPrefetchIncognitoEnabled());
+  CHECK(!features::IsDsePreload2Enabled());
 
   if (LoadFromPrefs())
     SaveToPrefs();
