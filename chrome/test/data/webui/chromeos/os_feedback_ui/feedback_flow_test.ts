@@ -138,20 +138,14 @@ suite('FeedbackFlowTestSuite', () => {
     }
   }
 
-  function setSettingsSearchFlags(
-      fromSettingsSearch: boolean, isQueryFingerprint: boolean) {
-    if (fromSettingsSearch || isQueryFingerprint) {
-      const queryParams = new URLSearchParams();
-
-      if (fromSettingsSearch) {
-        queryParams.set(
-            AdditionalContextQueryParam.FROM_SETTINGS_SEARCH, 'true');
-      }
-
-      if (isQueryFingerprint) {
-        queryParams.set(
-            AdditionalContextQueryParam.IS_QUERY_FINGERPRINT, 'true');
-      }
+  function setSettingsSearchDoNotRecordMetricsFlag(
+      settingsSearchDoNotRecordMetrics: boolean) {
+    if (settingsSearchDoNotRecordMetrics) {
+      const queryParams = new URLSearchParams(window.location.search);
+      const settingsSearchDoNotRecordMetrics = 'true';
+      queryParams.set(
+          AdditionalContextQueryParam.SETTINGS_SEARCH_DO_NOT_RECORD_METRICS,
+          settingsSearchDoNotRecordMetrics);
 
       window.history.replaceState(null, '', '?' + queryParams.toString());
     } else {
@@ -845,17 +839,13 @@ suite('FeedbackFlowTestSuite', () => {
   });
 
   // Test the sys info and metrics checkbox will not be checked if
-  // fromSettingsSearch flag has been passed and the search query does not
-  // contain the word "fingerprint".
+  // settingsSearchDoNotRecordMetrics flag has been passed.
   test(
       'SysinfoAndMetricsCheckboxIsUncheckedWhenFeedbackIsSentFromSettingsSearchAndQueryDoesNotContainFingerprint',
       async () => {
         testWithInternalAccount();
-        setSettingsSearchFlags(true, false);
+        setSettingsSearchDoNotRecordMetricsFlag(true);
         await initializePage();
-        const feedbackContext = getFeedbackContext();
-        assertTrue(feedbackContext.fromSettingsSearch);
-        assertFalse(feedbackContext.isQueryFingerprint);
 
         await fillDescriptionAndClickContinue();
 
@@ -871,51 +861,8 @@ suite('FeedbackFlowTestSuite', () => {
       'SysinfoAndMetricsCheckboxIsCheckedWhenFeedbackIsSentFromSettingsSearchAndQueryContainsFingerprint',
       async () => {
         testWithInternalAccount();
-        setSettingsSearchFlags(true, true);
+        setSettingsSearchDoNotRecordMetricsFlag(false);
         await initializePage();
-        const feedbackContext = getFeedbackContext();
-        assertTrue(feedbackContext.fromSettingsSearch);
-        assertTrue(feedbackContext.isQueryFingerprint);
-
-        await fillDescriptionAndClickContinue();
-
-        const sysInfoAndMetricsCheckbox =
-            checkAndGetSysInfoAndMetricsCheckbox();
-        assertTrue(sysInfoAndMetricsCheckbox.checked);
-      });
-
-  // Test the sys info and metrics checkbox will be checked if
-  // fromSettingsSearch flag not passed and the search query contains the word
-  // "fingerprint".
-  test(
-      'SysinfoAndMetricsCheckboxIsCheckedWhenFeedbackIsNotSentFromSettingsSearchAndQueryContainsFingerprint',
-      async () => {
-        testWithInternalAccount();
-        setSettingsSearchFlags(false, true);
-        await initializePage();
-        const feedbackContext = getFeedbackContext();
-        assertFalse(feedbackContext.fromSettingsSearch);
-        assertTrue(feedbackContext.isQueryFingerprint);
-
-        await fillDescriptionAndClickContinue();
-
-        const sysInfoAndMetricsCheckbox =
-            checkAndGetSysInfoAndMetricsCheckbox();
-        assertTrue(sysInfoAndMetricsCheckbox.checked);
-      });
-
-  // Test the sys info and metrics checkbox will be checked if
-  // fromSettingsSearch flag not passed and the search query does not contain
-  // the word "fingerprint".
-  test(
-      'SysinfoAndMetricsCheckboxIsCheckedWhenFeedbackIsNotSentFromSettingsSearchAndQueryDoesNotContainFingerprint',
-      async () => {
-        testWithInternalAccount();
-        setSettingsSearchFlags(false, false);
-        await initializePage();
-        const feedbackContext = getFeedbackContext();
-        assertFalse(feedbackContext.fromSettingsSearch);
-        assertFalse(feedbackContext.isQueryFingerprint);
 
         await fillDescriptionAndClickContinue();
 
@@ -1021,7 +968,8 @@ suite('FeedbackFlowTestSuite', () => {
   });
 
   // Test that the extra diagnostics, category tag, page_url, fromAssistant
-  // and fromSettingsSearch flag get set when query parameter is non-empty.
+  // and settingsSearchDoNotRecordMetrics flag get set when query parameter is
+  // non-empty.
   test(
       'AdditionalContextParametersProvidedInUrl_FeedbackContext_Matches',
       async () => {
@@ -1045,10 +993,10 @@ suite('FeedbackFlowTestSuite', () => {
         const fromAssistant = 'true';
         queryParams.set(
             AdditionalContextQueryParam.FROM_ASSISTANT, fromAssistant);
-        const fromSettingsSearch = 'true';
+        const settingsSearchDoNotRecordMetrics = 'true';
         queryParams.set(
-            AdditionalContextQueryParam.FROM_SETTINGS_SEARCH,
-            fromSettingsSearch);
+            AdditionalContextQueryParam.SETTINGS_SEARCH_DO_NOT_RECORD_METRICS,
+            settingsSearchDoNotRecordMetrics);
         // Replace current querystring with the new one.
         window.history.replaceState(null, '', '?' + queryParams.toString());
         await initializePage();
@@ -1069,7 +1017,7 @@ suite('FeedbackFlowTestSuite', () => {
         assertEquals(
             decodeURIComponent(category_tag), feedbackContext.categoryTag);
         assertTrue(feedbackContext.fromAssistant);
-        assertTrue(feedbackContext.fromSettingsSearch);
+        assertTrue(feedbackContext.settingsSearchDoNotRecordMetrics);
 
         // Set the pageUrl in fake feedback context back to its origin value
         // because it's overwritten by the page_url passed from the app.
@@ -1100,7 +1048,7 @@ suite('FeedbackFlowTestSuite', () => {
         assertEquals('', descriptionElement.value);
         assertEquals('', feedbackContext.categoryTag);
         assertFalse(feedbackContext.fromAssistant);
-        assertFalse(feedbackContext.fromSettingsSearch);
+        assertFalse(feedbackContext.settingsSearchDoNotRecordMetrics);
       });
 
   /**
@@ -1334,7 +1282,7 @@ suite('FeedbackFlowTestSuite', () => {
             '"descriptionPlaceholder":"fake description placeholder",' +
             '"fromAssistant": true, ' +
             '"fromAutofill": true, ' +
-            '"fromSettingsSearch": true, ' +
+            '"settingsSearchDoNotRecordMetrics": true, ' +
             '"hasLinkedCrossDevicePhone": true, ' +
             '"isInternalAccount": true, ' +
             '"pageUrl":"chrome://flags/",' +
@@ -1360,7 +1308,7 @@ suite('FeedbackFlowTestSuite', () => {
         '{"fake key1":"fake value1"}', feedbackContext.autofillMetadata);
     assertTrue(feedbackContext.fromAssistant);
     assertTrue(feedbackContext.fromAutofill);
-    assertTrue(feedbackContext.fromSettingsSearch);
+    assertTrue(feedbackContext.settingsSearchDoNotRecordMetrics);
     assertTrue(feedbackContext.hasLinkedCrossDevicePhone);
     assertTrue(feedbackContext.isInternalAccount);
 
@@ -1398,7 +1346,7 @@ suite('FeedbackFlowTestSuite', () => {
         assertEquals('{}', feedbackContext.autofillMetadata);
         assertFalse(feedbackContext.fromAssistant);
         assertFalse(feedbackContext.fromAutofill);
-        assertFalse(feedbackContext.fromSettingsSearch);
+        assertFalse(feedbackContext.settingsSearchDoNotRecordMetrics);
         assertFalse(feedbackContext.isInternalAccount);
         assertFalse(feedbackContext.hasLinkedCrossDevicePhone);
 

@@ -60,10 +60,10 @@ export const AdditionalContextQueryParam = {
   CATEGORY_TAG: 'category_tag',
   PAGE_URL: 'page_url',
   FROM_ASSISTANT: 'from_assistant',
-  FROM_SETTINGS_SEARCH: 'from_settings_search',
+  SETTINGS_SEARCH_DO_NOT_RECORD_METRICS:
+      'settings_search_do_not_record_metrics',
   FROM_AUTOFILL: 'from_autofill',
   AUTOFILL_METADATA: 'autofill_metadata',
-  IS_QUERY_FINGERPRINT: 'is_query_fingerprint',
 };
 
 /**
@@ -339,8 +339,8 @@ export class FeedbackFlowElement extends PolymerElement {
     assert(!!feedbackInfo);
     this.feedbackContext = {
       assistantDebugInfoAllowed: false,
-      fromSettingsSearch: feedbackInfo.fromSettingsSearch ?? false,
-      isQueryFingerprint: feedbackInfo.isQueryFingerprint ?? false,
+      settingsSearchDoNotRecordMetrics:
+          feedbackInfo.settingsSearchDoNotRecordMetrics ?? false,
       isInternalAccount: feedbackInfo.isInternalAccount ?? false,
       wifiDebugLogsAllowed: false,
       traceId: feedbackInfo.traceId ?? 0,
@@ -450,12 +450,11 @@ export class FeedbackFlowElement extends PolymerElement {
     const fromAssistant =
         params.get(AdditionalContextQueryParam.FROM_ASSISTANT);
     this.feedbackContext.fromAssistant = !!fromAssistant;
-    const fromSettingsSearch =
-        params.get(AdditionalContextQueryParam.FROM_SETTINGS_SEARCH);
-    this.set('feedbackContext.fromSettingsSearch', !!fromSettingsSearch);
-    const isQueryFingerprint =
-        params.get(AdditionalContextQueryParam.IS_QUERY_FINGERPRINT);
-    this.set('feedbackContext.isQueryFingerprint', !!isQueryFingerprint)
+    const settingsSearchDoNotRecordMetrics = params.get(
+        AdditionalContextQueryParam.SETTINGS_SEARCH_DO_NOT_RECORD_METRICS);
+    this.set(
+        'feedbackContext.settingsSearchDoNotRecordMetrics',
+        !!settingsSearchDoNotRecordMetrics);
 
     const fromAutofill = params.get(AdditionalContextQueryParam.FROM_AUTOFILL);
     this.feedbackContext.fromAutofill = !!fromAutofill;
