@@ -2210,7 +2210,7 @@
             ]
         }
     ],
-    "AutofillI18nINddressModel": [
+    "AutofillI18nINAddressModel": [
         {
             "platforms": [
                 "android",
