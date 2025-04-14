@@ -61,7 +61,6 @@
 ../../third_party/catapult/devil/devil/utils/run_tests_helper.py
 ../../third_party/catapult/devil/devil/utils/timeout_retry.py
 ../../third_party/catapult/devil/devil/utils/watchdog_timer.py
-../../third_party/catapult/devil/devil/utils/zip_utils.py
 ../../third_party/catapult/third_party/six/six.py
 ../../third_party/jinja2/__init__.py
 ../../third_party/jinja2/_identifier.py
