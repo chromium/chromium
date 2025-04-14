@@ -1453,15 +1453,15 @@
       status: "experimental",
     },
     {
-      // https://chromestatus.com/feature/5064894363992064
+      // https://chromestatus.com/feature/4850737974345728
       name: "CSSViewTransitionAutoName",
       status: "experimental",
       depends_on: ["CSSViewTransitionMatchElement"],
     },
     {
-      // https://chromestatus.com/feature/5064894363992064
+      // https://chromestatus.com/feature/5098745710247936
       name: "CSSViewTransitionMatchElement",
-      status: "experimental"
+      status: "stable"
     },
     {
       // Adds the appearance:base-select CSS value which makes <select>
