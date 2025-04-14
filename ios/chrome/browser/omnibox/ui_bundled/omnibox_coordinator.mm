@@ -270,8 +270,6 @@
   self.returnDelegate = nil;
   [self.zeroSuggestPrefetchHelper disconnect];
   self.zeroSuggestPrefetchHelper = nil;
-
-  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)updateOmniboxState {
