@@ -150,6 +150,18 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
   EXPECT_EQ(0u, window_list.size());
 }
 
+IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
+                       GetTabListForProducerIncognitoWindow) {
+  CreateIncognitoBrowser(ProfileManager::GetActiveUserProfile());
+  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  base::test::TestFuture<std::vector<mojom::WindowPtr>> future;
+  tab_info_collector()->GetWindowTabInfo(future.GetCallback());
+  auto window_list = future.Take();
+
+  EXPECT_EQ(1u, window_list.size());
+}
+
 IN_PROC_BROWSER_TEST_F(TabInfoCollectorConsumerTest,
                        GetTabListForTargetWindow) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
