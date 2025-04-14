@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 
-#include "ash/boca/on_task/on_task_pod_controller.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/functional/bind.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -193,34 +191,18 @@ void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
   if (!browser) {
     return;
   }
-
-  auto* const immersive_mode_controller =
-      BrowserView::GetBrowserViewForBrowser(browser)
-          ->immersive_mode_controller();
-  bool avoid_using_immersive_mode =
-      platform_util::IsBrowserLockedFullscreen(browser) && paused;
-  if (avoid_using_immersive_mode) {
-    // Hide tab strip in pause mode.
-    immersive_mode_controller->SetEnabled(false);
-  } else if (platform_util::IsBrowserLockedFullscreen(browser)) {
-    immersive_mode_controller->SetEnabled(true);
-  }
-
   if (paused) {
     // Focus on the boca homepage in pause mode.
     browser->tab_strip_model()->ActivateTabAt(0);
   }
-
   EnableOrDisableCommandsForTabSwitch(window_id, !paused);
 
-  // Update Ontask pod to enable or disable toggle tab strip visibility.
+  // Configure SWA window and the OnTask pod for paused mode. This needs to be
+  // done after switching tabs to ensure the pod is not visible when in paused
+  // mode.
   LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
-  if (!window_tracker) {
-    return;
-  }
-  auto* const pod_controller = window_tracker->on_task_pod_controller();
-  if (pod_controller) {
-    pod_controller->OnPauseModeChanged(paused);
+  if (window_tracker) {
+    window_tracker->OnPauseModeChanged(paused);
   }
 }
 

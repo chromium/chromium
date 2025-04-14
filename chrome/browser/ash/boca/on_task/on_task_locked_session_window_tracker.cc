@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/boca_window_observer.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
@@ -190,6 +191,30 @@ void LockedSessionWindowTracker::ObserveWebContents(
   Observe(web_content);
 }
 
+void LockedSessionWindowTracker::OnPauseModeChanged(bool paused) {
+  DCHECK(browser_);
+  if (on_task_pod_controller_) {
+    on_task_pod_controller_->OnPauseModeChanged(paused);
+  }
+
+  // Immersive mode needs to be disabled when in pause mode to ensure users
+  // cannot switch tabs. Since there is a possibility that it can be re-enabled
+  // in certain scenarios (like switching to tablet mode), we monitor the
+  // browsing instance for such anomalies.
+  auto* const immersive_mode_controller =
+      BrowserView::GetBrowserViewForBrowser(browser_)
+          ->immersive_mode_controller();
+  if (paused) {
+    immersive_mode_controller->SetEnabled(false);
+    immersive_mode_controller_observation_.Observe(immersive_mode_controller);
+  } else {
+    immersive_mode_controller_observation_.Reset();
+    bool enable_immersive_mode =
+        platform_util::IsBrowserLockedFullscreen(browser_);
+    immersive_mode_controller->SetEnabled(enable_immersive_mode);
+  }
+}
+
 void LockedSessionWindowTracker::set_can_start_navigation_throttle(
     bool is_ready) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -216,6 +241,7 @@ void LockedSessionWindowTracker::CleanupWindowTracker() {
     on_task_blocklist_->CleanupBlocklist();
   }
   on_task_pod_controller_.reset();
+  immersive_mode_controller_observation_.Reset();
   browser_ = nullptr;
   can_open_new_popup_ = true;
   oauth_in_progress_ = false;
@@ -402,4 +428,16 @@ void LockedSessionWindowTracker::DidFinishNavigation(
         base::BindOnce(&LockedSessionWindowTracker::MaybeCloseWebContents,
                        weak_pointer_factory_.GetWeakPtr(), tab->GetWeakPtr()));
   }
+}
+
+void LockedSessionWindowTracker::OnImmersiveRevealStarted() {
+  // Disable immersive mode when in pause mode to ensure the toolbar is not
+  // accessible as it allows for exiting this mode.
+  auto* const immersive_mode_controller =
+      immersive_mode_controller_observation_.GetSource();
+  immersive_mode_controller->SetEnabled(false);
+}
+
+void LockedSessionWindowTracker::OnImmersiveModeControllerDestroyed() {
+  immersive_mode_controller_observation_.Reset();
 }
