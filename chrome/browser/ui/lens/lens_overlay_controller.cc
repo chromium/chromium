@@ -22,7 +22,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -71,6 +70,7 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/lens/lens_overlay_side_panel_result.h"
+#include "components/omnibox/browser/lens_suggest_inputs_utils.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -2562,12 +2562,6 @@ void LensOverlayController::InitializeOverlay(
 
   state_ = State::kOverlay;
 
-  // If there is a pending contextual search request, issue it now that the
-  // overlay is initialized.
-  if (pending_contextual_search_request_) {
-    std::move(pending_contextual_search_request_).Run();
-  }
-
   // Update the entry points state to ensure that the entry points are disabled
   // now that the overlay is showing.
   UpdateEntryPointsState();
@@ -2587,6 +2581,12 @@ void LensOverlayController::InitializeOverlay(
         initialization_data_->primary_content_type_,
         initialization_data_->last_retrieved_most_visible_page_,
         GetUiScaleFactor(), invocation_time_);
+  }
+
+  // If there is a pending contextual search request, issue it now that the
+  // overlay is initialized.
+  if (pending_contextual_search_request_) {
+    std::move(pending_contextual_search_request_).Run();
   }
 
   // TODO(b/352622136): We should not start the lens request until the overlay

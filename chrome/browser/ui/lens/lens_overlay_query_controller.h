@@ -630,8 +630,9 @@ class LensOverlayQueryController {
 
   // Returns whether or not the contextual search query should be sent now or
   // held until the full page content upload is finished. This is only true if
-  // the page content upload is in progress and the partial page content upload
-  // will not yield detailed enough results.
+  // the page content upload is finished and the cluster info is available. If
+  // the cluster info is not available, the query should be held until the
+  // cluster info becomes available.
   bool ShouldSendContextualSearchQuery();
 
   // Returns whether the partial page content contains enough text to yield

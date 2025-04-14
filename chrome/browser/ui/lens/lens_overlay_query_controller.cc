@@ -681,6 +681,8 @@ void LensOverlayQueryController::MaybeRestartQueryFlow() {
 void LensOverlayQueryController::SendFullPageTranslateQuery(
     const std::string& source_language,
     const std::string& target_language) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendFullPageTranslateQuery called when query controller is off";
   translate_options_ = TranslateOptions(source_language, target_language);
 
   // Send a normal full image request. The parameters to make it a translate
@@ -690,6 +692,9 @@ void LensOverlayQueryController::SendFullPageTranslateQuery(
 }
 
 void LensOverlayQueryController::SendEndTranslateModeQuery() {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendEndTranslateModeQuery called when query controller is off";
+
   translate_options_.reset();
   PrepareAndFetchFullImageRequest();
 }
@@ -710,6 +715,9 @@ void LensOverlayQueryController::SendUpdatedPageContent(
     std::optional<std::string> new_page_title,
     std::optional<uint32_t> pdf_current_page,
     const SkBitmap& screenshot) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendUpdatedPageContent called when query controller is off";
+
   if (underlying_page_content.has_value()) {
     underlying_page_contents_ = underlying_page_content.value();
     primary_content_type_ = primary_content_type.value();
@@ -743,6 +751,8 @@ void LensOverlayQueryController::SendUpdatedPageContent(
 
 void LensOverlayQueryController::SendPartialPageContentRequest(
     base::span<const std::u16string> partial_content) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendPartialPageContentRequest called when query controller is off";
   partial_content_ = partial_content;
 
   PrepareAndFetchPartialPageContentRequest();
@@ -753,6 +763,9 @@ void LensOverlayQueryController::SendRegionSearch(
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     std::optional<SkBitmap> region_bytes) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendRegionSearch called when query controller is off";
+
   SendInteraction(/*region=*/std::move(region), /*query_text=*/std::nullopt,
                   /*object_id=*/std::nullopt, lens_selection_type,
                   additional_search_query_params, region_bytes);
@@ -762,6 +775,8 @@ void LensOverlayQueryController::SendContextualTextQuery(
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendContextualTextQuery called when query controller is off";
   if (underlying_page_contents_.empty()) {
     SendTextOnlyQuery(query_text, lens_selection_type,
                       additional_search_query_params);
@@ -792,6 +807,9 @@ void LensOverlayQueryController::SendTextOnlyQuery(
     const std::string& query_text,
     lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendTextOnlyQuery called when query controller is off";
+
   // Although the text only flow might not send an interaction request, we
   // should replace any in-flight interaction requests to cancel previously
   // issued fetches.
@@ -837,6 +855,9 @@ void LensOverlayQueryController::SendMultimodalRequest(
     lens::LensOverlaySelectionType multimodal_selection_type,
     std::map<std::string, std::string> additional_search_query_params,
     std::optional<SkBitmap> region_bytes) {
+  CHECK(query_controller_state_ != QueryControllerState::kOff)
+      << "SendMultimodalRequest called when query controller is off";
+
   if (base::TrimWhitespaceASCII(query_text, base::TRIM_ALL).empty()) {
     return;
   }
@@ -2381,7 +2402,7 @@ void LensOverlayQueryController::OnChunkUploadEndpointFetcherCreated(
 
 bool LensOverlayQueryController::ShouldSendContextualSearchQuery() {
   // Can send the query if the page content request has finished.
-  return !page_content_request_in_progress_;
+  return !page_content_request_in_progress_ && cluster_info_.has_value();
 }
 
 bool LensOverlayQueryController::IsPartialPageContentSubstantial() {
