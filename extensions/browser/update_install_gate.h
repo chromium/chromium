@@ -2,19 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_UPDATE_INSTALL_GATE_H_
-#define CHROME_BROWSER_EXTENSIONS_UPDATE_INSTALL_GATE_H_
+#ifndef EXTENSIONS_BROWSER_UPDATE_INSTALL_GATE_H_
+#define EXTENSIONS_BROWSER_UPDATE_INSTALL_GATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/install_gate.h"
+#include "extensions/browser/install_gate.h"
 
-class Profile;
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace extensions {
 // Delays an extension update if the old version is not idle.
 class UpdateInstallGate : public InstallGate {
  public:
-  explicit UpdateInstallGate(Profile* profile);
+  explicit UpdateInstallGate(content::BrowserContext* browser_context);
 
   UpdateInstallGate(const UpdateInstallGate&) = delete;
   UpdateInstallGate& operator=(const UpdateInstallGate&) = delete;
@@ -25,9 +27,9 @@ class UpdateInstallGate : public InstallGate {
 
  private:
   // Not owned.
-  const raw_ptr<Profile, DanglingUntriaged> profile_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 };
 
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_UPDATE_INSTALL_GATE_H_
+#endif  // EXTENSIONS_BROWSER_UPDATE_INSTALL_GATE_H_

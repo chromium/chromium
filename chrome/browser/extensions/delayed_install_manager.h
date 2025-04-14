@@ -8,9 +8,9 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/install_gate.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/install_gate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"

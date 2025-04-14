@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/update_install_gate.h"
+#include "extensions/browser/update_install_gate.h"
 
 #include <memory>
 

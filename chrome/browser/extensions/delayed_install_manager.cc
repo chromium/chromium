@@ -10,8 +10,8 @@
 #include "base/check.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/extensions/delayed_install_manager_factory.h"
-#include "chrome/browser/extensions/install_gate.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/install_gate.h"
 
 namespace extensions {
 
