@@ -2369,6 +2369,13 @@ using UserFeedbackDataCallback =
   }
 }
 
+- (void)maybeShowSettingsFromViewController {
+  if (self.signinCoordinator) {
+    return;
+  }
+  [self showSettingsFromViewController:nil];
+}
+
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController {
   BOOL hasDefaultBrowserBlueDot = NO;
 

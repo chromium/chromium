@@ -60,6 +60,9 @@ enum class TabGridOpeningMode {
                              referrer:(password_manager::PasswordCheckReferrer)
                                           referrer;
 
+// Shows the Settings UI if nothing else is displayed.
+- (void)maybeShowSettingsFromViewController;
+
 // TODO(crbug.com/41352590) : Do not pass baseViewController through dispatcher.
 // Shows the Settings UI, presenting from `baseViewController`.
 - (void)showSettingsFromViewController:(UIViewController*)baseViewController;
