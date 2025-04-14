@@ -436,9 +436,10 @@ void RevokedPermissionsService::OnContentSettingChanged(
   // When permissions change for a pattern it is either (1) through resetting
   // permissions, e.g. in page info or site settings, (2) user modifying
   // permissions manually, (3) through auto-revocation of unused site
-  // permissions that this module performs, or (4) through auto-revocation of
-  // abusive notifications that this module performs. In (1) and (2) the
-  // pattern should no longer be shown to the user.
+  // permissions that this module performs, (4) through auto-revocation of
+  // abusive notifications that this module performs, or (5) through
+  // auto-revocation of disruptive notifications that this module performs. In
+  // (1) and (2) the pattern should no longer be shown to the user.
   bool should_clean_revoked_permission_data = true;
 
   // If `content_type_set` contains all types, all permissions are changed at
@@ -449,6 +450,7 @@ void RevokedPermissionsService::OnContentSettingChanged(
     switch (content_type_set.GetType()) {
       case ContentSettingsType::REVOKED_UNUSED_SITE_PERMISSIONS:
       case ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS:
+      case ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS:
         // If content setting is changed because of auto revocation, the revoked
         // permission data should not be deleted.
         should_clean_revoked_permission_data = false;
@@ -458,13 +460,17 @@ void RevokedPermissionsService::OnContentSettingChanged(
         // permissions data. However if the permission is changed because of
         // Safety Hub revocation, then the revoked permission data should not be
         // revoked.
-        bool is_abusive_revocation_running =
+        const bool is_abusive_revocation_running =
             IsAbusiveNotificationAutoRevocationEnabled()
                 ? abusive_notification_manager_->IsRevocationRunning()
                 : false;
+        const bool is_disruptive_revocation_running =
+            disruptive_notification_manager_
+                ? disruptive_notification_manager_->IsRevocationRunning()
+                : false;
         should_clean_revoked_permission_data =
             !is_unused_site_revocation_running &&
-            !is_abusive_revocation_running;
+            !is_abusive_revocation_running && !is_disruptive_revocation_running;
         break;
     }
   }
@@ -780,7 +786,7 @@ RevokedPermissionsService::GetRevokedPermissions() {
           chooser_permissions_data_dict->Clone();
     }
 
-    // If the origin has a revoked abusive notification, add `NOTIFICATIONS` to
+    // If the origin has a revoked notification, add `NOTIFICATIONS` to
     // the list of revoked permissions.
     const GURL& url = GURL(revoked_permissions.primary_pattern.ToString());
     if (safety_hub_util::IsUrlRevokedAbusiveNotification(hcsm(), url)) {
@@ -799,6 +805,15 @@ RevokedPermissionsService::GetRevokedPermissions() {
           info.metadata.expiration()) {
         permissions_data.constraints = GetConstraintFromInfo(info);
       }
+    } else if (safety_hub_util::IsUrlRevokedDisruptiveNotification(hcsm(),
+                                                                   url)) {
+      // If the origin has a revoked disruptive notification, add
+      // `NOTIFICATIONS` to the list of revoked permissions.
+      CHECK(disruptive_notification_manager_);
+      permissions_data.permission_types.insert(
+          static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
+      // TODO(crbug.com/406473591): Add revocation type field.
+      // TODO(crbug.com/406473591): Update constraints to the latest one.
     }
 
     result->AddRevokedPermission(permissions_data);
@@ -828,6 +843,33 @@ RevokedPermissionsService::GetRevokedPermissions() {
         revoked_abusive_notification_permission.metadata.lifetime());
 
     result->AddRevokedPermission(permissions_data);
+  }
+
+  if (disruptive_notification_manager_) {
+    ContentSettingsForOneType revoked_disruptive_notifications =
+        disruptive_notification_manager_->GetRevokedNotifications();
+    for (const auto& permission : revoked_disruptive_notifications) {
+      // Skip origins with revoked unused site permissions, since these were
+      // handled above.
+      if (safety_hub_util::IsUrlRevokedUnusedSite(
+              hcsm(), GURL(permission.primary_pattern.ToString()))) {
+        continue;
+      }
+      CHECK(!safety_hub_util::IsUrlRevokedAbusiveNotification(
+          hcsm(), GURL(permission.primary_pattern.ToString())));
+      PermissionsData permissions_data;
+      permissions_data.primary_pattern = permission.primary_pattern;
+      permissions_data.permission_types.insert(
+          static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
+
+      permissions_data.constraints =
+          content_settings::ContentSettingConstraints(
+              permission.metadata.expiration() -
+              permission.metadata.lifetime());
+      permissions_data.constraints.set_lifetime(permission.metadata.lifetime());
+
+      result->AddRevokedPermission(permissions_data);
+    }
   }
 
   return result;
@@ -1041,6 +1083,9 @@ RevokedPermissionsService::GetTrackedUnusedPermissionsForTesting() {
 
 void RevokedPermissionsService::SetClockForTesting(base::Clock* clock) {
   clock_ = clock;
+  if (disruptive_notification_manager_) {
+    disruptive_notification_manager_->SetClockForTesting(clock);  // IN-TEST
+  }
   if (IsAbusiveNotificationAutoRevocationEnabled()) {
     abusive_notification_manager_->SetClockForTesting(clock);  // IN-TEST
   }

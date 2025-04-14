@@ -24,6 +24,11 @@ bool IsUrlRevokedAbusiveNotification(HostContentSettingsMap* hcsm,
 // `url` belongs to a site with revoked unused site permissions.
 bool IsUrlRevokedUnusedSite(HostContentSettingsMap* hcsm, const GURL& url);
 
+// Returns true if `url` belongs to a site with revoked disruptive
+// notifications.
+bool IsUrlRevokedDisruptiveNotification(HostContentSettingsMap* hcsm,
+                                        const GURL& url);
+
 // Returns the list of all `REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS` settings,
 // excluding settings that specify that they should be ignored.
 ContentSettingsForOneType GetRevokedAbusiveNotificationPermissions(

@@ -130,12 +130,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Invalid content setting"/>
   <int value="2" label="Content setting not site scoped"/>
   <int value="3" label="Managed content setting"/>
-  <int value="4" label="Site already in the revoke list"/>
+  <int value="4" label="Site already in the proposed revoke list"/>
   <int value="5" label="False positive"/>
   <int value="6" label="Site not disruptive"/>
-  <int value="7" label="Revoke notification"/>
+  <int value="7" label="Proposed revoke"/>
   <int value="8" label="Notification not revoked because of default block"/>
   <int value="9" label="Previously marked as false positive"/>
+  <int value="10" label="Revoke"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/safety_hub/disruptive_notification_permissions_manager.h:RevocationResult) -->
