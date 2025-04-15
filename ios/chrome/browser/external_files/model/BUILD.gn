@@ -31,6 +31,7 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//base/test:test_support",
+    "//components/sessions:test_support",
     "//ios/chrome/browser/sessions/model",
     "//ios/chrome/browser/sessions/model:fake",
     "//ios/chrome/browser/shared/model/browser",
