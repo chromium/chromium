@@ -1007,7 +1007,7 @@ void DeveloperPrivateRemoveMultipleExtensionsFunction::OnDialogAccepted() {
     }
     // If an extension fails to be uninstalled, it will not pause the
     // uninstall of the other extensions on the list.
-    ExtensionSystem::Get(profile_)->extension_service()->UninstallExtension(
+    ExtensionRegistrar::Get(profile_)->UninstallExtension(
         extension_id, UNINSTALL_REASON_USER_INITIATED, nullptr);
   }
   Respond(NoArguments());

@@ -580,7 +580,7 @@ bool ChromeManagementAPIDelegate::UninstallExtension(
     const ExtensionId& transient_extension_id,
     UninstallReason reason,
     std::u16string* error) const {
-  return ExtensionSystem::Get(context)->extension_service()->UninstallExtension(
+  return extensions::ExtensionRegistrar::Get(context)->UninstallExtension(
       transient_extension_id, reason, error);
 }
 

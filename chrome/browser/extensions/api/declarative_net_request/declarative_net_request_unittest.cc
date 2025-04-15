@@ -2467,8 +2467,8 @@ TEST_P(MultipleRulesetsTest, MultipleExtensionsRuleLimitExceeded) {
       warning_service->GetWarningTypesAffectingExtension(second_extension_id),
       ::testing::ElementsAre(Warning::kEnabledRuleCountExceeded));
 
-  service()->UninstallExtension(first_extension_id,
-                                UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(first_extension_id,
+                                  UNINSTALL_REASON_FOR_TESTING, nullptr);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(1);
 
   service()->DisableExtension(second_extension_id,

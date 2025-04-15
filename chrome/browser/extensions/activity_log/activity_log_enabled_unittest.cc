@@ -182,9 +182,10 @@ TEST_F(ActivityLogEnabledTest, WatchdogSwitch) {
   // Wait for UninstallExtension to complete to avoid race condition with data
   // cleanup at TearDown.
   base::RunLoop loop;
-  extension_service1->UninstallExtension(
-      kExtensionID, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr,
-      loop.QuitClosure());
+  ExtensionRegistrar::Get(profile1.get())
+      ->UninstallExtension(kExtensionID,
+                           extensions::UNINSTALL_REASON_FOR_TESTING, nullptr,
+                           loop.QuitClosure());
   loop.Run();
 
   EXPECT_EQ(0,
@@ -260,9 +261,10 @@ TEST_F(ActivityLogEnabledTest, AppAndCommandLine) {
   // Wait for UninstallExtension to complete to avoid race condition with data
   // cleanup at TearDown.
   base::RunLoop loop;
-  extension_service->UninstallExtension(
-      kExtensionID, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr,
-      loop.QuitClosure());
+  ExtensionRegistrar::Get(profile.get())
+      ->UninstallExtension(kExtensionID,
+                           extensions::UNINSTALL_REASON_FOR_TESTING, nullptr,
+                           loop.QuitClosure());
   loop.Run();
 
   EXPECT_TRUE(activity_log->IsDatabaseEnabled());

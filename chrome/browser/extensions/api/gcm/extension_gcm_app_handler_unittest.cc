@@ -390,7 +390,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   }
 
   void UninstallExtension(const Extension* extension) {
-    extension_service_->UninstallExtension(
+    ExtensionRegistrar::Get(profile())->UninstallExtension(
         extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   }
 
