@@ -23,7 +23,6 @@ class CertificateHandlerTest : public ChromeRenderViewHostTestHarness {
 
     web_ui_.set_web_contents(web_contents());
     cert_handler_.set_web_ui(&web_ui_);
-    pref_service_ = profile()->GetTestingPrefService();
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -41,17 +40,19 @@ class CertificateHandlerTest : public ChromeRenderViewHostTestHarness {
     return cert_handler_.CanEditCertificate(cert_info);
   }
 
+  sync_preferences::TestingPrefServiceSyncable* pref_service() {
+    return profile()->GetTestingPrefService();
+  }
+
  protected:
   content::TestWebUI web_ui_;
   certificate_manager::CertificatesHandler cert_handler_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable, DanglingUntriaged>
-      pref_service_ = nullptr;
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(CertificateHandlerTest, IsCACertificateManagementAllowedPolicyTest) {
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kCACertificateManagementAllowed,
         static_cast<int>(CACertificateManagementPermission::kAll));
 
@@ -62,7 +63,7 @@ TEST_F(CertificateHandlerTest, IsCACertificateManagementAllowedPolicyTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kCACertificateManagementAllowed,
         static_cast<int>(CACertificateManagementPermission::kUserOnly));
 
@@ -73,7 +74,7 @@ TEST_F(CertificateHandlerTest, IsCACertificateManagementAllowedPolicyTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kCACertificateManagementAllowed,
         static_cast<int>(CACertificateManagementPermission::kNone));
 
@@ -133,7 +134,7 @@ TEST_F(CertificateHandlerTest, CanDeleteUserCertificateTest) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kClientCertificateManagementAllowed,
         static_cast<int>(ClientCertificateManagementPermission::kAll));
 
@@ -145,7 +146,7 @@ TEST_F(CertificateHandlerTest, CanDeleteUserCertificateTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kClientCertificateManagementAllowed,
         static_cast<int>(ClientCertificateManagementPermission::kUserOnly));
 
@@ -157,7 +158,7 @@ TEST_F(CertificateHandlerTest, CanDeleteUserCertificateTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kClientCertificateManagementAllowed,
         static_cast<int>(ClientCertificateManagementPermission::kNone));
 
@@ -187,7 +188,7 @@ TEST_F(CertificateHandlerTest, CanDeleteCACertificateTest) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kCACertificateManagementAllowed,
         static_cast<int>(CACertificateManagementPermission::kAll));
 
@@ -199,7 +200,7 @@ TEST_F(CertificateHandlerTest, CanDeleteCACertificateTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kCACertificateManagementAllowed,
         static_cast<int>(CACertificateManagementPermission::kUserOnly));
 
@@ -211,7 +212,7 @@ TEST_F(CertificateHandlerTest, CanDeleteCACertificateTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kCACertificateManagementAllowed,
         static_cast<int>(CACertificateManagementPermission::kNone));
 
@@ -266,7 +267,7 @@ TEST_F(CertificateHandlerTest, CanEditUserCertificateTest) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kClientCertificateManagementAllowed,
         static_cast<int>(ClientCertificateManagementPermission::kAll));
 
@@ -278,7 +279,7 @@ TEST_F(CertificateHandlerTest, CanEditUserCertificateTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kClientCertificateManagementAllowed,
         static_cast<int>(ClientCertificateManagementPermission::kUserOnly));
 
@@ -290,7 +291,7 @@ TEST_F(CertificateHandlerTest, CanEditUserCertificateTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kClientCertificateManagementAllowed,
         static_cast<int>(ClientCertificateManagementPermission::kNone));
 
@@ -320,7 +321,7 @@ TEST_F(CertificateHandlerTest, CanEditCACertificateTest) {
 
 #if BUILDFLAG(IS_CHROMEOS)
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kCACertificateManagementAllowed,
         static_cast<int>(CACertificateManagementPermission::kAll));
 
@@ -332,7 +333,7 @@ TEST_F(CertificateHandlerTest, CanEditCACertificateTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kCACertificateManagementAllowed,
         static_cast<int>(CACertificateManagementPermission::kUserOnly));
 
@@ -344,7 +345,7 @@ TEST_F(CertificateHandlerTest, CanEditCACertificateTest) {
   }
 
   {
-    pref_service_->SetInteger(
+    pref_service()->SetInteger(
         prefs::kCACertificateManagementAllowed,
         static_cast<int>(CACertificateManagementPermission::kNone));
 
