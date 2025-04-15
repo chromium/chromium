@@ -20,27 +20,41 @@
 namespace internal {
 namespace {
 using std::size_t;
-// No expected rewrite
-bool GetAddress(const struct nlmsghdr* header,
+// Expected rewrite:
+// bool GetAddress(base::span<const struct nlmsghdr> header,
+bool GetAddress(base::span<const struct nlmsghdr> header,
                 int header_length,
                 bool* really_deprecated) {
   if (really_deprecated) {
     *really_deprecated = false;
   }
 
-  // No expected rewrite
+  // TODO: NLMSG_DATA is a third-party macro that performs an unsafe operation.
+  // So, `header` should be reiwritten to `header.data()`.
+  //
+  // Expected rewrite:
+  // const struct nlmsghdr* msg =
+  //     reinterpret_cast<const struct nlmsghdr*>(NLMSG_DATA(header.data()));
   const struct nlmsghdr* msg =
       reinterpret_cast<const struct nlmsghdr*>(NLMSG_DATA(header));
   return true;
 }
 
-// No expected rewrite
+// Expected rewrite:
+// template <typename T>
+// T* SafelyCastNetlinkMsgData(base::span<const struct nlmsghdr> header,
+//                             int length) {
 template <typename T>
-T* SafelyCastNetlinkMsgData(const struct nlmsghdr* header, int length) {
+T* SafelyCastNetlinkMsgData(base::span<const struct nlmsghdr> header,
+                            int length) {
   if (length <= 0 || static_cast<size_t>(length) < NLMSG_HDRLEN + sizeof(T)) {
     return nullptr;
   }
-  // no expected rewrite
+  // TODO: NLMSG_DATA is a third-party macro that performs an unsafe operation.
+  // So, `header` should be reiwritten to `header.data()`.
+  //
+  // Expected rewrite:
+  // return reinterpret_cast<const T*>(NLMSG_DATA(header.data()));
   return reinterpret_cast<const T*>(NLMSG_DATA(header));
 }
 }  // namespace

@@ -221,10 +221,10 @@ std::string HashBase64(const std::string& input, size_t output_size = 4) {
 //                                                    `--- line
 template <bool human_readable = false /* Tweak this to debug*/>
 std::string NodeKeyFromRange(const clang::SourceRange& range,
-                             const clang::SourceManager& sources,
+                             const clang::SourceManager& source_manager,
                              const std::string& optional_seed = "") {
   clang::tooling::Replacement replacement(
-      sources, clang::CharSourceRange::getCharRange(range), "");
+      source_manager, clang::CharSourceRange::getCharRange(range), "");
   llvm::StringRef path = replacement.getFilePath();
   llvm::StringRef file_name = llvm::sys::path::filename(path);
 
@@ -235,20 +235,34 @@ std::string NodeKeyFromRange(const clang::SourceRange& range,
   if constexpr (!human_readable) {
     return llvm::formatv(
         "{0}:{1}", ToStringWithPadding(replacement.getOffset(), 7),
-        HashBase64(NodeKeyFromRange<true>(range, sources, optional_seed), 8));
+        HashBase64(NodeKeyFromRange<true>(range, source_manager, optional_seed),
+                   8));
   }
 
   return llvm::formatv("{0}:{1}:{2}:{3}:{4}:{5}",
                        ToStringWithPadding(replacement.getOffset(), 7),
                        HashBase64(path.str() + optional_seed), file_name,
-                       sources.getSpellingLineNumber(range.getBegin()),
-                       sources.getSpellingColumnNumber(range.getBegin()),
+                       source_manager.getSpellingLineNumber(range.getBegin()),
+                       source_manager.getSpellingColumnNumber(range.getBegin()),
                        replacement.getLength());
 }
 
+// Returns the identifier for the given clang node. The returned identifier is
+// unique to a pair of (node, optional_seed). See also `NodeKeyFromRange` for
+// details.
+//
+// Arguments:
+//   node = A clang node whose identifier is returned.
+//   source_manager = The clang::SourceManager of the clang node `node`.
+//   optional_seed = The given string is used to make a variation of the
+//       identifier of `node`. This argument is useful when `node` alone does
+//       not provide enough fine precision.
 template <typename T>
-std::string NodeKey(const T* t, const clang::SourceManager& sources) {
-  return NodeKeyFromRange(t->getSourceRange(), sources);
+std::string NodeKey(const T* node,
+                    const clang::SourceManager& source_manager,
+                    const std::string& optional_seed = "") {
+  return NodeKeyFromRange(node->getSourceRange(), source_manager,
+                          optional_seed);
 }
 
 std::string GetRHS(const MatchFinder::MatchResult& result);
@@ -993,7 +1007,6 @@ static void EmitSingleVariableSpan(const std::string& key,
 static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
                                        const MatchFinder::MatchResult& result) {
   const clang::SourceManager& source_manager = *result.SourceManager;
-  const clang::ASTContext& ast_context = *result.Context;
   const std::string key = NodeKey(size_expr, source_manager);
 
   auto replacement_range =
@@ -1008,8 +1021,7 @@ static std::string getNodeFromSizeExpr(const clang::Expr* size_expr,
         nullptr_expr->getBeginLoc().getLocWithOffset(7)};
     EmitReplacement(
         key, GetReplacementDirective(nullptr_range, "{}", source_manager));
-  } else if (const auto* expr =
-                 result.Nodes.getNodeAs<clang::Expr>("address_expr")) {
+  } else if (result.Nodes.getNodeAs<clang::Expr>("address_expr")) {
     // This case occurs when an address to a variable is used as a buffer:
     //
     //   void UsesBarAsFloatBuffer(size_t size, float* bar);
@@ -1769,6 +1781,148 @@ std::string getArrayNode(bool is_lhs, const MatchFinder::MatchResult& result) {
   assert(false && "Unexpected match in getArrayNode()");
 }
 
+// Spanifies the matched function parameter/return type, and connects relevant
+// function declarations (forward declarations and overridden methods) to each
+// other bidirectionally per the matched function parameter/return type. Note
+// that a function definition is a function declaration by definition.
+// Tests are in: fct-decl-tests-original.cc
+//
+// Example) Given the following C++ code,
+//
+//   void F(short* arg1, long* arg2);         // [1] First declaration
+//   void F(short* arg1, long* arg2) { ... }  // [2] Second declaration
+//   // Only arg1 is connected to a source and sinks.
+//
+// we build the following node graph:
+//
+//   node_arg1_1st <==> replace_arg1_1st
+//         ^|
+//         ||
+//         |v
+//   node_arg1_2nd <==> replace_arg1_2nd <==> a source-to-sink graph
+//
+//   node_arg2_1st <==> replace_arg2_1st
+//         ^|
+//         ||
+//         |v
+//   node_arg2_2nd <==> replace_arg2_2nd
+//
+// where
+//
+//   replace_arg1_1st = `replacement_key` for arg1 at [1]
+//                    = GetRHS(arg1 at [1])
+//   replace_arg1_2nd = `replacement_key` for arg1 at [2]
+//                    = GetRHS(arg1 at [2])
+//   node_arg1_1st = `previous_key`
+//                 = NodeKey(F at [1], source_manager, "1-th parm type")
+//   node_arg1_2nd = `current_key`
+//                 = NodeKey(F at [2], source_manager, "1-th parm type")
+//   and the same for arg2.
+//   (`var` is a local variable name in the implementation.)
+//
+// Then, arg1 will be rewritten while arg2 will not be rewritten because only
+// the arg1 graph is connected to a source-to-sink graph.
+//
+// Q: Why do we create node_arg1_{1st,2nd} in addition to
+// replace_arg1_{1st,2nd}? Does the following graph suffice?
+//
+//   replace_arg1_1st <==> a source-to-sink graph
+//         ^|
+//         ||
+//         |v
+//   replace_arg1_2nd
+//
+// A: Yes, it does suffice. But it's hard to build because GetRHS takes
+// `result` as the argument. When we find a match for arg1 at [2], we no longer
+// have `result` for arg1 at [1]. It's easier to create node_arg1_{1st,2nd] than
+// saving the results of GetRHS somewhere and retrieving it.
+void RewriteFunctionParamAndReturnType(const MatchFinder::MatchResult& result) {
+  const clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::FunctionDecl* fct_decl =
+      result.Nodes.getNodeAs<clang::FunctionDecl>("fct_decl");
+
+  // This node spanifies the matched function parameter/return type.
+  const std::string& replacement_key = GetRHS(result);
+
+  // `parm_or_return_id` (passed in to NodeKey() as `optional_seed` argument) is
+  // used to identify the matched parameter/return type so that the spanifier
+  // tool can partially spanify some of (not necessarily all of) function
+  // parameter types and return type.
+  //
+  // With the example in the function header comment, we'd like to build two
+  // independent graphs for arg1 and arg2.
+  //
+  // Note: It's easier to make a unique node key from `fct_decl` +
+  // `parm_or_return_id` than making a unique node key from the clang::Decl
+  // that matches the function parameter/return type of each forward
+  // declaration or overridden method.
+  std::string parm_or_return_id;
+  if (const clang::ParmVarDecl* parm_var_decl =
+          result.Nodes.getNodeAs<clang::ParmVarDecl>("rhs_begin")) {
+    parm_or_return_id = llvm::formatv("{0}-th parm type",
+                                      parm_var_decl->getFunctionScopeIndex());
+  } else {
+    parm_or_return_id = "return type";
+  }
+
+  // `current_key` (node_arg1_2nd in the example in the function header comment)
+  // is just a helper node to be identical to `replacement_key`, so connect them
+  // bi-directionally to each other.
+  const std::string& current_key =
+      NodeKey(fct_decl, source_manager, parm_or_return_id);
+  EmitEdge(current_key, replacement_key);
+  EmitEdge(replacement_key, current_key);
+
+  // Connect to the previous function decl, which is already connected to the
+  // previous previous function decl.
+  if (const clang::Decl* previous_decl = fct_decl->getPreviousDecl()) {
+    const std::string& previous_key =
+        NodeKey(previous_decl, source_manager, parm_or_return_id);
+    if (raw_ptr_plugin::isNodeInThirdPartyLocation(*previous_decl,
+                                                   source_manager)) {
+      // A declaration in third party codebase is found, so we do not want to
+      // rewrite the parameter/return type in a third party function. This one-
+      // way edge prevents making a flow from a source to a sink, hence the
+      // rewriting will be cancelled.
+      //
+      // Example)
+      //
+      //   node_arg1_1st (No replace_arg1_1st because it's in third_party/)
+      //         ^
+      //         | (one-way edge)
+      //         |
+      //   node_arg1_2nd <==> replace_arg1_2nd <==> a source-to-sink graph
+      //
+      // where node_arg1_1st is not a sink node, so the source node reaches a
+      // non-sink end node. Hence, the rewriting will be cancelled.
+      EmitEdge(current_key, previous_key);
+    } else {
+      EmitEdge(current_key, previous_key);
+      EmitEdge(previous_key, current_key);
+    }
+  }
+
+  // Connect to the overridden methods.
+  if (const clang::CXXMethodDecl* method_decl =
+          clang::dyn_cast<clang::CXXMethodDecl>(fct_decl)) {
+    for (auto* overridden_method_decl : method_decl->overridden_methods()) {
+      const std::string& overridden_method_key =
+          NodeKey(overridden_method_decl, source_manager, parm_or_return_id);
+      if (raw_ptr_plugin::isNodeInThirdPartyLocation(*overridden_method_decl,
+                                                     source_manager)) {
+        // A declaration in third party codebase is found, so we do not want to
+        // rewrite the parameter/return type in a third party function. This
+        // one-way edge prevents making a flow from a source to a sink, hence
+        // the rewriting will be cancelled.
+        EmitEdge(current_key, overridden_method_key);
+      } else {
+        EmitEdge(current_key, overridden_method_key);
+        EmitEdge(overridden_method_key, current_key);
+      }
+    }
+  }
+}
+
 // Extracts the lhs node from the match result.
 std::string GetLHS(const MatchFinder::MatchResult& result) {
   if (auto* type_loc =
@@ -1872,128 +2026,6 @@ void MatchAdjacency(const MatchFinder::MatchResult& result) {
   EmitEdge(lhs, rhs);
 }
 
-// Called when the registered Match is found in the AST.
-//
-// The match includes:
-// - A parmVarDecl or RTNode
-// - Corresponding function declaration
-//
-// Using the function declaration, this:
-// 1. Create a unique key for the current function: `current_key`
-// 2. If the function has previous declarations or is overridden:
-//    - Retrieve previous declarations
-//    - Create keys for each previous declaration: `prev_key`
-//    - For each `prev_key`, add the pair (`current_key`, `prev_key`) to
-//      `fct_sig_pairs_`
-//
-// Using the parmVarDecl or RTNode, this:
-// 1. Create a node
-// 2. Insert the node into `fct_sig_nodes_[current_key]`
-//
-// At the end of the tool run for a given translation unit, edges between
-// corresponding nodes of two adjacent function signatures are created.
-class FunctionSignatureNodes : public MatchFinder::MatchCallback {
- public:
-  explicit FunctionSignatureNodes(
-      std::map<std::string, std::set<std::string>>& sig_nodes,
-      std::vector<std::pair<std::string, std::string>>& sig_pairs)
-      : fct_sig_nodes_(sig_nodes), fct_sig_pairs_(sig_pairs) {}
-
-  FunctionSignatureNodes(const FunctionSignatureNodes&) = delete;
-  FunctionSignatureNodes& operator=(const FunctionSignatureNodes&) = delete;
-
- private:
-  std::string getNodeFromMatchResult(const MatchFinder::MatchResult& result) {
-    if (auto* type_loc =
-            result.Nodes.getNodeAs<clang::PointerTypeLoc>("rhs_type_loc")) {
-      return getNodeFromPointerTypeLoc(type_loc, result);
-    }
-
-    if (auto* raw_ptr_type_loc =
-            result.Nodes.getNodeAs<clang::TemplateSpecializationTypeLoc>(
-                "rhs_raw_ptr_type_loc")) {
-      return getNodeFromRawPtrTypeLoc(raw_ptr_type_loc, result);
-    }
-
-    // "rhs_begin" match id could refer to a declaration that has a raw_ptr
-    // type. Those are handled in getNodeFromRawPtrTypeLoc. We
-    // should always check for a "rhs_raw_ptr_type_loc" match id and call
-    // getNodeFromRawPtrTypeLoc first.
-    if (auto* rhs_begin =
-            result.Nodes.getNodeAs<clang::DeclaratorDecl>("rhs_begin")) {
-      return getNodeFromDecl(rhs_begin, result);
-    }
-
-    // Shouldn't get here.
-    llvm::errs() << "\n"
-                    "Error: getNodeFromMatchResult() encountered an unexpected "
-                    "match.\n"
-                    "Expected one of : \n"
-                    "  - rhs_type_loc\n"
-                    "  - rhs_raw_ptr_type_loc\n"
-                    "  - rhs_begin\n"
-                    "\n";
-    assert(false && "Unexpected match in getNodeFromMatchResult()");
-  }
-
-  void run(const MatchFinder::MatchResult& result) override {
-    const clang::SourceManager& source_manager = *result.SourceManager;
-    const clang::FunctionDecl* fct_decl =
-        result.Nodes.getNodeAs<clang::FunctionDecl>("fct_decl");
-    const clang::CXXMethodDecl* method_decl =
-        result.Nodes.getNodeAs<clang::CXXMethodDecl>("fct_decl");
-
-    const std::string current_key = NodeKey(fct_decl, source_manager);
-
-    // Function related by separate declaration and definition:
-    {
-      for (auto* previous_decl = fct_decl->getPreviousDecl(); previous_decl;
-           previous_decl = previous_decl->getPreviousDecl()) {
-        // TODO(356666773): The `previous_decl` might be part of third_party/.
-        // Then it won't be matched by the matcher. So only one of the pair
-        // would have a node.
-        const std::string previous_key = NodeKey(previous_decl, source_manager);
-        fct_sig_pairs_.push_back({
-            current_key,
-            previous_key,
-        });
-      }
-    }
-
-    // Function related by overriding:
-    if (method_decl) {
-      for (auto* m : method_decl->overridden_methods()) {
-        const std::string previous_key = NodeKey(m, source_manager);
-        fct_sig_pairs_.push_back({
-            current_key,
-            previous_key,
-        });
-      }
-    }
-
-    std::string n = getNodeFromMatchResult(result);
-    fct_sig_nodes_[current_key].insert(n);
-  }
-
-  // Map a function signature, which is modeled as a string representing file
-  // location, to its matched graph nodes (RTNode and ParmVarDecl nodes).
-  // Note: `RTNode` represents a function return type node.
-  // In order to avoid relying on the order with which nodes are matched in
-  // the AST, and to guarantee that nodes are stored in the file declaration
-  // order, we use a `std::set<std::string>` which sorts Nodes based on their
-  // keys. Node that keys are properly ordered to reflect the order in the
-  // file. This property is important, because at the end of a tool run on a
-  // translationUnit, for each pair of function signatures, we iterate
-  // concurrently through the two sets of Nodes creating edges between nodes
-  // that appear at the same index.
-  std::map<std::string, std::set<std::string>>& fct_sig_nodes_;
-
-  // Map related function signatures to each other, this is needed for
-  // functions with separate definition and declaration, and for overridden
-  // functions.
-  std::vector<std::pair<std::string, std::string>>& fct_sig_pairs_;
-};
-
 raw_ptr_plugin::FilterFile PathsToExclude() {
   std::vector<std::string> paths_to_exclude_lines;
   paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
@@ -2049,11 +2081,7 @@ AST_MATCHER_P(clang::Expr,
 
 class Spanifier {
  public:
-  explicit Spanifier(
-      MatchFinder& finder,
-      std::map<std::string, std::set<std::string>>& sig_nodes,
-      std::vector<std::pair<std::string, std::string>>& sig_pairs)
-      : match_finder_(finder), fct_sig_nodes_(sig_nodes, sig_pairs) {
+  explicit Spanifier(MatchFinder& finder) : match_finder_(finder) {
     auto exclusions = anyOf(
         isExpansionInSystemHeader(), raw_ptr_plugin::isInExternCContext(),
         raw_ptr_plugin::isInThirdPartyLocation(),
@@ -2571,14 +2599,14 @@ class Spanifier {
         traverse(clang::TK_IgnoreUnlessSpelledInSource,
                  functionDecl(forEachParmVarDecl(rhs_param), unless(exclusions))
                      .bind("fct_decl"));
-    match_finder_.addMatcher(fct_decls_params, &fct_sig_nodes_);
+    Match(fct_decls_params, RewriteFunctionParamAndReturnType);
 
     auto fct_decls_returns = traverse(
         clang::TK_IgnoreUnlessSpelledInSource,
         functionDecl(hasReturnTypeLoc(pointerTypeLoc().bind("rhs_type_loc")),
                      unless(exclusions))
             .bind("fct_decl"));
-    match_finder_.addMatcher(fct_decls_returns, &fct_sig_nodes_);
+    Match(fct_decls_returns, RewriteFunctionParamAndReturnType);
   }
 
  private:
@@ -2613,7 +2641,6 @@ class Spanifier {
 
   raw_ptr_plugin::FilterFile paths_to_exclude_ = PathsToExclude();
   MatchFinder& match_finder_;
-  FunctionSignatureNodes fct_sig_nodes_;
   std::vector<std::unique_ptr<MatchCallback>> match_callbacks_;
 };
 
@@ -2633,49 +2660,13 @@ int main(int argc, const char* argv[]) {
   clang::tooling::ClangTool tool(options->getCompilations(),
                                  options->getSourcePathList());
 
-  // Map a function signature, which is modeled as a string representing file
-  // location, to it's graph nodes (RTNode and ParmVarDecl nodes).
-  // RTNode represents a function return type.
-  std::map<std::string, std::set<std::string>> fct_sig_nodes;
-  // Map related function signatures to each other, this is needed for functions
-  // with separate definition and declaration, and for overridden functions.
-  std::vector<std::pair<std::string, std::string>> fct_sig_pairs;
   MatchFinder match_finder;
-  Spanifier rewriter(match_finder, fct_sig_nodes, fct_sig_pairs);
+  Spanifier rewriter(match_finder);
 
   // Prepare and run the tool.
   std::unique_ptr<clang::tooling::FrontendActionFactory> factory =
       clang::tooling::newFrontendActionFactory(&match_finder);
   int result = tool.run(factory.get());
-
-  // Establish connections between corresponding parameters of adjacent function
-  // signatures. Two functions are considered adjacent if one overrides the
-  // other or if one is a function declaration while the other is its
-  // corresponding definition.
-  for (auto& [l, r] : fct_sig_pairs) {
-    // By construction, only the left side of the pair is guaranteed to have a
-    // matching set of nodes.
-    assert(fct_sig_nodes.find(l) != fct_sig_nodes.end());
-
-    // TODO(356666773): Handle the case where both side of the pair haven't
-    // been matched. This happens when a function is declared in third_party/,
-    // but implemented in first party.
-    if (fct_sig_nodes.find(r) == fct_sig_nodes.end()) {
-      continue;
-    }
-
-    auto& s1 = fct_sig_nodes[l];
-    auto& s2 = fct_sig_nodes[r];
-    assert(s1.size() == s2.size());
-    auto i1 = s1.begin();
-    auto i2 = s2.begin();
-    while (i1 != s1.end()) {
-      EmitEdge(*i1, *i2);
-      EmitEdge(*i2, *i1);
-      i1++;
-      i2++;
-    }
-  }
 
   return result;
 }
