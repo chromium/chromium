@@ -60,7 +60,12 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
 
   static get properties() {
     return {
-      bookmarks_: Array,
+      bookmarks_: {
+        type: Array,
+        value: () => [],
+      },
+      priceTracked_: Boolean,
+      priceTrackingEligible_: Boolean,
     };
   }
 
@@ -68,9 +73,9 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
       BookmarksApiProxyImpl.getInstance();
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
       PriceTrackingBrowserProxyImpl.getInstance();
-  private bookmarks_: chrome.bookmarks.BookmarkTreeNode[] = [];
-  private priceTracked_: boolean;
-  private priceTrackingEligible_: boolean;
+  declare private bookmarks_: chrome.bookmarks.BookmarkTreeNode[];
+  declare private priceTracked_: boolean;
+  declare private priceTrackingEligible_: boolean;
 
   showAt(
       event: MouseEvent, bookmarks: chrome.bookmarks.BookmarkTreeNode[],

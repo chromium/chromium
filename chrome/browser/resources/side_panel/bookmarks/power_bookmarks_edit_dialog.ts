@@ -69,17 +69,20 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
         type: Boolean,
         value: false,
       },
+
+      newFolderName_: String,
+      showNewFolderInput_: Boolean,
     };
   }
 
-  private topLevelBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
-  private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
-  private selectedFolder_: chrome.bookmarks.BookmarkTreeNode|undefined;
-  private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
-  private newFolders_: chrome.bookmarks.BookmarkTreeNode[];
-  private moveOnly_: boolean;
-  private newFolderName_: string;
-  private showNewFolderInput_: boolean;
+  declare private topLevelBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
+  declare private selectedBookmarks_: chrome.bookmarks.BookmarkTreeNode[];
+  declare private selectedFolder_: chrome.bookmarks.BookmarkTreeNode|undefined;
+  declare private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
+  declare private newFolders_: chrome.bookmarks.BookmarkTreeNode[];
+  declare private moveOnly_: boolean;
+  declare private newFolderName_: string;
+  declare private showNewFolderInput_: boolean;
 
   showDialog(
       activeFolderPath: chrome.bookmarks.BookmarkTreeNode[],

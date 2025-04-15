@@ -42,7 +42,6 @@ import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {listenOnce} from '//resources/js/util.js';
-import type {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {afterNextRender, Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -140,9 +139,20 @@ export class PowerBookmarksListElement extends PolymerElement implements
         observer: 'updateListScrollOffset_',
       },
 
+      contextMenuBookmark_: Object,
+
       activeFolderPath_: {
         type: Array,
         value: () => [],
+      },
+
+      currentUrl_: String,
+
+      imageUrls_: {
+        type: Object,
+        value: () => {
+          return {};
+        },
       },
 
       labels_: {
@@ -192,7 +202,9 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
       selectedBookmarks_: {
         type: Object,
-        value: {},
+        value: () => {
+          return {};
+        },
       },
 
       guestMode_: {
@@ -204,6 +216,11 @@ export class PowerBookmarksListElement extends PolymerElement implements
       renamingId_: {
         type: String,
         value: '',
+      },
+
+      bookmarksTreeViewEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('bookmarksTreeViewEnabled'),
       },
 
       deletionDescription_: {
@@ -221,6 +238,21 @@ export class PowerBookmarksListElement extends PolymerElement implements
       hasLoadedData_: {
         type: Boolean,
         value: false,
+      },
+
+      searchQuery_: String,
+      shoppingCollectionFolderId_: String,
+
+      trackedProductInfos_: {
+        type: Object,
+        value: () => {
+          return {};
+        },
+      },
+
+      updatedElementIds_: {
+        type: Array,
+        value: () => [],
       },
 
       hasSomeActiveFilter_: {
@@ -264,39 +296,39 @@ export class PowerBookmarksListElement extends PolymerElement implements
   private priceTrackingProxy_: PriceTrackingBrowserProxy =
       PriceTrackingBrowserProxyImpl.getInstance();
   private shoppingListenerIds_: number[] = [];
-  private displayLists_: chrome.bookmarks.BookmarkTreeNode[][];
-  private trackedProductInfos_: {[key: string]: BookmarkProductInfo} = {};
+  declare private displayLists_: chrome.bookmarks.BookmarkTreeNode[][];
+  declare private trackedProductInfos_: {[key: string]: BookmarkProductInfo};
   private availableProductInfos_ = new Map<string, BookmarkProductInfo>();
   private bookmarksService_: PowerBookmarksService;
   private keyArrowNavigationService_: KeyArrowNavigationService;
   private bookmarksDragManager_: PowerBookmarksDragManager;
   private focusOutlineManager_: FocusOutlineManager;
-  private compact_: boolean;
-  private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
-  private labels_: Label[];
-  private imageUrls_: {[key: string]: string} = {};
-  private activeSortIndex_: number;
-  private sortTypes_: SortOption[];
-  private searchQuery_: string|undefined;
-  private currentUrl_: string|undefined;
-  private editing_: boolean;
-  private selectedBookmarks_: {[key: string]: boolean};
-  private guestMode_: boolean;
-  private renamingId_: string;
-  private deletionDescription_: string;
+  declare private compact_: boolean;
+  declare private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
+  declare private labels_: Label[];
+  declare private imageUrls_: {[key: string]: string};
+  declare private activeSortIndex_: number;
+  declare private sortTypes_: SortOption[];
+  declare private searchQuery_: string|undefined;
+  declare private currentUrl_: string|undefined;
+  declare private editing_: boolean;
+  declare private selectedBookmarks_: {[key: string]: boolean};
+  declare private guestMode_: boolean;
+  declare private renamingId_: string;
+  declare private deletionDescription_: string;
   private shownBookmarksResizeObserver_?: ResizeObserver;
-  private hasScrollbars_: boolean;
-  private contextMenuBookmark_: chrome.bookmarks.BookmarkTreeNode|undefined;
-  private hasLoadedData_: boolean;
-  private canDrag_: boolean;
-  private hasSomeActiveFilter_: boolean;
-  private hasShownBookmarks_: boolean;
-  private sectionVisibility_: SectionVisibility = {};
-  private shoppingCollectionFolderId_: string;
+  declare private hasScrollbars_: boolean;
+  declare private contextMenuBookmark_: chrome.bookmarks.BookmarkTreeNode|
+      undefined;
+  declare private hasLoadedData_: boolean;
+  declare private canDrag_: boolean;
+  declare private hasSomeActiveFilter_: boolean;
+  declare private hasShownBookmarks_: boolean;
+  declare private sectionVisibility_: SectionVisibility;
+  declare private shoppingCollectionFolderId_: string;
   private recordCountMetricsOnNextUpdate_: boolean = false;
-  private updatedElementIds_: string[] = [];
-  private bookmarksTreeViewEnabled_: boolean =
-      loadTimeData.getBoolean('bookmarksTreeViewEnabled');
+  declare private updatedElementIds_: string[];
+  declare private bookmarksTreeViewEnabled_: boolean;
   private isBookmarksInTransportModeEnabled: boolean =
       loadTimeData.getBoolean('isBookmarksInTransportModeEnabled');
   private rebuildNavigationElementsDebouncer_: Debouncer|null = null;
@@ -745,8 +777,8 @@ export class PowerBookmarksListElement extends PolymerElement implements
     // After the lists are updated and all children updates are complete,
     // notify iron-list to resize.
     afterNextRender(this, () => {
-      const children = [...this.shadowRoot!.querySelectorAll<CrLitElement>(
-          'power-bookmark-row')];
+      const children =
+          [...this.shadowRoot!.querySelectorAll('power-bookmark-row')];
       if (children.length > 0) {
         Promise.all(children.map(el => el.updateComplete))
             .then(() => this.notifyBookmarksListResize_());

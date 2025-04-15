@@ -72,26 +72,26 @@ export class PowerBookmarkRowElement extends CrLitElement {
     };
   }
 
-  bookmark: chrome.bookmarks.BookmarkTreeNode = {id: '', title: ''};
-  compact: boolean = false;
-  contextMenuBookmark: chrome.bookmarks.BookmarkTreeNode|undefined;
-  bookmarksTreeViewEnabled: boolean =
+  accessor bookmark: chrome.bookmarks.BookmarkTreeNode = {id: '', title: ''};
+  accessor compact: boolean = false;
+  accessor contextMenuBookmark: chrome.bookmarks.BookmarkTreeNode|undefined;
+  accessor bookmarksTreeViewEnabled: boolean =
       loadTimeData.getBoolean('bookmarksTreeViewEnabled');
-  depth: number = 0;
-  hasCheckbox: boolean = false;
-  selectedBookmarks: chrome.bookmarks.BookmarkTreeNode[];
-  renamingId: string = '';
-  searchQuery: string|undefined;
-  shoppingCollectionFolderId: string = '';
-  rowAriaDescription: string = '';
-  trailingIconTooltip: string = '';
-  toggleExpand: boolean = false;
-  imageUrls: {[key: string]: string} = {};
-  updatedElementIds: string[] = [];
-  isPriceTracked: boolean = false;
-  canDrag: boolean = true;
+  accessor depth: number = 0;
+  accessor hasCheckbox: boolean = false;
+  accessor selectedBookmarks: chrome.bookmarks.BookmarkTreeNode[] = [];
+  accessor renamingId: string = '';
+  accessor searchQuery: string|undefined;
+  accessor shoppingCollectionFolderId: string = '';
+  accessor rowAriaDescription: string = '';
+  accessor trailingIconTooltip: string = '';
+  accessor toggleExpand: boolean = false;
+  accessor imageUrls: {[key: string]: string} = {};
+  accessor updatedElementIds: string[] = [];
+  accessor isPriceTracked: boolean = false;
+  accessor canDrag: boolean = true;
 
-  listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
+  accessor listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
 
   private bookmarksService_: PowerBookmarksService =
       PowerBookmarksService.getInstance();
