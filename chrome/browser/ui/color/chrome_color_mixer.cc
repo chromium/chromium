@@ -320,9 +320,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorPageInfoChosenObjectDeleteButtonIconDisabled] = {
       ui::kColorIconDisabled};
   mixer[kColorParentAccessViewLocalWebApprovalBackground] = {
-      // TODO(crbug.com/403555394): Update the dark mode color once the matching
-      // Family Link server color is updated.
-      dark_mode ? ui::SetAlpha(ui::kColorRefNeutral6, 0xFF) : SK_ColorWHITE};
+      // The background needs to match a custom static color used in Google Kids
+      // Ui server.
+      dark_mode ? SkColorSetARGB(0xFF, 0x2A, 0x2A, 0x2A) : SK_ColorWHITE};
   mixer[kColorPaymentsFeedbackTipBackground] = {
       ui::kColorSubtleEmphasisBackground};
   mixer[kColorPaymentsFeedbackTipBorder] = {ui::kColorBubbleFooterBorder};

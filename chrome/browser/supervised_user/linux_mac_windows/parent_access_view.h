@@ -117,7 +117,7 @@ class ParentAccessView : public views::View,
 
   void ShowWebViewAndDestroyTimeoutObserver();
 
-  void UpdateDialogBorder();
+  void UpdateDialogBorderAndChildrenBackgroundColors();
 
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 

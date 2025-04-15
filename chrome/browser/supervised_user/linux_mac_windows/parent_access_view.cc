@@ -177,7 +177,7 @@ base::WeakPtr<ParentAccessView> ParentAccessView::ShowParentAccessDialog(
   view_weak_ptr->widget_observations_.AddObservation(widget);
 
   // Border must be set only after the widget has been created.
-  view_weak_ptr->UpdateDialogBorder();
+  view_weak_ptr->UpdateDialogBorderAndChildrenBackgroundColors();
 
   // Starts observing the new dialog contents that have been created in
   // `Initialize`.
@@ -205,7 +205,7 @@ void ParentAccessView::OnWidgetClosing(views::Widget* widget) {
 }
 
 void ParentAccessView::OnWidgetThemeChanged(views::Widget*) {
-  UpdateDialogBorder();
+  UpdateDialogBorderAndChildrenBackgroundColors();
 }
 
 void ParentAccessView::CloseView() {
@@ -372,6 +372,8 @@ void ParentAccessView::DisplayErrorMessage(content::WebContents* web_contents) {
   error_view_ = AddChildView(std::move(error_view));
   // Triggers the dialog resizing.
   error_view_->SetPreferredSize(kErrorViewPreferredSize);
+
+  UpdateDialogBorderAndChildrenBackgroundColors();
   widget->Show();
 
   if (removed_view_holder_ && removed_view_holder_->GetVisible()) {
@@ -428,14 +430,30 @@ void ParentAccessView::ShowNativeView() {
   web_view_->RequestFocus();
 }
 
-void ParentAccessView::UpdateDialogBorder() {
+void ParentAccessView::UpdateDialogBorderAndChildrenBackgroundColors() {
+  views::View* displayed_child_view = error_view_ ? error_view_ : web_view_;
+  CHECK(displayed_child_view);
   auto* widget = GetWidget();
   CHECK(widget);
   CHECK(widget->widget_delegate()->AsDialogDelegate()->GetBubbleFrameView());
-
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::DIALOG_SHADOW);
-  border->SetColor(kColorParentAccessViewLocalWebApprovalBackground);
+
+  if (displayed_child_view == web_view_) {
+    // The background color of the view needs to match the fixed webview's
+    // content background.
+    auto background_color = kColorParentAccessViewLocalWebApprovalBackground;
+    border->SetColor(background_color);
+    SetBackground(
+        views::CreateRoundedRectBackground(background_color, corner_radius_));
+    web_view_->SetBackground(
+        views::CreateRoundedRectBackground(background_color, corner_radius_));
+  } else {
+    // For the error view case, remove any solid backgrounds to go with the
+    // default look.
+    SetBackground(nullptr);
+  }
+
   border->SetCornerRadius(corner_radius_);
   widget->widget_delegate()
       ->AsDialogDelegate()
