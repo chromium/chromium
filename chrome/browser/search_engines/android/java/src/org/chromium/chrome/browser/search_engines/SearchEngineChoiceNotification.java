@@ -6,10 +6,9 @@ package org.chromium.chrome.browser.search_engines;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omaha.VersionNumber;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -26,6 +25,7 @@ import java.util.concurrent.TimeUnit;
  * Class that prompts the user to change their search engine at the browser startup.
  * User is only meant to be prompted once, hence the fact of prompting is saved to preferences.
  */
+@NullMarked
 public final class SearchEngineChoiceNotification {
     /** Notification snackbar duration (in seconds). */
     private static final int NOTIFICATION_SNACKBAR_DURATION_SECONDS = 10;
@@ -35,14 +35,14 @@ public final class SearchEngineChoiceNotification {
      * page responsible for search engine choice, when button is clicked.
      */
     private static class NotificationSnackbarController implements SnackbarController {
-        @NonNull private final Context mContext;
+        private final Context mContext;
 
-        private NotificationSnackbarController(@NonNull Context context) {
+        private NotificationSnackbarController(Context context) {
             mContext = context;
         }
 
         @Override
-        public void onAction(Object actionData) {
+        public void onAction(@Nullable Object actionData) {
             SettingsNavigationFactory.createSettingsNavigation()
                     .startSettings(mContext, SearchEngineSettings.class);
             SearchEngineChoiceMetrics.recordEvent(SearchEngineChoiceMetrics.Events.PROMPT_FOLLOWED);
@@ -69,8 +69,7 @@ public final class SearchEngineChoiceNotification {
      * @param context Context in which to show the Snackbar.
      * @param snackbarManager Snackbar manager which will shown and manage the Snackbar.
      */
-    public static void handleSearchEngineChoice(
-            @NonNull Context context, @NonNull SnackbarManager snackbarManager) {
+    public static void handleSearchEngineChoice(Context context, SnackbarManager snackbarManager) {
         boolean searchEngineChoiceRequested = wasSearchEngineChoiceRequested();
         boolean searchEngineChoicePresented = wasSearchEngineChoicePresented();
         boolean searchEngineChoiceAvailable =
@@ -91,7 +90,7 @@ public final class SearchEngineChoiceNotification {
         }
     }
 
-    private static Snackbar buildSnackbarNotification(@NonNull Context context) {
+    private static Snackbar buildSnackbarNotification(Context context) {
         return Snackbar.make(
                         context.getString(R.string.search_engine_choice_prompt),
                         new NotificationSnackbarController(context),

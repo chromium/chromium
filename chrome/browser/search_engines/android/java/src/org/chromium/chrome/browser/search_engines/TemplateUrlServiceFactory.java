@@ -9,6 +9,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.search_engines.TemplateUrlService;
 
@@ -16,8 +18,9 @@ import org.chromium.components.search_engines.TemplateUrlService;
  * This factory links the native TemplateURLService for the current Profile to create and hold a
  * {@link TemplateUrlService} singleton.
  */
+@NullMarked
 public class TemplateUrlServiceFactory {
-    private static TemplateUrlService sTemplateUrlServiceForTesting;
+    private static @Nullable TemplateUrlService sTemplateUrlServiceForTesting;
 
     private TemplateUrlServiceFactory() {}
 

@@ -17,12 +17,12 @@ import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.search_engines.R;
@@ -44,6 +44,7 @@ import java.util.function.Function;
  * Entry point to show a blocking choice dialog inviting users to finish their default app & search
  * engine choice in Android settings.
  */
+@NullMarked
 public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     private static final String TAG = "ChoiceDialogCoordntr";
 
@@ -140,7 +141,7 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
             ViewHolder viewHolder,
             ModalDialogManager modalDialogManager,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            @NonNull SearchEngineChoiceService searchEngineChoiceService) {
+            SearchEngineChoiceService searchEngineChoiceService) {
         mContext = context;
         mViewHolder = viewHolder;
         mModel =
