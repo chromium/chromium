@@ -87,8 +87,11 @@ void ReadAloudAppModel::ResetGranularityIndex() {
 }
 
 void ReadAloudAppModel::InitAXPositionWithNode(ui::AXNode* ax_node) {
-  // If instance is Null or Empty, create the next AxPosition
-  if (ax_node != nullptr && (!ax_position_ || ax_position_->IsNullPosition())) {
+  // If instance is Null or Empty, create the next AxPosition. Don't create a
+  // new position if the node's manager is missing, as that means we've
+  // received incorrect data somewhere.
+  if (ax_node != nullptr && (!ax_position_ || ax_position_->IsNullPosition()) &&
+      ax_node->GetManager()) {
     ax_position_ =
         ui::AXNodePosition::CreateTreePositionAtStartOfAnchor(*ax_node);
     current_text_index_ = 0;
