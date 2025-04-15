@@ -985,8 +985,7 @@ void GenerateSampleOnSyncTokenReleased(
     D3D11_TEXTURE2D_DESC texture_desc;
     input_texture->GetDesc(&texture_desc);
     texture_desc.Usage = D3D11_USAGE_DEFAULT;
-    texture_desc.BindFlags =
-        D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+    texture_desc.BindFlags = D3D11_BIND_VIDEO_ENCODER;
     texture_desc.ArraySize = 1;
     texture_desc.CPUAccessFlags = 0;
     texture_desc.MiscFlags = 0;

@@ -2183,15 +2183,20 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     hr = PerformD3DScaling(input_texture.Get(), frame->visible_rect());
     RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D video processing", hr);
     sample_texture = scaled_d3d11_texture_;
+  } else if (!frame->VideoFrame::HasMappableGpuBuffer() &&
+             frame->HasSharedImage()) {
+    // Shared images that are not GpuMemoryBuffers have already
+    // been copied.
+    sample_texture = input_texture;
   } else {
     // Even though no scaling is needed we still need to copy the texture to
     // avoid concurrent usage causing glitches (https://crbug.com/1462315). This
     // is preferred over holding a keyed mutex for the duration of the encode
     // operation since that can take a significant amount of time and mutex
     // acquisitions (necessary even for read-only operations) are blocking.
-      hr = PerformD3DCopy(input_texture.Get(), frame->visible_rect());
-      RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D texture copy", hr);
-      sample_texture = copied_d3d11_texture_;
+    hr = PerformD3DCopy(input_texture.Get(), frame->visible_rect());
+    RETURN_ON_HR_FAILURE(hr, "Failed to perform D3D texture copy", hr);
+    sample_texture = copied_d3d11_texture_;
   }
 
   ComMFMediaBuffer input_buffer;
