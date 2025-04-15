@@ -9037,8 +9037,8 @@ crbug.com/402796552 [ Win11-arm64 ] webaudio/Analyser/realtimeanalyser-fftsize-r
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sawtooth.html [ Failure ]
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-sine.html [ Failure ]
 crbug.com/402796552 [ Win11-arm64 ] webaudio/Oscillator/osc-sweep-snr-square.html [ Failure ]
-crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout ]
-crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout ]
+crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/color-profile-image-profile-match.html [ Timeout Skip ]
+crbug.com/391006701 [ Debug Mac ] images/yuv-decode-eligible/webp-image-decoding.html [ Timeout Skip ]
 
 #Gardener 2025-03-17
 crbug.com/404060200 [ Mac12 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html [ Failure ]
@@ -9075,3 +9075,19 @@ crbug.com/407865639 external/wpt/css/css-grid/grid-extrinsically-sized-mutations
 # Gardener 2025-04-08
 crbug.com/409149439 [ Win11-arm64 ] external/wpt/partitioned-popins/partitioned-popins.partitions.tentative.https.window.html?include=variant-5-test [ Failure Pass ]
 crbug.com/409032332 http/tests/inspector-protocol/no-crash-with-stack-id-and-stale-while-revalidate.js [ Crash Pass Timeout ]
+
+# Temporarily disable wasm tests that use type reflection while we update an
+# incorrect flag implication in V8:
+# https://chromium-review.googlesource.com/c/v8/v8/+/6458419
+crbug.com/42202153 external/wpt/wasm/jsapi/function/call.tentative.any.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/function/call.tentative.any.worker.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/function/constructor.tentative.any.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/function/constructor.tentative.any.worker.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/function/table.tentative.any.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/function/table.tentative.any.worker.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/function/type.tentative.any.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/function/type.tentative.any.worker.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/global/type.tentative.any.worker.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/tag/type.tentative.any.html [ Failure Pass ]
+crbug.com/42202153 external/wpt/wasm/jsapi/tag/type.tentative.any.worker.html [ Failure Pass ]
