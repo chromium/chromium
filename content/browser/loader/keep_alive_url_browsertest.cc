@@ -1351,7 +1351,8 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 // TODO(crbug.com/40931297): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/410651366): Re-enable this test on Fuchsia.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_MultipleRedirectsRequestWithIframeRemoval \
   DISABLED_MultipleRedirectsRequestWithIframeRemoval
 #else
@@ -1428,7 +1429,8 @@ IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
 // As navigator.sendBeacon() marks its request with `no-cors`, the redirect
 // should succeed.
 // TODO(crbug.com/40282448): Flaky on Android and Mac.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/410651366): Flaky on Fuchsia.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_CrossOriginAndCORSSafelistedRedirectRequest \
   DISABLED_CrossOriginAndCORSSafelistedRedirectRequest
 #else
