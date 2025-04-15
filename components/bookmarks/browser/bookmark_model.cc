@@ -181,8 +181,8 @@ BookmarkModel::~BookmarkModel() {
   // be reset before the observer list.
   client_.reset();
 
-  // Set raw_ptr values to null to avoid danling pointer detection when UrlIndex
-  // is destroyed.
+  // Set raw_ptr values to null to avoid dangling pointer detection when
+  // UrlIndex is destroyed.
   account_bookmark_bar_node_ = nullptr;
   account_other_node_ = nullptr;
   account_mobile_node_ = nullptr;
