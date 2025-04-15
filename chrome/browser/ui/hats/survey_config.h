@@ -103,12 +103,14 @@ class Profile;
 
 namespace hats {
 struct SurveyConfig {
+  // LINT.IfChange(RequestedBrowserType)
   enum RequestedBrowserType {
     // A standard survey, shown only in regular mode.
     kRegular = 0,
     // An Incognito survey, shown only in incognito.
     kIncognito = 1,
   };
+  // LINT.ThenChange(//chrome/browser/ui/android/hats/java/src/org/chromium/chrome/browser/ui/hats/SurveyConfig.java:RequestedBrowserType)
 
   // Constructs a SurveyConfig by inspecting |feature|. This includes checking
   // if the feature is enabled, as well as inspecting the feature parameters

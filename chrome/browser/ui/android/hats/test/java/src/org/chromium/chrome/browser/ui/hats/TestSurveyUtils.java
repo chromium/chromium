@@ -45,7 +45,8 @@ public class TestSurveyUtils {
                         false,
                         psdBitFields,
                         psdStringFields,
-                        Optional.empty()));
+                        Optional.empty(),
+                        SurveyConfig.RequestedBrowserType.REGULAR));
     }
 
     /** Sets the flag that determines if we should forcefully use the testing configuration. */

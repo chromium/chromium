@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.ui.hats.SurveyConfig.RequestedBrowserType;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.lang.ref.WeakReference;
@@ -262,6 +263,11 @@ class SurveyClientImpl implements SurveyClient {
      * @return a boolean indicating whether the user's configuration allows a survey to be shown.
      */
     private boolean configurationAllowsSurveys() {
+        if (mConfig.mRequestedBrowserType != RequestedBrowserType.REGULAR) {
+            assert false : "HaTS on Android supports only RequestedBrowserType.REGULAR";
+            return false;
+        }
+
         if (forceShowSurvey()) return true;
 
         // Do not include any logging to avoid reveal the fact user has crash upload disabled.
