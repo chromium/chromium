@@ -353,6 +353,12 @@ BASE_FEATURE(kFileSystemProviderContentCache,
              "FileSystemProviderContentCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables hiding apps disabled by SystemFeaturesDisableList policy by default
+// in user sessions.
+BASE_FEATURE(kSystemFeaturesDisableListHidden,
+             "SystemFeaturesDisableListHidden",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsApnPoliciesEnabled() {
@@ -410,6 +416,10 @@ bool IsFileSystemProviderContentCacheEnabled() {
     return false;
   }
   return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
+}
+
+bool IsSystemFeaturesDisableListHiddenEnabled() {
+  return base::FeatureList::IsEnabled(kSystemFeaturesDisableListHidden);
 }
 
 bool IsGeminiAppPreinstallFeatureManagementEnabled() {

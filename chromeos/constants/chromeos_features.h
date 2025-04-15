@@ -115,6 +115,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kFileSystemProviderCloudFileSystem);
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 BASE_DECLARE_FEATURE(kFileSystemProviderContentCache);
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+BASE_DECLARE_FEATURE(kSystemFeaturesDisableListHidden);
 
 // Keep alphabetized.
 
@@ -140,6 +142,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsFileSystemProviderCloudFileSystemEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsFileSystemProviderContentCacheEnabled();
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+bool IsSystemFeaturesDisableListHiddenEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsGeminiAppPreinstallFeatureManagementEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
