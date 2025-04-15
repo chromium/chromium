@@ -29,6 +29,15 @@
     height: 32px;
     margin: 0 16px;
   }
+
+  .indented {
+    margin: 0 var(--cr-section-padding);
+  }
+
+  iron-collapse {
+    padding-block: 22px;
+  }
+
 </style>
 <div class="cr-row bottom-border">
   <cr-expand-button expanded="{{expanded_}}">
@@ -70,7 +79,7 @@
     </os-japanese-dictionary-entry-row>
   </template>
   <template is="dom-if" if="[[shouldShowAddButton_(dict.entries.length)]]">
-    <cr-button on-click="addEntry_">
+    <cr-button class="indented" on-click="addEntry_">
       <iron-icon slot="prefix-icon" icon="cr:add"></iron-icon>
         $i18n{japaneseDictionaryNewEntry}
     </cr-button>
