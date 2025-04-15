@@ -3392,7 +3392,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Secagentd.Cache" enum="SecagentdCache"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>rborzello@google.com</owner>
   <owner>cros-enterprise-security@google.com</owner>
   <summary>
@@ -3467,7 +3467,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Secagentd.SendMessageResult"
-    enum="SecagentdSendMessageResult" expires_after="2025-08-10">
+    enum="SecagentdSendMessageResult" expires_after="2025-10-12">
   <owner>rborzello@google.com</owner>
   <owner>cros-enterprise-security@google.com</owner>
   <summary>
@@ -3500,7 +3500,7 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
 </histogram>
 
 <histogram name="ChromeOS.Secagentd.Tpm" enum="SecagentdTpm"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>rborzello@google.com</owner>
   <owner>cros-enterprise-security@google.com</owner>
   <summary>

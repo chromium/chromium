@@ -831,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.DataTypeNumUnsyncedEntitiesOnModelReady{SyncDataType}"
-    units="entities" expires_after="2025-08-10">
+    units="entities" expires_after="2025-10-12">
   <owner>mmoskvitin@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>

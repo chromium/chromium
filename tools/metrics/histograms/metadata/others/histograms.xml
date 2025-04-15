@@ -626,7 +626,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ads.InterestGroup.Auction.BidderWorkletIsolateUsedHeapSizeKilobytes"
-    units="KB" expires_after="2025-08-10">
+    units="KB" expires_after="2025-10-12">
   <owner>abigailkatcoff@google.com</owner>
   <owner>privacy-sandbox-dev@chromium.org</owner>
   <summary>

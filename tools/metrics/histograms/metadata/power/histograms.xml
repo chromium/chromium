@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.AvgCpuLoad.{ProcessType}" units="%"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
@@ -974,7 +974,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerThreadType.{ProcessType}"
-    enum="CpuTimeMetricsThreadType" expires_after="2025-08-10">
+    enum="CpuTimeMetricsThreadType" expires_after="2025-10-12">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>

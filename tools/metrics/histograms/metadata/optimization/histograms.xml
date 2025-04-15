@@ -1088,7 +1088,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass"
-    enum="OnDeviceModelPerformanceClass" expires_after="2025-08-10">
+    enum="OnDeviceModelPerformanceClass" expires_after="2025-10-12">
   <owner>cduvall@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>

@@ -4852,7 +4852,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="PasswordManager.{Store}PasswordLoss" units="count"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>izuzic@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <owner>battre@chromium.org</owner>

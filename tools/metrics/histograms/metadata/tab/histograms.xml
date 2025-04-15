@@ -1397,7 +1397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin"
-    enum="DeviceType" expires_after="2025-08-10">
+    enum="DeviceType" expires_after="2025-10-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>
@@ -1471,7 +1471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin"
-    enum="DeviceType" expires_after="2025-08-10">
+    enum="DeviceType" expires_after="2025-10-12">
   <owner>shaktisahu@chromium.org</owner>
   <owner>chrome-multiplayer-eng@google.com</owner>
   <summary>

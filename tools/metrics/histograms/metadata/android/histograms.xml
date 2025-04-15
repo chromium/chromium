@@ -4475,7 +4475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.PredictiveGestureNavigation{Transition}"
-    enum="PredictiveNavTransitionPhase" expires_after="2025-08-10">
+    enum="PredictiveNavTransitionPhase" expires_after="2025-10-12">
   <owner>lazzzis@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>

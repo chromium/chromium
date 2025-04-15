@@ -5117,7 +5117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.GetAuthTokenResult"
-    enum="BooleanSuccess" expires_after="2025-08-10">
+    enum="BooleanSuccess" expires_after="2025-10-12">
   <owner>djmitche@chromium.org</owner>
   <owner>ashleynewson@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -5449,7 +5449,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NetworkService.IpProtection.TokenBatchRequestTime" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>djmitche@chromium.org</owner>
   <owner>src/chrome/browser/ip_protection/OWNERS</owner>
   <summary>

@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.DirectRenderer.{FocusType}" units="pixels"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>petermcneeley@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -298,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.Display.Draw.AverageOverdraw2" units="units"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
@@ -892,7 +892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compositing.TileManager.RasterTasksDuration"
-    units="microseconds" expires_after="2025-08-10">
+    units="microseconds" expires_after="2025-10-12">
   <owner>lizeb@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>

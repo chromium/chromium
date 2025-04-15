@@ -611,7 +611,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.{Database}Size" units="MB" expires_after="2025-08-10">
+<histogram name="Profile.{Database}Size" units="MB" expires_after="2025-10-12">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>

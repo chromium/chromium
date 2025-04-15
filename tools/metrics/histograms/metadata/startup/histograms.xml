@@ -558,7 +558,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.PrivacySandbox.ShouldShowAdsNoticeCCT"
-    enum="Boolean" expires_after="2025-08-10">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>jacobstanley@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>
@@ -568,7 +568,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Warm.MainIntentTimeToFirstDraw" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>nafisabedin@google.com</owner>
   <owner>mthiesse@chromium.org</owner>
   <summary>

@@ -1153,7 +1153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.MainFrame.MainResource.FetchResult"
-    enum="ServiceWorkerFetchEventResult" expires_after="2025-08-10">
+    enum="ServiceWorkerFetchEventResult" expires_after="2025-10-12">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1646,7 +1646,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.StartWorker.Time{ServiceWorker_StartSituationDoNotUse}"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-10-12">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
@@ -1717,7 +1717,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ServiceWorker.Storage.FindForClientUrlInDB.ScopeCountForStorageKey"
-    units="count" expires_after="2025-08-10">
+    units="count" expires_after="2025-10-12">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
