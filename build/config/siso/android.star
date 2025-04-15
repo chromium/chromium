@@ -44,11 +44,13 @@ def __step_config(ctx, step_config):
 
     # Run static analysis steps locally when build server is enabled.
     # https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md#asynchronous-static-analysis
-    remote_run_static_analysis = True
+    remote_run_static_analysis = False
     if "args.gn" in ctx.metadata:
         gn_args = gn.args(ctx)
-        if gn_args.get("android_static_analysis") == '"build_server"':
-            remote_run_static_analysis = False
+
+        # android_static_analysis = "build_server" by default.
+        if gn_args.get("android_static_analysis") == '"on"':
+            remote_run_static_analysis = True
         if gn_args.get("enable_kythe_annotations") == "true":
             # Remote Kythe annotations isn't supported.
             remote_run = False
