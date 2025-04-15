@@ -203,12 +203,7 @@ StyleReflection* StyleBuilderConverter::ConvertBoxReflect(
 }
 
 DynamicRangeLimit StyleBuilderConverter::ConvertDynamicRangeLimit(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  return StyleBuilderConverterBase::ConvertDynamicRangeLimit(value);
-}
-
-DynamicRangeLimit StyleBuilderConverterBase::ConvertDynamicRangeLimit(
+    const StyleResolverState& state,
     const CSSValue& value) {
   if (auto* mix_value =
           DynamicTo<cssvalue::CSSDynamicRangeLimitMixValue>(value)) {
@@ -217,9 +212,10 @@ DynamicRangeLimit StyleBuilderConverterBase::ConvertDynamicRangeLimit(
     float fraction_sum = 0.f;
     for (size_t i = 0; i < mix_value->Limits().size(); ++i) {
       const DynamicRangeLimit limit =
-          ConvertDynamicRangeLimit(*mix_value->Limits()[i]);
+          ConvertDynamicRangeLimit(state, *mix_value->Limits()[i]);
       const float fraction =
-          0.01f * mix_value->Percentages()[i]->GetFloatValue();
+          0.01f * mix_value->Percentages()[i]->ComputePercentage<float>(
+                      state.CssToLengthConversionData());
       fraction_sum += fraction;
       standard_mix_sum += fraction * limit.standard_mix;
       constrained_high_mix_sum += fraction * limit.constrained_high_mix;
