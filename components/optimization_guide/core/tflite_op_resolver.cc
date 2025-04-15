@@ -147,7 +147,7 @@ TFLiteOpResolver::TFLiteOpResolver() {
   AddBuiltin(tflite::BuiltinOperator_GATHER,
              tflite::ops::builtin::Register_GATHER(),
              /* min_version = */ 1,
-             /* max_version = */ 3);
+             /* max_version = */ 4);
   AddBuiltin(tflite::BuiltinOperator_TRANSPOSE,
              tflite::ops::builtin::Register_TRANSPOSE(),
              /* min_version = */ 1,
