@@ -59,6 +59,7 @@ class WEBVIEW_EXPORT WebView : public View,
   };
 
   using WebContentsAttachedCallback = base::RepeatingCallback<void(WebView*)>;
+  using WebContentsFocusedCallback = base::RepeatingCallback<void(WebView*)>;
 
   explicit WebView(content::BrowserContext* browser_context = nullptr);
 
@@ -119,6 +120,10 @@ class WEBVIEW_EXPORT WebView : public View,
   // Adds a callback for when a WebContents is attached to this WebView.
   base::CallbackListSubscription AddWebContentsAttachedCallback(
       WebContentsAttachedCallback callback);
+
+  // Adds a callback for when the attached WebContents is focused.
+  base::CallbackListSubscription AddWebContentsFocusedCallback(
+      WebContentsFocusedCallback callback);
 
   // Sets whether this is the primary web contents for the window.
   void set_is_primary_web_contents_for_window(bool is_primary) {
@@ -245,6 +250,9 @@ class WEBVIEW_EXPORT WebView : public View,
   // List of subscriptions listening for new WebContents being attached to this
   // WebView.
   base::RepeatingCallbackList<void(WebView*)> web_contents_attached_callbacks_;
+
+  // List of subscriptions listening for attached WebContents being focused.
+  base::RepeatingCallbackList<void(WebView*)> web_contents_focused_callbacks_;
 };
 
 BEGIN_VIEW_BUILDER(WEBVIEW_EXPORT, WebView, View)

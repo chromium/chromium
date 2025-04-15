@@ -36,9 +36,9 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
 
 MultiContentsView::MultiContentsView(
     BrowserView* browser_view,
-    WebContentsPressedCallback inactive_view_pressed_callback)
+    WebContentsFocusedCallback inactive_view_focused_callback)
     : browser_view_(browser_view),
-      inactive_view_pressed_callback_(inactive_view_pressed_callback) {
+      inactive_view_focused_callback_(inactive_view_focused_callback) {
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(
           std::make_unique<ContentsWebView>(browser_view_->GetProfile()))));
@@ -53,6 +53,14 @@ MultiContentsView::MultiContentsView(
       AddChildView(std::make_unique<ContentsContainerView>(
           std::make_unique<ContentsWebView>(browser_view_->GetProfile()))));
   contents_container_views_[1]->SetVisible(false);
+
+  for (auto* contents_container_view : contents_container_views_) {
+    web_contents_focused_subscriptions_.push_back(
+        contents_container_view->GetContentsView()
+            ->AddWebContentsFocusedCallback(
+                base::BindRepeating(&MultiContentsView::OnWebContentsFocused,
+                                    base::Unretained(this))));
+  }
 
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -120,18 +128,6 @@ void MultiContentsView::SetActiveIndex(int index) {
 }
 
 bool MultiContentsView::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
-  ContentsWebView* inactive_contents_view = GetInactiveContentsView();
-  if (event.GetTypeAsUiEventType() == ui::EventType::kMousePressed &&
-      inactive_contents_view->GetVisible()) {
-    gfx::Rect inactive_contents_view_bounds =
-        inactive_contents_view->GetWebContents()->GetContainerBounds();
-    const gfx::PointF& event_position = event.PositionInScreen();
-    if (inactive_contents_view_bounds.Contains(event_position.x(),
-                                               event_position.y())) {
-      inactive_view_pressed_callback_.Run(
-          inactive_contents_view->GetWebContents());
-    }
-  }
   // Always allow the event to propagate to the WebContents, regardless of
   // whether it was also handled above.
   return false;
@@ -191,6 +187,14 @@ void MultiContentsView::Layout(PassKey) {
 void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
   // Paint the multi contents area background to match the toolbar.
   TopContainerBackground::PaintBackground(canvas, this, browser_view_);
+}
+
+void MultiContentsView::OnWebContentsFocused(views::WebView* web_view) {
+  if (IsInSplitView()) {
+    if (GetInactiveContentsView()->web_contents() == web_view->web_contents()) {
+      inactive_view_focused_callback_.Run(web_view->web_contents());
+    }
+  }
 }
 
 MultiContentsView::ContentsContainerView::ContentsContainerView(

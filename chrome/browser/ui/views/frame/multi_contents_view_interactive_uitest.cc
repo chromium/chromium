@@ -102,6 +102,23 @@ class MultiContentsViewUiTest : public InteractiveBrowserTest {
     return result;
   }
 
+  auto ExitSplitView(int index) {
+    auto result = Steps(
+        Check([index, this]() {
+          return tab_strip_model()->GetSplitForTab(index).has_value();
+        }),
+        Do([index, this]() {
+          auto split_id = tab_strip_model()->GetSplitForTab(index);
+          tab_strip_model()->RemoveSplit(split_id.value());
+        }),
+        WaitForHide(MultiContentsResizeArea::kMultiContentsResizeAreaElementId),
+        Check([this]() {
+          return multi_contents_view()->GetInactiveContentsView()->GetVisible();
+        }));
+    AddDescriptionPrefix(result, "ExitSplitView()");
+    return result;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -111,19 +128,48 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ExistsWithFlag) {
       EnsurePresent(MultiContentsView::kMultiContentsViewElementId));
 }
 
-// Check that MultiContentsView executes its callback on inactive view mouse
-// down.
-IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ActivatesInactiveView) {
+// Create a new split and exit the split view and ensure only 1 contents view is
+// visible
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, EnterAndExitSplitViews) {
+  RunTestSequence(
+      EnterSplitView(),
+      Check([this]() { return tab_strip_model()->active_index() == 0; }),
+      ExitSplitView(0),
+      Check([this]() { return tab_strip_model()->active_index() == 0; }),
+      Check([this]() { return tab_strip_model()->count() == 2u; }));
+}
+
+// Check that MultiContentsView changes its active view when inactive view is
+// focused using mouse click.
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       ActivatesInactiveViewUsingMouseClick) {
   RunTestSequence(
       EnterSplitView(),
       Check([=, this]() { return tab_strip_model()->active_index() == 0; }),
-      Do([&]() {
-        // Simulate a mouse click event on the inactive contents, which should
-        // trigger the activation callback.
-        content::SimulateMouseClick(
-            multi_contents_view()->GetInactiveContentsView()->GetWebContents(),
-            0, blink::WebPointerProperties::Button::kLeft);
-      }),
+      MoveMouseTo(base::BindLambdaForTesting([this]() {
+        return multi_contents_view()
+            ->GetInactiveContentsView()
+            ->GetBoundsInScreen()
+            .CenterPoint();
+      })),
+      ClickMouse(),
+      Check([&]() { return tab_strip_model()->active_index() == 1; }));
+}
+
+// Check that MultiContentsView changes its active view when inactive view is
+// focused using keyboard.
+IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
+                       ActivatesInactiveViewUsingKeyboard) {
+  RunTestSequence(
+      EnterSplitView(),
+      Check([=, this]() { return tab_strip_model()->active_index() == 0; }),
+      // The second contents view should be next in the focus order after
+      // the resize handle so send a TAB key event to move focus to inactive tab
+      FocusElement(
+          MultiContentsResizeHandle::kMultiContentsResizeHandleElementId),
+      SendKeyPress(
+          MultiContentsResizeHandle::kMultiContentsResizeHandleElementId,
+          ui::VKEY_TAB),
       Check([&]() { return tab_strip_model()->active_index() == 1; }));
 }
 

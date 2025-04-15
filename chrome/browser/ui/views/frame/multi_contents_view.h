@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -25,9 +26,14 @@ class WebMouseEvent;
 namespace content {
 class WebContents;
 }  // namespace content
+
 namespace gfx {
 class Canvas;
 }  // namespace gfx
+
+namespace views {
+class WebView;
+}  // namespace views
 
 // MultiContentsView shows up to two contents web views side by side, and
 // manages their layout relative to each other.
@@ -37,7 +43,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMultiContentsViewElementId);
 
-  using WebContentsPressedCallback =
+  using WebContentsFocusedCallback =
       base::RepeatingCallback<void(content::WebContents*)>;
 
   struct ViewWidths {
@@ -47,7 +53,7 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   };
 
   MultiContentsView(BrowserView* browser_view,
-                    WebContentsPressedCallback inactive_view_pressed_callback);
+                    WebContentsFocusedCallback inactive_view_focused_callback);
   MultiContentsView(const MultiContentsView&) = delete;
   MultiContentsView& operator=(const MultiContentsView&) = delete;
   ~MultiContentsView() override;
@@ -119,6 +125,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
     raw_ptr<ContentsWebView> contents_view_;
   };
 
+  void OnWebContentsFocused(views::WebView*);
+
   ViewWidths GetViewWidths(gfx::Rect available_space);
 
   ViewWidths ClampToMinWidth(ViewWidths widths);
@@ -131,6 +139,11 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // ContentsContainerView is not visible.
   std::vector<ContentsContainerView*> contents_container_views_;
 
+  // Holds subscriptions for when the attached web contents to ContentsView
+  // is focused.
+  std::vector<base::CallbackListSubscription>
+      web_contents_focused_subscriptions_;
+
   // The handle responsible for resizing the two contents views as relative to
   // each other.
   raw_ptr<MultiContentsResizeArea> resize_area_ = nullptr;
@@ -138,9 +151,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // The index in contents_views_ of the active contents view.
   int active_index_ = 0;
 
-  // Callback to be executed when the user clicks anywhere within the bounds of
-  // the inactive contents view.
-  WebContentsPressedCallback inactive_view_pressed_callback_;
+  // Callback to be executed when the user focuses the inactive contents view.
+  WebContentsFocusedCallback inactive_view_focused_callback_;
 
   // Current ratio of |contents_views_|'s first ContentsContainerView's width /
   // overall contents view width.

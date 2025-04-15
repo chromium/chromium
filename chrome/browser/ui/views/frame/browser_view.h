@@ -481,6 +481,11 @@ class BrowserView : public BrowserWindow,
   // Update the index of the active split based on the active tab's web contents
   void UpdateActiveSplitView();
 
+  // True if an activation from `old_contents` to `new_contents` happens between
+  // tabs that are already in a split-view configuration.
+  bool IsTabChangeInSplitView(content::WebContents* old_contents,
+                              content::WebContents* new_contents);
+
   // Activate the tab containing the given WebContents (if any).
   void ActivateWebContents(content::WebContents* web_contents);
 

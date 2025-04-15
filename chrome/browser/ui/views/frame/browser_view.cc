@@ -429,6 +429,22 @@ void CheckFocusListForCycles(views::View* const start_view) {
 
 #endif  // DCHECK_IS_ON()
 
+void MaybeResetStoredFocusForWebContents(content::WebContents* web_contents) {
+  // In the case that the last focused view of the WebContents is a
+  // ContentsWebView, but not the ContentsWebView hosting the WebContents
+  // itself, we must reset the stored focus to prevent incorrect split-tab
+  // activation behavior when the split-view is swapped in during a tab switch.
+  ChromeWebContentsViewFocusHelper* focus_helper =
+      ChromeWebContentsViewFocusHelper::FromWebContents(web_contents);
+  if (focus_helper) {
+    ContentsWebView* focused_view =
+        views::AsViewClass<ContentsWebView>(focus_helper->GetStoredFocus());
+    if (focused_view && focused_view->web_contents() != web_contents) {
+      focus_helper->ResetStoredFocus();
+    }
+  }
+}
+
 bool GetGestureCommand(ui::GestureEvent* event, int* command) {
   DCHECK(command);
   *command = 0;
@@ -1524,6 +1540,15 @@ void BrowserView::UpdateActiveSplitView() {
   multi_contents_view_->SetActiveIndex(relative_active_position);
 }
 
+bool BrowserView::IsTabChangeInSplitView(content::WebContents* old_contents,
+                                         content::WebContents* new_contents) {
+  return multi_contents_view_ && multi_contents_view_->IsInSplitView() &&
+         multi_contents_view_->GetActiveContentsView()->web_contents() ==
+             old_contents &&
+         multi_contents_view_->GetInactiveContentsView()->web_contents() ==
+             new_contents;
+}
+
 void BrowserView::ActivateWebContents(content::WebContents* web_contents) {
   int tab_index =
       browser_->tab_strip_model()->GetIndexOfWebContents(web_contents);
@@ -1924,6 +1949,8 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   DCHECK(new_contents);
   TRACE_EVENT0("ui", "BrowserView::OnActiveTabChanged");
   views::WebView* active_contents_view = GetContentsWebView();
+  bool tab_change_in_split_view =
+      IsTabChangeInSplitView(old_contents, new_contents);
 
   if (old_contents && !old_contents->IsBeingDestroyed()) {
     // We do not store the focus when closing the tab to work-around bug 4633.
@@ -1943,23 +1970,20 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   // Visibility API under Windows, as ChangeWebContents will briefly hide
   // the WebContents window.
   bool change_tab_contents =
-      active_contents_view->web_contents() != new_contents;
-  if (multi_contents_view_) {
-    change_tab_contents =
-        change_tab_contents &&
-        multi_contents_view_->GetInactiveContentsView()->GetWebContents() !=
-            new_contents;
-  }
+      active_contents_view->web_contents() != new_contents &&
+      !tab_change_in_split_view;
 
 #if BUILDFLAG(IS_MAC)
   // Widget::IsActive is inconsistent between Mac and Aura, so don't check for
   // it on Mac. The check is also unnecessary for Mac, since restoring focus
   // won't activate the widget on that platform.
-  bool will_restore_focus =
-      !browser_->tab_strip_model()->closing_all() && GetWidget()->IsVisible();
-#else
   bool will_restore_focus = !browser_->tab_strip_model()->closing_all() &&
-                            GetWidget()->IsActive() && GetWidget()->IsVisible();
+                            GetWidget()->IsVisible() &&
+                            !tab_change_in_split_view;
+#else
+  bool will_restore_focus =
+      !browser_->tab_strip_model()->closing_all() && GetWidget()->IsActive() &&
+      GetWidget()->IsVisible() && !tab_change_in_split_view;
 #endif
   // Update various elements that are interested in knowing the current
   // WebContents.
@@ -2049,8 +2073,10 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
         if (multi_contents_view_->IsInSplitView()) {
           HideSplitView();
         }
-        active_contents_view->SetWebContents(new_contents);
+        multi_contents_view_->GetActiveContentsView()->SetWebContents(
+            new_contents);
       }
+      MaybeResetStoredFocusForWebContents(new_contents);
     } else {
       active_contents_view->SetWebContents(new_contents);
     }
@@ -2063,9 +2089,7 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
     // The second layout update should be no-op. It will just set the
     // DevTools WebContents.
     UpdateDevToolsForContents(new_contents, true);
-  } else if (multi_contents_view_ != nullptr &&
-             multi_contents_view_->GetInactiveContentsView()
-                     ->GetWebContents() == new_contents) {
+  } else if (tab_change_in_split_view) {
     UpdateActiveSplitView();
   }
 
