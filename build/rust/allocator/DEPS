@@ -3,7 +3,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "remap_alloc.cc" : [
+  "allocator_impls.cc" : [
     "+partition_alloc"
   ]
 }

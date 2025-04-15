@@ -32,10 +32,6 @@ if (toolchain_has_rust) {
     sources = [ "lib.rs" ]
     crate_root = "lib.rs"
     cxx_bindings = [ "lib.rs" ]
-    rustflags = [
-      "--cfg",
-      "mangle_alloc_error_handler",
-    ]
 
     deps = [ ":allocator_impls" ]
 
@@ -43,13 +39,12 @@ if (toolchain_has_rust) {
     no_allocator_crate = true
     allow_unsafe = true
 
+    rustflags = []
     if (use_cpp_allocator_impls) {
-      rustflags += [
-        "--cfg",
-        "use_cpp_allocator_impls",
-      ]
+      rustflags += [ "--cfg=use_cpp_allocator_impls" ]
     }
 
+    # TODO(https://crbug.com/410596442): Stop using unstable features here.
     configs -= [ "//build/config/compiler:disallow_unstable_features" ]
   }
 
