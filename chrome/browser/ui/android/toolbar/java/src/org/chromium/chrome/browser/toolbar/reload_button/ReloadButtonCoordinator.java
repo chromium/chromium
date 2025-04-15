@@ -18,8 +18,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.Toast;
 
 /**
- * Root component for the reload button. Exposes public API to change button's state and allows
- * consumers to react to button state changes.
+ * Root component for the reload button that maintains UI representations like stop/loading states.
+ * Exposes public API to change button's state and allows consumers to react to button state
+ * changes.
  */
 @NullMarked
 public class ReloadButtonCoordinator {

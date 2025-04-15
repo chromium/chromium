@@ -6,11 +6,19 @@ found in the LICENSE file.
 -->
 
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/web_app_header_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@macro/default_bg_color"
     android:minHeight="@dimen/web_app_header_min_height">
 
-    <!-- TODO(vkorotkevich): add buttons here -->
-
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/refresh_button"
+        style="@style/HeaderButton"
+        android:src="@drawable/btn_reload_stop"
+        android:contentDescription="@string/accessibility_btn_refresh"
+        android:tooltipText="@string/accessibility_btn_refresh"
+        android:visibility="gone"
+        app:tint="@color/default_icon_color_tint_list" />
 </FrameLayout>

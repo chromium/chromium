@@ -6,9 +6,19 @@ package org.chromium.chrome.browser.ui.web_app_header;
 
 import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.ImageButton;
 
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -25,8 +35,12 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
 
     private @Nullable WebAppHeaderLayoutMediator mMediator;
     private @Nullable ViewGroup mView;
+    private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
     private final ViewStub mViewStub;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
+    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ThemeColorProvider mThemeColorProvider;
+    private final @DisplayMode.EnumType int mDisplayMode;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -35,11 +49,23 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
      * @param desktopWindowStateManager a class that notifies about desktop windowing state changes.
      */
     public WebAppHeaderLayoutCoordinator(
-            ViewStub viewStub, DesktopWindowStateManager desktopWindowStateManager) {
+            ViewStub viewStub,
+            DesktopWindowStateManager desktopWindowStateManager,
+            ObservableSupplier<Tab> tabSupplier,
+            ThemeColorProvider themeColorProvider,
+            BrowserServicesIntentDataProvider browserServicesIntentDataProvider) {
+        final var webAppExtras = browserServicesIntentDataProvider.getWebappExtras();
+        assert webAppExtras != null;
+        mDisplayMode = webAppExtras.displayMode;
+
         mViewStub = viewStub;
         mViewStub.setLayoutResource(R.layout.web_app_header_layout);
+
         mDesktopWindowStateManager = desktopWindowStateManager;
         mDesktopWindowStateManager.addObserver(this);
+
+        mTabSupplier = tabSupplier;
+        mThemeColorProvider = themeColorProvider;
 
         final var appHeaderState = desktopWindowStateManager.getAppHeaderState();
         if (appHeaderState != null) {
@@ -65,7 +91,37 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
 
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
-        // TODO(vkorotkevich): create reload button coordinator here.
+        if (mDisplayMode == DisplayMode.MINIMAL_UI) {
+            initMinUiControls();
+        }
+    }
+
+    private void initMinUiControls() {
+        assert mView != null;
+
+        final ImageButton reloadButton = mView.findViewById(R.id.refresh_button);
+        mReloadButtonCoordinator =
+                new ReloadButtonCoordinator(
+                        reloadButton,
+                        this::refreshTab,
+                        mTabSupplier,
+                        new ObservableSupplierImpl<>(),
+                        mThemeColorProvider);
+        mReloadButtonCoordinator.setVisibility(true);
+    }
+
+    @VisibleForTesting
+    void refreshTab(boolean ignoreCache) {
+        final var tab = mTabSupplier.get();
+        if (tab == null) return;
+
+        if (tab.isLoading()) {
+            tab.stopLoading();
+        } else if (ignoreCache) {
+            tab.reloadIgnoringCache();
+        } else {
+            tab.reload();
+        }
     }
 
     /**
@@ -75,7 +131,12 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
     public void destroy() {
         mDesktopWindowStateManager.removeObserver(this);
 
-        if (mMediator == null) return;
-        mMediator.destroy();
+        if (mMediator != null) {
+            mMediator.destroy();
+        }
+
+        if (mReloadButtonCoordinator != null) {
+            mReloadButtonCoordinator.destroy();
+        }
     }
 }

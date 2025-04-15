@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.ui.web_app_header;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -27,7 +30,15 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -53,14 +64,24 @@ public class WebAppHeaderLayoutCoordinatorTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock public Profile mProfile;
+    @Mock public ThemeColorProvider mThemeColorProvider;
+    @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock public WebappExtras mWebAppExtras;
+    @Mock public Tab mTab;
 
     private WebAppHeaderLayoutCoordinator mCoordinator;
     private Activity mActivity;
     private ViewGroup mContentView;
     private ViewStub mViewStub;
+    private ObservableSupplierImpl<Tab> mTabSupplier;
+    private AppHeaderState mAppHeaderState;
 
     @Before
     public void setup() {
+        setupStandaloneMode();
+
+        mTabSupplier = new ObservableSupplierImpl<>();
         mActivityScenarioRule.getScenario().onActivity(testActivity -> mActivity = testActivity);
         mContentView = new FrameLayout(mActivity);
         mViewStub = new ViewStub(mActivity);
@@ -70,7 +91,64 @@ public class WebAppHeaderLayoutCoordinatorTest {
     }
 
     private void createCoordinator() {
-        mCoordinator = new WebAppHeaderLayoutCoordinator(mViewStub, mDesktopWindowStateManager);
+        mCoordinator =
+                new WebAppHeaderLayoutCoordinator(
+                        mViewStub,
+                        mDesktopWindowStateManager,
+                        mTabSupplier,
+                        mThemeColorProvider,
+                        mIntentDataProvider);
+    }
+
+    private void setupDesktopWindowing() {
+        mAppHeaderState =
+                new AppHeaderState(
+                        WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, /* isInDesktopWindow= */ true);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
+    }
+
+    private void setupStandaloneMode() {
+        mWebAppExtras =
+                new WebappExtras(
+                        "",
+                        "",
+                        "",
+                        new WebappIcon(),
+                        "",
+                        "",
+                        DisplayMode.STANDALONE,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        false);
+
+        when(mIntentDataProvider.getWebappExtras()).thenReturn(mWebAppExtras);
+    }
+
+    private void setupMinUiMode() {
+        mWebAppExtras =
+                new WebappExtras(
+                        "",
+                        "",
+                        "",
+                        new WebappIcon(),
+                        "",
+                        "",
+                        DisplayMode.MINIMAL_UI,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        false,
+                        false,
+                        false);
+
+        when(mIntentDataProvider.getWebappExtras()).thenReturn(mWebAppExtras);
     }
 
     @Test
@@ -97,10 +175,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
 
     @Test
     public void testInitHasAppHeaderState_shouldInitCoordinatorImmediately() {
-        final var appHeaderState =
-                new AppHeaderState(
-                        WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, /* isInDesktopWindow= */ true);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
+        setupDesktopWindowing();
         createCoordinator();
 
         assertNotNull(
@@ -111,15 +186,57 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Test
     public void testEnteredDesktopWindow_shouldInitCoordinator() {
         createCoordinator();
+        setupDesktopWindowing();
 
-        final var appHeaderState =
-                new AppHeaderState(
-                        WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, /* isInDesktopWindow= */ true);
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
-        mCoordinator.onAppHeaderStateChanged(appHeaderState);
-
+        mCoordinator.onAppHeaderStateChanged(mAppHeaderState);
         assertNotNull(
                 "Web app header should be inflated when in a desktop window",
                 mActivity.findViewById(R.id.web_app_header_layout));
+    }
+
+    @Test
+    public void testMinUiDisplayMode_shouldMakeMinUiVisible() {
+        setupDesktopWindowing();
+        setupMinUiMode();
+        mTabSupplier.set(mTab);
+        createCoordinator();
+
+        assertEquals(View.VISIBLE, mActivity.findViewById(R.id.refresh_button).getVisibility());
+    }
+
+    @Test
+    public void testReload_shouldReloadTab() {
+        setupDesktopWindowing();
+        setupMinUiMode();
+        mTabSupplier.set(mTab);
+        when(mTab.isLoading()).thenReturn(false);
+        createCoordinator();
+
+        mCoordinator.refreshTab(false);
+        verify(mTab).reload();
+    }
+
+    @Test
+    public void testReloadWhileReloading_shouldStopReloading() {
+        setupDesktopWindowing();
+        setupMinUiMode();
+        mTabSupplier.set(mTab);
+        when(mTab.isLoading()).thenReturn(true);
+        createCoordinator();
+
+        mCoordinator.refreshTab(false);
+        verify(mTab).stopLoading();
+    }
+
+    @Test
+    public void testReloadTabIgnoringCache_shouldReloadIgnoringCache() {
+        setupDesktopWindowing();
+        setupMinUiMode();
+        mTabSupplier.set(mTab);
+        when(mTab.isLoading()).thenReturn(false);
+        createCoordinator();
+
+        mCoordinator.refreshTab(true);
+        verify(mTab).reloadIgnoringCache();
     }
 }
