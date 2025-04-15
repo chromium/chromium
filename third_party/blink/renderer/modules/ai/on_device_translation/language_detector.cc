@@ -138,23 +138,27 @@ void OnGotStatus(
 ScriptPromise<V8AIAvailability> LanguageDetector::availability(
     ScriptState* script_state,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
+  if (!ValidateScriptState(script_state, exception_state)) {
     return EmptyPromise();
   }
+
+  // TODO(crbug.com/409848465): Validate and canonicalize
+  // expectedInputLanguages.
 
   ScriptPromiseResolver<V8AIAvailability>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
           script_state);
   ScriptPromise<V8AIAvailability> promise = resolver->Promise();
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+
+  // TODO(402166942): Return unavailable if document is not allowed to use
+  // language detector permission policy.
+
+  ExecutionContext* context = ExecutionContext::From(script_state);
 
   AIInterfaceProxy::GetLanguageDetectionModelStatus(
-      execution_context,
-      WTF::BindOnce(&OnGotStatus, WrapWeakPersistent(execution_context),
-                    WrapPersistent(resolver))
-          .Then(RejectOnDestruction(resolver)));
+      context, WTF::BindOnce(&OnGotStatus, WrapWeakPersistent(context),
+                             WrapPersistent(resolver))
+                   .Then(RejectOnDestruction(resolver)));
 
   return promise;
 }
@@ -164,18 +168,21 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
     ScriptState* script_state,
     LanguageDetectorCreateOptions* options,
     ExceptionState& exception_state) {
-  // TODO(crbug.com/349927087): Take `options` into account.
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
+  if (!ValidateScriptState(script_state, exception_state)) {
     return EmptyPromise();
   }
+
+  // TODO(crbug.com/409848465): Validate and canonicalize
+  // expectedInputLanguages.
 
   CHECK(options);
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (HandleAbortSignal(signal, script_state, exception_state)) {
     return EmptyPromise();
   }
+
+  // TODO(402166942): Reject if document is not allowed to use language detector
+  // permission policy.
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<LanguageDetector>>(
@@ -212,12 +219,12 @@ ScriptPromise<IDLSequence<LanguageDetectionResult>> LanguageDetector::detect(
     const WTF::String& input,
     LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
-  if (!script_state->ContextIsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "The execution context is not valid.");
-    return ScriptPromise<IDLSequence<LanguageDetectionResult>>();
+  if (!ValidateScriptState(script_state, exception_state)) {
+    return EmptyPromise();
   }
 
+  // TODO(crbug.com/399693771): This should be a composite signal of the passed
+  // in abort signal and the create abort signal.
   AbortSignal* signal = options->getSignalOr(nullptr);
   if (HandleAbortSignal(signal, script_state, exception_state)) {
     return EmptyPromise();
@@ -243,19 +250,8 @@ ScriptPromise<IDLDouble> LanguageDetector::measureInputUsage(
     const WTF::String& input,
     LanguageDetectorDetectOptions* options,
     ExceptionState& exception_state) {
-  // https://webmachinelearning.github.io/writing-assistance-apis/#measure-ai-model-input-usage
-  //
-  // If modelObject’s relevant global object is a Window whose associated
-  // Document is not fully active, then return a promise rejected with an
-  // "InvalidStateError" DOMException.
-  auto* context = ExecutionContext::From(script_state);
-  if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    auto* document = window->document();
-    if (document && !document->IsActive()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "The document is not active");
-      return EmptyPromise();
-    }
+  if (!ValidateScriptState(script_state, exception_state)) {
+    return EmptyPromise();
   }
 
   // TODO(crbug.com/399693771): This should be a composite signal of the passed

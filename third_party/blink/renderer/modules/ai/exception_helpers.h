@@ -30,6 +30,7 @@ extern const char kExceptionMessageUnsupportedLanguages[];
 extern const char kExceptionMessageInvalidResponseJsonSchema[];
 
 void ThrowInvalidContextException(ExceptionState& exception_state);
+void ThrowDocumentNotActiveException(ExceptionState& exception_state);
 void ThrowSessionDestroyedException(ExceptionState& exception_state);
 void ThrowAbortedException(ExceptionState& exception_state);
 
@@ -49,6 +50,11 @@ WTF::String ConvertModelAvailabilityCheckResultToDebugString(
 bool HandleAbortSignal(AbortSignal* signal,
                        ScriptState* script_state,
                        ExceptionState& exception_state);
+
+// Return true if fully active window. Otherwise throw an InvalidStateError and
+// return false.
+bool ValidateScriptState(ScriptState* script_state,
+                         ExceptionState& exception_state);
 
 // Validates and stringifies the responseJSONSchema option if provided.
 // Throws an exception if an unsupported schema is detected.

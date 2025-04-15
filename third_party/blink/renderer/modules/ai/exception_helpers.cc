@@ -9,9 +9,12 @@
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -19,6 +22,7 @@ const char kExceptionMessageExecutionContextInvalid[] =
     "The execution context is not valid.";
 const char kExceptionMessageServiceUnavailable[] =
     "Model execution service is not available.";
+const char kExceptionMessageDocumentNotActive[] = "The document is not active.";
 
 const char kExceptionMessagePermissionDenied[] =
     "A user permission error occurred, such as not signed-in or not "
@@ -69,6 +73,11 @@ void ThrowInvalidContextException(ExceptionState& exception_state) {
                                     kExceptionMessageExecutionContextInvalid);
 }
 
+void ThrowDocumentNotActiveException(ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                    kExceptionMessageDocumentNotActive);
+}
+
 void ThrowSessionDestroyedException(ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     kExceptionMessageSessionDestroyed);
@@ -106,6 +115,30 @@ bool HandleAbortSignal(AbortSignal* signal,
   }
 
   return false;
+}
+
+bool ValidateScriptState(ScriptState* script_state,
+                         ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return false;
+  }
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
+
+  // Realm’s global object must be a Window object.
+  CHECK(window);
+
+  // If document is not fully active, then return a promise rejected with an
+  // "InvalidStateError" DOMException.
+  Document* document = window->document();
+  CHECK(document);
+  if (!document->IsActive()) {
+    ThrowDocumentNotActiveException(exception_state);
+    return false;
+  }
+
+  return true;
 }
 
 String ValidateAndStringifyObject(const ScriptValue& input,

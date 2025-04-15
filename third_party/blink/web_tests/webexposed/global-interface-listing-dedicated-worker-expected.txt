@@ -1231,16 +1231,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter selectedTrack
 [Worker]     method @@iterator
 [Worker]     method constructor
-[Worker] interface LanguageDetector
-[Worker]     static method availability
-[Worker]     static method create
-[Worker]     attribute @@toStringTag
-[Worker]     getter expectedInputLanguages
-[Worker]     getter inputQuota
-[Worker]     method constructor
-[Worker]     method destroy
-[Worker]     method detect
-[Worker]     method measureInputUsage
 [Worker] interface LanguageModel : EventTarget
 [Worker]     static method availability
 [Worker]     static method create

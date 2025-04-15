@@ -24,7 +24,7 @@ dictionary LanguageDetectionResult {
 };
 
 [
-  Exposed=(Window, Worker),
+  Exposed=Window,
   RuntimeEnabled=LanguageDetectionAPI,
   SecureContext
 ]
