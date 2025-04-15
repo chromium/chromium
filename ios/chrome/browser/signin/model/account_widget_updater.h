@@ -26,8 +26,9 @@ class AccountWidgetUpdater : public SystemIdentityManagerObserver {
   void OnIdentityUpdated(id<SystemIdentity> identity) final;
 
  private:
-  SystemIdentityManager::IteratorResult StoreIdentityDataInDict(
-      NSMutableDictionary* dictionary,
+  SystemIdentityManager::IteratorResult IdentitiesOnDevice(
+      NSMutableDictionary* accounts,
+      NSMutableDictionary* avatars,
       id<SystemIdentity> identity);
   void UpdateLoadedAccounts();
   void HandleMigrationIfNeeded();

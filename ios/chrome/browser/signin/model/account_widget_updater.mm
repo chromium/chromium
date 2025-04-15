@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/signin/model/account_widget_updater.h"
 
 #import "base/task/single_thread_task_runner.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -19,6 +22,39 @@
 #import "ios/chrome/browser/widget_kit/model/model_swift.h"  // nogncheck
 #endif
 
+namespace {
+
+// Updates all widget timelines with the updated data.
+void ReloadAllTimelines() {
+#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
+  [WidgetTimelinesUpdater reloadAllTimelines];
+#endif
+}
+
+// Save avatar info to disk.
+void StoreAvatarDataToDisk(NSURL* identity_file, NSData* png_data) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+  if (png_data) {
+    [png_data writeToURL:identity_file atomically:YES];
+  } else {
+    [[NSFileManager defaultManager] removeItemAtURL:identity_file error:nil];
+  }
+}
+
+// Save avatars info to disk.
+void UpdateAvatarData(NSDictionary* avatars) {
+  for (NSString* gaia in avatars) {
+    NSString* file_name = [NSString stringWithFormat:@"%@.png", gaia];
+    NSURL* identity_file = [app_group::WidgetsAvatarFolder()
+        URLByAppendingPathComponent:file_name];
+    NSData* avatar_data = avatars[gaia];
+    StoreAvatarDataToDisk(identity_file, avatar_data);
+  }
+}
+
+}  // namespace
+
 AccountWidgetUpdater::AccountWidgetUpdater(
     SystemIdentityManager* system_identity_manager)
     : system_identity_manager_(system_identity_manager) {
@@ -30,48 +66,48 @@ AccountWidgetUpdater::~AccountWidgetUpdater() = default;
 
 void AccountWidgetUpdater::OnIdentityListChanged() {
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&AccountWidgetUpdater::UpdateLoadedAccounts,
-                                weak_ptr_factory_.GetWeakPtr()));
+  UpdateLoadedAccounts();
 #endif
 }
 
 void AccountWidgetUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
-  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
-  NSMutableDictionary* accounts =
-      [[shared_defaults objectForKey:app_group::kAccountsOnDevice] mutableCopy];
-  if (!accounts) {
-    accounts = [[NSMutableDictionary alloc] init];
-  }
-
-  StoreIdentityDataInDict(accounts, identity);
-
-  [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
-
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-  [WidgetTimelinesUpdater reloadAllTimelines];
-#endif
-}
+  UIImage* image =
+      system_identity_manager_->GetCachedAvatarForIdentity(identity);
+  NSData* png_data = UIImagePNGRepresentation(image);
 
-SystemIdentityManager::IteratorResult
-AccountWidgetUpdater::StoreIdentityDataInDict(NSMutableDictionary* dictionary,
-                                              id<SystemIdentity> identity) {
-  NSMutableDictionary* account = [[NSMutableDictionary alloc] init];
-  [account setObject:identity.userEmail forKey:app_group::kEmail];
-  // Add the account to the dictionary of accounts.
-  [dictionary setObject:account forKey:identity.gaiaID];
-
-  // Save avatar info to disk.
   NSString* file_name = [NSString stringWithFormat:@"%@.png", identity.gaiaID];
   NSURL* identity_file =
       [app_group::WidgetsAvatarFolder() URLByAppendingPathComponent:file_name];
 
-  if (UIImage* image =
-          system_identity_manager_->GetCachedAvatarForIdentity(identity)) {
+  // Update the identity image info on disk and update widgets.
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&StoreAvatarDataToDisk, identity_file, png_data),
+      base::BindOnce(&ReloadAllTimelines));
+#endif
+}
+
+#pragma mark - Private
+
+// Callback for SystemIdentityManager::IterateOverIdentities().
+SystemIdentityManager::IteratorResult AccountWidgetUpdater::IdentitiesOnDevice(
+    NSMutableDictionary* accounts,
+    NSMutableDictionary* avatars,
+    id<SystemIdentity> identity) {
+  NSMutableDictionary* account = [[NSMutableDictionary alloc] init];
+  [account setObject:identity.userEmail forKey:app_group::kEmail];
+  // Add the account to the dictionary of accounts.
+  [accounts setObject:account forKey:identity.gaiaID];
+
+  UIImage* image =
+      system_identity_manager_->GetCachedAvatarForIdentity(identity);
+  // Add the avatar info to the dictionary of avatars.
+  if (image) {
     NSData* png_data = UIImagePNGRepresentation(image);
-    [png_data writeToURL:identity_file atomically:YES];
-  } else {
-    [[NSFileManager defaultManager] removeItemAtURL:identity_file error:nil];
+    [avatars setObject:png_data forKey:identity.gaiaID];
   }
 
   return SystemIdentityManager::IteratorResult::kContinueIteration;
@@ -79,16 +115,16 @@ AccountWidgetUpdater::StoreIdentityDataInDict(NSMutableDictionary* dictionary,
 
 void AccountWidgetUpdater::UpdateLoadedAccounts() {
   NSMutableDictionary* accounts = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary* avatars = [[NSMutableDictionary alloc] init];
 
   // base::Unretained(...) is safe because the callback is
   // called synchronously from IterateOverIdentities(...).
   system_identity_manager_->IterateOverIdentities(
-      base::BindRepeating(&AccountWidgetUpdater::StoreIdentityDataInDict,
-                          base::Unretained(this), accounts));
+      base::BindRepeating(&AccountWidgetUpdater::IdentitiesOnDevice,
+                          base::Unretained(this), accounts, avatars));
 
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
   [shared_defaults setObject:accounts forKey:app_group::kAccountsOnDevice];
-
   NSDictionary* urls_info =
       [shared_defaults objectForKey:app_group::kSuggestedItemsForMultiprofile];
   NSDictionary* last_modification_dates_info = [shared_defaults
@@ -117,9 +153,12 @@ void AccountWidgetUpdater::UpdateLoadedAccounts() {
                       kSuggestedItemsLastModificationDateForMultiprofile];
   }
 
-#if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
-  [WidgetTimelinesUpdater reloadAllTimelines];
-#endif
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&UpdateAvatarData, avatars),
+      base::BindOnce(&ReloadAllTimelines));
 }
 
 void AccountWidgetUpdater::HandleMigrationIfNeeded() {
