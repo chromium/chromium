@@ -285,14 +285,39 @@ double LanguageDetector::inputQuota() const {
 
 HeapVector<Member<LanguageDetectionResult>> LanguageDetector::ConvertResult(
     WTF::Vector<LanguageDetectionModel::LanguagePrediction> predictions) {
-  HeapVector<Member<LanguageDetectionResult>> result;
+  float last_score = 1;
+  float cumulative_confidence = 0;
+
+  HeapVector<Member<LanguageDetectionResult>> results;
   for (const auto& prediction : predictions) {
-    auto* one = MakeGarbageCollected<LanguageDetectionResult>();
-    result.push_back(one);
-    one->setDetectedLanguage(String(prediction.language));
-    one->setConfidence(prediction.score);
+    CHECK_GE(prediction.score, 0);
+    CHECK_LE(prediction.score, 1 - cumulative_confidence);
+    CHECK_LE(prediction.score, last_score);
+    last_score = prediction.score;
+
+    if (prediction.score == 0 || prediction.language == "unknown") {
+      break;
+    }
+    auto* result = MakeGarbageCollected<LanguageDetectionResult>();
+    results.push_back(result);
+    result->setDetectedLanguage(String(prediction.language));
+    result->setConfidence(prediction.score);
+
+    cumulative_confidence += prediction.score;
+
+    if (cumulative_confidence >= 0.99) {
+      break;
+    }
   }
-  return result;
+
+  // Append "und" to end. Set it's confidence so that the total confidences add
+  // up to 1.
+  auto* result = MakeGarbageCollected<LanguageDetectionResult>();
+  results.push_back(result);
+  result->setDetectedLanguage(String("und"));
+  result->setConfidence(1 - cumulative_confidence);
+
+  return results;
 }
 
 void LanguageDetector::OnDetectComplete(
