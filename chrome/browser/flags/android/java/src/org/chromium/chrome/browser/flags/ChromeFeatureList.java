@@ -352,6 +352,8 @@ public abstract class ChromeFeatureList {
     public static final String EMPTY_TAB_LIST_ANIMATION_KILL_SWITCH =
             "EmptyTabListAnimationKillSwitch";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
+    public static final String ENABLE_SAVE_PACKAGE_FOR_OFF_THE_RECORD =
+            "EnableSavePackageForOffTheRecord";
     public static final String ENABLE_X_AXIS_ACTIVITY_TRANSITION = "EnableXAxisActivityTransition";
     public static final String ENABLE_CLIPBOARD_DATA_CONTROLS_ANDROID =
             "EnableClipboardDataControlsAndroid";

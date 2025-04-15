@@ -212,12 +212,13 @@ class DownloadItemFactoryImpl : public download::DownloadItemFactory {
       download::DownloadItemImplDelegate* delegate,
       uint32_t download_id,
       const base::FilePath& path,
+      const base::FilePath& display_name,
       const GURL& url,
       const std::string& mime_type,
       download::DownloadJob::CancelRequestCallback cancel_request_callback)
       override {
-    return new download::DownloadItemImpl(delegate, download_id, path, url,
-                                          mime_type,
+    return new download::DownloadItemImpl(delegate, download_id, path,
+                                          display_name, url, mime_type,
                                           std::move(cancel_request_callback));
   }
 };
@@ -883,6 +884,7 @@ BrowserContext* DownloadManagerImpl::GetBrowserContext() {
 
 void DownloadManagerImpl::CreateSavePackageDownloadItem(
     const base::FilePath& main_file_path,
+    const base::FilePath& main_file_display_name,
     const GURL& page_url,
     const std::string& mime_type,
     int render_process_id,
@@ -892,13 +894,14 @@ void DownloadManagerImpl::CreateSavePackageDownloadItem(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   GetNextId(base::BindOnce(
       &DownloadManagerImpl::CreateSavePackageDownloadItemWithId,
-      weak_factory_.GetWeakPtr(), main_file_path, page_url, mime_type,
-      render_process_id, render_frame_id, std::move(cancel_request_callback),
-      std::move(item_created)));
+      weak_factory_.GetWeakPtr(), main_file_path, main_file_display_name,
+      page_url, mime_type, render_process_id, render_frame_id,
+      std::move(cancel_request_callback), std::move(item_created)));
 }
 
 void DownloadManagerImpl::CreateSavePackageDownloadItemWithId(
     const base::FilePath& main_file_path,
+    const base::FilePath& main_file_display_name,
     const GURL& page_url,
     const std::string& mime_type,
     int render_process_id,
@@ -911,7 +914,7 @@ void DownloadManagerImpl::CreateSavePackageDownloadItemWithId(
   DCHECK(!base::Contains(downloads_, id));
 
   download::DownloadItemImpl* download_item = item_factory_->CreateSavePageItem(
-      this, id, main_file_path, page_url, mime_type,
+      this, id, main_file_path, main_file_display_name, page_url, mime_type,
       std::move(cancel_request_callback));
 
   GlobalRenderFrameHostId global_id(render_process_id, render_frame_id);

@@ -123,6 +123,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &data_sharing::features::kDataSharingFeature,
     &data_sharing::features::kDataSharingJoinOnly,
     &data_sharing::features::kDataSharingNonProductionEnvironment,
+    &download::features::kEnableSavePackageForOffTheRecord,
     &download::features::kSmartSuggestionForLargeDownloads,
     &base::features::kCollectAndroidFrameTimelineMetrics,
     &download::features::kDownloadNotificationServiceUnifiedAPI,
