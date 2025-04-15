@@ -28,7 +28,7 @@
 
 /// Module that provides `#[global_allocator]` / `GlobalAlloc` interface for
 /// using an allocator from C++.
-#[cfg(use_cpp_allocator_impls)]
+#[cfg(rust_allocator_uses_allocator_impls_h)]
 mod cpp_allocator {
     use super::ffi;
     use std::alloc::{GlobalAlloc, Layout};
@@ -61,7 +61,7 @@ mod cpp_allocator {
 
 /// Module that provides `#[global_allocator]` / `GlobalAlloc` interface for
 /// using the default Rust allocator.
-#[cfg(not(use_cpp_allocator_impls))]
+#[cfg(not(rust_allocator_uses_allocator_impls_h))]
 mod rust_allocator {
     #[global_allocator]
     static GLOBAL: std::alloc::System = std::alloc::System;

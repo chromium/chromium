@@ -20,28 +20,8 @@
 #if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC)
 #include "partition_alloc/partition_alloc_constants.h"  // nogncheck
 #include "partition_alloc/shim/allocator_shim.h"        // nogncheck
-#elif BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(RUST_ALLOCATOR_USES_ALIGNED_MALLOC)
 #include <cstdlib>
-#endif
-
-// In ASAN builds, PartitionAlloc-Everywhere is disabled, meaning malloc() and
-// friends in C++ do not go to PartitionAlloc. So we also don't point the Rust
-// allocation functions at PartitionAlloc. Generally, this means we just direct
-// them to the Standard Library's allocator.
-//
-// However, on Windows the Standard Library uses HeapAlloc() and Windows ASAN
-// does *not* hook that method, so ASAN does not get to hear about allocations
-// made in Rust. To resolve this, we redirect allocation to _aligned_malloc
-// which Windows ASAN *does* hook.
-//
-// Note that there is a runtime option to make ASAN hook HeapAlloc() but
-// enabling it breaks Win32 APIs like CreateProcess:
-// https://issues.chromium.org/u/1/issues/368070343#comment29
-#if !BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC) && BUILDFLAG(IS_WIN) && \
-    defined(ADDRESS_SANITIZER)
-#define USE_WIN_ALIGNED_MALLOC 1
-#else
-#define USE_WIN_ALIGNED_MALLOC 0
 #endif
 
 namespace rust_allocator_internal {
@@ -63,7 +43,7 @@ unsigned char* alloc(size_t size, size_t align) {
     return static_cast<unsigned char*>(
         allocator_shim::UncheckedAlignedAlloc(size, align));
   }
-#elif USE_WIN_ALIGNED_MALLOC
+#elif BUILDFLAG(RUST_ALLOCATOR_USES_ALIGNED_MALLOC)
   return static_cast<unsigned char*>(_aligned_malloc(size, align));
 #else
   // TODO(crbug.com/408221149): don't build this file in this case.
@@ -78,7 +58,7 @@ void dealloc(unsigned char* p, size_t size, size_t align) {
   } else {
     allocator_shim::UncheckedAlignedFree(p);
   }
-#elif USE_WIN_ALIGNED_MALLOC
+#elif BUILDFLAG(RUST_ALLOCATOR_USES_ALIGNED_MALLOC)
   return _aligned_free(p);
 #else
   // TODO(crbug.com/408221149): don't build this file in this case.
@@ -102,7 +82,7 @@ unsigned char* realloc(unsigned char* p,
     return static_cast<unsigned char*>(
         allocator_shim::UncheckedAlignedRealloc(p, new_size, align));
   }
-#elif USE_WIN_ALIGNED_MALLOC
+#elif BUILDFLAG(RUST_ALLOCATOR_USES_ALIGNED_MALLOC)
   return static_cast<unsigned char*>(_aligned_realloc(p, new_size, align));
 #else
   // TODO(crbug.com/408221149): don't build this file in this case.
@@ -111,7 +91,8 @@ unsigned char* realloc(unsigned char* p,
 }
 
 unsigned char* alloc_zeroed(size_t size, size_t align) {
-#if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC) || USE_WIN_ALIGNED_MALLOC
+#if BUILDFLAG(RUST_ALLOCATOR_USES_PARTITION_ALLOC) || \
+    BUILDFLAG(RUST_ALLOCATOR_USES_ALIGNED_MALLOC)
   // TODO(danakj): When RUST_ALLOCATOR_USES_PARTITION_ALLOC is true, it's
   // possible that a partition_alloc::UncheckedAllocZeroed() call would perform
   // better than partition_alloc::UncheckedAlloc() + memset. But there is no

@@ -12,13 +12,32 @@ if (build_with_chromium) {
   rust_allocator_uses_partition_alloc = use_partition_alloc_as_malloc
 }
 
-use_cpp_allocator_impls =
-    rust_allocator_uses_partition_alloc || (is_win && is_asan)
+# In ASAN builds, PartitionAlloc-Everywhere is disabled, meaning malloc() and
+# friends in C++ do not go to PartitionAlloc. So we also don't point the Rust
+# allocation functions at PartitionAlloc. Generally, this means we just direct
+# them to the Standard Library's allocator.
+#
+# However, on Windows the Standard Library uses HeapAlloc() and Windows ASAN
+# does *not* hook that method, so ASAN does not get to hear about allocations
+# made in Rust. To resolve this, we redirect allocation to _aligned_malloc
+# which Windows ASAN *does* hook.
+#
+# Note that there is a runtime option to make ASAN hook HeapAlloc() but
+# enabling it breaks Win32 APIs like CreateProcess:
+# https://crbug.com/368070343#comment29
+rust_allocator_uses_aligned_malloc = false
+if (!rust_allocator_uses_partition_alloc && is_win && is_asan) {
+  rust_allocator_uses_aligned_malloc = true
+}
+
+rust_allocator_uses_allocator_impls_h =
+    rust_allocator_uses_partition_alloc || rust_allocator_uses_aligned_malloc
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
     "RUST_ALLOCATOR_USES_PARTITION_ALLOC=$rust_allocator_uses_partition_alloc",
+    "RUST_ALLOCATOR_USES_ALIGNED_MALLOC=$rust_allocator_uses_aligned_malloc",
   ]
   visibility = [ ":*" ]
 }
@@ -40,16 +59,16 @@ if (toolchain_has_rust) {
     allow_unsafe = true
 
     rustflags = []
-    if (use_cpp_allocator_impls) {
-      rustflags += [ "--cfg=use_cpp_allocator_impls" ]
+    if (rust_allocator_uses_allocator_impls_h) {
+      rustflags += [ "--cfg=rust_allocator_uses_allocator_impls_h" ]
     }
 
     # TODO(https://crbug.com/410596442): Stop using unstable features here.
     configs -= [ "//build/config/compiler:disallow_unstable_features" ]
   }
 
-  # TODO(crbug.com/408221149): don't build this when `use_cpp_allocator_impls`
-  # is false.
+  # TODO(crbug.com/408221149): don't build this when
+  # `rust_allocator_uses_allocator_impls_h` is false.
   static_library("allocator_impls") {
     public_deps = []
     if (rust_allocator_uses_partition_alloc) {
