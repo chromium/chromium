@@ -669,6 +669,9 @@ need to be translated for each locale.-->
       <message name="IDS_APP_CONTINUE" desc="A generic term for Continue on buttons.">
         Continue
       </message>
+      <message name="IDS_APP_TURN_ON" desc="A generic term for Turn on buttons.">
+        Turn on
+      </message>
 
       <!-- Key names -->
       <message name="IDS_APP_ESC_KEY" desc="Escape key">

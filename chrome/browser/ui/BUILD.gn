@@ -1743,6 +1743,8 @@ static_library("ui") {
       "//chrome/browser/ui/download",
       "//chrome/browser/ui/download:impl",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/feature_first_run",
+      "//chrome/browser/ui/feature_first_run:impl",
       "//chrome/browser/ui/global_error",
       "//chrome/browser/ui/global_media_controls",
       "//chrome/browser/ui/global_media_controls:impl",

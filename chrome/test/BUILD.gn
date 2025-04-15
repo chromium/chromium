@@ -2265,6 +2265,7 @@ if (!is_android) {
       "//chrome/browser/ui/download",
       "//chrome/browser/ui/exclusive_access",
       "//chrome/browser/ui/exclusive_access:browser_tests",
+      "//chrome/browser/ui/feature_first_run:browser_tests",
       "//chrome/browser/ui/find_bar:browser_tests",
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:browser_tests",
