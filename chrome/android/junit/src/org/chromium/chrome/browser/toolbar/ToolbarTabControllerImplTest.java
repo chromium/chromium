@@ -29,8 +29,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.feature_engagement.Tracker;
@@ -68,6 +70,8 @@ public class ToolbarTabControllerImplTest {
     @Mock private Profile mProfile;
     @Mock private NativePage mNativePage;
     @Mock private Supplier<Tab> mActivityTabProvider;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
 
     private ToolbarTabControllerImpl mToolbarTabController;
 
@@ -178,7 +182,9 @@ public class ToolbarTabControllerImplTest {
                         mBottomControlsCoordinatorSupplier,
                         ToolbarManager::homepageUrl,
                         mRunnable,
-                        mActivityTabProvider);
+                        mActivityTabProvider,
+                        mTabCreatorManager,
+                        mMultiInstanceManager);
     }
 
     private void setUpUsingCorrectTabSupplier() {
