@@ -184,6 +184,9 @@ class WebClient implements GlicWebClient {
     delete (panelOpeningData as Partial<PanelState>).kind;
     delete (panelOpeningData as Partial<PanelState>).windowId;
     logMessage(`notifyPanelWillOpen(${JSON.stringify(panelOpeningData)})`);
+    this.browser!.setContextAccessIndicator!
+        ($.contextAccessIndicatorV2.checked);
+
     return {
       startingMode: WebClientMode.TEXT,
       resizeParams: {
