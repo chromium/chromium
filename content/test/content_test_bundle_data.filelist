@@ -7540,6 +7540,10 @@ data/lite_js_test.test-mojom
 data/loader/async_resource_handler.html
 data/loader/blank.html
 data/loader/change_title.js
+data/loader/compressed.html.gz
+data/loader/compressed.html.gz.mock-http-headers
+data/loader/compressed.js.gz
+data/loader/compressed.js.gz.mock-http-headers
 data/loader/cors_file_origin_test.html
 data/loader/cors_origin_access_list_test.html
 data/loader/cors_preflight.html

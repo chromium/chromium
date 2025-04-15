@@ -172,7 +172,9 @@ class MockContentBrowserClient final
 class SignedExchangeRequestHandlerBrowserTestBase
     : public CertVerifierBrowserTest {
  public:
-  SignedExchangeRequestHandlerBrowserTestBase() {
+  explicit SignedExchangeRequestHandlerBrowserTestBase(
+      bool use_prefetch = false)
+      : use_prefetch_(use_prefetch) {
     // Enable BackForwardCache for now as some tests are flaky when the previous
     // RenderFrameHost doesn't change on navigation (the histograms are not
     // recoded correctly).
@@ -205,6 +207,27 @@ class SignedExchangeRequestHandlerBrowserTestBase
   }
 
  protected:
+  bool UsePrefetch() const { return use_prefetch_; }
+
+  void MaybeTriggerPrefetchSXG(const GURL& url, bool expect_success) {
+    if (!UsePrefetch()) {
+      return;
+    }
+    const GURL prefetch_html_url = embedded_test_server()->GetURL(
+        std::string("/sxg/prefetch.html#") + url.spec());
+    std::u16string expected_title =
+        base::ASCIIToUTF16(expect_success ? "OK" : "FAIL");
+    TitleWatcher title_watcher(shell()->web_contents(), expected_title);
+    EXPECT_TRUE(NavigateToURL(shell(), prefetch_html_url));
+    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
+
+    if (expect_success) {
+      WaitUntilSXGIsCached(url);
+    }
+  }
+
+  void RunSimpleTest(std::string_view sxg_path);
+
   void InstallUrlInterceptor(const GURL& url, const std::string& data_path) {
     sxg_test_helper_.InstallUrlInterceptor(url, data_path);
   }
@@ -264,44 +287,6 @@ class SignedExchangeRequestHandlerBrowserTestBase
   std::unique_ptr<MockContentBrowserClient> client_;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
-  SignedExchangeBrowserTestHelper sxg_test_helper_;
-};
-
-class SignedExchangeRequestHandlerBrowserTest
-    : public testing::WithParamInterface<bool>,
-      public SignedExchangeRequestHandlerBrowserTestBase {
- public:
-  SignedExchangeRequestHandlerBrowserTest() { use_prefetch_ = GetParam(); }
-
-  SignedExchangeRequestHandlerBrowserTest(
-      const SignedExchangeRequestHandlerBrowserTest&) = delete;
-  SignedExchangeRequestHandlerBrowserTest& operator=(
-      const SignedExchangeRequestHandlerBrowserTest&) = delete;
-
-  ~SignedExchangeRequestHandlerBrowserTest() = default;
-
- protected:
-  bool UsePrefetch() const { return use_prefetch_; }
-
-  void MaybeTriggerPrefetchSXG(const GURL& url, bool expect_success) {
-    if (!UsePrefetch())
-      return;
-    const GURL prefetch_html_url = embedded_test_server()->GetURL(
-        std::string("/sxg/prefetch.html#") + url.spec());
-    std::u16string expected_title =
-        base::ASCIIToUTF16(expect_success ? "OK" : "FAIL");
-    TitleWatcher title_watcher(shell()->web_contents(), expected_title);
-    EXPECT_TRUE(NavigateToURL(shell(), prefetch_html_url));
-    EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-
-    if (expect_success)
-      WaitUntilSXGIsCached(url);
-  }
-
-  void RunSimpleTest(std::string_view sxg_path);
-
- private:
   class CacheObserver : public PrefetchedSignedExchangeCache::TestObserver {
    public:
     CacheObserver(const GURL& outer_url, base::OnceClosure quit_closure)
@@ -330,8 +315,9 @@ class SignedExchangeRequestHandlerBrowserTest
             shell()->web_contents()->GetPrimaryMainFrame())
             ->EnsurePrefetchedSignedExchangeCache();
 
-    if (cache->GetExchanges().find(url) != cache->GetExchanges().end())
+    if (cache->GetExchanges().find(url) != cache->GetExchanges().end()) {
       return;
+    }
     base::RunLoop run_loop;
     auto observer =
         std::make_unique<CacheObserver>(url, run_loop.QuitClosure());
@@ -340,11 +326,12 @@ class SignedExchangeRequestHandlerBrowserTest
     cache->RemoveObserverForTesting(observer.get());
   }
 
-  bool use_prefetch_ = false;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  const bool use_prefetch_ = false;
+  base::test::ScopedFeatureList feature_list_;
+  SignedExchangeBrowserTestHelper sxg_test_helper_;
 };
 
-void SignedExchangeRequestHandlerBrowserTest::RunSimpleTest(
+void SignedExchangeRequestHandlerBrowserTestBase::RunSimpleTest(
     std::string_view sxg_path) {
   InstallMockCert();
   InstallMockCertChainInterceptor();
@@ -411,12 +398,93 @@ void SignedExchangeRequestHandlerBrowserTest::RunSimpleTest(
   }
 }
 
+class SignedExchangeRequestHandlerBrowserTest
+    : public testing::WithParamInterface<bool>,
+      public SignedExchangeRequestHandlerBrowserTestBase {
+ public:
+  SignedExchangeRequestHandlerBrowserTest()
+      : SignedExchangeRequestHandlerBrowserTestBase(GetParam()) {}
+  ~SignedExchangeRequestHandlerBrowserTest() override = default;
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return info.param ? "WithPrefetch" : "WithoutPrefetch";
+  }
+};
+
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Simple) {
   RunSimpleTest("/sxg/test.example.org_test.sxg");
 }
 
-IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, Compressed) {
+class SignedExchangeRendererSideContentDecodingBrowserTest
+    : public testing::WithParamInterface<std::tuple<bool, bool>>,
+      public SignedExchangeRequestHandlerBrowserTestBase {
+ public:
+  SignedExchangeRendererSideContentDecodingBrowserTest()
+      : SignedExchangeRequestHandlerBrowserTestBase(std::get<0>(GetParam())) {
+    if (std::get<1>(GetParam())) {
+      features_.InitWithFeatures(
+          {network::features::kRendererSideContentDecoding}, {});
+    } else {
+      features_.InitWithFeatures(
+          {}, {network::features::kRendererSideContentDecoding});
+    }
+  }
+  ~SignedExchangeRendererSideContentDecodingBrowserTest() override = default;
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return base::StrCat({
+        std::get<0>(info.param) ? "WithPrefetch" : "WithoutPrefetch",
+        std::get<1>(info.param) ? "FeatureEnabled" : "FeatureDisabled",
+    });
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SignedExchangeRendererSideContentDecodingBrowserTest,
+    ::testing::Combine(::testing::Bool(), ::testing::Bool()),
+    &SignedExchangeRendererSideContentDecodingBrowserTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(SignedExchangeRendererSideContentDecodingBrowserTest,
+                       Compressed) {
   RunSimpleTest("/sxg/test.example.org_test.sxg.gz");
+}
+
+class SignedExchangeRendererSideContentDecodingFailureBrowserTest
+    : public SignedExchangeRequestHandlerBrowserTestBase {
+ public:
+  SignedExchangeRendererSideContentDecodingFailureBrowserTest() {
+    features_.InitWithFeaturesAndParameters(
+        {{network::features::kRendererSideContentDecoding,
+          {{"RendererSideContentDecodingForceMojoFailureForTesting", "true"}}}},
+        {});
+  }
+  ~SignedExchangeRendererSideContentDecodingFailureBrowserTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    SignedExchangeRendererSideContentDecodingFailureBrowserTest,
+    Compressed) {
+  std::string_view sxg_path = "/sxg/test.example.org_test.sxg.gz";
+  InstallMockCert();
+  InstallMockCertChainInterceptor();
+  embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url = embedded_test_server()->GetURL(sxg_path);
+  base::RunLoop run_loop;
+  FinishNavigationObserver finish_navigation_observer(shell()->web_contents(),
+                                                      run_loop.QuitClosure());
+  EXPECT_FALSE(NavigateToURL(shell()->web_contents(), url));
+  run_loop.Run();
+  EXPECT_THAT(finish_navigation_observer.error_code(),
+              net::ERR_INSUFFICIENT_RESOURCES);
 }
 
 IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest, VariantMatch) {
@@ -775,9 +843,11 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeRequestHandlerBrowserTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SignedExchangeRequestHandlerBrowserTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SignedExchangeRequestHandlerBrowserTest,
+    ::testing::Bool(),
+    &SignedExchangeRequestHandlerBrowserTest::DescribeParams);
 
 class SignedExchangeRequestHandlerDownloadBrowserTest
     : public SignedExchangeRequestHandlerBrowserTestBase {

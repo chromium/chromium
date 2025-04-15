@@ -5883,10 +5883,32 @@ void NavigationRequest::OnWillProcessResponseChecksComplete(
             network::features::kRendererSideContentDecoding));
         // If content decoding is required, perform the decoding in the network
         // service.
+
+        // Attempt to create the data pipe needed for content decoding.
+        auto data_pipe_pair =
+            network::ContentDecodingInterceptor::CreateDataPipePair(
+                network::ContentDecodingInterceptor::ClientType::kDownload);
+        if (!data_pipe_pair) {
+          // Handle data pipe creation failure. This is rare but can happen if
+          // shared memory is exhausted. In such a situation, the page load will
+          // likely fail anyway as resources cannot be properly loaded. However,
+          // we should avoid crashing the browser process or attempting to
+          // download the raw encoded body. Instead, just abort the navigation
+          // request.
+          OnRequestFailedInternal(
+              network::URLLoaderCompletionStatus(net::ERR_ABORTED),
+              /*skip_throttles=*/false,
+              /*error_page_content=*/std::nullopt,
+              /*collapse_frame=*/false);
+          // DO NOT ADD CODE after this. The previous call to
+          // OnRequestFailedInternal has destroyed the NavigationRequest.
+          return;
+        }
         network::ContentDecodingInterceptor::InterceptOnNetworkService(
             *GetNetworkService(),
             response_head_->client_side_content_decoding_types,
-            url_loader_client_endpoints_, response_body_);
+            url_loader_client_endpoints_, response_body_,
+            std::move(*data_pipe_pair));
       }
       download_manager->InterceptNavigation(
           std::move(resource_request), redirect_chain_, response_head_.Clone(),

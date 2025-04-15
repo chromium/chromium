@@ -89,14 +89,29 @@ SignedExchangeLoader::SignedExchangeLoader(
   DCHECK(outer_request_.url.is_valid());
   DCHECK(outer_response_body);
   if (!outer_response_head_->client_side_content_decoding_types.empty()) {
-    CHECK(base::FeatureList::IsEnabled(
-        network::features::kRendererSideContentDecoding));
     // If content decoding is required, perform the decoding in the network
     // service.
+    CHECK(base::FeatureList::IsEnabled(
+        network::features::kRendererSideContentDecoding));
+    // Attempt to create the data pipe needed for content decoding.
+    auto data_pipe_pair =
+        network::ContentDecodingInterceptor::CreateDataPipePair(
+            network::ContentDecodingInterceptor::ClientType::kSignedExchange);
+    if (!data_pipe_pair) {
+      // Handle data pipe creation failure. This is rare but can happen if
+      // shared memory is exhausted. In such a situation, the page load will
+      // likely fail anyway as resources cannot be properly loaded. However,
+      // we should avoid crashing the browser process or attempting to
+      // download the raw encoded body. Instead, just completes the request
+      // with ERR_INSUFFICIENT_RESOURCES error.
+      forwarding_client_->OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
+      return;
+    }
     network::ContentDecodingInterceptor::InterceptOnNetworkService(
         *GetNetworkService(),
         outer_response_head_->client_side_content_decoding_types, endpoints,
-        outer_response_body);
+        outer_response_body, std::move(*data_pipe_pair));
   }
 
   if (keep_entry_for_prefetch_cache) {

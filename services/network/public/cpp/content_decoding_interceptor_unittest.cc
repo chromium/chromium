@@ -72,6 +72,15 @@ void CreatePipe(uint32_t capacity_num_bytes,
                                                  data_pipe_consumer));
 }
 
+// Creates a data pipe pair using the CreateDataPipePair method of
+// ContentDecodingInterceptor.
+ContentDecodingInterceptor::DataPipePair CreateDataPipePair() {
+  auto result = ContentDecodingInterceptor::CreateDataPipePair(
+      ContentDecodingInterceptor::ClientType::kTest);
+  CHECK(result.has_value());
+  return std::move(*result);
+}
+
 // Reads data from a data pipe using DataPipeDrainer.
 class DataPipeReader : public mojo::DataPipeDrainer::Client {
  public:
@@ -141,7 +150,7 @@ void TestSimpleDecodeTest(const std::string_view file_name,
       url_loader_client_remote.BindNewPipeAndPassReceiver());
 
   ContentDecodingInterceptor::Intercept(
-      types, endpoints, consumer,
+      types, endpoints, consumer, CreateDataPipePair(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING}));
 
@@ -227,8 +236,8 @@ TEST_F(ContentDecodingInterceptorTest, OnCompleteBeforeOnFinishDecode) {
   auto worker_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::USER_BLOCKING});
 
-  ContentDecodingInterceptor::Intercept(types, endpoints, consumer,
-                                        worker_task_runner);
+  ContentDecodingInterceptor::Intercept(
+      types, endpoints, consumer, CreateDataPipePair(), worker_task_runner);
 
   // Send OnComplete() IPC.
   url_loader_client_remote->OnComplete(
@@ -283,7 +292,7 @@ TEST_F(ContentDecodingInterceptorTest, WrongContentType) {
       url_loader_client_remote.BindNewPipeAndPassReceiver());
 
   ContentDecodingInterceptor::Intercept(
-      types, endpoints, consumer,
+      types, endpoints, consumer, CreateDataPipePair(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING}));
 
@@ -333,7 +342,7 @@ TEST_F(ContentDecodingInterceptorTest, UrlLoaderError) {
       url_loader_client_remote.BindNewPipeAndPassReceiver());
 
   ContentDecodingInterceptor::Intercept(
-      types, endpoints, consumer,
+      types, endpoints, consumer, CreateDataPipePair(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING}));
 
@@ -384,7 +393,7 @@ TEST_F(ContentDecodingInterceptorTest, SetPriority) {
       url_loader_client_remote.BindNewPipeAndPassReceiver());
 
   ContentDecodingInterceptor::Intercept(
-      types, endpoints, consumer,
+      types, endpoints, consumer, CreateDataPipePair(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING}));
 
@@ -460,7 +469,7 @@ TEST_F(ContentDecodingInterceptorTest, OnTransferSizeUpdated) {
       url_loader_client_remote.BindNewPipeAndPassReceiver());
 
   ContentDecodingInterceptor::Intercept(
-      types, endpoints, consumer,
+      types, endpoints, consumer, CreateDataPipePair(),
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_BLOCKING}));
 
@@ -506,51 +515,9 @@ TEST_F(ContentDecodingInterceptorTest, CreateDataPipeFailure) {
       {{network::features::kRendererSideContentDecoding,
         {{"RendererSideContentDecodingForceMojoFailureForTesting", "true"}}}},
       {});
-
-  const std::string_view file_name = kBrotliTestFile;
-  const std::vector<net::SourceStreamType> types = {
-      net::SourceStreamType::kBrotli};
-
-  const std::string test_data = ReadTestData(file_name);
-  const std::string expected_data = ReadTestData(kOriginalTestFile);
-
-  mojo::ScopedDataPipeProducerHandle source_producer;
-  mojo::ScopedDataPipeConsumerHandle consumer;
-  CreatePipe(test_data.size(), source_producer, consumer);
-
-  mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver;
-  mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_remote;
-  auto endpoints = network::mojom::URLLoaderClientEndpoints::New(
-      url_loader_receiver.InitWithNewPipeAndPassRemote(),
-      url_loader_client_remote.BindNewPipeAndPassReceiver());
-
-  ContentDecodingInterceptor::Intercept(
-      types, endpoints, consumer,
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::USER_BLOCKING}));
-
-  // The data write operation should fail.
-  EXPECT_EQ(source_producer->WriteAllData(base::as_byte_span(test_data)),
-            MOJO_RESULT_FAILED_PRECONDITION);
-  // Finish the data.
-  source_producer.reset();
-
-  // Send OnComplete with OK.
-  url_loader_client_remote->OnComplete(
-      network::URLLoaderCompletionStatus(net::OK));
-
-  base::RunLoop run_loop;
-  testing::NiceMock<network::MockURLLoaderClient> client;
-  EXPECT_CALL(client, OnComplete)
-      .WillOnce([&](::network::URLLoaderCompletionStatus st) {
-        // OnComplete must be caled with ERR_INSUFFICIENT_RESOURCES.
-        EXPECT_EQ(st.error_code, net::ERR_INSUFFICIENT_RESOURCES);
-        EXPECT_EQ(st.decoded_body_length, 0u);
-        run_loop.Quit();
-      });
-  mojo::Receiver<network::mojom::URLLoaderClient> client_receiver(
-      &client, std::move(endpoints->url_loader_client));
-  run_loop.Run();
+  auto data_pipe_pair = ContentDecodingInterceptor::CreateDataPipePair(
+      ContentDecodingInterceptor::ClientType::kTest);
+  EXPECT_FALSE(data_pipe_pair.has_value());
 }
 
 }  // namespace network
