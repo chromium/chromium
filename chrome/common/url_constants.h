@@ -566,6 +566,16 @@ inline constexpr char kComposeLearnMorePageManagedURL[] =
 inline constexpr char kHistorySearchLearnMorePageURL[] =
     "https://support.google.com/chrome?p=ai_history_search";
 
+// The URL for the "Learn more about shortcuts" page for Glic.
+// TODO(crbug.com/409588999): Update this link with the actual link when ready.
+inline constexpr char kGlicKeyboardShortcutLearnMoreURL[] =
+    "https://google.com/";
+
+// The URL for the "Learn more about shortcuts" page for Glic for managed users.
+// TODO(crbug.com/409588999): Update this link with the actual link when ready.
+inline constexpr char kGlicKeyboardShortcutLearnMoreManagedURL[] =
+    "https://google.com/";
+
 // The URL for the "Learn more" links for pages related to History search for
 // managed users.
 inline constexpr char kHistorySearchLearnMorePageManagedURL[] =

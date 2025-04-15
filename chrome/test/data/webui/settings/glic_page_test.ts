@@ -435,5 +435,21 @@ suite('GlicPage', function() {
       tabAccessToggle.click();
       await verifyUserAction('Glic.Settings.TabContext.Disabled');
     });
+
+    test('keyboardShortcutLearnMore', () => {
+      assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
+      const learnMoreLink = page.shadowRoot!.querySelector('a');
+      assertTrue(!!learnMoreLink);
+      assertEquals(learnMoreLink.href, 'https://google.com/');
+    });
+
+    test('keyboardShortcutLearnMoreManaged', () => {
+      page.setPrefValue(PrefName.SETTINGS_POLICY, POLICY_ENABLED_VALUE);
+
+      assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
+      const learnMoreLink = page.shadowRoot!.querySelector('a');
+      assertTrue(!!learnMoreLink);
+      assertEquals(learnMoreLink.href, 'https://google.com/');
+    });
   });
 });

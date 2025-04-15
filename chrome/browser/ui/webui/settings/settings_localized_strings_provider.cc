@@ -513,6 +513,10 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
   html_source->AddString("aiPageMainManagedLearnMoreUrl",
                          chrome::kAiSettingsLearnMorePageManagedUrl);
 
+  html_source->AddString("glicKeyboardShortcutLearnMoreUrl",
+                         chrome::kGlicKeyboardShortcutLearnMoreURL);
+  html_source->AddString("glicKeyboardShortcutLearnMoreManagedUrl",
+                         chrome::kGlicKeyboardShortcutLearnMoreManagedURL);
   html_source->AddString("historySearchLearnMoreUrl",
                          chrome::kHistorySearchLearnMorePageURL);
   html_source->AddString("historySearchLearnMoreManagedUrl",
@@ -747,6 +751,8 @@ void AddGlicStrings(content::WebUIDataSource* html_source) {
       {"glicKeyboardShortcut", IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT},
       {"glicKeyboardShortcutSublabel",
        IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL},
+      {"glicKeyboardShortcutLearnMoreLabel",
+       IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL},
       {"glicLocationToggle", IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE},
       {"glicLocationToggleSublabel",
        IDS_SETTINGS_GLIC_DATA_LOCATION_TOGGLE_SUBLABEL},
