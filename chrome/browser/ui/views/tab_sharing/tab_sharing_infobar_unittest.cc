@@ -81,7 +81,7 @@ std::ostream& operator<<(std::ostream& os, const ViewInfo& info) {
   return os;
 }
 
-ViewInfo GetViewInfo(const views::View& view) {
+std::optional<ViewInfo> GetViewInfo(const views::View& view) {
   std::string_view class_name = view.GetClassName();
   if (class_name == "MdTextButton") {
     return ButtonInfo(std::u16string(
@@ -90,14 +90,16 @@ ViewInfo GetViewInfo(const views::View& view) {
     return LabelInfo(
         std::u16string(static_cast<const views::Label&>(view).GetText()));
   }
-  NOTREACHED();
+  return std::nullopt;
 }
 
 std::vector<ViewInfo> GetViewInfos(
     const TabSharingStatusMessageView& info_view) {
   std::vector<ViewInfo> child_view_infos;
   for (const views::View* view : info_view.children()) {
-    child_view_infos.emplace_back(GetViewInfo(*view));
+    if (std::optional<ViewInfo> view_info = GetViewInfo(*view)) {
+      child_view_infos.emplace_back(*view_info);
+    }
   }
   return child_view_infos;
 }

@@ -18,9 +18,10 @@ using ::testing::ElementsAreArray;
 std::vector<std::string> GetChildTexts(
     const TabSharingStatusMessageView& info_view) {
   std::vector<std::string> texts;
-  for (const views::View* button_or_label : info_view.children()) {
-    texts.emplace_back(
-        base::UTF16ToUTF8(GetButtonOrLabelText(*button_or_label)));
+  for (const views::View* view : info_view.children()) {
+    if (std::optional<std::u16string_view> text = GetButtonOrLabelText(*view)) {
+      texts.emplace_back(base::UTF16ToUTF8(*text));
+    }
   }
   return texts;
 }

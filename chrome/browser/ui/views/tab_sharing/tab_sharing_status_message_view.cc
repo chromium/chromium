@@ -11,13 +11,16 @@
 #include "media/capture/capture_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace {
 using MessageInfo = ::TabSharingStatusMessageView::MessageInfo;
 using TabRole = ::TabSharingInfoBarDelegate::TabRole;
 
 constexpr auto kButtonInsets = gfx::Insets::VH(2, 8);
+constexpr auto kSeparatorInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
 std::vector<std::u16string> EndpointInfosToStrings(
     const std::vector<TabSharingStatusMessageView::EndpointInfo>&
@@ -187,19 +190,22 @@ std::u16string TabSharingStatusMessageView::GetMessageText(
 
 TabSharingStatusMessageView::TabSharingStatusMessageView(
     const MessageInfo& info) {
-  AddChildViews(info);
+  AddMessageChildViews(info);
+  AddChildView(views::Builder<views::Separator>()
+                   .SetProperty(views::kMarginsKey, kSeparatorInsets)
+                   .Build());
 
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal));
   layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
+      views::BoxLayout::CrossAxisAlignment::kStretch);
   layout->set_between_child_spacing(0);
 }
 
 TabSharingStatusMessageView::~TabSharingStatusMessageView() = default;
 
-void TabSharingStatusMessageView::AddChildViews(MessageInfo info) {
+void TabSharingStatusMessageView::AddMessageChildViews(MessageInfo info) {
   // Format the message text and retrieve the offsets to where the replacements
   // should go.
   std::vector<size_t> offsets;
