@@ -11,11 +11,6 @@
 #include "pdf/buildflags.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_PDF)
-#include "base/feature_list.h"
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -23,10 +18,7 @@
 namespace {
 
 // LINT.IfChange(PdfBackgroundColor)
-constexpr SkColor kPdfExtensionBackgroundColor = SkColorSetRGB(82, 86, 89);
-#if BUILDFLAG(ENABLE_PDF)
-constexpr SkColor kPdfExtensionBackgroundColorCr23 = SkColorSetRGB(40, 40, 40);
-#endif  // BUILDFLAG(ENABLE_PDF)
+constexpr SkColor kPdfExtensionBackgroundColor = SkColorSetRGB(40, 40, 40);
 // LINT.ThenChange(//chrome/browser/resources/pdf/pdf_viewer.ts:PdfBackgroundColor)
 
 }  // namespace
@@ -56,10 +48,5 @@ bool IsPdfInternalPluginAllowedOrigin(
 }
 
 SkColor GetPdfBackgroundColor() {
-#if BUILDFLAG(ENABLE_PDF)
-  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfCr23)) {
-    return kPdfExtensionBackgroundColorCr23;
-  }
-#endif  // BUILDFLAG(ENABLE_PDF)
   return kPdfExtensionBackgroundColor;
 }

@@ -20,7 +20,6 @@ import {AnnotationMode} from './constants.js';
 <if expr="enable_ink or enable_pdf_ink2">
     .annotationAvailable="${this.annotationAvailable_()}"
 </if>
-    .pdfCr23Enabled="${this.pdfCr23Enabled}"
 <if expr="enable_pdf_ink2">
     .pdfInk2Enabled="${this.pdfInk2Enabled_}"
 </if>
@@ -54,7 +53,6 @@ import {AnnotationMode} from './constants.js';
         .bookmarks="${this.bookmarks_}"
         .clockwiseRotations="${this.clockwiseRotations_}"
         .docLength="${this.docLength_}"
-        .pdfCr23Enabled="${this.pdfCr23Enabled}"
         .strings="${this.strings}"
         @change-page="${this.onChangePage_}"
         @change-page-and-xy="${this.onChangePageAndXy_}"

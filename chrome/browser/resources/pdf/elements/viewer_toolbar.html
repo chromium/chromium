@@ -4,7 +4,7 @@ import {AnnotationMode} from '../constants.js';
 
 <div id="toolbar">
   <div id="start">
-    <cr-icon-button id="sidenavToggle" iron-icon="${this.menuIcon_()}"
+    <cr-icon-button id="sidenavToggle" iron-icon="pdf:menu"
         title="$i18n{menu}" aria-label="$i18n{menu}"
         aria-expanded="${this.getAriaExpanded_()}"
 <if expr="enable_ink">
@@ -21,7 +21,7 @@ import {AnnotationMode} from '../constants.js';
     <span class="vertical-separator"></span>
     <span id="zoom-controls">
       <cr-icon-button
-          iron-icon="${this.iconsetName_()}:remove"
+          iron-icon="pdf:remove"
           title="$i18n{tooltipZoomOut}"
           ?disabled="${this.isAtMinimumZoom_()}"
           aria-label="$i18n{tooltipZoomOut}" @click="${this.onZoomOutClick_}">
@@ -33,7 +33,7 @@ import {AnnotationMode} from '../constants.js';
           @blur="${this.onZoomChange_}">
       </input>
       <cr-icon-button
-          iron-icon="${this.iconsetName_()}:add"
+          iron-icon="pdf:add"
           title="$i18n{tooltipZoomIn}"
           ?disabled="${this.isAtMaximumZoom_()}"
           aria-label="$i18n{tooltipZoomIn}" @click="${this.onZoomInClick_}">
@@ -45,7 +45,7 @@ import {AnnotationMode} from '../constants.js';
         aria-label="${this.getFitToButtonTooltip_()}"
         @click="${this.onFitToButtonClick_}">
     </cr-icon-button>
-    <cr-icon-button id="rotate" .ironIcon="${this.iconsetName_()}:rotate-left"
+    <cr-icon-button id="rotate" iron-icon="pdf:rotate-left"
         suppress-rtl-flip
 <if expr="enable_ink">
         ?disabled="${this.isInInk1AnnotationMode_()}"
@@ -59,14 +59,14 @@ import {AnnotationMode} from '../constants.js';
         <span class="vertical-separator"></span>
         ${this.pdfTextAnnotationsEnabled_ ? html`
           <!-- TODO(crbug.com/402547554): Add aria-label and i18n string -->
-          <cr-icon-button id="text-annotate" iron-icon="pdf:text-annotate"
+          <cr-icon-button id="text-annotate" iron-icon="pdf-ink:text-annotate"
               class="annotate-button ${this.getActive_(AnnotationMode.TEXT)}"
               @click="${this.onTextAnnotationClick_}"
               ?disabled="${!this.annotationAvailable}"
               title="Text annotation">
           </cr-icon-button>
         ` : ''}
-        <cr-icon-button id="annotate" iron-icon="pdf:annotate"
+        <cr-icon-button id="annotate" iron-icon="pdf-ink:annotate"
             class="annotate-button ${this.getActive_(AnnotationMode.DRAW)}"
             @click="${this.onAnnotationClick_}"
             aria-label="$i18n{ink2Draw}"
@@ -74,12 +74,12 @@ import {AnnotationMode} from '../constants.js';
             title="$i18n{ink2Draw}"></cr-icon-button>
         <span class="vertical-separator"></span>
         <cr-icon-button id="undo" ?disabled="${!this.canUndoAnnotation_}"
-            iron-icon="${this.iconsetName_()}:undo"
+            iron-icon="pdf:undo"
             @click="${this.undo}"
             aria-label="$i18n{annotationUndo}"
             title="$i18n{annotationUndo}"></cr-icon-button>
         <cr-icon-button id="redo" ?disabled="${!this.canRedoAnnotation_}"
-            iron-icon="${this.iconsetName_()}:redo"
+            iron-icon="pdf:redo"
             @click="${this.redo}"
             aria-label="$i18n{annotationRedo}"
             title="$i18n{annotationRedo}"></cr-icon-button>
@@ -104,11 +104,11 @@ import {AnnotationMode} from '../constants.js';
 </if>
         .isFormFieldFocused="${this.isFormFieldFocused_()}">
     </viewer-download-controls>
-    <cr-icon-button id="print" iron-icon="${this.printIcon_()}"
+    <cr-icon-button id="print" iron-icon="pdf:print"
         ?hidden="${!this.printingEnabled_}" title="$i18n{tooltipPrint}"
         aria-label="$i18n{tooltipPrint}" @click="${this.onPrintClick_}">
     </cr-icon-button>
-    <cr-icon-button id="more" iron-icon="${this.moreIcon_()}"
+    <cr-icon-button id="more" iron-icon="pdf:more"
         title="$i18n{moreActions}" aria-label="$i18n{moreActions}"
         @click="${this.onMoreClick_}"></cr-icon-button>
   </div>
@@ -125,7 +125,7 @@ import {AnnotationMode} from '../constants.js';
 </if>
       aria-checked="${this.getAriaChecked_(this.twoUpViewEnabled)}">
     <span class="check-container">
-      <cr-icon icon="${this.iconsetName_()}:check"
+      <cr-icon icon="pdf:check"
           ?hidden="${!this.twoUpViewEnabled}"></cr-icon>
     </span>
     $i18n{twoUpViewEnable}
@@ -136,7 +136,7 @@ import {AnnotationMode} from '../constants.js';
       role="checkbox"
       aria-checked="${this.getAriaChecked_(this.displayAnnotations_)}">
     <span class="check-container">
-      <cr-icon icon="${this.iconsetName_()}:check"
+      <cr-icon icon="pdf:check"
           ?hidden="${!this.displayAnnotations_}">
       </cr-icon>
     </span>

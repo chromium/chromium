@@ -49,14 +49,11 @@ viewer-toolbar {
 }
 
 #sidenav-container {
+  border-inline-end: 1px solid var(--viewer-border-color);
   overflow: hidden;
   transition: transform 250ms cubic-bezier(.6, 0, 0, 1), visibility 250ms;
   visibility: visible;
   width: var(--viewer-pdf-sidenav-width);
-}
-
-:host-context([pdfcr23enabled]) #sidenav-container {
-  border-inline-end: 1px solid var(--viewer-border-color);
 }
 
 #sidenav-container.floating {

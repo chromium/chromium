@@ -62,8 +62,8 @@
     selected$="[[isAnnotationTool_('pen', annotationTool_.tool)]]"
     open-after-select
     on-click="annotationToolClicked_"
-    open-icon="pdf:marker"
-    closed-icon="pdf:marker"
+    open-icon="pdf-ink:marker"
+    closed-icon="pdf-ink:marker"
     dropdown-centered
     hide-header
     header="$i18n{annotationPen}"
@@ -81,8 +81,8 @@
     selected$="[[isAnnotationTool_('highlighter', annotationTool_.tool)]]"
     open-after-select
     on-click="annotationToolClicked_"
-    open-icon="pdf:highlighter"
-    closed-icon="pdf:highlighter"
+    open-icon="pdf-ink:highlighter"
+    closed-icon="pdf-ink:highlighter"
     dropdown-centered
     hide-header
     header="$i18n{annotationHighlighter}"
@@ -98,18 +98,18 @@
 
 <cr-icon-button id="eraser"
     selected$="[[isAnnotationTool_('eraser', annotationTool_.tool)]]"
-    on-click="annotationToolClicked_" iron-icon="pdf:eraser"
+    on-click="annotationToolClicked_" iron-icon="pdf-ink:eraser"
     aria-label="$i18n{annotationEraser}"
     title="$i18n{annotationEraser}"></cr-icon-button>
 
 <div id="annotation-separator"></div>
 
 <cr-icon-button id="undo" disabled="[[!canUndoAnnotation_]]"
-    iron-icon="pdf:undo" on-click="onUndoClick_"
+    iron-icon="pdf-ink:undo" on-click="onUndoClick_"
     aria-label="$i18n{annotationUndo}"
     title="$i18n{annotationUndo}"></cr-icon-button>
 
 <cr-icon-button id="redo" disabled="[[!canRedoAnnotation_]]"
-    iron-icon="pdf:redo" on-click="onRedoClick_"
+    iron-icon="pdf-ink:redo" on-click="onRedoClick_"
     aria-label="$i18n{annotationRedo}"
     title="$i18n{annotationRedo}"></cr-icon-button>

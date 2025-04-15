@@ -17,13 +17,9 @@
 
 #vertical-separator {
   background: rgba(255, 255, 255, 0.3);
-  height: 15px;
+  height: 20px;
   margin-inline: 12px;
   width: 1px;
-}
-
-:host-context([pdfcr23enabled]) #vertical-separator {
-  height: 20px;
 }
 
 ink-brush-selector {

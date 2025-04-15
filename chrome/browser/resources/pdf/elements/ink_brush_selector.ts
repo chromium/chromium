@@ -75,12 +75,12 @@ export class InkBrushSelectorElement extends CrLitElement {
     const isCurrentType = type === this.currentType;
     switch (type) {
       case AnnotationBrushType.ERASER:
-        return isCurrentType ? 'pdf:ink-eraser-fill' : 'pdf:ink-eraser';
+        return isCurrentType ? 'pdf-ink:ink-eraser-fill' : 'pdf-ink:ink-eraser';
       case AnnotationBrushType.HIGHLIGHTER:
-        return isCurrentType ? 'pdf:ink-highlighter-fill' :
-                               'pdf:ink-highlighter';
+        return isCurrentType ? 'pdf-ink:ink-highlighter-fill' :
+                               'pdf-ink:ink-highlighter';
       case AnnotationBrushType.PEN:
-        return isCurrentType ? 'pdf:ink-pen-fill' : 'pdf:ink-pen';
+        return isCurrentType ? 'pdf-ink:ink-pen-fill' : 'pdf-ink:ink-pen';
     }
   }
 

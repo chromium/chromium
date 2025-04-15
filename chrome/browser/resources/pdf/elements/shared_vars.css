@@ -18,12 +18,7 @@ html {
   --viewer-icon-ink-selected-fill-color: rgb(168, 199, 250);
   --viewer-icon-ink-selected-background-color: rgba(76, 141, 246, 0.32);
 </if>
-  --viewer-pdf-toolbar-background-color: rgb(50, 54, 57);
-  --viewer-side-background-color: var(--viewer-pdf-toolbar-background-color);
-  --viewer-text-input-selection-color: rgba(255, 255, 255, 0.3);
-}
-
-html[pdfcr23enabled] {
   --viewer-pdf-toolbar-background-color: rgb(60, 60, 60);
   --viewer-side-background-color: rgb(40, 41, 42);
+  --viewer-text-input-selection-color: rgba(255, 255, 255, 0.3);
 }

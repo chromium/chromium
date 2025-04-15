@@ -84,7 +84,6 @@ export class ViewerToolbarElement extends CrLitElement {
       },
 
       pageNo: {type: Number},
-      pdfCr23Enabled: {type: Boolean},
 
       rotated: {type: Boolean},
       strings: {type: Object},
@@ -134,7 +133,6 @@ export class ViewerToolbarElement extends CrLitElement {
   accessor formFieldFocus: FormFieldFocusType = FormFieldFocusType.NONE;
   accessor loadProgress: number = 0;
   accessor pageNo: number = 0;
-  accessor pdfCr23Enabled: boolean = false;
   accessor rotated: boolean = false;
   accessor strings: LoadTimeDataRaw|undefined;
   accessor viewportZoom: number = 0;
@@ -230,28 +228,10 @@ export class ViewerToolbarElement extends CrLitElement {
     this.dispatchEvent(new CustomEvent('sidenav-toggle-click'));
   }
 
-  protected iconsetName_(): string {
-    return this.pdfCr23Enabled ? 'pdf-cr23' : 'pdf';
-  }
-
   protected fitToButtonIcon_(): string {
-    return this.iconsetName_() +
+    return 'pdf' +
         (this.fittingType_ === FittingType.FIT_TO_PAGE ? ':fit-to-height' :
                                                          ':fit-to-width');
-  }
-
-  // TODO(crbug.com/360265881): Remove conditional icons after the UI refresh
-  // fully launches.
-  protected menuIcon_(): string {
-    return this.pdfCr23Enabled ? 'pdf-cr23:menu' : 'cr20:menu';
-  }
-
-  protected moreIcon_(): string {
-    return this.pdfCr23Enabled ? 'pdf-cr23:more' : 'cr:more-vert';
-  }
-
-  protected printIcon_(): string {
-    return this.pdfCr23Enabled ? 'pdf-cr23:print' : 'cr:print';
   }
 
   /** @return The appropriate tooltip for the current state. */

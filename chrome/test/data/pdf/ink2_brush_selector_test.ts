@@ -31,23 +31,24 @@ function assertBrushIcons(
   const eraserIcon = selector.$.eraser.icon;
   assert(eraserIcon);
   chrome.test.assertEq(
-      selectedBrushType === AnnotationBrushType.ERASER ? 'pdf:ink-eraser-fill' :
-                                                         'pdf:ink-eraser',
+      selectedBrushType === AnnotationBrushType.ERASER ?
+          'pdf-ink:ink-eraser-fill' :
+          'pdf-ink:ink-eraser',
       eraserIcon);
 
   const highlighterIcon = selector.$.highlighter.icon;
   assert(highlighterIcon);
   chrome.test.assertEq(
       selectedBrushType === AnnotationBrushType.HIGHLIGHTER ?
-          'pdf:ink-highlighter-fill' :
-          'pdf:ink-highlighter',
+          'pdf-ink:ink-highlighter-fill' :
+          'pdf-ink:ink-highlighter',
       highlighterIcon);
 
   const penIcon = selector.$.pen.icon;
   assert(penIcon);
   chrome.test.assertEq(
-      selectedBrushType === AnnotationBrushType.PEN ? 'pdf:ink-pen-fill' :
-                                                      'pdf:ink-pen',
+      selectedBrushType === AnnotationBrushType.PEN ? 'pdf-ink:ink-pen-fill' :
+                                                      'pdf-ink:ink-pen',
       penIcon);
 }
 
