@@ -129,6 +129,11 @@ const char kBookmarkGuid[] = "e397ed62-9532-4dbf-ae55-200236eba15c";
 const char16_t kBookmarkTitle[] = u"Title";
 const char kBookmarkPageUrl[] = "http://www.foo.com/";
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+const char kPreviouslySyncingGaiaIdMetricName[] =
+    "Sync.BookmarkModelMerger.PreviouslySyncingGaiaId";
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
 MATCHER(HasUniquePosition, "") {
   return arg.specifics().bookmark().has_unique_position();
 }
@@ -2927,5 +2932,64 @@ IN_PROC_BROWSER_TEST_F(
         << "for title " << entity.specifics().bookmark().full_title();
   }
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
+                       PRE_PreviouslySyncingGaiaId) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(SetupSync());
+  histogram_tester.ExpectUniqueSample(
+      kPreviouslySyncingGaiaIdMetricName,
+      /*sample=*/2 /*kSyncFeatureNeverPreviouslyTurnedOn*/,
+      /*expected_bucket_count=*/1);
+
+  // Turn Sync off by removing the primary account.
+  GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
+
+  // Turn Sync on with the same account.
+  ASSERT_TRUE(SetupSync());
+  histogram_tester.ExpectBucketCount(
+      kPreviouslySyncingGaiaIdMetricName,
+      /*sample=*/3 /*kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn*/,
+      /*expected_bucket_count=*/1);
+
+  // Enable Sync with a different account.
+  GetClient(kSingleProfileIndex)->SignOutPrimaryAccount();
+  GetClient(kSingleProfileIndex)
+      ->SetUsernameForFutureSignins("account2@gmail.com");
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->SetupSync());
+  histogram_tester.ExpectBucketCount(
+      kPreviouslySyncingGaiaIdMetricName,
+      /*sample=*/4 /*kCurrentGaiaIdDiffersPreviousWithSyncFeatureOn*/,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest, PreviouslySyncingGaiaId) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncSetupCompletion());
+  histogram_tester.ExpectTotalCount(kPreviouslySyncingGaiaIdMetricName, 0);
+
+  // Turn off bookmark sync specifically and turn it back on.
+  GetSyncService(kSingleProfileIndex)
+      ->GetUserSettings()
+      ->SetSelectedTypes(/*sync_everything=*/false, /*types=*/{});
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
+  GetSyncService(kSingleProfileIndex)
+      ->GetUserSettings()
+      ->SetSelectedTypes(/*sync_everything=*/false,
+                         /*types=*/{syncer::UserSelectableType::kBookmarks});
+  ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitSyncTransportActive());
+
+  // In this specific scenario, there is not enough information to know what
+  // the previously syncing gaia ID was, because the preference
+  // `prefs::kGoogleServicesLastSyncingGaiaId` was already updated to contain
+  // the current gaia ID upon browser startup.
+  histogram_tester.ExpectUniqueSample(
+      kPreviouslySyncingGaiaIdMetricName,
+      /*sample=*/1 /*kNotEnoughInformationToTell*/,
+      /*expected_bucket_count=*/1);
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

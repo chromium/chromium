@@ -240,6 +240,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync/engine/data_type_worker.h:PendingInvalidationStatus) -->
 
+<!-- LINT.IfChange(PreviouslySyncingGaiaIdInfoForMetrics) -->
+
+<enum name="PreviouslySyncingGaiaIdInfoForMetrics">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Not enough information"/>
+  <int value="2" label="Sync feature never previously turned on"/>
+  <int value="3" label="Current Gaia ID matches previous with Sync on"/>
+  <int value="4" label="Current Gaia ID differs previous with Sync on"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/sync/base/previously_syncing_gaia_id_info_for_metrics.h:PreviouslySyncingGaiaIdInfoForMetrics) -->
+
 <!-- LINT.IfChange(RemoteBookmarkUpdateError) -->
 
 <enum name="RemoteBookmarkUpdateError">

@@ -300,6 +300,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.BookmarkModelMerger.PreviouslySyncingGaiaId"
+    enum="PreviouslySyncingGaiaIdInfoForMetrics" expires_after="2025-10-11">
+  <owner>mastiz@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records how the current gaia ID (user) compares to the last gaia ID known to
+    have turned Sync the feature on within the same profile, if any. Recorded
+    during the initial merge procedure for bookmarks, triggered when bookmark
+    Sync is first started (most notably when Sync was just turned on or the
+    bookmark toggle in Sync settings changed from off to on). The metric is not
+    recorded when bookmark Sync starts in transport mode. Recorded on desktop
+    platforms only, excluding ChromeOS.
+  </summary>
+</histogram>
+
 <histogram name="Sync.BookmarkModelMerger.ReachableInputUpdates"
     units="bookmarks" expires_after="2025-09-19">
   <owner>rushans@google.com</owner>
