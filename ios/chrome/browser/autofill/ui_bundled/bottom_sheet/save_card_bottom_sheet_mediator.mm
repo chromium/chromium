@@ -55,6 +55,19 @@
   [self.consumer
       setCancelActionText:base::SysUTF16ToNSString(
                               _saveCardBottomSheetModel->cancel_button_text())];
+
+  [self.consumer
+      setCardNameAndLastFourDigits:base::SysUTF16ToNSString(
+                                       _saveCardBottomSheetModel
+                                           ->card_name_last_four_digits())
+                withCardExpiryDate:base::SysUTF16ToNSString(
+                                       _saveCardBottomSheetModel
+                                           ->card_expiry_date())
+                       andCardIcon:NativeImage(_saveCardBottomSheetModel
+                                                   ->issuer_icon_id())
+         andCardAccessibilityLabel:base::SysUTF16ToNSString(
+                                       _saveCardBottomSheetModel
+                                           ->card_accessibility_description())];
 }
 
 #pragma mark - SaveCardBottomSheetMutator

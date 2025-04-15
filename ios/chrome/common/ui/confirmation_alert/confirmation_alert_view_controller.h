@@ -35,6 +35,9 @@
 // The headline below the image. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* titleString;
 
+// Label displaying the `titleString`. Nil if `titleString` is not set.
+@property(nonatomic, strong) UILabel* titleLabel;
+
 // Text style for the title. If nil, will default to UIFontTextStyleTitle1.
 @property(nonatomic, copy) UIFontTextStyle titleTextStyle;
 
@@ -47,6 +50,10 @@
 
 // Text style for the subtitle. If nil, will default to UIFontTextStyleBody.
 @property(nonatomic, copy) UIFontTextStyle subtitleTextStyle;
+
+// The color of the text for the subtitle. If nil, will default to
+// kTextSecondaryColor.
+@property(nonatomic, copy) UIColor* subtitleTextColor;
 
 // The text for the primary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* primaryActionString;

@@ -60,6 +60,26 @@ class SaveCardBottomSheetModel {
     return ui_info_.cancel_text;
   }
 
+  // Card name and its last four digits displayed in the bottomsheet for the
+  // card to be saved.
+  inline const std::u16string& card_name_last_four_digits() const {
+    return ui_info_.card_label;
+  }
+
+  // Expiry date displayed in the bottomsheet for the card to be saved.
+  inline const std::u16string& card_expiry_date() const {
+    return ui_info_.card_sub_label;
+  }
+
+  // Card's accessibility description with the card's nick name (if present),
+  // card issuer name, last four digits and expiry date.
+  inline const std::u16string& card_accessibility_description() const {
+    return ui_info_.card_description;
+  }
+
+  // Card's issuer icon displayed in the bottomsheet for the card to be saved.
+  inline int issuer_icon_id() const { return ui_info_.issuer_icon_id; }
+
   base::WeakPtr<SaveCardBottomSheetModel> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }

@@ -32,6 +32,13 @@
 // Sets text for the button to dismiss the bottomsheet.
 - (void)setCancelActionText:(NSString*)cancelActionText;
 
+// Sets card information to be displayed in the under title view of the
+// bottomsheet.
+- (void)setCardNameAndLastFourDigits:(NSString*)label
+                  withCardExpiryDate:(NSString*)subLabel
+                         andCardIcon:(UIImage*)issuerIcon
+           andCardAccessibilityLabel:(NSString*)accessibilityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_SAVE_CARD_BOTTOM_SHEET_CONSUMER_H_

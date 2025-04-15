@@ -181,8 +181,8 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   }
 
   if (self.titleString.length) {
-    UILabel* title = [self createTitleLabel];
-    [stackSubviews addObject:title];
+    self.titleLabel = [self createTitleLabel];
+    [stackSubviews addObject:self.titleLabel];
   }
 
   if (self.secondaryTitleString.length) {
@@ -794,7 +794,8 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   UITextView* subtitle = [self createTextView];
   subtitle.font = [UIFont preferredFontForTextStyle:self.subtitleTextStyle];
   subtitle.text = self.subtitleString;
-  subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  subtitle.textColor =
+      self.subtitleTextColor ?: [UIColor colorNamed:kTextSecondaryColor];
   subtitle.accessibilityIdentifier =
       kConfirmationAlertSubtitleAccessibilityIdentifier;
   [self customizeSubtitle:subtitle];

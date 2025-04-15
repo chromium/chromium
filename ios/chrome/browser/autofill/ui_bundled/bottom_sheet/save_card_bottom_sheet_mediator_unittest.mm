@@ -8,9 +8,12 @@
 
 #import <string>
 
+#import "base/strings/strcat.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/payments/autofill_save_card_ui_info.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
@@ -22,6 +25,27 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+autofill::AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo() {
+  autofill::AutofillSaveCardUiInfo ui_info = autofill::AutofillSaveCardUiInfo();
+  ui_info.title_text = std::u16string(u"Title");
+  ui_info.description_text = std::u16string(u"Description Text");
+  ui_info.logo_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
+  ui_info.logo_icon_description = std::u16string(u"Logo description");
+  ui_info.confirm_text =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
+  ui_info.cancel_text =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE);
+  ui_info.card_label = std::u16string(u"CardName ****2345");
+  ui_info.card_sub_label = std::u16string(u"MM/YY");
+  ui_info.card_description = std::u16string(u"Card description");
+  ui_info.issuer_icon_id = IDR_AUTOFILL_METADATA_CC_VISA;
+  return ui_info;
+}
+
+}  // namespace
+
 @interface FakeSaveCardBottomSheetConsumer
     : NSObject <SaveCardBottomSheetConsumer>
 
@@ -31,10 +55,24 @@
 @property(nonatomic, copy) NSString* subtitle;
 @property(nonatomic, copy) NSString* acceptActionText;
 @property(nonatomic, copy) NSString* cancelActionText;
+@property(nonatomic, copy) NSString* cardNameAndLastFourDigits;
+@property(nonatomic, copy) NSString* expiryDate;
+@property(nonatomic, copy) NSString* cardAccessibilityLabel;
+@property(nonatomic, strong) UIImage* issuerIcon;
 
 @end
 
 @implementation FakeSaveCardBottomSheetConsumer
+
+- (void)setCardNameAndLastFourDigits:(NSString*)label
+                  withCardExpiryDate:(NSString*)subLabel
+                         andCardIcon:(UIImage*)issuerIcon
+           andCardAccessibilityLabel:(NSString*)accessibilityLabel {
+  self.cardNameAndLastFourDigits = label;
+  self.expiryDate = subLabel;
+  self.issuerIcon = issuerIcon;
+  self.cardAccessibilityLabel = accessibilityLabel;
+}
 
 @end
 
@@ -59,18 +97,9 @@ class SaveCardBottomSheetMediatorTest : public PlatformTest {
   SaveCardBottomSheetMediatorTest() {
     mock_autofill_commands_handler_ =
         OCMProtocolMock(@protocol(AutofillCommands));
-    autofill::AutofillSaveCardUiInfo ui_info =
-        autofill::AutofillSaveCardUiInfo();
-    ui_info.title_text = std::u16string(u"Title");
-    ui_info.description_text = std::u16string(u"Description Text");
-    ui_info.logo_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
-    ui_info.logo_icon_description = std::u16string(u"Logo description");
-    ui_info.confirm_text =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
-    ui_info.cancel_text =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_UPLOAD_SAVE);
     std::unique_ptr<MockSaveCardBottomSheetModel> model =
-        std::make_unique<MockSaveCardBottomSheetModel>(std::move(ui_info));
+        std::make_unique<MockSaveCardBottomSheetModel>(
+            CreateAutofillSaveCardUiInfo());
     model_ = model.get();
     mediator_ = [[SaveCardBottomSheetMediator alloc]
                 initWithUIModel:std::move(model)
@@ -96,6 +125,14 @@ TEST_F(SaveCardBottomSheetMediatorTest, SetConsumer) {
               consumer.acceptActionText);
   EXPECT_NSEQ(base::SysUTF16ToNSString(model_->cancel_button_text()),
               consumer.cancelActionText);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(model_->card_name_last_four_digits()),
+              consumer.cardNameAndLastFourDigits);
+  EXPECT_NSEQ(base::SysUTF16ToNSString(model_->card_expiry_date()),
+              consumer.expiryDate);
+  EXPECT_NSEQ(
+      base::SysUTF16ToNSString(model_->card_accessibility_description()),
+      consumer.cardAccessibilityLabel);
+  EXPECT_TRUE(consumer.issuerIcon);
 }
 
 // Test that `OnAccepted` is called on the model when bottomsheet is accepted.

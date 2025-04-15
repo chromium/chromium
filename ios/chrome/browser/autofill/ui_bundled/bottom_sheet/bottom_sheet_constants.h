@@ -13,4 +13,8 @@ extern NSString* const kEditProfileBottomSheetCancelButton;
 // Accessibility identifier for the Edit Address Bottom Sheet.
 extern NSString* const kEditProfileBottomSheetViewIdentfier;
 
+// Table view cell identifier for Save Card and Virtual Card Enrollment Bottom
+// Sheet.
+extern NSString* const kDetailIconCellIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_BOTTOM_SHEET_CONSTANTS_H_

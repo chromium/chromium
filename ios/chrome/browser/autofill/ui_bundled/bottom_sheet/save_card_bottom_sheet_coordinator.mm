@@ -53,9 +53,12 @@
   _viewController = [[SaveCardBottomSheetViewController alloc] init];
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
+  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
-                                      completion:nil];
+                                      completion:^{
+                                        [weakSelf setInitialVoiceOverFocus];
+                                      }];
 }
 
 - (void)stop {
@@ -64,6 +67,13 @@
   [_mediator disconnect];
   _mediator.consumer = nil;
   _mediator = nil;
+}
+
+#pragma mark - Private
+
+- (void)setInitialVoiceOverFocus {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  _viewController.titleLabel);
 }
 
 @end
