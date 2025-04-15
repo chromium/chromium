@@ -16,6 +16,7 @@
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -362,6 +363,53 @@ TEST_F(HomeModulesCardRegistryTest, TestAuxiliarySearchPromoCardDisabled) {
       GetSignalKeys(signal_map, kAuxiliarySearch);
   EXPECT_THAT(signalKeys, Not(Contains(kAuxiliarySearchAvailable)));
 }
+
+// Tests that the Registry registers the HistorySyncPromo card when its feature
+// is enabled.
+TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
+  feature_list_.InitWithFeatures(
+      {features::kEducationalTipModule, switches::kHistoryOptInEducationalTip},
+      {});
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Contains(kHistorySyncPromo));
+  EXPECT_GE(registry_->all_cards_input_size(), 12u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Contains(kHistorySyncPromo));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kHistorySyncPromo);
+  EXPECT_THAT(signalKeys, Contains(kHistorySyncPromoShownCount));
+  EXPECT_THAT(signalKeys, Contains(kIsEligibleToHistoryOptIn));
+}
+
+// Tests that the Registry won't register the HistorySyncPromo card when it is
+// disabled because of user's interaction history.
+TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardDisabled) {
+  feature_list_.InitWithFeatures(
+      {features::kEducationalTipModule, switches::kHistoryOptInEducationalTip},
+      {});
+  pref_service_.SetUserPref(kHistorySyncPromoImpressionCounterPref,
+                            std::make_unique<base::Value>(11));
+  registry_ = std::make_unique<HomeModulesCardRegistry>(&pref_service_);
+
+  EXPECT_THAT(registry_->all_output_labels(), Not(Contains(kHistorySyncPromo)));
+  EXPECT_GE(registry_->all_cards_input_size(), 0u);
+  const std::vector<std::unique_ptr<CardSelectionInfo>>& all_cards =
+      registry_->get_all_cards_by_priority();
+  std::vector<std::string> card_names = ExtractCardNames(all_cards);
+  EXPECT_THAT(card_names, Not(Contains(kHistorySyncPromo)));
+
+  const CardSignalMap& signal_map = registry_->get_card_signal_map();
+  std::vector<std::string> signalKeys =
+      GetSignalKeys(signal_map, kHistorySyncPromo);
+  EXPECT_THAT(signalKeys,
+              Not(Contains("history_sync_educational_promo_shown_count")));
+}
+
 #endif
 
 }  // namespace segmentation_platform::home_modules

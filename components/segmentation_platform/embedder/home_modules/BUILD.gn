@@ -45,6 +45,8 @@ static_library("home_modules") {
       "auxiliary_search_promo.h",
       "default_browser_promo.cc",
       "default_browser_promo.h",
+      "history_sync_promo.cc",
+      "history_sync_promo.h",
       "quick_delete_promo.cc",
       "quick_delete_promo.h",
       "tab_group_promo.cc",
@@ -63,6 +65,7 @@ static_library("home_modules") {
     "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/segmentation_platform/internal",
     "//components/send_tab_to_self",
+    "//components/signin/public/base:signin_switches",
   ]
 }
 
@@ -103,6 +106,7 @@ source_set("unit_tests") {
     sources += [
       "auxiliary_search_promo_unittest.cc",
       "default_browser_promo_unittest.cc",
+      "history_sync_promo_unittest.cc",
       "quick_delete_promo_unittest.cc",
       "tab_group_promo_unittest.cc",
       "tab_group_sync_promo_unittest.cc",
@@ -123,6 +127,7 @@ source_set("unit_tests") {
     "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
     "//components/send_tab_to_self",
+    "//components/signin/public/base:signin_switches",
     "//testing/gmock",
     "//testing/gtest",
   ]

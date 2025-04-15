@@ -34,6 +34,11 @@ BASE_FEATURE(kHistoryPagePromoCtaStringVariation,
              "HistoryPagePromoCtaStringVariation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a history sync educational tip in the magic stack on NTP.
+BASE_FEATURE(kHistoryOptInEducationalTip,
+             "HistoryOptInEducationalTip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Feature to bypass double-checking that signin callers have correctly gotten
 // the user to accept account management. This check is slow and not strictly
 // necessary, so disable it while we work on adding caching.

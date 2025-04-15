@@ -24,6 +24,7 @@ extern const char kTabGroupPromoImpressionCounterPref[];
 extern const char kTabGroupSyncPromoImpressionCounterPref[];
 extern const char kQuickDeletePromoImpressionCounterPref[];
 extern const char kAuxiliarySearchPromoImpressionCounterPref[];
+extern const char kHistorySyncPromoImpressionCounterPref[];
 
 // Interaction flag for each card.
 extern const char kDefaultBrowserPromoInteractedPref[];
@@ -31,6 +32,7 @@ extern const char kTabGroupPromoInteractedPref[];
 extern const char kTabGroupSyncPromoInteractedPref[];
 extern const char kQuickDeletePromoInteractedPref[];
 extern const char kAuxiliarySearchPromoInteractedPref[];
+extern const char kHistorySyncPromoInteractedPref[];
 #endif
 
 // Registry that manages all ephemeral cards in mobile home modules.

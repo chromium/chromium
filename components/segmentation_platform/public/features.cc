@@ -247,6 +247,9 @@ constexpr base::FeatureParam<int> kMaxTabGroupSyncCardImpressions{
 constexpr base::FeatureParam<int> kMaxQuickDeleteCardImpressions{
     &kEducationalTipModule, "max_quick_delete_card_impressions",
     /*default_value=*/10};
+constexpr base::FeatureParam<int> kMaxHistorySyncCardImpressions{
+    &kEducationalTipModule, "max_history_sync_card_impressions",
+    /*default_value=*/10};
 
 BASE_FEATURE(kAndroidAppIntegrationModule,
              "AndroidAppIntegrationModule",
