@@ -39,6 +39,7 @@ const CGFloat kContentStackSpacing = 2.0f;
   if (self) {
     _item = item;
   }
+  [self addTapGestureRecognizer];
 
   _trackPriceButton =
       [[PriceNotificationsTrackButton alloc] initWithLightVariant:YES];
@@ -99,6 +100,17 @@ const CGFloat kContentStackSpacing = 2.0f;
       url_formatter::
           FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
               URL));
+}
+
+- (void)addTapGestureRecognizer {
+  UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+      initWithTarget:self
+              action:@selector(shopCardItemTapped:)];
+  [self addGestureRecognizer:tapRecognizer];
+}
+
+- (void)shopCardItemTapped:(UIGestureRecognizer*)sender {
+  [self.commandHandler openTabResumptionItem:_item];
 }
 
 @end
