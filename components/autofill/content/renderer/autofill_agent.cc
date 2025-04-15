@@ -258,7 +258,7 @@ bool ShowPredictions(const WebDocument& document,
       frame_token = frame->GetLocalFrameToken();
     }
 
-    std::string title = base::StrCat({
+    std::string autofill_info = base::StrCat({
         "overall type: ",
         field.overall_type,
         "\nhtml type: ",
@@ -336,8 +336,8 @@ bool ShowPredictions(const WebDocument& document,
             option_values + delimiter + base::UTF16ToUTF8(select_option.value);
       }
 
-      title = base::StrCat({
-          title,
+      autofill_info = base::StrCat({
+          autofill_info,
           "\naria label: ",
           base::UTF16ToUTF8(truncated_aria_label),
           "\naria description: ",
@@ -353,25 +353,32 @@ bool ShowPredictions(const WebDocument& document,
 
     WebString kAutocomplete = WebString::FromASCII("autocomplete");
     if (element.HasAttribute(kAutocomplete)) {
-      title += "\nautocomplete: " +
-               element.GetAttribute(kAutocomplete).Utf8().substr(0, 100);
+      autofill_info +=
+          "\nautocomplete: " +
+          element.GetAttribute(kAutocomplete).Utf8().substr(0, 100);
     }
 
     // Set the same debug string to an attribute that does not get mangled if
     // Google Translate is triggered for the site. This is useful for
     // automated processing of the data.
-    element.SetAttribute("autofill-information", WebString::FromUTF8(title));
+    element.SetAttribute("autofill-information",
+                         WebString::FromUTF8(autofill_info));
 
     //  If the field has password manager's annotation, add it as well.
     if (element.HasAttribute("pm_parser_annotation")) {
-      title =
-          base::StrCat({title, "\npm_parser_annotation: ",
+      autofill_info =
+          base::StrCat({autofill_info, "\npm_parser_annotation: ",
                         element.GetAttribute("pm_parser_annotation").Utf8()});
     }
 
-    // Set this debug string to the title so that a developer can easily debug
-    // by hovering the mouse over the input field.
-    element.SetAttribute("title", WebString::FromUTF8(title));
+    // Set this debug string so that a developer can easily debug the element.
+    // If the flag is on with parameter :as-title, information will be found as
+    // 'title' in the DOM of the element.
+    bool title_parameter_on =
+        features::test::kAutofillShowTypePredictionsAsTitleParam.Get();
+    if (title_parameter_on) {
+      element.SetAttribute("title", WebString::FromUTF8(autofill_info));
+    }
 
     element.SetAttribute("autofill-prediction",
                          WebString::FromUTF8(field.overall_type));

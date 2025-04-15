@@ -952,6 +952,13 @@ BASE_FEATURE(kAutofillShowTypePredictions,
 const base::FeatureParam<bool> kAutofillShowTypePredictionsVerboseParam{
     &kAutofillShowTypePredictions, "verbose", false};
 
+// This variation controls whether the autofill information of the element
+// is shown as 'title' of the form field elements. If this parameter is on,
+// the title attribute will be overwritten with autofill information.
+// By default this is disabled to avoid data collection corruption.
+const base::FeatureParam<bool> kAutofillShowTypePredictionsAsTitleParam{
+    &kAutofillShowTypePredictions, "as-title", false};
+
 // Autofill upload throttling limits uploading a form to the Autofill server
 // more than once over a `kAutofillUploadThrottlingPeriodInDays` period.
 // This feature is for testing purposes and is not supposed

@@ -357,6 +357,8 @@ COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kShowDomNodeIDs);
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillShowTypePredictions);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool> kAutofillShowTypePredictionsVerboseParam;
+COMPONENT_EXPORT(AUTOFILL)
+extern const base::FeatureParam<bool> kAutofillShowTypePredictionsAsTitleParam;
 COMPONENT_EXPORT(AUTOFILL) BASE_DECLARE_FEATURE(kAutofillUploadThrottling);
 
 }  // namespace test

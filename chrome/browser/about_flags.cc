@@ -4442,6 +4442,12 @@ const FeatureEntry::FeatureVariation
          std::size(kAutofillVcnEnrollStrikeExpiryTime_30Days), nullptr}};
 // LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:AutofillVcnEnrollStrikeExpiryTime)
 
+const FeatureEntry::FeatureParam kAutofillShowTypePredictionsAsTitle[] = {
+    {"as-title", "true"}};
+const FeatureEntry::FeatureVariation kAutofillShowTypePredictionsVariations[] =
+    {{"- show predictions as title", kAutofillShowTypePredictionsAsTitle,
+      std::size(kAutofillShowTypePredictionsAsTitle), nullptr}};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -4583,8 +4589,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"show-autofill-type-predictions",
      flag_descriptions::kShowAutofillTypePredictionsName,
      flag_descriptions::kShowAutofillTypePredictionsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         autofill::features::test::kAutofillShowTypePredictions)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         autofill::features::test::kAutofillShowTypePredictions,
+         kAutofillShowTypePredictionsVariations,
+         "AutofillShowTypePredictions")},
     {"autofill-more-prominent-popup",
      flag_descriptions::kAutofillMoreProminentPopupName,
      flag_descriptions::kAutofillMoreProminentPopupDescription, kOsDesktop,
