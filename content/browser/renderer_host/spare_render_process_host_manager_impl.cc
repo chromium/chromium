@@ -51,13 +51,6 @@ BASE_FEATURE(kSpareRPHKeepOneAliveOnMemoryPressure,
              "kSpareRPHKeepOneAliveOnMemoryPressure",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, boosts the priority of spare renderer processes by adding a
-// non-perceptible binding on Android, to decrease the chance of the spare
-// process getting killed before it is taken.
-BASE_FEATURE(kSpareRendererProcessPriority,
-             "SpareRendererProcessPriority",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 constexpr char kSpareRendererTakenTimeSinceCreation[] =
     "BrowserRenderProcessHost.SpareRendererTaken.TimeSinceCreation";
 constexpr char kSpareRendererTakenIsReady[] =
@@ -811,7 +804,7 @@ void SpareRenderProcessHostManagerImpl::RenderProcessReady(
   UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessStartupTime",
                       process_startup_timer_->Elapsed());
 
-  if (base::FeatureList::IsEnabled(kSpareRendererProcessPriority)) {
+  if (base::FeatureList::IsEnabled(features::kSpareRendererProcessPriority)) {
     host->SetHasSpareRendererPriority(true);
   }
 

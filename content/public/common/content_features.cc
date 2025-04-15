@@ -892,6 +892,15 @@ BASE_FEATURE(kSetIsolatesPriority,
              "SetIsolatesPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, sends the spare renderer information when setting the
+// priority of renderers. Currently only Android handles the spare renderer
+// information in priority.
+// The target priority of a spare renderer in Android is decided by the feature
+// parameters in ContentFeatureList.java.
+BASE_FEATURE(kSpareRendererProcessPriority,
+             "SpareRendererProcessPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Reuse compositor instances with RenderDocument
 BASE_FEATURE(kRenderDocumentCompositorReuse,
              "RenderDocumentCompositorReuse",

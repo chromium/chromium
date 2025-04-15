@@ -44,6 +44,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content.app.SandboxedProcessService;
 import org.chromium.content.common.ContentSwitchUtils;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.content_public.common.ContentSwitches;
@@ -840,14 +841,15 @@ public final class ChildProcessLauncherHelperImpl {
         }
 
         if (mIsSpareRenderer != isSpareRenderer
-                && ChildProcessConnection.supportNotPerceptibleBinding()) {
+                && ChildProcessConnection.supportNotPerceptibleBinding()
+                && ContentFeatureList.sSpareRendererAddNotPerceptibleBinding.getValue()) {
             if (isSpareRenderer) {
                 connection.addNotPerceptibleBinding();
             } else {
                 connection.removeNotPerceptibleBinding();
             }
-            mIsSpareRenderer = isSpareRenderer;
         }
+        mIsSpareRenderer = isSpareRenderer;
 
         if (mRanking != null) {
             mRanking.updateConnection(
