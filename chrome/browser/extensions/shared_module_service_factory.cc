@@ -6,12 +6,12 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/extensions/delayed_install_manager_factory.h"
 #include "chrome/browser/extensions/pending_extension_manager_factory.h"
 #include "chrome/browser/extensions/shared_module_service.h"
 #include "chrome/browser/extensions/updater/extension_updater_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "extensions/browser/delayed_install_manager_factory.h"
 #include "extensions/browser/extension_registrar_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
 

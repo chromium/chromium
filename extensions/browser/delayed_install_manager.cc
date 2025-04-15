@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/delayed_install_manager.h"
+#include "extensions/browser/delayed_install_manager.h"
 
 #include <string>
 #include <vector>
 
 #include "base/check.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/extensions/delayed_install_manager_factory.h"
+#include "extensions/browser/delayed_install_manager_factory.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/install_gate.h"
 

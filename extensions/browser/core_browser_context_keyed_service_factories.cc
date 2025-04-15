@@ -6,6 +6,7 @@
 
 #include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/browser/api/web_request/web_request_event_router_factory.h"
+#include "extensions/browser/delayed_install_manager_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_function.h"
@@ -44,6 +45,7 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   AppWindowGeometryCache::Factory::GetInstance();
   AppWindowRegistry::Factory::GetInstance();
 #endif
+  DelayedInstallManagerFactory::GetInstance();
   EnsureExtensionURLLoaderFactoryShutdownNotifierFactoryBuilt();
   EventRouterFactory::GetInstance();
   ExtensionActionManager::GetFactory();

@@ -9,7 +9,6 @@
 #include "chrome/browser/extensions/component_loader_factory.h"
 #include "chrome/browser/extensions/corrupted_extension_reinstaller_factory.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
-#include "chrome/browser/extensions/delayed_install_manager_factory.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_allowlist_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -58,7 +57,6 @@ void EnsureChromeBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::ComponentLoaderFactory::GetInstance();
   extensions::CorruptedExtensionReinstallerFactory::GetInstance();
   extensions::CWSInfoServiceFactory::GetInstance();
-  extensions::DelayedInstallManagerFactory::GetInstance();
   extensions::ErrorConsoleFactory::GetInstance();
   extensions::ExtensionAllowlistFactory::GetInstance();
   extensions::ExtensionManagementFactory::GetInstance();
