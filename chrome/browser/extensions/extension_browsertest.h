@@ -14,7 +14,6 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_platform_browsertest.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
@@ -44,10 +43,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
 
   ExtensionBrowserTest(const ExtensionBrowserTest&) = delete;
   ExtensionBrowserTest& operator=(const ExtensionBrowserTest&) = delete;
-
-  bool IsContextTypeForServiceWorker() const {
-    return IsServiceWorkerContext(context_type_);
-  }
 
  protected:
   // The platform delegate is an implementation detail of the test harness
