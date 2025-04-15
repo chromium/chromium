@@ -39,10 +39,7 @@ source_set("core") {
 
 source_set("interfaces") {
   public = [ "notice_service_interface.h" ]
-  deps = [
-    ":notice_mojom",
-    "//components/keyed_service/core",
-  ]
+  deps = [ ":notice_mojom" ]
 }
 
 source_set("notice") {
@@ -52,6 +49,7 @@ source_set("notice") {
     ":interfaces",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
   ]
 
   if (!is_android) {

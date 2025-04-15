@@ -8,15 +8,16 @@
 #include <vector>
 
 #include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
-#include "components/keyed_service/core/keyed_service.h"
 
 namespace privacy_sandbox {
 
 enum class SurfaceType;
 
 // This framework communicates to the view manager via this interface.
-class PrivacySandboxNoticeServiceInterface : public KeyedService {
+class PrivacySandboxNoticeServiceInterface {
  public:
+  virtual ~PrivacySandboxNoticeServiceInterface() = default;
+
   // Returns a required list of notices to show.
   virtual std::vector<notice::mojom::PrivacySandboxNotice> GetRequiredNotices(
       SurfaceType surface) = 0;
