@@ -4308,6 +4308,88 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ResumePausedJobExistingSpdySession) {
   EXPECT_THAT(preconnector.result(), Optional(IsOk()));
 }
 
+// When a request (job) is resumed, it should handle an existing QUIC session if
+// exists. This test uses an HTTP/3 Origin frame to make a session usable for
+// the destination.
+TEST_F(HttpStreamPoolAttemptManagerTest, ResumePausedJobExistingQuicSession) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v6("2001:db8::1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  auto failed_data = std::make_unique<SequencedSocketData>();
+  failed_data->set_connect_data(MockConnect(ASYNC, ERR_CONNECTION_RESET));
+  socket_factory()->AddSocketDataProvider(failed_data.get());
+
+  HttpStreamKey stream_key = StreamKeyBuilder(kDefaultDestination).Build();
+
+  // The first request fails.
+  StreamRequester failing_requester(stream_key);
+  failing_requester.RequestStream(pool());
+  failing_requester.WaitForResult();
+  EXPECT_THAT(failing_requester.result(),
+              Optional(IsError(ERR_CONNECTION_RESET)));
+
+  // These request/preconnect are paused as the previous request failed and
+  // isn't destroyed yet.
+  StreamRequester requester(stream_key);
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+  Preconnector preconnector(stream_key);
+  preconnector.Preconnect(pool());
+  ASSERT_FALSE(preconnector.result().has_value());
+
+  // Simulate creating a QUIC session that can be used for kDefaultDestination
+  // before resuming the paused request/preconnect. The QUIC session is created
+  // for kAltDestination and the session receives an HTTP/3 Origin frame that
+  // indicates the session can be used for kDefaultDestination.
+  {
+    constexpr std::string_view kAltDestination = "https://alt.example.org";
+
+    AddQuicData(/*host=*/kAltDestination);
+    // Make the TCP attempt for kAltDestination stalled forever.
+    SequencedSocketData tcp_alt;
+    tcp_alt.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+    socket_factory()->AddSocketDataProvider(&tcp_alt);
+
+    resolver()
+        ->AddFakeRequest()
+        ->add_endpoint(
+            ServiceEndpointBuilder().add_v6("2001:db8::2").endpoint())
+        .CompleteStartSynchronously(OK);
+
+    StreamRequester alt_requester;
+    alt_requester.set_destination(kAltDestination)
+        .set_quic_version(quic_version())
+        .RequestStream(pool());
+    alt_requester.WaitForResult();
+    EXPECT_THAT(alt_requester.result(), Optional(IsOk()));
+
+    QuicSessionAliasKey alt_quic_key =
+        alt_requester.GetStreamKey().CalculateQuicSessionAliasKey();
+    QuicChromiumClientSession* alt_session =
+        quic_session_pool()->FindExistingSession(alt_quic_key.session_key(),
+                                                 alt_quic_key.destination());
+    ASSERT_TRUE(alt_session);
+
+    quic::OriginFrame origin_frame;
+    origin_frame.origins.emplace_back(kDefaultDestination);
+    alt_session->OnOriginFrame(origin_frame);
+  }  // End of creating an existing QUIC session.
+
+  // Destroy the first request to resume the paused request/preconnect.
+  failing_requester.ResetRequest();
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+  EXPECT_EQ(requester.negotiated_protocol(), NextProto::kProtoQUIC);
+  preconnector.WaitForResult();
+  EXPECT_THAT(preconnector.result(), Optional(IsOk()));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, ReleaseStreamWhileFailing) {
   constexpr std::string_view kDestination = "http://a.test";
 

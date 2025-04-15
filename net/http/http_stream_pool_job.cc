@@ -23,6 +23,7 @@
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
+#include "net/quic/quic_http_stream.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/socket/stream_socket.h"
@@ -177,18 +178,35 @@ void HttpStreamPool::Job::Resume() {
         return dict;
       });
 
-  // There might be an existing SpdySession after resuming `this`.
-  // TODO(crbug.com/406932139): Check existing QuicSession too.
+  // There might be existing QUIC/SPDY sessions after resuming `this`.
+
+  QuicChromiumClientSession* quic_session =
+      group_->pool()
+          ->http_network_session()
+          ->quic_session_pool()
+          ->FindExistingSession(group_->quic_session_alias_key().session_key(),
+                                group_->quic_session_alias_key().destination());
+  if (quic_session) {
+    if (IsPreconnect()) {
+      CallOnPreconnectCompleteLater(OK);
+    } else {
+      auto http_stream = std::make_unique<QuicHttpStream>(
+          quic_session->CreateHandle(
+              group_->quic_session_alias_key().destination()),
+          quic_session->GetDnsAliasesForSessionKey(
+              group_->quic_session_alias_key().session_key()));
+      delegate_->OnStreamReady(this, std::move(http_stream),
+                               NextProto::kProtoQUIC);
+    }
+    return;
+  }
+
   base::WeakPtr spdy_session = group_->pool()->FindAvailableSpdySession(
       group_->stream_key(), group_->spdy_session_key(),
       delegate_->enable_ip_based_pooling(), request_net_log_);
   if (spdy_session) {
     if (IsPreconnect()) {
-      // Using PostTask to avoid a dangling pointer. Calling
-      // `delegate_->OnPreconnectComplete()` deletes `this` synchronously.
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(&Job::OnPreconnectComplete,
-                                    weak_ptr_factory_.GetWeakPtr(), OK));
+      CallOnPreconnectCompleteLater(OK);
     } else {
       auto http_stream = std::make_unique<SpdyHttpStream>(
           spdy_session, request_net_log_.source(),
@@ -285,6 +303,12 @@ void HttpStreamPool::Job::OnPreconnectComplete(int status) {
   CHECK(!result_.has_value());
   result_ = status;
   delegate_->OnPreconnectComplete(this, status);
+}
+
+void HttpStreamPool::Job::CallOnPreconnectCompleteLater(int status) {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&Job::OnPreconnectComplete,
+                                weak_ptr_factory_.GetWeakPtr(), status));
 }
 
 base::TimeDelta HttpStreamPool::Job::CreateToResumeTime() const {
