@@ -5,8 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_SHARED_CONTEXT_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GRAPHITE_SHARED_CONTEXT_H_
 
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/synchronization/lock.h"
 #include "gpu/gpu_gles2_export.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/gpu/graphite/GraphiteTypes.h"
@@ -32,8 +31,7 @@ namespace gpu {
 // GraphiteSharedContext. Only GraphiteSharedContext can communicate with
 // skgpu::graphite::Context directly. If |is_thread_safe| is false, the locks
 // are equivalent to no-op.
-class GPU_GLES2_EXPORT GraphiteSharedContext
-    : public base::RefCountedThreadSafe<GraphiteSharedContext> {
+class GPU_GLES2_EXPORT GraphiteSharedContext {
  public:
   GraphiteSharedContext(
       std::unique_ptr<skgpu::graphite::Context> graphite_context,
@@ -43,6 +41,8 @@ class GPU_GLES2_EXPORT GraphiteSharedContext
   GraphiteSharedContext(GraphiteSharedContext&&) = delete;
   GraphiteSharedContext& operator=(const GraphiteSharedContext&) = delete;
   GraphiteSharedContext& operator=(GraphiteSharedContext&&) = delete;
+
+  ~GraphiteSharedContext();
 
   // Wrapper function implementations for skgpu::graphite:Context
   skgpu::BackendApi backend() const;
@@ -140,9 +140,6 @@ class GPU_GLES2_EXPORT GraphiteSharedContext
   skgpu::GpuStatsFlags supportedGpuStats() const;
 
  private:
-  friend class base::RefCountedThreadSafe<GraphiteSharedContext>;
-  ~GraphiteSharedContext();
-
   class AutoLock;
 
   // The lock for protecting skgpu::graphite::Context.

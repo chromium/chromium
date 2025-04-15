@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/gpu_gles2_export.h"
@@ -88,6 +89,8 @@ class GPU_GLES2_EXPORT DawnContextProvider {
   skgpu::graphite::Context* GetGraphiteContext() const {
     return graphite_context_.get();
   }
+
+  GraphiteSharedContext* GetGraphiteSharedContext() const;
 
 #if BUILDFLAG(IS_WIN)
   Microsoft::WRL::ComPtr<ID3D11Device> GetD3D11Device() const;

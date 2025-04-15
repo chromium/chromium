@@ -63,6 +63,8 @@ if (skia_use_metal) {
     defines = [ "VIZ_METAL_CONTEXT_PROVIDER_IMPLEMENTATION" ]
 
     sources = [
+      "//gpu/command_buffer/service/graphite_shared_context.cc",
+      "//gpu/command_buffer/service/graphite_shared_context.h",
       "gpu/metal_context_provider.h",
       "gpu/metal_context_provider.mm",
       "viz_metal_context_provider_export.h",
