@@ -43,6 +43,7 @@ enum class CSSMathOperator {
   kAcos,
   kAtan,
   kAtan2,
+  kInvert,
   kInvalid
 };
 

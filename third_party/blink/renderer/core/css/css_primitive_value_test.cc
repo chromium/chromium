@@ -402,7 +402,7 @@ TEST_F(CSSPrimitiveValueTest, CSSPrimitiveValueOperations) {
             "calc(-10% + 1px * sign(-20em + 10px))");
   EXPECT_EQ(function->Divide(20, CSSPrimitiveValue::UnitType::kNumber)
                 ->CustomCSSText(),
-            "calc(sign(-20em + 10px) / 20)");
+            "calc(sign(-20em + 10px) * 0.05)");
   EXPECT_EQ(function->Subtract(*function)->CustomCSSText(),
             "calc(sign(-20em + 10px) - sign(-20em + 10px))");
   EXPECT_EQ(

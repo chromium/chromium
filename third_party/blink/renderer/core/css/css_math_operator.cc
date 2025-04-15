@@ -85,6 +85,7 @@ StringView ToString(CSSMathOperator op) {
     case CSSMathOperator::kAtan2:
       return "atan2";
     case CSSMathOperator::kInvalid:
+    case CSSMathOperator::kInvert:
       NOTREACHED();
   }
 }

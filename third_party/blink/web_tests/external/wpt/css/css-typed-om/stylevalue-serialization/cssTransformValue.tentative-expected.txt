@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] CSSMathInvert with 0 parameter and nested serializes correctly
-  assert_equals: expected "rotate3d(0, 0, 0, calc(1deg / 0))" but got "rotate3d(0, 0, 0, calc(1deg * 1 / 0))"
-Harness: the test ran to completion.
-
