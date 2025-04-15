@@ -815,6 +815,24 @@ class AutoPictureInPictureWithVideoPlaybackBrowserTest
   base::CallbackListSubscription dependency_manager_subscription_;
 };
 
+class BrowserInitiatedAutoPictureInPictureBrowserTest
+    : public AutoPictureInPictureWithVideoPlaybackBrowserTest {
+ public:
+  BrowserInitiatedAutoPictureInPictureBrowserTest() = default;
+  BrowserInitiatedAutoPictureInPictureBrowserTest(
+      const BrowserInitiatedAutoPictureInPictureBrowserTest&) = delete;
+  BrowserInitiatedAutoPictureInPictureBrowserTest& operator=(
+      const BrowserInitiatedAutoPictureInPictureBrowserTest&) = delete;
+
+  std::vector<base::test::FeatureRef> GetEnabledFeatures() override {
+    auto features =
+        AutoPictureInPictureTabHelperBrowserTest::GetEnabledFeatures();
+    features.push_back(
+        blink::features::kBrowserInitiatedAutomaticPictureInPicture);
+    return features;
+  }
+};
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
@@ -2650,4 +2668,38 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
     EXPECT_EQ(expected_auto_pip_info,
               log_watcher.last_auto_picture_in_picture_event_info());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
+                       OpensAndClosesVideoBrowserAutopip) {
+  // Load a page that does not register for autopip and start video playback.
+  LoadNotRegisteredPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  WaitForWasRecentlyAudible(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  SwitchToNewTabAndBackAndExpectAutopip(/*should_video_pip=*/true,
+                                        /*should_document_pip=*/false);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserInitiatedAutoPictureInPictureBrowserTest,
+                       DoesNotBrowserAutopip_NotRecentlyAudible) {
+  // Load a page that does not register for autopip and start video playback.
+  LoadNotRegisteredPage(browser());
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  PlayVideo(web_contents);
+  WaitForAudioFocusGained();
+  WaitForMediaSessionPlaying(web_contents);
+  SetExpectedHasHighEngagement(true);
+
+  // Wait for video to be recently audible, to ensure we start from a known
+  // state. Then mute audio and wait for video to not be recently audible.
+  WaitForWasRecentlyAudible(web_contents, /*expected_recently_audible=*/true);
+  MuteVideo(web_contents);
+  WaitForWasRecentlyAudible(web_contents, /*expected_recently_audible=*/false);
+
+  SwitchToNewTabAndDontExpectAutopip();
 }

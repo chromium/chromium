@@ -25,6 +25,7 @@
 #include "content/public/browser/media_session_service.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -534,6 +535,19 @@ AutoPictureInPictureTabHelper::GetPrimaryMainRoutedFrame() const {
   }
 
   auto* rfh = media_session->GetRoutedFrame();
+
+  // Default to using the WebContents primary main frame for browser initiated
+  // auto picture in picture, where the MediaSession routed frame may not exist
+  // (a MediaSession routed frame is guaranteed to exist if the user manually
+  // registered a MediaSession `enterpictureinpicture` action handler). This is
+  // in line with the current requirement of only allowing auto picture in
+  // picture from the top frame.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kBrowserInitiatedAutomaticPictureInPicture) &&
+      rfh == nullptr) {
+    rfh = web_contents()->GetPrimaryMainFrame();
+  }
+
   if (!rfh || !rfh->IsInPrimaryMainFrame()) {
     return std::nullopt;
   }
