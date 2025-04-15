@@ -108,9 +108,9 @@ BASE_DECLARE_FEATURE(kEnableHistorySyncOptinExpansionPill);
 
 enum class HistorySyncOptinExpansionPillOption {
   kBrowseAcrossDevices,
-  kSyncTabsAndHistory,
+  kSyncHistory,
   kSeeTabsFromOtherDevices,
-  kSyncTabsAndHistoryProfileMenu,
+  kSyncHistoryProfileMenu,
 };
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

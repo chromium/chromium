@@ -1095,14 +1095,13 @@
     </message>
 
     <!-- History Sync Opt-in Expansion Pill Desktop -->
-    <!-- TODO(crbug.com/407708165): Finalize the strings and make them translateable. -->
-    <message translateable="false" name="IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES" desc="">
+    <message name="IDS_AVATAR_BUTTON_BROWSE_ACROSS_DEVICES" desc="The avatar button label for the history sync promo. When clicked, it opens the turn on sync dialog.">
       Browse across devices?
     </message>
-    <message translateable="false" name="IDS_AVATAR_BUTTON_SYNC_TABS_AND_HISTORY" desc="">
-      Sync tabs and history?
+    <message name="IDS_AVATAR_BUTTON_SYNC_HISTORY" desc="The avatar button label for the history sync promo. When clicked, it opens the turn on sync dialog.">
+      Sync history?
     </message>
-    <message translateable="false" name="IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES" desc="">
+    <message name="IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES" desc="The avatar button label for the history sync promo. When clicked, it opens the turn on sync dialog.">
       See tabs from other devices?
     </message>
   </if>
