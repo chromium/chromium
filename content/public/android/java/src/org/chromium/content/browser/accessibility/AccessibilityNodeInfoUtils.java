@@ -99,6 +99,11 @@ public class AccessibilityNodeInfoUtils {
             builder.append(" hint:\"").append(node.getHintText()).append("\"");
         }
 
+        // Print tooltip text unless it is null or empty.
+        if (node.getTooltipText() != null && !node.getTooltipText().toString().isEmpty()) {
+            builder.append(" tooltipText:\"").append(node.getTooltipText()).append("\"");
+        }
+
         // Text properties - Only print when non-null.
         if (node.getContentDescription() != null) {
             builder.append(" contentDescription:\"")

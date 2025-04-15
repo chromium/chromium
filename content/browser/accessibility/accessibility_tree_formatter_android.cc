@@ -57,6 +57,7 @@ const char* const BOOL_ATTRIBUTES[] = {
 const char* const STRING_ATTRIBUTES[] = {
     "name",
     "hint",
+    "tooltip_text",
     "state_description",
     "container_title",
     "content_description",
@@ -197,6 +198,7 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   // String attributes.
   dict->Set("name", android_node->GetTextContentUTF16());
   dict->Set("hint", android_node->GetHint());
+  dict->Set("tooltip_text", android_node->GetTooltipText());
   dict->Set("role_description", android_node->GetRoleDescription());
   dict->Set("state_description", android_node->GetStateDescription());
   dict->Set("container_title", android_node->GetContainerTitle());

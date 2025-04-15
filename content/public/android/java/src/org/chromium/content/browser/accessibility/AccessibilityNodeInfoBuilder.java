@@ -362,6 +362,7 @@ public class AccessibilityNodeInfoBuilder {
             String role,
             String roleDescription,
             String hint,
+            String tooltipText,
             String targetUrl,
             boolean canOpenPopup,
             boolean multiLine,
@@ -407,6 +408,7 @@ public class AccessibilityNodeInfoBuilder {
         node.setMultiLine(multiLine);
         node.setInputType(inputType);
         node.setHintText(hint);
+        node.setTooltipText(tooltipText);
         node.setExpandedState(expandedState);
 
         // Deliberately don't call setLiveRegion because TalkBack speaks the entire region anytime

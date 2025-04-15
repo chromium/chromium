@@ -2,7 +2,7 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='link' clickable focusable link interesting name='InnerText0'
 ++++android.widget.TextView name='InnerText0'
 ++android.widget.TextView name=' '
-++android.view.View role_description='link' clickable focusable link interesting name='InnerText1' hint='Title1'
+++android.view.View role_description='link' clickable focusable link interesting name='InnerText1' tooltip_text='Title1'
 ++++android.widget.TextView name='InnerText1'
 ++android.widget.TextView name=' '
 ++android.view.View role_description='link' clickable focusable link interesting name='a-name-calc' content_description='Title2'
