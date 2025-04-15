@@ -5,17 +5,10 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
-import type {AnnotationBrush, AnnotationText, Color, TextStyles} from './constants.js';
+import type {AnnotationBrush, AnnotationText, Color, TextBoxRect, TextStyles} from './constants.js';
 import {AnnotationBrushType, TextAlignment, TextStyle} from './constants.js';
 import type {MessageData} from './controller.js';
 import {PluginController, PluginControllerEventType} from './controller.js';
-
-export interface TextBoxUpdate {
-  height: number;
-  locationX: number;
-  locationY: number;
-  width: number;
-}
 
 export class Ink2Manager extends EventTarget {
   private brush_: AnnotationBrush = {type: AnnotationBrushType.PEN};
@@ -45,7 +38,7 @@ export class Ink2Manager extends EventTarget {
   private handlePluginMessage_(e: CustomEvent<MessageData>) {
     const data = e.detail;
     if (data.type.toString() === 'updateTextAnnotTextBoxRect') {
-      const detail = data as unknown as TextBoxUpdate;
+      const detail = data as unknown as TextBoxRect;
       this.dispatchEvent(new CustomEvent('update-text-box', {detail}));
     }
   }
@@ -171,6 +164,10 @@ export class Ink2Manager extends EventTarget {
 
     this.text_.styles = styles;
     this.updatedText_();
+  }
+
+  setTextBoxRect(update: TextBoxRect) {
+    this.pluginController_.setTextAnnotTextBoxRect(update);
   }
 
   /**

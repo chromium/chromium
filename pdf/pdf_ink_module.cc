@@ -318,6 +318,8 @@ bool PdfInkModule::OnMessage(const base::Value::Dict& message) {
            &PdfInkModule::HandleGetTextAnnotFontNamesMessage},
           {"setTextAnnotationFont",
            &PdfInkModule::HandleSetTextAnnotationFontMessage},
+          {"setTextAnnotTextBoxRect",
+           &PdfInkModule::HandleSetTextAnnotTextBoxRectMessage},
       });
 
   auto it = kMessageHandlers.find(*message.FindString("type"));
@@ -1056,6 +1058,12 @@ void PdfInkModule::HandleGetTextAnnotFontNamesMessage(
 }
 
 void PdfInkModule::HandleSetTextAnnotationFontMessage(
+    const base::Value::Dict& message) {
+  // TODO(crbug.com/409439509): Fill in this method. For now, just create it
+  // so the backend doesn't CHECK when it's sent from the frontend.
+}
+
+void PdfInkModule::HandleSetTextAnnotTextBoxRectMessage(
     const base::Value::Dict& message) {
   // TODO(crbug.com/409439509): Fill in this method. For now, just create it
   // so the backend doesn't CHECK when it's sent from the frontend.

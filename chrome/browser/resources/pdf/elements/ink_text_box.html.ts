@@ -17,7 +17,7 @@ export function getHtml(this: InkTextBoxElement) {
     <div class="handle bottom center"></div>
     <div class="handle bottom right"></div>
     <textarea id="textbox" .value="${this.textValue_}" rows="1"
-        @change="${this.onTextValueChange_}">
+        @input="${this.onTextValueInput_}">
     </textarea>
   <!--_html_template_end_-->`;
 }

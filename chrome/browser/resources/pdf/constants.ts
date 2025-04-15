@@ -59,6 +59,13 @@ export interface AnnotationText {
   alignment: TextAlignment;
   styles: TextStyles;
 }
+
+export interface TextBoxRect {
+  height: number;
+  locationX: number;
+  locationY: number;
+  width: number;
+}
 // </if>
 
 export interface Attachment {

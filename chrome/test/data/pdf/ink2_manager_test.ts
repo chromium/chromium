@@ -246,4 +246,22 @@ chrome.test.runTests([
     chrome.test.assertEq(200, event.detail.width);
     chrome.test.succeed();
   },
+
+  function testSetTextBoxRect() {
+    const newRect = {
+      height: 100,
+      locationX: 200,
+      locationY: 300,
+      width: 400,
+    };
+    manager.setTextBoxRect(newRect);
+    const setTextAnnotTextBoxRectMessage =
+        mockPlugin.findMessage('setTextAnnotTextBoxRect');
+    chrome.test.assertTrue(setTextAnnotTextBoxRectMessage !== undefined);
+    chrome.test.assertEq(
+        'setTextAnnotTextBoxRect', setTextAnnotTextBoxRectMessage.type);
+    chrome.test.assertTrue(
+        chrome.test.checkDeepEq(newRect, setTextAnnotTextBoxRectMessage.data));
+    chrome.test.succeed();
+  },
 ]);

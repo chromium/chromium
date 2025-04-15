@@ -16,10 +16,11 @@
   --textbox-location-y: 0;
   --textbox-width: 20px;
   border: 2px solid var(--google-blue-700);
+  display: flex;
+  flex-direction: column;
   height: var(--textbox-height);
   width: var(--textbox-width);
   top: var(--textbox-location-y);
-  display: flex;
   left: var(--textbox-location-x);
   position: absolute;
   z-index: 1;
@@ -60,10 +61,31 @@
   left: 50%;
 }
 
+.handle.left,
+.handle.right {
+  cursor: ew-resize;
+}
+
+.handle.top,
+.handle.bottom {
+  cursor: ns-resize;
+}
+
+.handle.top.right,
+.handle.bottom.left {
+  cursor: nesw-resize;
+}
+
+.handle.top.left,
+.handle.bottom.right {
+  cursor: nwse-resize;
+}
+
 textarea {
   background: none;
   border: none;
   display: block;
+  field-sizing: content;
   outline: none;
   overflow: hidden;
   padding: calc(var(--handle-size) / 2 + 2px);

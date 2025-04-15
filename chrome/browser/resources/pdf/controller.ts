@@ -5,10 +5,12 @@
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
+// clang-format off
 // <if expr="enable_pdf_ink2">
-import type {AnnotationBrush, AnnotationBrushType, AnnotationMode, Color, TextAlignment, TextStyles} from './constants.js';
+import type {AnnotationBrush, AnnotationBrushType, AnnotationMode, Color, TextAlignment, TextBoxRect, TextStyles} from './constants.js';
 // </if>
 import type {NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
+// clang-format on
 import type {PdfPluginElement} from './internal_plugin.js';
 import type {DestinationMessageData} from './pdf_viewer_utils.js';
 import type {Viewport} from './viewport.js';
@@ -71,6 +73,11 @@ interface AnnotationTextMessage {
 interface AnnotationFontsMessage {
   type: 'getTextAnnotFontNames';
   data: string[];
+}
+
+interface AnnotationTextBoxMessage {
+  type: 'setTextAnnotTextBoxRect'|'updateTextAnnotTextBoxRect';
+  data: TextBoxRect;
 }
 // </if>
 
@@ -263,6 +270,15 @@ export class PluginController implements ContentController {
     const message: AnnotationTextMessage = {
       type: 'setTextAnnotationFont',
       data: textData,
+    };
+
+    this.postMessage_(message);
+  }
+
+  setTextAnnotTextBoxRect(update: TextBoxRect) {
+    const message: AnnotationTextBoxMessage = {
+      type: 'setTextAnnotTextBoxRect',
+      data: update,
     };
 
     this.postMessage_(message);

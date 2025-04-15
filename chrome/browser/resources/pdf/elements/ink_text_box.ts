@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {AnnotationText} from '../constants.js';
-import type {TextBoxUpdate} from '../ink2_manager.js';
+import type {AnnotationText, TextBoxRect} from '../constants.js';
 import {Ink2Manager} from '../ink2_manager.js';
 import {colorToHex} from '../pdf_viewer_utils.js';
 
@@ -20,6 +20,12 @@ export interface InkTextBoxElement {
     textbox: HTMLTextAreaElement,
   };
 }
+
+// This is 12px of padding + 24px. For some reason, Blink crashes at < 24px wide
+// textarea. Since the textarea won't resize width-wise automatically, it also
+// doesn't work to set this dynamically like we do with the height; just set a
+// reasonable minimum width regardless of the content of the text box.
+const MIN_WIDTH_PX = 36;
 
 const InkTextBoxElementBase = InkTextObserverMixin(CrLitElement);
 
@@ -40,6 +46,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     return {
       locationX_: {type: Number},
       locationY_: {type: Number},
+      minHeight_: {type: Number},
       height_: {type: Number},
       textValue_: {type: String},
       width_: {type: Number},
@@ -48,18 +55,24 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
   private accessor locationX_: number = 0;
   private accessor locationY_: number = 0;
+  private accessor minHeight_: number = 0;
   private accessor height_: number = 0;
   protected accessor textValue_: string = 'Sample Text';
   private accessor width_: number = 0;
 
   private eventTracker_: EventTracker = new EventTracker();
+  private pointerStart_: {x: number, y: number}|null = null;
+  private sendTextboxUpdateTimeout_: number|null = null;
+  private startPosition_: TextBoxRect|null = null;
 
   override connectedCallback() {
     super.connectedCallback();
     this.eventTracker_.add(
         Ink2Manager.getInstance(), 'update-text-box',
         (e: Event) =>
-            this.onUpdateTextBox_((e as CustomEvent<TextBoxUpdate>).detail));
+            this.onUpdateTextBox_((e as CustomEvent<TextBoxRect>).detail));
+    this.eventTracker_.add(
+        this, 'pointerdown', (e: PointerEvent) => this.onPointerDown_(e));
   }
 
   override disconnectedCallback() {
@@ -75,6 +88,10 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (changedPrivateProperties.has('width_') ||
         changedPrivateProperties.has('height_')) {
       this.hidden = this.width_ === 0 && this.height_ === 0;
+    }
+
+    if (changedPrivateProperties.has('minHeight_')) {
+      this.height_ = Math.max(this.height_, this.minHeight_);
     }
   }
 
@@ -95,17 +112,123 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     if (changedPrivateProperties.has('locationY_')) {
       this.style.setProperty('--textbox-location-y', `${this.locationY_}px`);
     }
+    if (changedPrivateProperties.has('width_') ||
+        changedPrivateProperties.has('height_')) {
+      this.updateMinimumHeight_();
+    }
   }
 
-  protected onTextValueChange_() {
+  protected onTextValueInput_() {
     this.textValue_ = this.$.textbox.value;
+    this.updateMinimumHeight_();
+    if (this.minHeight_ > this.height_) {
+      // Height will adjust to minHeight_ on the next update cycle. Notify the
+      // backend. Debouncing by 10ms.
+      const update = {
+        height: this.minHeight_,
+        locationX: this.locationX_,
+        locationY: this.locationY_,
+        width: this.width_,
+      };
+      if (this.sendTextboxUpdateTimeout_) {
+        clearTimeout(this.sendTextboxUpdateTimeout_);
+      }
+      this.sendTextboxUpdateTimeout_ = setTimeout(() => {
+        this.sendTextboxUpdateTimeout_ = null;
+        Ink2Manager.getInstance().setTextBoxRect(update);
+      }, 10);
+    }
   }
 
-  private onUpdateTextBox_(update: TextBoxUpdate) {
+  private updateMinimumHeight_() {
+    if (this.$.textbox.scrollHeight > this.$.textbox.clientHeight) {
+      this.minHeight_ = this.$.textbox.scrollHeight;
+    } else {
+      this.minHeight_ = Math.min(this.minHeight_, this.$.textbox.clientHeight);
+    }
+  }
+
+  private onUpdateTextBox_(update: TextBoxRect) {
     this.width_ = update.width;
     this.height_ = update.height;
+    this.minHeight_ = 0;
     this.locationX_ = update.locationX;
     this.locationY_ = update.locationY;
+  }
+
+  protected onPointerDown_(e: PointerEvent) {
+    const target = e.composedPath()[0];
+    // Ignore pointer events that aren't on the handles.
+    // TODO(crbug.com/402546155): Handle pointer events on the lines to move
+    // the box around.
+    if (e.button !== 0 || !(target instanceof HTMLElement) ||
+        !target.classList.contains('handle')) {
+      return;
+    }
+
+    this.pointerStart_ = {x: e.x, y: e.y};
+    this.startPosition_ = {
+      locationX: this.locationX_,
+      locationY: this.locationY_,
+      width: this.width_,
+      height: this.height_,
+    };
+
+    this.eventTracker_.add(
+        target, 'pointercancel',
+        (e: PointerEvent) => this.onHandlePointerUp_(e));
+    this.eventTracker_.add(
+        target, 'pointerup', (e: PointerEvent) => this.onHandlePointerUp_(e));
+    this.eventTracker_.add(
+        target, 'pointermove',
+        (e: PointerEvent) => this.onHandlePointerMove_(e));
+    target.setPointerCapture(e.pointerId);
+  }
+
+  private onHandlePointerMove_(e: PointerEvent) {
+    const handle = e.target as HTMLElement;
+    assert(this.pointerStart_);
+    assert(this.startPosition_);
+    if (handle.classList.contains('left')) {
+      const deltaX = Math.min(
+          e.x - this.pointerStart_.x, this.startPosition_.width - MIN_WIDTH_PX);
+      this.locationX_ = this.startPosition_.locationX + deltaX;
+      this.width_ = this.startPosition_.width - deltaX;
+    }
+    if (handle.classList.contains('right')) {
+      const deltaX = Math.max(
+          e.x - this.pointerStart_.x,
+          -1 * this.startPosition_.width + MIN_WIDTH_PX);
+      this.width_ = this.startPosition_.width + deltaX;
+    }
+    if (handle.classList.contains('top')) {
+      const deltaY = Math.min(
+          e.y - this.pointerStart_.y,
+          this.startPosition_.height - this.minHeight_);
+      this.height_ = this.startPosition_.height - deltaY;
+      this.locationY_ = this.startPosition_.locationY + deltaY;
+    }
+    if (handle.classList.contains('bottom')) {
+      const deltaY = Math.max(
+          e.y - this.pointerStart_.y,
+          -1 * this.startPosition_.height + this.minHeight_);
+      this.height_ = this.startPosition_.height + deltaY;
+    }
+  }
+
+  private onHandlePointerUp_(e: PointerEvent) {
+    const handle = e.target as HTMLElement;
+    this.pointerStart_ = null;
+    this.startPosition_ = null;
+    this.eventTracker_.remove(handle, 'pointercancel');
+    this.eventTracker_.remove(handle, 'pointerup');
+    this.eventTracker_.remove(handle, 'pointermove');
+    Ink2Manager.getInstance().setTextBoxRect({
+      height: this.height_,
+      locationX: this.locationX_,
+      locationY: this.locationY_,
+      width: this.width_,
+    });
   }
 
   override onTextChanged(newTextStyles: AnnotationText) {
@@ -125,6 +248,7 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
     }
     this.$.textbox.style.textDecoration = textDecoration || 'none';
     this.$.textbox.style.color = colorToHex(newTextStyles.color);
+    this.updateMinimumHeight_();
   }
 }
 
