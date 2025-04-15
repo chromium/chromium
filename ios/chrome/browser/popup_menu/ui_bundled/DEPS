@@ -46,6 +46,7 @@ include_rules = [
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
   "+ios/chrome/browser/promos_manager/model/promos_manager_factory.h",
   "+ios/chrome/browser/reading_list/model/reading_list_browser_agent.h",
+  "+ios/chrome/browser/reader_mode/model/features.h",
   "+ios/chrome/browser/reading_list/model/reading_list_model_factory.h",
   "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",

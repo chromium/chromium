@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/reader_mode/model/constants.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 
 BASE_FEATURE(kEnableReaderModeDistillerHeuristic,
              "EnableReaderModeDistillerHeuristic",
@@ -32,4 +33,8 @@ const base::TimeDelta ReaderModeDistillerPageLoadDelay() {
       kEnableReaderModeDistillerHeuristic,
       /*name=*/kReaderModeDistillerPageLoadDelayDurationStringName,
       /*default_value=*/kReaderModeDistillerPageLoadDelay);
+}
+
+bool IsReaderModeAvailable() {
+  return experimental_flags::ShouldForceReaderModeDebugHTMLOverride();
 }

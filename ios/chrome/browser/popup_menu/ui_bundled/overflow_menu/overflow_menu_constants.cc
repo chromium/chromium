@@ -115,6 +115,8 @@ ActionType ActionTypeForStringName(std::string action) {
     return overflow_menu::ActionType::AIPrototype;
   } else if (action == "SetTabReminder") {
     return overflow_menu::ActionType::SetTabReminder;
+  } else if (action == "ReaderMode") {
+    return overflow_menu::ActionType::ReaderMode;
   } else {
     NOTREACHED();
   }
@@ -162,6 +164,8 @@ std::string StringNameForActionType(ActionType action) {
       return "AIPrototype";
     case overflow_menu::ActionType::SetTabReminder:
       return "SetTabReminder";
+    case overflow_menu::ActionType::ReaderMode:
+      return "ReaderMode";
   }
 }
 // LINT.ThenChange(/ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.cc:stringToActionType)

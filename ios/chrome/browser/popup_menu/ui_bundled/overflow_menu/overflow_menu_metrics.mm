@@ -77,6 +77,8 @@ IOSOverflowMenuAction HistogramActionFromActionType(
       return IOSOverflowMenuAction::kAIPrototype;
     case overflow_menu::ActionType::SetTabReminder:
       return IOSOverflowMenuAction::kSetTabReminder;
+    case overflow_menu::ActionType::ReaderMode:
+      return IOSOverflowMenuAction::kReaderMode;
   }
 }
 

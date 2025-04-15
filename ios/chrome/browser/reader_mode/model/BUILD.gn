@@ -38,6 +38,7 @@ source_set("features") {
   deps = [
     ":constants",
     "//base",
+    "//ios/chrome/browser/shared/public/features:system_flags",
   ]
 }
 

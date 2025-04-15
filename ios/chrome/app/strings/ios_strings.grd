@@ -6911,6 +6911,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLS_MENU_QR_SCANNER" desc="The iOS menu item for opening the QR Code Scanner screen, allowing the user to scan QR code.">
         Scan QR Code
       </message>
+      <message name="IDS_IOS_TOOLS_MENU_READER_MODE" desc="The iOS menu item for opening the current page in Reader Mode. [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
+        Show Reader Mode
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_READING_LIST" desc="The iOS menu item for opening the reading list [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
         Reading List
       </message>
