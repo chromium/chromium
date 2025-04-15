@@ -26,7 +26,7 @@ APPNAME_CANARY="Google Chrome Canary.app"
 FWKNAME="Google Chrome Framework.framework"
 
 # The version number for fake ksadmin to pretend to be
-KSADMIN_VERSION_LIE="1.0.9.2318"
+KSADMIN_VERSION_LIE="137.0.7106.0"
 
 # Temp directory to be used as the disk image (source)
 TEMPDIR=$(mktemp -d -t $(basename ${0}))
@@ -48,15 +48,20 @@ function cleanup_tempdir() {
   rm -rf "${TEMPDIR}"
 }
 
+function invoke_installer() {
+  GOOGLE_CHROME_UPDATER_DEBUG=y "${INSTALLER}" "${TEMPDIR}" \
+      > "${OUTDIR}/keystone_install.out" \
+      2> "${OUTDIR}/keystone_install.err"
+  RETURN=$?
+}
+
 # Run the installer and make sure it fails.
 # If it succeeds, we fail.
 # Arg0: string to print
 # Arg1: expected error code
 function fail_installer() {
   echo $1
-  "${INSTALLER}" "${TEMPDIR}" > "${OUTDIR}/keystone_install.out" \
-      2> "${OUTDIR}/keystone_install.err"
-  RETURN=$?
+  invoke_installer
   if [ $RETURN -eq 0 ]; then
     echo "  Did not fail (which is a failure)" >& 2
     exit 1
@@ -73,9 +78,7 @@ function fail_installer() {
 # Arg0: string to print
 function pass_installer() {
   echo $1
-  "${INSTALLER}" "${TEMPDIR}" > "${OUTDIR}/keystone_install.out" \
-      2> "${OUTDIR}/keystone_install.err"
-  RETURN=$?
+  invoke_installer
   if [ $RETURN -ne 0 ]; then
     echo "  FAILED; returned $RETURN but should have worked" >& 2
     exit 1
@@ -104,6 +107,15 @@ fi
 if [ "\${1}" = "-pP" ] ; then
   # finding app to update
   echo " xc=<KSPathExistenceChecker:0x45 path=${DEST}>"
+  exit 0
+fi
+if [ "\${1}" = "--print-xattr-tag-brand" ] ; then
+  # xattr brand
+  if [ -z "${XATTR_BRAND}" ] ; then
+    echo "No xattr brand in this test" >& 2
+    exit 1
+  fi
+  echo "${XATTR_BRAND}"
   exit 0
 fi
 # assume it is registration; prepare to save args
@@ -325,6 +337,39 @@ set_library_brand "LIBR"
 pass_installer "conflict between library brand and Info.plist"
 assert_registration
 assert_library_brand_registered "PLST"
+remove_library_brand
+
+XATTR_BRAND="XATR"  # persists for remaining tests
+make_basic_src_and_dest
+set_src_ksupdateurl
+pass_installer "brand code in xattr tag (only)"
+assert_registration
+assert_library_brand_registered "XATR"
+remove_library_brand
+
+make_basic_src_and_dest
+set_src_ksupdateurl
+set_dest_plist_brand "PLST"
+pass_installer "brand code conflict between xattr tag and Info.plist"
+assert_registration
+assert_library_brand_registered "XATR"
+remove_library_brand
+
+make_basic_src_and_dest
+set_src_ksupdateurl
+set_library_brand "LIBR"
+pass_installer "conflict between library brand and xattr tag"
+assert_registration
+assert_library_brand_registered "XATR"
+remove_library_brand
+
+make_basic_src_and_dest
+set_src_ksupdateurl
+set_dest_plist_brand "PLST"
+set_library_brand "LIBR"
+pass_installer "conflict between library brand and xattr tag"
+assert_registration
+assert_library_brand_registered "XATR"
 remove_library_brand
 
 cleanup_tempdir

@@ -534,7 +534,10 @@ if (is_win || is_mac || is_linux) {
       "constants_prod.cc",
     ]
 
-    public_deps = [ ":public_sources" ]
+    public_deps = [
+      ":public_sources",
+      ":tagging",
+    ]
     deps = [ ":constants_header" ]
 
     visibility = [
