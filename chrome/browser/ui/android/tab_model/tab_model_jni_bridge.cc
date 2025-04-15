@@ -190,27 +190,6 @@ bool TabModelJniBridge::IsActiveModel() const {
   return Java_TabModelJniBridge_isActiveModel(env, java_object_.get(env));
 }
 
-// static
-bool TabModelJniBridge::IsTabInTabGroupLegacy(TabAndroid* tab) {
-  // Terminate early if tab is in the process of being destroyed.
-  if (!tab || !tab->web_contents() || !tab->web_contents()->GetDelegate()) {
-    return false;
-  }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabModelJniBridge_isTabInTabGroupLegacy(env,
-                                                      tab->GetJavaObject());
-}
-
-bool TabModelJniBridge::IsTabInTabGroup(TabAndroid* tab) {
-  // Terminate early if tab is in the process of being destroyed.
-  if (!tab || !tab->web_contents() || !tab->web_contents()->GetDelegate()) {
-    return false;
-  }
-  JNIEnv* env = base::android::AttachCurrentThread();
-  return Java_TabModelJniBridge_isTabInTabGroup(env, java_object_.get(env),
-                                                tab->GetJavaObject());
-}
-
 void TabModelJniBridge::AddObserver(TabModelObserver* observer) {
   // If a first observer is being added then instantiate an observer bridge.
   if (!observer_bridge_) {

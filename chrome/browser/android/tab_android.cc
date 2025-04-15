@@ -292,16 +292,6 @@ int TabAndroid::GetParentId() const {
   return Java_TabImpl_getParentId(env, weak_java_tab_.get(env));
 }
 
-std::optional<base::Token> TabAndroid::GetTabGroupId() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_token =
-      Java_TabImpl_getTabGroupId(env, weak_java_tab_.get(env));
-  if (j_token.is_null()) {
-    return std::nullopt;
-  }
-  return base::android::TokenAndroid::FromJavaToken(env, j_token);
-}
-
 void TabAndroid::DeleteFrozenNavigationEntries(
     const WebContentsState::DeletionPredicate& predicate) {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -693,8 +683,14 @@ bool TabAndroid::IsSplit() const {
 }
 
 std::optional<tab_groups::TabGroupId> TabAndroid::GetGroup() const {
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_token =
+      Java_TabImpl_getTabGroupId(env, weak_java_tab_.get(env));
+  if (j_token.is_null()) {
+    return std::nullopt;
+  }
+  return tab_groups::TabGroupId::FromRawToken(
+      base::android::TokenAndroid::FromJavaToken(env, j_token));
 }
 
 std::optional<split_tabs::SplitTabId> TabAndroid::GetSplit() const {

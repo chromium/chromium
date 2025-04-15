@@ -94,7 +94,11 @@ URLVisitAggregate::Tab MakeAggregateTab(
   tab.tab_metadata.tab_origin =
       GetTabOriginFromLaunchType(tab.tab_metadata.tab_android_launch_type);
   tab.tab_metadata.parent_tab_id = tab_android->GetParentId();
-  tab.tab_metadata.local_tab_group_id = tab_android->GetTabGroupId();
+  std::optional<tab_groups::TabGroupId> tab_group_id = tab_android->GetGroup();
+  // Use optional::transform once C++23 is allowed.
+  tab.tab_metadata.local_tab_group_id =
+      tab_group_id.has_value() ? std::make_optional(tab_group_id->token())
+                               : std::nullopt;
   return tab;
 }
 
@@ -158,8 +162,7 @@ void AndroidTabModelURLVisitDataFetcher::FetchURLVisitData(
           std::max(tab_data.last_active, last_show_timestamp);
       // Not applicable to android.
       tab_data.pinned = false;
-      tab_data.in_group =
-          tab_data.in_group || model->IsTabInTabGroup(tab_android);
+      tab_data.in_group = tab_data.in_group || tab_android->GetGroup();
     }
   }
 

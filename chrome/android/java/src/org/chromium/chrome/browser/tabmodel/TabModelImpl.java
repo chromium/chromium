@@ -1037,12 +1037,6 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean isTabInTabGroup(@NonNull Tab tab) {
-        TabGroupModelFilter filter = mModelDelegate.getFilter(isIncognito());
-        return filter == null ? false : filter.isTabInTabGroup(tab);
-    }
-
-    @Override
     public int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
         return getTabsNavigatedInTimeWindow(beginTimeMs, endTimeMs).size();
     }

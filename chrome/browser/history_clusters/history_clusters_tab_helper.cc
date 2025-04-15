@@ -53,9 +53,10 @@ bool IsPageInTabGroup(content::WebContents* contents) {
   return false;
 #else   // BUILDFLAG(IS_ANDROID)
   TabAndroid* const tab = TabAndroid::FromWebContents(contents);
-  if (!tab)
+  if (!tab) {
     return false;
-  return TabModelJniBridge::IsTabInTabGroupLegacy(tab);
+  }
+  return tab->GetGroup().has_value();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

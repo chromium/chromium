@@ -48,7 +48,6 @@ class TestTabModel : public TabModel {
       const base::Time& end_time) const override;
   void CloseTabsNavigatedInTimeWindow(const base::Time& begin_time,
                                       const base::Time& end_time) override;
-  bool IsTabInTabGroup(TabAndroid* tab) override;
 
  private:
   // A fake value for the current number of tabs.
