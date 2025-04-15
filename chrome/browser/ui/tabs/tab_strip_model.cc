@@ -3218,6 +3218,26 @@ void TabStripModel::RemoveSplitImpl(split_tabs::SplitTabId split_id) {
 
   contents_data_->Unsplit(split_id);
 
+  const ui::ListSelectionModel old_selection_model = selection_model();
+
+  // TODO(crbug.com/392950857): Use collection API to remove the split.
+  for (const auto& tab_pair : tabs_with_indices) {
+    GetTabModelAtIndex(tab_pair.second)->set_split(std::nullopt);
+
+    if (selection_model().IsSelected(tab_pair.second) &&
+        tab_pair.second != active_index()) {
+      selection_model_.RemoveIndexFromSelection(tab_pair.second);
+    }
+  }
+
+  // If there was an update to the selection model, notify observers.
+  if (old_selection_model != selection_model()) {
+    TabStripSelectionChange selection(GetActiveTab(), old_selection_model);
+    selection.new_model = selection_model();
+    TabStripModelChange change;
+    OnChange(change, selection);
+  }
+
   for (TabStripModelObserver& observer : observers_) {
     observer.OnSplitTabRemoved(
         tabs_with_indices, split_id,
@@ -3460,6 +3480,9 @@ std::unique_ptr<tabs::TabModel> TabStripModel::RemoveTabFromIndexImpl(
         // in the split.
         selection_model_.set_active(next_selected_index);
         selection_model_.set_anchor(next_selected_index);
+        if (next_selected_index.has_value()) {
+          selection_model_.AddIndexToSelection(next_selected_index.value());
+        }
       } else if (!selection_model_.empty()) {
         // The active tab was removed, but there is still something selected.
         // Move the active and anchor to the first selected index.

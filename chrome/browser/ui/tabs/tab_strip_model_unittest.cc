@@ -5725,6 +5725,36 @@ TEST_F(TabStripModelTest, RemoveSplitInSelectionActivatesRemainingTab) {
   EXPECT_EQ(tabstrip.selection_model().size(), 3u);
 }
 
+TEST_F(TabStripModelTest, RemoveSplitUnselectsNonActiveTab) {
+  TestTabStripModelDelegate delegate;
+
+  TabStripModel tabstrip(&delegate, profile());
+  ASSERT_TRUE(tabstrip.empty());
+
+  // Add 4 tabs to the tabstrip model. Tabs 1 and 2 are in a split view and
+  // active/selected.
+  PrepareTabs(&tabstrip, 4);
+  ASSERT_EQ(4, tabstrip.count());
+  tabstrip.ActivateTabAt(1);
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({2}, tabs::SplitTabLayout::kHorizontal);
+
+  // Verify the selection model before closing the tab.
+  EXPECT_EQ(tabstrip.active_index(), 1);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_EQ(tabstrip.selection_model().size(), 2u);
+
+  // Unsplit the tabs
+  tabstrip.RemoveSplit(split_tab_id);
+
+  // Verify that only the active tab (1) is selected.
+  EXPECT_EQ(tabstrip.active_index(), 1);
+  EXPECT_TRUE(tabstrip.selection_model().IsSelected(1));
+  EXPECT_FALSE(tabstrip.selection_model().IsSelected(2));
+  EXPECT_EQ(tabstrip.selection_model().size(), 1u);
+}
+
 TEST_F(TabStripModelTest, RemoveLeftTabInSplitActivatesRemainingTab) {
   TestTabStripModelDelegate delegate;
 
