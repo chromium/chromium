@@ -26,6 +26,18 @@ source_set("impression_limits") {
   ]
 }
 
+source_set("observer_bridge") {
+  sources = [
+    "impression_limit_service_observer_bridge.h",
+    "impression_limit_service_observer_bridge.mm",
+  ]
+  deps = [
+    ":impression_limits",
+    "//ios/third_party/material_components_ios",
+    "//url:url",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "impression_limit_service_unittest.cc" ]

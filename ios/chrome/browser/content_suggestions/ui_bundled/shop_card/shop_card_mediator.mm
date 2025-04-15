@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_observer_bridge.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_action_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
@@ -60,7 +61,8 @@ int GetImpressionLimit() {
 
 }  // namespace
 
-@interface ShopCardMediator () <MagicStackModuleDelegate,
+@interface ShopCardMediator () <ImpressionLimitServiceObserverBridgeDelegate,
+                                MagicStackModuleDelegate,
                                 PrefObserverDelegate,
                                 ShopCardFaviconConsumerSource>
 @end
@@ -80,6 +82,8 @@ int GetImpressionLimit() {
   bool _faviconCallbackCalledOnce;
   id<ShopCardFaviconConsumer> _faviconConsumer;
   raw_ptr<ImpressionLimitService> _impressionLimitService;
+  std::unique_ptr<ImpressionLimitServiceObserverBridge>
+      _impressionLimitServiceObserverBridge;
 }
 
 - (instancetype)
@@ -106,6 +110,9 @@ int GetImpressionLimit() {
         &_prefChangeRegistrar);
     _faviconLoader = faviconLoader;
     _impressionLimitService = impressionLimitService;
+    _impressionLimitServiceObserverBridge =
+        std::make_unique<ImpressionLimitServiceObserverBridge>(
+            self, _impressionLimitService);
   }
   return self;
 }
@@ -116,6 +123,7 @@ int GetImpressionLimit() {
   _imageFetcher = nil;
   _faviconLoader = nil;
   _impressionLimitService = nil;
+  _impressionLimitServiceObserverBridge.reset();
 }
 
 - (void)reset {
@@ -345,6 +353,13 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
       recordShopCardImpression:static_cast<ShopCardItem*>(magicStackModule)
                                    .shopCardData
                        atIndex:index];
+}
+
+#pragma mark - ImpressionLimitServiceObserverBridgeDelegate
+- (void)onUrlUntracked:(GURL)url {
+  if (url == _shopCardItem.shopCardData.productURL) {
+    [self.delegate removeShopCard];
+  }
 }
 
 #pragma mark - ShopCardMediatorDelegate

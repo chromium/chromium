@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/commerce/core/shopping_service.h"
@@ -34,6 +35,13 @@ class ImpressionLimitService : public bookmarks::BaseBookmarkModelObserver,
                                public history::HistoryServiceObserver,
                                public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // When a product is no longer price tracked, the impression should be
+    // removed.
+    virtual void OnUntracked(const GURL& url) {}
+  };
+
   explicit ImpressionLimitService(PrefService* pref_service,
                                   history::HistoryService* history_service,
                                   bookmarks::BookmarkModel* bookmark_model,
@@ -43,6 +51,10 @@ class ImpressionLimitService : public bookmarks::BaseBookmarkModelObserver,
   ImpressionLimitService& operator=(const ImpressionLimitService&) = delete;
 
   ~ImpressionLimitService() override;
+
+  void AddObserver(ImpressionLimitService::Observer* observer);
+
+  void RemoveObserver(ImpressionLimitService::Observer* observer);
 
   // Logs a magic stack impression for a card generated using the |url| in
   // the preference called |pref_name|.
@@ -101,6 +113,9 @@ class ImpressionLimitService : public bookmarks::BaseBookmarkModelObserver,
   // if we exceed the maximum.
   void RemoveOldestEntryIfSizeExceedsMaximum(const std::string_view& pref_name);
 
+  // ImpressionLimitService::Observer
+  void OnUntracked(const GURL& url);
+
   const std::set<std::string_view> GetAllowListedPrefs();
 
   raw_ptr<PrefService> pref_service_;
@@ -117,6 +132,7 @@ class ImpressionLimitService : public bookmarks::BaseBookmarkModelObserver,
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>
       bookmark_model_observation_{this};
+  base::ObserverList<ImpressionLimitService::Observer> observers_;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTENT_SUGGESTIONS_UI_BUNDLED_IMPRESSION_LIMITS_IMPRESSION_LIMIT_SERVICE_H_
