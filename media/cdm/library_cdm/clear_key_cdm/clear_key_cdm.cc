@@ -891,7 +891,10 @@ void ClearKeyCdm::OnSessionKeysChange(const std::string& session_id,
   // Crash if the special key ID "crash" is present.
   const std::vector<uint8_t> kCrashKeyId{'c', 'r', 'a', 's', 'h'};
   for (const auto& key_info : keys_info) {
-    CHECK(key_info->key_id != kCrashKeyId) << "Crash on special crash key ID.";
+    if (key_info->key_id == kCrashKeyId) {
+      DVLOG(1) << __func__ << "Crash on special crash key ID.";
+      base::ImmediateCrash();
+    }
   }
 
   std::vector<cdm::KeyInformation_2> keys_vector;
