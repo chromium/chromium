@@ -1,30 +1,26 @@
+
 <!DOCTYPE html>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/#break">
-<link rel="author" title="Sam Davis Omekara Jr." href="mailto:samomekarajr@microsoft.com">
+<link rel="author" title="Javier Contreras" href="mailto:javiercon@microsoft.com">
 <style>
     body {
         margin: 0px;
     }
-
     .grid-container {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         gap: 10px;
-
         width: 430px;
         height: 430px;
     }
-
     .grid-container>div {
         z-index: 2
     }
-
     .grid-item {
         background-color: gray;
         opacity: 0.5;
         border: 1px solid #000;
     }
-
     .row-gap1 {
         position: absolute;
         height: 0px;
@@ -33,17 +29,14 @@
         width: 430px;
         border-bottom: solid 5px red;
     }
-
     .row-gap2 {
         position: absolute;
         height: 0px;
-
         top: 212.5px;
         left: 0px;
         width: 430px;
         border-bottom: solid 5px red;
     }
-
     .row-gap3 {
         position: absolute;
         height: 0px;
@@ -53,7 +46,6 @@
         border-bottom: solid 5px red;
         width: 430px;
     }
-
     .col-gap1 {
         position: absolute;
         width: 0;
@@ -62,7 +54,6 @@
         top: 0px;
         left: 102.5px;
     }
-
     .col-gap2 {
         position: absolute;
         width: 0;
@@ -71,7 +62,6 @@
         left: 212.5px;
         border-left: solid 5px blue;
     }
-
     .col-gap3 {
         position: absolute;
         width: 0;
@@ -79,7 +69,6 @@
         top: 0px;
         left: 322.5px;
         border-left: solid 5px blue;
-
     }
 </style>
 <div class="grid-container">
@@ -92,11 +81,9 @@
     <div class="grid-item" style="grid-column: 1 / 4; grid-row: 4 / 5;"></div>
     <div class="grid-item" style="grid-column: 4 / 5; grid-row: 4 / 5;"></div>
 </div>
-
-<div class="col-gap1"></div>
-<div class="col-gap2"></div>
-<div class="col-gap3"></div>
-
 <div class="row-gap1"></div>
 <div class="row-gap2"></div>
 <div class="row-gap3"></div>
+<div class="col-gap1"></div>
+<div class="col-gap2"></div>
+<div class="col-gap3"></div>

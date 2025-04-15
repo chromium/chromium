@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <title>
-    CSS Gap Decorations: flex column and row gaps are painted column flex direction.
+    CSS Gap Decorations: flex column and are painted with column over rows.
 </title>
 <link rel="help" href="https://drafts.csswg.org/css-gaps-1/">
-<link rel="match" href="flex-gap-decorations-015-ref.html">
+<link rel="match" href="flex-gap-decorations-012-ref.html">
 <link rel="author" title="Javier Contreras" href="mailto:javiercon@microsoft.com">
 <style>
     body {
@@ -13,19 +13,17 @@
     #flexbox {
         border: 2px solid rgb(96 139 168);
         display: flex;
-        column-gap: 20px;
+        column-gap: 10px;
         row-gap: 10px;
-        width: 120px;
-        height: 170px;
-        flex-wrap: wrap;
-        flex-direction: column;
-        column-rule-style: solid;
-        column-rule-color: red;
-        column-rule-width: 20px;
         row-rule-style: solid;
         row-rule-color: blue;
-        row-rule-width: 10px;
+        row-rule-width: 2px;
+        column-rule-style: solid;
+        column-rule-color: red;
+        column-rule-width: 2px;
         gap-rule-paint-order: column-over-row;
+        width: 170px;
+        flex-wrap: wrap;
     }
 
     .items {
@@ -35,13 +33,18 @@
         height: 50px;
     }
 
+    #four {
+        width: 100px;
+    }
 </style>
 
 <div id="flexbox">
     <div class="items">One</div>
     <div class="items">Two</div>
     <div class="items">Three</div>
-    <div class="items">Four</div>
+    <div class="items" id="four">Four</div>
     <div class="items">Five</div>
     <div class="items">Six</div>
+    <div class="items">Seven</div>
+    <div class="items">Eight</div>
 </div>

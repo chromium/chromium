@@ -29,26 +29,25 @@
     .row-gap {
         margin: 0px;
         padding: 0px;
-        height: 0px;
+        height: 2px;
+        background: blue;
         width: 170px;
-        left: 2px;
         position: absolute;
-        border-bottom: 10px dotted blue;
     }
 
     .column-gap {
         display: flex;
         flex-direction: column;
         row-gap: 60px;
-        height: 170px;
+        height: 174px;
         top: 2px;
         width: 10px;
         position: absolute;
     }
 
     .column {
-        width: 0px;
-        border-left: 10px dotted red;
+        background: red;
+        width: 2px;
         height: 55px;
     }
 </style>
@@ -64,17 +63,17 @@
     <div class="items">Eight</div>
 </div>
 
-<div id="columns1" style="left: 52px;" class="column-gap">
+<div id="row1" class="row-gap" style="top: 56px; left: 2px;"></div>
+<div id="row2" class="row-gap" style="top: 116px; left: 2px;"></div>
+
+<div id="columns1" style="left: 56px;" class="column-gap">
     <div id="c1" class="column"></div>
     <div id="c2" class="column"></div>
 </div>
 
-<div id="columns2" style="left: 112px;" class="column-gap">
+<div id="columns2" style="left: 116px;" class="column-gap">
     <div id="c1" class="column"></div>
     <div id="c2" class="column"></div>
 </div>
 
-<div id="column3" style="left: 102px; position:absolute; top: 57px; height:60px;" class="column"></div>
-
-<div class="row-gap" style="top: 52px"></div>
-<div class="row-gap" style="top: 112px"></div>
+<div id="columns3" style="left: 106px; position:absolute; top: 57px; height:60px;" class="column"></div>

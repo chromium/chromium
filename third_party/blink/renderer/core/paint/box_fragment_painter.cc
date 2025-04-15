@@ -1331,8 +1331,18 @@ void BoxFragmentPainter::PaintBoxDecorationBackgroundWithDecorationData(
 void BoxFragmentPainter::PaintGapDecorations(const PaintInfo& paint_info,
                                              const PhysicalRect& paint_rect) {
   if (const GapGeometry* gap_geometry = box_fragment_.GapGeometry()) {
-    PaintGaps(kForRows, paint_info, paint_rect, *gap_geometry);
+    EGapRulePaintOrder paint_order = box_fragment_.Style().GapRulePaintOrder();
+    // `gap-rule-paint-order` dictates whether to paint the columns over the
+    // rows, or the rows over the columns. The default is to paint the rows over
+    // the columns.
+    if (paint_order == EGapRulePaintOrder::kColumnOverRow) {
+      PaintGaps(kForRows, paint_info, paint_rect, *gap_geometry);
+      PaintGaps(kForColumns, paint_info, paint_rect, *gap_geometry);
+      return;
+    }
+
     PaintGaps(kForColumns, paint_info, paint_rect, *gap_geometry);
+    PaintGaps(kForRows, paint_info, paint_rect, *gap_geometry);
   }
 }
 
