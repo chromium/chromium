@@ -64,6 +64,16 @@ will need to manually copy the Debuggers\x64 directory from another machine beca
 it does not get installed on ARM64 and is needed, whether you are building Chromium
 for x64 or ARM64 on ARM64.
 
+WARNING: On sufficiently old versions of Windows (1909 or earlier), dawn or
+related components may fail with a D3d-related error when using the 26100 SDK.
+This is because the d3dcompiler_47.dll file in the new SDK attempts to
+dynamically link versions of the Universal C Runtime which are not present by
+default on older systems. If you experience these errors, you can either update
+the UCRT on your system, or install the 22621 SDK and use the d3dcompiler_47.dll
+file included there, which statically links the UCRT.
+
+This problem may also manifest as a DLL failure to load `__CxxFrameHandler4`.
+
 ## git installation
 
 ### Install git
