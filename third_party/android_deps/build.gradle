@@ -163,7 +163,7 @@ dependencies {
     // Used by //third_party/byte_buddy
     androidTestCompile "net.bytebuddy:byte-buddy:1.14.5"
 
-    // Use testCompile to have is_robolectric = true set on targets.
+    // Use testCompile to have requires_robolectric = true set on targets.
     testCompile "org.robolectric:robolectric:4.14.1"
 }
 

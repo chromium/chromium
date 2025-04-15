@@ -436,7 +436,7 @@ robolectric_library("junit") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_fragment_fragment_testing_java",
-    "//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",

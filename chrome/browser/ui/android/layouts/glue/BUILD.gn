@@ -9,6 +9,7 @@ android_library("java") {
     ":*",
     "//chrome/android:chrome_java",
     "//chrome/android/junit:*",
+    "//chrome/browser/ui/android/plus_addresses:junit",
   ]
 
   sources = [

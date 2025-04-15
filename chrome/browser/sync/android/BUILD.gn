@@ -67,7 +67,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/messages/android:java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
-    "//third_party/androidx:androidx_lifecycle_lifecycle_common_jvm_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
     "//third_party/junit:junit",

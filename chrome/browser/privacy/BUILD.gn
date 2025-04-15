@@ -56,6 +56,7 @@ if (is_android) {
     visibility = [
       ":*",
       "//chrome/android:*",
+      "//chrome/android/junit:*",
       "//chrome/browser/feed/android:*",
       "//chrome/browser/ui/android/hats:*",
       "//chrome/browser/ui/android/hats/*:*",

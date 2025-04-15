@@ -144,6 +144,7 @@ source_set("unit_tests") {
 if (is_android) {
   android_library("internal_java") {
     visibility = [
+      ":*",
       "//chrome/android:chrome_all_java",
       "//chrome/android/javatests:chrome_test_java_org.chromium.chrome.browser.collaboration",
       "//components:*",

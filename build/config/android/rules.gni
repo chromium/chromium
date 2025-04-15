@@ -1266,7 +1266,7 @@ if (!is_robolectric && enable_java_templates) {
       # 66%, which makes sharding more effective.
       tiered_stop_at_level_one = true
 
-      is_robolectric = true
+      requires_robolectric = true
       include_android_sdk = true
       alternative_android_sdk_dep =
           "//third_party/robolectric:robolectric_test_sdk_java"
@@ -1864,7 +1864,7 @@ if (!is_robolectric && enable_java_templates) {
 
       testonly = true
 
-      is_robolectric = true
+      requires_robolectric = true
       include_android_sdk = true
       alternative_android_sdk_dep =
           "//third_party/robolectric:robolectric_test_sdk_java"

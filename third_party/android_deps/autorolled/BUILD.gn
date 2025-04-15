@@ -404,7 +404,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_robolectric_robolectric_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_robolectric/robolectric-4.14.1.jar"
       output_name = "org_robolectric_robolectric"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
       testonly = true
       deps = [
@@ -432,7 +432,7 @@ template("define_autorolled_targets") {
     java_prebuilt("com_google_auto_value_auto_value_annotations_java") {
       jar_path = "autorolled/cipd/libs/com_google_auto_value_auto_value_annotations/auto-value-annotations-1.11.0.jar"
       output_name = "com_google_auto_value_auto_value_annotations"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -449,7 +449,7 @@ template("define_autorolled_targets") {
         "com_google_testparameterinjector_test_parameter_injector_java") {
       jar_path = "autorolled/cipd/libs/com_google_testparameterinjector_test_parameter_injector/test-parameter-injector-1.18.jar"
       output_name = "com_google_testparameterinjector_test_parameter_injector"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -512,7 +512,7 @@ template("define_autorolled_targets") {
     java_prebuilt("javax_annotation_javax_annotation_api_java") {
       jar_path = "autorolled/cipd/libs/javax_annotation_javax_annotation_api/javax.annotation-api-1.3.2.jar"
       output_name = "javax_annotation_javax_annotation_api"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -528,7 +528,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_bouncycastle_bcprov_jdk18on_java") {
       jar_path = "autorolled/cipd/libs/org_bouncycastle_bcprov_jdk18on/bcprov-jdk18on-1.78.1.jar"
       output_name = "org_bouncycastle_bcprov_jdk18on"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -544,7 +544,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_conscrypt_conscrypt_openjdk_uber_java") {
       jar_path = "autorolled/cipd/libs/org_conscrypt_conscrypt_openjdk_uber/conscrypt-openjdk-uber-2.5.2.jar"
       output_name = "org_conscrypt_conscrypt_openjdk_uber"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -615,7 +615,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_robolectric_annotations_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_annotations/annotations-4.14.1.jar"
       output_name = "org_robolectric_annotations"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -631,7 +631,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_robolectric_junit_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_junit/junit-4.14.1.jar"
       output_name = "org_robolectric_junit"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -654,7 +654,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_robolectric_nativeruntime_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_nativeruntime/nativeruntime-4.14.1.jar"
       output_name = "org_robolectric_nativeruntime"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -677,7 +677,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_robolectric_nativeruntime_dist_compat_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_nativeruntime_dist_compat/nativeruntime-dist-compat-1.0.16.jar"
       output_name = "org_robolectric_nativeruntime_dist_compat"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -694,7 +694,7 @@ template("define_autorolled_targets") {
       jar_path =
           "autorolled/cipd/libs/org_robolectric_pluginapi/pluginapi-4.14.1.jar"
       output_name = "org_robolectric_pluginapi"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -714,7 +714,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_robolectric_plugins_maven_dependency_resolver_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver-4.14.1.jar"
       output_name = "org_robolectric_plugins_maven_dependency_resolver"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -737,7 +737,7 @@ template("define_autorolled_targets") {
       jar_path =
           "autorolled/cipd/libs/org_robolectric_resources/resources-4.14.1.jar"
       output_name = "org_robolectric_resources"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -761,7 +761,7 @@ template("define_autorolled_targets") {
       jar_path =
           "autorolled/cipd/libs/org_robolectric_sandbox/sandbox-4.14.1.jar"
       output_name = "org_robolectric_sandbox"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -789,7 +789,7 @@ template("define_autorolled_targets") {
       jar_path =
           "autorolled/cipd/libs/org_robolectric_shadowapi/shadowapi-4.14.1.jar"
       output_name = "org_robolectric_shadowapi"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -809,7 +809,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_robolectric_shadows_framework_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_shadows_framework/shadows-framework-4.14.1.jar"
       output_name = "org_robolectric_shadows_framework"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -839,7 +839,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_robolectric_utils_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_utils/utils-4.14.1.jar"
       output_name = "org_robolectric_utils"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -861,7 +861,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_robolectric_utils_reflector_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_utils_reflector/utils-reflector-4.14.1.jar"
       output_name = "org_robolectric_utils_reflector"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to
@@ -883,7 +883,7 @@ template("define_autorolled_targets") {
     java_prebuilt("org_yaml_snakeyaml_java") {
       jar_path = "autorolled/cipd/libs/org_yaml_snakeyaml/snakeyaml-2.3.jar"
       output_name = "org_yaml_snakeyaml"
-      is_robolectric = true
+      requires_robolectric = true
       enable_bytecode_checks = false
 
       # To remove visibility constraint, add this dependency to

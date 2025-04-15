@@ -317,7 +317,7 @@ template("write_build_config") {
         invoker.bypass_platform_checks) {
       args += [ "--bypass-platform-checks" ]
     }
-    if (defined(invoker.is_robolectric) && invoker.is_robolectric) {
+    if (defined(invoker.requires_robolectric) && invoker.requires_robolectric) {
       args += [ "--is-robolectric" ]
     }
 
@@ -3478,8 +3478,8 @@ if (enable_java_templates) {
   #    library via its built .jar rather than including its .java sources.
   #  proguard_enabled: Optional. True to enable ProGuard obfuscation.
   #  proguard_configs: Optional list of additional proguard config file paths.
-  #  is_robolectric: Optional. If True, this is a host side android test binary
-  #    which is allowed to depend on other android targets.
+  #  requires_robolectric: Optional. If True, this is a host side android test
+  #    binary which is allowed to depend on other android targets.
   #  include_java_resources: Optional. If True, include Java (not Android)
   #    resources into final .jar file.
   #  jar_excluded_patterns: Optional list of .class file patterns to exclude
@@ -3554,7 +3554,8 @@ if (enable_java_templates) {
 
     _bypass_platform_checks = defined(invoker.bypass_platform_checks) &&
                               invoker.bypass_platform_checks
-    _is_robolectric = defined(invoker.is_robolectric) && invoker.is_robolectric
+    _requires_robolectric =
+        defined(invoker.requires_robolectric) && invoker.requires_robolectric
 
     if (defined(invoker.sources)) {
       _source_files = invoker.sources
@@ -3892,7 +3893,7 @@ if (enable_java_templates) {
 
       supports_android = _supports_android
       requires_android = _requires_android
-      is_robolectric = _is_robolectric
+      requires_robolectric = _requires_robolectric
       bypass_platform_checks = _bypass_platform_checks
 
       if (defined(invoker.resources_package)) {
@@ -3967,7 +3968,8 @@ if (enable_java_templates) {
       if (defined(invoker.resources_package) && _type == "java_library") {
         # TODO(crbug.com/40821816): remove _bypass_platform_checks from the list
         # once all robolectric targets have migrated to robolectric_library.
-        assert(_requires_android || _bypass_platform_checks || _is_robolectric,
+        assert(_requires_android || _bypass_platform_checks ||
+                   _requires_robolectric,
                "Setting resources_package applicable only for " +
                    "android_library(), or robolectric_library(). " +
                    "Target=$target_name")
@@ -4016,7 +4018,7 @@ if (enable_java_templates) {
           source_files = _source_files
           target_sources_file = _target_sources_file
           chromium_code = _chromium_code
-          include_android_sdk = _is_robolectric || _requires_android
+          include_android_sdk = _requires_robolectric || _requires_android
         }
       }
 
@@ -4055,7 +4057,7 @@ if (enable_java_templates) {
           if (!use_turbine) {
             chromium_code = _chromium_code
           }
-          include_android_sdk = _is_robolectric || _requires_android
+          include_android_sdk = _requires_robolectric || _requires_android
         }
       }
       _compile_java_forward_variables = [
@@ -4204,7 +4206,7 @@ if (enable_java_templates) {
             data_deps += [ ":$_compile_java_errorprone_target" ]
           }
 
-          include_android_sdk = _requires_android || _is_robolectric
+          include_android_sdk = _requires_android || _requires_robolectric
           target_label =
               get_label_info(":${invoker.target_name}", "label_no_toolchain")
           input_jar = _unprocessed_jar_path
@@ -4339,7 +4341,7 @@ if (enable_java_templates) {
           script_name = invoker.wrapper_script_name
         }
         deps = [ ":$_build_config_target_name" ]
-        if (_is_robolectric) {
+        if (_requires_robolectric) {
           # For robolectric tests, we add the sdk stub jars so that classes
           # that reference Android types can be loaded without throwing
           # NoClassDefFoundErrors. The Robolectric sandbox makes these types
@@ -4373,10 +4375,10 @@ if (enable_java_templates) {
 
     # robolectric_library can depend on java_library, so java_library must
     # define __assetres.
-    if ((_is_library || _supports_android || _is_robolectric) &&
+    if ((_is_library || _supports_android || _requires_robolectric) &&
         !defined(_fake_rjava_target)) {
       group("${target_name}__assetres") {
-        if (_supports_android || _is_robolectric) {
+        if (_supports_android || _requires_robolectric) {
           deps = _java_assetres_deps
         }
       }

@@ -616,7 +616,7 @@ No modifications.
                   output_name = "${dependency.id}"
                 """.stripIndent(/* forceGroovyBehavior */ true))
             if (dependency.isRobolectric) {
-                sb.append('  is_robolectric = true\n')
+                sb.append('  requires_robolectric = true\n')
             } else {
               if (dependency.supportsAndroid) {
                 sb.append('  supports_android = true\n')
