@@ -8090,6 +8090,13 @@ static_library("browser") {
     ]
   }
 
+  if (enable_extensions_core) {
+    sources += [
+      "supervised_user/supervised_user_extensions_metrics_recorder.cc",
+      "supervised_user/supervised_user_extensions_metrics_recorder.h",
+    ]
+  }
+
   if (enable_extensions) {
     sources += [
       "supervised_user/extension_icon_loader.cc",
@@ -8098,8 +8105,6 @@ static_library("browser") {
       "supervised_user/supervised_user_extensions_delegate_impl.h",
       "supervised_user/supervised_user_extensions_manager.cc",
       "supervised_user/supervised_user_extensions_manager.h",
-      "supervised_user/supervised_user_extensions_metrics_recorder.cc",
-      "supervised_user/supervised_user_extensions_metrics_recorder.h",
     ]
     if (is_chromeos) {
       sources += [

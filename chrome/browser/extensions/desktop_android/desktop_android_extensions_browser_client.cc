@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/api/management/chrome_management_api_delegate.h"
 #include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_host_delegate.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
@@ -71,6 +72,11 @@ class DesktopAndroidExtensionsAPIClient : public ExtensionsAPIClient {
       messaging_delegate_ = std::make_unique<MessagingDelegate>();
     }
     return messaging_delegate_.get();
+  }
+
+  ManagementAPIDelegate* CreateManagementAPIDelegate() const override {
+    // `ManagementAPI` owns the object.
+    return new ChromeManagementAPIDelegate;
   }
 
  private:

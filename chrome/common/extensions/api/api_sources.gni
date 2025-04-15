@@ -17,6 +17,7 @@ schema_sources_ = [
   "developer_private.idl",
   "identity.idl",
   "notifications.idl",
+  "webstore_private.json",
 ]
 
 # Schemas that should be used only to auto-generate the C++ types.
@@ -88,7 +89,6 @@ if (enable_extensions) {
     "webrtc_desktop_capture_private.idl",
     "webrtc_logging_private.idl",
 
-    "webstore_private.json",
     "windows.json",
   ]
 

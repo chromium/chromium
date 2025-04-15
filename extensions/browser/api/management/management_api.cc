@@ -93,8 +93,7 @@ std::vector<std::string> CreateWarningsList(const Extension* extension) {
 }
 
 std::vector<management::LaunchType> GetAvailableLaunchTypes(
-    const Extension& extension,
-    const ManagementAPIDelegate* delegate) {
+    const Extension& extension) {
   std::vector<management::LaunchType> launch_type_list;
   if (extension.is_platform_app()) {
     launch_type_list.push_back(management::LaunchType::kOpenAsWindow);
@@ -114,6 +113,7 @@ management::ExtensionInfo CreateExtensionInfo(
   ExtensionRegistry* registry = ExtensionRegistry::Get(context);
   const ManagementAPIDelegate* delegate =
       ManagementAPI::GetFactoryInstance()->Get(context)->GetDelegate();
+  CHECK(delegate);
   management::ExtensionInfo info;
 
   info.id = extension.id();
@@ -259,7 +259,7 @@ management::ExtensionInfo CreateExtensionInfo(
         NOTREACHED();
     }
 
-    info.available_launch_types = GetAvailableLaunchTypes(extension, delegate);
+    info.available_launch_types = GetAvailableLaunchTypes(extension);
   }
 
   return info;
@@ -981,7 +981,7 @@ ExtensionFunction::ResponseAction ManagementSetLaunchTypeFunction::Run() {
   }
 
   std::vector<management::LaunchType> available_launch_types =
-      GetAvailableLaunchTypes(*extension, delegate);
+      GetAvailableLaunchTypes(*extension);
 
   management::LaunchType app_launch_type = params->launch_type;
   if (!base::Contains(available_launch_types, app_launch_type)) {
