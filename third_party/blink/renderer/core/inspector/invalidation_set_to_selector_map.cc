@@ -51,24 +51,30 @@ void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
   Persistent<InvalidationSetToSelectorMap>& instance = GetInstanceReference();
   const bool is_tracing_enabled = InvalidationTracingFlag::IsEnabled();
   if (is_tracing_enabled) [[unlikely]] {
+    auto revisit_style_sheets =
+        [](InvalidationSetToSelectorMap* instance,
+           const ActiveStyleSheetVector& active_style_sheets,
+           StyleEngine& style_engine) {
+          for (const ActiveStyleSheet& sheet : active_style_sheets) {
+            StyleSheetContents* contents = sheet.first->Contents();
+            if (!instance->revisited_style_sheets_.Contains(contents)) {
+              instance->revisited_style_sheets_.insert(contents);
+              style_engine.RevisitStyleSheetForInspector(contents);
+              // TODO(crbug.com/337076014): Revisit UA sheets.
+            }
+          }
+        };
     if (instance == nullptr) {
       instance = MakeGarbageCollected<InvalidationSetToSelectorMap>();
+      revisit_style_sheets(instance, style_engine.ActiveUserStyleSheets(),
+                           style_engine);
     }
-    // Revisit active style sheets to capture relationships for previously
-    // existing rules.
-    // TODO(crbug.com/337076014): Also revisit other stylesheets such as user
-    // sheets and UA sheets.
     const ScopedStyleResolver* scoped_style_resolver =
         tree_scope.GetScopedStyleResolver();
     if (scoped_style_resolver != nullptr) {
-      for (const ActiveStyleSheet& sheet :
-           scoped_style_resolver->GetActiveStyleSheets()) {
-        StyleSheetContents* contents = sheet.first->Contents();
-        if (!instance->revisited_style_sheets_.Contains(contents)) {
-          instance->revisited_style_sheets_.insert(contents);
-          style_engine.RevisitStyleSheetForInspector(contents);
-        }
-      }
+      revisit_style_sheets(instance,
+                           scoped_style_resolver->GetActiveStyleSheets(),
+                           style_engine);
     }
   } else if (!is_tracing_enabled && instance != nullptr) [[unlikely]] {
     instance.Clear();

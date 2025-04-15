@@ -5,8 +5,11 @@
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
 
 #include "base/test/trace_event_analyzer.h"
+#include "third_party/blink/public/web/web_css_origin.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -1076,6 +1079,52 @@ TEST_F(InvalidationSetToSelectorMapTest, HostSelector) {
       EXPECT_EQ(StyleSheetIdAtIndex(selector_list, 0),
                 IdentifiersFactory::IdForCSSStyleSheet(sheet).Utf8());
       found_event_count++;
+    }
+  }
+  EXPECT_EQ(found_event_count, 1u);
+}
+
+TEST_F(InvalidationSetToSelectorMapTest, UserStylesheet) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=parent class=a>Parent
+      <div class=x>Child</div>
+    </div>
+  )HTML");
+
+  StyleSheetContents* user_sheet = MakeGarbageCollected<StyleSheetContents>(
+      MakeGarbageCollected<CSSParserContext>(GetDocument()));
+  user_sheet->ParseString(
+      ".a .x { color: red; }"
+      ".b .x { color: green; }"
+      ".c .x { color: blue; }");
+  StyleSheetKey user_key("user");
+  GetDocument().GetStyleEngine().InjectSheet(user_key, user_sheet,
+                                             WebCssOrigin::kUser);
+  UpdateAllLifecyclePhasesForTest();
+
+  StartTracing();
+
+  GetElementById("parent")->setAttribute(html_names::kClassAttr,
+                                         AtomicString("b"));
+  UpdateAllLifecyclePhasesForTest();
+
+  auto analyzer = StopTracing();
+  trace_analyzer::TraceEventVector events;
+  analyzer->FindEvents(trace_analyzer::Query::EventNameIs(
+                           "StyleInvalidatorInvalidationTracking"),
+                       &events);
+  size_t found_event_count = 0;
+  for (auto event : events) {
+    ASSERT_TRUE(event->HasDictArg("data"));
+    base::Value::Dict data_dict = event->GetKnownArgAsDict("data");
+    std::string* reason = data_dict.FindString("reason");
+    if (reason != nullptr && *reason == "Invalidation set matched class") {
+      base::Value::List* selector_list = data_dict.FindList("selectors");
+      if (selector_list != nullptr) {
+        EXPECT_EQ(selector_list->size(), 1u);
+        EXPECT_EQ(SelectorAtIndex(selector_list, 0), ".b .x");
+        found_event_count++;
+      }
     }
   }
   EXPECT_EQ(found_event_count, 1u);
