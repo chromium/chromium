@@ -118,7 +118,7 @@ class MODULES_EXPORT DoubleConstraint : public BaseConstraint {
  public:
   // Permit a certain leeway when comparing floats. The offset of 0.00001
   // is chosen based on observed behavior of doubles formatted with
-  // rtc::ToString.
+  // webrtc::ToString.
   static const double kConstraintEpsilon;
 
   explicit DoubleConstraint(const char* name);
