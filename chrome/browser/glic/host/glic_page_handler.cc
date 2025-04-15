@@ -672,12 +672,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           "without the GlicZeroStateSuggestions feature enabled.");
       return;
     }
-    // TODO (crbug.com/405185362) Wire this to the correct service for the
-    // current tab.
-
-    auto suggestions = glic::mojom::ZeroStateSuggestions::New();
-
-    std::move(callback).Run(std::move(suggestions));
+    glic_service_->FetchZeroStateSuggestions(is_fre.value_or(false),
+                                             std::move(callback));
   }
 
   void OnOsPermissionSettingChanged(ContentSettingsType content_type,

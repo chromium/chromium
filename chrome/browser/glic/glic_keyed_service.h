@@ -83,7 +83,10 @@ class GlicKeyedService : public KeyedService {
   void PrepareForOpen();
 
   // Fetch zero state suggestions for the active web contents.
-  void FetchZeroStateSuggestions();
+  void FetchZeroStateSuggestions(
+      bool is_first_run,
+      glic::mojom::WebClientHandler::
+          GetZeroStateSuggestionsForFocusedTabCallback callback);
 
   GlicEnabling& enabling() { return *enabling_.get(); }
 
@@ -234,6 +237,13 @@ class GlicKeyedService : public KeyedService {
 
  private:
   GlicPageHandler* GetPageHandler(const content::WebContents* webui_contents);
+  // A helper function to route GetZeroStateSuggestionsForFocusedTabCallback
+  // callbacks.
+  void OnZeroStateSuggestionsFetched(
+      glic::mojom::ZeroStateSuggestionsPtr suggestions,
+      glic::mojom::WebClientHandler::
+          GetZeroStateSuggestionsForFocusedTabCallback callback,
+      std::optional<std::vector<std::string>> returned_suggestions);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

@@ -20,6 +20,8 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
+#include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/glic/glic_keyed_service.h"
 #include "chrome/browser/glic/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -66,6 +68,8 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithOneTabAndContextualCueing",
   };
 }
+
+using testing::_;
 
 // Observes the state of the WebUI hosted in the glic window.
 class WebUIStateListener : public GlicWindowController::WebUiStateObserver {
@@ -274,6 +278,24 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   }
 };
 
+class MockContextualCueingService
+    : public contextual_cueing::ContextualCueingService {
+ public:
+  MockContextualCueingService()
+      : contextual_cueing::ContextualCueingService(nullptr,
+                                                   nullptr,
+                                                   nullptr,
+                                                   nullptr) {}
+
+  MOCK_METHOD(
+      void,
+      GetContextualGlicZeroStateSuggestions,
+      (content::WebContents * web_contents,
+       bool is_first_run,
+       base::OnceCallback<void(std::optional<std::vector<std::string>>)>),
+      (override));
+};
+
 class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
  public:
   GlicApiTestWithOneTabAndContextualCueing() {
@@ -292,8 +314,34 @@ class GlicApiTestWithOneTabAndContextualCueing : public GlicApiTestWithOneTab {
             features::kGlicWarming,
         });
   }
+  // Create the mock service.
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* browser_context) override {
+    mock_cueing_service_ =
+        static_cast<testing::NiceMock<MockContextualCueingService>*>(
+            contextual_cueing::ContextualCueingServiceFactory::GetInstance()
+                ->SetTestingFactoryAndUse(
+                    browser_context,
+                    base::BindRepeating([](content::BrowserContext* context)
+                                            -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<
+                          testing::NiceMock<MockContextualCueingService>>();
+                    })));
+
+    GlicApiTestWithOneTab::SetUpBrowserContextKeyedServices(browser_context);
+  }
+
+  void TearDownOnMainThread() override {
+    mock_cueing_service_ = nullptr;
+    GlicApiTestWithOneTab::TearDownOnMainThread();
+  }
+
+  MockContextualCueingService* mock_cueing_service() {
+    return mock_cueing_service_.get();
+  }
 
  private:
+  raw_ptr<testing::NiceMock<MockContextualCueingService>> mock_cueing_service_;
   base::test::ScopedFeatureList contextual_cueing_features_;
 };
 
@@ -611,6 +659,10 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testGetFocusedTabState) {
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
                        testGetZeroStateSuggestions) {
+  EXPECT_CALL(*mock_cueing_service(),
+              GetContextualGlicZeroStateSuggestions(_, _, _))
+      .Times(1);
+
   ExecuteJsTest();
 }
 

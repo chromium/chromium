@@ -298,8 +298,8 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testGetZeroStateSuggestions() {
     assertTrue(!!this.host.getZeroStateSuggestionsForFocusedTab);
-    this.host.getZeroStateSuggestionsForFocusedTab().then(
-        (suggestions) => assertTrue(suggestions.suggestions.length === 0));
+    const suggestions = await this.host.getZeroStateSuggestionsForFocusedTab();
+    assertEquals(0, suggestions.suggestions.length);
   }
 
   async testGetFocusedTabState() {

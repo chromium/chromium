@@ -118,6 +118,14 @@ FocusedTabData::GetFocus() const {
       *this);
 }
 
+int GetTabId(content::WebContents* web_contents) {
+  return sessions::SessionTabHelper::IdForTab(web_contents).id();
+}
+
+const GURL& GetTabUrl(content::WebContents* web_contents) {
+  return web_contents->GetLastCommittedURL();
+}
+
 // CreateTabData Implementation:
 glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
   if (!web_contents) {
@@ -133,11 +141,10 @@ glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents) {
     }
   }
   return glic::mojom::TabData::New(
-      sessions::SessionTabHelper::IdForTab(web_contents).id(),
+      GetTabId(web_contents),
       sessions::SessionTabHelper::IdForWindowContainingTab(web_contents).id(),
-      web_contents->GetLastCommittedURL(),
-      base::UTF16ToUTF8(web_contents->GetTitle()), favicon,
-      web_contents->GetContentsMimeType());
+      GetTabUrl(web_contents), base::UTF16ToUTF8(web_contents->GetTitle()),
+      favicon, web_contents->GetContentsMimeType());
 }
 
 // CreateFocusedTabData Implementation:

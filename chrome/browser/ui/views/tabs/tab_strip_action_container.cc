@@ -455,10 +455,11 @@ void TabStripActionContainer::OnGlicButtonMouseDown() {
     // Do not do this optimization if user has not consented to GLIC.
     return;
   }
-
+  // This prefetches the results and allows the underlying implementation to
+  // cache the results for future calls. Which is why the callback does nothing.
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  glic_service->FetchZeroStateSuggestions();
+  glic_service->FetchZeroStateSuggestions(false, base::DoNothing());
 }
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

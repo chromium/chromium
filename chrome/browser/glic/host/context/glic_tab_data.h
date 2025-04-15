@@ -112,6 +112,12 @@ class FocusedTabData : public std::variant<base::WeakPtr<content::WebContents>,
   base::expected<content::WebContents*, std::string_view> GetFocus() const;
 };
 
+// Helper function to extract the Tab Id from the current web contents.
+int GetTabId(content::WebContents* web_contents);
+
+// Helper function to extract the Tab url from the current web contents.
+const GURL& GetTabUrl(content::WebContents* web_contents);
+
 // Populates and returns a TabDataPtr from a given WebContents, or null if
 // web_contents is null.
 glic::mojom::TabDataPtr CreateTabData(content::WebContents* web_contents);

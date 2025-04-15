@@ -46,6 +46,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/views/widget/widget.h"
@@ -188,16 +189,43 @@ void GlicKeyedService::PrepareForOpen() {
   }
 }
 
-void GlicKeyedService::FetchZeroStateSuggestions() {
+void GlicKeyedService::OnZeroStateSuggestionsFetched(
+    mojom::ZeroStateSuggestionsPtr suggestions,
+    mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
+        callback,
+    std::optional<std::vector<std::string>> returned_suggestions) {
+  std::vector<mojom::SuggestionContentPtr> output_suggestions;
+  if (returned_suggestions) {
+    for (const std::string& suggestion_string : returned_suggestions.value()) {
+      output_suggestions.push_back(
+          mojom::SuggestionContent::New(suggestion_string));
+    }
+    suggestions->suggestions = std::move(output_suggestions);
+  }
+
+  std::move(callback).Run(std::move(suggestions));
+}
+
+void GlicKeyedService::FetchZeroStateSuggestions(
+    bool is_first_run,
+    mojom::WebClientHandler::GetZeroStateSuggestionsForFocusedTabCallback
+        callback) {
   auto* active_web_contents = GetFocusedTabData().focus();
+
   if (contextual_cueing_service_ && active_web_contents) {
-    // TODO(crbug.com/405185362): Update callback to pipe to window controller.
-    // TODO(crbug.com/405185362); Reflect true FRE state as this would always
-    // be false otherwise with current design as this won't fetch until user
-    // has accepted the FRE.
+    auto suggestions = mojom::ZeroStateSuggestions::New();
+    suggestions->tab_id = GetTabId(active_web_contents);
+    suggestions->tab_url = active_web_contents->GetLastCommittedURL();
     contextual_cueing_service_->GetContextualGlicZeroStateSuggestions(
-        active_web_contents,
-        /*is_fre=*/false, base::DoNothing());
+        active_web_contents, is_first_run,
+        mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            base::BindOnce(&GlicKeyedService::OnZeroStateSuggestionsFetched,
+                           GetWeakPtr(), std::move(suggestions),
+                           std::move(callback)),
+            std::nullopt));
+
+  } else {
+    std::move(callback).Run(nullptr);
   }
 }
 

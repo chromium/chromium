@@ -82,10 +82,11 @@ class ContextualCueingService
   void PrepareToFetchContextualGlicZeroStateSuggestions(
       content::WebContents* web_contents);
 
-  // Returns zero state suggestions for GLIC.
-  void GetContextualGlicZeroStateSuggestions(content::WebContents* web_contents,
-                                             bool is_fre,
-                                             GlicSuggestionsCallback callback);
+  // Returns zero state suggestions for GLIC. Virtual for testing.
+  virtual void GetContextualGlicZeroStateSuggestions(
+      content::WebContents* web_contents,
+      bool is_fre,
+      GlicSuggestionsCallback callback);
 
  private:
   // page_content_annotations::PageContentExtractionService::Observer:
