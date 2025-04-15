@@ -302,3 +302,79 @@ async def test_browsingContext_beforeUnloadPromptOpened_capabilityRespected(
         }
     else:
         assert False, f"Unexpected handler: {expected_handler}"
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_userPromptOpened_withIframe(
+        websocket, context_id, iframe_id, read_messages):
+    await subscribe(websocket, ["browsingContext.userPromptOpened"])
+
+    message = 'Prompt Opened'
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""alert('{message}')""",
+                "awaitPromise": True,
+                "target": {
+                    "context": context_id,
+                }
+            }
+        })
+
+    resp = await read_messages(2, check_no_other_messages=True)
+    assert resp == [{
+        'id': command_id,
+        'result': ANY_DICT,
+        'type': 'success',
+    }, {
+        'method': 'browsingContext.userPromptOpened',
+        'params': {
+            'context': context_id,
+            'handler': 'dismiss',
+            'message': message,
+            'type': 'alert',
+        },
+        'type': 'event',
+    }]
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_userPromptOpened_inIframe(
+        websocket, context_id, iframe_id, read_messages):
+    pytest.xfail(
+        reason=  # noqa: E251. The line is too long.
+        "TODO: https://github.com/GoogleChromeLabs/chromium-bidi/issues/3324")
+
+    await subscribe(websocket, ["browsingContext.userPromptOpened"])
+
+    message = 'Prompt Opened'
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"""alert('{message}')""",
+                "awaitPromise": True,
+                "target": {
+                    "context": iframe_id,
+                }
+            }
+        })
+
+    resp = await read_messages(2, check_no_other_messages=True)
+    assert resp == [{
+        'id': command_id,
+        'result': ANY_DICT,
+        'type': 'success',
+    }, {
+        'method': 'browsingContext.userPromptOpened',
+        'params': {
+            'context': iframe_id,
+            'handler': 'dismiss',
+            'message': message,
+            'type': 'alert',
+        },
+        'type': 'event',
+    }]
