@@ -52,6 +52,10 @@ class OptimizationFilter {
   // This method will return true if any of those suffixes are present.
   bool ContainsHostSuffix(const GURL& url) const;
 
+  // Returns whether the bloom filter contains a given string. If the bloom
+  // filter uses hashing, this method performs the hashing.
+  bool BloomFilterContains(std::string_view str) const;
+
   std::unique_ptr<BloomFilter> bloom_filter_;
 
   std::unique_ptr<RegexpList> regexps_;

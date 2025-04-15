@@ -38,7 +38,7 @@ class BloomFilter {
   ~BloomFilter();
 
   // Returns whether this Bloom filter contains |str|.
-  bool Contains(const std::string& str) const;
+  bool Contains(std::string_view str) const;
 
   // Adds |str| to this Bloom filter.
   void Add(const std::string& str);
