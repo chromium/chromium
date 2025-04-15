@@ -10,13 +10,22 @@ found in the LICENSE file.
     android:id="@+id/web_app_header_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@macro/default_bg_color"
     android:minHeight="@dimen/web_app_header_min_height">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/back_button"
+        style="@style/HeaderButton"
+        android:src="@drawable/btn_back"
+        android:contentDescription="@string/accessibility_toolbar_btn_back"
+        android:tooltipText="@string/accessibility_toolbar_btn_back"
+        android:visibility="gone"
+        app:tint="@color/default_icon_color_tint_list" />
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/refresh_button"
         style="@style/HeaderButton"
         android:src="@drawable/btn_reload_stop"
+        android:layout_marginStart="@dimen/header_button_width"
         android:contentDescription="@string/accessibility_btn_refresh"
         android:tooltipText="@string/accessibility_btn_refresh"
         android:visibility="gone"

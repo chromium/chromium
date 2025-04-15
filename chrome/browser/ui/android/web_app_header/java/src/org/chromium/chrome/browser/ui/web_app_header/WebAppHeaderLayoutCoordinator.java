@@ -18,7 +18,9 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.back_button.BackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.reload_button.ReloadButtonCoordinator;
+import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -36,11 +38,13 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
     private @Nullable WebAppHeaderLayoutMediator mMediator;
     private @Nullable ViewGroup mView;
     private @Nullable ReloadButtonCoordinator mReloadButtonCoordinator;
+    private @Nullable BackButtonCoordinator mBackButtonCoordinator;
     private final ViewStub mViewStub;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
     private final ObservableSupplier<Tab> mTabSupplier;
     private final ThemeColorProvider mThemeColorProvider;
     private final @DisplayMode.EnumType int mDisplayMode;
+    private final NavigationPopup.HistoryDelegate mHistoryDelegate;
 
     /**
      * Creates an instance of {@link WebAppHeaderLayoutCoordinator}.
@@ -53,10 +57,12 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
             DesktopWindowStateManager desktopWindowStateManager,
             ObservableSupplier<Tab> tabSupplier,
             ThemeColorProvider themeColorProvider,
-            BrowserServicesIntentDataProvider browserServicesIntentDataProvider) {
+            BrowserServicesIntentDataProvider browserServicesIntentDataProvider,
+            NavigationPopup.HistoryDelegate historyDelegate) {
         final var webAppExtras = browserServicesIntentDataProvider.getWebappExtras();
         assert webAppExtras != null;
         mDisplayMode = webAppExtras.displayMode;
+        mHistoryDelegate = historyDelegate;
 
         mViewStub = viewStub;
         mViewStub.setLayoutResource(R.layout.web_app_header_layout);
@@ -87,7 +93,8 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
         final int headerMinHeight =
                 mView.getResources().getDimensionPixelSize(R.dimen.web_app_header_min_height);
         mMediator =
-                new WebAppHeaderLayoutMediator(model, mDesktopWindowStateManager, headerMinHeight);
+                new WebAppHeaderLayoutMediator(
+                        model, mDesktopWindowStateManager, mTabSupplier, headerMinHeight);
 
         PropertyModelChangeProcessor.create(model, mView, WebAppHeaderLayoutViewBinder::bind);
 
@@ -98,6 +105,7 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
 
     private void initMinUiControls() {
         assert mView != null;
+        assert mMediator != null;
 
         final ImageButton reloadButton = mView.findViewById(R.id.refresh_button);
         mReloadButtonCoordinator =
@@ -108,6 +116,16 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
                         new ObservableSupplierImpl<>(),
                         mThemeColorProvider);
         mReloadButtonCoordinator.setVisibility(true);
+
+        final ImageButton backButton = mView.findViewById(R.id.back_button);
+        mBackButtonCoordinator =
+                new BackButtonCoordinator(
+                        backButton,
+                        mMediator::goBack,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHistoryDelegate);
+        mBackButtonCoordinator.setVisibility(true);
     }
 
     @VisibleForTesting
@@ -135,8 +153,14 @@ public class WebAppHeaderLayoutCoordinator implements DesktopWindowStateManager.
             mMediator.destroy();
         }
 
+        if (mBackButtonCoordinator != null) {
+            mBackButtonCoordinator.destroy();
+            mBackButtonCoordinator = null;
+        }
+
         if (mReloadButtonCoordinator != null) {
             mReloadButtonCoordinator.destroy();
+            mReloadButtonCoordinator = null;
         }
     }
 }

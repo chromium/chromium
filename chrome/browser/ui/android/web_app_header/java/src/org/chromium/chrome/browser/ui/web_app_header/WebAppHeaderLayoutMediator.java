@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.ui.web_app_header;
 import android.graphics.Rect;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -24,6 +26,7 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
     private final Rect mCachedPaddings;
     private final PropertyModel mModel;
     private final DesktopWindowStateManager mDesktopWindowStateManager;
+    private final ObservableSupplier<Tab> mTabSupplier;
     private final int mWebAppMinHeaderHeight;
 
     /**
@@ -38,9 +41,11 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
     public WebAppHeaderLayoutMediator(
             PropertyModel model,
             DesktopWindowStateManager desktopWindowStateManager,
+            ObservableSupplier<Tab> tabSupplier,
             int webAppHeaderMinHeightFromResources) {
         mWebAppMinHeaderHeight = webAppHeaderMinHeightFromResources;
         mDesktopWindowStateManager = desktopWindowStateManager;
+        mTabSupplier = tabSupplier;
 
         final var modelPaddings = model.get(WebAppHeaderLayoutProperties.PADDINGS);
         mCachedPaddings = modelPaddings != null ? modelPaddings : new Rect(0, 0, 0, 0);
@@ -76,6 +81,14 @@ class WebAppHeaderLayoutMediator implements DesktopWindowStateManager.AppHeaderO
                 newState.getRightPadding(),
                 mCachedPaddings.bottom);
         mModel.set(WebAppHeaderLayoutProperties.PADDINGS, mCachedPaddings);
+    }
+
+    /** Navigates back in the navigation history of the current {@link Tab}. */
+    public void goBack() {
+        final var tab = mTabSupplier.get();
+        if (tab != null && tab.canGoBack()) {
+            tab.goBack();
+        }
     }
 
     private int getDefaultMinHeight() {

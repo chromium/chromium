@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ui.web_app_header;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
@@ -20,7 +22,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -40,16 +44,19 @@ public class WebAppHeaderLayoutMediatorTest {
 
     private WebAppHeaderLayoutMediator mMediator;
     private PropertyModel mModel;
-    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
+    private ObservableSupplierImpl<Tab> mTabSupplier;
+    @Mock public DesktopWindowStateManager mDesktopWindowStateManager;
+    @Mock public Tab mTab;
 
     @Before
     public void setup() {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(null);
 
+        mTabSupplier = new ObservableSupplierImpl<>();
         mModel = new PropertyModel.Builder(WebAppHeaderLayoutProperties.ALL_KEYS).build();
         mMediator =
                 new WebAppHeaderLayoutMediator(
-                        mModel, mDesktopWindowStateManager, SYS_APP_HEADER_HEIGHT);
+                        mModel, mDesktopWindowStateManager, mTabSupplier, SYS_APP_HEADER_HEIGHT);
     }
 
     @Test
@@ -60,7 +67,7 @@ public class WebAppHeaderLayoutMediatorTest {
         when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
         mMediator =
                 new WebAppHeaderLayoutMediator(
-                        mModel, mDesktopWindowStateManager, SYS_APP_HEADER_HEIGHT);
+                        mModel, mDesktopWindowStateManager, mTabSupplier, SYS_APP_HEADER_HEIGHT);
 
         assertEquals(
                 "Header min height should match app header height",
@@ -157,5 +164,29 @@ public class WebAppHeaderLayoutMediatorTest {
                 "Top padding should match exceeding size of the app header",
                 new Rect(LEFT_INSET, 10, RIGHT_INSET, 0),
                 mModel.get(WebAppHeaderLayoutProperties.PADDINGS));
+    }
+
+    @Test
+    public void testGoBackWithHistory_shouldGoBack() {
+        mTabSupplier.set(mTab);
+        when(mTab.canGoBack()).thenReturn(true);
+
+        mMediator.goBack();
+        verify(mTab).goBack();
+    }
+
+    @Test
+    public void testGoBackNoHistory_shouldNotGoBack() {
+        mTabSupplier.set(mTab);
+        when(mTab.canGoBack()).thenReturn(false);
+
+        mMediator.goBack();
+        verify(mTab, never()).goBack();
+    }
+
+    @Test
+    public void testGoBackNoTab_shouldNotGoBack() {
+        mMediator.goBack();
+        verify(mTab, never()).goBack();
     }
 }

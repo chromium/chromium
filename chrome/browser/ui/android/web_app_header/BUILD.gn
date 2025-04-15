@@ -65,6 +65,7 @@ robolectric_library("junit") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:java",
     "//components/browser_ui/desktop_windowing/android:java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_core_java",

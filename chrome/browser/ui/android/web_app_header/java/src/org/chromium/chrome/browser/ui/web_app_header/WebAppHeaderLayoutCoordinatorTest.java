@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.top.NavigationPopup;
 import org.chromium.chrome.browser.web_app_header.R;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -67,6 +68,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
     @Mock public Profile mProfile;
     @Mock public ThemeColorProvider mThemeColorProvider;
     @Mock public BrowserServicesIntentDataProvider mIntentDataProvider;
+    @Mock public NavigationPopup.HistoryDelegate mHistoryDelegate;
     @Mock public WebappExtras mWebAppExtras;
     @Mock public Tab mTab;
 
@@ -97,7 +99,8 @@ public class WebAppHeaderLayoutCoordinatorTest {
                         mDesktopWindowStateManager,
                         mTabSupplier,
                         mThemeColorProvider,
-                        mIntentDataProvider);
+                        mIntentDataProvider,
+                        mHistoryDelegate);
     }
 
     private void setupDesktopWindowing() {
@@ -202,6 +205,7 @@ public class WebAppHeaderLayoutCoordinatorTest {
         createCoordinator();
 
         assertEquals(View.VISIBLE, mActivity.findViewById(R.id.refresh_button).getVisibility());
+        assertEquals(View.VISIBLE, mActivity.findViewById(R.id.back_button).getVisibility());
     }
 
     @Test
