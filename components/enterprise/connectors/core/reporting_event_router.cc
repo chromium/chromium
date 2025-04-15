@@ -124,11 +124,10 @@ void ReportingEventRouter::OnPasswordReuse(const GURL& url,
                                            const std::string& user_name,
                                            bool is_phishing_url,
                                            bool warning_shown) {
-  std::optional<enterprise_connectors::ReportingSettings> settings =
+  std::optional<ReportingSettings> settings =
       reporting_client_->GetReportingSettings();
   if (!settings.has_value() ||
-      settings->enabled_event_names.count(
-          enterprise_connectors::kKeyPasswordReuseEvent) == 0) {
+      settings->enabled_event_names.count(kKeyPasswordReuseEvent) == 0) {
     return;
   }
 
@@ -137,13 +136,29 @@ void ReportingEventRouter::OnPasswordReuse(const GURL& url,
   event.Set(kKeyUserName, user_name);
   event.Set(kKeyIsPhishingUrl, is_phishing_url);
   event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(
-                warning_shown ? enterprise_connectors::EventResult::WARNED
-                              : enterprise_connectors::EventResult::ALLOWED));
+            EventResultToString(warning_shown ? EventResult::WARNED
+                                              : EventResult::ALLOWED));
 
   reporting_client_->ReportEventWithTimestampDeprecated(
-      enterprise_connectors::kKeyPasswordReuseEvent,
-      std::move(settings.value()), std::move(event), base::Time::Now(),
+      kKeyPasswordReuseEvent, std::move(settings.value()), std::move(event),
+      base::Time::Now(),
+      /*include_profile_user_name=*/true);
+}
+
+void ReportingEventRouter::OnPasswordChanged(const std::string& user_name) {
+  std::optional<ReportingSettings> settings =
+      reporting_client_->GetReportingSettings();
+  if (!settings.has_value() ||
+      settings->enabled_event_names.count(kKeyPasswordChangedEvent) == 0) {
+    return;
+  }
+
+  base::Value::Dict event;
+  event.Set(kKeyUserName, user_name);
+
+  reporting_client_->ReportEventWithTimestampDeprecated(
+      kKeyPasswordChangedEvent, std::move(settings.value()), std::move(event),
+      base::Time::Now(),
       /*include_profile_user_name=*/true);
 }
 

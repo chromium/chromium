@@ -160,6 +160,12 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   void TriggerOnPolicySpecifiedPasswordChangedEvent() {
     SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
         ->OnPolicySpecifiedPasswordChanged("user_name_2");
+
+    // TODO(crbug.com/410855312):  Move the tests related to the
+    // ReportingEventRouter to its own unit tests file.
+    enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
+        profile_)
+        ->OnPasswordChanged("user_name_2");
   }
 
   void TriggerOnDangerousDownloadOpenedEvent() {

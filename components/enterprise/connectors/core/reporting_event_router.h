@@ -48,6 +48,10 @@ class ReportingEventRouter : public KeyedService {
                        bool is_phishing_url,
                        bool warning_shown);
 
+  // Notifies listeners that the user changed the password associated with
+  // `user_name`
+  void OnPasswordChanged(const std::string& user_name);
+
   void OnUrlFilteringInterstitial(
       const GURL& url,
       const std::string& threat_type,

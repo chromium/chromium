@@ -1334,11 +1334,18 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
 
 void ChromePasswordProtectionService::ReportPasswordChanged() {
   if (!IsIncognito()) {
-    auto* router =
+    auto* safe_browsing_event_router =
         extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
             profile_);
-    if (router) {
-      router->OnPolicySpecifiedPasswordChanged(GetAccountInfo().email);
+    if (safe_browsing_event_router) {
+      safe_browsing_event_router->OnPolicySpecifiedPasswordChanged(
+          GetAccountInfo().email);
+    }
+
+    auto* reporting_event_router = enterprise_connectors::
+        ReportingEventRouterFactory::GetForBrowserContext(profile_);
+    if (reporting_event_router) {
+      reporting_event_router->OnPasswordChanged(GetAccountInfo().email);
     }
   }
 }
