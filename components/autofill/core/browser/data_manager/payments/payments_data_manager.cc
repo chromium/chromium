@@ -631,17 +631,12 @@ PaymentsDataManager::GetApplicableBenefitDescriptionForCardAndOrigin(
     const CreditCard& credit_card,
     const url::Origin& origin,
     const AutofillOptimizationGuide* optimization_guide) const {
-  // Benefits are only supported for app locale set to U.S. English.
-  if (app_locale_ != "en-US") {
+  // Ensures that benefit suggestions can be displayed.
+  if (ShouldBlockCardBenefitSuggestionLabels(credit_card, origin,
+                                             optimization_guide)) {
     return std::u16string();
   }
-  // Ensure that benefit suggestions can be displayed for this card on the
-  // current origin.
-  if (optimization_guide &&
-      optimization_guide->ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
-          credit_card, origin.GetURL())) {
-    return std::u16string();
-  }
+
   CreditCardBenefitBase::LinkedCardInstrumentId benefit_instrument_id(
       credit_card.instrument_id());
 
@@ -987,6 +982,22 @@ bool PaymentsDataManager::IsCardBenefitsFeatureEnabled() {
              features::kAutofillEnableCardBenefitsForAmericanExpress) ||
          base::FeatureList::IsEnabled(
              features::kAutofillEnableCardBenefitsForBmo);
+}
+
+bool PaymentsDataManager::ShouldBlockCardBenefitSuggestionLabels(
+    const CreditCard& credit_card,
+    const url::Origin& origin,
+    const AutofillOptimizationGuide* optimization_guide) const {
+  // Benefits are only supported for app locale set to U.S. English or Great
+  // Britain English.
+  if (app_locale_ != "en-US" && app_locale_ != "en-GB") {
+    return true;
+  }
+  // Ensure that benefit suggestions can be displayed for this card on the
+  // current origin.
+  return optimization_guide &&
+         optimization_guide->ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
+             credit_card, origin.GetURL());
 }
 
 bool PaymentsDataManager::IsCardBenefitsPrefEnabled() const {
