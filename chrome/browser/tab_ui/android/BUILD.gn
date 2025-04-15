@@ -11,12 +11,11 @@ import("//tools/grit/grit_rule.gni")
 
 java_strings_grd("java_strings_grd") {
   defines = chrome_grit_defines
-  grd_file = "java/strings/android_chrome_tab_ui_strings.grd"
-  outputs =
-      [ "values/android_chrome_tab_ui_strings.xml" ] +
-      process_file_template(
-          android_bundle_locales_as_resources,
-          [ "values-{{source_name_part}}/android_chrome_tab_ui_strings.xml" ])
+  grd_file = "java/strings/android_tab_ui_strings.grd"
+  outputs = [ "values/android_tab_ui_strings.xml" ] +
+            process_file_template(
+                android_bundle_locales_as_resources,
+                [ "values-{{source_name_part}}/android_tab_ui_strings.xml" ])
 }
 
 android_library("java") {
