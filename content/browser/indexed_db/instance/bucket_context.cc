@@ -989,12 +989,9 @@ bool BucketContext::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
       }
     }
   }
-  // This pointer is used to match the pointer used in
-  // TransactionalLevelDBDatabase::OnMemoryDump.
-  leveldb::DB* db = leveldb_backing_store()->db()->db();
   auto* db_dump = pmd->CreateAllocatorDump(
       base::StringPrintf("site_storage/index_db/in_flight_0x%" PRIXPTR,
-                         reinterpret_cast<uintptr_t>(db)));
+                         backing_store()->GetIdentifierForMemoryDump()));
   db_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                      base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                      total_memory_in_flight.ValueOrDefault(0));
@@ -1112,13 +1109,9 @@ void BucketContext::ResetBackingStore() {
   weak_factory_.InvalidateWeakPtrs();
 
   if (backing_store_) {
-    if (leveldb_backing_store()->IsBlobCleanupPending()) {
-      leveldb_backing_store()->ForceRunBlobCleanup();
-    }
-
-    const auto start = base::TimeTicks::Now();
     base::WaitableEvent leveldb_destruct_event;
     backing_store_->TearDown(&leveldb_destruct_event);
+    const auto start = base::TimeTicks::Now();
     backing_store_.reset();
     leveldb_destruct_event.Wait();
     base::UmaHistogramTimes("IndexedDB.BackingStoreCloseDuration",

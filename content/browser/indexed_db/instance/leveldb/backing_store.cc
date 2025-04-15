@@ -1238,6 +1238,10 @@ Status BackingStore::Initialize(bool clean_active_journal) {
 }
 
 void BackingStore::TearDown(base::WaitableEvent* signal_on_destruction) {
+  if (IsBlobCleanupPending()) {
+    ForceRunBlobCleanup();
+  }
+
   db()->leveldb_state()->RequestDestruction(signal_on_destruction);
 }
 
@@ -3118,6 +3122,12 @@ Status BackingStore::GetDatabaseNames(std::vector<std::u16string>* names) {
     names->push_back(nav->name);
   }
   return s;
+}
+
+uintptr_t BackingStore::GetIdentifierForMemoryDump() {
+  // This pointer is used to match the pointer used in
+  // TransactionalLevelDBDatabase::OnMemoryDump.
+  return reinterpret_cast<uintptr_t>(db()->db());
 }
 
 Status BackingStore::GetDatabaseNamesAndVersions(

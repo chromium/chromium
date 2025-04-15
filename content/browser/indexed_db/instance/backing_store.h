@@ -294,6 +294,8 @@ class BackingStore {
       const blink::IndexedDBKey& key,
       std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
       bool* exists) = 0;
+
+  virtual uintptr_t GetIdentifierForMemoryDump() = 0;
 };
 
 }  // namespace content::indexed_db

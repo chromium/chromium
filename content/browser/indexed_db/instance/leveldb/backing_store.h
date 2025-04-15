@@ -505,6 +505,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
       std::unique_ptr<blink::IndexedDBKey>* found_primary_key,
       bool* exists) override;
 
+  uintptr_t GetIdentifierForMemoryDump() override;
+
   // Fill in the provided list with existing database names.
   Status GetDatabaseNames(std::vector<std::u16string>* names) override;
   // Fill in the provided list with existing database names and versions.
@@ -546,12 +548,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   const LevelDBCleanupScheduler& GetLevelDBCleanupSchedulerForTesting() const {
     return level_db_cleanup_scheduler_;
   }
-
-  // Returns true if a blob cleanup job is pending on journal_cleaning_timer_.
-  bool IsBlobCleanupPending();
-
-  // Stops the journal_cleaning_timer_ and runs its pending task.
-  void ForceRunBlobCleanup();
 
   bool in_memory() const { return backing_store_mode_ == Mode::kInMemory; }
 
@@ -672,6 +668,12 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   // and updating timing information as needed for throttling.
   bool ShouldRunTombstoneSweeper();
   bool ShouldRunCompaction();
+
+  // Returns true if a blob cleanup job is pending on journal_cleaning_timer_.
+  bool IsBlobCleanupPending();
+
+  // Stops the journal_cleaning_timer_ and runs its pending task.
+  void ForceRunBlobCleanup();
 
   // Owns `this`. Should be initialized shortly after construction.
   raw_ptr<BucketContext> bucket_context_ = nullptr;
