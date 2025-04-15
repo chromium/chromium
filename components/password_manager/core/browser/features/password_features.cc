@@ -86,10 +86,6 @@ BASE_FEATURE(kIOSProactivePasswordGenerationBottomSheet,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // IS_IOS
 
-BASE_FEATURE(kLocalStateEnterprisePasswordHashes,
-             "LocalStateEnterprisePasswordHashes",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPasswordFormGroupedAffiliations,
              "PasswordFormGroupedAffiliations",
              base::FEATURE_DISABLED_BY_DEFAULT);
