@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.omnibox.LocationBarCoordinator.OfflineDownloader;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
@@ -207,6 +208,8 @@ public class LocationBarMediatorTest {
     @Mock private OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
     @Mock private ResourceRequestBody.Natives mResourceRequestBodyJni;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
+    @Mock private OfflineDownloader mOfflineDownloader;
+    @Mock private View mSafeOfflineButton;
 
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
@@ -266,7 +269,8 @@ public class LocationBarMediatorTest {
                         () -> mIsToolbarMicEnabled,
                         mEmbedderImpl,
                         mTabModelSelectorSupplier,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mOfflineDownloader);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
 
@@ -289,7 +293,8 @@ public class LocationBarMediatorTest {
                         () -> mIsToolbarMicEnabled,
                         mEmbedderImpl,
                         mTabModelSelectorSupplier,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mOfflineDownloader);
         mTabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ShadowUrlUtilities.sIsNtp = false;
@@ -1036,7 +1041,8 @@ public class LocationBarMediatorTest {
                         () -> mIsToolbarMicEnabled,
                         mEmbedderImpl,
                         mTabModelSelectorSupplier,
-                        mBrowserControlsStateProvider);
+                        mBrowserControlsStateProvider,
+                        mOfflineDownloader);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         int primeCount = sGeoHeaderPrimeCount;
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
@@ -1379,6 +1385,15 @@ public class LocationBarMediatorTest {
         mTabletMediator.updateButtonVisibility();
 
         verify(mLocationBarTablet).setSaveOfflineButtonVisibility(true, true);
+    }
+
+    @Test
+    public void testSaveOfflineButtonClick() {
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+
+        mTabletMediator.saveOfflineButtonClicked(mSafeOfflineButton);
+
+        verify(mOfflineDownloader).downloadPage(mContext, mTab, /* fromAppMenu= */ false);
     }
 
     public void testRecordHistogramOmniboxClick_Ntp_base() {

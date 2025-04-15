@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnLongClickListener;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.widget.Toast;
 
 /** Location bar for tablet form factors. */
-class LocationBarTablet extends LocationBarLayout {
+class LocationBarTablet extends LocationBarLayout implements OnLongClickListener {
     // The number of toolbar buttons that can be hidden at small widths (reload, back, forward).
     private static final int HIDEABLE_BUTTON_COUNT = 3;
 
@@ -79,6 +82,8 @@ class LocationBarTablet extends LocationBarLayout {
                         }
                     }
                 });
+
+        setOnLongClickListener(this);
 
         mTargets = new View[] {mUrlBar, mDeleteButton};
     }
@@ -322,5 +327,19 @@ class LocationBarTablet extends LocationBarLayout {
     /* package */ void finishAnimatingWidthChange() {
         mAnimatingWidthChange = false;
         mToolbarStartPaddingDifference = 0;
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        String description = null;
+        Context context = getContext();
+        Resources resources = context.getResources();
+
+        if (v == mBookmarkButton) {
+            description = resources.getString(R.string.menu_bookmark);
+        } else if (v == mSaveOfflineButton) {
+            description = resources.getString(R.string.menu_download);
+        }
+        return Toast.showAnchoredToast(context, v, description);
     }
 }

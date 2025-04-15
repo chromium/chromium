@@ -89,7 +89,6 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
-import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.content_settings.CookieBlocking3pcdStatus;
 import org.chromium.components.feature_engagement.Tracker;
@@ -130,7 +129,6 @@ public class CustomTabToolbarUnitTest {
     @Mock private ToggleTabStackButtonCoordinator mTabSwitcherButtonCoordinator;
     @Mock HistoryDelegate mHistoryDelegate;
     @Mock BooleanSupplier mPartnerHomepageEnabledSupplier;
-    @Mock OfflineDownloader mOfflineDownloader;
     @Mock UserEducationHelper mUserEducationHelper;
     @Mock Tracker mTracker;
     @Mock Tab mTab;
@@ -199,7 +197,6 @@ public class CustomTabToolbarUnitTest {
                 mTabSwitcherButtonCoordinator,
                 mHistoryDelegate,
                 mPartnerHomepageEnabledSupplier,
-                mOfflineDownloader,
                 mUserEducationHelper,
                 trackerSupplier,
                 mToolbarProgressBar,

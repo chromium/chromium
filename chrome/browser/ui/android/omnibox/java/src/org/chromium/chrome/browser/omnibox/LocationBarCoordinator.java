@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.view.ActionMode;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 
 import androidx.annotation.DrawableRes;
@@ -19,6 +20,7 @@ import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
@@ -78,12 +80,25 @@ import java.util.function.BooleanSupplier;
  */
 public class LocationBarCoordinator
         implements LocationBar, NativeInitObserver, AutocompleteDelegate {
+
     private OmniboxSuggestionsDropdownEmbedderImpl mOmniboxDropdownEmbedderImpl;
 
     /** Identifies coordinators with methods specific to a device type. */
     public interface SubCoordinator {
         /** Destroys SubCoordinator. */
         void destroy();
+    }
+
+    /** Downloads page for offline access. */
+    public interface OfflineDownloader {
+        /**
+         * Trigger the download of a page.
+         *
+         * @param context Context to pull resources from.
+         * @param tab Tab containing the page to download.
+         * @param fromAppMenu Whether the download is started from the app menu.
+         */
+        void downloadPage(Context context, Tab tab, boolean fromAppMenu);
     }
 
     private LocationBarLayout mLocationBarLayout;
@@ -100,6 +115,8 @@ public class LocationBarCoordinator
     private View mDeleteButton;
     private View mMicButton;
     private View mLensButton;
+    @Nullable private View mBookmarksButton;
+    @Nullable private View mSaveOfflineButton;
     private CallbackController mCallbackController = new CallbackController();
     private boolean mDestroyed;
 
@@ -151,6 +168,8 @@ public class LocationBarCoordinator
      *     suggestions list draws edge to edge when appropriate. This should only be used when the
      *     soft keyboard is not visible.
      * @param onLongClickListener for the url bar.
+     * @param offlineDownloader Used to initiate download when saveOffline button in url action
+     *     container is clicked.
      */
     public LocationBarCoordinator(
             View locationBarLayout,
@@ -188,7 +207,8 @@ public class LocationBarCoordinator
             Supplier<Integer> bottomWindowPaddingSupplier,
             @Nullable OnLongClickListener onLongClickListener,
             @Nullable BrowserControlsStateProvider browserControlsStateProvider,
-            boolean isToolbarPositionCustomizationEnabled) {
+            boolean isToolbarPositionCustomizationEnabled,
+            @NonNull OfflineDownloader offlineDownloader) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -233,7 +253,8 @@ public class LocationBarCoordinator
                         isToolbarMicEnabledSupplier,
                         mOmniboxDropdownEmbedderImpl,
                         tabModelSelectorSupplier,
-                        browserControlsStateProvider);
+                        browserControlsStateProvider,
+                        offlineDownloader);
         if (backPressManager != null) {
             backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         }
@@ -298,6 +319,11 @@ public class LocationBarCoordinator
         mLensButton = mLocationBarLayout.findViewById(R.id.lens_camera_button);
         mLensButton.setOnClickListener(mLocationBarMediator::lensButtonClicked);
 
+        mSaveOfflineButton = mLocationBarLayout.findViewById(R.id.save_offline_button);
+        if (mSaveOfflineButton != null) {
+            mSaveOfflineButton.setOnClickListener(mLocationBarMediator::saveOfflineButtonClicked);
+        }
+
         mUrlCoordinator.setTextChangeListener(mAutocompleteCoordinator::onTextChanged);
         mUrlCoordinator.setKeyDownListener(mLocationBarMediator);
         mUrlCoordinator.setTypingStartedListener(
@@ -361,6 +387,16 @@ public class LocationBarCoordinator
         mLensButton.setOnClickListener(null);
         mLensButton = null;
 
+        if (mBookmarksButton != null) {
+            mBookmarksButton.setOnClickListener(null);
+            mBookmarksButton = null;
+        }
+
+        if (mSaveOfflineButton != null) {
+            mSaveOfflineButton.setOnClickListener(null);
+            mSaveOfflineButton = null;
+        }
+
         mLocationBarMediator.removeUrlFocusChangeListener(mUrlCoordinator);
         mUrlCoordinator.destroy();
         mUrlCoordinator = null;
@@ -414,6 +450,15 @@ public class LocationBarCoordinator
     @Override
     public void updateVisualsForState() {
         mLocationBarMediator.updateVisualsForState();
+    }
+
+    public void setBookmarkClickListener(OnClickListener listener) {
+        mBookmarksButton = mLocationBarLayout.findViewById(R.id.bookmark_button);
+        mBookmarksButton.setOnClickListener(
+                (view) -> {
+                    listener.onClick(view);
+                    RecordUserAction.record("MobileToolbarToggleBookmark");
+                });
     }
 
     @Override

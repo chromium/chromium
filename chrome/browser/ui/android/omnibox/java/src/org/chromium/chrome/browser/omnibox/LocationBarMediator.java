@@ -107,6 +107,7 @@ class LocationBarMediator
                 TemplateUrlService.TemplateUrlServiceObserver,
                 BackPressHandler,
                 PauseResumeWithNativeObserver {
+
     private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
     private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
     private static final long NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
@@ -188,6 +189,7 @@ class LocationBarMediator
             new ObserverList<>();
     private final Rect mRootViewBounds = new Rect();
     private final SaveOfflineButtonState mSaveOfflineButtonState;
+    private final LocationBarCoordinator.OfflineDownloader mOfflineDownloader;
     private final OmniboxUma mOmniboxUma;
     private final OmniboxSuggestionsDropdownEmbedderImpl mEmbedderImpl;
 
@@ -232,7 +234,8 @@ class LocationBarMediator
             @NonNull BooleanSupplier isToolbarMicEnabledSupplier,
             @NonNull OmniboxSuggestionsDropdownEmbedderImpl dropdownEmbedder,
             @Nullable ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            @Nullable BrowserControlsStateProvider browserControlsStateProvider) {
+            @Nullable BrowserControlsStateProvider browserControlsStateProvider,
+            @NonNull LocationBarCoordinator.OfflineDownloader offlineDownloader) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -256,6 +259,7 @@ class LocationBarMediator
         mEmbedderImpl = dropdownEmbedder;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mOfflineDownloader = offlineDownloader;
     }
 
     /**
@@ -710,6 +714,15 @@ class LocationBarMediator
             LensMetrics.recordClicked(entryPoint);
         }
         startLens(entryPoint);
+    }
+
+    /** package */
+    void saveOfflineButtonClicked(View view) {
+        if (mOfflineDownloader != null) {
+            mOfflineDownloader.downloadPage(
+                    mContext, mLocationBarDataProvider.getTab(), /* fromAppMenu= */ false);
+            RecordUserAction.record("MobileToolbarDownloadPage");
+        }
     }
 
     /* package */ void setUrlFocusChangeInProgress(boolean inProgress) {

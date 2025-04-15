@@ -400,6 +400,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/DeferredIMEWindowInsetApplicationCallbackTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/KeyboardHideHelperUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarMediatorTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/LocationBarTabletUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OmniboxSuggestionsDropdownEmbedderImplTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/OverrideUrlLoadingDelegateImplUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/SearchEngineUtilsUnitTest.java",
