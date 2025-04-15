@@ -7180,6 +7180,21 @@ def CheckTranslationExpectations(input_api, output_api,
                                          'tests')
     grd_files = [p for p in grd_files if ignore_path not in p]
 
+    # Ensure no duplicate basenames.
+    basename_to_src_paths = {}
+    for grd_path in grd_files:
+        basename = input_api.os_path.basename(grd_path)
+        basename_to_src_paths.setdefault(basename, [])
+        basename_to_src_paths[basename].append(grd_path)
+    for src_paths in basename_to_src_paths.values():
+        if len(src_paths) > 1:
+            return [
+                output_api.PresubmitNotifyResult(
+                    'Multiple string files have the same basename. This will result in '
+                    'missing translations. Files: %s'
+                    % ', '.join(src_paths))
+            ]
+
     try:
         translation_helper.get_translatable_grds(
             repo_root, grd_files, translation_expectations_path, is_cog)

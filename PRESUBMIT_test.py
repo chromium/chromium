@@ -4195,6 +4195,29 @@ class TranslationExpectationsTest(unittest.TestCase):
             grd_files)
         self.assertEqual(0, len(warnings))
 
+    # Tests that the list of files passed to the presubmit does not
+    # contain duplicate basenames.
+    def testExpectationsSuccess(self):
+        # Mock input file list needs a grd or grdp file in order to run the
+        # presubmit. The file itself doesn't matter.
+        input_api = MockInputApi()
+        input_api.files = [
+            MockAffectedFile('dummy.grd', 'not used', 'not used', action='M')
+        ]
+        # List of all grd files in the repo.
+        grd_files = [
+            'dir1/test.grd', 'unlisted.grd', 'not_translated.grd',
+            'internal.grd', 'dir2/test.grd'
+        ]
+        warnings = PRESUBMIT.CheckTranslationExpectations(
+            input_api, MockOutputApi(), self.REPO_ROOT, self.EXPECTATIONS,
+            grd_files)
+        self.assertEqual(1, len(warnings))
+        self.assertTrue(
+            ("Multiple string files have the same basename. "
+             "This will result in missing translations. "
+             "Files: dir1/test.grd, dir2/test.grd") in warnings[0].message)
+
     # Tests that the presubmit warns when a file is listed in expectations, but
     # does not actually exist.
     def testExpectationsMissingFile(self):
