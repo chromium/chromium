@@ -1093,6 +1093,10 @@ inline constexpr char kRecurrentSSLInterstitial[] =
 inline constexpr char kDefaultSearchProviderChoiceScreenShuffleMilestone[] =
     "default_search_provider.choice_screen_shuffle_milestone";
 
+// Deprecated 04/2025.
+inline constexpr char kAddedBookmarkSincePowerBookmarksLaunch[] =
+    "bookmarks.added_since_power_bookmarks_launch";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1529,6 +1533,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 04/2025.
   registry->RegisterIntegerPref(
       kDefaultSearchProviderChoiceScreenShuffleMilestone, 0);
+
+  // Deprecated 04/2025.
+  registry->RegisterBooleanPref(kAddedBookmarkSincePowerBookmarksLaunch, false);
 }
 
 }  // namespace
@@ -2810,6 +2817,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 04/2025.
   profile_prefs->ClearPref(kDefaultSearchProviderChoiceScreenShuffleMilestone);
+
+  // Added 04/2025.
+  profile_prefs->ClearPref(kAddedBookmarkSincePowerBookmarksLaunch);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

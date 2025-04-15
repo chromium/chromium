@@ -9,10 +9,6 @@
 
 namespace bookmarks::prefs {
 
-// Boolean which specifies whether the user has added any new bookmarks
-// following the launch of the power bookmarks feature.
-inline constexpr char kAddedBookmarkSincePowerBookmarksLaunch[] =
-    "bookmarks.added_since_power_bookmarks_launch";
 // Boolean which specifies the ids of the bookmark nodes that are expanded in
 // the bookmark editor.
 inline constexpr char kBookmarkEditorExpandedNodes[] =
