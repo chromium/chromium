@@ -4,17 +4,41 @@
 
 #include "ui/views/animation/pulsing_path_ink_drop_mask.h"
 
+#include <algorithm>
+
 #include "base/i18n/rtl.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
 // Cycle duration of ink drop pulsing animation used for in-product help.
 constexpr base::TimeDelta kFeaturePromoPulseDuration = base::Milliseconds(800);
 
 // Max inset for pulsing animation.
-constexpr float kFeaturePromoPulseInsetDip = 3.0f;
+constexpr double kFeaturePromoPulseMaxInsetDip = 3.0;
+
+// Returns how much the pulsing inkdrop should pulse inwards from the
+// container's `bounds`, in DIP.
+double GetThrobInsetDip(const SkRect& bounds) {
+  // Verify that neither axis of `bounds` is zero.
+  if (bounds.isEmpty()) {
+    return kFeaturePromoPulseMaxInsetDip;
+  }
+  // The pulsing inkdrop will pulse between the full view bounds and the view
+  // bounds modified by some inset. Since this involves scaling, if the shorter
+  // axis A is scaled by X, then the longer axis B pulses by X * (B / A). This
+  // excessive pulsing looks bad.
+  //
+  // To correct for this, adjust so that the longer axis pulses by
+  // kFeaturePromoPulseMaxInsetDip, and the shorter axis pulses by
+  // proportionately less.
+  double ratio = bounds.width() / bounds.height();
+  ratio = std::min(ratio, 1.0 / ratio);
+  return ratio * kFeaturePromoPulseMaxInsetDip;
+}
+
 }  // namespace
 
 namespace views {
@@ -25,6 +49,7 @@ PulsingPathInkDropMask::PulsingPathInkDropMask(views::View* layer_container,
       layer_container_(layer_container),
       path_(path),
       initial_rect_(path.getBounds()),
+      throb_inset_(GetThrobInsetDip(initial_rect_)),
       throb_animation_(this) {
   throb_animation_.SetThrobDuration(kFeaturePromoPulseDuration);
   throb_animation_.StartThrobbing(-1);
@@ -54,7 +79,7 @@ void PulsingPathInkDropMask::OnPaintLayer(const ui::PaintContext& context) {
   }
 
   const float current_inset =
-      throb_animation_.CurrentValueBetween(0.0f, kFeaturePromoPulseInsetDip);
+      throb_animation_.CurrentValueBetween(0.0f, throb_inset_);
   bounds.Inset(gfx::InsetsF(current_inset));
 
   // Transform the highlight path to the target region.
