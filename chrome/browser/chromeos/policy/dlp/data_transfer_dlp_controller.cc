@@ -317,8 +317,8 @@ void DataTransferDlpController::PasteIfAllowed(
     if (files_controller) {
       files_controller->CheckIfPasteOrDropIsAllowed(
           pasted_files, destination.as_ptr(), std::move(paste_cb));
+      return;
     }
-    return;
   }
 
   if (std::holds_alternative<size_t>(pasted_content) &&
