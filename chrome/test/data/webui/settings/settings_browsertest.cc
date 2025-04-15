@@ -970,7 +970,13 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
       "runMochaSuite('CompletionFragmentAiSettingsInPrivacyGuideDisabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, AdTopicsFragment) {
+// TODO(crbug.com/410848707): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AdTopicsFragment DISABLED_AdTopicsFragment
+#else
+#define MAYBE_AdTopicsFragment AdTopicsFragment
+#endif
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, MAYBE_AdTopicsFragment) {
   RunTest("settings/privacy_guide_ad_topics_fragment_test.js",
           "runMochaSuite('AdTopicsFragment')");
 }
