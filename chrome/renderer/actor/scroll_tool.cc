@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/logging.h"
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "chrome/renderer/actor/tool_utils.h"
 #include "content/public/renderer/render_frame.h"
@@ -44,6 +45,7 @@ void ScrollTool::Execute(ToolFinishedCallback callback) {
     }
 
     // TODO(crbug.com/402083666): add support for scrolling subscrollers later.
+    NOTIMPLEMENTED();
     std::move(callback).Run(false);
     return;
   }

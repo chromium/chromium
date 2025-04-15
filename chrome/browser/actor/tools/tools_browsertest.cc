@@ -219,20 +219,100 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool) {
   EXPECT_FALSE(result_fail.Get());
 }
 
-// Basic test of the MouseMoveTool.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool) {
-  const GURL url = embedded_test_server()->GetURL("/simple.html");
+// Test the MouseMove tool fails on a non-existent content node.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_NonExistentNode) {
+  const GURL url = embedded_test_server()->GetURL("/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "event_log.join(',')"));
 
   // Use a random node id that doesn't exist.
   BrowserAction action = MakeMouseMove(kNonExistentContentNodeId);
 
-  TestFuture<bool> result_fail;
-  actor_coordinator().Act(action, result_fail.GetCallback());
-  // The node id doesn't exist so the tool will return false.
-  // TODO(crbug.com/402218570): Add function to extract real DOMNodeId from the
-  // test page so we can expect a true click returning here.
-  EXPECT_FALSE(result_fail.Get());
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_FALSE(result.Get());
+}
+
+// Test basic movements using MouseMove tool generates the expected events.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
+  const GURL url = embedded_test_server()->GetURL("/mouse_log.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "event_log.join(',')"));
+
+  // Move mouse over #first DIV
+  {
+    std::optional<int> first_id = FindContentNodeId(*main_frame(), "#first");
+    BrowserAction action = MakeMouseMove(first_id.value());
+
+    TestFuture<bool> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    EXPECT_TRUE(result.Get());
+  }
+
+  EXPECT_EQ("mouseenter[DIV#first],mousemove[DIV#first]",
+            EvalJs(web_contents(), "event_log.join(',')"));
+  ASSERT_TRUE(ExecJs(web_contents(), "event_log = []"));
+
+  // Move mouse over #second DIV
+  {
+    std::optional<int> second_id = FindContentNodeId(*main_frame(), "#second");
+    BrowserAction action = MakeMouseMove(second_id.value());
+
+    TestFuture<bool> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    EXPECT_TRUE(result.Get());
+  }
+
+  EXPECT_EQ(
+      "mouseleave[DIV#first],mouseenter[DIV#second],mousemove[DIV#second]",
+      EvalJs(web_contents(), "event_log.join(',')"));
+}
+
+// Test mouse move returns failure if a target is offscreen.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
+  const GURL url = embedded_test_server()->GetURL("/mouse_log.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // Log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "event_log.join(',')"));
+
+  // Move mouse over #offscreen DIV. This should fail since #offscreen is
+  // outside the viewport.
+  {
+    std::optional<int> offscreen_id =
+        FindContentNodeId(*main_frame(), "#offscreen");
+    BrowserAction action = MakeMouseMove(offscreen_id.value());
+
+    TestFuture<bool> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    EXPECT_FALSE(result.Get());
+  }
+
+  // The action should fail without generating any events.
+  EXPECT_EQ("", EvalJs(web_contents(), "event_log.join(',')"));
+
+  // Scroll the element into the viewport.
+  ASSERT_TRUE(ExecJs(web_contents(),
+                     "document.getElementById('offscreen').scrollIntoView()"));
+
+  // Try moving the mouse over #offscreen again. This time it should succeed
+  // since it was scrolled into the viewport.
+  {
+    std::optional<int> offscreen_id =
+        FindContentNodeId(*main_frame(), "#offscreen");
+    BrowserAction action = MakeMouseMove(offscreen_id.value());
+
+    TestFuture<bool> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    EXPECT_TRUE(result.Get());
+  }
+
+  EXPECT_EQ("mouseenter[DIV#offscreen],mousemove[DIV#offscreen]",
+            EvalJs(web_contents(), "event_log.join(',')"));
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {

@@ -72,6 +72,12 @@ void MouseMoveTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
+  if (!IsPointWithinViewport(center_point.value(), frame_.get())) {
+    DLOG(ERROR) << "Target is outside viewport";
+    std::move(callback).Run(false);
+    return;
+  }
+
   // Dispatch MouseMove event
   blink::WebMouseEvent mouse_move = CreateMouseEvent(
       blink::WebInputEvent::Type::kMouseMove, center_point.value());

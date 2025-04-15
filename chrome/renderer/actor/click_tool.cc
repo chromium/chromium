@@ -21,7 +21,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "ui/events/base_event_utils.h"
-#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/latency/latency_info.h"
 
@@ -149,9 +148,7 @@ std::optional<gfx::PointF> ClickTool::ValidateAndGetClickPoint() const {
     return std::nullopt;
   }
 
-  gfx::Rect viewport(
-      frame_->GetWebFrame()->FrameWidget()->VisibleViewportSize());
-  if (!viewport.Contains(gfx::ToFlooredPoint(click_point.value()))) {
+  if (!IsPointWithinViewport(click_point.value(), frame_.get())) {
     DLOG(ERROR) << "Element is offscreen.";
     return std::nullopt;
   }

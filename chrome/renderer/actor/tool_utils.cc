@@ -6,8 +6,10 @@
 
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -53,6 +55,12 @@ bool IsNodeFocused(const content::RenderFrame& frame,
   blink::WebElement currently_focused = document.FocusedElement();
   blink::WebElement element = node.To<blink::WebElement>();
   return element == currently_focused;
+}
+
+bool IsPointWithinViewport(const gfx::PointF& point,
+                           const content::RenderFrame& frame) {
+  gfx::Rect viewport(frame.GetWebFrame()->FrameWidget()->VisibleViewportSize());
+  return viewport.Contains(gfx::ToFlooredPoint(point));
 }
 
 }  // namespace actor

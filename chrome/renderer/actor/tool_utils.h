@@ -34,6 +34,10 @@ std::optional<gfx::PointF> InteractionPointFromWebNode(
 bool IsNodeFocused(const content::RenderFrame& frame,
                    const blink::WebNode& node);
 
+// `point` is relative to the viewport origin.
+bool IsPointWithinViewport(const gfx::PointF& point,
+                           const content::RenderFrame& frame);
+
 }  // namespace actor
 
 #endif  // CHROME_RENDERER_ACTOR_TOOL_UTILS_H_
