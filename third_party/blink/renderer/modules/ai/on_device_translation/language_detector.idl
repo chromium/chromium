@@ -19,7 +19,7 @@ dictionary LanguageDetectorDetectOptions {
 };
 
 dictionary LanguageDetectionResult {
-  DOMString? detectedLanguage; // null represents unknown language
+  DOMString detectedLanguage;
   double confidence;
 };
 
