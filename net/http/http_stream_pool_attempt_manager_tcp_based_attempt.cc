@@ -112,8 +112,13 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::~TcpBasedAttempt() {
         elapsed);
   }
 
-  TRACE_EVENT_END("net.stream", track_, "result",
-                  result_.value_or(ERR_ABORTED));
+  // Reset `attempt_` before emitting trace events to ensure that trace events
+  // in `attempt_` balances.
+  attempt_.reset();
+  TRACE_EVENT_END(
+      "net.stream", track_, "result", result_.value_or(ERR_ABORTED),
+      "cancel_reason",
+      cancel_reason_.value_or(StreamSocketCloseReason::kUnspecified));
   TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttemptEnd", manager_->track_,
                       flow_);
 }
@@ -161,8 +166,6 @@ void HttpStreamPool::AttemptManager::TcpBasedAttempt::Start() {
 
 void HttpStreamPool::AttemptManager::TcpBasedAttempt::SetCancelReason(
     StreamSocketCloseReason reason) {
-  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttempt::SetCancelReason", track_,
-                      "reason", StreamSocketCloseReasonToString(reason));
   cancel_reason_ = reason;
   if (attempt_) {
     attempt_->SetCancelReason(reason);
@@ -222,8 +225,6 @@ HttpStreamPool::AttemptManager::TcpBasedAttempt::GetInfoAsValue() const {
 
 void HttpStreamPool::AttemptManager::TcpBasedAttempt::OnAttemptComplete(
     int rv) {
-  TRACE_EVENT_INSTANT("net.stream", "TcpBasedAttempt::OnAttemptComplete",
-                      track_, "result", rv);
   manager_->net_log().AddEvent(
       NetLogEventType::HTTP_STREAM_POOL_ATTEMPT_MANAGER_TCP_BASED_ATTEMPT_END,
       [&] {

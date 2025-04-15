@@ -43,13 +43,15 @@ TlsStreamAttempt::TlsStreamAttempt(const StreamAttemptParams* params,
                                    SSLConfigProvider* ssl_config_provider)
     : StreamAttempt(params,
                     ip_endpoint,
-                    std::move(track),
+                    track,
                     NetLogSourceType::TLS_STREAM_ATTEMPT,
                     NetLogEventType::TLS_STREAM_ATTEMPT_ALIVE),
       host_port_pair_(std::move(host_port_pair)),
       ssl_config_provider_(ssl_config_provider) {}
 
-TlsStreamAttempt::~TlsStreamAttempt() = default;
+TlsStreamAttempt::~TlsStreamAttempt() {
+  MaybeRecordTlsHandshakeEnd(ERR_ABORTED);
+}
 
 LoadState TlsStreamAttempt::GetLoadState() const {
   switch (next_state_) {
@@ -216,7 +218,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
       params().ssl_client_context, std::move(nested_socket), host_port_pair_,
       *ssl_config_);
 
-  TRACE_EVENT_INSTANT("net.stream", "TlsConnectStart", track());
+  TRACE_EVENT_BEGIN("net.stream", "TlsConnect", track());
   net_log().BeginEvent(NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT);
 
   return ssl_socket_->Connect(
@@ -224,7 +226,7 @@ int TlsStreamAttempt::DoTlsAttempt(int rv) {
 }
 
 int TlsStreamAttempt::DoTlsAttemptComplete(int rv) {
-  TRACE_EVENT_INSTANT("net.stream", "TlsConnectEnd", track(), "result", rv);
+  MaybeRecordTlsHandshakeEnd(rv);
   net_log().EndEventWithNetErrorCode(
       NetLogEventType::TLS_STREAM_ATTEMPT_CONNECT, rv);
 
@@ -280,6 +282,13 @@ void TlsStreamAttempt::OnTlsHandshakeTimeout() {
   // TODO(bashi): The error code should be ERR_CONNECTION_TIMED_OUT but use
   // ERR_TIMED_OUT for consistency with ConnectJobs.
   OnIOComplete(ERR_TIMED_OUT);
+}
+
+void TlsStreamAttempt::MaybeRecordTlsHandshakeEnd(int rv) {
+  if (!tls_handshake_started_ || !tls_handshake_timeout_timer_.IsRunning()) {
+    return;
+  }
+  TRACE_EVENT_END("net.stream", track(), "result", rv);
 }
 
 }  // namespace net

@@ -57,6 +57,8 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
 
   void OnTimeout();
 
+  void MaybeRecordConnectEnd(int rv);
+
   State next_state_ = State::kNone;
   base::OneShotTimer timeout_timer_;
 };
