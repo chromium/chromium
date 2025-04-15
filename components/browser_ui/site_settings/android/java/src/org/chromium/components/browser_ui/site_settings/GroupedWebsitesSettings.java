@@ -51,6 +51,8 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
     public static final String PREF_RESET_GROUP = "reset_group_button";
 
+    public static final int RWS_ROW_ID = View.generateViewId();
+
     private static @Nullable GroupedWebsitesSettings sPausedInstance;
 
     private WebsiteGroup mSiteGroup;
@@ -360,6 +362,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
                                     getActivity().getLayoutInflater(),
                                     /* showRwsMembershipLabels= */ false,
                                     /* isClickable= */ false);
+                    preference.setViewId(RWS_ROW_ID);
                     // If the row is for the current site, deleting the data will bounce back to the
                     // previous page to refresh
                     preference.setOnDeleteCallback(
