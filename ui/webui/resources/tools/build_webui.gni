@@ -66,8 +66,7 @@ template("build_webui") {
   bundle = optimize && defined(invoker.optimize_webui_in_files)
 
   has_ts_in_files =
-      defined(invoker.web_component_files) ||
-      defined(invoker.non_web_component_files) || defined(invoker.ts_files)
+      defined(invoker.web_component_files) || defined(invoker.ts_files)
   enable_source_maps = enable_webui_inline_sourcemaps && has_ts_in_files
   if (defined(invoker.enable_source_maps) && has_ts_in_files) {
     assert(!invoker.enable_source_maps || !optimize)
@@ -101,15 +100,7 @@ template("build_webui") {
   }
 
   if (defined(invoker.ts_files)) {
-    assert(!defined(invoker.non_web_component_files))
     all_ts_files += invoker.ts_files
-  }
-
-  # TODO(crbug.com/409590662): Delete `non_web_component_files` once all client
-  # code is migrated to `ts_files`.
-  if (defined(invoker.non_web_component_files)) {
-    assert(!defined(invoker.ts_files))
-    all_ts_files += invoker.non_web_component_files
   }
 
   if (defined(invoker.web_component_files) ||
