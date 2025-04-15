@@ -56,6 +56,8 @@ StringView ToString(CSSMathOperator op) {
       return "hypot";
     case CSSMathOperator::kAbs:
       return "abs";
+    case CSSMathOperator::kExp:
+      return "exp";
     case CSSMathOperator::kSqrt:
       return "sqrt";
     case CSSMathOperator::kSign:

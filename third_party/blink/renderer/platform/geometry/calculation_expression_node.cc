@@ -368,6 +368,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
     case CalculationOperator::kAcos:
     case CalculationOperator::kAtan:
     case CalculationOperator::kAbs:
+    case CalculationOperator::kExp:
     case CalculationOperator::kSqrt:
     case CalculationOperator::kSign: {
       DCHECK_EQ(children.size(), 1u);
@@ -388,6 +389,9 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
         }
         return base::MakeRefCounted<CalculationExpressionNumberNode>(
             value > 0 ? 1 : -1);
+      } else if (op == CalculationOperator::kExp) {
+        return base::MakeRefCounted<CalculationExpressionNumberNode>(
+            std::exp(value));
       } else if (op == CalculationOperator::kSqrt) {
         return base::MakeRefCounted<CalculationExpressionNumberNode>(
             std::sqrt(value));
@@ -580,12 +584,15 @@ float CalculationExpressionOperationNode::Evaluate(
       return value;
     }
     case CalculationOperator::kAbs:
+    case CalculationOperator::kExp:
     case CalculationOperator::kSqrt:
     case CalculationOperator::kSign: {
       DCHECK_EQ(children_.size(), 1u);
       const float value = children_.front()->Evaluate(max_value, input);
       if (operator_ == CalculationOperator::kAbs) {
         return std::abs(value);
+      } else if (operator_ == CalculationOperator::kExp) {
+        return std::exp(value);
       } else if (operator_ == CalculationOperator::kSign) {
         if (value == 0 || std::isnan(value)) {
           return value;
@@ -702,6 +709,7 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kRem:
     case CalculationOperator::kHypot:
     case CalculationOperator::kAbs:
+    case CalculationOperator::kExp:
     case CalculationOperator::kSqrt:
     case CalculationOperator::kSign:
     case CalculationOperator::kProgress:
@@ -830,6 +838,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     case CalculationOperator::kContainerProgress:
     case CalculationOperator::kProgress:
     case CalculationOperator::kMediaProgress:
+    case CalculationOperator::kExp:
     case CalculationOperator::kSin:
     case CalculationOperator::kCos:
     case CalculationOperator::kTan:
