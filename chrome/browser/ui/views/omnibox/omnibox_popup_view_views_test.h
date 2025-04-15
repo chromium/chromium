@@ -103,4 +103,17 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
   OmniboxTriggeredFeatureService triggered_feature_service_;
 };
 
+class OmniboxPopupSuggestionGroupHeadersTest
+    : public OmniboxPopupViewViewsTest {
+ public:
+  OmniboxPopupSuggestionGroupHeadersTest() = default;
+
+  void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      omnibox::kHideSuggestionGroupHeaders};
+};
+
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_TEST_H_

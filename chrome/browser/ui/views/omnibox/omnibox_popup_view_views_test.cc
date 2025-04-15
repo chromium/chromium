@@ -4,9 +4,17 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
 
+#include <memory>
+
+#include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_paths.h"
 #include "content/public/test/test_utils.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 
 #if BUILDFLAG(IS_LINUX)
@@ -68,4 +76,34 @@ void OmniboxPopupViewViewsTest::UseDefaultTheme() {
   }
   ASSERT_TRUE(theme_service->UsingDefaultTheme());
 #endif  // BUILDFLAG(IS_LINUX)
+}
+
+void OmniboxPopupSuggestionGroupHeadersTest::SetUpOnMainThread() {
+  host_resolver()->AddRule("*", "127.0.0.1");
+
+  embedded_test_server()->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(chrome::DIR_TEST_DATA));
+
+  // Register custom request handler for SRP URL.
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        // Check if the request is for our search path
+        if (request.relative_url.starts_with("/search?")) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);  // Return 200 OK
+          response->set_content("<html><body>Mock SRP Content</body></html>");
+          response->set_content_type("text/html");
+          return response;
+        }
+        // Let other handlers deal with other requests (like /empty.html)
+        return nullptr;
+      }));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+}
+
+void OmniboxPopupSuggestionGroupHeadersTest::TearDownOnMainThread() {
+  ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
 }

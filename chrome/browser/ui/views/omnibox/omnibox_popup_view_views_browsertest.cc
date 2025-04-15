@@ -13,27 +13,34 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views_test.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -49,6 +56,7 @@
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
@@ -922,4 +930,162 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
   EXPECT_FALSE(popup_view()->IsOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
       ax::mojom::IntListAttribute::kControlsIds));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupSuggestionGroupHeadersTest,
+                       ShowSuggestionGroupHeadersByPageContext) {
+  scoped_refptr<FakeAutocompleteProvider> provider =
+      new FakeAutocompleteProvider(AutocompleteProvider::TYPE_SEARCH);
+  controller()->autocomplete_controller()->providers_.push_back(provider);
+
+  const auto group1 = omnibox::GroupId::GROUP_VISITED_DOC_RELATED;
+  const auto group2 = omnibox::GroupId::GROUP_CONTEXTUAL_SEARCH;
+
+  ACMatches matches;
+  // Non-contextual search suggestion.
+  {
+    std::u16string match_url = u"https://google.com/search?q=foo1";
+    AutocompleteMatch match(nullptr, 500, false,
+                            AutocompleteMatchType::SEARCH_SUGGEST);
+    match.contents = u"foo1";
+    match.contents_class.emplace_back(0, ACMatchClassification::URL);
+    match.destination_url = GURL(match_url);
+    match.description = u"first match";
+    match.description_class.emplace_back(0, ACMatchClassification::URL);
+    match.allowed_to_be_default_match = true;
+    match.provider = provider.get();
+    match.suggestion_group_id = group1;
+    match.keyword = u"foo1";
+    matches.push_back(match);
+  }
+  // Contextual search suggestion.
+  {
+    std::u16string match_url = u"https://google.com/search?q=foo2";
+    AutocompleteMatch match(nullptr, 450, false,
+                            AutocompleteMatchType::SEARCH_SUGGEST);
+    match.contents = u"foo2";
+    match.contents_class.emplace_back(0, ACMatchClassification::URL);
+    match.destination_url = GURL(match_url);
+    match.description = u"second match";
+    match.description_class.emplace_back(0, ACMatchClassification::URL);
+    match.allowed_to_be_default_match = true;
+    match.provider = provider.get();
+    match.suggestion_group_id = group2;
+    match.keyword = u"foo2";
+    matches.push_back(match);
+  }
+
+  omnibox::GroupConfigMap suggestion_groups_map;
+  // Non-contextual suggestion group header.
+  suggestion_groups_map[group1];
+  suggestion_groups_map[group1].set_header_text("Related to this page");
+  // Contextual suggestion group header.
+  suggestion_groups_map[group2];
+  suggestion_groups_map[group2].set_header_text(
+      "Suggested questions about this page");
+
+  // NTP page context.
+  {
+    GURL ntp_url = GURL(chrome::kChromeUINewTabURL);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
+    ASSERT_TRUE(content::WaitForLoadStop(
+        browser()->tab_strip_model()->GetActiveWebContents()));
+
+    provider->matches_ = matches;
+    controller()->autocomplete_controller()->internal_result_.ClearMatches();
+    controller()->autocomplete_controller()->internal_result_.AppendMatches(
+        matches);
+
+    controller()
+        ->autocomplete_controller()
+        ->internal_result_.MergeSuggestionGroupsMap(suggestion_groups_map);
+
+    controller()->autocomplete_controller()->NotifyChanged();
+    popup_view()->UpdatePopupAppearance();
+    EXPECT_TRUE(popup_view()->IsOpen());
+
+    // Non-contextual suggestion group header should be SHOWN.
+    EXPECT_TRUE(popup_view()->header_view_at(0)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(0)->GetVisible());
+
+    // Contextual suggestion group header should be SHOWN.
+    EXPECT_TRUE(popup_view()->header_view_at(1)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
+  }
+
+  // SRP page context.
+  {
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(browser()->profile());
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+
+    TemplateURLData data;
+    data.SetShortName(u"TestSearch");
+    data.SetKeyword(u"test_search_keyword");
+    GURL search_url_pattern =
+        embedded_test_server()->GetURL("/search?q={searchTerms}");
+    data.SetURL(search_url_pattern.spec());
+
+    TemplateURL* turl =
+        template_url_service->Add(std::make_unique<TemplateURL>(data));
+    ASSERT_TRUE(turl);
+    template_url_service->SetUserSelectedDefaultSearchProvider(turl);
+
+    GURL srp_url = embedded_test_server()->GetURL("/search?q=foo");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), srp_url));
+    ASSERT_TRUE(content::WaitForLoadStop(
+        browser()->tab_strip_model()->GetActiveWebContents()));
+
+    provider->matches_ = matches;
+    controller()->autocomplete_controller()->internal_result_.ClearMatches();
+    controller()->autocomplete_controller()->internal_result_.AppendMatches(
+        matches);
+
+    controller()
+        ->autocomplete_controller()
+        ->internal_result_.MergeSuggestionGroupsMap(suggestion_groups_map);
+
+    controller()->autocomplete_controller()->NotifyChanged();
+    popup_view()->UpdatePopupAppearance();
+    EXPECT_TRUE(popup_view()->IsOpen());
+
+    // Non-contextual suggestion group header should be HIDDEN for SRP page
+    // context.
+    EXPECT_FALSE(popup_view()->header_view_at(0)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(0)->GetVisible());
+
+    // Contextual suggestion group header should be SHOWN for SRP page context.
+    EXPECT_TRUE(popup_view()->header_view_at(1)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
+  }
+
+  // Web page context.
+  {
+    GURL other_url = embedded_test_server()->GetURL("/empty.html");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), other_url));
+    ASSERT_TRUE(content::WaitForLoadStop(
+        browser()->tab_strip_model()->GetActiveWebContents()));
+
+    provider->matches_ = matches;
+    controller()->autocomplete_controller()->internal_result_.ClearMatches();
+    controller()->autocomplete_controller()->internal_result_.AppendMatches(
+        matches);
+
+    controller()
+        ->autocomplete_controller()
+        ->internal_result_.MergeSuggestionGroupsMap(suggestion_groups_map);
+
+    controller()->autocomplete_controller()->NotifyChanged();
+    popup_view()->UpdatePopupAppearance();
+    EXPECT_TRUE(popup_view()->IsOpen());
+
+    // Non-contextual suggestion group header should be HIDDEN for Web page
+    // context.
+    EXPECT_FALSE(popup_view()->header_view_at(0)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(0)->GetVisible());
+
+    // Contextual suggestion group header should be SHOWN for Web page context.
+    EXPECT_TRUE(popup_view()->header_view_at(1)->GetVisible());
+    EXPECT_TRUE(popup_view()->result_view_at(1)->GetVisible());
+  }
 }
