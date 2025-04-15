@@ -80,10 +80,10 @@ bool ShouldUseMitShm(x11::Connection* connection) {
     return false;
 
   // Used by JRE.
-  std::string j2d_use_mitshm;
-  if (env->GetVar("J2D_USE_MITSHM", &j2d_use_mitshm) &&
-      (j2d_use_mitshm == "0" ||
-       base::EqualsCaseInsensitiveASCII(j2d_use_mitshm, "false"))) {
+  std::optional<std::string> j2d_use_mitshm = env->GetVar("J2D_USE_MITSHM");
+  if (j2d_use_mitshm.has_value() &&
+      (*j2d_use_mitshm == "0" ||
+       base::EqualsCaseInsensitiveASCII(*j2d_use_mitshm, "false"))) {
     return false;
   }
 

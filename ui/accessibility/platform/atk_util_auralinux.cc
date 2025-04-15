@@ -12,6 +12,7 @@
 #include <array>
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -126,8 +127,8 @@ bool AtkUtilAuraLinux::ShouldEnableAccessibility() {
   // Check enabled/disabled accessibility based on env variable
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   for (const auto* variable : kAccessibilityEnabledVariables) {
-    std::string enable_accessibility;
-    env->GetVar(variable, &enable_accessibility);
+    std::string enable_accessibility =
+        env->GetVar(variable).value_or(std::string());
     if (enable_accessibility == "1")
       return true;
     if (enable_accessibility == "0") {
@@ -138,8 +139,8 @@ bool AtkUtilAuraLinux::ShouldEnableAccessibility() {
 #if defined(USE_GIO)
   // Do not run additional checks when Chrome runs in headless mode, which means
   // we are in a test environment
-  std::string chrome_headless;
-  env->GetVar("CHROME_HEADLESS", &chrome_headless);
+  std::string chrome_headless =
+      env->GetVar("CHROME_HEADLESS").value_or(std::string());
   if (chrome_headless == "1") {
     return false;
   }

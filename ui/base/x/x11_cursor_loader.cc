@@ -75,10 +75,7 @@ class ScopedSetInsertion {
 };
 
 std::string GetEnv(const std::string& var) {
-  auto env = base::Environment::Create();
-  std::string value;
-  env->GetVar(var, &value);
-  return value;
+  return base::Environment::Create()->GetVar(var).value_or(std::string());
 }
 
 NO_SANITIZE("cfi-icall")
