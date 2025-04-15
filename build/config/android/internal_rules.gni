@@ -1689,16 +1689,14 @@ if (enable_java_templates) {
         depfile = "$target_gen_dir/$target_name.d"
         outputs = [ invoker.output ]
         inputs = [
-                   "$android_sdk/optional/android.test.base.jar",
-                   "$android_sdk/optional/org.apache.http.legacy.jar",
-                   "//third_party/jdk/current/bin/java",
                    _custom_d8_path,
                    _d8_path,
-                   android_sdk_jar,
-                   invoker.build_config,
                  ] + java_paths_for_inputs
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
+        }
+        if (defined(invoker.build_config)) {
+          inputs += [ invoker.build_config ]
         }
 
         if (!_is_library) {
@@ -1744,10 +1742,6 @@ if (enable_java_templates) {
         }
         if (defined(invoker.input_classes_filearg)) {
           args += [ "--class-inputs-filearg=${invoker.input_classes_filearg}" ]
-
-          # Required for the same reason as unprocessed_jar_path is added to
-          # classpath (see note below).
-          args += [ "--classpath=${invoker.input_classes_filearg}" ]
         }
         if (_input_class_jars != []) {
           inputs += _input_class_jars
@@ -1778,26 +1772,29 @@ if (enable_java_templates) {
           # filtered out via jar_excluded_patterns.
           # Must come first in classpath in order to take precedence over
           # deps that defined the same classes (via jar_excluded_patterns).
-          _rebased_build_config =
-              rebase_path(invoker.build_config, root_build_dir)
           if (defined(invoker.unprocessed_jar_path)) {
             args += [
               "--classpath",
               rebase_path(invoker.unprocessed_jar_path, root_build_dir),
+            ]
+            inputs += [ invoker.unprocessed_jar_path ]
+          }
+          if (_min_sdk_version < 24) {
+            _rebased_build_config =
+                rebase_path(invoker.build_config, root_build_dir)
+            _desugar_dependencies_path =
+                "$target_gen_dir/$target_name.desugardeps"
+            args += [
+              "--desugar-dependencies",
+              rebase_path(_desugar_dependencies_path, root_build_dir),
 
               # Pass the full classpath to find new dependencies that are not in
               # the .desugardeps file.
               "--classpath=@FileArg($_rebased_build_config:deps_info:javac_full_interface_classpath)",
+              "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_jars)",
             ]
-            inputs += [ invoker.unprocessed_jar_path ]
+            inputs += [ android_sdk_jar ]
           }
-          _desugar_dependencies_path =
-              "$target_gen_dir/$target_name.desugardeps"
-          args += [
-            "--desugar-dependencies",
-            rebase_path(_desugar_dependencies_path, root_build_dir),
-            "--bootclasspath=@FileArg($_rebased_build_config:android:sdk_jars)",
-          ]
         }
 
         if (defined(invoker.custom_assertion_handler)) {
@@ -3677,8 +3674,6 @@ if (enable_java_templates) {
       }
       if (_build_device_jar) {
         _dex_path = "$target_out_dir/$_main_target_name.dex.jar"
-        _enable_desugar =
-            !defined(invoker.enable_desugar) || invoker.enable_desugar
 
         # Build speed optimization: Skip "process device" step if the step
         # would be just a copy and avoid the copy.
@@ -4294,20 +4289,19 @@ if (enable_java_templates) {
                                    "repackage_classes",
                                  ])
           input_class_jars = [ _device_processed_jar_path ]
-          enable_desugar = _enable_desugar
           ignore_desugar_missing_deps = !_enable_bytecode_checks
 
           # There's no value in per-class dexing prebuilts since they never
           # change just one class at a time.
           disable_incremental = _is_prebuilt
           output = _dex_path
-          deps = _process_device_jar_deps
+          deps = _process_device_jar_deps + _unprocessed_jar_deps
 
-          if (enable_desugar) {
-            # Desugaring with D8 requires full classpath.
+          unprocessed_jar_path = _unprocessed_jar_path
+          if (default_min_sdk_version < 24) {
+            # Desugaring with D8 requires classpath for default method desugaring (required until API 24).
             build_config = _build_config
-            unprocessed_jar_path = _unprocessed_jar_path
-            deps += _header_classpath_deps + _unprocessed_jar_deps
+            deps += _header_classpath_deps
           }
 
           is_library = true
