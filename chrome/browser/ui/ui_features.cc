@@ -371,6 +371,8 @@ const base::FeatureParam<bool> kPageActionsMigrationFileSystemAccess{
     &kPageActionsMigration, "file_system_access", false};
 const base::FeatureParam<bool> kPageActionsMigrationPwaInstall{
     &kPageActionsMigration, "pwa_install", false};
+const base::FeatureParam<bool> kPageActionsMigrationPriceInsights{
+    &kPageActionsMigration, "price_insights", false};
 
 BASE_FEATURE(kCompositorLoadingAnimations,
              "CompositorLoadingAnimations",

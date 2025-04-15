@@ -3890,6 +3890,8 @@ static_library("ui") {
       "views/commerce/discounts_icon_view.h",
       "views/commerce/price_insights_icon_view.cc",
       "views/commerce/price_insights_icon_view.h",
+      "views/commerce/price_insights_page_action_view_controller.cc",
+      "views/commerce/price_insights_page_action_view_controller.h",
       "views/commerce/price_tracking_bubble_dialog_view.cc",
       "views/commerce/price_tracking_bubble_dialog_view.h",
       "views/commerce/price_tracking_email_dialog_view.cc",

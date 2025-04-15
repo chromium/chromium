@@ -45,6 +45,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_translate_action_listener.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/ui/views/intent_picker/intent_picker_view_page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/action_ids.h"
@@ -239,6 +240,12 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     if (IsPageActionMigrated(PageActionIconType::kPwaInstall)) {
       pwa_install_page_action_controller_ =
           std::make_unique<PwaInstallPageActionController>(tab);
+    }
+
+    if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
+      commerce_price_insights_page_action_view_controller_ =
+          std::make_unique<commerce::PriceInsightsPageActionViewController>(
+              tab);
     }
   }
 

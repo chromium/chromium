@@ -23,8 +23,10 @@
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
+#include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
@@ -251,6 +253,16 @@ void CommerceUiTabHelper::TriggerUpdateForIconView() {
 }
 
 void CommerceUiTabHelper::UpdatePriceInsightsIconView() {
+  if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
+    auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
+    CHECK(tab_interface);
+
+    tab_interface->GetTabFeatures()
+        ->commerce_price_insights_page_action_view_controller()
+        ->UpdatePageActionIcon();
+    return;
+  }
+
   UpdatePageActionIconView(web_contents(), PageActionIconType::kPriceInsights);
 }
 

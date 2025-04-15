@@ -77,13 +77,22 @@ const PageActionProperties& PageActionPropertiesProvider::GetProperties(
               },
           },
           {
-            kActionInstallPwa,
-            {
-                .histogram_name = "PwaInstall",
-                .is_ephemeral = true,
-                .type = PageActionIconType::kPwaInstall,
-            },
-        },
+              kActionInstallPwa,
+              {
+                  .histogram_name = "PwaInstall",
+                  .is_ephemeral = true,
+                  .type = PageActionIconType::kPwaInstall,
+              },
+          },
+          {
+              kActionCommercePriceInsights,
+              {
+                  .histogram_name = "PriceInsights",
+                  .is_ephemeral = true,
+                  .type = PageActionIconType::kPriceInsights,
+                  .element_identifier = kPriceInsightsChipElementId,
+              },
+          },
       });
 
   CHECK(kPageActionProperties.contains(action_id));

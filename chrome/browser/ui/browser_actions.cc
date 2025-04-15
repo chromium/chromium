@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
@@ -340,6 +341,31 @@ void BrowserActions::InitializeBrowserActions() {
           .SetText(l10n_util::GetStringUTF16(IDS_ZOOM_NORMAL))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_ZOOM))
           .SetImage(ui::ImageModel::FromVectorIcon(kZoomInIcon))
+          .Build());
+
+  root_action_item_->AddChild(
+      actions::ActionItem::Builder(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* tab_helper = browser->GetActiveTabInterface()
+                                       ->GetTabFeatures()
+                                       ->commerce_ui_tab_helper();
+                CHECK(tab_helper);
+
+                tab_helper->OnPriceInsightsIconClicked();
+              },
+              base::Unretained(browser)))
+          .SetActionId(kActionCommercePriceInsights)
+          // The tooltip text is used as a default text. The
+          // PriceInsightsPageActionViewController will override it based on its
+          // state.
+          .SetText(l10n_util::GetStringUTF16(
+              IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT))
+          .SetTooltipText(l10n_util::GetStringUTF16(
+              IDS_SHOPPING_INSIGHTS_ICON_TOOLTIP_TEXT))
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              vector_icons::kShoppingBagRefreshIcon))
           .Build());
 
   //------- Chrome Menu Actions --------//

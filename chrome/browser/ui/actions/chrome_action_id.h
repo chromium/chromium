@@ -494,7 +494,9 @@
   E(kActionShowFileSystemAccess) \
   /*Toolbar pinning*/ \
   E(kActionPinActionToToolbar) \
-  E(kActionUnpinActionFromToolbar)
+  E(kActionUnpinActionFromToolbar) \
+  /*Commerce*/ \
+  E(kActionCommercePriceInsights) \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \

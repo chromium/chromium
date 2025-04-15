@@ -27,6 +27,7 @@ class PwaInstallPageActionController;
 
 namespace commerce {
 class CommerceUiTabHelper;
+class PriceInsightsPageActionViewController;
 }
 
 namespace content {
@@ -197,6 +198,11 @@ class TabFeatures {
     return memory_saver_chip_controller_.get();
   }
 
+  commerce::PriceInsightsPageActionViewController*
+  commerce_price_insights_page_action_view_controller() {
+    return commerce_price_insights_page_action_view_controller_.get();
+  }
+
   LensOverlayController* lens_overlay_controller();
 
   PwaInstallPageActionController* pwa_install_page_action_controller() {
@@ -303,6 +309,10 @@ class TabFeatures {
 
   // Responsible for managing the "Zoom" page action and bubble.
   std::unique_ptr<zoom::ZoomViewController> zoom_view_controller_;
+
+  // Responsible for managing the commerce "Price insights" page action.
+  std::unique_ptr<commerce::PriceInsightsPageActionViewController>
+      commerce_price_insights_page_action_view_controller_;
 
   // Contains the recent collaboration message for a shared tab.
   std::unique_ptr<tab_groups::CollaborationMessagingTabData>
