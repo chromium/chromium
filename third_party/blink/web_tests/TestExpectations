@@ -757,10 +757,10 @@ crbug.com/1056778 fast/scrolling/scrollbars/scrollbar-thumb-snapping.html [ Fail
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-border-image.html [ Failure ]
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-filter.html [ Failure ]
 crbug.com/1044742 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-stacking-context-001.html [ Failure ]
-crbug.com/410324960 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter.html [ Pass Failure ]
-crbug.com/410324960 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg.html [ Pass Failure ]
-crbug.com/410324960 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-video.html [ Pass Failure ]
-crbug.com/410324960 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Pass Failure ]
+crbug.com/410324960 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter.html [ Failure Pass ]
+crbug.com/410324960 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-lighter-svg.html [ Failure Pass ]
+crbug.com/410324960 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-plus-video.html [ Failure Pass ]
+crbug.com/410324960 external/wpt/css/compositing/mix-blend-mode/mix-blend-mode-video.html [ Failure Pass ]
 
 crbug.com/1271275 external/wpt/css/compositing/background-blending/background-blend-mode-plus-lighter.html [ Failure ]
 

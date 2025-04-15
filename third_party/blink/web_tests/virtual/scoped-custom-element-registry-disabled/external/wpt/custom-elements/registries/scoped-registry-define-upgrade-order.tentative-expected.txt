@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Upgrade in tree order in the same tree scope
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Upgrade in shadow-including tree order across tree scopes
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Upgrade order does not depend on shadow root attach order
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Upgrade in association order across documents, then tree order in each document
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Upgrade order is not affected by DOM order between child frames
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Upgrade order is affected by shadow tree adoption across documents
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] Elements in the "owner" window of a scoped registry are not always upgraded first
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+

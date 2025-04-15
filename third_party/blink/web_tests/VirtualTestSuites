@@ -1773,7 +1773,7 @@
     "prefix": "scoped-custom-element-registry-disabled",
     "owners": ["masonf@chromium.org", "dizhangg@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["external/wpt/custom-elements/revamped-scoped-registry"],
+    "bases": ["external/wpt/custom-elements/registries/"],
     "args": ["--disable-blink-features=ScopedCustomElementRegistry"],
     "expires": "Jun 1, 2025"
   },
