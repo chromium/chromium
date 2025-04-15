@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/back_forward_cache_test_util.h"
@@ -1404,8 +1405,16 @@ IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
 //
 // Without delaying iframe removal, renderer disconnection may happen in between
 // (2) and (3).
+// TODO(crbug.com/332142891): Re-enable this test
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_MultipleRedirectsRequestWithDelayedIframeRemoval \
+  DISABLED_MultipleRedirectsRequestWithDelayedIframeRemoval
+#else
+#define MAYBE_MultipleRedirectsRequestWithDelayedIframeRemoval \
+  MultipleRedirectsRequestWithDelayedIframeRemoval
+#endif
 IN_PROC_BROWSER_TEST_P(SendBeaconBrowserTest,
-                       MultipleRedirectsRequestWithDelayedIframeRemoval) {
+                       MAYBE_MultipleRedirectsRequestWithDelayedIframeRemoval) {
   const auto beacon_endpoint =
       base::StringPrintf("%s?id=%s", kKeepAliveEndpoint, kBeaconId);
   auto request_handler =
