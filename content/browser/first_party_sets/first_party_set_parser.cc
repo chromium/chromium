@@ -417,19 +417,8 @@ class ParseContext {
         validator.Update(site, entry.primary());
       }
     }
-    const auto do_updates_for_alias = [&](const std::vector<SingleSet>& sets,
-                                          const net::SchemefulSite& site) {
-      for (const auto& set : sets) {
-        const auto* entry = base::FindOrNull(set, site);
-        if (entry) {
-          validator.Update(site, entry->primary());
-        }
-      }
-    };
-    for (const auto& [alias, canonical] : lists.aliases) {
-      do_updates_for_alias(lists.additions, alias);
-      do_updates_for_alias(lists.replacements, alias);
-    }
+    // We do not need to perform updates on the aliases explicitly because they
+    // are already included in lists.replacements and lists.additions.
 
     // Since we just removed some keys, we have to double-check that there are
     // no invalid sets (e.g. singletons).

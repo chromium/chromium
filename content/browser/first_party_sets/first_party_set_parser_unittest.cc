@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/test/fuzztest_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/values_test_util.h"
 #include "base/version.h"
 #include "content/public/browser/first_party_sets_handler.h"
 #include "content/public/common/content_features.h"
@@ -1738,6 +1739,83 @@ TEST(FirstPartySetParser, EnterprisePolicies_ExemptFromAssociatedSiteLimit) {
                                        std::nullopt)},
           }},
           {}, {})));
+}
+
+// Regression test for https://crbug.com/406036301.
+TEST(FirstPartySetParser,
+     EnterprisePolicies_AcceptsValidAndInvalidCctld_JustAdditions) {
+  net::SchemefulSite primary(GURL("https://primary.test"));
+  net::SchemefulSite alias(GURL("https://primary.foo"));
+
+  base::Value::Dict policy_dict = base::test::ParseJsonDict(R"(
+             {
+                "additions": [
+                  {
+                    "primary": "https://primary.test",
+                    "associatedSites": [
+                      "https://associated.test"
+                    ],
+                    "ccTLDs": {
+                      "https://primary.test": [
+                        "https://sub.associated.test",
+                        "https://primary.foo"
+                      ]
+                    }
+                  }
+                ]
+              }
+            )");
+
+  EXPECT_EQ(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_dict)
+          .first.value(),
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
+          {},
+          {{
+              {primary, net::FirstPartySetEntry(
+                            primary, net::SiteType::kPrimary, std::nullopt)},
+              {alias, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                              std::nullopt)},
+          }},
+          {{alias, primary}})));
+}
+
+// Regression test for https://crbug.com/406036301.
+TEST(FirstPartySetParser,
+     EnterprisePolicies_AcceptsValidAndInvalidCctld_JustReplacements) {
+  net::SchemefulSite primary(GURL("https://primary.test"));
+  net::SchemefulSite alias(GURL("https://primary.foo"));
+
+  base::Value::Dict policy_dict = base::test::ParseJsonDict(R"(
+             {
+                "replacements": [
+                  {
+                    "primary": "https://primary.test",
+                    "associatedSites": [
+                      "https://associated.test"
+                    ],
+                    "ccTLDs": {
+                      "https://primary.test": [
+                        "https://sub.associated.test",
+                        "https://primary.foo"
+                      ]
+                    }
+                  }
+                ]
+              }
+            )");
+
+  EXPECT_EQ(
+      FirstPartySetParser::ParseSetsFromEnterprisePolicy(policy_dict)
+          .first.value(),
+      FirstPartySetsOverridesPolicy(net::SetsMutation(
+          {{
+              {primary, net::FirstPartySetEntry(
+                            primary, net::SiteType::kPrimary, std::nullopt)},
+              {alias, net::FirstPartySetEntry(primary, net::SiteType::kPrimary,
+                                              std::nullopt)},
+          }},
+          {}, {{alias, primary}})));
 }
 
 TEST(FirstPartySetParser, ParseFromCommandLine_Invalid_MultipleSets) {
