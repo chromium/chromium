@@ -1377,7 +1377,7 @@
     },
     {
       name: "CSSShapeFunctionOffsetPath",
-      status: "experimental",
+      status: "stable",
     },
     {
       // sibling-index() and sibling-count()
