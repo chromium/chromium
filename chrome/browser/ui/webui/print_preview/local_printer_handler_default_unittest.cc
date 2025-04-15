@@ -9,7 +9,7 @@
 #include <string_view>
 #include <utility>
 
-#include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -131,6 +131,13 @@ void RecordPrintersDone(bool& is_done_out) {
 void RecordGetCapability(base::Value::Dict& capabilities_out,
                          base::Value::Dict capability) {
   capabilities_out = std::move(capability);
+}
+
+// Converts JSON string to `base::Value` object.
+// On failure, fills `error` string and the return value is not a list.
+base::Value GetJSONAsValue(std::string_view json, std::string& error) {
+  return base::Value::FromUniquePtrValue(
+      JSONStringValueDeserializer(json).Deserialize(nullptr, &error));
 }
 
 }  // namespace
@@ -608,13 +615,11 @@ TEST_P(LocalPrinterHandlerDefaultTest, GetPrinters) {
       }
     ]
   )";
-  base::JSONReader::Result expected_printers =
-      base::JSONReader::ReadAndReturnValueWithError(expected_list);
-  ASSERT_TRUE(expected_printers.has_value())
-      << "Error deserializing printers: "
-      << expected_printers.error().ToString();
-  ASSERT_TRUE(expected_printers->is_list());
-  EXPECT_EQ(printers, expected_printers->GetList());
+  std::string error;
+  base::Value expected_printers(GetJSONAsValue(expected_list, error));
+  ASSERT_TRUE(expected_printers.is_list())
+      << "Error deserializing printers: " << error;
+  EXPECT_EQ(printers, expected_printers.GetList());
 }
 
 TEST_P(LocalPrinterHandlerDefaultTest, GetPrintersNoneRegistered) {

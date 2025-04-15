@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/files/file_util.h"
-#include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/common/chrome_version.h"
@@ -49,11 +49,11 @@ const wchar_t kMsiInstall[] = L"msi";
 // valid, returns std::nullopt.
 std::optional<base::Value::Dict> ParseDistributionPreferences(
     const std::string& json_data) {
-  base::JSONReader::Result root =
-      base::JSONReader::ReadAndReturnValueWithError(json_data);
-  if (!root.has_value()) {
-    LOGFN(WARNING) << "Failed to parse initial prefs file: "
-                   << root.error().ToString();
+  JSONStringValueDeserializer json(json_data);
+  std::string error;
+  std::unique_ptr<base::Value> root(json.Deserialize(nullptr, &error));
+  if (!root.get()) {
+    LOGFN(WARNING) << "Failed to parse initial prefs file: " << error;
     return std::nullopt;
   }
   if (!root->is_dict()) {

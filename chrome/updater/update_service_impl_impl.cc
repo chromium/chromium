@@ -23,7 +23,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_reader.h"
+#include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -1274,13 +1274,19 @@ void UpdateServiceImplImpl::RunInstallerImpl(
   config_->GetUpdaterPersistedData()->RegisterApp(request);
 
   const base::Version installer_version([&install_settings]() -> std::string {
-    std::optional<base::Value::Dict> install_settings_dict =
-        base::JSONReader::ReadDict(install_settings);
-    if (install_settings_dict) {
-      std::string* installer_version_value =
-          install_settings_dict->FindString(kInstallerVersion);
-      if (installer_version_value) {
-        return std::move(*installer_version_value);
+    std::unique_ptr<base::Value> install_settings_deserialized =
+        JSONStringValueDeserializer(install_settings)
+            .Deserialize(
+                /*error_code=*/nullptr, /*error_message=*/nullptr);
+    if (install_settings_deserialized) {
+      const base::Value::Dict* install_settings_dict =
+          install_settings_deserialized->GetIfDict();
+      if (install_settings_dict) {
+        const std::string* installer_version_value =
+            install_settings_dict->FindString(kInstallerVersion);
+        if (installer_version_value) {
+          return *installer_version_value;
+        }
       }
     }
 
