@@ -131,13 +131,6 @@ public final class Http2TestServer {
     }
 
     /**
-     * @return url of a zstd-encoded server resource.
-     */
-    public static String getServeSimpleZstdResponse() {
-        return getServerUrl() + Http2TestHandler.SERVE_SIMPLE_ZSTD_RESPONSE;
-    }
-
-    /**
      * @return url of a shared-brotli-encoded server resource.
      */
     public static String getServeSharedBrotliResponse() {
