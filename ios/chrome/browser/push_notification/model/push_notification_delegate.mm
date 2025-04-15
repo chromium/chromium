@@ -6,7 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/check_is_test.h"
 #import "base/files/file_path.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
@@ -18,6 +20,8 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/change_profile_commands.h"
+#import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
@@ -40,6 +44,7 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -199,6 +204,53 @@ PushNotificationClientManager* GetClientManagerForProfile(ProfileIOS* profile) {
   return profile_service->GetPushNotificationClientManager();
 }
 
+// Extracts the Profile name from the notification's `user_info` dictionary. It
+// validates that the name is present, non-empty, and corresponds to an existing
+// Profile in `ProfileAttributesStorageIOS`. Returns the Profile name if
+// successful, otherwise returns an empty string.
+//
+// Records specific failures to UMA via `RecordClientManagerAccessFailure`.
+//
+// Requires `IsIOSMultiProfilePushNotificationHandlingEnabled()` to be true.
+std::string ExtractAndValidateProfileNameFromUserInfo(NSDictionary* user_info) {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  NSString* profile_name_ns = user_info[kOriginatingProfileNameKey];
+
+  if (!profile_name_ns || profile_name_ns.length == 0) {
+    RecordClientManagerAccessFailure(
+        PushNotificationClientManagerFailurePoint::
+            kValidateProfileNameMissingFromUserInfo);
+    return "";
+  }
+
+  ProfileManagerIOS* profile_manager =
+      GetApplicationContext()->GetProfileManager();
+
+  if (!profile_manager) {
+    CHECK_IS_TEST();
+    return "";
+  }
+
+  ProfileAttributesStorageIOS* storage =
+      profile_manager->GetProfileAttributesStorage();
+
+  if (!storage) {
+    CHECK_IS_TEST();
+    return "";
+  }
+
+  std::string profile_name = base::SysNSStringToUTF8(profile_name_ns);
+
+  if (!storage->HasProfileWithName(profile_name)) {
+    RecordClientManagerAccessFailure(PushNotificationClientManagerFailurePoint::
+                                         kValidateProfileNameNotFoundInStorage);
+    return "";
+  }
+
+  return profile_name;
+}
+
 // Helper function to get the profile-specific PushNotificationClientManager
 // using userInfo containing the profile name. Returns nullptr if the profile
 // cannot be found or the manager cannot be retrieved.
@@ -244,6 +296,51 @@ PushNotificationClientManager* GetClientManagerForUserInfo(
   return GetClientManagerForProfile(profile);
 }
 
+// Callback executed after a Profile switch initiated by a notification
+// interaction. This function validates the state of the `new_scene_state` and
+// its associated Profile, retrieves the appropriate
+// `PushNotificationClientManager` for the now-active `switched_profile`, and
+// forwards the original `response` for handling by that manager. Logs failures
+// to UMA.
+void HandleNotificationInteractionAfterProfileSwitch(
+    UNNotificationResponse* response,
+    SceneState* new_scene_state,
+    base::OnceClosure completion_closure) {
+  base::ScopedClosureRunner run_completion_closure(
+      std::move(completion_closure));
+
+  CHECK(new_scene_state.profileState);
+  CHECK_GE(new_scene_state.profileState.initStage,
+           ProfileInitStage::kProfileLoaded);
+
+  ProfileIOS* switched_profile = new_scene_state.profileState.profile;
+  CHECK(switched_profile);
+
+  PushNotificationClientManager* client_manager =
+      GetClientManagerForProfile(switched_profile);
+
+  if (!client_manager) {
+    RecordClientManagerAccessFailure(
+        PushNotificationClientManagerFailurePoint::
+            kInteractionContinuationMissingClientManager);
+
+    return;
+  }
+
+  client_manager->HandleNotificationInteraction(response);
+}
+
+// Creates a `ChangeProfileContinuation` callback bound with the original
+// notification `response`. `HandleNotificationInteractionAfterProfileSwitch()`
+// will be invoked by the Profile switching mechanism if a switch occurs,
+// allowing the notification interaction to be handled in the context of the
+// newly switched Profile.
+ChangeProfileContinuation CreateNotificationInteractionContinuation(
+    UNNotificationResponse* response) {
+  return base::BindOnce(&HandleNotificationInteractionAfterProfileSwitch,
+                        response);
+}
+
 }  // anonymous namespace
 
 @interface PushNotificationDelegate () <AppStateObserver,
@@ -282,7 +379,7 @@ PushNotificationClientManager* GetClientManagerForUserInfo(
   [self recordLifeCycleEvent:PushNotificationLifecycleEvent::
                                  kNotificationInteraction];
   __weak __typeof(self) weakSelf = self;
-  [self executeWhenInitStageFinal:^{
+  [self executeWhenForeground:^{
     [weakSelf handleNotificationResponse:response];
   }];
   // TODO(crbug.com/401537165): Consider changing when completionHandler is
@@ -506,6 +603,20 @@ PushNotificationClientManager* GetClientManagerForUserInfo(
   }
 }
 
+- (void)appState:(AppState*)appState
+    sceneDidBecomeActive:(SceneState*)sceneState {
+  if (sceneState.profileState.initStage < ProfileInitStage::kFinal) {
+    [sceneState.profileState addObserver:self];
+    return;
+  }
+
+  if (sceneState.activationLevel < SceneActivationLevelForegroundActive) {
+    return;
+  }
+
+  [self appDidEnterForeground:sceneState];
+}
+
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
   [sceneState addObserver:self];
   [self sceneState:sceneState
@@ -555,20 +666,37 @@ PushNotificationClientManager* GetClientManagerForUserInfo(
 
 #pragma mark - Private
 
-// Notifies the client manager that the scene is "foreground active".
-- (void)appDidEnterForeground:(SceneState*)sceneState {
+// Executes blocks queued in _runAfterForeground. If multi-profile handling is
+// enabled, also notifies the profile-specific PushNotificationClientManager
+// for the given sceneState upon readiness.
+- (void)handleQueuedBlocksWithSceneState:(SceneState*)sceneState {
+  NSMutableArray<ProceduralBlock>* blocks = _runAfterForeground;
+  _runAfterForeground = nil;
+
+  for (ProceduralBlock block in blocks) {
+    block();
+  }
+
   if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
+    if (!sceneState || !sceneState.profileState.profile) {
+      return;
+    }
+
     PushNotificationClientManager* clientManager =
         GetClientManagerForProfile(sceneState.profileState.profile);
 
-    if (clientManager) {
-      clientManager->OnSceneActiveForegroundBrowserReady();
-    } else {
+    if (!clientManager) {
       RecordClientManagerAccessFailure(
           PushNotificationClientManagerFailurePoint::kAppDidEnterForeground);
+      return;
     }
-  }
 
+    clientManager->OnSceneActiveForegroundBrowserReady();
+  }
+}
+
+// Notifies the client manager that the scene is "foreground active".
+- (void)appDidEnterForeground:(SceneState*)sceneState {
   PushNotificationClientManager* appWideClientManager =
       GetApplicationContext()
           ->GetPushNotificationService()
@@ -576,12 +704,23 @@ PushNotificationClientManager* GetClientManagerForUserInfo(
   DCHECK(appWideClientManager);
   appWideClientManager->OnSceneActiveForegroundBrowserReady();
 
-  for (ProceduralBlock block in _runAfterForeground) {
-    block();
-  }
-  _runAfterForeground = nil;
-  ProfileIOS* profile = sceneState.browserProviderInterface.mainBrowserProvider
-                            .browser->GetProfile();
+  __weak PushNotificationDelegate* weakSelf = self;
+  __weak SceneState* weakSceneState = sceneState;
+
+  // Asynchronously processes any queued `_runAfterForeground` blocks.
+  //
+  // This is crucial for notification interactions (queued via
+  // `-executeWhenForeground:`), as handling them might require tearing down the
+  // current Browser/Profile to switch Profiles. Asynchronous processing ensures
+  // that all current observers (potentially observing the Browser/Profile being
+  // torn down) finish their work *before* these objects are destroyed. This
+  // prevents state modification or destruction while observers are still active
+  // in the original synchronous call stack.
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf handleQueuedBlocksWithSceneState:weakSceneState];
+  });
+
+  ProfileIOS* profile = sceneState.profileState.profile;
   if (IsContentNotificationEnabled(profile)) {
     ContentNotificationService* contentNotificationService =
         ContentNotificationServiceFactory::GetForProfile(profile);
@@ -749,23 +888,75 @@ PushNotificationClientManager* GetClientManagerForUserInfo(
             AppInitStage::kBrowserObjectsForBackgroundHandlers);
 
   if (IsIOSMultiProfilePushNotificationHandlingEnabled()) {
-    PushNotificationClientManager* clientManager = GetClientManagerForUserInfo(
-        response.notification.request.content.userInfo);
-
-    if (clientManager) {
-      clientManager->HandleNotificationInteraction(response);
-    } else {
-      RecordClientManagerAccessFailure(
-          PushNotificationClientManagerFailurePoint::
-              kHandleNotificationResponse);
-    }
+    [self handleProfileSpecificNotificationResponse:response];
   }
+
+  // Notifications are intentionally passed on to the `appWideClientManager`
+  // even when the profile specific one handles them. In a future refacor, if a
+  // notification is properly handled in a profile specific manager it likely
+  // should not be passed onto the app wide manager.
 
   PushNotificationClientManager* appWideClientManager =
       GetApplicationContext()
           ->GetPushNotificationService()
           ->GetPushNotificationClientManager();
   appWideClientManager->HandleNotificationInteraction(response);
+}
+
+// Handles a notification interaction specifically for the multi-Profile case.
+//
+// It determines the Profile the notification originated from and the target
+// scene where the interaction should occur. Based on whether the target scene's
+// current Profile matches the notification's originating Profile, it either:
+//
+// 1. Handles the interaction directly using the current context if the Profiles
+//    match.
+// 2. Initiates a Profile switch for the target scene if the Profiles do not
+//    match. A continuation callback is provided to the switching mechanism to
+//    process the interaction once the correct Profile is active.
+//
+// Failures encountered during Profile validation, scene lookup, manager
+// retrieval, or switch initiation are logged to UMA for monitoring.
+- (void)handleProfileSpecificNotificationResponse:
+    (UNNotificationResponse*)response {
+  CHECK(IsIOSMultiProfilePushNotificationHandlingEnabled());
+
+  std::string profileName = ExtractAndValidateProfileNameFromUserInfo(
+      response.notification.request.content.userInfo);
+
+  if (profileName.empty()) {
+    RecordClientManagerAccessFailure(PushNotificationClientManagerFailurePoint::
+                                         kHandleInteractionInvalidProfileName);
+
+    return;
+  }
+
+  SceneState* targetSceneState =
+      [self notificationTargetSceneStateForResponse:response];
+
+  if (!targetSceneState) {
+    RecordClientManagerAccessFailure(PushNotificationClientManagerFailurePoint::
+                                         kHandleInteractionMissingTargetScene);
+
+    targetSceneState = self.foregroundActiveScene;
+  }
+
+  if (!targetSceneState) {
+    RecordClientManagerAccessFailure(
+        PushNotificationClientManagerFailurePoint::
+            kHandleInteractionMissingFallbackScene);
+
+    return;
+  }
+
+  id<ChangeProfileCommands> handler =
+      HandlerForProtocol(_appState.appCommandDispatcher, ChangeProfileCommands);
+
+  CHECK(handler);
+
+  [handler changeProfile:profileName
+                forScene:targetSceneState
+            continuation:CreateNotificationInteractionContinuation(response)];
 }
 
 // Shows the app's notification settings in the first foreground active
@@ -784,6 +975,32 @@ PushNotificationClientManager* GetClientManagerForUserInfo(
   [applicationHandler prepareToPresentModal:^{
     [settingsHandler showNotificationsSettings];
   }];
+}
+
+// Returns the `SceneState` matching the notification response's target scene,
+// if any.
+- (SceneState*)notificationTargetSceneStateForResponse:
+    (UNNotificationResponse*)response {
+  UIScene* targetScene = response.targetScene;
+
+  if (!targetScene) {
+    RecordClientManagerAccessFailure(
+        PushNotificationClientManagerFailurePoint::kGetResponseTargetSceneNil);
+
+    return nil;
+  }
+
+  std::string targetSceneSessionIdentifier =
+      SessionIdentifierForScene(targetScene);
+
+  for (SceneState* scene in _appState.connectedScenes) {
+    if (scene.sceneSessionID == targetSceneSessionIdentifier) {
+      return scene;
+    }
+  }
+
+  // No matching scene found
+  return nil;
 }
 
 @end

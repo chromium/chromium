@@ -50,34 +50,60 @@ enum class NotificationOptInAccessPoint {
 // LINT.IfChange(PushNotificationClientManagerFailurePoint)
 enum class PushNotificationClientManagerFailurePoint {
   // Failed to get Profile-based `PushNotificationClientManager` when handling
-  // foreground presentation.
+  // foreground presentation (in
+  // `-userNotificationCenter:willPresentNotification:withCompletionHandler:`).
   kWillPresentNotification = 0,
   // Failed to get Profile-based `PushNotificationClientManager` during APNS
-  // registration.
+  // registration (in `-applicationDidRegisterWithAPNS:profile:`).
   kDidRegisterWithAPNS = 1,
   // Failed to get Profile-based `PushNotificationClientManager` when the app
-  // entered foreground.
+  // entered foreground (in `-appDidEnterForeground:`).
   kAppDidEnterForeground = 2,
   // Failed to get Profile-based `PushNotificationClientManager` when handling a
-  // user interaction response.
+  // user interaction response (in `-handleNotificationResponse:`).
   kHandleNotificationResponse = 3,
   // Failed to get Profile-based `PushNotificationClientManager` when processing
-  // an incoming remote notification
-  // in the background.
+  // an incoming remote notification in the background (in
+  // `-applicationWillProcessIncomingRemoteNotification:`).
   kWillProcessIncomingRemoteNotification = 4,
-  // Failed inside GetClientManagerForProfile because the input ProfileIOS* was
-  // nullptr.
+  // Failed inside `GetClientManagerForProfile()` because the input
+  // `ProfileIOS*` was `nullptr`.
   kGetClientManagerNullProfileInput = 5,
-  // Failed inside GetClientManagerForProfile because the
-  // PushNotificationProfileService couldn't be retrieved.
+  // Failed inside `GetClientManagerForProfile()` because the
+  // `PushNotificationProfileService` couldn't be retrieved.
   kGetClientManagerMissingProfileService = 6,
-  // Failed inside GetClientManagerForUserInfo because the Profile name key was
-  // missing from user info dictionary.
+  // Failed inside `GetClientManagerForUserInfo()` because the
+  // Profile name key was missing from the user info dictionary.
   kGetClientManagerMissingProfileNameInUserInfo = 7,
-  // Failed inside GetClientManagerForUserInfo because the Profile couldn't be
-  // found using the name from user info.
+  // Failed inside `GetClientManagerForUserInfo()` because the Profile couldn't
+  // be found (or wasn't loaded) using the name from user info.
   kGetClientManagerProfileNotFoundByName = 8,
-  kMaxValue = kGetClientManagerProfileNotFoundByName,
+  // Failed inside `ExtractAndValidateProfileNameFromUserInfo()` because the
+  // profile name was missing/empty in user info.
+  kValidateProfileNameMissingFromUserInfo = 9,
+  // Failed inside `ExtractAndValidateProfileNameFromUserInfo()` because the
+  // profile name was not found in storage.
+  kValidateProfileNameNotFoundInStorage = 10,
+  // Failed inside `HandleNotificationInteractionAfterProfileSwitch()` because
+  // the client manager couldn't be retrieved for the switched profile.
+  kInteractionContinuationMissingClientManager = 11,
+  // Failed inside `-handleProfileSpecificNotificationResponse:` because profile
+  // name extraction/validation failed overall (returned empty `profileName`).
+  kHandleInteractionInvalidProfileName = 12,
+  // Recorded inside `-handleProfileSpecificNotificationResponse:` when the
+  // notification's target scene couldn't be found via
+  // `-notificationTargetSceneStateForResponse:`. The system will attempt to
+  // fall back to the foreground active scene. Note: Unlike other entries, this
+  // indicates a fallback mechanism being used, not an outright failure that
+  // prevents further processing. Logged for monitoring purposes.
+  kHandleInteractionMissingTargetScene = 13,
+  // Failed inside `-handleProfileSpecificNotificationResponse:` because the
+  // fallback foreground scene (`self.foregroundActiveScene`) was also missing.
+  kHandleInteractionMissingFallbackScene = 14,
+  // Failed inside `-notificationTargetSceneStateForResponse:` because
+  // `response.targetScene` was `nil`.
+  kGetResponseTargetSceneNil = 15,
+  kMaxValue = kGetResponseTargetSceneNil,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientManagerFailurePoint)
 

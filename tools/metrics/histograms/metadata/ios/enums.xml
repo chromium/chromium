@@ -1445,6 +1445,19 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="GetClientManager: Missing Profile Service"/>
   <int value="7" label="GetClientManager: Missing Profile Name in UserInfo"/>
   <int value="8" label="GetClientManager: Profile Not Found By Name"/>
+  <int value="9" label="Validate: Missing UserInfo Name"/>
+  <int value="10" label="Validate: Name Not Found In Storage"/>
+  <int value="11" label="Continuation: Missing Client Manager"/>
+  <int value="12" label="HandleInteraction: Invalid Profile Name"/>
+  <int value="13" label="HandleInteraction: Missing Target Scene">
+    Indicates the system had to fall back to the foreground active scene because
+    the notification's specific target scene couldn't be found. Unlike most
+    other entries in this enum, this represents a non-critical fallback scenario
+    recorded for monitoring, rather than a failure preventing interaction
+    handling.
+  </int>
+  <int value="14" label="HandleInteraction: Missing Fallback Scene"/>
+  <int value="15" label="GetTargetScene: Response Scene Nil"/>
 </enum>
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:PushNotificationClientManagerFailurePoint) -->
