@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/tracing.h"
 #include "net/dns/host_resolver.h"
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_attempt_manager.h"
@@ -79,6 +80,8 @@ class HttpStreamPool::AttemptManager::QuicTask
   const raw_ptr<AttemptManager> manager_;
   const quic::ParsedQuicVersion quic_version_;
   const NetLogWithSource net_log_;
+  const perfetto::Track track_;
+  const perfetto::Flow flow_;
 
   std::optional<int> start_result_;
 

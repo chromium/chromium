@@ -306,7 +306,7 @@ void HttpStreamPool::Job::StartInternal() {
   if (IsPreconnect()) {
     attempt_manager()->Preconnect(this);
   } else {
-    attempt_manager()->StartJob(this, request_net_log_);
+    attempt_manager()->StartJob(this);
   }
 }
 
