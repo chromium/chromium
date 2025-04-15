@@ -379,14 +379,11 @@
     userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount,
                                 skipCounter);
   }
-  __weak __typeof(self) weakSelf = self;
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
-                         completion:^() {
-                           [weakSelf runCompletionWithSigninResult:
-                                         SigninCoordinatorResultCanceledByUser
-                                                completionIdentity:nil];
-                         }];
+                         completion:nil];
+  [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
+                   completionIdentity:nil];
 }
 
 - (void)consistencyDefaultAccountCoordinatorOpenIdentityChooser:
@@ -493,15 +490,11 @@
                                     withIdentity:(id<SystemIdentity>)identity {
   DCHECK([identity isEqual:self.selectedIdentity]);
   id<SystemIdentity> completionIdentity = identity;
-  __weak __typeof(self) weakSelf = self;
   [self.navigationController.presentingViewController
       dismissViewControllerAnimated:YES
-                         completion:^() {
-                           [weakSelf runCompletionWithSigninResult:
-                                         SigninCoordinatorResultSuccess
-                                                completionIdentity:
-                                                    completionIdentity];
-                         }];
+                         completion:nil];
+  [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
+                   completionIdentity:completionIdentity];
 }
 
 - (void)consistencyPromoSigninMediatorSignInCancelled:
