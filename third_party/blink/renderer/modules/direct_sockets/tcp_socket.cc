@@ -301,11 +301,11 @@ void TCPSocket::FinishOpenOrAccept(
   readable_stream_wrapper_ = MakeGarbageCollected<TCPReadableStreamWrapper>(
       GetScriptState(),
       WTF::BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
-      std::move(receive_stream));
+      std::move(receive_stream), inspector_id_);
   writable_stream_wrapper_ = MakeGarbageCollected<TCPWritableStreamWrapper>(
       GetScriptState(),
       WTF::BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
-      std::move(send_stream));
+      std::move(send_stream), inspector_id_);
 
   auto* open_info = TCPSocketOpenInfo::Create();
 

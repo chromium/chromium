@@ -7512,6 +7512,32 @@ domain Network
       RequestId identifier
       MonotonicTime timestamp
 
+  # Fired when data is sent to tcp direct socket stream.
+  experimental event directTCPSocketChunkSent
+    parameters
+      RequestId identifier
+      binary data
+      MonotonicTime timestamp
+
+  # Fired when data is received from tcp direct socket stream.
+  experimental event directTCPSocketChunkReceived
+    parameters
+      RequestId identifier
+      binary data
+      MonotonicTime timestamp
+
+  # Fired when there is an error
+  # when writing to tcp direct socket stream.
+  # For example, if user writes illegal type like string
+  # instead of ArrayBuffer or ArrayBufferView.
+  # There's no reporting for reading, because
+  # we cannot know errors on the other side.
+  experimental event directTCPSocketChunkError
+    parameters
+      RequestId identifier
+      string errorMessage
+      MonotonicTime timestamp
+
   experimental type PrivateNetworkRequestPolicy extends string
     enum
       Allow

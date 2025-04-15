@@ -153,6 +153,9 @@ interface CoreProbes {
   void DirectTCPSocketOpened(ExecutionContext*, uint64_t identifier, const String& remote_addr, uint16_t remote_port, std::optional<String> local_addr, std::optional<uint16_t> local_port);
   void DirectTCPSocketAborted(ExecutionContext*, uint64_t identifier, int net_error);
   void DirectTCPSocketClosed(ExecutionContext*, uint64_t identifier);
+  void DirectTCPSocketChunkSent(ScriptState&, uint64_t identifier, base::span<const uint8_t> data);
+  void DirectTCPSocketChunkReceived(ScriptState&, uint64_t identifier, base::span<const uint8_t> data);
+  void DirectTCPSocketChunkError(ScriptState&, uint64_t identifier, const String& error_message);
   void WillCreateP2PSocketUdp(ExecutionContext*, std::optional<base::UnguessableToken>* devtools_token);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
   void LayerTreeDidChange(LocalFrame*);

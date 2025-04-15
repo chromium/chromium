@@ -227,6 +227,15 @@ class CORE_EXPORT InspectorNetworkAgent final
 
   void DirectTCPSocketClosed(uint64_t identifier);
 
+  void DirectTCPSocketChunkSent(uint64_t identifier,
+                                base::span<const uint8_t> data);
+
+  void DirectTCPSocketChunkReceived(uint64_t identifier,
+                                    base::span<const uint8_t> data);
+
+  void DirectTCPSocketChunkError(uint64_t identifier,
+                                 const String& error_message);
+
   void SetDevToolsIds(ResourceRequest& request, const FetchInitiatorInfo&);
   void IsCacheDisabled(bool* is_cache_disabled) const;
   void ShouldApplyDevtoolsCookieSettingOverrides(

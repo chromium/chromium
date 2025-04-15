@@ -35,7 +35,8 @@ class MODULES_EXPORT TCPWritableStreamWrapper
  public:
   TCPWritableStreamWrapper(ScriptState*,
                            CloseOnceCallback,
-                           mojo::ScopedDataPipeProducerHandle);
+                           mojo::ScopedDataPipeProducerHandle,
+                           uint64_t inspector_id);
 
   // WritableStreamWrapper:
   void CloseStream() override;
@@ -74,6 +75,9 @@ class MODULES_EXPORT TCPWritableStreamWrapper
   // Prepares the object for destruction.
   void Dispose();
 
+  // Reports write error to Devtools Protocol.
+  void ReportWriteError(const WTF::String& message);
+
   CloseOnceCallback on_close_;
 
   mojo::ScopedDataPipeProducerHandle data_pipe_;
@@ -95,6 +99,9 @@ class MODULES_EXPORT TCPWritableStreamWrapper
   // If an asynchronous write() on the underlying sink object is pending, this
   // will be non-null.
   Member<ScriptPromiseResolver<IDLUndefined>> write_promise_resolver_;
+
+  // Unique id for devtools inspector_network_agent.
+  const uint64_t inspector_id_;
 };
 
 }  // namespace blink
