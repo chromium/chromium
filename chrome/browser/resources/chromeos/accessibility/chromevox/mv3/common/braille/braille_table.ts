@@ -53,7 +53,7 @@ export namespace BrailleTable {
 
       return tables;
     }
-    const url = chrome.extension.getURL(BrailleTable.TABLE_PATH);
+    const url = chrome.runtime.getURL(BrailleTable.TABLE_PATH);
     if (!url) {
       throw 'Invalid path: ' + BrailleTable.TABLE_PATH;
     }

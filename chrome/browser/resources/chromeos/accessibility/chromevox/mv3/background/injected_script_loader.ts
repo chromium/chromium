@@ -54,7 +54,7 @@ export class InjectedScriptLoader {
     // directly, with a magic comment that makes Chrome treat it like it
     // loaded normally. Wait until it's fetched before loading the
     // next script.
-    const url = chrome.extension.getURL(fileName) + '?' + new Date().getTime();
+    const url = chrome.runtime.getURL(fileName) + '?' + new Date().getTime();
     const response = await fetch(url);
     if (response.ok) {
       let scriptText = await response.text();

@@ -30,9 +30,9 @@ export class BrailleTranslatorManager {
     this.liblouis_ =
         liblouisForTest ||
         new LibLouis(
-            chrome.extension.getURL(
+            chrome.runtime.getURL(
                 'chromevox/third_party/liblouis/liblouis_wrapper.js'),
-            chrome.extension.getURL('chromevox/mv3/background/braille/tables'),
+            chrome.runtime.getURL('chromevox/mv3/background/braille/tables'),
             () => this.loadLiblouis_());
   }
 

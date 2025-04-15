@@ -47,7 +47,7 @@ export class LogUrlWatcher implements ChromeVoxRangeObserver {
       // TODO(b/314203187): Not null asserted, check that this is correct.
       LogStore.instance.shouldSkipOutput =
           range.start.node.root.docUrl!.indexOf(
-              chrome.extension.getURL('chromevox/mv3/log_page/log.html')) === 0;
+              chrome.runtime.getURL('chromevox/mv3/log_page/log.html')) === 0;
     } else {
       LogStore.instance.shouldSkipOutput = false;
     }
