@@ -10709,6 +10709,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
         <message name="IDS_PASSWORD_MANAGER_IPH_BODY_SAVE_TO_ACCOUNT" desc="Body of the in Product Help shown when the 'Save to account` is selected">
           You can save this password in your Google Account or only on this device
         </message>
+        <message name="IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY" desc="Body of IPH prompting users to consider saving passwords">
+          Save your passwords securely with Google Chrome - just sign in as normal and we'll do the rest
+        </message>
+        <message name="IDS_PASSWORDS_SAVE_PRIMING_PROMO_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text for IPH prompting users to consider saving passwords">
+          You can save your passwords securely with Google Chrome - just sign in as normal and we'll do the rest
+        </message>
         <message name="IDS_PASSWORD_MANAGER_IPH_MANAGEMENT_BUBBLE_AFTER_SAVE" desc="Body of the in Product Help shown after saving a password informing the user about the password management bubble">
           To view your password or add a note about it, click the key icon
         </message>

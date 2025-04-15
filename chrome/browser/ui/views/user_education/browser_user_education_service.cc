@@ -602,6 +602,24 @@ void MaybeRegisterChromeFeaturePromos(
       IDS_GMC_LOCAL_MEDIA_CAST_START_PROMO,
       FeaturePromoSpecification::AcceleratorInfo()));
 
+  // kIPHPasswordsSavePrimingPromo:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForToastPromo(
+          feature_engagement::kIPHPasswordsSavePrimingPromoFeature,
+#if BUILDFLAG(IS_CHROMEOS)
+          // No avatar button on ChromeOS, so anchor to app menu instead.
+          kToolbarAppMenuButtonElementId,
+#else
+          kToolbarAvatarButtonElementId,
+#endif
+          IDS_PASSWORDS_SAVE_PRIMING_PROMO_BODY,
+          IDS_PASSWORDS_SAVE_PRIMING_PROMO_SCREENREADER,
+          FeaturePromoSpecification::AcceleratorInfo())
+          .SetMetadata(
+              137, "dfried@chromium.org",
+              "Triggered when the user navigates a page with an eligible login "
+              "form, and they have no saved passwords.")));
+
   // kIPHPasswordsManagementBubbleAfterSaveFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(

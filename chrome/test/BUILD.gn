@@ -10808,6 +10808,7 @@ if (!is_android && !is_chromeos_device) {
       "../browser/password_manager/password_manager_interactive_test_base.cc",
       "../browser/password_manager/password_manager_interactive_test_base.h",
       "../browser/password_manager/password_manager_interactive_uitest.cc",
+      "../browser/password_manager/password_user_education_interactive_uitest.cc",
       "../browser/permissions/one_time_permissions_tracker_helper_interactive_uitest.cc",
       "../browser/preloading/prerender/prerender_omnibox_ui_browsertest.cc",
       "../browser/privacy_sandbox/browsing_topics_settings_interactive_uitest.cc",

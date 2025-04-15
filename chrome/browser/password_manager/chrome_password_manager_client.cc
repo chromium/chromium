@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/webui_url_constants.h"
@@ -63,6 +64,7 @@
 #include "components/back_forward_cache/back_forward_cache_disable.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/device_reauth/device_authenticator.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/password_manager/content/browser/bad_message.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
@@ -2096,10 +2098,12 @@ void ChromePasswordManagerClient::MaybeShowSavePasswordPrimingPromo(
     return;
   }
 
-  // TODO(https://crbug.com/409769482): Fetch the
-  // `BrowserUserEducationInterface` for the `WebContents` and call
-  // `MaybeShowFeaturePromo()` once the IPH feature for this promo has been
-  // created.
+  if (auto* const user_ed =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              web_contents())) {
+    user_ed->MaybeShowFeaturePromo(
+        feature_engagement::kIPHPasswordsSavePrimingPromoFeature);
+  }
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)

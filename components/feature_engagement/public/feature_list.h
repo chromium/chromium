@@ -359,6 +359,8 @@ DEFINE_VARIATION_PARAM(kIPHLensOverlayTranslateButtonFeature,
                        "IPH_LensOverlayTranslateButton");
 DEFINE_VARIATION_PARAM(kIPHLiveCaptionFeature, "IPH_LiveCaption");
 DEFINE_VARIATION_PARAM(kIPHMerchantTrustFeature, "IPH_MerchantTrust");
+DEFINE_VARIATION_PARAM(kIPHPasswordsSavePrimingPromoFeature,
+                       "IPH_PasswordsSavePrimingPromo");
 DEFINE_VARIATION_PARAM(kIPHPasswordsManagementBubbleAfterSaveFeature,
                        "IPH_PasswordsManagementBubbleAfterSave");
 DEFINE_VARIATION_PARAM(kIPHPasswordsManagementBubbleDuringSigninFeature,
