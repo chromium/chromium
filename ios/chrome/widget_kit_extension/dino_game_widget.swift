@@ -55,38 +55,44 @@ struct DinoGameWidgetEntryView: View {
   var entry: ConfigureWidgetEntry
   @Environment(\.redactionReasons) var redactionReasons
   var body: some View {
-    // We wrap this widget in a link on top of using `widgetUrl` so that the voice over will treat
-    // the widget as one tap target. Without the wrapping, voice over treats the content within
-    // the widget as multiple tap targets.
-    Link(destination: WidgetConstants.DinoGameWidget.url) {
-      ZStack {
-        Image(redactionReasons.isEmpty ? background : backgroundPlaceholder)
-          .resizable()
-          .unredacted()
-        VStack(alignment: .leading, spacing: 0) {
-          Spacer()
-            .frame(minWidth: 0, maxWidth: .infinity)
-          HStack {
-            Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE")
-              .foregroundColor(Color("widget_text_color"))
-              .fontWeight(.semibold)
-              .font(.subheadline)
-              .lineLimit(1)
+    // The account to display was deleted (entry.deleted can only be true if
+    // IOS_ENABLE_WIDGETS_FOR_MIM is enabled).
+    if entry.deleted && !entry.isPreview {
+      SmallWidgetDeletedAccountView()
+    } else {
+      // We wrap this widget in a link on top of using `widgetUrl` so that the voice over will treat
+      // the widget as one tap target. Without the wrapping, voice over treats the content within
+      // the widget as multiple tap targets.
+      Link(destination: WidgetConstants.DinoGameWidget.url) {
+        ZStack {
+          Image(redactionReasons.isEmpty ? background : backgroundPlaceholder)
+            .resizable()
+            .unredacted()
+          VStack(alignment: .leading, spacing: 0) {
             Spacer()
-            #if IOS_ENABLE_WIDGETS_FOR_MIM
-              AvatarForDinoGame(entry: entry)
-            #endif
+              .frame(minWidth: 0, maxWidth: .infinity)
+            HStack {
+              Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_TITLE")
+                .foregroundColor(Color("widget_text_color"))
+                .fontWeight(.semibold)
+                .font(.subheadline)
+                .lineLimit(1)
+              Spacer()
+              #if IOS_ENABLE_WIDGETS_FOR_MIM
+                AvatarForDinoGame(entry: entry)
+              #endif
+            }
+            .padding([.leading, .bottom], 16)
           }
-          .padding([.leading, .bottom], 16)
         }
       }
+      .widgetURL(destinationURL(url: WidgetConstants.DinoGameWidget.url, gaia: entry.gaiaID))
+      .accessibility(
+        label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL")
+      )
+      // Background is not used as the image takes the whole widget.
+      .crContainerBackground(Color("widget_background_color").unredacted())
     }
-    .widgetURL(destinationURL(url: WidgetConstants.DinoGameWidget.url, gaia: entry.gaiaID))
-    .accessibility(
-      label: Text("IDS_IOS_WIDGET_KIT_EXTENSION_GAME_A11Y_LABEL")
-    )
-    // Background is not used as the image takes the whole widget.
-    .crContainerBackground(Color("widget_background_color").unredacted())
   }
 }
 

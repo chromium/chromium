@@ -98,4 +98,9 @@ struct SelectAccountIntent: WidgetConfigurationIntent {
 
     return gaia
   }
+
+  // Returns a boolean used to check if the account was deleted from device.
+  func deleted() -> Bool {
+    return account?.gaia == nil
+  }
 }
