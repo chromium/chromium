@@ -8,7 +8,7 @@ build_webui("build") {
   grd_prefix = "profile_internals"
   static_files = [ "profile_internals.html" ]
   web_component_files = [ "profile_internals_app.ts" ]
-  non_web_component_files = [ "profile_internals_browser_proxy.ts" ]
+  ts_files = [ "profile_internals_browser_proxy.ts" ]
 
   css_files = [ "profile_internals_app.css" ]
 

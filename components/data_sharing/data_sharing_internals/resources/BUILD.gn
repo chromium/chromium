@@ -10,7 +10,7 @@ build_webui("build") {
     "data_sharing_internals.css",
     "data_sharing_internals.html",
   ]
-  non_web_component_files = [
+  ts_files = [
     "data_sharing_internals.ts",
     "data_sharing_internals_browser_proxy.ts",
   ]
