@@ -24,31 +24,31 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 
-#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL()                  \
-  if (!GetOwner() || !GetOwner()->GetDelegate() || !start() || \
-      !start()->GetAnchor() || !end() || !end()->GetAnchor())  \
-    return UIA_E_ELEMENTNOTAVAILABLE;                          \
-  SetStart(start()->AsValidPosition());                        \
+#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL()                 \
+  if (!GetOwner() || GetOwner()->IsDestroyed() || !start() || \
+      !start()->GetAnchor() || !end() || !end()->GetAnchor()) \
+    return UIA_E_ELEMENTNOTAVAILABLE;                         \
+  SetStart(start()->AsValidPosition());                       \
   SetEnd(end()->AsValidPosition());
-#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN(in)           \
-  if (!GetOwner() || !GetOwner()->GetDelegate() || !start() || \
-      !start()->GetAnchor() || !end() || !end()->GetAnchor())  \
-    return UIA_E_ELEMENTNOTAVAILABLE;                          \
-  if (!in)                                                     \
-    return E_POINTER;                                          \
-  SetStart(start()->AsValidPosition());                        \
+#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN(in)          \
+  if (!GetOwner() || GetOwner()->IsDestroyed() || !start() || \
+      !start()->GetAnchor() || !end() || !end()->GetAnchor()) \
+    return UIA_E_ELEMENTNOTAVAILABLE;                         \
+  if (!in)                                                    \
+    return E_POINTER;                                         \
+  SetStart(start()->AsValidPosition());                       \
   SetEnd(end()->AsValidPosition());
-#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(out)         \
-  if (!GetOwner() || !GetOwner()->GetDelegate() || !start() || \
-      !start()->GetAnchor() || !end() || !end()->GetAnchor())  \
-    return UIA_E_ELEMENTNOTAVAILABLE;                          \
-  if (!out)                                                    \
-    return E_POINTER;                                          \
-  *out = {};                                                   \
-  SetStart(start()->AsValidPosition());                        \
+#define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_OUT(out)        \
+  if (!GetOwner() || GetOwner()->IsDestroyed() || !start() || \
+      !start()->GetAnchor() || !end() || !end()->GetAnchor()) \
+    return UIA_E_ELEMENTNOTAVAILABLE;                         \
+  if (!out)                                                   \
+    return E_POINTER;                                         \
+  *out = {};                                                  \
+  SetStart(start()->AsValidPosition());                       \
   SetEnd(end()->AsValidPosition());
 #define UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(in, out) \
-  if (!GetOwner() || !GetOwner()->GetDelegate() || !start() ||  \
+  if (!GetOwner() || GetOwner()->IsDestroyed() || !start() ||   \
       !start()->GetAnchor() || !end() || !end()->GetAnchor())   \
     return UIA_E_ELEMENTNOTAVAILABLE;                           \
   if (!in || !out)                                              \
@@ -629,6 +629,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
   for (auto it = normalized_start->AsLeafTextPosition();
        it->anchor_id() != end->anchor_id() || it->tree_id() != end->tree_id();
        it = it->CreateNextAnchorPosition()) {
+    DCHECK(it);
     // If the iterator creates a null position, then it has likely overrun the
     // range, return failure. This is unexpected but may happen if the range
     // became inverted.
@@ -637,7 +638,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetAttributeValue(
       return E_FAIL;
 
     AXPlatformNodeDelegate* delegate = GetDelegate(it.get());
-    DCHECK(it && delegate);
+    DCHECK(delegate);
 
     AXPlatformNodeWin* platform_node = static_cast<AXPlatformNodeWin*>(
         delegate->GetFromNodeID(it->anchor_id()));
@@ -1112,7 +1113,6 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ScrollIntoView(BOOL align_to_top) {
   DCHECK(common_ancestor_platform_node);
   AXPlatformNodeDelegate* common_ancestor_delegate =
       common_ancestor_platform_node->GetDelegate();
-  DCHECK(common_ancestor_delegate);
   const gfx::Rect text_range_container_frame_bounds =
       common_ancestor_delegate->GetBoundsRect(AXCoordinateSystem::kFrame,
                                               AXClippingBehavior::kUnclipped);
