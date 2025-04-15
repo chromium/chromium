@@ -47,7 +47,9 @@ class CredentialProviderService
  public:
   // Initializes the service.
   CredentialProviderService(
+      const std::string& profile_name,
       PrefService* prefs,
+      PrefService* local_state,
       scoped_refptr<password_manager::PasswordStoreInterface>
           profile_password_store,
       scoped_refptr<password_manager::PasswordStoreInterface>
@@ -179,11 +181,19 @@ class CredentialProviderService
   MemoryCredentialStore* GetCredentialStore(
       password_manager::PasswordStoreInterface* store) const;
 
-  // Returns whether multiple profiles are currently fully initialized.
-  bool IsUsingMultiProfile() const;
+  // Returns whether the profile used to create this CredentialProviderService
+  // is the last used profile. Always return true if the user isn't using multi
+  // profile.
+  bool IsLastUsedProfile() const;
+
+  // The name of the profile used to create this CredentialProviderService.
+  const std::string profile_name_;
 
   // The pref service.
   const raw_ptr<PrefService> prefs_;
+
+  // The local state. Used to query the last used profile.
+  const raw_ptr<PrefService> local_state_;
 
   // The interfaces for getting and manipulating a user's saved passwords.
   const scoped_refptr<password_manager::PasswordStoreInterface>

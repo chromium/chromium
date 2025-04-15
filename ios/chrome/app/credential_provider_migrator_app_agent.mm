@@ -16,6 +16,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_browser_agent.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
@@ -27,6 +28,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -89,9 +91,25 @@ void MigrationCompleteForProfile(
   return self;
 }
 
+#pragma mark - SceneObservingAppAgent
+
 // Migrate the password when Chrome comes to foreground.
 - (void)appDidEnterForeground {
   [self migrateCredentialForAllPasskeyModels];
+}
+
+#pragma mark - AppStateObserver
+
+// Called when a new ProfileState is connected.
+- (void)appState:(AppState*)appState
+    profileStateConnected:(ProfileState*)profileState {
+  [self updateMultiProfileSetting];
+}
+
+// Called when a ProfileState is disconnected.
+- (void)appState:(AppState*)appState
+    profileStateDisconnected:(ProfileState*)profileState {
+  [self updateMultiProfileSetting];
 }
 
 #pragma mark - PasskeyModelObserverDelegate
@@ -121,6 +139,30 @@ void MigrationCompleteForProfile(
 }
 
 #pragma mark - Private
+
+// Returns whether multiple profiles have at least one scene connected.
+- (BOOL)isMultiProfile {
+  if (!AreSeparateProfilesForManagedAccountsEnabled()) {
+    return NO;
+  }
+
+  // Check if we have more than 1 connected profile.
+  NSUInteger profileWithScenes = 0;
+  for (ProfileState* profileState in self.appState.profileStates) {
+    if ([profileState.connectedScenes count] != 0) {
+      profileWithScenes++;
+    }
+  }
+
+  return profileWithScenes > 1;
+}
+
+// Updates the CPE's multi profile setting.
+- (void)updateMultiProfileSetting {
+  [app_group::GetGroupUserDefaults()
+      setObject:[NSNumber numberWithBool:[self isMultiProfile]]
+         forKey:AppGroupUserDefaultsCredentialProviderMultiProfileSetting()];
+}
 
 // Sets whether the passkey updates are allowed to show an infobar to the user.
 // This should normally only happen during the credential migration.

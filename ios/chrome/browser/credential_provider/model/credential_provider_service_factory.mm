@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -73,7 +74,8 @@ CredentialProviderServiceFactory::BuildServiceInstanceFor(
       IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
   return std::make_unique<CredentialProviderService>(
-      profile->GetPrefs(), profile_password_store, account_password_store,
-      passkeyModel, credential_store, identity_manager, sync_service,
-      affiliation_service, favicon_loader);
+      profile->GetProfileName(), profile->GetPrefs(),
+      GetApplicationContext()->GetLocalState(), profile_password_store,
+      account_password_store, passkeyModel, credential_store, identity_manager,
+      sync_service, affiliation_service, favicon_loader);
 }
