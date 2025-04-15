@@ -57,6 +57,11 @@ BookmarksSidePanelCoordinator::CreateBookmarksWebView(
               /*esc_closes_ui=*/false));
   bookmarks_web_view->SetProperty(views::kElementIdentifierKey,
                                   kBookmarkSidePanelWebViewElementId);
+  bookmarks_web_view->GetWebContents()
+      ->GetWebUI()
+      ->GetController()
+      ->GetAs<BookmarksSidePanelUI>()
+      ->Initialize(scope.GetBrowserWindowInterface());
   extensions::BookmarkManagerPrivateDragEventRouter::CreateForWebContents(
       bookmarks_web_view.get()->contents_wrapper()->web_contents());
   return bookmarks_web_view;

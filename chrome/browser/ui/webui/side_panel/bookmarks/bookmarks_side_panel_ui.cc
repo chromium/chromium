@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/page_image_service/image_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmark_prefs.h"
 #include "chrome/browser/ui/webui/commerce/price_tracking_handler.h"
@@ -312,10 +314,14 @@ BookmarksSidePanelUI::GetShoppingListContextMenuController() {
 void BookmarksSidePanelUI::CreateBookmarksPageHandler(
     mojo::PendingRemote<side_panel::mojom::BookmarksPage> page,
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
+  if (!browser_window_) {
+    CHECK_IS_TEST();
+  }
   bookmarks_page_handler_ = std::make_unique<BookmarksPageHandler>(
       std::move(receiver), std::move(page), this,
       BookmarkMergedSurfaceServiceFactory::GetForProfile(
-          Profile::FromWebUI(web_ui())));
+          Profile::FromWebUI(web_ui())),
+      browser_window_);
 }
 
 void BookmarksSidePanelUI::CreateShoppingServiceHandler(
@@ -357,4 +363,8 @@ bool BookmarksSidePanelUI::IsIncognitoModeAvailable() {
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   return prefs->GetInteger(policy::policy_prefs::kIncognitoModeAvailability) ==
          static_cast<int>(policy::IncognitoModeAvailability::kEnabled);
+}
+
+void BookmarksSidePanelUI::Initialize(BrowserWindowInterface& browser_window) {
+  browser_window_ = &browser_window;
 }

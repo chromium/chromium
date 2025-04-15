@@ -22,6 +22,7 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 
 class BookmarksPageHandler;
+class BrowserWindowInterface;
 
 namespace commerce {
 class ShoppingListContextMenuController;
@@ -59,6 +60,8 @@ class BookmarksSidePanelUI
   BookmarksSidePanelUI(const BookmarksSidePanelUI&) = delete;
   BookmarksSidePanelUI& operator=(const BookmarksSidePanelUI&) = delete;
   ~BookmarksSidePanelUI() override;
+
+  void Initialize(BrowserWindowInterface& browser_window);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
@@ -108,6 +111,7 @@ class BookmarksSidePanelUI
 
   bool IsIncognitoModeAvailable();
 
+  raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
   std::unique_ptr<BookmarksPageHandler> bookmarks_page_handler_;
   mojo::Receiver<side_panel::mojom::BookmarksPageHandlerFactory>
       bookmarks_page_factory_receiver_{this};

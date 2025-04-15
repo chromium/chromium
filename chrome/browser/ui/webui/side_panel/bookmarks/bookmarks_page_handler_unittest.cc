@@ -176,7 +176,7 @@ class BookmarksPageHandlerTest : public BrowserWithTestWindowTest {
     handler_ = std::make_unique<BookmarksPageHandler>(
         mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler>(),
         mock_bookmarks_page_.BindAndGetRemote(),
-        /*bookmarks_ui=*/nullptr, bookmark_merged_service_.get());
+        /*bookmarks_ui=*/nullptr, bookmark_merged_service_.get(), browser());
   }
 
   void LoadBookmarkModel() {
