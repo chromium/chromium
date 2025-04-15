@@ -115,6 +115,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
   declare blockOptionSubLabel: string;
   declare blockOptionIcon: string;
   declare private pref_: chrome.settingsPrivate.PrefObject<number>;
+  selected: boolean;
 
   override ready() {
     super.ready();
@@ -199,6 +200,11 @@ export class SettingsCategoryDefaultRadioGroupElement extends
     this.browserProxy.setDefaultValueForContentType(
         this.category,
         this.categoryEnabled_ ? allowOption : ContentSetting.BLOCK);
+    if (this.selected !== this.categoryEnabled_) {
+      this.selected = this.categoryEnabled_;
+      this.dispatchEvent(new CustomEvent(
+          'selected-changed', {detail: {value: this.selected}}));
+    }
   }
 
   /**
@@ -231,7 +237,7 @@ export class SettingsCategoryDefaultRadioGroupElement extends
     const enabled = this.computeIsSettingEnabled(update.setting);
     const prefValue = enabled ? SiteContentRadioSetting.ENABLED :
                                 SiteContentRadioSetting.DISABLED;
-
+    this.selected = enabled;
     this.set('pref_.value', prefValue);
   }
 
