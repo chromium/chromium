@@ -21,6 +21,7 @@ import org.chromium.components.payments.intent.WebPaymentIntentHelperType.Paymen
 import org.chromium.components.payments.intent.WebPaymentIntentHelperType.PaymentRequestDetailsUpdate;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Helper class used by android payment app to notify the browser that the user has selected a
@@ -230,19 +231,41 @@ public class PaymentDetailsUpdateServiceHelper {
             Log.e(TAG, "mInvokedAppPackageInfo is null in isCallerAuthorized");
             return false;
         }
-        PackageInfo callerPackageInfo =
-                mPackageManagerDelegate.getPackageInfoWithSignatures(callerUid);
-        if (callerPackageInfo == null) {
-            Log.e(TAG, "Received null callerPackageInfo for UID %d", callerUid);
+
+        List<PackageInfo> callerPackageInfos =
+                mPackageManagerDelegate.getPackageInfosWithSignatures(callerUid);
+        if (callerPackageInfos == null) {
+            Log.e(TAG, "Received null callerPackageInfos for UID %d", callerUid);
             return false;
         }
-        if (!mInvokedAppPackageInfo.packageName.equals(callerPackageInfo.packageName)) {
+        if (callerPackageInfos.size() < 1) {
+            Log.e(TAG, "Received empty callerPackageInfos for UID %d", callerUid);
+            return false;
+        }
+
+        Log.d(TAG, "Found %d packages for UID %d", callerPackageInfos.size(), callerUid);
+        PackageInfo callerPackageInfo = null;
+        for (PackageInfo packageInfo : callerPackageInfos) {
+            assert packageInfo != null;
+
+            if (mInvokedAppPackageInfo.packageName.equals(packageInfo.packageName)) {
+                Log.d(TAG, "Package name \"%s\" matches invoked app", packageInfo.packageName);
+                callerPackageInfo = packageInfo;
+                break;
+            }
+            Log.d(
+                    TAG,
+                    "Package name \"%s\" does not match invoked app (\"%s\")",
+                    packageInfo.packageName,
+                    mInvokedAppPackageInfo.packageName);
+        }
+        if (callerPackageInfo == null) {
             Log.e(
                     TAG,
-                    "Invoked app's package name (\"%s\") is different from calling app's package"
-                            + " name (\"%s\")",
-                    mInvokedAppPackageInfo.packageName,
-                    callerPackageInfo.packageName);
+                    "No package info for calling UID %d had a package name equal to the invoked"
+                            + " app's (\"%s\")",
+                    callerUid,
+                    mInvokedAppPackageInfo.packageName);
             return false;
         }
 

@@ -8,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageInfo;
+import android.content.pm.Signature;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
@@ -45,6 +47,7 @@ import org.chromium.components.payments.intent.WebPaymentIntentHelperType.Paymen
 import org.chromium.payments.mojom.PaymentAddress;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Tests for PaymentDetailsUpdateServiceHelper. */
@@ -304,6 +307,13 @@ public class PaymentDetailsUpdateServiceHelperTest {
                 });
     }
 
+    private PackageInfo createPackageInfo(String packageName, String signature) {
+        PackageInfo packageInfo = new PackageInfo();
+        packageInfo.packageName = packageName;
+        packageInfo.signatures = new Signature[] {new Signature(signature)};
+        return packageInfo;
+    }
+
     @Test
     @MediumTest
     @Feature({"Payments"})
@@ -546,5 +556,154 @@ public class PaymentDetailsUpdateServiceHelperTest {
         onPaymentDetailsNotUpdated();
         Assert.assertTrue(mPaymentDetailsDidNotUpdate);
         verifyIsWaitingForPaymentDetailsUpdate(false);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testIsCallerAuthorized() throws Throwable {
+        installAndInvokePaymentApp();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // The callerUid doesn't matter in this case, as by default
+                    // MockPackageManagerDelegate returns the invoking app's package info.
+                    Assert.assertTrue(
+                            PaymentDetailsUpdateServiceHelper.getInstance()
+                                    .isCallerAuthorized(/* callerUid= */ 7));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testIsCallerAuthorizedWithoutInitialization() throws Throwable {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            PaymentDetailsUpdateServiceHelper.getInstance()
+                                    .isCallerAuthorized(/* callerUid= */ 7));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testIsCallerAuthorizedWithoutInvokingApp() throws Throwable {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Initialize the PaymentDetailsUpdateServiceHelper so that the package manager
+                    // is not null, but with an app that is neither installed nor invoked. In this
+                    // state, isCallerAuthorized should reject all calls.
+                    PaymentDetailsUpdateServiceHelper.getInstance()
+                            .initialize(
+                                    mPackageManager,
+                                    /* invokedAppPackageName= */ "com.nosuchapp",
+                                    mUpdateListener);
+                    Assert.assertFalse(
+                            PaymentDetailsUpdateServiceHelper.getInstance()
+                                    .isCallerAuthorized(/* callerUid= */ 7));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testIsCallerAuthorizedNullPackageInfos() throws Throwable {
+        final int callerUid = 7;
+        mPackageManager.overridePackageInfosForUid(callerUid, /* packageInfos= */ null);
+
+        installAndInvokePaymentApp();
+        startPaymentDetailsUpdateService();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            PaymentDetailsUpdateServiceHelper.getInstance()
+                                    .isCallerAuthorized(callerUid));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testIsCallerAuthorizedEmptyPackageInfos() throws Throwable {
+        final int callerUid = 7;
+        mPackageManager.overridePackageInfosForUid(callerUid, new ArrayList<PackageInfo>());
+
+        installAndInvokePaymentApp();
+        startPaymentDetailsUpdateService();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            PaymentDetailsUpdateServiceHelper.getInstance()
+                                    .isCallerAuthorized(callerUid));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testIsCallerAuthorizedMultiplePackagesForUid() throws Throwable {
+        final int callerUid = 7;
+        // In this case there are two packages for the calling UID. The first doesn't match the
+        // invoked package name and should be ignored, whilst the second matches both package name
+        // and signature.
+        List<PackageInfo> packageInfos =
+                Arrays.asList(
+                        createPackageInfo("com.alicepay", /* signature= */ "00"),
+                        createPackageInfo("com.bobpay", /* signature= */ "01"));
+        mPackageManager.overridePackageInfosForUid(callerUid, packageInfos);
+
+        installAndInvokePaymentApp();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertTrue(
+                            PaymentDetailsUpdateServiceHelper.getInstance()
+                                    .isCallerAuthorized(callerUid));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testIsCallerAuthorizedNoPackagesMatchInvokedApp() throws Throwable {
+        final int callerUid = 7;
+        // In this case there are two packages for the calling UID, but neither match the invoked
+        // app name (com.bobpay).
+        List<PackageInfo> packageInfos =
+                Arrays.asList(
+                        createPackageInfo("com.alicepay", /* signature= */ "01"),
+                        createPackageInfo("com.charliepay", /* signature= */ "01"));
+        mPackageManager.overridePackageInfosForUid(callerUid, packageInfos);
+
+        installAndInvokePaymentApp();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            PaymentDetailsUpdateServiceHelper.getInstance()
+                                    .isCallerAuthorized(callerUid));
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testIsCallerAuthorizedSignatureMismatch() throws Throwable {
+        final int callerUid = 7;
+        // In this case there are two packages for the calling UID. The first doesn't match the
+        // invoked package name and should be ignored even though it has the same signature, whilst
+        // the second matches package name but has the wrong signature.
+        List<PackageInfo> packageInfos =
+                Arrays.asList(
+                        createPackageInfo("com.alicepay", /* signature= */ "01"),
+                        createPackageInfo("com.bobpay", /* signature= */ "02"));
+        mPackageManager.overridePackageInfosForUid(callerUid, packageInfos);
+
+        installAndInvokePaymentApp();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(
+                            PaymentDetailsUpdateServiceHelper.getInstance()
+                                    .isCallerAuthorized(callerUid));
+                });
     }
 }

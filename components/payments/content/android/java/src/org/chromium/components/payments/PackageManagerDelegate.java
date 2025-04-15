@@ -18,18 +18,23 @@ import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Abstraction of Android's package manager to enable testing. */
 @NullMarked
 public class PackageManagerDelegate {
+    private static final String TAG = "PkgManagerDelegate";
+
     /**
      * Checks whether the system has the given feature.
+     *
      * @param feature The feature to check.
      * @return Whether the system has the given feature.
      */
@@ -49,17 +54,32 @@ public class PackageManagerDelegate {
     }
 
     /**
-     * Retrieves package information of an installed application.
+     * Retrieves package information of an installed application, based on the UID. On Android,
+     * multiple packages can share the same UID, so more than one {@link PackageInfo} may be
+     * returned.
      *
      * @param uid The uid of an installed application.
-     * @return The package information of the installed application.
+     * @return The package information of installed appliacations with the input uid, or null if no
+     *     matching applications are found.
      */
     @SuppressLint("PackageManagerGetSignatures")
-    public @Nullable PackageInfo getPackageInfoWithSignatures(int uid) {
-        String packageName =
-                ContextUtils.getApplicationContext().getPackageManager().getNameForUid(uid);
-        if (packageName == null) return null;
-        return getPackageInfoWithSignatures(packageName);
+    public @Nullable List<PackageInfo> getPackageInfosWithSignatures(int uid) {
+        String[] packageNames =
+                ContextUtils.getApplicationContext().getPackageManager().getPackagesForUid(uid);
+        if (packageNames == null) {
+            return null;
+        }
+
+        List<PackageInfo> packageInfos = new ArrayList<PackageInfo>();
+        for (String packageName : packageNames) {
+            PackageInfo result = getPackageInfoWithSignatures(packageName);
+            if (result == null) {
+                Log.e(TAG, "No package info found for %s", packageName);
+                continue;
+            }
+            packageInfos.add(result);
+        }
+        return packageInfos;
     }
 
     /**
