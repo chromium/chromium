@@ -504,6 +504,7 @@ void BnplManager::OnBnplPaymentInstrumentCreated(
     ongoing_flow_state_->instrument_id = std::move(instrument_id);
     FetchRedirectUrl();
   } else {
+    payments_autofill_client().CloseBnplTos();
     payments_autofill_client().ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
             /*is_permanent_error=*/ShouldShowPermanentErrorDialog(result)));

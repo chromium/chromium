@@ -1400,6 +1400,7 @@ TEST_F(BnplManagerTest, CreateBnplPaymentInstrument_Failure) {
                   _))
       .WillOnce(base::test::RunOnceCallback<1>(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure, ""));
+  EXPECT_CALL(GetPaymentsAutofillClient(), CloseBnplTos);
 
   test_api(*bnpl_manager_).CreateBnplPaymentInstrument();
 
