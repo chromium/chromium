@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/profile/model/test_with_profile.h"
 
+#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/test/test_file_util.h"
 #import "ios/chrome/browser/optimization_guide/model/ios_chrome_prediction_model_store.h"
@@ -16,8 +17,22 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
+TestWithProfile::InitializedFeatureList::InitializedFeatureList(
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features) {
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+}
+
+TestWithProfile::InitializedFeatureList::~InitializedFeatureList() = default;
+
 TestWithProfile::TestWithProfile()
-    : profile_data_dir_(base::CreateUniqueTempDirectoryScopedToTest()),
+    : TestWithProfile(/*enabled_features=*/{}, /*disabled_features=*/{}) {}
+
+TestWithProfile::TestWithProfile(
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features)
+    : initialized_scoped_feature_list_(enabled_features, disabled_features),
+      profile_data_dir_(base::CreateUniqueTempDirectoryScopedToTest()),
       profile_manager_(GetApplicationContext()->GetLocalState(),
                        profile_data_dir_) {
   TestingApplicationContext* application_context =
