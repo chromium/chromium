@@ -107,6 +107,30 @@ bool IsCmdOrCtrl(const ui::Event& event) {
 
 }  // namespace
 
+TableHeaderStyle::TableHeaderStyle(int cell_vertical_padding,
+                                   int cell_horizontal_padding,
+                                   int resize_bar_vertical_padding,
+                                   int separator_horizontal_padding,
+                                   gfx::Font::Weight font_weight,
+                                   ui::ColorId separator_horizontal_color_id,
+                                   ui::ColorId separator_vertical_color_id,
+                                   ui::ColorId background_color_id,
+                                   float focus_ring_upper_corner_radius,
+                                   bool header_sort_state)
+    : cell_vertical_padding(cell_vertical_padding),
+      cell_horizontal_padding(cell_horizontal_padding),
+      resize_bar_vertical_padding(resize_bar_vertical_padding),
+      separator_horizontal_padding(separator_horizontal_padding),
+      font_weight(font_weight),
+      separator_horizontal_color_id(separator_horizontal_color_id),
+      separator_vertical_color_id(separator_vertical_color_id),
+      background_color_id(background_color_id),
+      focus_ring_upper_corner_radius(focus_ring_upper_corner_radius),
+      header_sort_state(header_sort_state) {}
+
+TableHeaderStyle::TableHeaderStyle() = default;
+TableHeaderStyle::~TableHeaderStyle() = default;
+
 // Used as the comparator to sort the contents of the table.
 struct TableView::SortHelper {
   explicit SortHelper(TableView* table) : table(table) {}
@@ -455,6 +479,10 @@ void TableView::ToggleSortOrder(size_t visible_column_index) {
   SetSortDescriptors(sort);
   ForceHoverUpdate();
   UpdateFocusRings();
+
+  if (header_style().header_sort_state.value_or(false)) {
+    UpdateHeaderAXName();
+  }
 }
 
 void TableView::SetSortDescriptors(const SortDescriptors& sort_descriptors) {
@@ -2247,6 +2275,60 @@ void TableView::UpdateFocusRings() {
   }
 }
 
+void TableView::UpdateHeaderAXName() {
+  const std::optional<int> primary_sorted_column_id =
+      sort_descriptors().empty()
+          ? std::nullopt
+          : std::make_optional(sort_descriptors()[0].column_id);
+  std::vector<std::u16string> column_titles;
+  std::vector<std::u16string> column_sortable;
+
+  column_titles.reserve(visible_columns_.size());
+  column_sortable.reserve(visible_columns_.size());
+  AXVirtualView* ax_header_row = GetVirtualAccessibilityHeaderRow();
+
+  for (size_t visible_column_index = 0;
+       visible_column_index < visible_columns_.size(); ++visible_column_index) {
+    const VisibleColumn& visible_column =
+        visible_columns_[visible_column_index];
+    const ui::TableColumn column = visible_column.column;
+
+    column_titles.push_back(column.title);
+    auto sort_direction = ax::mojom::SortDirection::kUnsorted;
+    // For macOS, only show sort state for sorting column.
+    auto col_sort_state =
+        PlatformStyle::kTableViewSupportsKeyboardNavigationByCell
+            ? IDS_APP_TABLE_HEADER_NOT_SORTED_ACCNAME
+            : IDS_APP_TABLE_HEADER_NOT_SORTED_ACCNAME_MAC;
+
+    if (column.sortable && primary_sorted_column_id.has_value() &&
+        column.id == primary_sorted_column_id.value()) {
+      sort_direction = GetFirstSortDescriptorDirection();
+      // Update sort_state on sorting column.
+      col_sort_state = sort_direction == ax::mojom::SortDirection::kAscending
+                           ? IDS_APP_TABLE_HEADER_SORTED_ASC_ACCNAME
+                           : IDS_APP_TABLE_HEADER_SORTED_DESC_ACCNAME;
+    }
+    std::u16string sort_state =
+        l10n_util::GetStringFUTF16(col_sort_state, column.title);
+    // Update the cell AX name, only the columns with sorting state change will
+    // have different AX name.
+    GetVirtualAccessibilityCellImpl(ax_header_row, visible_column_index)
+        ->SetName(model()->GetAXNameForHeaderCell(column.title, sort_state));
+    column_sortable.push_back(std::move(sort_state));
+  }
+
+  // Update header name to be combined column titles for macOS.
+  if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell &&
+      !column_titles.empty()) {
+    std::u16string header_name =
+        model()->GetAXNameForHeader(column_titles, column_sortable);
+    if (!header_name.empty()) {
+      ax_header_row->SetName(std::move(header_name));
+    }
+  }
+}
+
 std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
   DCHECK(header_) << "header_ needs to be instantiated before setting its"
                      "accessibility view.";
@@ -2259,7 +2341,10 @@ std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
   auto ax_header = std::make_unique<AXVirtualView>();
   ax_header->SetRole(ax::mojom::Role::kRow);
   std::vector<std::u16string> column_titles;
+  std::vector<std::u16string> column_sortable;
+
   column_titles.reserve(visible_columns_.size());
+  column_sortable.reserve(visible_columns_.size());
 
   for (size_t visible_column_index = 0;
        visible_column_index < visible_columns_.size(); ++visible_column_index) {
@@ -2268,7 +2353,6 @@ std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
     const ui::TableColumn column = visible_column.column;
     auto ax_cell = std::make_unique<AXVirtualView>();
     ax_cell->SetRole(ax::mojom::Role::kColumnHeader);
-    ax_cell->SetName(column.title);
     column_titles.push_back(column.title);
     ax_cell->SetTableCellColumnIndex(
         static_cast<int32_t>(visible_column_index));
@@ -2279,22 +2363,37 @@ std::unique_ptr<AXVirtualView> TableView::CreateHeaderAccessibilityView() {
     }
 
     auto sort_direction = ax::mojom::SortDirection::kUnsorted;
+    // For macOS, only show sort state for sorting column.
+    auto col_sort_state =
+        PlatformStyle::kTableViewSupportsKeyboardNavigationByCell
+            ? IDS_APP_TABLE_HEADER_NOT_SORTED_ACCNAME
+            : IDS_APP_TABLE_HEADER_NOT_SORTED_ACCNAME_MAC;
     if (column.sortable && primary_sorted_column_id.has_value() &&
         column.id == primary_sorted_column_id.value()) {
       sort_direction = GetFirstSortDescriptorDirection();
+      // Update sort_state on sorting column.
+      col_sort_state = sort_direction == ax::mojom::SortDirection::kAscending
+                           ? IDS_APP_TABLE_HEADER_SORTED_ASC_ACCNAME
+                           : IDS_APP_TABLE_HEADER_SORTED_DESC_ACCNAME;
     }
-    ax_cell->SetSortDirection(sort_direction);
+    std::u16string sort_state =
+        l10n_util::GetStringFUTF16(col_sort_state, column.title);
 
+    // Set AX name for each column header, which will include sorting state in
+    // certain surface, for example refreshed task manager.
+    ax_cell->SetName(model()->GetAXNameForHeaderCell(column.title, sort_state));
+    ax_cell->SetSortDirection(sort_direction);
     ax_header->AddChildView(std::move(ax_cell));
+    column_sortable.push_back(std::move(sort_state));
   }
 
   // Update header name to be combined column titles for macOS.
   if (!PlatformStyle::kTableViewSupportsKeyboardNavigationByCell &&
       !column_titles.empty()) {
-    const std::u16string header_name =
-        model()->GetAXNameForHeader(column_titles);
+    std::u16string header_name =
+        model()->GetAXNameForHeader(column_titles, column_sortable);
     if (!header_name.empty()) {
-      ax_header->SetName(header_name);
+      ax_header->SetName(std::move(header_name));
     }
   }
 

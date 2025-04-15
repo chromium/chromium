@@ -628,17 +628,17 @@ void TaskManagerView::Init() {
       provider->GetCornerRadiusMetric(views::Emphasis::kHigh);
 
   if (table_config_.header_style) {
-    views::TableHeaderStyle header_style = {
-        .cell_vertical_padding = 14,
-        .cell_horizontal_padding = 12,
-        .resize_bar_vertical_padding = 16,
-        .separator_horizontal_padding = 0,
-        .font_weight = gfx::Font::Weight::MEDIUM,
-        .separator_horizontal_color_id = ui::kColorSysDivider,
-        .separator_vertical_color_id = ui::kColorSysDivider,
-        .background_color_id = kColorTaskManagerTableHeaderBackground,
-        .focus_ring_upper_corner_radius = corner_radius,
-    };
+    views::TableHeaderStyle header_style(
+        /*cell_vertical_padding=*/14, /*cell_horizontal_padding=*/12,
+        /*resize_bar_vertical_padding=*/16,
+        /*separator_horizontal_padding=*/0,
+        /*font_weight=*/gfx::Font::Weight::MEDIUM,
+        /*separator_horizontal_color_id=*/ui::kColorSysDivider,
+        /*separator_vertical_color_id=*/ui::kColorSysDivider,
+        /*background_color_id=*/kColorTaskManagerTableHeaderBackground,
+        /*focus_ring_upper_corner_radius=*/corner_radius,
+        /*header_sort_state=*/
+        base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh));
     tab_table->SetHeaderStyle(header_style);
   }
 

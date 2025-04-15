@@ -747,16 +747,26 @@ int TaskManagerTableModel::CompareValues(size_t row1,
 }
 
 std::u16string TaskManagerTableModel::GetAXNameForHeader(
-    const std::vector<std::u16string>& visible_column_titles) {
+    const std::vector<std::u16string>& visible_column_titles,
+    const std::vector<std::u16string>& visible_column_sortable) {
   // Gate the header change for task manager behind feature flag. Clean it up
   // once refreshed task manager is launched.
   // TODO(crbug.com/364926055): Chromium Task Manager Refresh Cleanup.
   if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
-    return TableModel::GetAXNameForHeader(visible_column_titles);
+    return TableModel::GetAXNameForHeader(visible_column_titles,
+                                          visible_column_sortable);
   }
+  return FormatListToString(visible_column_sortable);
+}
 
-  CHECK(!visible_column_titles.empty());
-  return FormatListToString(visible_column_titles);
+std::u16string TaskManagerTableModel::GetAXNameForHeaderCell(
+    const std::u16string& visible_column_title,
+    const std::u16string& visible_column_sortable) {
+  if (!base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh)) {
+    return TableModel::GetAXNameForHeaderCell(visible_column_title,
+                                              visible_column_sortable);
+  }
+  return visible_column_sortable;
 }
 
 std::u16string TaskManagerTableModel::GetAXNameForRow(

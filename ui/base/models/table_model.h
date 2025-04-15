@@ -44,21 +44,32 @@ class COMPONENT_EXPORT(UI_BASE) TableModel {
   // column zero.
   virtual std::u16string GetTooltip(size_t row);
 
-  // Returns the accessibility name for the header.
+  // Returns the accessibility name and sort status for the header.
   // If there are multiple columns in the table, the AX name will be combined
-  // names from all visible columns' titles.
+  // names from all visible columns' titles and sort status.
   // For example: The table has 3 visible columns with title as `col1`, `col2`
-  // and `col3` correspondingly. The accessibility name for the `header` would
-  // be `col1 col2 col3`.
+  // and `col3` correspondingly. Their sortable status is `unsorted`,`sorted in
+  // ascending order`,`sorted in descending order`.The accessibility name for
+  // the `header` would be `col1 unsorted col2 sorted in ascending order col3
+  // sorted in descending order`.
   virtual std::u16string GetAXNameForHeader(
-      const std::vector<std::u16string>& visible_column_titles);
+      const std::vector<std::u16string>& visible_column_titles,
+      const std::vector<std::u16string>& visible_column_sortable);
+
+  // Returns the accessibility name and sort status for the header cell.
+  // For example:  `col1` has sortable status as `sorted in ascending
+  // order`. The accessibility name for the `header` cell would be `col1 sorted
+  // in ascending order`.
+  virtual std::u16string GetAXNameForHeaderCell(
+      const std::u16string& visible_column_title,
+      const std::u16string& visible_column_sortable);
 
   // Returns the accessibility name for the row.
-  // If there are multiple columns in the `row`, the AX name will be combined
-  // names from all visible columns.
-  // For example: The indexed `row` has 3 visible columns with value as `col1`,
-  // `col2` and `col3` correspondingly. The accessibility name for the `row`
-  // would be `col1 col2 col3`.
+  // If there are multiple columns in the `row`, the AX name will be
+  // combined names from all visible columns. For example: The indexed `row`
+  // has 3 visible columns with value as `col1`, `col2` and `col3`
+  // correspondingly. The accessibility name for the `row` would be `col1
+  // col2 col3`.
   virtual std::u16string GetAXNameForRow(
       size_t row,
       const std::vector<int>& visible_column_ids);
