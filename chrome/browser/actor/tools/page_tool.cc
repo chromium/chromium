@@ -9,21 +9,35 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
-
-using content::RenderFrameHost;
-using optimization_guide::proto::ActionInformation;
-using optimization_guide::proto::ClickAction_ClickCount;
-using optimization_guide::proto::ClickAction_ClickType;
-using optimization_guide::proto::ScrollAction_ScrollDirection;
-using optimization_guide::proto::TypeAction_TypeMode;
+#include "ui/gfx/geometry/point.h"
 
 namespace {
+
+using ::content::RenderFrameHost;
+using ::optimization_guide::proto::ActionInformation;
+using ::optimization_guide::proto::ActionTarget;
+using ::optimization_guide::proto::ClickAction_ClickCount;
+using ::optimization_guide::proto::ClickAction_ClickType;
+using ::optimization_guide::proto::ScrollAction_ScrollDirection;
+using ::optimization_guide::proto::TypeAction_TypeMode;
+
+void SetMojoTarget(const ActionTarget& target,
+                   actor::mojom::ToolTargetPtr& out_mojo_target) {
+  if (target.has_coordinate()) {
+    out_mojo_target = actor::mojom::ToolTarget::NewCoordinate(
+        gfx::Point(target.coordinate().x(), target.coordinate().y()));
+  } else {
+    out_mojo_target =
+        actor::mojom::ToolTarget::NewDomNodeId(target.content_node_id());
+  }
+}
+
 // Set mojom for click action based on proto. Returns false if the proto does
 // not contain correct/sufficient information, true otherwise.
 bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
                       const ActionInformation& action_info) {
-  click->target = actor::mojom::ToolTarget::New(
-      action_info.click().target().content_node_id());
+  SetMojoTarget(action_info.click().target(), click->target);
+
   switch (action_info.click().click_type()) {
     case ClickAction_ClickType::ClickAction_ClickType_LEFT:
       click->type = actor::mojom::ClickAction::Type::kLeft;
@@ -50,8 +64,7 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
 // Set mojom for mouse move action based on proto.
 void SetMouseMoveToolArgs(actor::mojom::MouseMoveActionPtr& move,
                           const ActionInformation& action_info) {
-  move->target = actor::mojom::ToolTarget::New(
-      action_info.move_mouse().target().content_node_id());
+  SetMojoTarget(action_info.move_mouse().target(), move->target);
 }
 
 // Set mojom for type action based on proto.
@@ -59,8 +72,8 @@ void SetMouseMoveToolArgs(actor::mojom::MouseMoveActionPtr& move,
 // true otherwise.
 bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
                      const ActionInformation& action_info) {
-  type_action->target = actor::mojom::ToolTarget::New(
-      action_info.type().target().content_node_id());
+  SetMojoTarget(action_info.type().target(), type_action->target);
+
   type_action->text = action_info.type().text();
   type_action->follow_by_enter = action_info.type().follow_by_enter();
 
@@ -88,8 +101,7 @@ bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
 bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
                        const ActionInformation& action_info) {
   if (action_info.scroll().has_target()) {
-    scroll->target = actor::mojom::ToolTarget::New(
-        action_info.scroll().target().content_node_id());
+    SetMojoTarget(action_info.scroll().target(), scroll->target);
   }
   switch (action_info.scroll().direction()) {
     case ScrollAction_ScrollDirection::ScrollAction_ScrollDirection_LEFT:
@@ -113,8 +125,7 @@ bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
 
 void SetSelectToolArgs(actor::mojom::SelectActionPtr& select,
                        const ActionInformation& action_info) {
-  select->target = actor::mojom::ToolTarget::New(
-      action_info.select().target().content_node_id());
+  SetMojoTarget(action_info.select().target(), select->target);
   select->value = action_info.select().value();
 }
 

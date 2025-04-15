@@ -4,13 +4,20 @@
 
 module actor.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // This interface is meant to largely mirror the
 // BrowserAction::ActionInformation proto.
 
 // Tool-specific target.
-struct ToolTarget {
+union ToolTarget {
   // DOMNodeId for the node this invocation should be applied to.
   int32 dom_node_id;
+
+  // An x,y pair representing a location relative to the origin at the top-left
+  // corner of the local root frame (i.e. the blink::WebWidget/RenderWidget). In
+  // physical pixels.
+  gfx.mojom.Point coordinate;
 };
 
 // Information specific to a click action.

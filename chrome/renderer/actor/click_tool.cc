@@ -126,9 +126,12 @@ std::optional<gfx::PointF> ClickTool::ValidateAndGetClickPoint() const {
   }
 
   // Currently only support DOMNodeId as target.
-  int32_t dom_node_id = action_->target->dom_node_id;
-  CHECK(dom_node_id);
+  if (action_->target->is_coordinate()) {
+    NOTIMPLEMENTED() << "Coordinate-based target not yet supported.";
+    return std::nullopt;
+  }
 
+  int32_t dom_node_id = action_->target->get_dom_node_id();
   WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {
     DLOG(ERROR) << "Cannot find dom node with id " << dom_node_id;

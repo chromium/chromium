@@ -37,7 +37,7 @@ void SelectTool::Execute(ToolFinishedCallback callback) {
     return;
   }
 
-  auto element = GetNodeFromId(frame_.get(), action_->target->dom_node_id)
+  auto element = GetNodeFromId(frame_.get(), action_->target->get_dom_node_id())
                      .To<WebSelectElement>();
   auto value = WebString::FromUTF8(action_->value);
   element.SetValue(value, /*send_events=*/true);
@@ -58,8 +58,12 @@ bool SelectTool::Validate() const {
 
   mojom::ToolTargetPtr& target = action_->target;
 
-  // Currently only support DOMNodeId as target.
-  int32_t dom_node_id = target->dom_node_id;
+  if (target->is_coordinate()) {
+    NOTIMPLEMENTED() << "Coordinate-based target is not yet supported.";
+    return false;
+  }
+
+  int32_t dom_node_id = target->get_dom_node_id();
 
   WebNode node = GetNodeFromId(frame_.get(), dom_node_id);
   if (node.IsNull()) {
