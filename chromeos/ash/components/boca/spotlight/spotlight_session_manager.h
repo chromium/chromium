@@ -49,6 +49,7 @@ class SpotlightSessionManager : public boca::BocaSessionManager::Observer {
 
   bool in_session_ = false;
   bool request_in_progress_ = false;
+  std::string teacher_name_;
   const std::unique_ptr<SpotlightNotificationHandler> notification_handler_;
   const std::unique_ptr<SpotlightService> spotlight_service_;
   const std::unique_ptr<SpotlightCrdManager> spotlight_crd_manager_;

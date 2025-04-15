@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/boca/spotlight/spotlight_notification_bubble_controller.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -18,6 +19,13 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/crd_session_result_codes.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/public/shared_crd_session.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,29 +54,42 @@ class MockSharedCrdSession : public policy::SharedCrdSession {
   MOCK_METHOD(void, TerminateSession, (), (override));
 };
 
-class SpotlightCrdManagerImplTest : public testing::Test {
- public:
-  SpotlightCrdManagerImplTest() = default;
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({ash::features::kBocaSpotlight},
-                                          /*disabled_features=*/{});
-    auto crd_session = std::make_unique<NiceMock<MockSharedCrdSession>>();
-    crd_session_ = crd_session.get();
-    manager_ =
-        std::make_unique<SpotlightCrdManagerImpl>(std::move(crd_session));
+class SpotlightCrdManagerImplTest : public InProcessBrowserTest {
+ protected:
+  SpotlightCrdManagerImplTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kBoca, ash::features::kBocaConsumer,
+         ash::features::kBocaSpotlight},
+        /*disabled_features=*/{});
   }
 
- protected:
+  void SetUpOnMainThread() override {
+    ash::SystemWebAppManager::Get(profile())->InstallSystemAppsForTesting();
+    auto crd_session = std::make_unique<NiceMock<MockSharedCrdSession>>();
+    crd_session_ = crd_session.get();
+    auto notification_bubble_controller =
+        std::make_unique<ash::SpotlightNotificationBubbleController>();
+    notification_bubble_controller_ = notification_bubble_controller.get();
+    manager_ = std::make_unique<SpotlightCrdManagerImpl>(
+        std::move(crd_session), std::move(notification_bubble_controller));
+    host_resolver()->AddRule("*", "127.0.0.1");
+    InProcessBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->AddDefaultHandlers(
+        base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  Profile* profile() { return browser()->profile(); }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<SpotlightCrdManagerImpl> manager_;
   raw_ptr<NiceMock<MockSharedCrdSession>> crd_session_;
-
- private:
-  base::test::TaskEnvironment task_environment_;
+  raw_ptr<ash::SpotlightNotificationBubbleController>
+      notification_bubble_controller_;
 };
 
-TEST_F(SpotlightCrdManagerImplTest,
-       InitiateSpotlightSessionShouldStartCrdHost) {
+IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
+                       InitiateSpotlightSessionShouldStartCrdHost) {
   EXPECT_CALL(*crd_session_, StartCrdHost)
       .WillOnce(WithArg<1>(
           Invoke([&](auto callback) { std::move(callback).Run("123"); })));
@@ -81,8 +102,9 @@ TEST_F(SpotlightCrdManagerImplTest,
   EXPECT_EQ(kSpotlightConnectionCode, success_future.Get());
 }
 
-TEST_F(SpotlightCrdManagerImplTest,
-       InitiateSpotlightSessionWithCrdFailureShouldRunErrorCallback) {
+IN_PROC_BROWSER_TEST_F(
+    SpotlightCrdManagerImplTest,
+    InitiateSpotlightSessionWithCrdFailureShouldRunErrorCallback) {
   TestFuture<void> error_callback_future;
   EXPECT_CALL(*crd_session_, StartCrdHost)
       .WillOnce(WithArg<2>(
@@ -98,8 +120,8 @@ TEST_F(SpotlightCrdManagerImplTest,
   EXPECT_TRUE(error_callback_future.Wait());
 }
 
-TEST_F(SpotlightCrdManagerImplTest,
-       InitiateSpotlightSessionShouldFailIfNotInActiveSession) {
+IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
+                       InitiateSpotlightSessionShouldFailIfNotInActiveSession) {
   EXPECT_CALL(*crd_session_, StartCrdHost).Times(0);
 
   manager_->InitiateSpotlightSession(
@@ -109,8 +131,9 @@ TEST_F(SpotlightCrdManagerImplTest,
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
 }
 
-TEST_F(SpotlightCrdManagerImplTest,
-       OnSessionEndedShouldClearTeacherEmailAndTerminateSession) {
+IN_PROC_BROWSER_TEST_F(
+    SpotlightCrdManagerImplTest,
+    OnSessionEndedShouldClearTeacherEmailAndTerminateSession) {
   EXPECT_CALL(*crd_session_, StartCrdHost).Times(1);
   EXPECT_CALL(*crd_session_, TerminateSession()).Times(1);
   TestFuture<const std::string&> success_future;
@@ -130,6 +153,29 @@ TEST_F(SpotlightCrdManagerImplTest,
         GTEST_FAIL() << "Unexpected call to success callback";
       }));
   ::testing::Mock::VerifyAndClearExpectations(crd_session_);
+}
+
+IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
+                       ShowPersistentNotificationShowsWidget) {
+  manager_->ShowPersistentNotification("Teacher");
+
+  EXPECT_TRUE(notification_bubble_controller_->IsNotificationBubbleVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
+                       HidePersistentNotificationHidesWidget) {
+  manager_->ShowPersistentNotification("Teacher");
+
+  manager_->HidePersistentNotification();
+  EXPECT_FALSE(notification_bubble_controller_->IsNotificationBubbleVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(SpotlightCrdManagerImplTest,
+                       OnSessionEndedHidesNotificationWidget) {
+  manager_->ShowPersistentNotification("Teacher");
+
+  manager_->OnSessionEnded();
+  EXPECT_FALSE(notification_bubble_controller_->IsNotificationBubbleVisible());
 }
 
 }  // namespace

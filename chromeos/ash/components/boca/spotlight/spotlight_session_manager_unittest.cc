@@ -41,6 +41,7 @@ constexpr char kGaiaId[] = "123";
 constexpr char kSessionId[] = "session-id";
 constexpr char kSpotlightConnectionCode[] = "456";
 constexpr char kUserEmail[] = "cat@gmail.com";
+constexpr char kUserFullName[] = "Best Teacher";
 constexpr char kTestBaseUrl[] = "https://test";
 
 class MockBocaAppClient : public BocaAppClient {
@@ -97,6 +98,11 @@ class MockSpotlightCrdManager : public SpotlightCrdManager {
               InitiateSpotlightSession,
               (InitiateSpotlightSessionCallback callback),
               (override));
+  MOCK_METHOD(void,
+              ShowPersistentNotification,
+              (const std::string& teacher_name),
+              (override));
+  MOCK_METHOD(void, HidePersistentNotification, (), (override));
 };
 
 class FakeSpotlightNotificationHandlerDelegate
@@ -177,7 +183,7 @@ TEST_F(SpotlightSessionManagerTest, OnSessionEnded) {
   spotlight_session_manager_->OnSessionEnded(kSessionId);
 }
 
-TEST_F(SpotlightSessionManagerTest, OnConsumerActivityUpdated) {
+TEST_F(SpotlightSessionManagerTest, IniatesSpotlightSessionWhenRequested) {
   ::boca::StudentDevice device;
   device.mutable_view_screen_config()->set_view_screen_state(
       ::boca::ViewScreenConfig::REQUESTED);
@@ -203,8 +209,7 @@ TEST_F(SpotlightSessionManagerTest, OnConsumerActivityUpdated) {
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
 }
 
-TEST_F(SpotlightSessionManagerTest,
-       OnConsumerActivityUpdatedWithInactiveSession) {
+TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightWithInactiveSession) {
   ::boca::StudentDevice device;
   device.mutable_view_screen_config()->set_view_screen_state(
       ::boca::ViewScreenConfig::REQUESTED);
@@ -218,8 +223,7 @@ TEST_F(SpotlightSessionManagerTest,
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
 }
 
-TEST_F(SpotlightSessionManagerTest,
-       OnConsumerActivityUpdatedWithNoStudentStatus) {
+TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightWithNoStudentStatus) {
   std::map<std::string, ::boca::StudentStatus> activities;
   EXPECT_CALL(*spotlight_crd_manager(), InitiateSpotlightSession).Times(0);
 
@@ -229,7 +233,7 @@ TEST_F(SpotlightSessionManagerTest,
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
 }
 
-TEST_F(SpotlightSessionManagerTest, OnConsumerActivityUpdatedWithNoDevice) {
+TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightWithNoDevice) {
   ::boca::StudentStatus status;
   std::map<std::string, ::boca::StudentStatus> activities;
   activities.emplace(kGaiaId, status);
@@ -242,8 +246,7 @@ TEST_F(SpotlightSessionManagerTest, OnConsumerActivityUpdatedWithNoDevice) {
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
 }
 
-TEST_F(SpotlightSessionManagerTest,
-       OnConsumerActivityUpdatedWhenViewScreenNotRequested) {
+TEST_F(SpotlightSessionManagerTest, DoesNotStartSpotlightIfNotRequested) {
   ::boca::StudentDevice device;
   device.mutable_view_screen_config()->set_view_screen_state(
       ::boca::ViewScreenConfig::INACTIVE);
@@ -261,8 +264,7 @@ TEST_F(SpotlightSessionManagerTest,
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
 }
 
-TEST_F(SpotlightSessionManagerTest,
-       OnConsumerActivityUpdatedOnlyProcessesOneRequestAtATime) {
+TEST_F(SpotlightSessionManagerTest, OnlyProcessesOneRequestAtATime) {
   ::boca::StudentDevice device;
   device.mutable_view_screen_config()->set_view_screen_state(
       ::boca::ViewScreenConfig::REQUESTED);
@@ -290,6 +292,47 @@ TEST_F(SpotlightSessionManagerTest,
               RegisterScreen(kSpotlightConnectionCode, kTestBaseUrl, _))
       .Times(1);
   spotlight_session_manager_->OnSessionEnded(kSessionId);
+  spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
+  spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+}
+
+TEST_F(SpotlightSessionManagerTest,
+       StartsPersistentNotificationWhenSpotlightActive) {
+  ::boca::StudentDevice device;
+  device.mutable_view_screen_config()->set_view_screen_state(
+      ::boca::ViewScreenConfig::ACTIVE);
+  ::boca::StudentStatus status;
+  status.mutable_devices()->emplace(kDeviceId, device);
+
+  std::map<std::string, ::boca::StudentStatus> activities;
+  activities.emplace(kGaiaId, status);
+
+  EXPECT_CALL(*spotlight_crd_manager(),
+              ShowPersistentNotification(kUserFullName))
+      .Times(1);
+
+  ::boca::UserIdentity producer;
+  producer.set_email(kUserEmail);
+  producer.set_full_name(kUserFullName);
+  spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
+  spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+}
+
+TEST_F(SpotlightSessionManagerTest,
+       StopsPersistentNotificationWhenSpotlightInactive) {
+  ::boca::StudentDevice device;
+  device.mutable_view_screen_config()->set_view_screen_state(
+      ::boca::ViewScreenConfig::INACTIVE);
+  ::boca::StudentStatus status;
+  status.mutable_devices()->emplace(kDeviceId, device);
+
+  std::map<std::string, ::boca::StudentStatus> activities;
+  activities.emplace(kGaiaId, status);
+
+  EXPECT_CALL(*spotlight_crd_manager(), HidePersistentNotification).Times(1);
+
+  ::boca::UserIdentity producer;
+  producer.set_email(kUserEmail);
   spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
   spotlight_session_manager_->OnConsumerActivityUpdated(activities);
 }

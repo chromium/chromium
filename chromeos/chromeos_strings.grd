@@ -7234,8 +7234,13 @@
       <message name="IDS_BOCA_NOTIFICATION_TITLE" desc="Title of the class tools notification">
         Class Tools
       </message>
+
+      <!-- Strings for Spotlight notifications -->
       <message name="IDS_BOCA_SPOTLIGHT_NOTIFICATION_MESSAGE" desc="Message signaling the countdown before the start of a Spotlight session in the Boca app.">
         Your teacher will view your screen in <ph name="NUM_SECONDS">$1<ex>3</ex></ph> seconds
+      </message>
+      <message name="IDS_BOCA_SPOTLIGHT_PERSISTENT_NOTIFICATION_MESSAGE" desc="Message of the notiification telling users their screen is currently being viewed.">
+       <ph name="TEACHER_NAME">$1<ex>John Doe</ex></ph> is viewing your screen
       </message>
     </messages>
   </release>

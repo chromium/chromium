@@ -20,6 +20,12 @@ class SpotlightCrdManager {
   virtual void OnSessionStarted(const std::string& teacher_email) = 0;
   virtual void OnSessionEnded() = 0;
 
+  // TODO: dorianbrandon - Move to more appropriate class.
+  // Show and hide notification are not directly related to CRD so
+  // they should be moved or the name of this class should be updated.
+  virtual void ShowPersistentNotification(const std::string& teacher_name) = 0;
+  virtual void HidePersistentNotification() = 0;
+
   // Starts the CRD session and returns the connection code for the request.
   virtual void InitiateSpotlightSession(
       base::OnceCallback<void(const std::string&)> callback) = 0;
