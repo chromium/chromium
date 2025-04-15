@@ -1486,7 +1486,7 @@ gfx::Size GlicWindowController::GetLastRequestedSizeClamped() const {
   }
 
   gfx::Size max(kMaxWidgetSize, kMaxWidgetSize);
-  gfx::Size result = glic_size_ ? *glic_size_ : min;
+  gfx::Size result = glic_size_.value_or(min);
 
   result.SetToMax(min);
   result.SetToMin(max);
