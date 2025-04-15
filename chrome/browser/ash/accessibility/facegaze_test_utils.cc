@@ -33,7 +33,7 @@ namespace {
 
 const char* kDefaultDisplaySize = "1200x800";
 constexpr char kMediapipeTestFilePath[] =
-    "resources/chromeos/accessibility/accessibility_common/third_party/"
+    "resources/chromeos/accessibility/accessibility_common/mv2/third_party/"
     "mediapipe_task_vision";
 const int kMouseDeviceId = 1;
 constexpr char kTestSupportPath[] =

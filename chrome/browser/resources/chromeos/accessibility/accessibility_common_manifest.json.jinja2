@@ -6,13 +6,13 @@
   "manifest_version": 3,
   "minimum_chrome_version": "93",
   "background": {
-    "service_worker": "accessibility_common/accessibility_common_loader.ts",
+    "service_worker": "accessibility_common/mv3/accessibility_common_loader.ts",
     "type": "module"
   },
 {% else %}
   "manifest_version": 2,
   "background": {
-    "page": "accessibility_common/background.html"
+    "page": "accessibility_common/mv2/background.html"
   },
 {% endif %}
   "name": "Accessibility Common",
