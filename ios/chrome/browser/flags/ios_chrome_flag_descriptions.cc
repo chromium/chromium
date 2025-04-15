@@ -1441,6 +1441,11 @@ const char kWebPageTextZoomIPadName[] = "Enable text zoom on iPad";
 const char kWebPageTextZoomIPadDescription[] =
     "When enabled, text zoom works again on iPad";
 
+extern const char kWelcomeBackInFirstRunName[] = "Enable Welcome Back screen";
+extern const char kWelcomeBackInFirstRunDescription[] =
+    "When enabled, returning users will see the Welcome Back screen after the "
+    "First Run sequence.";
+
 const char kYoutubeIncognitoName[] =
     "Enable the opening of links from Youtube incognito in Chrome incognito";
 const char kYoutubeIncognitoDescription[] =

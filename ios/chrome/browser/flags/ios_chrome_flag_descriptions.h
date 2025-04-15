@@ -849,6 +849,9 @@ extern const char kWebPageAlternativeTextZoomDescription[];
 extern const char kWebPageTextZoomIPadName[];
 extern const char kWebPageTextZoomIPadDescription[];
 
+extern const char kWelcomeBackInFirstRunName[];
+extern const char kWelcomeBackInFirstRunDescription[];
+
 extern const char kYoutubeIncognitoName[];
 extern const char kYoutubeIncognitoDescription[];
 

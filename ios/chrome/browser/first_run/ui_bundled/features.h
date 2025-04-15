@@ -57,6 +57,23 @@ enum class UpdatedFRESequenceVariationType {
   kDBPromoFirstAndRemoveSignInSync,
 };
 
+// Enum to represent the arms of feature kWelcomeBackInFirstRun.
+enum class WelcomeBackScreenVariationType {
+  kDisabled,
+  // Show the Search with Lens, Enhanced Safe Browsing, and Locked Incognito
+  // items.
+  kBasicsWithLockedIncognitoTabs,
+  // Show the Enhanced Safe Browsing, Search with Lens, and Save & Autofill
+  // Passwords items.
+  kBasicsWithPasswords,
+  // Show the Tab Groups, Locked Incognito, and Price Tracking & Insights items.
+  kProductivityAndShopping,
+  // Show the Search with Lens, Enhanced Safe Browsing, and Autofill Passwords
+  // in Other Apps items. If Credential Provider Extension (CPE) is already
+  // enabled, Autofill Passwords in Other Apps is replaced with Share Passwords.
+  kSignInBenefits,
+};
+
 // Flag to enable the FRE Default Browser Experiment.
 BASE_DECLARE_FEATURE(kAnimatedDefaultBrowserPromoInFRE);
 
@@ -69,6 +86,9 @@ BASE_DECLARE_FEATURE(kManualLogUploadsInTheFRE);
 
 // Feature to enable updates to the sequence of the first run screens.
 BASE_DECLARE_FEATURE(kUpdatedFirstRunSequence);
+
+// Feature to enable the Welcome Back screen.
+BASE_DECLARE_FEATURE(kWelcomeBackInFirstRun);
 
 // Name of the parameter that controls the experiment type for the Animated
 // Default Browser Promo in the FRE experiment, which determines the layout of
@@ -83,6 +103,10 @@ extern const char kBestFeaturesScreenInFirstRunParam[];
 // kUpdatedFirstRunSequence is enabled.
 extern const char kUpdatedFirstRunSequenceParam[];
 
+// Name of the param that indicates which variation of the
+// kWelcomeBackInFirstRun is enabled.
+extern const char kWelcomeBackInFirstRunParam[];
+
 // Returns which variation of the kBestFeaturesScreenInFirstRun feature is
 // enabled or `kDisabled` if the feature is disabled.
 BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType();
@@ -92,6 +116,10 @@ BestFeaturesScreenVariationType GetBestFeaturesScreenVariationType();
 // countries.
 UpdatedFRESequenceVariationType GetUpdatedFRESequenceVariation(
     ProfileIOS* profile);
+
+// Returns which variation of the kWelcomeBackInFirstRun feature is enabled or
+// `kDisabled` if the feature is disabled.
+WelcomeBackScreenVariationType GetWelcomeBackScreenVariationType();
 
 // Whether the Default Browser Experiment in the FRE is enabled. This feature is
 // disabled when kUpdatedFirstRunSequence is enabled.

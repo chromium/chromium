@@ -1467,6 +1467,27 @@ const FeatureEntry::FeatureVariation
          std::size(kAutofillVcnEnrollStrikeExpiryTime_30Days), nullptr}};
 // LINT.ThenChange(/chrome/browser/about_flags.cc:AutofillVcnEnrollStrikeExpiryTime)
 
+const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm1[] = {
+    {first_run::kWelcomeBackInFirstRunParam, "1"}};
+const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm2[] = {
+    {first_run::kWelcomeBackInFirstRunParam, "2"}};
+const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm3[] = {
+    {first_run::kWelcomeBackInFirstRunParam, "3"}};
+const FeatureEntry::FeatureParam kWelcomeBackInFirstRunArm4[] = {
+    {first_run::kWelcomeBackInFirstRunParam, "4"}};
+
+const FeatureEntry::FeatureVariation kWelcomeBackInFirstRunVariations[] = {
+    {" - Variant A: Basics with Locked Incognito", kWelcomeBackInFirstRunArm1,
+     std::size(kWelcomeBackInFirstRunArm1), nullptr},
+    {" - Variant B: Basics with Save & Autofill Passwords",
+     kWelcomeBackInFirstRunArm2, std::size(kWelcomeBackInFirstRunArm2),
+     nullptr},
+    {" - Variant C: Productivity & Shopping", kWelcomeBackInFirstRunArm3,
+     std::size(kWelcomeBackInFirstRunArm3), nullptr},
+    {" - Variant D: Sign-in Benefits", kWelcomeBackInFirstRunArm4,
+     std::size(kWelcomeBackInFirstRunArm4), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -2699,6 +2720,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kIOSEnterpriseRealtimeUrlFiltering)},
+    {"ios-welcome-back-screen", flag_descriptions::kWelcomeBackInFirstRunName,
+     flag_descriptions::kWelcomeBackInFirstRunDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(first_run::kWelcomeBackInFirstRun,
+                                    kWelcomeBackInFirstRunVariations,
+                                    "WelcomeBackInFirstRun")},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
