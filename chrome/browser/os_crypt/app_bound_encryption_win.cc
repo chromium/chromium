@@ -234,15 +234,10 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
     HRESULT encrypt_hr =
         elevator->EncryptData(protection_level, plaintext_data.Get(),
                               reencrypted_data.Receive(), &encrypt_last_error);
-    base::UmaHistogramSparse("OSCrypt.AppBound.ReEncrypt.ResultCode",
-                             encrypt_hr);
     if (SUCCEEDED(encrypt_hr)) {
       new_ciphertext.emplace(
           reinterpret_cast<std::string::value_type*>(reencrypted_data.Get()),
           reencrypted_data.ByteLength());
-    } else {
-      base::UmaHistogramSparse("OSCrypt.AppBound.ReEncrypt.ResultLastError",
-                               encrypt_last_error);
     }
   }
 
