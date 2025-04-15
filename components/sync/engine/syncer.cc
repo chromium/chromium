@@ -235,10 +235,14 @@ bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
   *request_types = Union(download_types, requested_commit_only_types);
 
   // Exit without applying if we're shutting down or an error was detected.
+  // TODO(crbug.com/410765719): Check for the exit request when downloading
+  // updates above.
   if (ExitRequested()) {
     return false;
   }
 
+  base::UmaHistogramEnumeration("Sync.DownloadUpdatesResult",
+                                GetSyncerErrorValueForUma(download_result));
   if (download_result.type() != SyncerError::Type::kSuccess) {
     get_updates_processor.RecordDownloadFailure(
         Union(download_types, data_types_with_failure),

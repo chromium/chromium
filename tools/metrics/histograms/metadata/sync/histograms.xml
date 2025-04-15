@@ -1031,6 +1031,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.DownloadUpdatesResult" enum="SyncerErrorValues"
+    expires_after="2026-04-14">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records the result of the download updates step of the sync cycle. This
+    metric is recorded only once per sync cycle and records the last error
+    encountered during the cycle.
+  </summary>
+</histogram>
+
 <histogram name="Sync.EntityEncryptionSucceeded{SyncDataType}"
     enum="BooleanSuccess" expires_after="2025-09-14">
   <owner>rushans@google.com</owner>
