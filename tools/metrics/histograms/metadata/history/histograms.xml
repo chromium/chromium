@@ -1410,30 +1410,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.DatabaseAdvancedMetricsTime" units="ms"
-    expires_after="2025-05-18">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <component>1456716</component>
-  <summary>
-    Time spent on advanced History DB metrics calculation (weekly and monthly
-    URL, host, and category counts). Advanced metrics are logged on
-    initialization of the History DB on 0.3% of starts.
-  </summary>
-</histogram>
-
-<histogram name="History.DatabaseBasicMetricsTime" units="ms"
-    expires_after="2025-10-12">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <component>1456716</component>
-  <summary>
-    Time spent on basic History DB metrics calculation (file size and table
-    counts). Basic metrics are logged on initialization of the History DB on 1%
-    of starts.
-  </summary>
-</histogram>
-
 <histogram name="History.DatabaseFileMB" units="MB" expires_after="2025-06-22">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
@@ -1442,20 +1418,6 @@ chromium-metrics-reviews@google.com.
     Size of History DB file. Duplicate of Profile.HistorySize and
     Sqlite.SizeKB.History. Logged on initialization of the History DB on 1% of
     starts.
-  </summary>
-</histogram>
-
-<histogram name="History.DatabaseForeignVisitMetricsTime" units="ms"
-    expires_after="2025-09-17">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>treib@chromium.org</owner>
-  <component>1456716</component>
-  <summary>
-    Time spent on foreign-visit-related History DB metrics calculation. These
-    metrics are logged on initialization of the History DB on 1% of starts. Note
-    that the actual metrics (History.ForeignVisits*) are only recorded if any
-    such visits were actually found, so the total counts will not match this
-    histogram's.
   </summary>
 </histogram>
 
