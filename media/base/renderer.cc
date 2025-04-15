@@ -15,8 +15,6 @@ std::string GetRendererName(RendererType renderer_type) {
       return "RendererImpl";
     case RendererType::kMojo:
       return "MojoRenderer";
-    case RendererType::kMediaPlayer:
-      return "MediaPlayerRenderer";
     case RendererType::kCourier:
       return "CourierRenderer";
     case RendererType::kFlinging:

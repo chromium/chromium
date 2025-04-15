@@ -86,14 +86,6 @@ class MojoRenderer : public Renderer, public mojom::RendererClient {
   // called asynchronously.
   void BindRemoteRendererIfNeeded();
 
-  // Initialize the remote renderer when |media_resource| is of type
-  // MediaResource::Type::STREAM.
-  void InitializeRendererFromStreams(media::RendererClient* client);
-
-  // Initialize the remote renderer when |media_resource| is of type
-  // MediaResource::Type::URL.
-  void InitializeRendererFromUrl(media::RendererClient* client);
-
   // Callback for connection error on |remote_renderer_|.
   void OnConnectionError();
 

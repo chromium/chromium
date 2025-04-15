@@ -44,9 +44,6 @@ class MediaFoundationRendererClientFactory : public media::RendererFactory {
       media::RequestOverlayInfoCB request_surface_cb,
       const gfx::ColorSpace& target_color_space) override;
 
-  // The MediaFoundationRenderer uses a Type::URL.
-  media::MediaResource::Type GetRequiredMediaResourceType() override;
-
  private:
   // Raw pointer is safe since both `this` and the `media_log` are owned by
   // WebMediaPlayerImpl with the correct declaration order.

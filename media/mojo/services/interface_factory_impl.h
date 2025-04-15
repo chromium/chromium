@@ -73,12 +73,6 @@ class InterfaceFactoryImpl final
       mojo::PendingReceiver<mojom::Renderer> receiver) final;
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  void CreateMediaPlayerRenderer(
-      mojo::PendingRemote<mojom::MediaPlayerRendererClientExtension>
-          client_extension_remote,
-      mojo::PendingReceiver<mojom::Renderer> receiver,
-      mojo::PendingReceiver<mojom::MediaPlayerRendererExtension>
-          renderer_extension_receiver) final;
   void CreateFlingingRenderer(
       const std::string& presentation_id,
       mojo::PendingRemote<mojom::FlingingRendererClientExtension>

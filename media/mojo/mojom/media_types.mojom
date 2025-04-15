@@ -635,7 +635,7 @@ enum InputStreamErrorCode {
 enum RendererType {
   kRendererImpl = 0,     // RendererImplFactory
   kMojo = 1,             // MojoRendererFactory
-  kMediaPlayer = 2,      // MediaPlayerRendererClientFactory
+  // kMediaPlayer = 2,   // Deprecated
   kCourier = 3,          // CourierRendererFactory
   kFlinging = 4,         // FlingingRendererClientFactory
   kCast = 5,             // CastRendererClientFactory

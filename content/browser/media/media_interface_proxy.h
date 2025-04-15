@@ -77,12 +77,6 @@ class MediaInterfaceProxy final : public DocumentUserData<MediaInterfaceProxy>,
       mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
           client_extension,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) final;
-  void CreateMediaPlayerRenderer(
-      mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
-          client_extension_remote,
-      mojo::PendingReceiver<media::mojom::Renderer> receiver,
-      mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
-          renderer_extension_request) final;
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)
   void CreateMediaFoundationRenderer(

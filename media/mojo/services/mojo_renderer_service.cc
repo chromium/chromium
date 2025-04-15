@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "media/base/cdm_context.h"
-#include "media/base/media_url_demuxer.h"
 #include "media/base/renderer.h"
 #include "media/mojo/common/media_type_converters.h"
 #include "media/mojo/services/media_resource_shim.h"
@@ -57,7 +56,6 @@ void MojoRendererService::Initialize(
     mojo::PendingAssociatedRemote<mojom::RendererClient> client,
     std::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>
         streams,
-    mojom::MediaUrlParamsPtr media_url_params,
     InitializeCallback callback) {
   DVLOG(1) << __func__;
   DCHECK_EQ(state_, STATE_UNINITIALIZED);
@@ -65,25 +63,10 @@ void MojoRendererService::Initialize(
   client_.Bind(std::move(client));
   state_ = STATE_INITIALIZING;
 
-  if (!media_url_params) {
-    DCHECK(streams.has_value());
-    media_resource_ = std::make_unique<MediaResourceShim>(
-        std::move(*streams),
-        base::BindOnce(&MojoRendererService::OnAllStreamsReady, weak_this_,
-                       std::move(callback)));
-    return;
-  }
-
-  DCHECK(!media_url_params->media_url.is_empty());
-  media_resource_ = std::make_unique<MediaUrlDemuxer>(
-      nullptr, media_url_params->media_url, media_url_params->site_for_cookies,
-      media_url_params->top_frame_origin,
-      media_url_params->storage_access_api_status,
-      media_url_params->allow_credentials, media_url_params->is_hls);
-  media_resource_->SetHeaders(std::move(media_url_params->headers));
-  renderer_->Initialize(
-      media_resource_.get(), this,
-      base::BindOnce(&MojoRendererService::OnRendererInitializeDone, weak_this_,
+  DCHECK(streams.has_value());
+  media_resource_ = std::make_unique<MediaResourceShim>(
+      std::move(*streams),
+      base::BindOnce(&MojoRendererService::OnAllStreamsReady, weak_this_,
                      std::move(callback)));
 }
 

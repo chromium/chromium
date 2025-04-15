@@ -34,7 +34,7 @@ void RendererRpcCallTranslator::OnRpcInitialize() {
     has_been_initialized_ = true;
     renderer_->Initialize(
         renderer_client_receiver_.BindNewEndpointAndPassRemote(),
-        /* streams */ {}, /* media_url_params */ nullptr,
+        /* streams */ {},
         base::BindOnce(&RendererRpcCallTranslator::OnInitializeCompleted,
                        weak_factory_.GetWeakPtr(), remote_handle_));
   } else {

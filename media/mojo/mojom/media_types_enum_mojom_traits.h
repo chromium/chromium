@@ -372,8 +372,6 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return media::mojom::RendererType::kRendererImpl;
       case ::media::RendererType::kMojo:
         return media::mojom::RendererType::kMojo;
-      case ::media::RendererType::kMediaPlayer:
-        return media::mojom::RendererType::kMediaPlayer;
       case ::media::RendererType::kCourier:
         return media::mojom::RendererType::kCourier;
       case ::media::RendererType::kFlinging:
@@ -405,9 +403,6 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return true;
       case media::mojom::RendererType::kMojo:
         *output = ::media::RendererType::kMojo;
-        return true;
-      case media::mojom::RendererType::kMediaPlayer:
-        *output = ::media::RendererType::kMediaPlayer;
         return true;
       case media::mojom::RendererType::kCourier:
         *output = ::media::RendererType::kCourier;

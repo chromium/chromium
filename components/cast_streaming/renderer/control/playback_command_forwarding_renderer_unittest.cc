@@ -171,7 +171,7 @@ TEST_F(PlaybackCommandForwardingRendererTest, RendererClientCallbacksCalled) {
 
   EXPECT_CALL(*mojo_renderer_client_, InitializeCallback(true));
   remote_->Initialize(
-      std::move(remote_client_), std::nullopt, nullptr,
+      std::move(remote_client_), std::nullopt,
       base::BindOnce(&MockMojoRendererClient::InitializeCallback,
                      base::Unretained(mojo_renderer_client_.get())));
   task_environment_.RunUntilIdle();

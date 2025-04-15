@@ -19,8 +19,6 @@ namespace media {
 namespace {
 
 bool HasAudio(MediaResource* media_resource) {
-  DCHECK(media_resource->GetType() == MediaResource::Type::kStream);
-
   const auto media_streams = media_resource->GetAllStreams();
   for (const media::DemuxerStream* stream : media_streams) {
     if (stream->type() == media::DemuxerStream::Type::AUDIO)

@@ -78,7 +78,6 @@ class PlaybackCommandForwardingRenderer : public media::Renderer,
       std::optional<
           std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
           streams,
-      media::mojom::MediaUrlParamsPtr media_url_params,
       media::mojom::Renderer::InitializeCallback callback);
   void MojoRendererStartPlayingFrom(::base::TimeDelta time);
   void MojoRendererSetPlaybackRate(double playback_rate);

@@ -76,7 +76,6 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/renderer/media/android/flinging_renderer_client_factory.h"
-#include "content/renderer/media/android/media_player_renderer_client_factory.h"
 #include "content/renderer/media/android/stream_texture_wrapper_impl.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/media.h"
@@ -573,21 +572,6 @@ MediaFactory::CreateRendererFactorySelector(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  // MediaPlayerRendererClientFactory setup. It is used for HLS playback.
-  auto media_player_factory =
-      std::make_unique<MediaPlayerRendererClientFactory>(
-          render_thread->compositor_task_runner(), CreateMojoRendererFactory(),
-          base::BindRepeating(
-              &StreamTextureWrapperImpl::Create,
-              render_thread->EnableStreamTextureCopy(),
-              render_thread->GetStreamTexureFactory(),
-              render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia)));
-
-  // Always give |factory_selector| a MediaPlayerRendererClient factory. WMPI
-  // might fallback to it if the final redirected URL is an HLS url.
-  factory_selector->AddFactory(RendererType::kMediaPlayer,
-                               std::move(media_player_factory));
-
   // FlingingRendererClientFactory (FRCF) setup.
   auto flinging_factory = std::make_unique<FlingingRendererClientFactory>(
       CreateMojoRendererFactory(), std::move(client_wrapper));

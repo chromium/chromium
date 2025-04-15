@@ -34,7 +34,6 @@ class FakeMojomRenderer : public mojom::Renderer {
   void Initialize(
       mojo::PendingAssociatedRemote<mojom::RendererClient>,
       std::optional<std::vector<mojo::PendingRemote<mojom::DemuxerStream>>>,
-      mojom::MediaUrlParamsPtr,
       InitializeCallback cb) override {
     std::move(cb).Run(true);
   }

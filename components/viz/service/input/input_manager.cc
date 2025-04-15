@@ -45,7 +45,7 @@ namespace {
 void ForwardVizInputTransferToken(
     const input::ScopedInputTransferToken& viz_input_token,
     const gpu::SurfaceHandle& surface_handle) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   base::android::ScopedJavaGlobalRef<jobject> viz_input_token_java(
       env, base::AndroidInputReceiverCompat::GetInstance()
                .AInputTransferToken_toJavaFn(
@@ -533,7 +533,7 @@ bool InputManager::ReturnInputBackToBrowser() {
   if (!receiver_data_) {
     return false;
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   base::android::ScopedJavaGlobalRef<jobject> viz_input_token_java(
       env,
       base::AndroidInputReceiverCompat::GetInstance()

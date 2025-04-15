@@ -48,11 +48,9 @@ class RendererCommandForwarder : public media::mojom::Renderer {
       std::optional<
           std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
           streams,
-      media::mojom::MediaUrlParamsPtr media_url_params,
       InitializeCallback callback) override {
     owning_renderer_->MojoRendererInitialize(
-        std::move(client), std::move(streams), std::move(media_url_params),
-        std::move(callback));
+        std::move(client), std::move(streams), std::move(callback));
   }
 
   void StartPlayingFrom(::base::TimeDelta time) override {
@@ -169,9 +167,7 @@ void PlaybackCommandForwardingRenderer::MojoRendererInitialize(
     std::optional<
         std::vector<::mojo::PendingRemote<::media::mojom::DemuxerStream>>>
         streams,
-    media::mojom::MediaUrlParamsPtr media_url_params,
     media::mojom::Renderer::InitializeCallback callback) {
-  DCHECK(!media_url_params);
   DCHECK(client);
 
   // NOTE: To maintain existing functionality, and ensure mirroring continues
@@ -186,7 +182,7 @@ void PlaybackCommandForwardingRenderer::MojoRendererInitialize(
         base::BindOnce(
             &PlaybackCommandForwardingRenderer::MojoRendererInitialize,
             weak_factory_.GetWeakPtr(), std::move(client), std::move(streams),
-            std::move(media_url_params), std::move(callback)));
+            std::move(callback)));
     return;
   }
 

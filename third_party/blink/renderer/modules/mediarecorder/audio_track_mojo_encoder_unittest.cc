@@ -134,14 +134,6 @@ class TestInterfaceFactory final : public media::mojom::InterfaceFactory {
   }
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  void CreateMediaPlayerRenderer(
-      mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
-          client_extension_remote,
-      mojo::PendingReceiver<media::mojom::Renderer> receiver,
-      mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
-          renderer_extension_receiver) override {
-    NOTREACHED();
-  }
   void CreateFlingingRenderer(
       const std::string& presentation_id,
       mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>

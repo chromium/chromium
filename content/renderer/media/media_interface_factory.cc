@@ -128,28 +128,6 @@ void MediaInterfaceFactory::CreateCastRenderer(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-void MediaInterfaceFactory::CreateMediaPlayerRenderer(
-    mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
-        client_extension_remote,
-    mojo::PendingReceiver<media::mojom::Renderer> receiver,
-    mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
-        renderer_extension_receiver) {
-  if (!task_runner_->BelongsToCurrentThread()) {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&MediaInterfaceFactory::CreateMediaPlayerRenderer,
-                       weak_this_, std::move(client_extension_remote),
-                       std::move(receiver),
-                       std::move(renderer_extension_receiver)));
-    return;
-  }
-
-  DVLOG(1) << __func__;
-  GetMediaInterfaceFactory()->CreateMediaPlayerRenderer(
-      std::move(client_extension_remote), std::move(receiver),
-      std::move(renderer_extension_receiver));
-}
-
 void MediaInterfaceFactory::CreateFlingingRenderer(
     const std::string& presentation_id,
     mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>

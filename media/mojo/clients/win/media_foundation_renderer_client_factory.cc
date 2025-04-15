@@ -107,9 +107,4 @@ MediaFoundationRendererClientFactory::CreateRenderer(
       std::move(media_foundation_renderer_observer_remote));
 }
 
-media::MediaResource::Type
-MediaFoundationRendererClientFactory::GetRequiredMediaResourceType() {
-  return media::MediaResource::Type::kStream;
-}
-
 }  // namespace media
