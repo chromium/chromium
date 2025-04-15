@@ -8,7 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/values.h"
@@ -228,14 +228,12 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
 
   simple_url_loader_.reset();
 
-  JSONStringValueDeserializer deserializer(json_string);
-  std::string error_msg;
-  std::unique_ptr<base::Value> json_value =
-      deserializer.Deserialize(nullptr, &error_msg);
+  base::JSONReader::Result json_value =
+      base::JSONReader::ReadAndReturnValueWithError(json_string);
 
   if (!response_body || (response_code != net::HTTP_OK)) {
     const std::string* error =
-        json_value && json_value->is_dict()
+        json_value.has_value() && json_value->is_dict()
             ? json_value->GetDict().FindString(kErrorDescription)
             : nullptr;
 
@@ -263,9 +261,9 @@ void ArcBackgroundAuthCodeFetcher::OnSimpleLoaderComplete(
     return;
   }
 
-  if (!json_value) {
-    LOG(WARNING) << "Unable to deserialize auth code json data: " << error_msg
-                 << ".";
+  if (!json_value.has_value()) {
+    LOG(WARNING) << "Unable to deserialize auth code json data: "
+                 << json_value.error().ToString() << ".";
     ReportResult(std::string(), OptInSilentAuthCode::RESPONSE_PARSE_FAILURE);
     return;
   }

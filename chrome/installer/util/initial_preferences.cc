@@ -11,7 +11,7 @@
 
 #include "base/environment.h"
 #include "base/files/file_util.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -51,11 +51,11 @@ std::vector<std::string> GetNamedList(const char* name,
 
 std::optional<base::Value::Dict> ParseDistributionPreferences(
     const std::string& json_data) {
-  JSONStringValueDeserializer json(json_data);
-  std::string error;
-  std::unique_ptr<base::Value> root(json.Deserialize(nullptr, &error));
-  if (!root.get()) {
-    LOG(WARNING) << "Failed to parse initial prefs file: " << error;
+  base::JSONReader::Result root =
+      base::JSONReader::ReadAndReturnValueWithError(json_data);
+  if (!root.has_value()) {
+    LOG(WARNING) << "Failed to parse initial prefs file: "
+                 << root.error().ToString();
     return std::nullopt;
   }
   if (!root->is_dict()) {

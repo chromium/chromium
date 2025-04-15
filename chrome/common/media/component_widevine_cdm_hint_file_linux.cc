@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/values.h"
@@ -44,14 +44,11 @@ base::Value::Dict GetHintFileContents() {
     return base::Value::Dict();
   }
 
-  std::string error_message;
-  JSONStringValueDeserializer deserializer(json_string);
-  std::unique_ptr<base::Value> dict =
-      deserializer.Deserialize(/*error_code=*/nullptr, &error_message);
-
-  if (!dict || !dict->is_dict()) {
+  base::JSONReader::Result dict =
+      base::JSONReader::ReadAndReturnValueWithError(json_string);
+  if (!dict.has_value() || !dict->is_dict()) {
     DLOG(ERROR) << "Could not deserialize the CDM hint file. Error: "
-                << error_message;
+                << (!dict.has_value() ? dict.error().ToString() : "not a dict");
     return base::Value::Dict();
   }
 

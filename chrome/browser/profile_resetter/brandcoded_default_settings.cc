@@ -6,7 +6,7 @@
 
 #include <optional>
 
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/installer/util/initial_preferences_constants.h"
@@ -17,11 +17,11 @@ BrandcodedDefaultSettings::BrandcodedDefaultSettings() = default;
 
 BrandcodedDefaultSettings::BrandcodedDefaultSettings(const std::string& prefs) {
   if (!prefs.empty()) {
-    JSONStringValueDeserializer json(prefs);
-    std::string error;
-    std::unique_ptr<base::Value> root(json.Deserialize(nullptr, &error));
-    if (!root.get()) {
-      VLOG(1) << "Failed to parse brandcode prefs file: " << error;
+    base::JSONReader::Result root =
+        base::JSONReader::ReadAndReturnValueWithError(prefs);
+    if (!root.has_value()) {
+      VLOG(1) << "Failed to parse brandcode prefs file: "
+              << root.error().ToString();
       return;
     }
     if (!root->is_dict()) {

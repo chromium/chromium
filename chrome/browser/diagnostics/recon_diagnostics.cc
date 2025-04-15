@@ -12,7 +12,6 @@
 
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_string_value_serializer.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -159,16 +158,10 @@ class JSONTest : public DiagnosticsTest {
       return true;
     }
 
-    JSONStringValueDeserializer json(json_data);
-    int error_code = base::ValueDeserializer::kErrorCodeNoError;
-    std::string error_message;
-    std::unique_ptr<base::Value> json_root(
-        json.Deserialize(&error_code, &error_message));
-    if (base::ValueDeserializer::kErrorCodeNoError != error_code) {
-      if (error_message.empty()) {
-        error_message = "Parse error " + base::NumberToString(error_code);
-      }
-      RecordFailure(DIAG_RECON_PARSE_ERROR, error_message);
+    base::JSONReader::Result json_root =
+        base::JSONReader::ReadAndReturnValueWithError(json_data);
+    if (!json_root.has_value()) {
+      RecordFailure(DIAG_RECON_PARSE_ERROR, json_root.error().message);
       return true;
     }
 

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/media/router/mojo/media_sink_service_status.h"
 
-#include "base/json/json_string_value_serializer.h"
+#include <optional>
+#include <string_view>
+
+#include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -14,26 +17,14 @@ namespace media_router {
 
 namespace {
 
-std::unique_ptr<base::Value> DeserializeJSONString(const std::string& str) {
-  JSONStringValueDeserializer deserializer(str);
-  int error_code = 0;
-  std::string error_message;
-  std::unique_ptr<base::Value> value =
-      deserializer.Deserialize(&error_code, &error_message);
-  EXPECT_TRUE(value.get());
-  EXPECT_EQ(0, error_code);
-  EXPECT_TRUE(error_message.empty());
-  return value;
-}
-
 // Helper function to compare two JSON strings. The two strings may have
 // different format and spaces. Still returns true if their contents are the
 // same.
-void VerifyEqualJSONString(const std::string& expected_str,
-                           const std::string& str) {
-  std::unique_ptr<base::Value> expected_value =
-      DeserializeJSONString(expected_str);
-  std::unique_ptr<base::Value> actual_value = DeserializeJSONString(str);
+void VerifyEqualJSONString(std::string_view expected_str,
+                           std::string_view str) {
+  std::optional<base::Value> expected_value =
+      base::JSONReader::Read(expected_str);
+  std::optional<base::Value> actual_value = base::JSONReader::Read(str);
   ASSERT_TRUE(expected_value);
   ASSERT_TRUE(actual_value);
   EXPECT_EQ(*expected_value, *actual_value);

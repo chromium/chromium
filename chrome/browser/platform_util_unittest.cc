@@ -17,7 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -97,28 +97,25 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
     // handles .txt files. The extension doesn't actually need to exist due to
     // the DisableShellOperationsForTesting() call which prevents the extension
     // from being invoked.
-    std::string error;
-    int error_code = 0;
 
-    std::string json_manifest =
-        "{"
-        "  \"manifest_version\": 2,"
-        "  \"name\": \"Test extension\","
-        "  \"version\": \"0\","
-        "  \"app\": { \"background\": { \"scripts\": [\"main.js\"] }},"
-        "  \"file_handlers\": {"
-        "    \"text\": {"
-        "      \"extensions\": [ \"txt\" ],"
-        "      \"title\": \"Text\""
-        "      }"
-        "    }"
-        "}";
-    JSONStringValueDeserializer json_string_deserializer(json_manifest);
-    std::unique_ptr<base::Value> manifest =
-        json_string_deserializer.Deserialize(&error_code, &error);
-    base::Value::Dict* manifest_dictionary = manifest->GetIfDict();
+    constexpr char kJsonManifest[] = R"(
+        {
+          "manifest_version": 2,
+          "name": "Test extension",
+          "version": "0",
+          "app": { "background": { "scripts": ["main.js"] }},
+          "file_handlers": {
+            "text": {
+              "extensions": [ "txt" ],
+              "title": "Text"
+              }
+            }
+        })";
+    std::optional<base::Value::Dict> manifest_dictionary =
+        base::JSONReader::ReadDict(kJsonManifest);
     ASSERT_TRUE(manifest_dictionary);
 
+    std::string error;
     scoped_refptr<extensions::Extension> extension =
         extensions::Extension::Create(
             test_directory.AppendASCII("invalid-extension"),

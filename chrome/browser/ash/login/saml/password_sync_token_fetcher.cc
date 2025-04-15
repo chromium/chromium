@@ -5,13 +5,14 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -292,10 +293,7 @@ void PasswordSyncTokenFetcher::OnSimpleLoaderComplete(
     json_string = std::move(*response_body);
   simple_url_loader_.reset();
 
-  JSONStringValueDeserializer deserializer(json_string);
-  std::string error_msg;
-  std::unique_ptr<base::Value> json_value =
-      deserializer.Deserialize(/*error_code=*/nullptr, &error_msg);
+  std::optional<base::Value> json_value = base::JSONReader::Read(json_string);
 
   if (!response_body || (response_code != net::HTTP_OK)) {
     const auto* error_json = json_value && json_value->is_dict()

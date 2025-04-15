@@ -5,8 +5,9 @@
 #include "chrome/browser/chromeos/extensions/desk_api/desk_api_extension_manager.h"
 
 #include <memory>
+#include <optional>
 
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/profiles/profile.h"
@@ -28,16 +29,9 @@ inline constexpr char kDummyManifest[] = "";
 inline constexpr char kExternallyConnectableKey[] = "externally_connectable";
 inline constexpr char kMatchesKey[] = "matches";
 
-std::unique_ptr<base::Value> ParseManifest(std::string manifest) {
-  std::string error_message;
-  int error_code;
-  JSONStringValueDeserializer deserializer(manifest);
-  return deserializer.Deserialize(&error_code, &error_message);
-}
-
 const base::Value::List* GetMatchesListFromManifest(
-    const base::Value* manifest_value) {
-  const base::Value::Dict* manifest_dict = manifest_value->GetIfDict();
+    const base::Value& manifest_value) {
+  const base::Value::Dict* manifest_dict = manifest_value.GetIfDict();
 
   if (!manifest_dict) {
     ADD_FAILURE() << "No manifest dict";
@@ -66,7 +60,7 @@ class TestDelegate : public DeskApiExtensionManager::Delegate {
   void InstallExtension(ComponentLoader* component_loader,
                         const std::string& manifest_content) override {
     extension_installed_.store(true);
-    manifest_value_ = ParseManifest(manifest_content);
+    manifest_value_ = base::JSONReader::Read(manifest_content);
   }
 
   void UninstallExtension(ComponentLoader* component_loader) override {
@@ -82,13 +76,13 @@ class TestDelegate : public DeskApiExtensionManager::Delegate {
     return extension_installed_.load();
   }
 
-  const base::Value* GetInstalledManifest() const {
-    return manifest_value_.get();
+  const std::optional<base::Value>& GetInstalledManifest() const {
+    return manifest_value_;
   }
 
  private:
   std::atomic<bool> extension_installed_;
-  std::unique_ptr<base::Value> manifest_value_;
+  std::optional<base::Value> manifest_value_;
 };
 
 void SetDeskAPIPolicies(PrefService* pref_service,
@@ -298,11 +292,11 @@ TEST_F(DeskApiExtensionManagerTest, GenerateManifestFromPolicyAllowlist) {
   EXPECT_TRUE(extension_manager.CanInstallExtension());
   EXPECT_TRUE(delegate_raw_ptr->IsExtensionInstalled(component_loader));
 
-  const base::Value* installed_manifest_value =
+  const auto& installed_manifest_value =
       delegate_raw_ptr->GetInstalledManifest();
   ASSERT_TRUE(installed_manifest_value);
   const base::Value::List* installed_matches_list =
-      GetMatchesListFromManifest(installed_manifest_value);
+      GetMatchesListFromManifest(*installed_manifest_value);
   ASSERT_TRUE(installed_matches_list);
   EXPECT_EQ(domain_allowlist, *installed_matches_list);
 }
@@ -329,11 +323,11 @@ TEST_F(DeskApiExtensionManagerTest, GenerateManifestIgnoresInvalidURLPattern) {
   EXPECT_TRUE(extension_manager.CanInstallExtension());
   EXPECT_TRUE(delegate_raw_ptr->IsExtensionInstalled(component_loader));
 
-  const base::Value* installed_manifest_value =
+  const auto& installed_manifest_value =
       delegate_raw_ptr->GetInstalledManifest();
   ASSERT_TRUE(installed_manifest_value);
   const base::Value::List* installed_matches_list =
-      GetMatchesListFromManifest(installed_manifest_value);
+      GetMatchesListFromManifest(*installed_manifest_value);
   ASSERT_TRUE(installed_matches_list);
   EXPECT_EQ(1ul, installed_matches_list->size());
   EXPECT_EQ(test_domain1, (*installed_matches_list)[0].GetString());

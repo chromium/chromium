@@ -9,7 +9,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/memory/raw_ref.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -74,14 +74,6 @@ class PolicyUpdateObserver : public policy::PolicyService::Observer {
   const raw_ref<policy::PolicyService> policy_service_;
   base::OnceClosure policy_updated_callback_;
 };
-
-// Converts JSON string to `base::Value` object.
-static base::Value GetJSONAsValue(std::string_view json) {
-  std::string error;
-  auto value = JSONStringValueDeserializer(json).Deserialize(nullptr, &error);
-  EXPECT_EQ("", error);
-  return base::Value::FromUniquePtrValue(std::move(value));
-}
 
 }  // namespace
 
@@ -247,13 +239,16 @@ class FirstRunServicePolicyBrowserTest
         &policy_provider_);
   }
 
-  void SetPolicy(const std::string& key, const std::string& value) {
+  void SetPolicy(const std::string& key, const std::string& value_json) {
     auto* policy_service = g_browser_process->policy_service();
     ASSERT_TRUE(policy_service);
 
+    std::optional<base::Value> value = base::JSONReader::Read(value_json);
+    ASSERT_TRUE(value.has_value());
+
     policy::PolicyMap policy;
     policy.Set(key, policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_PLATFORM, GetJSONAsValue(value), nullptr);
+               policy::POLICY_SOURCE_PLATFORM, std::move(value), nullptr);
 
     base::RunLoop run_loop;
     PolicyUpdateObserver policy_update_observer{*policy_service,
