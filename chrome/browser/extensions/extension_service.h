@@ -202,24 +202,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // Suppresses noisy failures.
   void ReloadExtensionWithQuietFailure(const std::string& extension_id);
 
-  // Uninstalls the specified extension. Callers should only call this method
-  // with extensions that exist. |reason| lets the caller specify why the
-  // extension is uninstalled.
-  // Note: this method synchronously removes the extension from the
-  // set of installed extensions stored in the ExtensionRegistry, but will
-  // asynchronously remove site-related data and the files stored on disk.
-  // Returns true if an uninstall was successfully triggered; this can fail if
-  // the extension cannot be uninstalled (such as a policy force-installed
-  // extension).
-  // |done_callback| is synchronously invoked once the site-related data and the
-  // files stored on disk are removed. If such a callback is not needed, pass in
-  // a null callback (base::NullCallback()).
-  bool UninstallExtension(
-      const std::string& extension_id,
-      UninstallReason reason,
-      std::u16string* error,
-      base::OnceClosure done_callback = base::NullCallback());
-
   // Enables the extension. If the extension is already enabled, does
   // nothing.
   void EnableExtension(const std::string& extension_id);

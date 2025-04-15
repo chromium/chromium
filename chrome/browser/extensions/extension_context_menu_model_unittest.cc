@@ -1315,7 +1315,7 @@ TEST_F(ExtensionContextMenuModelTest,
 
     // Uninstall the extension so as not to conflict with more additions.
     std::u16string error;
-    EXPECT_TRUE(service()->UninstallExtension(
+    EXPECT_TRUE(registrar()->UninstallExtension(
         extension->id(), UNINSTALL_REASON_FOR_TESTING, &error));
     EXPECT_TRUE(error.empty()) << error;
     EXPECT_EQ(nullptr, registry()->GetInstalledExtension(extension->id()));

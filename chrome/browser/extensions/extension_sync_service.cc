@@ -397,8 +397,9 @@ void ExtensionSyncService::ApplySyncData(
       error = u"Unknown extension";
       uninstalled = false;
     } else {
-      uninstalled = extension_service()->UninstallExtension(
-          id, extensions::UNINSTALL_REASON_SYNC, &error);
+      uninstalled =
+          extensions::ExtensionRegistrar::Get(profile_)->UninstallExtension(
+              id, extensions::UNINSTALL_REASON_SYNC, &error);
     }
 
     if (!uninstalled) {

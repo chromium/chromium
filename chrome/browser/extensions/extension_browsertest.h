@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_protocols.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -54,6 +55,7 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
 
   // Useful accessors.
   ExtensionService* extension_service();
+  ExtensionRegistrar* extension_registrar();
 
   // InProcessBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override;

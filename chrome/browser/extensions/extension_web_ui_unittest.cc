@@ -372,7 +372,7 @@ TEST_F(ExtensionWebUIOverrideURLTest,
   const base::Value::List* newtab_overrides = overrides.FindList("newtab");
   EXPECT_FALSE(newtab_overrides);
 
-  EXPECT_TRUE(service()->UninstallExtension(
+  EXPECT_TRUE(registrar()->UninstallExtension(
       kNtpOverrideExtensionId, UNINSTALL_REASON_FOR_TESTING, nullptr));
   ASSERT_FALSE(registry()->GetInstalledExtension(kNtpOverrideExtensionId));
 }

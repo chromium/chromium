@@ -100,6 +100,10 @@ ExtensionBrowserTest::CreateTestNotificationObserver() {
                          profile());
 }
 
+ExtensionRegistrar* ExtensionBrowserTest::extension_registrar() {
+  return ExtensionRegistrar::Get(profile());
+}
+
 Profile* ExtensionBrowserTest::profile() {
   if (!profile_) {
     if (browser()) {

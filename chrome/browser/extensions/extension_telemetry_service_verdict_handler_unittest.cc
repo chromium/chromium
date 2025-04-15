@@ -176,8 +176,8 @@ TEST_F(ExtensionTelemetryServiceVerdictHandlerTest,
   ExtensionStateTester state_tester(profile());
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
-  service()->UninstallExtension(kTestExtensionId, UNINSTALL_REASON_FOR_TESTING,
-                                nullptr);
+  registrar()->UninstallExtension(kTestExtensionId,
+                                  UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   Blocklist::BlocklistStateMap state_map;
   state_map[kTestExtensionId] = BlocklistState::BLOCKLISTED_MALWARE;

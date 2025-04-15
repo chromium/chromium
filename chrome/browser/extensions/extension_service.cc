@@ -441,17 +441,6 @@ void ExtensionService::ReloadExtensionWithQuietFailure(
                                         LoadErrorBehavior::kQuiet);
 }
 
-bool ExtensionService::UninstallExtension(
-    // "transient" because the process of uninstalling may cause the reference
-    // to become invalid. Instead, use |extension->id()|.
-    const std::string& transient_extension_id,
-    UninstallReason reason,
-    std::u16string* error,
-    base::OnceClosure done_callback) {
-  return extension_registrar_->UninstallExtension(
-      transient_extension_id, reason, error, std::move(done_callback));
-}
-
 void ExtensionService::PerformActionBasedOnOmahaAttributes(
     const std::string& extension_id,
     const base::Value::Dict& attributes) {
@@ -738,8 +727,8 @@ void ExtensionService::CheckManagementPolicy() {
   }
   for (auto extension_id : remove_list) {
     std::u16string error;
-    if (!UninstallExtension(extension_id, UNINSTALL_REASON_INTERNAL_MANAGEMENT,
-                            &error)) {
+    if (!extension_registrar_->UninstallExtension(
+            extension_id, UNINSTALL_REASON_INTERNAL_MANAGEMENT, &error)) {
       SYSLOG(WARNING) << "Extension with id " << extension_id
                       << " failed to be uninstalled via policy: " << error;
     }

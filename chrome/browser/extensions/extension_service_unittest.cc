@@ -4405,7 +4405,7 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsLoadFromPrefs) {
 
   const Extension* extension =
       (registry()->enabled_extensions().begin())->get();
-  EXPECT_TRUE(service()->UninstallExtension(
+  EXPECT_TRUE(registrar()->UninstallExtension(
       extension->id(), UNINSTALL_REASON_FOR_TESTING, nullptr));
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
 
@@ -4465,7 +4465,7 @@ TEST_F(ExtensionServiceTest, ManagementPolicyProhibitsUninstall) {
   GetManagementPolicy()->RegisterProvider(&provider);
 
   // Attempt to uninstall it.
-  EXPECT_FALSE(service()->UninstallExtension(
+  EXPECT_FALSE(registrar()->UninstallExtension(
       good_crx, UNINSTALL_REASON_FOR_TESTING, nullptr));
 
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
@@ -5670,7 +5670,7 @@ TEST_F(ExtensionServiceTest, ClearExtensionData) {
   }
 
   // Uninstall the extension.
-  ASSERT_TRUE(service()->UninstallExtension(
+  ASSERT_TRUE(registrar()->UninstallExtension(
       good_crx, UNINSTALL_REASON_FOR_TESTING, nullptr));
   // The data deletion happens on the IO thread; since we use a
   // BrowserTaskEnvironment (without REAL_IO_THREAD), the IO and UI threads are
@@ -5918,7 +5918,8 @@ TEST_F(ExtensionServiceTest, LoadExtension) {
   const ExtensionId good_id =
       get_extension_by_name(registry()->enabled_extensions(), kGoodExtension)
           ->id();
-  service()->UninstallExtension(good_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(good_id, UNINSTALL_REASON_FOR_TESTING,
+                                  nullptr);
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(registry()->GenerateInstalledExtensionsSet().empty());
 }
@@ -6127,7 +6128,7 @@ void ExtensionServiceTest::TestExternalProvider(MockExternalProvider* provider,
   EXPECT_EQ(id, good_crx);
   bool no_uninstall = GetManagementPolicy()->MustRemainEnabled(
       loaded_extensions()[0].get(), nullptr);
-  service()->UninstallExtension(id, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(id, UNINSTALL_REASON_FOR_TESTING, nullptr);
   task_environment()->RunUntilIdle();
 
   base::FilePath install_path = extensions_install_dir().AppendASCII(id);
@@ -6181,7 +6182,7 @@ void ExtensionServiceTest::TestExternalProvider(MockExternalProvider* provider,
     ASSERT_EQ(0u, GetErrors().size());
 
     // User uninstalls.
-    service()->UninstallExtension(id, UNINSTALL_REASON_FOR_TESTING, nullptr);
+    registrar()->UninstallExtension(id, UNINSTALL_REASON_FOR_TESTING, nullptr);
     task_environment()->RunUntilIdle();
     ASSERT_EQ(0u, loaded_extensions().size());
 
@@ -8160,8 +8161,8 @@ TEST_F(ExtensionServiceTest, UninstallBlocklistedExtension) {
   service()->BlocklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
   std::u16string error;
-  EXPECT_TRUE(service()->UninstallExtension(id, UNINSTALL_REASON_USER_INITIATED,
-                                            nullptr));
+  EXPECT_TRUE(registrar()->UninstallExtension(
+      id, UNINSTALL_REASON_USER_INITIATED, nullptr));
   EXPECT_EQ(nullptr, registry()->GetInstalledExtension(id));
 }
 
