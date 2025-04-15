@@ -1116,6 +1116,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="TabGroups.Shortcuts" enum="TabGroupShortcut"
+    expires_after="2025-11-24">
+  <owner>dljames@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    [Desktop] Records when a keyboard shortcut for a tab group action is
+    triggered. Tracks the number of times each tab group shortcut is used. Ex: -
+    Creating a new tab group - Closing a tab group - Focusing the next /
+    previous tab group - Adding the new tab to a tab group
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.SpecificsToDataMigration.ParseFailurePercentage"
     units="%" expires_after="2025-10-12">
   <owner>shaktisahu@chromium.org</owner>

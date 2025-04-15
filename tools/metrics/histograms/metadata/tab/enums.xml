@@ -272,6 +272,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/internal/stats.cc:TabGroupLoadedEmptiness) -->
 
+<!-- LINT.IfChange(TabGroupShortcut)-->
+
+<enum name="TabGroupShortcut">
+  <int value="0" label="Create a new tab group"/>
+  <int value="1" label="Close a tab group"/>
+  <int value="2" label="Add a new tab to a tab group"/>
+  <int value="3" label="Focus the first tab in the next tab group"/>
+  <int value="4" label="Focus the first tab in the previous tab group"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/browser_commands.h:TabGroupShortcut) -->
+
 <enum name="TabOrganizationDeclutterCTREvent">
   <int value="0" label="Declutter Shown"/>
   <int value="1" label="Close Tabs Clicked"/>

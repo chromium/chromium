@@ -152,6 +152,20 @@ void PinTab(Browser* browser);
 void GroupTab(Browser* browser);
 
 // Tab group commands
+// These values are persisted to logs. Entries should not be renumbered
+// and  numeric values should never be reused.
+//
+// LINT.IfChange(TabGroupShortcut)
+enum class TabGroupShortcut {
+  kCreateNewTabGroup = 0,
+  kCloseTabGroup = 1,
+  kAddNewTabToGroup = 2,
+  kFocusNextTabGroup = 3,
+  kFocusPrevTabGroup = 4,
+  kMaxValue = kFocusPrevTabGroup
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabGroupShortcut)
+
 // Creates a new tab at the end of the active tab's group.
 void AddNewTabToGroup(Browser* browser);
 // Creates a new tab group at the end of the tab strip.

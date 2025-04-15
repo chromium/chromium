@@ -1002,12 +1002,16 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_WINDOW_GROUP_TAB:
       GroupTab(browser_);
       break;
+
+    // Tab group commands.
     case IDC_FOCUS_NEXT_TAB_GROUP:
       if (base::i18n::IsRTL()) {
         FocusPreviousTabGroup(browser_);
       } else {
         FocusNextTabGroup(browser_);
       }
+      base::UmaHistogramEnumeration("TabGroups.Shortcuts",
+                                    TabGroupShortcut::kFocusNextTabGroup);
       break;
     case IDC_FOCUS_PREV_TAB_GROUP:
       if (base::i18n::IsRTL()) {
@@ -1015,16 +1019,25 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       } else {
         FocusPreviousTabGroup(browser_);
       }
+      base::UmaHistogramEnumeration("TabGroups.Shortcuts",
+                                    TabGroupShortcut::kFocusPrevTabGroup);
       break;
     case IDC_CLOSE_TAB_GROUP:
       CloseTabGroup(browser_);
+      base::UmaHistogramEnumeration("TabGroups.Shortcuts",
+                                    TabGroupShortcut::kCloseTabGroup);
       break;
     case IDC_CREATE_NEW_TAB_GROUP:
       CreateNewTabGroup(browser_);
+      base::UmaHistogramEnumeration("TabGroups.Shortcuts",
+                                    TabGroupShortcut::kCreateNewTabGroup);
       break;
     case IDC_ADD_NEW_TAB_TO_GROUP:
       AddNewTabToGroup(browser_);
+      base::UmaHistogramEnumeration("TabGroups.Shortcuts",
+                                    TabGroupShortcut::kAddNewTabToGroup);
       break;
+
     case IDC_WINDOW_CLOSE_TABS_TO_RIGHT:
       CloseTabsToRight(browser_);
       break;
