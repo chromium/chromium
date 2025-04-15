@@ -9,6 +9,7 @@
 
 #include "components/gwp_asan/crash_handler/crash_handler.h"
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -258,7 +259,7 @@ MULTIPROCESS_TEST_MAIN(CrashingProcess) {
     gpa->Deallocate(reinterpret_cast<void*>(bad_address));
   } else if (test_name == "MissingMetadata") {
     // Consume all allocations/metadata
-    void* ptrs[AllocatorState::kMaxMetadata];
+    std::array<void*, AllocatorState::kMaxMetadata> ptrs;
     for (size_t i = 0; i < AllocatorState::kMaxMetadata; i++)
       ptrs[i] = gpa->Allocate(1);
 

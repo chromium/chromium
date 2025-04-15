@@ -13,6 +13,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <array>
+
 #include "base/containers/queue.h"
 #include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom-forward.h"
@@ -79,8 +81,8 @@ class ResourceLoadAggregator {
   size_t network_bytes_ = 0u;
 
   // Ad network bytes for different mime type resources loaded in the frame.
-  size_t ad_bytes_by_mime_[static_cast<size_t>(ResourceMimeType::kMaxValue) +
-                           1] = {0};
+  std::array<size_t, static_cast<size_t>(ResourceMimeType::kMaxValue) + 1>
+      ad_bytes_by_mime_ = {0};
 
   // Tracks the number of bytes that were used to load resources which were
   // detected to be ads inside of this frame. For ad frames, these counts should

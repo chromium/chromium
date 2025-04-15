@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <cstdlib>
 #include <cstring>
 #include <string_view>
@@ -51,7 +52,8 @@ static const uint8_t kSslClientHello[] = {
 };
 
 // This is a TLSv1 SERVER_HELLO message.
-static const uint8_t kSslServerHello[] = {
+static const auto kSslServerHello = std::to_array<uint8_t>({
+    // clang-format off
     0x16,                                            // handshake message
     0x03, 0x01,                                      // SSL 3.1
     0x00, 0x4a,                                      // message len
@@ -69,7 +71,8 @@ static const uint8_t kSslServerHello[] = {
     0x4d, 0xa2, 0x75, 0x57, 0x41, 0x6c, 0x34, 0x5c,  //
     0x00, 0x04,                                      // RSA/RC4-128/MD5
     0x00                                             // null compression
-};
+    // clang-format on
+});
 
 // TODO(crbug.com/40171113): This annotation is not test specific but is for
 // test. We should fix it.
@@ -91,7 +94,7 @@ std::string_view FakeSSLClientSocket::GetSslClientHello() {
 }
 
 std::string_view FakeSSLClientSocket::GetSslServerHello() {
-  return std::string_view(reinterpret_cast<const char*>(kSslServerHello),
+  return std::string_view(reinterpret_cast<const char*>(kSslServerHello.data()),
                           std::size(kSslServerHello));
 }
 

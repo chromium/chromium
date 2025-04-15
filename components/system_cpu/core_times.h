@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <initializer_list>
 
 #include "base/gtest_prod_util.h"
@@ -86,7 +87,7 @@ class CoreTimes {
   // Used by CoreTimesTest.
   CoreTimes(const std::initializer_list<uint64_t>& times);
 
-  uint64_t times_[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  std::array<uint64_t, 10> times_ = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 };
 
 }  // namespace system_cpu

@@ -234,7 +234,7 @@ TEST(Snippets, ExtractMatchPositions) {
   struct TestData {
     const std::string offsets_string;
     const size_t expected_match_count;
-    const size_t expected_matches[10];
+    const std::array<size_t, 10> expected_matches;
   };
   auto data = std::to_array<TestData>({
       {"0 0 1 2 0 0 4 1 0 0 1 5", 1, {1, 6}},
