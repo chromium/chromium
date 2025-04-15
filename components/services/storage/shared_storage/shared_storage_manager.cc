@@ -521,6 +521,8 @@ void SharedStorageManager::OnStalePurged(OperationResult result) {
 void SharedStorageManager::RecordShutdownMetrics() {
   base::UmaHistogramCounts1000("Storage.SharedStorage.OnShutdown.NumSqlErrors",
                                operation_sql_error_count_);
+  base::UmaHistogramBoolean("Storage.SharedStorage.OnShutdown.HasSqlErrors",
+                            operation_sql_error_count_ > 0);
   base::UmaHistogramBoolean(
       "Storage.SharedStorage.OnShutdown.RecoveryFromInitFailureAttempted",
       tried_to_recover_from_init_failure_);

@@ -1791,6 +1791,8 @@ TEST_P(SharedStorageManagerErrorParamTest,
   histogram_tester_.ExpectUniqueSample(
       "Storage.SharedStorage.OnShutdown.NumSqlErrors", 6, 1);
   histogram_tester_.ExpectUniqueSample(
+      "Storage.SharedStorage.OnShutdown.HasSqlErrors", true, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Storage.SharedStorage.OnShutdown.RecoveryFromInitFailureAttempted",
       false, 1);
   histogram_tester_.ExpectUniqueSample(
@@ -1866,6 +1868,8 @@ TEST_P(SharedStorageManagerErrorParamTest,
   histogram_tester_.ExpectUniqueSample(
       "Storage.SharedStorage.OnShutdown.NumSqlErrors", 0, 1);
   histogram_tester_.ExpectUniqueSample(
+      "Storage.SharedStorage.OnShutdown.HasSqlErrors", false, 1);
+  histogram_tester_.ExpectUniqueSample(
       "Storage.SharedStorage.OnShutdown.RecoveryFromInitFailureAttempted", true,
       1);
   histogram_tester_.ExpectUniqueSample(
@@ -1929,6 +1933,8 @@ TEST_P(SharedStorageManagerErrorParamTest,
   ResetManager();
   histogram_tester_.ExpectUniqueSample(
       "Storage.SharedStorage.OnShutdown.NumSqlErrors", 0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Storage.SharedStorage.OnShutdown.HasSqlErrors", false, 1);
   histogram_tester_.ExpectUniqueSample(
       "Storage.SharedStorage.OnShutdown.RecoveryFromInitFailureAttempted",
       false, 1);
