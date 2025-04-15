@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActio
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
@@ -29,7 +30,14 @@ import java.lang.annotation.RetentionPolicy;
 /** List of properties to designate information about a single tab. */
 public class TabProperties {
     /** IDs for possible types of UI in the tab list. */
-    @IntDef({UiType.TAB, UiType.STRIP, UiType.MESSAGE, UiType.LARGE_MESSAGE, UiType.CUSTOM_MESSAGE})
+    @IntDef({
+        UiType.TAB,
+        UiType.STRIP,
+        UiType.MESSAGE,
+        UiType.LARGE_MESSAGE,
+        UiType.CUSTOM_MESSAGE,
+        UiType.TAB_GROUP
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface UiType {
         int TAB = 0;
@@ -37,6 +45,7 @@ public class TabProperties {
         int MESSAGE = 2;
         int LARGE_MESSAGE = 3;
         int CUSTOM_MESSAGE = 4;
+        int TAB_GROUP = 5;
     }
 
     /** IDs for possible tab action states. */
@@ -133,17 +142,18 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<TabCardLabelData> TAB_CARD_LABEL_DATA =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true);
 
-    public static final PropertyKey[] ALL_KEYS_TAB_GRID =
+    // TODO(crbug.com/410841414): Consider updating the property to use a syncId (current
+    // implementation) and/or tab group Tokens.
+    /** The {@link SavedTabGroup} syncId associated with tab groups shown on the Tab Grid. */
+    public static final WritableObjectPropertyKey<String> TAB_GROUP_SYNC_ID =
+            new WritableObjectPropertyKey<>();
+
+    private static final PropertyKey[] COMMON_KEYS_TAB_AND_GROUP_GRID =
             new PropertyKey[] {
-                TAB_ACTION_STATE,
-                TAB_ID,
-                IS_INCOGNITO,
                 TAB_CLICK_LISTENER,
-                TAB_LONG_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_DATA,
                 FAVICON_FETCHED,
                 FAVICON_FETCHER,
-                IS_SELECTED,
                 GRID_CARD_SIZE,
                 THUMBNAIL_FETCHER,
                 TITLE,
@@ -155,15 +165,36 @@ public class TabProperties {
                 CARD_TYPE,
                 CONTENT_DESCRIPTION_TEXT_RESOLVER,
                 ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER,
-                SHOPPING_PERSISTED_TAB_DATA_FETCHER,
-                SHOULD_SHOW_PRICE_DROP_TOOLTIP,
                 QUICK_DELETE_ANIMATION_STATUS,
                 TAB_GROUP_COLOR_VIEW_PROVIDER,
                 VISIBILITY,
                 USE_SHRINK_CLOSE_ANIMATION,
-                HAS_NOTIFICATION_BUBBLE,
-                TAB_CARD_LABEL_DATA,
             };
+
+    // TAB_ACTION_STATE must always be the first property as keys are iterated in order. TAB_ID must
+    // be the second key in the list.
+    public static final PropertyKey[] ALL_KEYS_TAB_GRID =
+            PropertyModel.concatKeys(
+                    new PropertyKey[] {
+                        TAB_ACTION_STATE,
+                        TAB_ID,
+                        IS_INCOGNITO,
+                        TAB_LONG_CLICK_LISTENER,
+                        IS_SELECTED,
+                        SHOPPING_PERSISTED_TAB_DATA_FETCHER,
+                        SHOULD_SHOW_PRICE_DROP_TOOLTIP,
+                        HAS_NOTIFICATION_BUBBLE,
+                        TAB_CARD_LABEL_DATA,
+                    },
+                    COMMON_KEYS_TAB_AND_GROUP_GRID);
+
+    // TAB_ACTION_STATE must always be the first property as keys are iterated in order.
+    public static final PropertyKey[] ALL_KEYS_TAB_GROUP_GRID =
+            PropertyModel.concatKeys(
+                    new PropertyKey[] {
+                        TAB_ACTION_STATE, TAB_GROUP_SYNC_ID,
+                    },
+                    COMMON_KEYS_TAB_AND_GROUP_GRID);
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
             new PropertyKey[] {
