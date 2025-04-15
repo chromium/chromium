@@ -370,8 +370,8 @@
 
 - (void)consistencyDefaultAccountCoordinatorSkip:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
-  // This DCHECK is to help to understand crbug.com/372272374.
-  DCHECK(!self.alertCoordinator) << base::SysNSStringToUTF8([self description]);
+  CHECK(!self.alertCoordinator, base::NotFatalUntil::M142)
+      << base::SysNSStringToUTF8([self description]);
   PrefService* userPrefService = self.profile->GetPrefs();
   if (self.accessPoint == signin_metrics::AccessPoint::kWebSignin) {
     const int skipCounter =
