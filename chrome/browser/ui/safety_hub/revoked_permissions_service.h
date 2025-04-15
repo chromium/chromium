@@ -46,16 +46,6 @@ namespace content {
 class Page;
 }  // namespace content
 
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.safety_hub
-enum class PermissionsRevocationType {
-  kUnusedPermissions,
-  kAbusiveNotificationPermissions,
-  kDisruptiveNotificationPermissions,
-  kUnusedPermissionsAndAbusiveNotifications,
-  kUnusedPermissionsAndDisruptiveNotifications,
-};
-
 // Class to store data about unused permissions for a given origin.
 struct PermissionsData {
  public:
@@ -68,7 +58,6 @@ struct PermissionsData {
   std::set<ContentSettingsType> permission_types;
   base::Value::Dict chooser_permissions_data;
   content_settings::ContentSettingConstraints constraints;
-  PermissionsRevocationType revocation_type;
 };
 
 // This class keeps track of revoked permissions, including unused permissions,

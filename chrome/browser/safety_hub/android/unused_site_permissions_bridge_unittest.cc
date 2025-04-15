@@ -73,7 +73,6 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
   expected.constraints =
       content_settings::ContentSettingConstraints(kExpiration - kLifetime);
   expected.constraints.set_lifetime(kLifetime);
-  expected.revocation_type = PermissionsRevocationType::kUnusedPermissions;
 
   const auto jobject = ToJavaPermissionsData(env(), expected);
   PermissionsData converted = FromJavaPermissionsData(env(), jobject);
@@ -82,8 +81,6 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestJavaRoundTrip) {
   EXPECT_EQ(expected.permission_types, converted.permission_types);
   EXPECT_EQ(kExpiration, converted.constraints.expiration());
   EXPECT_EQ(kLifetime, converted.constraints.lifetime());
-  EXPECT_EQ(PermissionsRevocationType::kUnusedPermissions,
-            converted.revocation_type);
 }
 
 TEST_F(UnusedSitePermissionsBridgeTest, TestDefaultValuesRoundTrip) {
@@ -100,7 +97,6 @@ TEST_F(UnusedSitePermissionsBridgeTest, TestDefaultValuesRoundTrip) {
   EXPECT_EQ(expected.constraints.expiration(),
             converted.constraints.expiration());
   EXPECT_EQ(expected.constraints.lifetime(), converted.constraints.lifetime());
-  EXPECT_EQ(expected.revocation_type, converted.revocation_type);
 }
 
 TEST_F(UnusedSitePermissionsBridgeTest, TestGetRevokedPermissions) {

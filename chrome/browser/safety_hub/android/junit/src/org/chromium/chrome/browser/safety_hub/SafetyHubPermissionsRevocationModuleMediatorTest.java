@@ -44,8 +44,7 @@ public class SafetyHubPermissionsRevocationModuleMediatorTest {
                         ContentSettingsType.MEDIASTREAM_CAMERA,
                     },
                     0,
-                    0,
-                    PermissionsRevocationType.UNUSED_PERMISSIONS);
+                    0);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

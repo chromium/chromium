@@ -19,20 +19,16 @@ public class PermissionsData {
     private final long mExpiration;
     // TimeDelta in microseconds.
     private final long mLifetime;
-    // The reason why permissions were revoked.
-    private final @PermissionsRevocationType int mRevocationType;
 
     private PermissionsData(
             String origin,
             @ContentSettingsType.EnumType int[] permissions,
             long expiration,
-            long lifetime,
-            @PermissionsRevocationType int revocationType) {
+            long lifetime) {
         mOrigin = origin;
         mPermissions = permissions;
         mExpiration = expiration;
         mLifetime = lifetime;
-        mRevocationType = revocationType;
     }
 
     @VisibleForTesting
@@ -41,9 +37,8 @@ public class PermissionsData {
             @JniType("std::string") String origin,
             @JniType("std::vector<int32_t>") @ContentSettingsType.EnumType int[] permissions,
             @JniType("std::int64_t") long expiration,
-            @JniType("std::int64_t") long lifetime,
-            @JniType("std::int32_t") @PermissionsRevocationType int revocationType) {
-        return new PermissionsData(origin, permissions, expiration, lifetime, revocationType);
+            @JniType("std::int64_t") long lifetime) {
+        return new PermissionsData(origin, permissions, expiration, lifetime);
     }
 
     @CalledByNative
@@ -64,10 +59,5 @@ public class PermissionsData {
     @CalledByNative
     public @JniType("std::int64_t") long getLifetime() {
         return mLifetime;
-    }
-
-    @CalledByNative
-    public @JniType("std::int32_t") @PermissionsRevocationType int getRevocationType() {
-        return mRevocationType;
     }
 }

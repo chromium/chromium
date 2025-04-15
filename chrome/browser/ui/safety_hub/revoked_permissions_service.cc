@@ -55,7 +55,6 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "revoked_permissions_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -231,8 +230,7 @@ PermissionsData::~PermissionsData() = default;
 PermissionsData::PermissionsData(const PermissionsData& other)
     : primary_pattern(other.primary_pattern),
       permission_types(other.permission_types),
-      constraints(other.constraints.Clone()),
-      revocation_type(other.revocation_type) {
+      constraints(other.constraints.Clone()) {
   chooser_permissions_data = other.chooser_permissions_data.Clone();
 }
 
@@ -807,8 +805,6 @@ RevokedPermissionsService::GetRevokedPermissions() {
           info.metadata.expiration()) {
         permissions_data.constraints = GetConstraintFromInfo(info);
       }
-      permissions_data.revocation_type =
-          PermissionsRevocationType::kUnusedPermissionsAndAbusiveNotifications;
     } else if (safety_hub_util::IsUrlRevokedDisruptiveNotification(hcsm(),
                                                                    url)) {
       // If the origin has a revoked disruptive notification, add
@@ -816,12 +812,8 @@ RevokedPermissionsService::GetRevokedPermissions() {
       CHECK(disruptive_notification_manager_);
       permissions_data.permission_types.insert(
           static_cast<ContentSettingsType>(ContentSettingsType::NOTIFICATIONS));
+      // TODO(crbug.com/406473591): Add revocation type field.
       // TODO(crbug.com/406473591): Update constraints to the latest one.
-      permissions_data.revocation_type = PermissionsRevocationType::
-          kUnusedPermissionsAndDisruptiveNotifications;
-    } else {
-      permissions_data.revocation_type =
-          PermissionsRevocationType::kUnusedPermissions;
     }
 
     result->AddRevokedPermission(permissions_data);
@@ -850,9 +842,6 @@ RevokedPermissionsService::GetRevokedPermissions() {
     permissions_data.constraints.set_lifetime(
         revoked_abusive_notification_permission.metadata.lifetime());
 
-    permissions_data.revocation_type =
-        PermissionsRevocationType::kAbusiveNotificationPermissions;
-
     result->AddRevokedPermission(permissions_data);
   }
 
@@ -878,9 +867,6 @@ RevokedPermissionsService::GetRevokedPermissions() {
               permission.metadata.expiration() -
               permission.metadata.lifetime());
       permissions_data.constraints.set_lifetime(permission.metadata.lifetime());
-
-      permissions_data.revocation_type =
-          PermissionsRevocationType::kDisruptiveNotificationPermissions;
 
       result->AddRevokedPermission(permissions_data);
     }
