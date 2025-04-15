@@ -18,10 +18,10 @@
 import type {CdpClient} from '../../../cdp/CdpClient.js';
 import type {GoogChannel} from '../../../protocol/chromium-bidi.js';
 import {
-  InvalidArgumentException,
-  Session,
   type ChromiumBidi,
   type EmptyResult,
+  InvalidArgumentException,
+  Session,
 } from '../../../protocol/protocol.js';
 import type {MapperOptions} from '../../BidiServer.js';
 
@@ -99,14 +99,27 @@ export class SessionProcessor {
       );
     }
     switch (capabilityValue) {
+      // `beforeUnload: accept` has higher priority over string capability, as the latest
+      // one is set to "fallbackDefault".
+      // https://w3c.github.io/webdriver/#dfn-deserialize-as-an-unhandled-prompt-behavior
+      // https://w3c.github.io/webdriver/#dfn-get-the-prompt-handler
       case 'accept':
       case 'accept and notify':
-        return {default: Session.UserPromptHandlerType.Accept};
+        return {
+          default: Session.UserPromptHandlerType.Accept,
+          beforeUnload: Session.UserPromptHandlerType.Accept,
+        };
       case 'dismiss':
       case 'dismiss and notify':
-        return {default: Session.UserPromptHandlerType.Dismiss};
+        return {
+          default: Session.UserPromptHandlerType.Dismiss,
+          beforeUnload: Session.UserPromptHandlerType.Accept,
+        };
       case 'ignore':
-        return {default: Session.UserPromptHandlerType.Ignore};
+        return {
+          default: Session.UserPromptHandlerType.Ignore,
+          beforeUnload: Session.UserPromptHandlerType.Accept,
+        };
       default:
         throw new InvalidArgumentException(
           `Unexpected 'unhandledPromptBehavior' value: ${capabilityValue}`,
