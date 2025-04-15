@@ -68,6 +68,20 @@ StringView ToString(CSSMathOperator op) {
       return "container-progress";
     case CSSMathOperator::kPow:
       return "pow";
+    case CSSMathOperator::kSin:
+      return "sin";
+    case CSSMathOperator::kCos:
+      return "cos";
+    case CSSMathOperator::kTan:
+      return "tan";
+    case CSSMathOperator::kAsin:
+      return "asin";
+    case CSSMathOperator::kAcos:
+      return "acos";
+    case CSSMathOperator::kAtan:
+      return "atan";
+    case CSSMathOperator::kAtan2:
+      return "atan2";
     case CSSMathOperator::kInvalid:
       NOTREACHED();
   }

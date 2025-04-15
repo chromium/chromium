@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/geometry/math_functions.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
@@ -186,6 +187,15 @@ CalculationExpressionPixelsAndPercentNode::ResolvedResultType() const {
 
 // ------ CalculationExpressionOperationNode ------
 
+namespace {
+
+bool ShouldConvertRad2DegForOperator(CalculationOperator op) {
+  return op == CalculationOperator::kSin || op == CalculationOperator::kCos ||
+         op == CalculationOperator::kTan;
+}
+
+}  // namespace
+
 // static
 scoped_refptr<const CalculationExpressionNode>
 CalculationExpressionOperationNode::CreateSimplified(Children&& children,
@@ -351,6 +361,12 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       return base::MakeRefCounted<CalculationExpressionOperationNode>(
           std::move(children), op);
     }
+    case CalculationOperator::kSin:
+    case CalculationOperator::kCos:
+    case CalculationOperator::kTan:
+    case CalculationOperator::kAsin:
+    case CalculationOperator::kAcos:
+    case CalculationOperator::kAtan:
     case CalculationOperator::kAbs:
     case CalculationOperator::kSign: {
       DCHECK_EQ(children.size(), 1u);
@@ -360,19 +376,24 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       if (!pixels_and_percent || pixels_and_percent->Percent()) {
         return base::MakeRefCounted<CalculationExpressionOperationNode>(
             std::move(children), op);
-      } else {
-        float value = pixels_and_percent->Pixels();
-        if (op == CalculationOperator::kAbs) {
-          return base::MakeRefCounted<
-              CalculationExpressionPixelsAndPercentNode>(
-              PixelsAndPercent(std::abs(value)));
-        } else {
-          if (value == 0 || std::isnan(value)) {
-            return base::MakeRefCounted<CalculationExpressionNumberNode>(value);
-          }
-          return base::MakeRefCounted<CalculationExpressionNumberNode>(
-              value > 0 ? 1 : -1);
+      }
+      float value = pixels_and_percent->Pixels();
+      if (op == CalculationOperator::kAbs) {
+        return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+            PixelsAndPercent(std::abs(value)));
+      } else if (op == CalculationOperator::kSign) {
+        if (value == 0 || std::isnan(value)) {
+          return base::MakeRefCounted<CalculationExpressionNumberNode>(value);
         }
+        return base::MakeRefCounted<CalculationExpressionNumberNode>(
+            value > 0 ? 1 : -1);
+      } else {
+        if (ShouldConvertRad2DegForOperator(op) &&
+            children.front()->IsNumber()) {
+          value = Rad2deg(value);
+        }
+        value = EvaluateTrigonometricFunction(op, value);
+        return base::MakeRefCounted<CalculationExpressionNumberNode>(value);
       }
     }
     case CalculationOperator::kProgress:
@@ -422,6 +443,23 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
     }
     case CalculationOperator::kInvalid:
       NOTREACHED();
+    case CalculationOperator::kAtan2: {
+      DCHECK_EQ(children.size(), 2u);
+      const auto* a =
+          DynamicTo<CalculationExpressionPixelsAndPercentNode>(*children[0]);
+      const auto* b =
+          DynamicTo<CalculationExpressionPixelsAndPercentNode>(*children[1]);
+      bool can_simplify = a && !a->Percent() && b && !b->Percent();
+      if (can_simplify) {
+        float value =
+            EvaluateTrigonometricFunction(op, a->Pixels(), {b->Pixels()});
+        return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+            PixelsAndPercent(value));
+      } else {
+        return base::MakeRefCounted<CalculationExpressionOperationNode>(
+            std::move(children), op);
+      }
+    }
   }
 }
 
@@ -579,6 +617,24 @@ float CalculationExpressionOperationNode::Evaluate(
       float b = children_[1]->Evaluate(max_value, input);
       return std::pow(a, b);
     }
+    case CalculationOperator::kSin:
+    case CalculationOperator::kCos:
+    case CalculationOperator::kTan:
+    case CalculationOperator::kAsin:
+    case CalculationOperator::kAcos:
+    case CalculationOperator::kAtan:
+    case CalculationOperator::kAtan2: {
+      float a = children_[0]->Evaluate(max_value, input);
+      if (ShouldConvertRad2DegForOperator(operator_) &&
+          children_.front()->IsNumber()) {
+        a = Rad2deg(a);
+      }
+      std::optional<float> b =
+          operator_ == CalculationOperator::kAtan2
+              ? std::optional<float>(children_[1]->Evaluate(max_value, input))
+              : std::nullopt;
+      return EvaluateTrigonometricFunction(operator_, a, b);
+    }
     case CalculationOperator::kInvalid:
       break;
       // TODO(crbug.com/1284199): Support other math functions.
@@ -643,6 +699,13 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
     case CalculationOperator::kProgress:
     case CalculationOperator::kMediaProgress:
     case CalculationOperator::kContainerProgress:
+    case CalculationOperator::kSin:
+    case CalculationOperator::kCos:
+    case CalculationOperator::kTan:
+    case CalculationOperator::kAsin:
+    case CalculationOperator::kAcos:
+    case CalculationOperator::kAtan:
+    case CalculationOperator::kAtan2:
     case CalculationOperator::kPow: {
       DCHECK(children_.size());
       Vector<scoped_refptr<const CalculationExpressionNode>> cloned_operands;
@@ -758,6 +821,13 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     case CalculationOperator::kContainerProgress:
     case CalculationOperator::kProgress:
     case CalculationOperator::kMediaProgress:
+    case CalculationOperator::kSin:
+    case CalculationOperator::kCos:
+    case CalculationOperator::kTan:
+    case CalculationOperator::kAsin:
+    case CalculationOperator::kAcos:
+    case CalculationOperator::kAtan:
+    case CalculationOperator::kAtan2:
     case CalculationOperator::kPow:
       return ResultType::kNumber;
     case CalculationOperator::kInvalid:
