@@ -44,6 +44,7 @@ static_library("base") {
     "passphrase_enums.cc",
     "passphrase_enums.h",
     "pref_names.h",
+    "previously_syncing_gaia_id_info_for_metrics.h",
     "progress_marker_map.cc",
     "progress_marker_map.h",
     "report_unrecoverable_error.cc",

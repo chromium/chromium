@@ -26,8 +26,10 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -1321,6 +1323,12 @@ void SyncServiceImpl::SyncAuthCredentialsChanged() {
   NotifyObservers();
 }
 
+GaiaId SyncServiceImpl::SyncAuthGetLastSyncingGaiaId() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return GaiaId(sync_client_->GetPrefService()->GetString(
+      prefs::kGoogleServicesLastSyncingGaiaId));
+}
+
 void SyncServiceImpl::CryptoStateChanged() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << "Notify observers on CryptoStateChanged";
@@ -1630,12 +1638,15 @@ void SyncServiceImpl::ConfigureDataTypeManager(
   DVLOG(1) << "Started DataTypeManager configuration, reason: "
            << static_cast<int>(reason);
 
-  ConfigureContext configure_context = {
-      .authenticated_account_id = GetAccountInfo().account_id,
-      .cache_guid = engine_->GetCacheGuid(),
-      .sync_mode = SyncMode::kFull,
-      .reason = reason,
-      .configuration_start_time = base::Time::Now()};
+  ConfigureContext configure_context;
+  configure_context.authenticated_account_id = GetAccountInfo().account_id;
+  configure_context.previously_syncing_gaia_id_info =
+      DeterminePreviouslySyncingGaiaIdInfoForMetrics();
+  configure_context.cache_guid = engine_->GetCacheGuid();
+  configure_context.sync_mode = SyncMode::kFull;
+  configure_context.reason = reason;
+  configure_context.configuration_start_time = base::Time::Now();
+
   base::UmaHistogramBoolean("Sync.ConfigureDataTypeManager.IsGaiaAccountId",
                             GetAccountInfo().account_id.ToString() ==
                                 GetAccountInfo().gaia.ToString());
@@ -2230,6 +2241,34 @@ void SyncServiceImpl::RecordHistoryOptInStateOnSigninHistograms(
   signin_metrics::RecordHistoryOptInStateOnSignin(
       access_point, consent_level,
       user_settings_->GetSelectedTypes().Has(UserSelectableType::kHistory));
+}
+
+PreviouslySyncingGaiaIdInfoForMetrics
+SyncServiceImpl::DeterminePreviouslySyncingGaiaIdInfoForMetrics() const {
+  if (IsLocalSyncEnabled()) {
+    return PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified;
+  }
+
+  const std::optional<GaiaId> previously_syncing_gaia_id_if_known =
+      auth_manager_->GetPreviouslySyncingGaiaIdIfKnown();
+
+  if (!previously_syncing_gaia_id_if_known.has_value()) {
+    return PreviouslySyncingGaiaIdInfoForMetrics::kNotEnoughInformationToTell;
+  }
+
+  if (previously_syncing_gaia_id_if_known->empty()) {
+    // It is known that no previous gaia ID existed that turned sync on.
+    return PreviouslySyncingGaiaIdInfoForMetrics::
+        kSyncFeatureNeverPreviouslyTurnedOn;
+  }
+
+  const GaiaId current_gaia_id = GetAccountInfo().gaia;
+
+  return current_gaia_id == *previously_syncing_gaia_id_if_known
+             ? PreviouslySyncingGaiaIdInfoForMetrics::
+                   kCurrentGaiaIdMatchesPreviousWithSyncFeatureOn
+             : PreviouslySyncingGaiaIdInfoForMetrics::
+                   kCurrentGaiaIdIfDiffersPreviousWithSyncFeatureOn;
 }
 
 const GURL& SyncServiceImpl::GetSyncServiceUrlForDebugging() const {

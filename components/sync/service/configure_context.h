@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "components/sync/base/previously_syncing_gaia_id_info_for_metrics.h"
 #include "components/sync/base/sync_mode.h"
 #include "components/sync/engine/configure_reason.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -21,11 +22,17 @@ namespace syncer {
 // controllers, which propagate analogous information to the processor/bridge
 // via DataTypeActivationRequest.
 struct ConfigureContext {
+  ConfigureContext();
+  ConfigureContext(const ConfigureContext&);
+  ~ConfigureContext();
+
   CoreAccountId authenticated_account_id;
   std::string cache_guid;
   SyncMode sync_mode = SyncMode::kFull;
   ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
   base::Time configuration_start_time;
+  PreviouslySyncingGaiaIdInfoForMetrics previously_syncing_gaia_id_info =
+      PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified;
 };
 
 }  // namespace syncer

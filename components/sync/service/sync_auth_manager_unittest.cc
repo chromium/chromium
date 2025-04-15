@@ -28,6 +28,7 @@ class MockDelegate : public SyncAuthManager::Delegate {
 
   MOCK_METHOD(void, SyncAuthAccountStateChanged, (), (override));
   MOCK_METHOD(void, SyncAuthCredentialsChanged, (), (override));
+  MOCK_METHOD(GaiaId, SyncAuthGetLastSyncingGaiaId, (), (override));
 };
 
 class SyncAuthManagerTest : public testing::Test {

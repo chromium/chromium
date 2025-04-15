@@ -9,6 +9,7 @@ static_library("service") {
     "active_devices_provider.h",
     "backend_migrator.cc",
     "backend_migrator.h",
+    "configure_context.cc",
     "configure_context.h",
     "data_type_controller.cc",
     "data_type_controller.h",
