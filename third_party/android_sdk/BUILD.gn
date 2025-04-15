@@ -64,7 +64,7 @@ if (enable_java_templates) {
   }
   android_sdk_optional_library("android_xr_extensions_java") {
     runtime_library_name = "com.android.extensions.xr"
-    input_jars_paths = "xr_extensions/com.android.extensions.xr.jar"
+    input_jars_paths = [ "xr_extensions/com.android.extensions.xr.jar" ]
     required = false
   }
   if (!limit_android_deps) {
@@ -74,7 +74,7 @@ if (enable_java_templates) {
       jar_deps = [ "//third_party/android_sdk/window_extensions:androidx_window_extensions" ]
       deps =
           [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]
-      input_jars_paths = [ "$root_build_dir/obj/third_party/android_sdk/window_extensions/androidx_window_extensions_java.javac.jar" ]
+      input_jars_paths = [ "$root_build_dir/obj/third_party/android_sdk/window_extensions/androidx_window_extensions_java.turbine.jar" ]
     }
   }
 }

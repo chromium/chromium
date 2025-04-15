@@ -1817,17 +1817,30 @@ if (!is_robolectric && enable_java_templates) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-      supports_android = true
-      requires_android = true
-
-      if (!defined(jar_excluded_patterns)) {
-        jar_excluded_patterns = []
+      if (!defined(requires_robolectric)) {
+        supports_android = true
+        requires_android = true
       }
-      jar_excluded_patterns += [
-        "*/R.class",
-        "*/R\$*.class",
-        "*/*GEN_JNI.class",
-      ]
+
+      # Using JNI Zero via srcjar_deps. jni_zero.gni enforces "jni" in the name.
+      if (defined(srcjar_deps) &&
+          filter_include(srcjar_deps, [ "*jni*" ]) != []) {
+        if (!defined(jar_excluded_patterns)) {
+          jar_excluded_patterns = []
+        }
+        jar_excluded_patterns += [ "*/*GEN_JNI.class" ]
+      }
+
+      # Strip generated R.java classes if they are being generated.
+      if (defined(resources_package)) {
+        if (!defined(jar_excluded_patterns)) {
+          jar_excluded_patterns = []
+        }
+        jar_excluded_patterns += [
+          "*/R.class",
+          "*/R\$*.class",
+        ]
+      }
     }
   }
 
@@ -1858,7 +1871,7 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("robolectric_library") {
-    java_library(target_name) {
+    android_library(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
@@ -1868,15 +1881,6 @@ if (!is_robolectric && enable_java_templates) {
       include_android_sdk = true
       alternative_android_sdk_dep =
           "//third_party/robolectric:robolectric_test_sdk_java"
-
-      if (!defined(jar_excluded_patterns)) {
-        jar_excluded_patterns = []
-      }
-      jar_excluded_patterns += [
-        "*/R.class",
-        "*/R\$*.class",
-        "*/*GEN_JNI.class",
-      ]
 
       if (!defined(deps)) {
         deps = []
@@ -1901,9 +1905,20 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("android_java_prebuilt") {
-    android_library(target_name) {
+    java_library(target_name) {
       forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+      supports_android = true
+      requires_android = true
+
+      if (!defined(jar_excluded_patterns)) {
+        jar_excluded_patterns = []
+      }
+      jar_excluded_patterns += [
+        "*/R.class",
+        "*/R\$*.class",
+      ]
     }
   }
 

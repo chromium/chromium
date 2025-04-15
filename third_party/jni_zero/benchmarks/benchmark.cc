@@ -16,8 +16,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
-#include "third_party/jni_zero/benchmarks/benchmark_header/Benchmark_jni.h"
-#include "third_party/jni_zero/benchmarks/system_jni_headers/Integer_jni.h"
+#include "third_party/jni_zero/benchmarks/benchmark_jni/Benchmark_jni.h"
+#include "third_party/jni_zero/benchmarks/system_jni/Integer_jni.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 using benchmark::DoNotOptimize;

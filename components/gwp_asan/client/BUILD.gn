@@ -30,7 +30,7 @@ source_set("features") {
 
   if (is_android) {
     sources += [ "feature_map.cc" ]
-    deps += [ "android:gwp_asan_headers" ]
+    deps += [ "android:gwp_asan_jni" ]
   }
 }
 

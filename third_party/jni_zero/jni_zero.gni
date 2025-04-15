@@ -500,6 +500,9 @@ template("generate_jni_impl") {
 #     ]
 #   }
 template("generate_jni") {
+  assert(
+      filter_exclude([ target_name ], [ "*jni*" ]) == [],
+      "generate_jni() targets must contain \"jni\" in their names (a \"_jni\" suffix is common). Found \"$target_name\"")
   generate_jni_impl(target_name) {
     forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)

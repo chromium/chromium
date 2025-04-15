@@ -3673,6 +3673,12 @@ if (enable_java_templates) {
         _host_processed_jar_path =
             "$root_out_dir/lib.java$_target_dir/$_output_name.jar"
       }
+      if (_has_sources) {
+        _javac_jar_path = "$target_out_dir/$_main_target_name.javac.jar"
+        _generated_jar_path =
+            "$target_gen_dir/$_main_target_name.generated.srcjar"
+      }
+
       if (_build_device_jar) {
         _dex_path = "$target_out_dir/$_main_target_name.dex.jar"
 
@@ -3684,6 +3690,8 @@ if (enable_java_templates) {
             defined(invoker.jar_included_patterns)
         if (!_process_device_jar && _is_prebuilt) {
           _device_processed_jar_path = invoker.jar_path
+        } else if (!_process_device_jar && _has_sources) {
+          _device_processed_jar_path = _javac_jar_path
         } else {
           _device_processed_jar_path =
               "$target_out_dir/$_output_name.processed.jar"
@@ -3699,16 +3707,6 @@ if (enable_java_templates) {
         _final_ijar_path = "$target_out_dir/$_output_name.turbine.jar"
       } else {
         _final_ijar_path = "$target_out_dir/$_output_name.ijar.jar"
-      }
-
-      if (_has_sources) {
-        if (_build_device_jar && !_process_device_jar) {
-          _javac_jar_path = _device_processed_jar_path
-        } else {
-          _javac_jar_path = "$target_out_dir/$_main_target_name.javac.jar"
-        }
-        _generated_jar_path =
-            "$target_gen_dir/$_main_target_name.generated.srcjar"
       }
 
       if (_is_prebuilt) {

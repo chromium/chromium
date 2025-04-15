@@ -7,7 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 _enable_generated_benchmark = false
 
-generate_jni("benchmark_header") {
+generate_jni("benchmark_jni") {
   sources = [ "java/src/org/jni_zero/benchmark/Benchmark.java" ]
 }
 
@@ -24,7 +24,7 @@ android_library("benchmark_java") {
   }
 }
 
-generate_jar_jni("system_jni_headers") {
+generate_jar_jni("system_jni") {
   classes = [ "java/lang/Integer.class" ]
   visibility = [ ":*" ]
 }
@@ -32,8 +32,8 @@ generate_jar_jni("system_jni_headers") {
 source_set("benchmark_native_side") {
   testonly = true
   deps = [
-    ":benchmark_header",
-    ":system_jni_headers",
+    ":benchmark_jni",
+    ":system_jni",
     "//base",
     "//third_party/google_benchmark",
   ]
