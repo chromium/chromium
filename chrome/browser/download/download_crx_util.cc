@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_item.h"
@@ -22,8 +23,6 @@
 #include "extensions/common/user_script.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android.
-#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -84,14 +83,9 @@ std::unique_ptr<ExtensionInstallPrompt> CreateExtensionInstallPrompt(
 }  // namespace
 
 bool OffStoreInstallAllowedByPrefs(Profile* profile, const DownloadItem& item) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   return g_allow_offstore_install_for_testing ||
          extensions::ExtensionManagementFactory::GetForBrowserContext(profile)
              ->IsOffstoreInstallAllowed(item.GetURL(), item.GetReferrerUrl());
-#else
-  // TODO(crbug.com/394876083): Port ExtensionManagement to desktop Android.
-  return g_allow_offstore_install_for_testing;
-#endif
 }
 
 // Tests can call this method to inject a mock ExtensionInstallPrompt
