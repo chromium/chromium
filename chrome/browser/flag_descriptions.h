@@ -418,6 +418,9 @@ extern const char kAutofillEnableCardBenefitsSyncDescription[];
 extern const char kAutofillEnableCardInfoRuntimeRetrievalName[];
 extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
 
+extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[];
+extern const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[];
+
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[];
 extern const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[];
 

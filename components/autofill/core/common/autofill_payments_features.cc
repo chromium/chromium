@@ -114,6 +114,12 @@ BASE_FEATURE(kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement,
              "AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, flat rate card benefits sourced from Curinos will be shown in
+// Payments Autofill UI.
+BASE_FEATURE(kAutofillEnableFlatRateCardBenefitsFromCurinos,
+             "AutofillEnableFlatRateCardBenefitsFromCurinos",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, server card retrieval will begin with a risk-based check
 // instead of jumping straight to CVC or biometric auth.
 BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,

@@ -12073,6 +12073,14 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableShowSaveCardSecurelyMessage)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"autofill-enable-flat-rate-card-benefits-from-curinos",
+     flag_descriptions::kAutofillEnableFlatRateCardBenefitsFromCurinosName,
+     flag_descriptions::
+         kAutofillEnableFlatRateCardBenefitsFromCurinosDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableFlatRateCardBenefitsFromCurinos)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

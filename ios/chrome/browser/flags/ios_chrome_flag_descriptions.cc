@@ -88,6 +88,12 @@ const char kAutofillEnableDynamicallyLoadingFieldsForAddressInputDescription[] =
     "When enabled, the address fields for input would be dynamically loaded "
     "based on the country value";
 
+const char kAutofillEnableFlatRateCardBenefitsFromCurinosName[] =
+    "Enable showing flat rate card benefits sourced from Curinos";
+const char kAutofillEnableFlatRateCardBenefitsFromCurinosDescription[] =
+    "When enabled, flat rate card benefits sourced from Curinos will be shown "
+    "in Autofill suggestions.";
+
 const char kAutofillEnableLogFormEventsToAllParsedFormTypesName[] =
     "Enable logging form events to all parsed form on a web page.";
 const char kAutofillEnableLogFormEventsToAllParsedFormTypesDescription[] =
