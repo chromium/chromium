@@ -522,7 +522,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       privacy_sandbox::kFingerprintingProtectionUx);
   html_source->AddBoolean("isIpProtectionUxEnabled", ipp_ux);
   html_source->AddBoolean("isFingerprintingProtectionUxEnabled", fpp_ux);
-  html_source->AddBoolean("showActSettingsPage", ipp_ux || fpp_ux);
+  html_source->AddBoolean("enableIncognitoTrackingProtections",
+                          ipp_ux || fpp_ux);
 
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());

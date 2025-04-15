@@ -1031,6 +1031,7 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
             features::kEnableCertManagementUIV2,
             privacy_sandbox::kPrivacySandboxRelatedWebsiteSetsUi,
             permissions::features::kPermissionSiteSettingsRadioButton,
+            privacy_sandbox::kFingerprintingProtectionUx,
         },
         {});
     scoped_feature_list2_.InitAndEnableFeatureWithParameters(
@@ -1100,6 +1101,12 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CertificateManagementV2) {
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, CookiesSubpage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('CookiesSubpage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
+                       IncognitoTrackingProtectionsSubpage) {
+  RunTest("settings/privacy_page_test.js",
+          "runMochaSuite('IncognitoTrackingProtectionsSubpage')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest, AllSitesSubpage) {

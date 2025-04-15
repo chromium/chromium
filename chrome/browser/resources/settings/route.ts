@@ -31,7 +31,7 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   r.SECURITY = r.PRIVACY.createChild('/security');
 
   r.COOKIES = r.PRIVACY.createChild('/cookies');
-  if (loadTimeData.getBoolean('showActSettingsPage') ) {
+  if (loadTimeData.getBoolean('enableIncognitoTrackingProtections') ) {
     r.INCOGNITO_TRACKING_PROTECTIONS = r.PRIVACY.createChild('/incognito');
   }
 

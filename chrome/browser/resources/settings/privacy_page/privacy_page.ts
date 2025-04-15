@@ -273,6 +273,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             map.set(routes.PRIVACY_SANDBOX.path, '#privacySandboxLinkRow');
           }
 
+          if (routes.INCOGNITO_TRACKING_PROTECTIONS) {
+            map.set(routes.INCOGNITO_TRACKING_PROTECTIONS.path,
+              '#incognitoTrackingProtectionsLinkRow');
+          }
+
           return map;
         },
       },
@@ -352,9 +357,9 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
       },
 
-      showActSettingsPage_: {
+      enableIncognitoTrackingProtections_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('showActSettingsPage'),
+        value: () => loadTimeData.getBoolean('enableIncognitoTrackingProtections'),
       },
 
       isNotificationAllowed_: Boolean,
@@ -417,7 +422,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   declare private enableKeyboardLockPrompt_: boolean;
   declare private enableRelatedWebsiteSetsV2Ui_: boolean;
   declare private allSitesPageTitle_: string;
-  declare private showActSettingsPage_: boolean;
+  declare private enableIncognitoTrackingProtections_: boolean;
 
   override ready() {
     super.ready();
@@ -533,6 +538,12 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromSettingsParent');
     Router.getInstance().navigateTo(routes.PRIVACY_SANDBOX);
+  }
+
+  private onIncognitoTrackingProtectionsClick_() {
+    this.interactedWithPage_();
+    // TODO(crbug.com/408036586): Add user action for Incognito tracking protections row click.
+    Router.getInstance().navigateTo(routes.INCOGNITO_TRACKING_PROTECTIONS);
   }
 
   private async updateLocationAndNotificationState_() {

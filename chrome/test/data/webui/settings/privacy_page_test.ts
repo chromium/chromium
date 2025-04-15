@@ -512,10 +512,64 @@ suite(`CookiesSubpage`, function() {
             '#thirdPartyCookiesLinkRow');
     assertTrue(!!thirdPartyCookiesLinkRow);
     thirdPartyCookiesLinkRow.click();
-    // Ensure we navigate to the correct page.
+    // Check that the correct page was navigated to.
     await flushTasks();
     assertEquals(
         routes.COOKIES, Router.getInstance().getCurrentRoute());
+  });
+});
+
+suite(`IncognitoTrackingProtectionsSubpage`, function() {
+  let page: SettingsPrivacyPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    resetRouterForTesting();
+
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    page = document.createElement('settings-privacy-page');
+    page.prefs = settingsPrefs.prefs!;
+    document.body.appendChild(page);
+    return flushTasks();
+  });
+
+  teardown(function() {
+    resetRouterForTesting();
+  });
+
+  test('clickIncognitoTrackingProtectionsRow', async function() {
+    const incognitoTrackingProtectionsLinkRow =
+        page.shadowRoot!.querySelector<HTMLElement>(
+            '#incognitoTrackingProtectionsLinkRow');
+    assertTrue(!!incognitoTrackingProtectionsLinkRow);
+    incognitoTrackingProtectionsLinkRow.click();
+    // Check that the correct page was navigated to.
+    await flushTasks();
+    assertEquals(
+        routes.INCOGNITO_TRACKING_PROTECTIONS, Router.getInstance().getCurrentRoute());
+  });
+
+  // TODO(crbug.com/408036586): Remove once kFingerprintingProtectionUx is launched.
+  test('IncognitoTrackingProtectionsRowNotVisible', async function () {
+    loadTimeData.overrideValues({
+      isFingerprintingProtectionUxEnabled: false,
+      isIpProtectionUxEnabled: false,
+      enableIncognitoTrackingProtections: false,
+    });
+
+    page.remove();
+    page = document.createElement('settings-privacy-page');
+    document.body.appendChild(page);
+
+    await flushTasks();
+
+    assertFalse(isChildVisible(page, '#incognitoTrackingProtectionsLinkRow'));
   });
 });
 
