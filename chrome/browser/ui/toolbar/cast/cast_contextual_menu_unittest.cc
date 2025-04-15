@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
 #include "chrome/browser/ui/toolbar/cast/mock_cast_toolbar_button_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -65,7 +66,10 @@ class MockCastContextualMenuObserver : public CastContextualMenu::Observer {
 
 class CastContextualMenuUnitTest : public BrowserWithTestWindowTest {
  public:
-  CastContextualMenuUnitTest() = default;
+  CastContextualMenuUnitTest() {
+    // These tests are replaced by the tests in CastContextualMenuBrowserTest.
+    scoped_feature_list_.InitAndDisableFeature(features::kPinnedCastButton);
+  }
   CastContextualMenuUnitTest(const CastContextualMenuUnitTest&) = delete;
   CastContextualMenuUnitTest& operator=(const CastContextualMenuUnitTest&) =
       delete;
@@ -115,6 +119,7 @@ class CastContextualMenuUnitTest : public BrowserWithTestWindowTest {
 
   raw_ptr<ToolbarActionsModel> toolbar_actions_model_ = nullptr;
   MockCastContextualMenuObserver observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the basic state of the contextual menu.

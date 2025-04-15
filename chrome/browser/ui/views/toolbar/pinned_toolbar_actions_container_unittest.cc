@@ -425,7 +425,7 @@ TEST_F(PinnedToolbarActionsContainerTest,
   UpdateActionItem(actions::kActionCopy);
 
   // Set pinned state for an action item that isn't registered
-  model()->UpdatePinnedState(kActionRouteMedia, true);
+  model()->UpdatePinnedState(kActionExit, true);
   model()->UpdatePinnedState(actions::kActionCut, true);
   model()->UpdatePinnedState(actions::kActionCopy, true);
 

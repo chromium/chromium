@@ -49333,6 +49333,7 @@ should be able to be added at any place in this file.
   <suffix name="kActionNewIncognitoWindow" label="New incognito window action"/>
   <suffix name="kActionPrint" label="Print action"/>
   <suffix name="kActionQrCodeGenerator" label="QR code generator action"/>
+  <suffix name="kActionRouteMedia" label="Media router action"/>
   <suffix name="kActionSendTabToSelf" label="Send tab to self action"/>
   <suffix name="kActionShowAddressesBubbleOrPage"
       label="Show addresses action"/>
