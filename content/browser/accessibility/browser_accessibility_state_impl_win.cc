@@ -22,6 +22,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/registry.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -40,6 +41,13 @@ namespace {
 // TODO(crbug.com/407891291): Remove this feature flag in Chrome 139.
 BASE_FEATURE(kDisableUiaProviderWhenJawsIsRunning,
              "DisableUiaProviderWhenJawsIsRunning",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Killswitch to turn off this feature remotely in case it affects performance.
+// This is temporary. TODO(crbug.com/407891291): Remove this feature flag in
+// Chrome 139.
+BASE_FEATURE(kDiscoverAssistiveTechOnUiThread,
+             "DiscoverAssistiveTechOnUiThread",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 const wchar_t kNarratorRegistryKey[] = L"Software\\Microsoft\\Narrator\\NoRoam";
@@ -417,17 +425,26 @@ BrowserAccessibilityStateImplWin::BrowserAccessibilityStateImplWin() {
 }
 
 void BrowserAccessibilityStateImplWin::RefreshAssistiveTech() {
-  if (!awaiting_known_assistive_tech_computation_) {
-    awaiting_known_assistive_tech_computation_ = true;
-    // Using base::Unretained() instead of a weak pointer as the lifetime of
-    // this is tied to BrowserMainLoop.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&DiscoverAssistiveTech),
-        base::BindOnce(
-            &BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech,
-            base::Unretained(this)));
+  if (awaiting_known_assistive_tech_computation_) {
+    return;
   }
+
+  awaiting_known_assistive_tech_computation_ = true;
+
+  if (base::FeatureList::IsEnabled(kDiscoverAssistiveTechOnUiThread)) {
+    TRACE_EVENT("accessibility", "DiscoverAssistiveTechOnUiThread");
+    OnDiscoveredAssistiveTech(DiscoverAssistiveTech());
+    return;
+  }
+
+  // Using base::Unretained() instead of a weak pointer as the lifetime of
+  // this is tied to BrowserMainLoop.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&DiscoverAssistiveTech),
+      base::BindOnce(
+          &BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech,
+          base::Unretained(this)));
 }
 
 void BrowserAccessibilityStateImplWin::OnDiscoveredAssistiveTech(
