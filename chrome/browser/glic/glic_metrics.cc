@@ -261,6 +261,26 @@ void GlicMetrics::OnGlicWindowResize() {
   base::RecordAction(base::UserMetricsAction("GlicPanelResized"));
 }
 
+void GlicMetrics::OnWidgetUserResizeStarted() {
+  base::RecordAction(base::UserMetricsAction("GlicPanelUserResizeStarted"));
+
+  gfx::Size size_on_user_resize_started = window_controller_->GetSize();
+  base::UmaHistogramCounts10000("Glic.PanelWebUi.UserResizeStarted.Width",
+                                size_on_user_resize_started.width());
+  base::UmaHistogramCounts10000("Glic.PanelWebUi.UserResizeStarted.Height",
+                                size_on_user_resize_started.height());
+}
+
+void GlicMetrics::OnWidgetUserResizeEnded() {
+  base::RecordAction(base::UserMetricsAction("GlicPanelUserResizeEnded"));
+
+  gfx::Size size_on_user_resize_ended = window_controller_->GetSize();
+  base::UmaHistogramCounts10000("Glic.PanelWebUi.UserResizeEnded.Width",
+                                size_on_user_resize_ended.width());
+  base::UmaHistogramCounts10000("Glic.PanelWebUi.UserResizeEnded.Height",
+                                size_on_user_resize_ended.height());
+}
+
 void GlicMetrics::OnGlicWindowClose() {
   base::RecordAction(base::UserMetricsAction("GlicSessionEnd"));
   base::UmaHistogramCounts1000("Glic.Session.ResponseCount",

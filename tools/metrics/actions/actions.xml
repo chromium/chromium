@@ -12545,6 +12545,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="GlicPanelUserResizeEnded">
+  <owner>fsenra@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <description>
+    Recorded when the glic panel stops being resized by the user.
+  </description>
+</action>
+
+<action name="GlicPanelUserResizeStarted">
+  <owner>fsenra@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <description>
+    Recorded when the glic panel starts being resized by the user.
+  </description>
+</action>
+
 <action name="GlicResponse">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>

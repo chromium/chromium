@@ -158,6 +158,10 @@ class GlicMetrics {
   void OnGlicWindowShown();
   // Called when the glic window is resized.
   void OnGlicWindowResize();
+  // Called when the glic window starts being resized by the user.
+  void OnWidgetUserResizeStarted();
+  // Called when the glic window stops being resized by the user.
+  void OnWidgetUserResizeEnded();
   // Called when the glic window finishes closing.
   void OnGlicWindowClose();
 

@@ -309,6 +309,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.PanelWebUi.UserResizeEnded.Height" units="DIPs"
+    expires_after="2026-01-15">
+  <owner>fsenra@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Records the height of the Glic panel in DIP when the user stops resizing the
+    panel.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PanelWebUi.UserResizeEnded.Width" units="DIPs"
+    expires_after="2026-01-15">
+  <owner>fsenra@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Records the width of the Glic panel in DIP when the user stops resizing the
+    panel.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PanelWebUi.UserResizeStarted.Height" units="DIPs"
+    expires_after="2026-01-15">
+  <owner>fsenra@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Records the height of the Glic panel in DIP when the user starts resizing
+    the panel.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PanelWebUi.UserResizeStarted.Width" units="DIPs"
+    expires_after="2026-01-15">
+  <owner>fsenra@google.com</owner>
+  <owner>iwells@google.com</owner>
+  <summary>
+    Records the width of the Glic panel in DIP when the user starts resizing the
+    panel.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PanelWebUiState" enum="WebUiState"
     expires_after="2026-01-15">
   <owner>erikchen@chromium.org</owner>

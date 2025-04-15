@@ -379,12 +379,14 @@ void GlicWindowController::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 void GlicWindowController::OnWidgetUserResizeStarted() {
+  glic_service_->metrics()->OnWidgetUserResizeStarted();
   if (web_client_) {
     web_client_->ManualResizeChanged(true);
   }
 }
 
 void GlicWindowController::OnWidgetUserResizeEnded() {
+  glic_service_->metrics()->OnWidgetUserResizeEnded();
   if (web_client_) {
     web_client_->ManualResizeChanged(false);
   }
