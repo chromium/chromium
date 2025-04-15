@@ -8,9 +8,10 @@
 namespace crx_file {
 
 // The magic string embedded in the header.
-constexpr char kCrxFileHeaderMagic[] = "Cr24";
-constexpr char kCrxDiffFileHeaderMagic[] = "CrOD";
-constexpr int kCrxFileHeaderMagicSize = 4;
+constexpr auto kCrxFileHeaderMagic =
+    std::to_array<uint8_t>({'C', 'r', '2', '4'});
+constexpr auto kCrxDiffFileHeaderMagic =
+    std::to_array<uint8_t>({'C', 'r', 'O', 'D'});
 constexpr char kSignatureContext[] = "CRX3 SignedData";
 
 }  // namespace crx_file
