@@ -34,10 +34,6 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
       WhatsNewModule("Googlepayreauth", "vinnypersky@google.com",
                      BrowserCommand::kOpenPaymentsSettings));
 
-  // 131
-  registry->RegisterModule(WhatsNewModule(
-      lens::features::kLensOverlayTranslateButton, "juanmojica@google.com"));
-
 #if BUILDFLAG(ENABLE_PDF)
   // 132
   registry->RegisterModule(WhatsNewModule(chrome_pdf::features::kPdfSearchify,
