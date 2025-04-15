@@ -80,6 +80,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
     BUILDFLAG(IS_CHROMEOS)
   void OpenPasswordDetailsBubble(
       const password_manager::PasswordForm& form) override;
+  void MaybeShowSavePasswordPrimingPromo(const GURL& current_url) override;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_IOS)

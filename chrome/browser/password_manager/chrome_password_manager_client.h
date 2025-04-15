@@ -451,6 +451,7 @@ class ChromePasswordManagerClient
       autofill::password_generation::PasswordGenerationType type,
       password_manager::ContentPasswordManagerDriver* driver,
       const autofill::password_generation::PasswordGenerationUIData& ui_data);
+  void MaybeShowSavePasswordPrimingPromo(const GURL& current_url) override;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   gfx::RectF TransformToRootCoordinates(

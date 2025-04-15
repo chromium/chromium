@@ -163,6 +163,14 @@ LikelyFormFilling SendFillInformationToRenderer(
     }
 
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    if (!should_show_popup_without_passwords) {
+      client->MaybeShowSavePasswordPrimingPromo(observed_form.url);
+    }
+#endif
+
     driver->InformNoSavedCredentials(should_show_popup_without_passwords);
     metrics_recorder->RecordFillEvent(
         PasswordFormMetricsRecorder::kManagerFillEventNoCredential);

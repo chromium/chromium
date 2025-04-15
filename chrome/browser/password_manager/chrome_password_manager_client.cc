@@ -89,6 +89,7 @@
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
@@ -2047,6 +2048,7 @@ void ChromePasswordManagerClient::GenerationResultAvailable(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+
 void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
     PasswordGenerationType type,
     password_manager::ContentPasswordManagerDriver* driver,
@@ -2074,6 +2076,32 @@ void ChromePasswordManagerClient::ShowPasswordGenerationPopup(
           ? autofill::mojom::AutofillSuggestionAvailability::kAutofillAvailable
           : autofill::mojom::AutofillSuggestionAvailability::kNoSuggestions);
 }
+
+void ChromePasswordManagerClient::MaybeShowSavePasswordPrimingPromo(
+    const GURL& current_url) {
+  // If the user has any stored passwords do not show the promo.
+  auto* const prefs = GetPrefs();
+  if (prefs->GetBoolean(
+          password_manager::prefs::
+              kAutofillableCredentialsProfileStoreLoginDatabase) ||
+      prefs->GetBoolean(
+          password_manager::prefs::
+              kAutofillableCredentialsAccountStoreLoginDatabase)) {
+    return;
+  }
+
+  // If the current page is not eligible for password saving, do not show the
+  // promo.
+  if (!IsSavingAndFillingEnabled(current_url)) {
+    return;
+  }
+
+  // TODO(https://crbug.com/409769482): Fetch the
+  // `BrowserUserEducationInterface` for the `WebContents` and call
+  // `MaybeShowFeaturePromo()` once the IPH feature for this promo has been
+  // created.
+}
+
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 gfx::RectF ChromePasswordManagerClient::TransformToRootCoordinates(
