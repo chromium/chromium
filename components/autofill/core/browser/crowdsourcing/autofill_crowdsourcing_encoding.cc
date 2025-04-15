@@ -386,12 +386,6 @@ void EncodeFormFieldsForUpload(
       added_field->add_autofill_type(field_type);
     }
 
-    if (field->generation_type()) {
-      added_field->set_generation_type(field->generation_type());
-      added_field->set_generated_password_changed(
-          field->generated_password_changed());
-    }
-
     if (field->vote_type()) {
       added_field->set_vote_type(field->vote_type());
     }
@@ -429,6 +423,12 @@ void EncodeFormFieldsForUpload(
     }
 
     if (field_options) {
+      if (field_options->generation_type) {
+        added_field->set_generation_type(field_options->generation_type);
+        added_field->set_generated_password_changed(
+            field->generated_password_changed());
+      }
+
       if (field_options->single_username_vote_type) {
         added_field->set_single_username_vote_type(
             field_options->single_username_vote_type.value());

@@ -61,6 +61,7 @@ class BrowserSavePasswordProgressLogger
   void LogFormStructure(
       StringID label,
       const autofill::FormStructure& form,
+      const autofill::EncodeUploadRequestOptions& vote_metadata,
       std::optional<PasswordAttributesMetadata> password_attributes);
 
   // Browser-specific addition to the base class' Log* methods. The input is
@@ -104,7 +105,8 @@ class BrowserSavePasswordProgressLogger
 
   // Returns the string representation of `form`.
   static std::string FormStructureToFieldsLogString(
-      const autofill::FormStructure& form);
+      const autofill::FormStructure& form,
+      const autofill::EncodeUploadRequestOptions& vote_metadata);
 
   // Returns the string representation of votes related password attributes from
   // the `password_attributes`.

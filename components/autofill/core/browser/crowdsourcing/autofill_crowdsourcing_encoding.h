@@ -56,6 +56,10 @@ struct EncodeUploadRequestOptions {
     IsMostRecentSingleUsernameCandidate
         is_most_recent_single_username_candidate =
             IsMostRecentSingleUsernameCandidate::kNotPartOfUsernameFirstFlow;
+
+    // The type of password generation event, if it happened.
+    AutofillUploadContents::Field::PasswordGenerationType generation_type =
+        AutofillUploadContents::Field::NO_GENERATION;
   };
 
   EncodeUploadRequestOptions();

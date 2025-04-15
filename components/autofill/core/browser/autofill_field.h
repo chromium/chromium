@@ -297,15 +297,6 @@ class AutofillField : public FormFieldData {
     return credit_card_number_offset_;
   }
 
-  void set_generation_type(
-      AutofillUploadContents::Field::PasswordGenerationType type) {
-    generation_type_ = type;
-  }
-  AutofillUploadContents::Field::PasswordGenerationType generation_type()
-      const {
-    return generation_type_;
-  }
-
   void set_generated_password_changed(bool generated_password_changed) {
     generated_password_changed_ = generated_password_changed;
   }
@@ -548,10 +539,6 @@ class AutofillField : public FormFieldData {
   // The parseable label attribute is potentially only a part of the original
   // label when the label is divided between subsequent fields.
   std::u16string parseable_label_;
-
-  // The type of password generation event, if it happened.
-  AutofillUploadContents::Field::PasswordGenerationType generation_type_ =
-      AutofillUploadContents::Field::NO_GENERATION;
 
   // Whether the generated password was changed by user.
   bool generated_password_changed_ = false;
