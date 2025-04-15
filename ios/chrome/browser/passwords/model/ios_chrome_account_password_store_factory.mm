@@ -13,7 +13,6 @@
 #import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
-#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/password_store/login_database.h"
 #import "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
@@ -70,17 +69,11 @@ IOSChromeAccountPasswordStoreFactory::BuildServiceInstanceFor(
       password_manager::CreateLoginDatabaseForAccountStorage(
           profile->GetStatePath(), profile->GetPrefs()));
 
-  os_crypt_async::OSCryptAsync* os_crypt_async =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUseAsyncOsCryptInLoginDatabase)
-          ? GetApplicationContext()->GetOSCryptAsync()
-          : nullptr;
-
   auto password_store = base::MakeRefCounted<password_manager::PasswordStore>(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-          profile->GetPrefs(), os_crypt_async));
+          profile->GetPrefs(), GetApplicationContext()->GetOSCryptAsync()));
 
   AffiliationService* affiliation_service =
       IOSChromeAffiliationServiceFactory::GetForProfile(profile);

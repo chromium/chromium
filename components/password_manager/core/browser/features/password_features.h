@@ -182,9 +182,6 @@ inline constexpr base::FeatureParam<int> kLoginDbDeprecationExportDelay = {
 // websites like slack.com.
 BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 
-// Enables async implementation of OSCrypt inside LoginDatabase (Stage 1).
-BASE_DECLARE_FEATURE(kUseAsyncOsCryptInLoginDatabase);
-
 // Enables new encryption method of OSCrypt inside LoginDatabase (Stage 2).
 BASE_DECLARE_FEATURE(kUseNewEncryptionMethod);
 

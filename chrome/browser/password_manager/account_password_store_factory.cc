@@ -27,7 +27,6 @@
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
@@ -120,10 +119,7 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   DCHECK(!profile->IsOffTheRecord());
 
   os_crypt_async::OSCryptAsync* os_crypt_async =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUseAsyncOsCryptInLoginDatabase)
-          ? g_browser_process->os_crypt_async()
-          : nullptr;
+      g_browser_process->os_crypt_async();
 
   scoped_refptr<password_manager::PasswordStore> ps =
 #if BUILDFLAG(IS_ANDROID)

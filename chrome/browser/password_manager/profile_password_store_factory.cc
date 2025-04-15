@@ -19,7 +19,6 @@
 #include "chrome/common/chrome_paths_internal.h"
 #include "components/affiliations/core/browser/affiliation_service.h"
 #include "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -62,14 +61,9 @@ scoped_refptr<RefcountedKeyedService> BuildPasswordStore(
   scoped_refptr<PasswordStore> ps;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_OZONE)
-  os_crypt_async::OSCryptAsync* os_crypt_async =
-      base::FeatureList::IsEnabled(
-          password_manager::features::kUseAsyncOsCryptInLoginDatabase)
-          ? g_browser_process->os_crypt_async()
-          : nullptr;
-
-  ps = new password_manager::PasswordStore(CreateProfilePasswordStoreBackend(
-      profile->GetPath(), profile->GetPrefs(), os_crypt_async));
+  ps = new password_manager::PasswordStore(
+      CreateProfilePasswordStoreBackend(profile->GetPath(), profile->GetPrefs(),
+                                        g_browser_process->os_crypt_async()));
 #else
   NOTIMPLEMENTED();
 #endif
