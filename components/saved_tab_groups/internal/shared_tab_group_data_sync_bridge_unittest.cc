@@ -70,6 +70,7 @@ using testing::ElementsAre;
 using testing::Eq;
 using testing::Invoke;
 using testing::InvokeWithoutArgs;
+using testing::IsEmpty;
 using testing::IsNull;
 using testing::NotNull;
 using testing::Pointee;
@@ -2328,6 +2329,44 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, UntrackEntitiesForCollaboration) {
         run_loop2.Quit();
       }));
   run_loop2.Run();
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest,
+       ShouldResolveTabsMissingGroupsOnRemoteUpdate) {
+  const CollaborationId kCollaborationId("collaboration");
+  const base::Uuid kMissingGroupGuid = base::Uuid::GenerateRandomV4();
+  ASSERT_TRUE(InitializeBridgeAndModel());
+
+  // Add a tab missing group remotely.
+  sync_pb::SharedTabGroupDataSpecifics tab_specifics =
+      MakeTabSpecifics("tab title", GURL("http://google.com/1"),
+                       kMissingGroupGuid, GenerateRandomUniquePosition());
+  ApplySingleEntityChange(
+      CreateAddEntityChange(tab_specifics, kCollaborationId));
+
+  std::vector<syncer::EntityData> entity_data_list =
+      ExtractEntityDataFromBatch(bridge()->GetAllDataForDebugging());
+
+  // Verify that the model is still empty but the tab missing group is stored.
+  ASSERT_THAT(entity_data_list,
+              UnorderedElementsAre(HasTabEntityData(
+                  "tab title", "http://google.com/1", kCollaborationId)));
+  ASSERT_THAT(model()->saved_tab_groups(), IsEmpty());
+
+  // Add the missing group entry remotely.
+  sync_pb::SharedTabGroupDataSpecifics group_specifics =
+      MakeTabGroupSpecifics("group title", sync_pb::SharedTabGroup::CYAN);
+  group_specifics.set_guid(kMissingGroupGuid.AsLowercaseString());
+  ApplySingleEntityChange(
+      CreateAddEntityChange(group_specifics, kCollaborationId));
+
+  // Both the group and the tab should be present in the model.
+  ASSERT_THAT(model()->saved_tab_groups(),
+              ElementsAre(HasSharedGroupMetadata(
+                  "group title", tab_groups::TabGroupColorId::kCyan,
+                  kCollaborationId)));
+  EXPECT_THAT(model()->saved_tab_groups().front().saved_tabs(),
+              ElementsAre(HasTabMetadata("tab title", "http://google.com/1")));
 }
 
 // The number of tabs to test the correct ordering of remote updates.

@@ -716,8 +716,12 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
         change->data().specifics.shared_tab_group_data().guid()));
   }
 
-  // TODO(crbug.com/370719750): resolve and handle tabs missing groups later.
-  // ResolveTabsMissingGroups(write_batch.get());
+  // Note that ResolveTabsMissingGroups() must be called after all the tab
+  // updates are applied to the model to correctly handle unique positions.
+  if (std::optional<syncer::ModelError> error =
+          ResolveTabsMissingGroups(*metadata_change_list)) {
+    return error;
+  }
 
   ongoing_write_batch_->TakeMetadataChangesFrom(
       std::move(metadata_change_list));
@@ -1568,6 +1572,37 @@ void SharedTabGroupDataSyncBridge::ProcessCommittedTabGroups() {
     model_wrapper_->MarkTransitionedToShared(group->saved_guid());
     std::erase(tab_groups_waiting_for_commit_, group_guid);
   }
+}
+
+std::optional<syncer::ModelError>
+SharedTabGroupDataSyncBridge::ResolveTabsMissingGroups(
+    syncer::MetadataChangeList& metadata_change_list) {
+  // This method should only be called when there is an ongoing write batch,
+  // for example during a remote update.
+  CHECK(ongoing_write_batch_);
+  for (const auto& [tab_guid, tab_missing_group] : tabs_missing_groups_) {
+    base::Uuid group_guid = base::Uuid::ParseLowercase(
+        tab_missing_group.specifics.tab().shared_tab_group_guid());
+    const SavedTabGroup* group = model_wrapper_->GetGroup(group_guid);
+    if (!group) {
+      // The group still does not exist in the model.
+      continue;
+    }
+
+    // The group exists in the model, simulate a remote update for the tab. Note
+    // that `tab_ids_with_pending_model_update` is empty because all the tabs in
+    // the model are already updated (and other tabs missing groups are still
+    // not in the model).
+    if (std::optional<syncer::ModelError> error =
+            ApplyRemoteTabUpdate(tab_missing_group.specifics,
+                                 &metadata_change_list, *ongoing_write_batch_,
+                                 /*tab_ids_with_pending_model_update=*/{},
+                                 tab_missing_group.collaboration_metadata,
+                                 tab_missing_group.creation_time)) {
+      return error;
+    }
+  }
+  return std::nullopt;
 }
 
 SharedTabGroupDataSyncBridge::TabMissingGroup::TabMissingGroup(
