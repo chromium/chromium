@@ -414,7 +414,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         boolean isIncognito = filter.getTabModel().isIncognitoBranded();
         mMiniThumbnailPlaceholderColor =
                 TabUiThemeUtils.getMiniThumbnailPlaceholderColor(mContext, isIncognito, false);
-        if (mGroupTintedMiniThumbnailPlaceholderColor != null) {
+        if (mGroupTintedMiniThumbnailPlaceholderColor == null) {
             mEmptyThumbnailPaint.setColor(mMiniThumbnailPlaceholderColor);
         }
         mTextPaint.setColor(
