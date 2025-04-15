@@ -1464,7 +1464,7 @@
       "http/tests/inspector-protocol/shared-storage"
     ],
     "args": ["--enable-features=SharedStorageAPI,SharedStorageWebLocks,InterestGroupsInSharedStorageWorklet,Fledge,AdInterestGroupAPI,FencedFrames:implementation_type/mparch,PrivacySandboxAdsAPIsOverride,FencedFramesAPIChanges,FencedFramesDefaultMode,SharedStorageAPIEnableWALForDatabase,FencedFramesEnforceFocus,FencedFramesReportEventHeaderChanges,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin,SharedStorageTransactionalBatchUpdate"],
-    "expires": "Jan 31, 2025"
+    "expires": "Oct 31, 2025"
   },
   {
     "prefix": "shared-storage-selecturl-limit",
@@ -1477,7 +1477,7 @@
       "external/wpt/shared-storage-selecturl-limit/"
     ],
     "args": ["--enable-features=SharedStorageAPI,FencedFrames:implementation_type/mparch,FencedFramesAPIChanges,FencedFramesDefaultMode,FencedFramesEnforceFocus,PrivacySandboxAdsAPIsOverride,SharedStorageSelectURLLimit:SharedStorageSelectURLBitBudgetPerPageLoad/6/SharedStorageSelectURLBitBudgetPerSitePerPageLoad/3,SharedStorageAPIEnableWALForDatabase,SharedStorageSelectURLSavedQueries,SharedStorageCreateWorkletCustomDataOrigin"],
-    "expires": "Jan 31, 2025"
+    "expires": "Oct 31, 2025"
   },
   "Task tracking tests require UnexposedTaskIds to work, so these tests are run",
   "exclusively with a virtual test suite that never expires.",
