@@ -18,7 +18,6 @@
 #include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_constants.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -141,10 +140,6 @@ void WindowCycleItemView::Layout(PassKey) {
   const gfx::Rect preview_area_bounds = preview_view()->bounds();
   SetBackdropVisibility(preview_max_bounds.size() !=
                         preview_area_bounds.size());
-
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    return;
-  }
 
   if (!layer_tree_synchronizer_) {
     layer_tree_synchronizer_ = std::make_unique<ScopedLayerTreeSynchronizer>(

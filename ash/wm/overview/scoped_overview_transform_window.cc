@@ -34,7 +34,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -566,10 +565,6 @@ void ScopedOverviewTransformWindow::UpdateRoundedCorners(bool show) {
       has_rounding ? window_util::GetMiniWindowRoundedCorners(
                          window(), /*include_header_rounding=*/false, scale)
                    : gfx::RoundedCornersF(0));
-
-  if (!chromeos::features::IsRoundedWindowsEnabled()) {
-    return;
-  }
 
   gfx::RectF contents_bounds_in_root(contents_bounds_in_screen);
   wm::TranslateRectFromScreen(window_->GetRootWindow(),
