@@ -33,22 +33,6 @@ inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
 // Usage: --no-sandbox --webnn-ort-dump-model=./OnnxModels
 inline constexpr char kWebNNOrtDumpModel[] = "webnn-ort-dump-model";
 
-// For GPU, OV EP will use FP16 inference precision by default. You can specify
-// the flag to use FP32 or ACCURACY to get better accuracy, but it may result in
-// decreased performance.
-//
-// Usage1: --webnn-ort-ov-gpu-precision=FP32
-// It will set underlying OV inference precison to
-// "ov::hint::inference_precision(ov::element::f32)".
-//
-// Usage2: --webnn-ort-ov-gpu-precision=ACCURACY
-// It will set underlying OV execution mode to
-// "ov::hint::ExecutionMode::ACCURACY"
-//
-// More details for the inference precision and execution mode can be found at
-// https://docs.openvino.ai/2025/openvino-workflow/running-inference/optimize-inference/precision-control.html
-inline constexpr char kWebNNOrtOVGpuPrecision[] = "webnn-ort-ov-gpu-precision";
-
 // Enable model caching for OV EP with cache folder specified by
 // --webnn-ort-use-ov-model-cache. Note, the folder needs to be accessible from
 // the GPU process sandbox or --no-sandbox must be used. Usage: --no-sandbox

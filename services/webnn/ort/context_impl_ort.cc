@@ -49,8 +49,9 @@ void HandleTensorCreationFailure(
 // Keys:
 constexpr char kOVPrecision[] = "precision";
 constexpr char kOVCacheDir[] = "cache_dir";
-// Values:
 constexpr char kOVDeviceType[] = "device_type";
+// Values:
+constexpr char kOVAccuracyPrecision[] = "ACCURACY";
 constexpr char kOVDeviceGPU[] = "GPU";
 constexpr char kOVDeviceCPU[] = "CPU";
 constexpr char kOVDeviceNPU[] = "NPU";
@@ -122,7 +123,6 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
   if (base::FeatureList::IsEnabled(mojom::features::kWebNNOrtOpenVino)) {
     std::vector<const char*> provider_options_keys;
     std::vector<const char*> provider_options_values;
-    std::string gpu_precision;
     switch (device_type) {
       case mojom::CreateContextOptions::Device::kCpu: {
         provider_options_keys.push_back(kOVDeviceType);
@@ -133,15 +133,13 @@ SessionOptions::Create(const mojom::CreateContextOptions::Device device_type) {
         provider_options_keys.push_back(kOVDeviceType);
         provider_options_values.push_back(kOVDeviceGPU);
 
-        // "GPU" will use FP16 inference precision by default.
-        if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                switches::kWebNNOrtOVGpuPrecision)) {
-          gpu_precision =
-              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                  switches::kWebNNOrtOVGpuPrecision);
-          provider_options_keys.push_back(kOVPrecision);
-          provider_options_values.push_back(gpu_precision.data());
-        }
+        // Specify the `ACCURACY` precision explicitly for OV GPU to override
+        // the default `FP16` to get better accuracy.
+        // More details for the inference precision and execution mode can be
+        // found at
+        // https://docs.openvino.ai/2025/openvino-workflow/running-inference/optimize-inference/precision-control.html
+        provider_options_keys.push_back(kOVPrecision);
+        provider_options_values.push_back(kOVAccuracyPrecision);
         break;
       }
       case mojom::CreateContextOptions::Device::kNpu: {
