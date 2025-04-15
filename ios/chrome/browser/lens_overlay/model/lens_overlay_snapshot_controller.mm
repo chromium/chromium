@@ -429,7 +429,7 @@ void LensOverlaySnapshotController::StartSnapshotFlow() {
 }
 
 void LensOverlaySnapshotController::ProcessRawSnapshot(UIImage* snapshot) {
-  if (!is_capturing_) {
+  if (!snapshot || !is_capturing_) {
     return;
   }
 
