@@ -1,0 +1,5 @@
+# Ignore all vendored third-party code. If any first-party code need to be
+# formatted, please put a config under your own directory to void this one.
+# https://clang.llvm.org/docs/ClangFormat.html#clang-format-ignore
+
+**

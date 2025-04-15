@@ -20,7 +20,8 @@ wrap_comments = true
 use_small_heuristics = "Max"
 
 # Third party code is formatted upstream.
+# Please use negative pattern (!path) for any path you do want to format.
 ignore = [
-  "third_party/rust/**/crate",
-  "third_party/rust/chromium_crates_io/vendor",
+  "third_party/**",
+  "!third_party/blink/**",
 ]
