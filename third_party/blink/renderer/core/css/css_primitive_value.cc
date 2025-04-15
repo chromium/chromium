@@ -286,16 +286,6 @@ double CSSPrimitiveValue::ComputeDegrees() const {
   return CSSValueClampingUtils::ClampAngle(result);
 }
 
-double CSSPrimitiveValue::ComputeDotsPerPixel() const {
-  DCHECK(IsResolution());
-
-  if (IsCalculated()) {
-    return To<CSSMathFunctionValue>(this)->ComputeDotsPerPixel();
-  }
-
-  return To<CSSNumericLiteralValue>(this)->ComputeDotsPerPixel();
-}
-
 double CSSPrimitiveValue::ComputeDegrees(
     const CSSLengthResolver& length_resolver) const {
   double result =

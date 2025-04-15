@@ -21,9 +21,12 @@ namespace {
 const CSSPrimitiveValue* ComputeResolution(
     const CSSPrimitiveValue& resolution) {
   if (resolution.IsResolution()) {
+    std::optional<double> number = resolution.GetValueIfKnown();
+    // TODO(crbug.com/410746569): See comments in
+    // css_parsing_utils::ConsumeImageSetOption()
+    CHECK(number.has_value());
     return CSSNumericLiteralValue::Create(
-        resolution.ComputeDotsPerPixel(),
-        CSSPrimitiveValue::UnitType::kDotsPerPixel);
+        number.value(), CSSPrimitiveValue::UnitType::kDotsPerPixel);
   }
   return &resolution;
 }

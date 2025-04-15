@@ -30,13 +30,15 @@ CSSImageSetOptionValue::CSSImageSetOptionValue(
 
 CSSImageSetOptionValue::~CSSImageSetOptionValue() = default;
 
-double CSSImageSetOptionValue::ComputedResolution() const {
-  return resolution_->ComputeDotsPerPixel();
+double CSSImageSetOptionValue::ComputedResolution(
+    const CSSLengthResolver& resolver) const {
+  return resolution_->ComputeDotsPerPixel(resolver);
 }
 
-bool CSSImageSetOptionValue::IsSupported() const {
+bool CSSImageSetOptionValue::IsSupported(
+    const CSSLengthResolver& resolver) const {
   return (!type_ || type_->IsSupported()) &&
-         (resolution_->ComputeDotsPerPixel() > 0.0);
+         (ComputedResolution(resolver) > 0.0);
 }
 
 CSSValue& CSSImageSetOptionValue::GetImage() const {

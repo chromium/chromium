@@ -38,6 +38,7 @@ class String;
 namespace blink {
 
 class CSSImageSetOptionValue;
+class CSSLengthResolver;
 class StyleImage;
 
 class CORE_EXPORT CSSImageSetValue : public CSSValueList {
@@ -51,7 +52,8 @@ class CORE_EXPORT CSSImageSetValue : public CSSValueList {
                          const float device_scale_factor,
                          bool is_origin_clean);
 
-  const CSSImageSetOptionValue* GetBestOption(const float device_scale_factor);
+  const CSSImageSetOptionValue* GetBestOption(const CSSLengthResolver&,
+                                              const float device_scale_factor);
 
   WTF::String CustomCSSText() const;
 

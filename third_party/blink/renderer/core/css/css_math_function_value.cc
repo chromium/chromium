@@ -151,11 +151,6 @@ double CSSMathFunctionValue::ComputeValueInCanonicalUnit(
   return std::isnan(value) ? 0.0 : value;
 }
 
-double CSSMathFunctionValue::ComputeDotsPerPixel() const {
-  DCHECK_EQ(kCalcResolution, expression_->Category());
-  return ClampToPermittedRange(*expression_->ComputeValueInCanonicalUnit());
-}
-
 bool CSSMathFunctionValue::AccumulateLengthArray(CSSLengthArray& length_array,
                                                  double multiplier) const {
   return expression_->AccumulateLengthArray(length_array, multiplier);
