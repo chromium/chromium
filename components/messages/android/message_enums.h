@@ -15,6 +15,8 @@ namespace messages {
 // TODO(crbug.com/40755174): Revisit enum values. TAB_SWITCHED is not currently
 // used. Likely the same for TAB_DESTROYED and ACTIVITY_DESTROYED. We also need
 // a dedicated value for message dismissed from feature code.
+//
+// LINT.IfChange(DismissReason)
 enum class DismissReason {
   // Dismiss reasons that are fully controlled by clients (i.e. are not used
   // inside the Messages implementation are marked "Controlled by client" on
@@ -48,6 +50,7 @@ enum class DismissReason {
 
   kMaxValue = COUNT,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:DismissReason)
 
 // "Urgent" means the user should take actions ASAP, such as responding to
 // permissions or safety warnings.

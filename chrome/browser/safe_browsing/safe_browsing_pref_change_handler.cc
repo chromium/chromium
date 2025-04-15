@@ -164,7 +164,8 @@ void SafeBrowsingPrefChangeHandler::
         web_contents, is_enhanced_enabled,
         base::BindOnce(
             &SafeBrowsingPrefChangeHandler::ConsentedMessageDismissed,
-            weak_ptr_factory_.GetWeakPtr()));
+            weak_ptr_factory_.GetWeakPtr()),
+        /*is_requested_by_synced_esb=*/true);
     if (retry_handler_) {
       retry_handler_->SaveRetryState(
           MessageRetryHandler::RetryState::NO_RETRY_NEEDED);

@@ -3005,6 +3005,43 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.SyncedEsbDialogDisabledMessageOutcome"
+    enum="SyncedEsbOutcome" expires_after="2026-03-12">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Records the outcome of the dialog when the ESB setting is synced. This
+    dialog appears on Android when the ESB setting is synced, and it presents
+    either an OK button to accept or a Turn On button to re-enable ESB. For this
+    histogram, it's a dialog with a Turn On button because the ESB is synced to
+    off.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.SyncedEsbDialogEnabledMessageDismissReason"
+    enum="DismissReason" expires_after="2025-09-25">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Records the dismiss reason of the message for ESB as a synced setting flow.
+    This dialog appears on Android when the ESB setting is synced, and it
+    presents either an OK button to accept or a Turn On button to re-enable ESB.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.SyncedEsbDialogEnabledMessageOutcome"
+    enum="SyncedEsbOutcome" expires_after="2026-03-12">
+  <owner>zackhan@chromium.org</owner>
+  <owner>chrome-counter-abuse-core@google.com</owner>
+  <summary>
+    Records the outcome of the dialog when the ESB setting is synced. This
+    dialog appears on Android when the ESB setting is synced, and it presents
+    either an OK button to accept or a Turn On button to re-enable ESB. For this
+    histogram, it's a dialog with an OK button to accept the change because the
+    ESB is synced to on.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome"
     enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2025-09-29">

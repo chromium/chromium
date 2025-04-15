@@ -27,6 +27,21 @@ namespace safe_browsing {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SyncedEsbOutcome)
+enum class SyncedEsbOutcome {
+  kShown = 0,
+  // The user clicked the OK button on the enable dialog.
+  kAcceptedOk = 1,
+  // The user clicked the Turn On button on the disable dialog.
+  kAcceptedTurnOn = 2,
+  kDismissed = 3,
+  kMaxValue = kDismissed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SyncedEsbOutcome)
+
 const char kSyncedEsbDialogOkButtonClicked[] =
     "SafeBrowsing.SyncedEsbDialog.OkButtonClicked";
 const char kSyncedEsbDialogTurnOnButtonClicked[] =
@@ -41,16 +56,25 @@ void LogOutcome(TailoredSecurityOutcome outcome, bool enable) {
       base::UserMetricsAction(GetUserActionString(outcome, enable)));
 }
 
+void LogSyncedEsbDialogOutcome(bool enable, SyncedEsbOutcome outcome) {
+  std::string histogram =
+      enable ? "SafeBrowsing.SyncedEsbDialogEnabledMessageOutcome"
+             : "SafeBrowsing.SyncedEsbDialogDisabledMessageOutcome";
+  base::UmaHistogramEnumeration(histogram, outcome);
+}
+
 }  // namespace
 
 TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
     content::WebContents* web_contents,
     bool enable,
-    base::OnceClosure dismiss_callback)
+    base::OnceClosure dismiss_callback,
+    bool is_requested_by_synced_esb)
     : web_contents_(web_contents),
       window_android_(web_contents->GetTopLevelNativeWindow()),
       dismiss_callback_(std::move(dismiss_callback)),
-      is_enable_message_(enable) {
+      is_enable_message_(enable),
+      is_requested_by_synced_esb_(is_requested_by_synced_esb) {
   message_ = std::make_unique<messages::MessageWrapper>(
       is_enable_message_
           ? messages::MessageIdentifier::TAILORED_SECURITY_ENABLED
@@ -132,7 +156,11 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
 
   messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
       message_.get(), window_android_, messages::MessagePriority::kNormal);
-  LogOutcome(TailoredSecurityOutcome::kShown, is_enable_message_);
+  if (is_requested_by_synced_esb_) {
+    LogSyncedEsbDialogOutcome(is_enable_message_, SyncedEsbOutcome::kShown);
+  } else {
+    LogOutcome(TailoredSecurityOutcome::kShown, is_enable_message_);
+  }
 }
 
 TailoredSecurityConsentedModalAndroid::
@@ -161,6 +189,12 @@ void TailoredSecurityConsentedModalAndroid::HandleMessageDismissed(
   message_.reset();
   if (dismiss_callback_)
     std::move(dismiss_callback_).Run();
+  if (is_requested_by_synced_esb_) {
+    LogSyncedEsbDialogOutcome(is_enable_message_, SyncedEsbOutcome::kDismissed);
+    base::UmaHistogramEnumeration(
+        "SafeBrowsing.SyncedEsbDialogEnabledMessageDismissReason",
+        dismiss_reason);
+  }
 }
 
 void TailoredSecurityConsentedModalAndroid::HandleMessageAccepted() {
@@ -172,8 +206,10 @@ void TailoredSecurityConsentedModalAndroid::HandleMessageAccepted() {
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
     SetSafeBrowsingState(profile->GetPrefs(),
                          SafeBrowsingState::ENHANCED_PROTECTION);
-    // TODO(crbug.com/392612935): Log histogram for the dialog.
-    // Log user actions if the action came from synced ESB setting.
+    LogSyncedEsbDialogOutcome(is_enable_message_,
+                              is_enable_message_
+                                  ? SyncedEsbOutcome::kAcceptedOk
+                                  : SyncedEsbOutcome::kAcceptedTurnOn);
     base::RecordAction(base::UserMetricsAction(
         is_enable_message_ ? kSyncedEsbDialogOkButtonClicked
                            : kSyncedEsbDialogTurnOnButtonClicked));
