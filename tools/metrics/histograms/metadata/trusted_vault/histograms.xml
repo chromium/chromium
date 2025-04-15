@@ -22,6 +22,10 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="LocalRecoveryFactorType">
+  <variant name=".PhysicalDevice" summary="Local physical device"/>
+</variants>
+
 <variants name="SecurityDomainId">
   <variant name=".ChromeSync"
       summary="The security domain used for Chrome Sync"/>
@@ -39,27 +43,33 @@ chromium-metrics-reviews@google.com.
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
-<histogram name="TrustedVault.DeviceRegistered{SecurityDomainId}"
+<histogram
+    name="TrustedVault.DeviceRegistered{LocalRecoveryFactorType}{SecurityDomainId}"
     enum="Boolean" expires_after="2026-05-03">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
   <summary>
     Simplified version of TrustedVault.DeviceRegistrationState. Records whether
-    the local device is registered (and ignores whether re-registration was
+    a recovery factor is registered (and ignores whether re-registration was
     completed/pending/in-flight) upon startup (if signed in) or upon first
     signin.
   </summary>
+  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 
-<histogram name="TrustedVault.DeviceRegistrationOutcome{SecurityDomainId}"
+<histogram
+    name="TrustedVault.DeviceRegistrationOutcome{LocalRecoveryFactorType}{SecurityDomainId}"
     enum="TrustedVaultDeviceRegistrationOutcome" expires_after="2026-05-05">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
+  <owner>thomasth@google.com</owner>
   <summary>
     Records the outcome of device registration attempt upon request completion
     or failure.
   </summary>
+  <token key="LocalRecoveryFactorType" variants="LocalRecoveryFactorType"/>
   <token key="SecurityDomainId" variants="SecurityDomainId"/>
 </histogram>
 

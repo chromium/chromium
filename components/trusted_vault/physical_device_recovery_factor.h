@@ -36,10 +36,13 @@ class PhysicalDeviceRecoveryFactor : public LocalRecoveryFactor {
       delete;
   ~PhysicalDeviceRecoveryFactor() override;
 
+  LocalRecoveryFactorType GetRecoveryFactorType() const override;
+
   void AttemptRecovery(TrustedVaultThrottlingConnection* connection,
                        AttemptRecoveryCallback cb,
                        AttemptRecoveryFailureCallback failure_cb) override;
 
+  bool IsRegistered() override;
   void MarkAsNotRegistered() override;
 
   void ClearRegistrationAttemptInfo(const GaiaId& gaia_id) override;

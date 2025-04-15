@@ -24,6 +24,11 @@ PhysicalDeviceRecoveryFactor::PhysicalDeviceRecoveryFactor(
 }
 PhysicalDeviceRecoveryFactor::~PhysicalDeviceRecoveryFactor() = default;
 
+LocalRecoveryFactorType PhysicalDeviceRecoveryFactor::GetRecoveryFactorType()
+    const {
+  return LocalRecoveryFactorType::kPhysicalDevice;
+}
+
 void PhysicalDeviceRecoveryFactor::AttemptRecovery(
     TrustedVaultThrottlingConnection* connection,
     AttemptRecoveryCallback cb,
@@ -80,6 +85,11 @@ void PhysicalDeviceRecoveryFactor::AttemptRecovery(
       base::BindOnce(&PhysicalDeviceRecoveryFactor::OnKeysDownloaded,
                      base::Unretained(this), std::move(cb)));
   CHECK(ongoing_request_);
+}
+
+bool PhysicalDeviceRecoveryFactor::IsRegistered() {
+  auto* per_user_vault = GetPrimaryAccountVault();
+  return per_user_vault->local_device_registration_info().device_registered();
 }
 
 void PhysicalDeviceRecoveryFactor::MarkAsNotRegistered() {
