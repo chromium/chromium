@@ -125,7 +125,7 @@ TEST_F(PuffOperationTest, BadPatch) {
                   loop_.Quit();
                   ASSERT_FALSE(result.has_value());
                   EXPECT_EQ(
-                      result.error().code_,
+                      result.error().code,
                       static_cast<int>(UnpackerError::kDeltaOperationFailure));
                 }));
       }));
@@ -157,7 +157,7 @@ TEST_F(PuffOperationTest, NotInCache) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
             loop_.Quit();
             ASSERT_FALSE(result.has_value());
-            EXPECT_EQ(result.error().code_,
+            EXPECT_EQ(result.error().code,
                       static_cast<int>(UnpackerError::kCrxCacheFileNotCached));
           }));
   loop_.Run();
@@ -186,7 +186,7 @@ TEST_F(PuffOperationTest, NoCache) {
             DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
             loop_.Quit();
             ASSERT_FALSE(result.has_value());
-            EXPECT_EQ(result.error().code_,
+            EXPECT_EQ(result.error().code,
                       static_cast<int>(UnpackerError::kCrxCacheNotProvided));
           }));
   loop_.Run();

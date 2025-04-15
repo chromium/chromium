@@ -183,9 +183,9 @@ void Component::SetUpdateCheckResult(std::optional<ProtocolParser::App> result,
             [](base::raw_ref<Component> component,
                const CrxInstaller::Result& result) {
               component->installer_result_ = result;
-              component->error_category_ = result.result.category_;
-              component->error_code_ = result.result.code_;
-              component->extra_code1_ = result.result.extra_;
+              component->error_category_ = result.result.category;
+              component->error_code_ = result.result.code;
+              component->extra_code1_ = result.result.extra;
             },
             base::raw_ref(*this)),
         crx_component_->action_handler, result.value(),
@@ -203,7 +203,7 @@ void Component::SetUpdateCheckResult(std::optional<ProtocolParser::App> result,
             .Then(std::move(callback)));
   } else {
     pipeline_ = base::unexpected(
-        CategorizedError({.category_ = error_category, .code_ = error}));
+        CategorizedError({.category = error_category, .code = error}));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), true));
   }
@@ -378,7 +378,7 @@ void Component::StateChecking::DoHandle() {
     return;
   }
 
-  if (component.pipeline_.error().category_ == ErrorCategory::kNone) {
+  if (component.pipeline_.error().category == ErrorCategory::kNone) {
     metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kNoUpdate);
     TransitionState(std::make_unique<StateUpToDate>(&component));
     return;
@@ -494,9 +494,9 @@ void Component::StateUpdating::DoHandle() {
                                 base::Unretained(this)));
     return;
   }
-  component.error_category_ = component.pipeline_.error().category_;
-  component.error_code_ = component.pipeline_.error().code_;
-  component.extra_code1_ = component.pipeline_.error().extra_;
+  component.error_category_ = component.pipeline_.error().category;
+  component.error_code_ = component.pipeline_.error().code;
+  component.extra_code1_ = component.pipeline_.error().extra;
   TransitionState(std::make_unique<StateUpdateError>(&component));
 }
 
@@ -506,10 +506,10 @@ void Component::StateUpdating::PipelineComplete(
 
   auto& component = Component::State::component();
 
-  if (result.category_ != ErrorCategory::kNone) {
-    component.error_category_ = result.category_;
-    component.error_code_ = result.code_;
-    component.extra_code1_ = result.extra_;
+  if (result.category != ErrorCategory::kNone) {
+    component.error_category_ = result.category;
+    component.error_code_ = result.code;
+    component.extra_code1_ = result.extra;
   }
 
   CHECK(component.crx_component_);

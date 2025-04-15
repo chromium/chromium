@@ -70,9 +70,9 @@ void CleanUp(
   if (result) {
     base::DeleteFile(new_file);
     std::move(callback).Run(base::unexpected<CategorizedError>(
-        {.category_ = ErrorCategory::kUnpack,
-         .code_ = static_cast<int>(UnpackerError::kDeltaOperationFailure),
-         .extra_ = result}));
+        {.category = ErrorCategory::kUnpack,
+         .code = static_cast<int>(UnpackerError::kDeltaOperationFailure),
+         .extra = result}));
     return;
   }
   std::move(callback).Run(new_file);
@@ -112,8 +112,8 @@ void CacheLookupDone(
         base::BindOnce(IgnoreResult(&base::DeleteFile), patch_file),
         base::BindOnce(std::move(callback),
                        base::unexpected<CategorizedError>(
-                           {.category_ = ErrorCategory::kUnpack,
-                            .code_ = static_cast<int>(cache_result.error())})));
+                           {.category = ErrorCategory::kUnpack,
+                            .code = static_cast<int>(cache_result.error())})));
     return;
   }
   base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)

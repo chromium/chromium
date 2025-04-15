@@ -435,7 +435,7 @@ Installer::Result MakeInstallerResult(
   // can use the `installer_extracode1` to transmit a custom value even in the
   // case of success.
   if (outcome.installer_extracode1) {
-    result.result.extra_ = *outcome.installer_extracode1;
+    result.result.extra = *outcome.installer_extracode1;
   }
 
   switch (*outcome.installer_result) {
@@ -456,22 +456,22 @@ Installer::Result MakeInstallerResult(
       //   error.
       // - use the installer extra code if available.
       // - use the text description of the error if available.
-      result.result.code_ = outcome.installer_error.value_or(exit_code);
-      if (!result.result.code_) {
-        result.result.code_ = kErrorApplicationInstallerFailed;
+      result.result.code = outcome.installer_error.value_or(exit_code);
+      if (!result.result.code) {
+        result.result.code = kErrorApplicationInstallerFailed;
       }
 
       // `update_client` needs to view the below codes as a success, otherwise
       // it will consider the app as not installed; set the error category to
       // kNone in this case.
-      result.result.category_ =
-          result.result.code_ == ERROR_SUCCESS_REBOOT_INITIATED ||
-                  result.result.code_ == ERROR_SUCCESS_REBOOT_REQUIRED ||
-                  result.result.code_ == ERROR_SUCCESS_RESTART_REQUIRED
+      result.result.category =
+          result.result.code == ERROR_SUCCESS_REBOOT_INITIATED ||
+                  result.result.code == ERROR_SUCCESS_REBOOT_REQUIRED ||
+                  result.result.code == ERROR_SUCCESS_RESTART_REQUIRED
               ? update_client::ErrorCategory::kNone
               : update_client::ErrorCategory::kInstaller;
       result.installer_text = outcome.installer_text.value_or("");
-      CHECK_NE(result.result.code_, 0);
+      CHECK_NE(result.result.code, 0);
       break;
   }
 
@@ -639,7 +639,7 @@ InstallerResult RunApplicationInstaller(
     if (wait_result) {
       const Installer::Result installer_result = MakeInstallerResult(
           GetInstallerOutcome(app_info.scope, app_info.app_id), exit_code);
-      exit_code = installer_result.result.code_;
+      exit_code = installer_result.result.code;
       VLOG(1) << "Installer exit code " << exit_code << "; Output: " << output;
       if (exit_code == ERROR_INSTALL_ALREADY_RUNNING) {
         continue;

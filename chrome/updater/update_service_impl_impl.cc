@@ -1276,12 +1276,12 @@ void UpdateServiceImplImpl::RunInstallerImpl(
             base::ScopedTempDir temp_dir;
             if (!temp_dir.CreateUniqueTempDir()) {
               return InstallerResult(
-                  {.category_ = update_client::ErrorCategory::kInstall,
-                   .code_ = kErrorCreatingTempDir,
+                  {.category = update_client::ErrorCategory::kInstall,
+                   .code = kErrorCreatingTempDir,
 #if BUILDFLAG(IS_WIN)
-                   .extra_ = HRESULTFromLastError()
+                   .extra = HRESULTFromLastError()
 #else
-                   .extra_ = logging::GetLastSystemErrorCode()
+                   .extra = logging::GetLastSystemErrorCode()
 #endif  // BUILDFLAG(IS_WIN)
                   });
             }
@@ -1320,7 +1320,7 @@ void UpdateServiceImplImpl::RunInstallerImpl(
             UpdateState state;
             state.app_id = app_id;
             state.state =
-                result.result.category_ == update_client::ErrorCategory::kNone
+                result.result.category == update_client::ErrorCategory::kNone
                     ? UpdateState::State::kUpdated
                     : UpdateState::State::kUpdateError;
 
@@ -1333,8 +1333,7 @@ void UpdateServiceImplImpl::RunInstallerImpl(
               installer_version = registered_version;
             }
 
-            if (result.result.category_ ==
-                    update_client::ErrorCategory::kNone &&
+            if (result.result.category == update_client::ErrorCategory::kNone &&
                 installer_version.IsValid()) {
               persisted_data->SetProductVersion(app_id, installer_version);
               config->GetPrefService()->CommitPendingWrite();
@@ -1342,9 +1341,9 @@ void UpdateServiceImplImpl::RunInstallerImpl(
               persisted_data->RemoveApp(app_id);
             }
 
-            state.error_category = ToErrorCategory(result.result.category_);
-            state.error_code = result.result.code_;
-            state.extra_code1 = result.result.extra_;
+            state.error_category = ToErrorCategory(result.result.category);
+            state.error_code = result.result.code;
+            state.extra_code1 = result.result.extra;
             state.installer_text = result.installer_text;
 #if BUILDFLAG(IS_WIN)
             if (state.installer_text.empty())
@@ -1373,18 +1372,18 @@ void UpdateServiceImplImpl::RunInstallerImpl(
                   install_data,
                   {.event_type = update_client::protocol_request::kEventInstall,
                    .result =
-                       result.result.category_ ==
+                       result.result.category ==
                                update_client::ErrorCategory::kNone
                            ? update_client::protocol_request::
                                  kEventResultSuccess
                            : update_client::protocol_request::kEventResultError,
-                   .error_category = result.result.category_,
-                   .error_code = result.result.code_,
-                   .extra_code1 = result.result.extra_},
+                   .error_category = result.result.category,
+                   .error_code = result.result.code,
+                   .extra_code1 = result.result.extra},
                   base::DoNothing());
             }
 
-            std::move(callback).Run(result.result.category_ ==
+            std::move(callback).Run(result.result.category ==
                                             update_client::ErrorCategory::kNone
                                         ? Result::kSuccess
                                         : Result::kInstallFailed);

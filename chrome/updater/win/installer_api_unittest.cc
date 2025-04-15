@@ -160,10 +160,10 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     installer_outcome.installer_text = "some text";
     installer_outcome.installer_cmd_line = "some cmd line";
     const auto installer_result = MakeInstallerResult(installer_outcome, 10);
-    EXPECT_EQ(installer_result.result.category_,
+    EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kNone);
-    EXPECT_EQ(installer_result.result.code_, 0);
-    EXPECT_EQ(installer_result.result.extra_, -2);
+    EXPECT_EQ(installer_result.result.code, 0);
+    EXPECT_EQ(installer_result.result.extra, -2);
     EXPECT_TRUE(installer_result.installer_text.empty());
     EXPECT_EQ(installer_result.installer_cmd_line, "some cmd line");
   }
@@ -176,18 +176,18 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     installer_outcome.installer_text = "some text";
     installer_outcome.installer_cmd_line = "some cmd line";
     auto installer_result = MakeInstallerResult(installer_outcome, 10);
-    EXPECT_EQ(installer_result.result.category_,
+    EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
-    EXPECT_EQ(installer_result.result.code_, 1);
-    EXPECT_EQ(installer_result.result.extra_, -2);
+    EXPECT_EQ(installer_result.result.code, 1);
+    EXPECT_EQ(installer_result.result.extra, -2);
     EXPECT_EQ(installer_result.installer_text, "some text");
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
     installer_outcome.installer_error = std::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
-    EXPECT_EQ(installer_result.result.category_,
+    EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
-    EXPECT_EQ(installer_result.result.code_, 10);
-    EXPECT_EQ(installer_result.result.extra_, -2);
+    EXPECT_EQ(installer_result.result.code, 10);
+    EXPECT_EQ(installer_result.result.extra, -2);
     EXPECT_EQ(installer_result.installer_text, "some text");
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
   }
@@ -200,18 +200,18 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     installer_outcome.installer_text = "some text";
     installer_outcome.installer_cmd_line = "some cmd line";
     auto installer_result = MakeInstallerResult(installer_outcome, 10);
-    EXPECT_EQ(installer_result.result.category_,
+    EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
-    EXPECT_EQ(installer_result.result.code_, 1);
-    EXPECT_EQ(installer_result.result.extra_, -2);
+    EXPECT_EQ(installer_result.result.code, 1);
+    EXPECT_EQ(installer_result.result.extra, -2);
     EXPECT_FALSE(installer_result.installer_text.empty());
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
     installer_outcome.installer_error = std::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
-    EXPECT_EQ(installer_result.result.category_,
+    EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
-    EXPECT_EQ(installer_result.result.code_, 10);
-    EXPECT_EQ(installer_result.result.extra_, -2);
+    EXPECT_EQ(installer_result.result.code, 10);
+    EXPECT_EQ(installer_result.result.extra, -2);
     EXPECT_FALSE(installer_result.installer_text.empty());
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
   }
@@ -224,18 +224,18 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     installer_outcome.installer_text = "some text";
     installer_outcome.installer_cmd_line = "some cmd line";
     auto installer_result = MakeInstallerResult(installer_outcome, 10);
-    EXPECT_EQ(installer_result.result.category_,
+    EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
-    EXPECT_EQ(installer_result.result.code_, 1);
-    EXPECT_EQ(installer_result.result.extra_, -2);
+    EXPECT_EQ(installer_result.result.code, 1);
+    EXPECT_EQ(installer_result.result.extra, -2);
     EXPECT_FALSE(installer_result.installer_text.empty());
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
     installer_outcome.installer_error = std::nullopt;
     installer_result = MakeInstallerResult(installer_outcome, 10);
-    EXPECT_EQ(installer_result.result.category_,
+    EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
-    EXPECT_EQ(installer_result.result.code_, 10);
-    EXPECT_EQ(installer_result.result.extra_, -2);
+    EXPECT_EQ(installer_result.result.code, 10);
+    EXPECT_EQ(installer_result.result.extra, -2);
     EXPECT_FALSE(installer_result.installer_text.empty());
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
   }
@@ -249,19 +249,19 @@ TEST_P(InstallerAPITest, MakeInstallerResult) {
     installer_outcome.installer_cmd_line = "some cmd line";
     auto installer_result = MakeInstallerResult(installer_outcome, 0);
 
-    EXPECT_EQ(installer_result.result.category_,
+    EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kNone);
-    EXPECT_EQ(installer_result.result.code_, 0);
-    EXPECT_EQ(installer_result.result.extra_, -2);
+    EXPECT_EQ(installer_result.result.code, 0);
+    EXPECT_EQ(installer_result.result.extra, -2);
     EXPECT_EQ(installer_result.installer_text, "");
     EXPECT_EQ(installer_result.installer_cmd_line, "some cmd line");
 
     // `installer_outcome` overrides the exit code.
     installer_result = MakeInstallerResult(installer_outcome, 10);
-    EXPECT_EQ(installer_result.result.category_,
+    EXPECT_EQ(installer_result.result.category,
               update_client::ErrorCategory::kInstaller);
-    EXPECT_EQ(installer_result.result.code_, 1);
-    EXPECT_EQ(installer_result.result.extra_, -2);
+    EXPECT_EQ(installer_result.result.code, 1);
+    EXPECT_EQ(installer_result.result.extra, -2);
     EXPECT_EQ(installer_result.installer_text, "some text");
     EXPECT_TRUE(installer_result.installer_cmd_line.empty());
   }

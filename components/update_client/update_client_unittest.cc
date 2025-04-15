@@ -1810,8 +1810,8 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
           base::BindOnce(
               std::move(callback),
               CrxInstaller::Result(
-                  {.category_ = ErrorCategory::kInstaller,
-                   .code_ = static_cast<int>(InstallError::GENERIC_ERROR)})));
+                  {.category = ErrorCategory::kInstaller,
+                   .code = static_cast<int>(InstallError::GENERIC_ERROR)})));
     }
 
    protected:

@@ -426,11 +426,11 @@ void PersistedDataImpl::SetLastUpdateCheckError(const CategorizedError& error) {
   if (!pref_service) {
     return;
   }
-  pref_service->SetInteger(kLastUpdateCheckErrorPreference, error.code_);
+  pref_service->SetInteger(kLastUpdateCheckErrorPreference, error.code);
   pref_service->SetInteger(kLastUpdateCheckErrorCategoryPreference,
-                           static_cast<int>(error.category_));
+                           static_cast<int>(error.category));
   pref_service->SetInteger(kLastUpdateCheckErrorExtraCode1Preference,
-                           error.extra_);
+                           error.extra);
 }
 
 }  // namespace

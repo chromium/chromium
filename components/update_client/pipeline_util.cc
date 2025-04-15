@@ -17,7 +17,7 @@ base::Value::Dict MakeSimpleOperationEvent(
   return MakeSimpleOperationEvent(
       result.has_value()
           ? CategorizedError(
-                {.category_ = ErrorCategory::kNone, .code_ = 0, .extra_ = 0})
+                {.category = ErrorCategory::kNone, .code = 0, .extra = 0})
           : result.error(),
       operation_type);
 }
@@ -27,17 +27,17 @@ base::Value::Dict MakeSimpleOperationEvent(const CategorizedError& error,
   base::Value::Dict event;
   event.Set("eventtype", operation_type);
   event.Set("eventresult",
-            static_cast<int>(error.category_ == ErrorCategory::kNone
+            static_cast<int>(error.category == ErrorCategory::kNone
                                  ? protocol_request::kEventResultSuccess
                                  : protocol_request::kEventResultError));
-  if (error.category_ != ErrorCategory::kNone) {
-    event.Set("errorcat", static_cast<int>(error.category_));
+  if (error.category != ErrorCategory::kNone) {
+    event.Set("errorcat", static_cast<int>(error.category));
   }
-  if (error.code_ != 0) {
-    event.Set("errorcode", error.code_);
+  if (error.code != 0) {
+    event.Set("errorcode", error.code);
   }
-  if (error.extra_ != 0) {
-    event.Set("extracode1", error.extra_);
+  if (error.extra != 0) {
+    event.Set("extracode1", error.extra);
   }
   return event;
 }

@@ -59,12 +59,12 @@ using Operation = base::OnceCallback<base::OnceClosure(
         base::expected<base::FilePath, CategorizedError>)>)>;
 
 constexpr CategorizedError kUnsupportedOperationError = CategorizedError(
-    {.category_ = ErrorCategory::kUpdateCheck,
-     .code_ = static_cast<int>(ProtocolError::UNSUPPORTED_OPERATION)});
+    {.category = ErrorCategory::kUpdateCheck,
+     .code = static_cast<int>(ProtocolError::UNSUPPORTED_OPERATION)});
 
 constexpr CategorizedError kInvalidOperationAttributesError = CategorizedError(
-    {.category_ = ErrorCategory::kUpdateCheck,
-     .code_ = static_cast<int>(ProtocolError::INVALID_OPERATION_ATTRIBUTES)});
+    {.category = ErrorCategory::kUpdateCheck,
+     .code = static_cast<int>(ProtocolError::INVALID_OPERATION_ATTRIBUTES)});
 
 // `Pipeline` manages the flow of operations, passing the output path of
 // each operation to the next one, short-circuiting on errors.
@@ -141,8 +141,8 @@ void Pipeline::OpComplete(
   if (cancel_->IsCancelled()) {
     // Pipeline still running, but cancelled.
     std::move(callback_).Run(
-        {.category_ = ErrorCategory::kService,
-         .code_ = static_cast<int>(ServiceError::CANCELLED)});
+        {.category = ErrorCategory::kService,
+         .code = static_cast<int>(ServiceError::CANCELLED)});
     return;
   }
   // Pipeline still running: start next operation.
@@ -385,7 +385,7 @@ void MakePipeline(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        base::unexpected(CategorizedError(
-                           {.category_ = ErrorCategory::kUpdateCheck}))));
+                           {.category = ErrorCategory::kUpdateCheck}))));
     return;
   }
 
