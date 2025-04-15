@@ -389,13 +389,13 @@ NSString* const kCustomMinimizedDetentIdentifier = @"customMinimizedDetent";
       preferredFontDescriptorWithTextStyle:UIFontTextStyleSubheadline];
   titleLabel.font = [UIFont systemFontOfSize:fontDescriptor.pointSize
                                       weight:UIFontWeightSemibold];
-  titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
-  titleLabel.numberOfLines = 0;
+  titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  titleLabel.numberOfLines = 2;
 
   URLLabel.text = [_sharedURL absoluteString];
   URLLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   URLLabel.textColor = [UIColor colorNamed:kTextTertiaryColor];
-  URLLabel.lineBreakMode = NSLineBreakByWordWrapping;
+  URLLabel.lineBreakMode = NSLineBreakByCharWrapping;
   URLLabel.numberOfLines = 0;
 
   UIStackView* URLStackView =
