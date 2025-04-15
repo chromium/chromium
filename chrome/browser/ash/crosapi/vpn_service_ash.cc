@@ -359,19 +359,6 @@ void VpnServiceForExtensionAsh::BindPepperVpnProxyObserver(
   RunSuccessCallback(std::move(callback));
 }
 
-void VpnServiceForExtensionAsh::DispatchAddDialogEvent() {
-  for (auto& observer : observers_) {
-    observer->OnAddDialog();
-  }
-}
-
-void VpnServiceForExtensionAsh::DispatchConfigureDialogEvent(
-    const std::string& configuration_name) {
-  for (auto& observer : observers_) {
-    observer->OnConfigureDialog(configuration_name);
-  }
-}
-
 void VpnServiceForExtensionAsh::OnConfigurationRemoved(
     const std::string& service_path,
     const std::string& guid) {
@@ -436,10 +423,9 @@ void VpnServiceForExtensionAsh::DispatchOnPacketReceivedEvent(
 
 void VpnServiceForExtensionAsh::DispatchOnPlatformMessageEvent(
     const std::string& configuration_name,
-    int32_t platform_message,
-    const std::optional<std::string>& error) {
+    int32_t platform_message) {
   for (auto& observer : observers_) {
-    observer->OnPlatformMessage(configuration_name, platform_message, error);
+    observer->OnPlatformMessage(configuration_name, platform_message);
   }
 }
 

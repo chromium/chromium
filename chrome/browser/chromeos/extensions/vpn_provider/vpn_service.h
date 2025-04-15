@@ -53,12 +53,9 @@ class VpnServiceForExtension
   VpnServiceForExtension& operator=(const VpnServiceForExtension&) = delete;
 
   // crosapi::mojom::EventObserverForExtension:
-  void OnAddDialog() override;
-  void OnConfigureDialog(const std::string& configuration_name) override;
   void OnConfigRemoved(const std::string& configuration_name) override;
   void OnPlatformMessage(const std::string& configuration_name,
-                         int32_t platform_message,
-                         const std::optional<std::string>& error) override;
+                         int32_t platform_message) override;
   void OnPacketReceived(const std::vector<uint8_t>& data) override;
 
   mojo::Remote<crosapi::mojom::VpnServiceForExtension>& Proxy() {
@@ -128,6 +125,7 @@ class VpnService : public extensions::api::VpnServiceInterface,
  private:
   class VpnServiceProxyImpl;
   class PepperVpnProxyAdapter;
+  friend class VpnProviderApiTest;
   friend class VpnServiceForExtension;
   friend class VpnServiceFactory;
 
@@ -135,6 +133,14 @@ class VpnService : public extensions::api::VpnServiceInterface,
 
   mojo::Remote<crosapi::mojom::VpnServiceForExtension>&
   GetVpnServiceForExtension(const std::string& extension_id);
+
+  // Sends the given event to the given extension.
+  void SendToExtension(const std::string& extension_id,
+                       std::unique_ptr<extensions::Event> event);
+
+  void SendOnPlatformMessageToExtension(const std::string& extension_id,
+                                        const std::string& configuration_name,
+                                        uint32_t platform_message);
 
   // Binds |pepper_vpn_provider_proxy| to the active configuration if it's owned
   // by extension with id |extension_id|. On success all packets will be routed

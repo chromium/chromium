@@ -24,6 +24,7 @@
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h"
+#include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -150,8 +151,9 @@ class VpnProviderApiTestBase : public extensions::ExtensionApiTest {
     return *extension_id_;
   }
 
-  chromeos::VpnServiceInterface* service() {
-    return chromeos::VpnServiceFactory::GetForBrowserContext(profile());
+  chromeos::VpnService* service() {
+    return static_cast<chromeos::VpnService*>(
+        chromeos::VpnServiceFactory::GetForBrowserContext(profile()));
   }
 
   virtual crosapi::mojom::VpnService* service_remote() const = 0;
@@ -273,14 +275,10 @@ class VpnProviderApiTest : public VpnProviderApiTestBase {
   }
 
   void SendPlatformError(const std::string& extension_id,
-                         const std::string& configuration_name,
-                         const std::string& error_message) {
-    const auto& mapping = GetVpnServiceAsh()->extension_id_to_service_;
-    DCHECK(base::Contains(mapping, extension_id));
-    auto* service = mapping.at(extension_id).get();
-    service->DispatchOnPlatformMessageEvent(
-        configuration_name,
-        base::to_underlying(api_vpn::PlatformMessage::kError), error_message);
+                         const std::string& configuration_name) {
+    service()->SendOnPlatformMessageToExtension(
+        extension_id, configuration_name,
+        base::to_underlying(api_vpn::PlatformMessage::kError));
   }
 
   void ClearNetworkProfiles() {
@@ -364,7 +362,7 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, CheckEvents) {
   EXPECT_TRUE(DoesConfigExist(kTestConfig));
 
   extensions::ResultCatcher catcher;
-  SendPlatformError(extension_id(), kTestConfig, "error_message");
+  SendPlatformError(extension_id(), kTestConfig);
   service()->SendShowAddDialogToExtension(extension_id());
   service()->SendShowConfigureDialogToExtension(extension_id(), kTestConfig);
   EXPECT_TRUE(catcher.GetNextResult());
@@ -538,12 +536,9 @@ class TestEventObserverForExtension
     : public crosapi::mojom::EventObserverForExtension {
  public:
   // crosapi::mojom::EventObserverForExtension:
-  void OnAddDialog() override {}
-  void OnConfigureDialog(const std::string& configuration_name) override {}
   void OnConfigRemoved(const std::string& configuration_name) override {}
   void OnPlatformMessage(const std::string& configuration_name,
-                         int32_t platform_message,
-                         const std::optional<std::string>& error) override {}
+                         int32_t platform_message) override {}
   void OnPacketReceived(const std::vector<uint8_t>& data) override {}
 };
 

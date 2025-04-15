@@ -91,9 +91,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
       mojo::PendingRemote<crosapi::mojom::PepperVpnProxyObserver>
           pepper_vpn_proxy_observer,
       BindPepperVpnProxyObserverCallback) override;
-  void DispatchAddDialogEvent() override;
-  void DispatchConfigureDialogEvent(
-      const std::string& configuration_name) override;
 
   // ash::NetworkConfigurationObserver:
   void OnConfigurationRemoved(const std::string& service_path,
@@ -109,10 +106,6 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
 
   void DispatchConfigRemovedEvent(const std::string& configuration_name);
   void DispatchOnPacketReceivedEvent(const std::vector<char>& data);
-  void DispatchOnPlatformMessageEvent(
-      const std::string& configuration_name,
-      int32_t platform_message,
-      const std::optional<std::string>& error = {});
 
  private:
   friend class VpnConfigurationImpl;
@@ -125,6 +118,9 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
       std::map<std::string, raw_ptr<VpnConfiguration, CtnExperimental>>;
 
   const extensions::ExtensionId& extension_id() const { return extension_id_; }
+
+  void DispatchOnPlatformMessageEvent(const std::string& configuration_name,
+                                      int32_t platform_message);
 
   // Creates a key for |key_to_configuration_map_| as a hash of |extension_id|
   // and |configuration_name|.

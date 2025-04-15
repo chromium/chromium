@@ -40,18 +40,14 @@ interface PepperVpnProxyObserver {
 // Next method id: 1
 [Uuid="76ed414e-1710-4b5c-895d-181714376511"]
 interface EventObserverForExtension {
-  // Dispatches UI_EVENT_SHOWADDDIALOG.
-  OnAddDialog@0();
-
-  // Dispatches UI_EVENT_SHOWCONFIGUREDIALOG.
-  OnConfigureDialog@1(string configuration_name);
+  // OnAddDialog@0 was removed.
+  // OnConfigureDialog@1 was removed.
 
   // Dispatches OnConfigRemoved event.
   OnConfigRemoved@2(string configuration_name);
 
   // Dispatches OnPlatformMessage event.
-  OnPlatformMessage@3(string configuration_name,
-      int32 platform_message, string? error);
+  OnPlatformMessage@3(string configuration_name, int32 platform_message);
 
   // Dispatches OnPacketReceived event.
   OnPacketReceived@4(array<uint8> data);
@@ -106,13 +102,8 @@ interface VpnServiceForExtension {
       pending_remote<PepperVpnProxyObserver> pepper_vpn_proxy_observer)
       => (VpnErrorResponse? error);
 
-  // Informs all connected clients that an ADD_DIALOG event should be dispatched
-  // to the extension.
-  DispatchAddDialogEvent@6();
-
-  // Informs all connected clients that a CONFIGURE_DIALOG event should be
-  // dispatched to the extension.
-  DispatchConfigureDialogEvent@7(string configuration_name);
+  // DispatchAddDialogEvent@6 was removed.
+  // DispatchConfigureDialogEvent@7 was removed.
 };
 
 // VpnService manages VPN connections on the ash side.
