@@ -211,7 +211,7 @@ bool CreateWebURLRequest(PP_Instance instance,
 
   const std::string& headers = data->headers;
   if (!headers.empty()) {
-    net::HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\n\r");
+    net::HttpUtil::HeadersIterator it(headers, "\n\r");
     while (it.GetNext()) {
       dest->AddHttpHeaderField(WebString::FromUTF8(it.name()),
                                WebString::FromUTF8(it.values()));

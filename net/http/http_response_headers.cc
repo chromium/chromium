@@ -667,11 +667,15 @@ void HttpResponseHeaders::Parse(std::string_view raw_input) {
     raw_headers_.push_back('\0');
   }
 
-  HttpUtil::HeadersIterator headers(raw_headers_.begin() + status_line_len,
-                                    raw_headers_.end(), std::string(1, '\0'));
+  std::string::iterator headers_start = raw_headers_.begin() + status_line_len;
+  HttpUtil::HeadersIterator headers(
+      std::string_view(raw_headers_).substr(status_line_len),
+      std::string(1, '\0'));
   while (headers.GetNext()) {
-    AddHeader(headers.name_begin(), headers.name_end(), headers.values_begin(),
-              headers.values_end(), ContainsCommas::kMaybe);
+    AddHeader(headers_start + headers.name_begin(),
+              headers_start + headers.name_end(),
+              headers_start + headers.values_begin(),
+              headers_start + headers.values_end(), ContainsCommas::kMaybe);
   }
 
   DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 2]);

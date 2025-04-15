@@ -84,7 +84,7 @@ bool GetByteRangeFromStr(const std::string& content_range_str,
 // response.
 // Returns false if not even a start position could be parsed.
 bool GetByteRangeFromHeaders(const std::string& headers, int* start, int* end) {
-  net::HttpUtil::HeadersIterator it(headers.begin(), headers.end(), "\n");
+  net::HttpUtil::HeadersIterator it(headers, "\n");
   while (it.GetNext()) {
     if (base::EqualsCaseInsensitiveASCII(it.name_piece(), "content-range")) {
       if (GetByteRangeFromStr(it.values().c_str(), start, end))
@@ -205,8 +205,7 @@ void URLLoaderWrapperImpl::ParseHeaders(const std::string& response_headers) {
   if (response_headers.empty())
     return;
 
-  net::HttpUtil::HeadersIterator it(response_headers.begin(),
-                                    response_headers.end(), "\n");
+  net::HttpUtil::HeadersIterator it(response_headers, "\n");
   while (it.GetNext()) {
     std::string_view name = it.name_piece();
     if (base::EqualsCaseInsensitiveASCII(name, "content-length")) {

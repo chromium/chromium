@@ -144,6 +144,12 @@ class NET_EXPORT HttpUtil {
   static void TrimLWS(std::string::const_iterator* begin,
                       std::string::const_iterator* end);
   static std::string_view TrimLWS(std::string_view string);
+  // This operates on the substring of `string` between `begin_offset` and
+  // `end_offset`, for consumers that need to know offsets relative to the
+  // original string.
+  static void TrimLWS(std::string_view string,
+                      size_t& begin_offset,
+                      size_t& end_offset);
 
   // Whether the character is a valid |tchar| as defined in RFC 7230 Sec 3.2.6.
   static bool IsTokenChar(char c);
@@ -301,8 +307,9 @@ class NET_EXPORT HttpUtil {
   // does not expect any).
   class NET_EXPORT HeadersIterator {
    public:
-    HeadersIterator(std::string::const_iterator headers_begin,
-                    std::string::const_iterator headers_end,
+    // The data `headers` points to must outlive `this`. GetNext() must be
+    // called before any other method.
+    HeadersIterator(std::string_view headers,
                     const std::string& line_delimiter);
     ~HeadersIterator();
 
@@ -311,38 +318,35 @@ class NET_EXPORT HttpUtil {
     // header name and values.
     bool GetNext();
 
-    std::string::const_iterator name_begin() const {
-      return name_begin_;
-    }
-    std::string::const_iterator name_end() const {
-      return name_end_;
-    }
-    std::string name() const {
-      return std::string(name_begin_, name_end_);
-    }
+    void Reset() { lines_.Reset(); }
+
+    size_t name_begin() const { return name_begin_; }
+    size_t name_end() const { return name_end_; }
+    std::string name() const { return std::string(name_piece()); }
     std::string_view name_piece() const {
-      return base::MakeStringPiece(name_begin_, name_end_);
+      return headers_.substr(name_begin_, name_end_ - name_begin_);
     }
 
-    std::string::const_iterator values_begin() const {
-      return values_begin_;
-    }
-    std::string::const_iterator values_end() const {
-      return values_end_;
-    }
-    std::string values() const {
-      return std::string(values_begin_, values_end_);
-    }
+    size_t values_begin() const { return values_begin_; }
+    size_t values_end() const { return values_end_; }
+    std::string values() const { return std::string(values_piece()); }
     std::string_view values_piece() const {
-      return base::MakeStringPiece(values_begin_, values_end_);
+      return headers_.substr(values_begin_, values_end_ - values_begin_);
     }
 
    private:
-    base::StringTokenizer lines_;
-    std::string::const_iterator name_begin_;
-    std::string::const_iterator name_end_;
-    std::string::const_iterator values_begin_;
-    std::string::const_iterator values_end_;
+    // The full set of input headers.
+    const std::string_view headers_;
+
+    // Tokenizer over `headers_`.
+    base::StringViewTokenizer lines_;
+
+    // Start/end of the corresponding fields, relative to the start of
+    // `headers_`.
+    size_t name_begin_ = 0;
+    size_t name_end_ = 0;
+    size_t values_begin_ = 0;
+    size_t values_end_ = 0;
   };
 
   // Iterates over delimited values in an HTTP header.  HTTP LWS is

@@ -459,10 +459,25 @@ void HttpUtil::TrimLWS(std::string::const_iterator* begin,
 
 // static
 std::string_view HttpUtil::TrimLWS(std::string_view string) {
-  const char* begin = string.data();
-  const char* end = string.data() + string.size();
-  TrimLWSImplementation(&begin, &end);
-  return std::string_view(begin, end - begin);
+  size_t begin_offset = 0;
+  size_t end_offset = string.size();
+  TrimLWS(string, begin_offset, end_offset);
+  return string.substr(begin_offset, end_offset - begin_offset);
+}
+
+// static
+void HttpUtil::TrimLWS(std::string_view string,
+                       size_t& begin_offset,
+                       size_t& end_offset) {
+  // Leading whitespace
+  while (begin_offset < end_offset && HttpUtil::IsLWS(string[begin_offset])) {
+    ++begin_offset;
+  }
+
+  // Trailing whitespace
+  while (begin_offset < end_offset && HttpUtil::IsLWS(string[end_offset - 1])) {
+    --end_offset;
+  }
 }
 
 bool HttpUtil::IsTokenChar(char c) {
@@ -898,39 +913,43 @@ int HttpUtil::MapStatusCodeForHistogram(int code) {
 //                     of token, separators, and quoted-string>
 //
 
-HttpUtil::HeadersIterator::HeadersIterator(
-    std::string::const_iterator headers_begin,
-    std::string::const_iterator headers_end,
-    const std::string& line_delimiter)
-    : lines_(headers_begin, headers_end, line_delimiter) {
-}
+HttpUtil::HeadersIterator::HeadersIterator(std::string_view headers,
+                                           const std::string& line_delimiter)
+    : headers_(headers), lines_(headers, line_delimiter) {}
 
 HttpUtil::HeadersIterator::~HeadersIterator() = default;
 
 bool HttpUtil::HeadersIterator::GetNext() {
   while (lines_.GetNext()) {
-    name_begin_ = lines_.token_begin();
-    values_end_ = lines_.token_end();
+    // Calculate begin/end positions relative to entire string.
+    name_begin_ = lines_.token_begin() - headers_.begin();
+    values_end_ = lines_.token_end() - headers_.begin();
 
-    std::string::const_iterator colon(std::find(name_begin_, values_end_, ':'));
-    if (colon == values_end_)
+    // Colon index, relative to start of line.
+    size_t colon = lines_.token().find(':');
+    if (colon == std::string_view::npos) {
       continue;  // skip malformed header
+    }
+    // Adjust colon to be relative to start of headers.
+    colon += name_begin_;
 
     name_end_ = colon;
 
     // If the name starts with LWS, it is an invalid line.
     // Leading LWS implies a line continuation, and these should have
     // already been joined by AssembleRawHeaders().
-    if (name_begin_ == name_end_ || IsLWS(*name_begin_))
+    if (name_begin_ == name_end_ || IsLWS(headers_[name_begin_])) {
       continue;
+    }
 
-    TrimLWS(&name_begin_, &name_end_);
-    DCHECK(name_begin_ < name_end_);
-    if (!IsToken(base::MakeStringPiece(name_begin_, name_end_)))
+    TrimLWS(headers_, name_begin_, name_end_);
+    CHECK_LT(name_begin_, name_end_);
+    if (!IsToken(headers_.substr(name_begin_, name_end_ - name_begin_))) {
       continue;  // skip malformed header
+    }
 
     values_begin_ = colon + 1;
-    TrimLWS(&values_begin_, &values_end_);
+    TrimLWS(headers_, values_begin_, values_end_);
 
     // if we got a header name, then we are done.
     return true;
