@@ -50,6 +50,8 @@ optimization_guide::proto::ContentAttributeType ConvertAttributeType(
       return optimization_guide::proto::CONTENT_ATTRIBUTE_ANCHOR;
     case blink::mojom::AIPageContentAttributeType::kImage:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_IMAGE;
+    case blink::mojom::AIPageContentAttributeType::kSVG:
+      return optimization_guide::proto::CONTENT_ATTRIBUTE_UNKNOWN;
     case blink::mojom::AIPageContentAttributeType::kForm:
       return optimization_guide::proto::CONTENT_ATTRIBUTE_FORM;
     case blink::mojom::AIPageContentAttributeType::kFormControl:
