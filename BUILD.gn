@@ -1597,23 +1597,6 @@ if (use_blink && !is_cronet_build) {
     ]
   }
 
-  script_test("devtools_web_tests") {
-    # This target differs from :blink_web_tests in that it uses the
-    # same test harness but runs an entirely different set of tests
-    # and doesn't have a dependency on the web_test directory at all.
-    script = _common_web_test_script
-
-    args = _common_web_test_args + [
-             "--layout-tests-directory=@WrappedPath(" + rebase_path(
-                     "//third_party/devtools-frontend/src/test/webtests",
-                     root_out_dir) + ")",
-             "http/tests/devtools",
-           ]
-
-    data_deps = [ ":blink_web_tests_support_data" ]
-    data = [ "//third_party/devtools-frontend/src/test/webtests/" ]
-  }
-
   script_test("webgpu_blink_web_tests") {
     # This target differs from :blink_web_tests in that it uses the same
     # test harness and a few additional flags but, more importantly, only runs
