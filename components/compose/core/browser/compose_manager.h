@@ -10,7 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/integrators/autofill_compose_delegate.h"
+#include "components/autofill/core/browser/integrators/compose/autofill_compose_delegate.h"
 
 namespace compose {
 
