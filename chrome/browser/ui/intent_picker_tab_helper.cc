@@ -146,7 +146,7 @@ void IntentPickerTabHelper::MaybeShowIntentPickerIcon() {
   }
 
   intent_picker_delegate_->FindAllAppsForUrl(
-      web_contents()->GetLastCommittedURL(), GetIntentPickerBubbleIconSize(),
+      web_contents()->GetLastCommittedURL(),
       base::BindOnce(&IntentPickerTabHelper::MaybeShowIconForApps,
                      per_navigation_weak_factory_.GetWeakPtr()));
 }
@@ -159,7 +159,7 @@ void IntentPickerTabHelper::ShowIntentPickerBubbleOrLaunchApp(const GURL& url) {
   }
 
   intent_picker_delegate_->FindAllAppsForUrl(
-      url, GetIntentPickerBubbleIconSize(),
+      url,
       base::BindOnce(&IntentPickerTabHelper::ShowIntentPickerOrLaunchAppImpl,
                      per_navigation_weak_factory_.GetWeakPtr(), url));
 }
@@ -250,8 +250,9 @@ IntentPickerTabHelper::IntentPickerTabHelper(content::WebContents* web_contents)
   intent_picker_delegate_ =
       std::make_unique<apps::ChromeOsAppsIntentPickerDelegate>(profile);
 #else
-  intent_picker_delegate_ =
-      std::make_unique<apps::WebAppsIntentPickerDelegate>(profile);
+  intent_picker_delegate_ = std::make_unique<apps::WebAppsIntentPickerDelegate>(
+      profile, std::vector<int>{GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+                                GetIntentPickerBubbleIconSize()});
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

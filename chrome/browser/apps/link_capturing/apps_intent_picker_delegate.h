@@ -31,7 +31,6 @@ class AppsIntentPickerDelegate {
   virtual bool ShouldShowIntentPickerWithApps() = 0;
   // Will CHECK-fail if `ShouldShowIntentPickerWithApps()` returns `false`.
   virtual void FindAllAppsForUrl(const GURL& url,
-                                 int icon_size_in_dep,
                                  IntentPickerAppsCallback apps_callback) = 0;
   // Will CHECK-fail if `ShouldShowIntentPickerWithApps()` returns `false`.
   virtual bool IsPreferredAppForSupportedLinks(const std::string& app_id) = 0;

@@ -59,11 +59,16 @@ void OnAppReparentedRunInNewContents(const std::string& launch_name,
 
 }  // namespace
 
-WebAppsIntentPickerDelegate::WebAppsIntentPickerDelegate(Profile* profile)
+WebAppsIntentPickerDelegate::WebAppsIntentPickerDelegate(
+    Profile* profile,
+    std::vector<int> icon_sizes_in_dep)
     : profile_(*profile),
       provider_(web_app::AreWebAppsUserInstallable(profile)
                     ? web_app::WebAppProvider::GetForWebApps(profile)
-                    : nullptr) {}
+                    : nullptr),
+      icon_sizes_in_dep_(std::move(icon_sizes_in_dep)) {
+  CHECK(!icon_sizes_in_dep_.empty());
+}
 
 WebAppsIntentPickerDelegate::~WebAppsIntentPickerDelegate() = default;
 
@@ -73,7 +78,6 @@ bool WebAppsIntentPickerDelegate::ShouldShowIntentPickerWithApps() {
 
 void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
     const GURL& url,
-    int icon_size_in_dep,
     IntentPickerAppsCallback apps_callback) {
   CHECK(ShouldShowIntentPickerWithApps());
   CHECK(provider_);
@@ -89,7 +93,7 @@ void WebAppsIntentPickerDelegate::FindAllAppsForUrl(
   // this.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-      base::BindOnce(&FindMacAppForUrl, url, icon_size_in_dep),
+      base::BindOnce(&FindMacAppForUrl, url, base::span(icon_sizes_in_dep_)),
       base::BindOnce(
           &WebAppsIntentPickerDelegate::CacheMacAppInfoAndPostFinalCallback,
           weak_ptr_factory.GetWeakPtr(), std::move(apps_callback),
@@ -155,7 +159,8 @@ void WebAppsIntentPickerDelegate::LoadSingleAppIcon(
     ui::ImageModel mac_app_icon;
     if (mac_app_info_.has_value()) {
       CHECK_EQ(mac_app_info_->launch_name, app_id);
-      mac_app_icon = mac_app_info_->icon_model;
+      mac_app_icon = ui::ImageModel::FromImage(
+          mac_app_info_->icon.CreateExact(gfx::Size(size_in_dep, size_in_dep)));
     }
     std::move(icon_loaded_callback).Run(mac_app_icon);
 #else
@@ -265,8 +270,8 @@ void WebAppsIntentPickerDelegate::LaunchApp(content::WebContents* web_contents,
 void WebAppsIntentPickerDelegate::CacheMacAppInfoAndPostFinalCallback(
     IntentPickerAppsCallback apps_callback,
     std::vector<IntentPickerAppInfo> apps,
-    MacAppInfo mac_app_info) {
-  mac_app_info_ = mac_app_info;
+    std::optional<MacAppInfo> mac_app_info) {
+  mac_app_info_ = std::move(mac_app_info);
   if (mac_app_info_.has_value()) {
     apps.emplace_back(mac_app_info_.value());
   }

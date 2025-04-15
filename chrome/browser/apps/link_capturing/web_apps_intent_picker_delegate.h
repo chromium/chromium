@@ -15,6 +15,10 @@
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/apps/link_capturing/mac_intent_picker_helpers.h"
+#endif
+
 class Profile;
 
 namespace content {
@@ -27,13 +31,13 @@ class WebAppProvider;
 
 namespace apps {
 
-#if BUILDFLAG(IS_MAC)
-using MacAppInfo = std::optional<IntentPickerAppInfo>;
-#endif  // BUILDFLAG(IS_MAC)
-
 class WebAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
  public:
-  explicit WebAppsIntentPickerDelegate(Profile* profile);
+  // Since this class sometimes pre-caches icons for returned applications, all
+  // the icon sizes that might be passed to calls to `LoadSingleAppIcon` should
+  // be included in the `icon_sizes_in_dep` parameter.
+  WebAppsIntentPickerDelegate(Profile* profile,
+                              std::vector<int> icon_sizes_in_dep);
   ~WebAppsIntentPickerDelegate() override;
 
   WebAppsIntentPickerDelegate(const WebAppsIntentPickerDelegate&) = delete;
@@ -42,7 +46,6 @@ class WebAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
 
   bool ShouldShowIntentPickerWithApps() override;
   void FindAllAppsForUrl(const GURL& url,
-                         int icon_size_in_dep,
                          IntentPickerAppsCallback apps_callback) override;
   bool IsPreferredAppForSupportedLinks(const std::string& app_id) override;
   void LoadSingleAppIcon(PickerEntryType entry_type,
@@ -71,13 +74,14 @@ class WebAppsIntentPickerDelegate : public AppsIntentPickerDelegate {
   void CacheMacAppInfoAndPostFinalCallback(
       IntentPickerAppsCallback apps_callback,
       std::vector<IntentPickerAppInfo> apps,
-      MacAppInfo mac_app_info);
+      std::optional<MacAppInfo> mac_app_info);
 #endif  // BUILDFLAG(IS_MAC)
 
   raw_ref<Profile> profile_;
   raw_ptr<web_app::WebAppProvider> provider_;
+  std::vector<int> icon_sizes_in_dep_;
 #if BUILDFLAG(IS_MAC)
-  MacAppInfo mac_app_info_;
+  std::optional<MacAppInfo> mac_app_info_;
 #endif  // BUILDFLAG(IS_MAC)
   base::WeakPtrFactory<WebAppsIntentPickerDelegate> weak_ptr_factory{this};
 };
