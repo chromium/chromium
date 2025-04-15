@@ -613,6 +613,10 @@ void TabGroupSyncServiceImpl::OnTabSelected(
 
   UpdateAttributions(*group_id);
   model_->UpdateLastUserInteractionTimeLocally(*group_id);
+  if (group->is_shared_tab_group()) {
+    model_->UpdateTabLastSeenTime(group->saved_guid(), tab->saved_tab_guid(),
+                                  base::Time::Now(), TriggerSource::LOCAL);
+  }
   LogEvent(TabGroupEvent::kTabSelected, *group_id, tab_id);
 }
 

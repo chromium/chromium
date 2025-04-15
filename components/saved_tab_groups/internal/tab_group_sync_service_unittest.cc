@@ -1320,13 +1320,31 @@ TEST_F(TabGroupSyncServiceTest, MoveTab) {
 }
 
 TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
+  MakeTabGroupShared(local_group_id_1_, kCollaborationId);
   base::HistogramTester histogram_tester;
+  base::Time test_start_time = base::Time::Now();
+
+  // Advance the clock, so when a tab is selected, it will get a more
+  // recent time than `test_start_time`.
+  task_environment_.AdvanceClock(base::Seconds(5));
+
   // Add a new tab.
   auto local_tab_id_2 = test::GenerateRandomTabID();
   std::u16string tab_title_2 = u"random tab title";
   tab_group_sync_service_->AddTab(local_group_id_1_, local_tab_id_2,
                                   tab_title_2, GURL("www.google.com"),
                                   std::nullopt);
+
+  {
+    std::optional<SavedTabGroup> group =
+        tab_group_sync_service_->GetGroup(local_group_id_1_);
+    CHECK(group);
+
+    // Local Tab 2 should start with no last_seen time.
+    EXPECT_FALSE(group->GetTab(local_tab_id_2)
+                     ->last_seen_time_windows_epoch_micros()
+                     .has_value());
+  }
 
   EXPECT_CALL(*observer_,
               OnTabSelected(Eq(std::set<LocalTabID>({local_tab_id_2}))));
@@ -1336,6 +1354,17 @@ TEST_F(TabGroupSyncServiceTest, OnTabSelected) {
       .WillRepeatedly(Return(std::set<LocalTabID>({local_tab_id_2})));
   tab_group_sync_service_->OnTabSelected(local_group_id_1_, local_tab_id_2,
                                          tab_title_2);
+
+  std::optional<SavedTabGroup> group =
+      tab_group_sync_service_->GetGroup(local_group_id_1_);
+  CHECK(group);
+
+  // Local Tab 2 should get a last_seen time.
+  const SavedTabGroupTab* tab = group->GetTab(local_tab_id_2);
+  EXPECT_TRUE(tab->last_seen_time_windows_epoch_micros().has_value());
+  EXPECT_GT(tab->last_seen_time_windows_epoch_micros().value(),
+            test_start_time);
+
   histogram_tester.ExpectTotalCount(
       "TabGroups.Sync.TabGroup.TabSelected.GroupCreateOrigin", 1u);
 }

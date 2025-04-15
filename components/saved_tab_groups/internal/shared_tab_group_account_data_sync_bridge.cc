@@ -78,7 +78,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromSpecifics(
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromSavedTabGroupTab(
     const SavedTabGroupModel& model,
     const SavedTabGroupTab& tab) {
-  CHECK(!tab.last_seen_time_windows_epoch_micros().is_null());
+  CHECK(!tab.last_seen_time_windows_epoch_micros().has_value());
 
   const SavedTabGroup* group = model.Get(tab.saved_group_guid());
   CHECK(group);
@@ -96,7 +96,7 @@ std::unique_ptr<syncer::EntityData> CreateEntityDataFromSavedTabGroupTab(
   tab_group_details->set_shared_tab_group_guid(
       group->saved_guid().AsLowercaseString());
   tab_group_details->set_last_seen_timestamp_windows_epoch(
-      SerializeTime(tab.last_seen_time_windows_epoch_micros()));
+      SerializeTime(tab.last_seen_time_windows_epoch_micros().value()));
 
   return CreateEntityDataFromSpecifics(specifics);
 }
@@ -376,8 +376,9 @@ void SharedTabGroupAccountDataSyncBridge::SavedTabGroupTabLastSeenTimeUpdated(
   const SavedTabGroupTab* tab = group->GetTab(saved_tab_id);
   CHECK(tab);
 
-  const base::Time model_last_seen = tab->last_seen_time_windows_epoch_micros();
-  if (model_last_seen.is_null()) {
+  const std::optional<base::Time>& model_last_seen =
+      tab->last_seen_time_windows_epoch_micros();
+  if (model_last_seen.has_value()) {
     // This tab has not been seen by the user. Avoid syncing tabs
     // without a timestamp by skipping this.
     return;

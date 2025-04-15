@@ -983,11 +983,11 @@ TEST_F(SavedTabGroupModelTest, SetsLastSeenTime) {
   saved_tab_group_model_->AddedLocally(saved_group);
   const base::Uuid group_id = saved_group.saved_guid();
 
-  EXPECT_TRUE(saved_tab_group_model_->Get(group_id)
-                  ->saved_tabs()
-                  .front()
-                  .last_seen_time_windows_epoch_micros()
-                  .is_null());
+  EXPECT_FALSE(saved_tab_group_model_->Get(group_id)
+                   ->saved_tabs()
+                   .front()
+                   .last_seen_time_windows_epoch_micros()
+                   .has_value());
 
   base::Time last_seen_time = base::Time::Now();
   saved_tab_group_model_->UpdateTabLastSeenTime(
@@ -995,11 +995,11 @@ TEST_F(SavedTabGroupModelTest, SetsLastSeenTime) {
       saved_group.saved_tabs().front().saved_tab_guid(), last_seen_time,
       TriggerSource::LOCAL);
 
-  EXPECT_FALSE(saved_tab_group_model_->Get(group_id)
-                   ->saved_tabs()
-                   .front()
-                   .last_seen_time_windows_epoch_micros()
-                   .is_null());
+  EXPECT_TRUE(saved_tab_group_model_->Get(group_id)
+                  ->saved_tabs()
+                  .front()
+                  .last_seen_time_windows_epoch_micros()
+                  .has_value());
   EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
                                 ->saved_tabs()
                                 .front()
@@ -1359,11 +1359,11 @@ TEST_F(SavedTabGroupModelObserverTest,
   saved_tab_group_model_->AddedLocally(saved_group);
   const base::Uuid group_id = saved_group.saved_guid();
 
-  EXPECT_TRUE(saved_tab_group_model_->Get(group_id)
-                  ->saved_tabs()
-                  .front()
-                  .last_seen_time_windows_epoch_micros()
-                  .is_null());
+  EXPECT_FALSE(saved_tab_group_model_->Get(group_id)
+                   ->saved_tabs()
+                   .front()
+                   .last_seen_time_windows_epoch_micros()
+                   .has_value());
 
   base::Time last_seen_time = base::Time::Now();
   saved_tab_group_model_->UpdateTabLastSeenTime(
@@ -1376,11 +1376,11 @@ TEST_F(SavedTabGroupModelObserverTest,
                                    ->saved_tabs()
                                    .front()
                                    .saved_tab_guid());
-  EXPECT_FALSE(saved_tab_group_model_->Get(group_id)
-                   ->saved_tabs()
-                   .front()
-                   .last_seen_time_windows_epoch_micros()
-                   .is_null());
+  EXPECT_TRUE(saved_tab_group_model_->Get(group_id)
+                  ->saved_tabs()
+                  .front()
+                  .last_seen_time_windows_epoch_micros()
+                  .has_value());
   EXPECT_EQ(last_seen_time, saved_tab_group_model_->Get(group_id)
                                 ->saved_tabs()
                                 .front()
