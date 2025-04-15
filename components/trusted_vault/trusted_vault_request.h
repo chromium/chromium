@@ -95,7 +95,7 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
   void OnAccessTokenFetched(
       TrustedVaultAccessTokenFetcher::AccessTokenInfoOrError
           access_token_info_or_error);
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoadComplete(std::optional<std::string> response_body);
 
   std::unique_ptr<network::SimpleURLLoader> CreateURLLoader(
       const std::string& access_token) const;
