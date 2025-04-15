@@ -35,7 +35,7 @@ void FreWebUIContentsContainer::SetContentsBounds(content::WebContents* source,
                                                   const gfx::Rect& bounds) {
   gfx::Size new_size = bounds.size();
   fre_web_view_->SetPreferredSize(new_size);
-  fre_controller_->UpdateFreWidgetSize(new_size);
+  fre_web_view_->SizeToPreferredSize();
 }
 
 }  // namespace glic
