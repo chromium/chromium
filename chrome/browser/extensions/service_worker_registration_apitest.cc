@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/delayed_install_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
@@ -1237,12 +1238,11 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerRegistrationInstallMetricBrowserTest,
   ServiceWorkerTaskQueueRegistrationObserver register_observer(
       extension()->id());
   task_queue->SetObserverForTest(&register_observer);
-  ExtensionSystem* system = ExtensionSystem::Get(profile());
   const ExtensionId extension_id = extension()->id();
   // Uninstalling frees `extension_` so we must free it here to prevent dangling
   // ptr between the uninstall and until the test is torn down.
   ReleaseExtension();
-  system->extension_service()->UninstallExtension(
+  ExtensionRegistrar::Get(profile())->UninstallExtension(
       extension_id, UNINSTALL_REASON_FOR_TESTING, nullptr);
   {
     SCOPED_TRACE(

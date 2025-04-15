@@ -444,7 +444,7 @@ TEST_F(HostAccessRequestsHelperUnittest,
 
   // Uninstall extension A. Verify only extension B should have a host access
   // request.
-  service()->UninstallExtension(
+  registrar()->UninstallExtension(
       extension_A->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   EXPECT_FALSE(permissions_manager()->HasActiveHostAccessRequest(
       tab_id, extension_A->id()));

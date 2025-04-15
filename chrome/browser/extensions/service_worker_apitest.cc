@@ -1337,7 +1337,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerTest,
 
   // Uninstall the extension. Opening pages should fail again.
   std::u16string error;
-  extension_service()->UninstallExtension(
+  extension_registrar()->UninstallExtension(
       extension_id, UninstallReason::UNINSTALL_REASON_FOR_TESTING, &error);
   base::RunLoop().RunUntilIdle();
 

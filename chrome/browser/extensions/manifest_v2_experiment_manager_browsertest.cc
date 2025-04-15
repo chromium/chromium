@@ -278,9 +278,9 @@ class ManifestV2ExperimentManagerBrowserTest : public ExtensionBrowserTest {
   void UninstallExtension(const ExtensionId& extension_id,
                           UninstallReason uninstall_reason) {
     base::RunLoop run_loop;
-    extension_service()->UninstallExtension(extension_id, uninstall_reason,
-                                            /*error=*/nullptr,
-                                            run_loop.QuitWhenIdleClosure());
+    extension_registrar()->UninstallExtension(extension_id, uninstall_reason,
+                                              /*error=*/nullptr,
+                                              run_loop.QuitWhenIdleClosure());
     run_loop.Run();
   }
 

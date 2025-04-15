@@ -465,7 +465,8 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kGood0));
 
   // Now uninstall kGood0.
-  service()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING,
+                                  nullptr);
   // kGood0 should be removed from the blocklist.
   EXPECT_EQ(0u, registry()->blocklisted_extensions().size());
 
@@ -498,7 +499,8 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
   test_blocklist.SetBlocklistState(kGood0, BLOCKLISTED_MALWARE, true);
 
   // Uninstalled the extension in the middle of the update.
-  service()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING,
+                                  nullptr);
   // Should not crash when the update finishes.
   task_environment()->RunUntilIdle();
 }

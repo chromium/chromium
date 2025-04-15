@@ -355,8 +355,7 @@ void ExternalInstallErrorDesktop::OnInstallPromptDone(
       NOTREACHED();
     case ExtensionInstallPrompt::Result::USER_CANCELED:
       if (extension) {
-        ExtensionSystem::Get(browser_context_)
-            ->extension_service()
+        ExtensionRegistrar::Get(browser_context_)
             ->UninstallExtension(extension_id_,
                                  extensions::UNINSTALL_REASON_INSTALL_CANCELED,
                                  nullptr);  // Ignore error.

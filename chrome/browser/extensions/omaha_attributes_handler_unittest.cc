@@ -260,8 +260,8 @@ TEST_F(OmahaAttributesHandlerUnitTest, ExtensionUninstalledBeforeNotified) {
 
   EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
 
-  service()->UninstallExtension(kTestExtensionId, UNINSTALL_REASON_FOR_TESTING,
-                                nullptr);
+  registrar()->UninstallExtension(kTestExtensionId,
+                                  UNINSTALL_REASON_FOR_TESTING, nullptr);
 
   auto attributes = base::Value::Dict().Set("_malware", true);
   // kTestExtensionId is already uninstalled. Performing action on it should
