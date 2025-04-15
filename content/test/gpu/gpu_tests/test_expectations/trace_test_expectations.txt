@@ -223,17 +223,12 @@ crbug.com/329138770 [ graphite-enabled win10 ] WebGPUCachingTraceTest_RenderPipe
 
 # Win/AMD RX 7600 failures
 crbug.com/402989071 [ win11 amd-0x7480 ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
-crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginCacheHits [ Failure ]
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
-crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineMainThread [ Failure ]
-crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_ComputePipelineWorkerAsync [ Failure ]
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
-crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineMainThread [ Failure ]
-crbug.com/398149367 [ win11 amd-0x7480 ] WebGPUCachingTraceTest_RenderPipelineWorkerAsync [ Failure ]
 
 # DirectionComposition seems to flakily fail
 crbug.com/403536258 [ win angle-d3d11 intel-0x4680 graphite-enabled passthrough ] VideoPathTraceTest_DirectComposition_Video_MP4_NV12 [ RetryOnFailure ]
