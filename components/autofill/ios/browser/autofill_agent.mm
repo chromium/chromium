@@ -499,13 +499,6 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   } else {
     [self sendData:std::move(autofillData) toFrame:frame];
   }
-
-  auto* driver =
-      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame);
-  if (!driver || !driver->is_processed()) {
-    return;
-  }
-  driver->ScanForms();
 }
 
 // Similar to `fillField`, but does not rely on `FillActiveFormField`, opting
