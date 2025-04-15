@@ -305,7 +305,7 @@ jobs:
         run: npm ci
       - uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
-          pattern: chromedriver-headful-*
+          pattern: cd-headful-*
           merge-multiple: true
       - name: Generate HTML test report
         run: >
