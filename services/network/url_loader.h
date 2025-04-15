@@ -65,8 +65,6 @@
 #include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/shared_storage/shared_storage_request_helper.h"
-#include "services/network/trust_tokens/pending_trust_token_store.h"
-#include "services/network/trust_tokens/trust_token_request_helper.h"
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/upload_progress_tracker.h"
 #include "services/network/url_loader_context.h"
@@ -107,6 +105,7 @@ class NetToMojoPendingBuffer;
 class ScopedThrottlingToken;
 class SharedDictionaryManager;
 class SlopBucket;
+class TrustTokenUrlLoaderInterceptor;
 
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     : public mojom::URLLoader,
@@ -420,42 +419,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void ContinueOnReceiveRedirect(const net::RedirectInfo& redirect_info,
                                  mojom::URLResponseHeadPtr response);
 
-  // A request with Trust Tokens parameters will (assuming preconditions pass
-  // and operations are successful) have one TrustTokenRequestHelper::Begin
-  // executed against the request and one TrustTokenRequestHelper::Finalize
-  // executed against its response.
-  //
-  // Outbound control flow:
-  //
-  // Start in ProcessOutboundTrustTokenInterceptor
-  // - If there are no Trust Tokens parameters, immediately ScheduleStart.
-  // - Otherwise:
-  //   - asynchronously construct a TrustTokenRequestHelper;
-  //   - receive the helper (or an error) in OnDoneConstructingTrustTokenHelper
-  //   and, if an error, fail the request;
-  //   - execute TrustTokenRequestHelper::Begin against the helper;
-  //   - receive the result in OnDoneBeginningTrustTokenOperation;
-  //   - if successful, ScheduleStart; if there was an error, fail.
-  //
-  // Inbound control flow:
-  //
-  // Start in OnResponseStarted
-  // - If there are no Trust Tokens parameters, proceed to
-  // ContinueOnResponseStarted.
-  // - Otherwise:
-  //   - execute TrustTokenRequestHelper::Finalize against the helper;
-  //   - receive the result in OnDoneFinalizingTrustTokenOperation;
-  //   - if successful, ProcessInboundAttributionInterceptorOnResponseStarted;
-  //   if there was an error, fail.
+  // If Trust Tokens parameters are present, delegates Trust Token handling
+  // to `trust_token_interceptor_`.
+  // The interceptor manages the asynchronous Begin (outbound, adding headers)
+  // and Finalize (inbound, processing headers) steps. URLLoader receives
+  // results via the OnDone... callbacks.
+  // On error during either step, the request is failed via NotifyCompleted.
   void ProcessOutboundTrustTokenInterceptor(const ResourceRequest& request);
-  void OnDoneConstructingTrustTokenHelper(
-      mojom::TrustTokenOperationType type,
-      TrustTokenStatusOrRequestHelper status_or_helper);
+  // Callback receiving result (headers or error) of the interceptor's Begin
+  // step.
   void OnDoneBeginningTrustTokenOperation(
-      std::optional<net::HttpRequestHeaders> headers,
-      mojom::TrustTokenOperationStatus status);
-  void OnDoneFinalizingTrustTokenOperation(
-      mojom::TrustTokenOperationStatus status);
+      base::expected<net::HttpRequestHeaders, net::Error> result);
+  // Callback receiving result (net::OK or error) of the interceptor's Finalize
+  // step.
+  void OnDoneFinalizingTrustTokenOperation(net::Error error);
 
   // Continuation of `OnResponseStarted` after possibly asynchronously
   // concluding the request's Trust Tokens, Attribution, and/or Shared Storage
@@ -465,7 +442,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // `ContinueOnResponseStarted` when no mojo pipe is needed (thus no need to
   // use to wait on it).
   void ContinueOnResponseStartedImmediately();
-  void MaybeSendTrustTokenOperationResultToDevTools();
 
   void ScheduleStart();
 
@@ -712,23 +688,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // (https://github.com/WICG/trust-token-api) protocol operations, annotates
   // the request with the pertinent request headers and, on receiving the
   // corresponding response, processes and strips Trust Tokens response headers.
-  //
-  // For requests configured for Trust Tokens operations, |trust_token_helper_|
-  // is constructed (using |trust_token_helper_factory_|) just before the
-  // outbound (Begin) operation; for requests without associated Trust Tokens
-  // operations, the field remains null, as does |trust_token_helper_factory_|.
-  std::unique_ptr<TrustTokenRequestHelper> trust_token_helper_;
-  std::unique_ptr<TrustTokenRequestHelperFactory> trust_token_helper_factory_;
-
-  // The current Trust Token operation being processed by the request.
-  std::optional<mojom::TrustTokenOperationType> trust_token_operation_;
-
-  // The cached result of the request's Trust Tokens protocol operation, if any.
-  // This can describe the result of either an outbound (request-annotating)
-  // protocol step or an inbound (response header reading) step; some error
-  // codes, like kFailedPrecondition (outbound) and kBadResponse (inbound) are
-  // specific to one direction.
-  std::optional<mojom::TrustTokenOperationStatus> trust_token_status_;
+  std::unique_ptr<TrustTokenUrlLoaderInterceptor> trust_token_interceptor_;
 
   // This is used to determine whether it is allowed to use a dictionary when
   // there is a matching shared dictionary for the request.

@@ -69,6 +69,8 @@ source_set("trust_tokens") {
     "trust_token_request_signing_helper.h",
     "trust_token_store.cc",
     "trust_token_store.h",
+    "trust_token_url_loader_interceptor.cc",
+    "trust_token_url_loader_interceptor.h",
     "types.cc",
     "types.h",
   ]
