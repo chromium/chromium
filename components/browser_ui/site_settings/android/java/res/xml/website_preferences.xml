@@ -37,6 +37,9 @@ found in the LICENSE file.
     <!-- A three state toggle for third-party cookies preferences, only shown for the ThirdPartyCookies category. -->
     <org.chromium.components.browser_ui.site_settings.TriStateCookieSettingsPreference
         android:key="tri_state_cookie_toggle" />
+    <!-- A message to display why toggle is disabled -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="toggle_disable_reason" />
     <!-- A checkbox for enabling a quiet ui for notification prompts. Only shown in the Notifications category. -->
     <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
         android:key="notifications_quiet_ui"

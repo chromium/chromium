@@ -1907,7 +1907,7 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testOnlyExpctedPreferencesJavascriptOptimizer() {
+    public void testOnlyExpectedPreferencesJavascriptOptimizer() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.JAVASCRIPT_OPTIMIZER,
                 BINARY_TOGGLE_WITH_EXCEPTION_AND_INFO_TEXT,
@@ -2662,6 +2662,18 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testOsBlocksJavascriptOptimizer() {
+        String pageOrigin = mPermissionRule.getOrigin();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            getBrowserContextHandle(),
+                            ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                            new GURL(pageOrigin),
+                            new GURL(pageOrigin),
+                            ContentSettingValues.ALLOW);
+                });
+
         mAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(true);
 
         final SettingsActivity settingsActivity =
@@ -2678,7 +2690,9 @@ public class SiteSettingsTest {
                             new String[] {
                                 SingleCategorySettings.INFO_TEXT_KEY,
                                 SingleCategorySettings.BINARY_TOGGLE_KEY,
-                                SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA
+                                SingleCategorySettings.TOGGLE_DISABLE_REASON_KEY,
+                                SingleCategorySettings.ALLOWED_GROUP,
+                                SingleCategorySettings.ADD_EXCEPTION_KEY,
                             });
 
                     ChromeSwitchPreference binaryToggle =
@@ -2688,20 +2702,20 @@ public class SiteSettingsTest {
                     Assert.assertFalse(binaryToggle.isChecked());
                     Assert.assertFalse(binaryToggle.isEnabled());
 
-                    Preference osWarningPreference =
+                    Preference toggleDisableReason =
                             singleCategorySettings.findPreference(
-                                    SingleWebsiteSettings.PREF_OS_PERMISSIONS_WARNING_EXTRA);
+                                    SingleCategorySettings.TOGGLE_DISABLE_REASON_KEY);
                     Assert.assertEquals(
                             AdvancedProtectionTestRule.TEST_JAVASCRIPT_OPTIMIZER_MESSAGE,
-                            osWarningPreference.getTitle());
+                            toggleDisableReason.getTitle());
 
                     settingsActivity.finish();
                 });
     }
 
     /**
-     * Test that if the Javascript-optimizer is enabled by enterprise policy but disabled by the
-     * Android OS setting that the enterprise policy is given precedence.
+     * Test that if the Javascript-optimizer is enabled by enterprise policy but disabled by the OS
+     * advanced-portection-mode setting that the enterprise policy is given precedence.
      */
     @Test
     @SmallTest
@@ -2748,9 +2762,10 @@ public class SiteSettingsTest {
     }
 
     /**
-     * Test that when: - Javascript-optimizer permission toggle is present on the {@link
-     * SingleWebsiteSettings} screen AND - Javascript-optimizer permission is denied by the
-     * operating system THAT the toggle is disabled.
+     * Test that when: (1) Javascript-optimizer permission toggle is present on the {@link
+     * SingleWebsiteSettings} screen AND (2) Advanced protection is requested by the operating
+     * system THAT the toggle is still enabled because explicit Javascript-optimizer content
+     * settings have priority over advanced-protection-mode.
      */
     @Test
     @SmallTest
@@ -2789,7 +2804,7 @@ public class SiteSettingsTest {
                             (SingleWebsiteSettings) settingsActivity.getMainFragment();
                     Preference javascriptOptimizerPreference =
                             websitePreferences.findPreference("javascript_optimizer");
-                    Assert.assertFalse(javascriptOptimizerPreference.isEnabled());
+                    Assert.assertTrue(javascriptOptimizerPreference.isEnabled());
                 });
         settingsActivity.finish();
     }

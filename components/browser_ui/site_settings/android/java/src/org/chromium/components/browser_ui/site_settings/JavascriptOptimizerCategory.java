@@ -27,22 +27,12 @@ public class JavascriptOptimizerCategory extends SiteSettingsCategory {
     }
 
     @Override
-    protected boolean enabledGlobally() {
-        return !mBlockedByOs;
-    }
-
-    @Override
-    protected boolean isToggleDisabled() {
+    protected boolean shouldDisableToggle() {
         return mBlockedByOs;
     }
 
     @Override
-    protected boolean shouldShowWarningWhenBlocked() {
-        return mBlockedByOs;
-    }
-
-    @Override
-    protected @Nullable String getMessageForEnablingOsGlobalPermission(Context context) {
+    protected @Nullable String getMessageWhyToggleIsDisabled(Context context) {
         var provider = OsAdditionalSecurityPermissionUtil.getProviderInstance();
         return (provider == null) ? null : provider.getJavascriptOptimizerMessage(context);
     }
