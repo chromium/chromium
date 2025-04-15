@@ -55,7 +55,7 @@ std::optional<std::string> CreateHeaderAndPayloadWithCustomPayload(
     const base::Value::Dict& payload) {
   auto header = base::Value::Dict()
                     .Set("alg", SignatureAlgorithmToString(algorithm))
-                    .Set("typ", "jwt");
+                    .Set("typ", "dbsc+jwt");
   if (!schema.empty()) {
     header.Set("schema", schema);
   }

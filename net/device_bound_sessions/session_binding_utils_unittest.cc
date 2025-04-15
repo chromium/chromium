@@ -54,7 +54,7 @@ TEST(SessionBindingUtilsTest, CreateKeyRegistrationHeaderAndPayload) {
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
   base::Value::Dict expected_header =
-      base::Value::Dict().Set("alg", "RS256").Set("typ", "jwt");
+      base::Value::Dict().Set("alg", "RS256").Set("typ", "dbsc+jwt");
   base::Value::Dict expected_payload =
       base::Value::Dict()
           .Set("aud", "https://accounts.example.test/RegisterKey")
@@ -87,7 +87,7 @@ TEST(SessionBindingUtilsTest,
       Base64UrlEncodedJsonToValue(header_and_payload[1]);
 
   base::Value::Dict expected_header =
-      base::Value::Dict().Set("alg", "RS256").Set("typ", "jwt");
+      base::Value::Dict().Set("alg", "RS256").Set("typ", "dbsc+jwt");
   base::Value::Dict expected_payload =
       base::Value::Dict()
           .Set("aud", "https://accounts.example.test/RegisterKey")
