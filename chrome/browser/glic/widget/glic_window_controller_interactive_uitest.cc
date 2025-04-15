@@ -54,8 +54,8 @@ namespace glic {
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
-const InteractiveBrowserTestApi::DeepQuery
-    kMockGlicClientStart11sUnresponsiveButton = {"#busyWork11s"};
+const InteractiveBrowserTestApi::DeepQuery kMockGlicClientHangButton = {
+    "#hang"};
 
 }  // anonymous namespace
 
@@ -451,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
                        ClientUnresponsiveThenError) {
   RunTestSequence(
       OpenGlicWindow(GlicWindowMode::kAttached),
-      ClickMockGlicElement(kMockGlicClientStart11sUnresponsiveButton, true),
+      ClickMockGlicElement(kMockGlicClientHangButton, true),
       ObserveState(test::internal::kGlicAppState, &window_controller()),
       WaitForState(test::internal::kGlicAppState,
                    mojom::WebUiState::kUnresponsive),

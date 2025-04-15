@@ -220,11 +220,11 @@ export class GlicAppController implements PageInterface, WebviewDelegate,
       WebUiState.kUnresponsive,
       {
         onEnter: () => {
-          $.unresponsiveOverlay.classList.toggle('hidden', true);
+          $.unresponsiveOverlay.classList.toggle('hidden', false);
         },
         onExit:
             () => {
-              $.unresponsiveOverlay.classList.toggle('hidden', false);
+              $.unresponsiveOverlay.classList.toggle('hidden', true);
             },
       },
     ],

@@ -138,18 +138,32 @@ $.audioDuckingOff.addEventListener('click', () => {
 
 // Hang web client for <workTimeMs> amount of time.
 function busyWork(workTimeMs: number) {
+  if (workTimeMs < 0) {
+    return;
+  }
+
   const end = performance.now() + workTimeMs;
   while (performance.now() < end) {
     // mock busy work to test the web client unresponsive handling.
   }
 }
 
-$.busyWork5s.addEventListener('click', () => {
-  busyWork(5000);
-});
+$.hang.addEventListener('click', () => {
+  const durationString = $.hangDuration.value;
+  const duration = parseFloat(durationString);
 
-$.busyWork11s.addEventListener('click', () => {
-  busyWork(11000);
+  // Validate the input
+  if (isNaN(duration)) {
+    alert('Invalid number entered for duration.');
+    return;
+  }
+  if (duration < 0) {
+    alert('Duration cannot be negative.');
+    return;
+  }
+
+  const durationMs = duration * 1000;
+  busyWork(durationMs);
 });
 
 window.addEventListener('load', () => {
