@@ -527,22 +527,21 @@ chromium-metrics-reviews@google.com.
   <owner>mqg@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
-    The level of the backlight as a percentage when the privacy screen is in
-    {PrivacyScreenState} state and the device is powered by {PowerSource}.
-    Sampled every 30 seconds. Chrome OS only.
+    The level of the backlight as a percentage {PrivacyScreenState} when the
+    device is {PowerSource}. Sampled every 30 seconds. Chrome OS only.
   </summary>
   <token key="PrivacyScreenState">
-    <variant name=""
-        summary="All Chrome OS, irrespective of whether privacy screens are
-                 present, or privacy screen state."/>
+    <variant name="" summary=""/>
     <variant name="PrivacyScreenDisabled"
-        summary="Chrome OS with privacy screens only."/>
+        summary="with privacy screens disabled for ChromeOS devices with
+                 privacy screens only"/>
     <variant name="PrivacyScreenEnabled"
-        summary="Chrome OS with privacy screens only."/>
+        summary="with privacy screens enabled for ChromeOS devices with
+                 privacy screens only"/>
   </token>
   <token key="PowerSource">
-    <variant name="OnAC"/>
-    <variant name="OnBattery"/>
+    <variant name="OnAC" summary="on AC"/>
+    <variant name="OnBattery" summary="powered by battery"/>
   </token>
 </histogram>
 
