@@ -129,6 +129,9 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // Called when the user tried to close the window.
   virtual void HandleClose() = 0;
 
+  // Called when the user tried to close the application, through TaskManager.
+  virtual void HandleRequestClose() = 0;
+
   // Called when a command defined by the application was performed. Returns
   // true if the command was handled.
   virtual bool HandleCommand(int command) = 0;

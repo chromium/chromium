@@ -78,6 +78,7 @@ class BrowserDesktopWindowTreeHostWin
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void HandleWindowMinimizedOrRestored(bool restored) override;
+  void HandleRequestClose() override;
 
   // ProfileAttributesStorage::Observer:
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
