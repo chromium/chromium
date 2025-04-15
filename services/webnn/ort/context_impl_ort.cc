@@ -261,7 +261,7 @@ ContextProperties ContextImplOrt::GetContextProperties(
   // According to
   // https://github.com/openvinotoolkit/openvino/blob/master/src/plugins/intel_gpu/src/graph/activation.cpp#L35,
   // OV EP GPU does not support integer data type for sign operation.
-  static const SupportedDataTypes kSignInputSupportedDataTypes =
+  const SupportedDataTypes kSignInputSupportedDataTypes =
       use_ov_gpu ? DataTypeConstraint::kFloat16To32
                  : DataTypeConstraint::kAllDataTypesAtLeast8bits;
 
