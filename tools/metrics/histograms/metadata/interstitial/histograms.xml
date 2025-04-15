@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.enterprise_block.decision"
     enum="SecurityInterstitialDecision" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user is blocked from visiting a site as per admin rules in an
     enterprise managed browser.
@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.enterprise_block.decision.repeat_visit"
     enum="SecurityInterstitialDecision" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user is blocked from visiting a site as per admin rules in an
     enterprise managed browser and the user tries to access it again.
@@ -120,9 +120,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_block.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2025-05-25">
+    enum="SecurityInterstitialInteraction" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user interacts with a blocking page shown for a url that
     doesn't comply with admin rules.
@@ -132,7 +132,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.enterprise_warn.decision"
     enum="SecurityInterstitialDecision" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user is shown a warning while visiting a site that doesn't
     comply with the admin rules in an enterprise managed browser.
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="interstitial.enterprise_warn.decision.repeat_visit"
     enum="SecurityInterstitialDecision" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user revisits a page they were warned about for not complying
     with the admin rules in an enterprise managed browser.
@@ -150,9 +150,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="interstitial.enterprise_warn.interaction"
-    enum="SecurityInterstitialInteraction" expires_after="2025-05-25">
+    enum="SecurityInterstitialInteraction" expires_after="2026-01-21">
   <owner>domfc@chromium.org</owner>
-  <owner>dpr-eng@google.com</owner>
+  <owner>cbe-cep-eng@google.com</owner>
   <summary>
     Records when a user interacts with a warning page shown for a url that
     doesn't comply with admin rules.
