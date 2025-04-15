@@ -248,6 +248,25 @@ ValueAndSize SerializeAds(const std::vector<blink::InterestGroup::Ad>& ads,
   return {cbor::Value(std::move(result)), total_size};
 }
 
+std::pair<cbor::Value::ArrayValue, size_t> BuildClickinessArray(
+    const blink::mojom::ViewOrClickCounts& counts) {
+  cbor::Value::ArrayValue result;
+  base::CheckedNumeric<size_t> serialized_size = 1;  // Array tag + length
+  result.reserve(5);
+  result.emplace_back(counts.past_hour);
+  serialized_size += TaggedSIntLength(counts.past_hour);
+  result.emplace_back(counts.past_day);
+  serialized_size += TaggedSIntLength(counts.past_day);
+  result.emplace_back(counts.past_week);
+  serialized_size += TaggedSIntLength(counts.past_week);
+  result.emplace_back(counts.past_30_days);
+  serialized_size += TaggedSIntLength(counts.past_30_days);
+  result.emplace_back(counts.past_90_days);
+  serialized_size += TaggedSIntLength(counts.past_90_days);
+  return std::pair<cbor::Value::ArrayValue, size_t>(
+      std::move(result), serialized_size.ValueOrDie());
+}
+
 // This serialization is sent to the B&A server, so the format is standardized.
 // We can't add fields to this format without coordinating with the B&A team.
 ValueAndSizeAndPrevWinsSize SerializeInterestGroup(
@@ -329,6 +348,26 @@ ValueAndSizeAndPrevWinsSize SerializeInterestGroup(
   browser_signals_elements_size +=
       TaggedStringLength(constexpr_strlen("recencyMs")) +
       TaggedSIntLength(recency);
+
+  if (group->bidding_browser_signals->view_and_click_counts &&
+      base::FeatureList::IsEnabled(features::kEnableBandAClickiness)) {
+    if (group->bidding_browser_signals->view_and_click_counts->view_counts) {
+      std::pair<cbor::Value::ArrayValue, size_t> views = BuildClickinessArray(
+          *group->bidding_browser_signals->view_and_click_counts->view_counts);
+      browser_signals[cbor::Value("viewCounts")] =
+          cbor::Value(std::move(views.first));
+      browser_signals_elements_size +=
+          TaggedStringLength(constexpr_strlen("viewCounts")) + views.second;
+    }
+    if (group->bidding_browser_signals->view_and_click_counts->click_counts) {
+      std::pair<cbor::Value::ArrayValue, size_t> clicks = BuildClickinessArray(
+          *group->bidding_browser_signals->view_and_click_counts->click_counts);
+      browser_signals[cbor::Value("clickCounts")] =
+          cbor::Value(std::move(clicks.first));
+      browser_signals_elements_size +=
+          TaggedStringLength(constexpr_strlen("clickCounts")) + clicks.second;
+    }
+  }
 
   cbor::Value::ArrayValue prev_wins;
   base::CheckedNumeric<size_t> prev_wins_elements_size = 0;

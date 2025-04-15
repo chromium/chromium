@@ -11979,6 +11979,58 @@ TEST_F(AdAuctionServiceImplTest,
                                test_origin, testing::ElementsAre("cars"))));
 }
 
+TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithClickiness) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kEnableBandAClickiness);
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+
+  network::AdAuctionEventRecord event;
+  event.eligible_origins.emplace_back(test_origin);
+  event.type = network::AdAuctionEventRecord::Type::kClick;
+  event.providing_origin = test_origin;
+  manager_->RecordViewClick(std::move(event));
+
+  blink::InterestGroup ig =
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/"do not send",
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .Build();
+  ig.view_and_click_counts_providers.emplace();
+  ig.view_and_click_counts_providers->emplace_back(test_origin);
+
+  manager_->JoinInterestGroup(ig, GURL("https://a.test/example.html"));
+
+  std::vector<uint8_t> msg;
+  base::RunLoop run_loop;
+  manager_->GetInterestGroupAdAuctionData(
+      /*top_level_origin=*/test_origin,
+      /*generation_id=*/
+      base::Uuid::ParseCaseInsensitive("00000000-0000-0000-0000-000000000000"),
+      /*timestamp=*/base::Time::FromMillisecondsSinceUnixEpoch(10),
+      /*config=*/blink::mojom::AuctionDataConfig::New(),
+      /*sellers=*/{test_origin},
+      /*callback=*/base::BindLambdaForTesting([&](BiddingAndAuctionData data) {
+        EXPECT_EQ(1u, data.requests.size());
+        msg = std::move(data.requests[test_origin]);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  std::string expected =
+      "AgAAAQ+"
+      "mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wMDA"
+      "wLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8vYS50ZXN"
+      "0WHYfiwgAAAAAAAAALci7DYNADADQ80gQNqCmokh92FYwEB+y+"
+      "YguFEwSiTkjUF759i9G8p2y/"
+      "FGQxjcTRnNtLK3OVstL4+Bn2wiVadYptKPx8hT1j3RJ9E4QY2TFrfLQLcLrvX6ES4+"
+      "DYP8fAIDwA5l1ceBzAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwp0ZW5hYmxlRGVidWdSZXBvcnR"
+      "pbmf1AAAAAAA";
+  EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
+}
+
 TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
   url::Origin test_origin_a = url::Origin::Create(GURL(kOriginStringA));
   url::Origin test_origin_b = url::Origin::Create(GURL(kOriginStringB));
