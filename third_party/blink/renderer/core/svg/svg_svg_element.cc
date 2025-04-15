@@ -516,6 +516,11 @@ AffineTransform SVGSVGElement::LocalCoordinateSpaceTransform(
   gfx::SizeF viewport_size;
   AffineTransform transform;
   if (!IsOutermostSVGSVGElement()) {
+    if (layout_object) {
+      transform.PreConcat(
+          To<LayoutSVGViewportContainer>(*layout_object).LocalSVGTransform());
+    }
+
     SVGLengthContext length_context(this);
     transform.Translate(x_->CurrentValue()->Value(length_context),
                         y_->CurrentValue()->Value(length_context));

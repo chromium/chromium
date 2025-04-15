@@ -4407,6 +4407,10 @@
       status: "stable",
     },
     {
+      name: "SvgTransformOnNestedSvgElement",
+      status: "experimental",
+    },
+    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
     },
