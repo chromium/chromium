@@ -1,4 +1,44 @@
+const kValidAvailabilities =
+    ['unavailable', 'downloadable', 'downloading', 'available'];
+const kAvailableAvailabilities = ['downloadable', 'downloading', 'available'];
+
 const kTestPrompt = 'Please write a sentence in English.';
+
+// Takes an array of dictionaries mapping keys to value arrays, e.g.:
+//   [ {Shape: ["Square", "Circle", undefined]}, {Count: [1, 2]} ]
+// Returns an array of dictionaries with all value combinations, i.e.:
+//  [ {Shape: "Square", Count: 1}, {Shape: "Square", Count: 2},
+//    {Shape: "Circle", Count: 1}, {Shape: "Circle", Count: 2},
+//    {Shape: undefined, Count: 1}, {Shape: undefined, Count: 2} ]
+// Omits dictionary members when the value is undefined; supports array values.
+const generateOptionCombinations = (optionsSpec) => {
+  // 1. Extract keys from the input specification.
+  const keys = optionsSpec.map(o => Object.keys(o)[0]);
+  // 2. Extract the arrays of possible values for each key.
+  const valueArrays = optionsSpec.map(o => Object.values(o)[0]);
+  // 3. Compute the Cartesian product of the value arrays using reduce.
+  const valueCombinations = valueArrays.reduce((accumulator, currentValues) => {
+    // Init the empty accumulator (first iteration), with single-element arrays.
+    if (accumulator.length === 0) {
+      return currentValues.map(value => [value]);
+    }
+    // Otherwise, expand existing combinations with current values.
+    return accumulator.flatMap(existingCombo =>
+      currentValues.map(currentValue => [...existingCombo, currentValue])
+    );
+  }, []);
+
+  // 4. Map each value combination to a result dictionary, skipping undefined.
+  return valueCombinations.map(combination => {
+    const result = {};
+    keys.forEach((key, index) => {
+      if (combination[index] !== undefined) {
+        result[key] = combination[index];
+      }
+    });
+    return result;
+  });
+}
 
 // The method should take the AbortSignal as an option and return a promise.
 const testAbortPromise = async (t, method) => {
@@ -77,7 +117,7 @@ async function testMonitor(createFunc, options = {}) {
     });
   }
 
-  await createFunc({...options, monitor});
+  result = await createFunc({...options, monitor});
   created = true;
 
   assert_greater_than_equal(progressEvents.length, 2);
@@ -93,4 +133,5 @@ async function testMonitor(createFunc, options = {}) {
     assert_greater_than(progressEvent.loaded, lastProgressEventLoaded);
     lastProgressEventLoaded = progressEvent.loaded;
   }
+  return result;
 }

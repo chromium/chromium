@@ -1,4 +1,4 @@
-// META: title=Summarizer Streaming
+// META: title=Summarizer Summarize Streaming
 // META: script=../resources/util.js
 // META: timeout=long
 
