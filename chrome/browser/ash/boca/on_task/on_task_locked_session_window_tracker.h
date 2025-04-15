@@ -34,6 +34,8 @@ namespace ash {
 class OnTaskPodController;
 }
 
+inline static constexpr char16_t kOutsideOfWorkbookTitle[] = u"Not in workbook";
+
 // This class is used to track the windows and tabs that are opened in the
 // user's OnTask locked session. Only one browser window is allowed at a time to
 // be tracked. Attempting to track another browser while there is one already
@@ -121,6 +123,8 @@ class LockedSessionWindowTracker : public KeyedService,
   // BrowserListObserver Implementation
   void OnBrowserClosing(Browser* browser) override;
   void OnBrowserAdded(Browser* browser) override;
+  void OnBrowserSetLastActive(Browser* browser) override;
+  void OnBrowserNoLongerActive(Browser* browser) override;
 
   // content::WebContentsObserver Impl
   void DidFinishNavigation(

@@ -407,6 +407,30 @@ void LockedSessionWindowTracker::OnBrowserAdded(Browser* browser) {
   }
 }
 
+void LockedSessionWindowTracker::OnBrowserSetLastActive(Browser* browser) {
+  if (browser != browser_ || !browser) {
+    return;
+  }
+  if (!browser->GetActiveTabInterface() ||
+      !browser->GetActiveTabInterface()->GetContents()) {
+    return;
+  }
+  for (auto& observer : observers_) {
+    observer.OnActiveTabChanged(
+        browser->GetActiveTabInterface()->GetContents()->GetTitle());
+  }
+}
+
+void LockedSessionWindowTracker::OnBrowserNoLongerActive(Browser* browser) {
+  if (browser != browser_) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnActiveTabChanged(std::u16string(kOutsideOfWorkbookTitle));
+  }
+}
+
 // content::WebContentsObserver Impl
 void LockedSessionWindowTracker::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {

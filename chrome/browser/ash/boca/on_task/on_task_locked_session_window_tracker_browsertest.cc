@@ -985,6 +985,43 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
   window_tracker->RemoveObserver(&window_observer);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    OnTaskLockedSessionWindowTrackerBrowserTest,
+    NotifyObserverForActiveTabChangeWhenSwitchInAndOutOnTask) {
+  // Launch OnTask SWA.
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+
+  // Set up window tracker to track the app window.
+  const SessionID window_id = boca_app_browser->session_id();
+  ASSERT_TRUE(window_id.is_valid());
+  NiceMock<MockBocaWindowObserver> window_observer;
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{&window_observer});
+
+  // Switch out of boca SWA
+  EXPECT_CALL(window_observer,
+              OnActiveTabChanged(::testing::Eq(kOutsideOfWorkbookTitle)))
+      .Times(1);
+
+  BrowserList::GetInstance()->NotifyBrowserNoLongerActive(boca_app_browser);
+  testing::Mock::VerifyAndClearExpectations(&window_observer);
+
+  // Switch back to Boca SWA
+  EXPECT_CALL(window_observer, OnActiveTabChanged(_)).Times(1);
+  BrowserList::GetInstance()->SetLastActive(boca_app_browser);
+
+  testing::Mock::VerifyAndClearExpectations(&window_observer);
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
+          profile());
+  window_tracker->RemoveObserver(&window_observer);
+}
+
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionWindowTrackerBrowserTest,
                        NotifyObserverOnActiveTabUpdates) {
   // Launch OnTask SWA.
