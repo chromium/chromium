@@ -9,11 +9,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/ai_common.mojom-blink.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/modules/ai/ai_availability.h"
 #include "third_party/blink/renderer/modules/ai/ai_interface_proxy.h"
@@ -78,8 +80,18 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
         MakeGarbageCollected<ScriptPromiseResolver<V8AIAvailability>>(
             script_state);
     auto promise = resolver->Promise();
-
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
+
+    // Return unavailable for cross-origin iframe access with no permission
+    // policy.
+    if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+      if (window->IsCrossSiteSubframeIncludingScheme() &&
+          !window->IsFeatureEnabled(GetPermissionsPolicy())) {
+        resolver->Resolve(AIAvailabilityToV8(AIAvailability::kUnavailable));
+        return promise;
+      }
+    }
+
     HeapMojoRemote<mojom::blink::AIManager>& ai_manager_remote =
         AIInterfaceProxy::GetAIManagerRemote(execution_context);
 
@@ -119,6 +131,19 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
     if (signal && signal->aborted()) {
       resolver->Reject(signal->reason(script_state));
       return promise;
+    }
+
+    // Block cross-origin iframe access with no permission policy.
+    auto* context = ExecutionContext::From(script_state);
+    if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
+      if (window->GetFrame() &&
+          window->GetFrame()->IsCrossOriginToOutermostMainFrame() &&
+          !window->IsFeatureEnabled(GetPermissionsPolicy())) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotAllowedError,
+            kExceptionMessageCrossOriginAccess));
+        return promise;
+      }
     }
 
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
@@ -334,6 +359,9 @@ class AIWritingAssistanceBase : public ExecutionContextClient {
 
   // Returns the session type; defined in template specializations.
   static AIMetrics::AISessionType GetSessionType();
+
+  // Returns permission policy feature for session type.
+  static network::mojom::PermissionsPolicyFeature GetPermissionsPolicy();
 
   // Runs CanCreate* for the session type; defined in template specializations.
   static void RemoteCanCreate(

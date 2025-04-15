@@ -39,6 +39,18 @@ AIWritingAssistanceBase<Summarizer,
 
 // static
 template <>
+network::mojom::PermissionsPolicyFeature
+AIWritingAssistanceBase<Summarizer,
+                        mojom::blink::AISummarizer,
+                        mojom::blink::AIManagerCreateSummarizerClient,
+                        SummarizerCreateCoreOptions,
+                        SummarizerCreateOptions,
+                        SummarizerSummarizeOptions>::GetPermissionsPolicy() {
+  return network::mojom::PermissionsPolicyFeature::kSummarizer;
+}
+
+// static
+template <>
 void AIWritingAssistanceBase<Summarizer,
                              mojom::blink::AISummarizer,
                              mojom::blink::AIManagerCreateSummarizerClient,
