@@ -345,8 +345,12 @@ public class AutocompleteCoordinator
                         || (keyCode == KeyEvent.KEYCODE_DPAD_DOWN)
                         || (keyCode == KeyEvent.KEYCODE_TAB);
 
-        if (isShowingList && event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
-            mMediator.finishInteraction();
+        if (event.getKeyCode() == KeyEvent.KEYCODE_ESCAPE) {
+            if (isShowingList) {
+                mMediator.stopAutocomplete(true);
+            } else {
+                mMediator.finishInteraction();
+            }
             return true;
         }
         if (isShowingList && isSelectionKey) {
