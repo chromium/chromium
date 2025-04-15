@@ -193,19 +193,6 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
     return false;
   }
 
-  // If kAutofillOverwritePlaceholdersOnly is enabled:
-  // Fields that are non-empty on page load are only overwritten if
-  // crowdsourcing classified them as "placeholder" fields (meaning that users
-  // typically modify the value).
-  //
-  // At this point the field is known to contain a non-empty initial value at
-  // page load.
-  if (field.may_use_prefilled_placeholder().has_value() &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillOverwritePlaceholdersOnly)) {
-    return !field.may_use_prefilled_placeholder().value();
-  }
-
   // If kAutofillSkipPreFilledFields is enabled:
   // Fields that are non-empty on page load are not meant to be overwritten.
   //

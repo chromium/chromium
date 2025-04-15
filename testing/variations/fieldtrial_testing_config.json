@@ -2574,27 +2574,6 @@
             ]
         }
     ],
-    "AutofillPreFilledFieldsCorrectly": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_OverwritePlaceholdersOnly",
-                    "enable_features": [
-                        "AutofillOverwritePlaceholdersOnly",
-                        "AutofillSkipPreFilledFields"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillRecordCorrectionOfSelectElements": [
         {
             "platforms": [

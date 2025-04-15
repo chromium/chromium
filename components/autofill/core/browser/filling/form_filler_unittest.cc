@@ -310,51 +310,9 @@ TEST_F(FormFillerTest, DoNotFillIfFormChanged) {
       AutofillTriggerSource::kPopup);
 }
 
-TEST_F(FormFillerTest, SkipFillIfFieldIsMeaningfullyPreFilled) {
-  base::test::ScopedFeatureList placeholders_feature;
-  placeholders_feature.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillOverwritePlaceholdersOnly},
-      /*disabled_features=*/{features::kAutofillSkipPreFilledFields});
-
-  const FieldType kSkippedType = ADDRESS_HOME_LINE1;
-  FormData form = test::GetFormData(
-      {.fields = {
-           {.role = NAME_FIRST, .value = u"Triggering field (filled)"},
-           {.role = NAME_LAST, .value = u"Placeholder (filled)"},
-           {.role = EMAIL_ADDRESS, .value = u"No data (filled)"},
-           {.role = kSkippedType,
-            .value = u"Meaningfully pre-filled (skipped)"},
-           // Value initialized with whitespace-only, expect field to be filled.
-           {.role = ADDRESS_HOME_COUNTRY, .value = u" "}}});
-  FormsSeen({form});
-
-  FormStructure* form_structure = GetFormStructure(form);
-  form_structure->fields()[0]->set_may_use_prefilled_placeholder(false);
-  form_structure->fields()[1]->set_may_use_prefilled_placeholder(true);
-  form_structure->fields()[3]->set_may_use_prefilled_placeholder(false);
-
-  AutofillProfile profile = test::GetFullProfile();
-  std::vector<FormFieldData> filled_fields =
-      FillAutofillFormData(form, form.fields().front(), &profile).fields();
-
-  EXPECT_THAT(filled_fields[0],
-              AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
-  EXPECT_THAT(filled_fields[1],
-              AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
-  EXPECT_THAT(filled_fields[2],
-              AutofilledWith(profile.GetInfo(EMAIL_ADDRESS, kAppLocale)));
-  EXPECT_FALSE(filled_fields[3].is_autofilled());
-  EXPECT_EQ(filled_fields[3].value(), form.fields()[3].value());
-  EXPECT_THAT(filled_fields[4], AutofilledWith(profile.GetInfo(
-                                    ADDRESS_HOME_COUNTRY, kAppLocale)));
-}
-
-TEST_F(FormFillerTest, SkipAllPreFilledFieldsExceptIfFieldIsAPlaceholder) {
-  base::test::ScopedFeatureList placeholders_features;
-  placeholders_features.InitWithFeatures(
-      {features::kAutofillOverwritePlaceholdersOnly,
-       features::kAutofillSkipPreFilledFields},
-      {});
+TEST_F(FormFillerTest, SkipPreFilledFields) {
+  base::test::ScopedFeatureList placeholders_features(
+      features::kAutofillSkipPreFilledFields);
 
   AutofillProfile profile = test::GetFullProfile();
   const std::u16string kToBeFilledState =
@@ -363,7 +321,7 @@ TEST_F(FormFillerTest, SkipAllPreFilledFieldsExceptIfFieldIsAPlaceholder) {
   FormData form = test::GetFormData(
       {.fields = {
            {.role = NAME_FIRST, .value = u"Triggering field (filled)"},
-           {.role = NAME_LAST, .value = u"Placeholder (filled)"},
+           {.role = NAME_LAST, .value = u"Placeholder (skipped)"},
            {.role = EMAIL_ADDRESS, .value = u"No data (skipped)"},
            {.role = ADDRESS_HOME_LINE1, .value = u"No placeholder (skipped)"},
            {.role = ADDRESS_HOME_STATE,
@@ -388,8 +346,8 @@ TEST_F(FormFillerTest, SkipAllPreFilledFieldsExceptIfFieldIsAPlaceholder) {
 
   EXPECT_THAT(filled_fields[0],
               AutofilledWith(profile.GetInfo(NAME_FIRST, kAppLocale)));
-  EXPECT_THAT(filled_fields[1],
-              AutofilledWith(profile.GetInfo(NAME_LAST, kAppLocale)));
+  EXPECT_FALSE(filled_fields[1].is_autofilled());
+  EXPECT_EQ(filled_fields[1].value(), form.fields()[1].value());
   EXPECT_FALSE(filled_fields[2].is_autofilled());
   EXPECT_EQ(filled_fields[2].value(), form.fields()[2].value());
   EXPECT_FALSE(filled_fields[3].is_autofilled());
@@ -1779,10 +1737,8 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
 // Regression test that a field with an unrelated type doesn't cause a crash
 // (crbug.com/324811625).
 TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({features::kAutofillSkipPreFilledFields,
-                                 features::kAutofillOverwritePlaceholdersOnly},
-                                {});
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillSkipPreFilledFields);
   FormData form = test::GetFormData(
       {.fields = {{.role = NAME_FULL,
                    .value = u"pre-filled",

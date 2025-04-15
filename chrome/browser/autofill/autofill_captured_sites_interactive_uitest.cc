@@ -412,8 +412,7 @@ class AutofillCapturedSitesInteractiveTest
                               {features::test::
                                    kAutofillCapturedSiteTestsUseAutofillFlow,
                                {}}},
-        /*disabled_features=*/{features::kAutofillOverwritePlaceholdersOnly,
-                               features::kAutofillSkipPreFilledFields});
+        /*disabled_features=*/{features::kAutofillSkipPreFilledFields});
     command_line->AppendSwitchASCII(
         variations::switches::kVariationsOverrideCountry, "us");
     // SelectParserRelaxation affects the results from the test data because the

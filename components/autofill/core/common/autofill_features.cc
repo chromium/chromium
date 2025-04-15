@@ -545,14 +545,6 @@ BASE_FEATURE_PARAM(bool,
                    "model_active",
                    false);
 
-// If enabled, a pre-filled field will only be overwritten if it's not
-// classified as meaningfully pre-filled based on server predictions. If also
-// flag `kAutofillSkipPreFilledFields` is enabled, a pre-filled field will only
-// be overwritten if it's classified as a placeholder.
-BASE_FEATURE(kAutofillOverwritePlaceholdersOnly,
-             "AutofillOverwritePlaceholdersOnly",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, a pre-filled field will not be filled.
 BASE_FEATURE(kAutofillSkipPreFilledFields,
              "AutofillSkipPreFilledFields",
