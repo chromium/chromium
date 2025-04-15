@@ -26,7 +26,7 @@ class ExtensionHostObserver {
   // Called when the ExtensionHost has finished the first load.
   virtual void OnExtensionHostDidStopFirstLoad(const ExtensionHost* host) {}
 
-  // Called when a message has been disptached to the event page corresponding
+  // Called when a message has been dispatched to the event page corresponding
   // to |host|.
   virtual void OnBackgroundEventDispatched(const ExtensionHost* host,
                                            const std::string& event_name,
