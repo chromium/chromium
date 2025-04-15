@@ -496,6 +496,12 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
                    .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
                    .Build());
 
+#if !BUILDFLAG(IS_LINUX)
+  // On Linux the top bar background will be drawn in OnPaint().
+  top_bar_container_view_->SetBackground(
+      views::CreateSolidBackground(kColorPipWindowTopBarBackground));
+#endif
+
   // Creates the window icon.
   const gfx::FontList& font_list = views::TypographyProvider::Get().GetFont(
       CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY);
@@ -534,6 +540,9 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
                                        views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
+
+  window_title_->SetBackgroundColor(kColorPipWindowTopBarBackground);
+  window_title_->SetEnabledColor(kColorPipWindowForeground);
 
   // Creates a container view for the top right buttons to handle the button
   // animations.
@@ -847,19 +856,9 @@ gfx::Size PictureInPictureBrowserFrameView::GetMaximumSize() const {
 
 void PictureInPictureBrowserFrameView::OnThemeChanged() {
   const auto* color_provider = GetColorProvider();
-  window_title_->SetBackgroundColor(
-      color_provider->GetColor(kColorPipWindowTopBarBackground));
-  window_title_->SetEnabledColor(
-      color_provider->GetColor(kColorPipWindowForeground));
   for (ContentSettingImageView* view : content_setting_views_) {
     view->SetIconColor(color_provider->GetColor(kColorPipWindowForeground));
   }
-
-#if !BUILDFLAG(IS_LINUX)
-  // On Linux the top bar background will be drawn in OnPaint().
-  top_bar_container_view_->SetBackground(views::CreateSolidBackground(
-      color_provider->GetColor(kColorPipWindowTopBarBackground)));
-#endif
 
   BrowserNonClientFrameView::OnThemeChanged();
 }
