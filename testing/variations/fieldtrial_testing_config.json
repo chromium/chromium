@@ -2940,6 +2940,22 @@
             ]
         }
     ],
+    "BGPriorityWorkerThreadsWithPISupport": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledBoth_20250410",
+                    "enable_features": [
+                        "UseBackgroundPriorityForWorkerThreads",
+                        "UsePriorityInheritanceMutex"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCacheMediaSessionService": [
         {
             "platforms": [
