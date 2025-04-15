@@ -12,10 +12,12 @@ import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.TestChildProcessConnection;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ContentFeatureList;
 
 /** Unit tests for ChildProessRanking */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -110,6 +112,7 @@ public class ChildProcessRankingTest {
                 /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
 
         // Visible subframe outside viewport.
@@ -118,12 +121,14 @@ public class ChildProcessRankingTest {
                 /* visible= */ true,
                 /* frameDepth= */ 2,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
 
         // Visible subframe inside viewport.
@@ -132,12 +137,14 @@ public class ChildProcessRankingTest {
                 /* visible= */ true,
                 /* frameDepth= */ 2,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c5,
                 /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
 
         // Visible main frame.
@@ -146,6 +153,7 @@ public class ChildProcessRankingTest {
                 /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
 
         if (enableGroupImportanceAfter) {
@@ -175,24 +183,28 @@ public class ChildProcessRankingTest {
                 /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
                 /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.MODERATE);
         ranking.addConnection(
                 c3,
                 /* visible= */ false,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
         ranking.addConnection(
                 c4,
                 /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
 
         assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c4, c3, c2, c1});
@@ -216,24 +228,28 @@ public class ChildProcessRankingTest {
                 /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
                 /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c3,
                 /* visible= */ false,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c4,
                 /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         Assert.assertEquals(c3, ranking.getLowestRankedConnection());
 
@@ -243,24 +259,28 @@ public class ChildProcessRankingTest {
                 /* visible= */ false,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.updateConnection(
                 c2,
                 /* visible= */ false,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.updateConnection(
                 c3,
                 /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.updateConnection(
                 c4,
                 /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
 
         assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c4, c3, c2, c1});
@@ -283,18 +303,21 @@ public class ChildProcessRankingTest {
                 /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
                 /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
 
         assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c3, c2, c1});
@@ -316,18 +339,21 @@ public class ChildProcessRankingTest {
                 /* visible= */ true,
                 /* frameDepth= */ intOverflow - 1,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
                 /* visible= */ true,
                 /* frameDepth= */ 10,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c1,
                 /* visible= */ true,
                 /* frameDepth= */ intOverflow,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
 
         assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c2, c3, c1});
@@ -346,12 +372,14 @@ public class ChildProcessRankingTest {
                 /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c2,
                 /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         boolean exceptionThrown = false;
         try {
@@ -360,6 +388,7 @@ public class ChildProcessRankingTest {
                     /* visible= */ true,
                     /* frameDepth= */ 1,
                     /* intersectsViewport= */ true,
+                    /* isSpareRenderer= */ false,
                     ChildProcessImportance.NORMAL);
         } catch (Throwable e) {
             exceptionThrown = true;
@@ -381,18 +410,21 @@ public class ChildProcessRankingTest {
                 /* visible= */ true,
                 /* frameDepth= */ 0,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.IMPORTANT);
         ranking.addConnection(
                 c2,
                 /* visible= */ true,
                 /* frameDepth= */ 2,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         ranking.addConnection(
                 c3,
                 /* visible= */ true,
                 /* frameDepth= */ 3,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
 
         assertNotInGroup(new ChildProcessConnection[] {c1});
@@ -404,6 +436,7 @@ public class ChildProcessRankingTest {
                 /* visible= */ true,
                 /* frameDepth= */ 1,
                 /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
                 ChildProcessImportance.NORMAL);
         assertNotInGroup(new ChildProcessConnection[] {c1});
         assertInGroupOrderedByImportance(new ChildProcessConnection[] {c3, c2});
@@ -411,5 +444,42 @@ public class ChildProcessRankingTest {
 
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         Assert.assertTrue(c1.getAndResetRebindCalled());
+    }
+
+    @Test
+    public void testIsSpareRenderer() {
+        FeatureOverrides.overrideParam(
+                ContentFeatureList.sSpareRendererLowestRanking.getFeatureName(),
+                ContentFeatureList.sSpareRendererLowestRanking.getName(),
+                true);
+
+        ChildProcessConnection c1 = createConnection();
+        ChildProcessConnection c2 = createConnection();
+        ChildProcessConnection c3 = createConnection();
+        ChildProcessRanking ranking = new ChildProcessRanking();
+
+        ranking.addConnection(
+                c3,
+                /* visible= */ false,
+                /* frameDepth= */ 10,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.NORMAL);
+        ranking.addConnection(
+                c2,
+                /* visible= */ true,
+                /* frameDepth= */ 10,
+                /* intersectsViewport= */ true,
+                /* isSpareRenderer= */ false,
+                ChildProcessImportance.NORMAL);
+        ranking.addConnection(
+                c1,
+                /* visible= */ false,
+                /* frameDepth= */ 10,
+                /* intersectsViewport= */ false,
+                /* isSpareRenderer= */ true,
+                ChildProcessImportance.NORMAL);
+
+        assertRankingAndRemoveAll(ranking, new ChildProcessConnection[] {c2, c3, c1});
     }
 }

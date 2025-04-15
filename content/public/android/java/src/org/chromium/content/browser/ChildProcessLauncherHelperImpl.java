@@ -196,11 +196,15 @@ public final class ChildProcessLauncherHelperImpl {
                     if (pid > 0) {
                         sLauncherByPid.put(pid, ChildProcessLauncherHelperImpl.this);
                         if (mRanking != null) {
+                            // TODO(crbug.com/409703175): Set isSpareRenderer once the
+                            // spare renderer information is passed when launching the
+                            // process.
                             mRanking.addConnection(
                                     connection,
                                     /* visible= */ false,
                                     /* frameDepth= */ 1,
                                     /* intersectsViewport= */ false,
+                                    /* isSpareRenderer= */ false,
                                     ChildProcessImportance.MODERATE);
                             if (mBindingManager != null) mBindingManager.rankingChanged();
                         }
@@ -853,7 +857,12 @@ public final class ChildProcessLauncherHelperImpl {
 
         if (mRanking != null) {
             mRanking.updateConnection(
-                    connection, visible, frameDepth, intersectsViewport, importance);
+                    connection,
+                    visible,
+                    frameDepth,
+                    intersectsViewport,
+                    isSpareRenderer,
+                    importance);
             if (mBindingManager != null) mBindingManager.rankingChanged();
         }
 

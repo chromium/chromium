@@ -65,4 +65,8 @@ public class ContentFeatureList {
     // killed before it is taken.
     public static final MutableBooleanParamWithSafeDefault sSpareRendererAddNotPerceptibleBinding =
             sSpareRendererProcessPriority.newBooleanParam("not-perceptible-binding", false);
+
+    // Make the spare renderer of the lowest priority so as not to kill other processes during OOM.
+    public static final MutableBooleanParamWithSafeDefault sSpareRendererLowestRanking =
+            sSpareRendererProcessPriority.newBooleanParam("lowest-ranking", false);
 }

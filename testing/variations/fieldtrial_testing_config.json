@@ -650,6 +650,7 @@
                 {
                     "name": "CreateByDefault_AfterLoading",
                     "params": {
+                        "lowest-ranking": "false",
                         "not-perceptible-binding": "true",
                         "spare_renderer_creation_timing": "after-loading",
                         "spare_renderer_timeout_seconds": "60"
