@@ -188,14 +188,14 @@ cr-progress {
 .placeholder {
   background-color: #35383b;
   background-image:
-    linear-gradient(135deg, #161617 0%,
+    linear-gradient(110deg, #161617 0%,
                             #161617 10%,
                             #1e1f20 30%,
                             #35383b 50%,
                             #1e1f20 70%,
                             #161617 90%,
                             #161617 100%);
-  background-size: calc(400cqw);
+  background-size: calc(200cqw);
   background-position: center;
   animation: 1.5s infinite linear gradient-move,
       1.5s infinite linear pulsedark;
@@ -204,13 +204,12 @@ cr-progress {
 @media (prefers-color-scheme: light) {
   .placeholder {
     background-image:
-      linear-gradient(135deg, #F0F4F9 0%,
-                              #F0F4F9 10%,
-                              #696B6C 30%,
-                              #727676 50%,
-                              #696B6C 70%,
-                              #F0F4F9 90%,
-                              #F0F4F9 100%);
+      linear-gradient(110deg, #CDCDCD 0%,
+                              #CDCDCD 25%,
+                              #696B6C 33%,
+                              #727676 65%,
+                              #CDCDCD 75%,
+                              #CDCDCD 100%);
       animation: 1.5s infinite linear gradient-move,
           1.5s infinite linear pulselight;
   }
@@ -218,19 +217,19 @@ cr-progress {
 
 @keyframes pulselight {
   0% {
-    opacity: 0;
+    opacity: 0.1;
   }
   22% {
-    opacity: 0.38;
+    opacity: 0.14;
   }
   67% {
-    opacity: 0.38;
+    opacity: 0.14;
   }
   80% {
-    opacity: 0;
+    opacity: 0.1;
   }
   100% {
-    opacity: 0;
+    opacity: 0.1;
   }
 }
 
@@ -254,10 +253,10 @@ cr-progress {
 
 @keyframes gradient-move {
   0% {
-    background-position: 75% 0;
+    background-position: 100% 0;
   }
   100% {
-    background-position: 12.5% 0;
+    background-position: 0 0;
   }
 }
 
