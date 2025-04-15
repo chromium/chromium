@@ -19,6 +19,7 @@
 #include <concepts>
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -410,6 +411,32 @@ BASE_EXPORT bool EndsWith(
 BASE_EXPORT bool EndsWith(
     std::u16string_view str,
     std::u16string_view search_for,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+
+// If `string` begins with `prefix`, return a view into the portion
+// of `string` following `prefix`. Otherwise, return nullopt. The
+// `case_sensitivity` argument is the same as would be passed to
+// StartsWith() above.
+BASE_EXPORT std::optional<std::string_view> RemovePrefix(
+    std::string_view string,
+    std::string_view prefix,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+BASE_EXPORT std::optional<std::u16string_view> RemovePrefix(
+    std::u16string_view string,
+    std::u16string_view prefix,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+
+// If `string` ends with `suffix`, return a view into the portion
+// of `string` preceding `suffix`. Otherwise, return nullopt. The
+// `case_sensitivity` argument is the same as would be passed to
+// EndsWith() above.
+BASE_EXPORT std::optional<std::string_view> RemoveSuffix(
+    std::string_view string,
+    std::string_view suffix,
+    CompareCase case_sensitivity = CompareCase::SENSITIVE);
+BASE_EXPORT std::optional<std::u16string_view> RemoveSuffix(
+    std::u16string_view string,
+    std::u16string_view suffix,
     CompareCase case_sensitivity = CompareCase::SENSITIVE);
 
 // Determines the type of ASCII character, independent of locale (the C
