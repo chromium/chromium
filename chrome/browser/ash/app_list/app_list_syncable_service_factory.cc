@@ -44,7 +44,7 @@ std::unique_ptr<KeyedService> AppListSyncableServiceFactory::BuildInstanceFor(
   Profile* profile = static_cast<Profile*>(browser_context);
   // This condition still needs to be explicitly stated here despite having
   // ProfileKeyedService logic implemented because `IsGuestSession()` and
-  // `IsRegularProfile()` are not yet mutually exclusive in ASH and Lacros.
+  // `IsRegularProfile()` are not yet mutually exclusive in ASH.
   // TODO(rsult): remove this condition when `IsGuestSession() is fixed.
   if (profile->IsGuestSession() && !profile->IsOffTheRecord())
     return nullptr;
