@@ -231,11 +231,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // malware blocklist.
   void OnBlocklistStateAdded(const std::string& extension_id);
 
-  // Removes the disable reason and enable the extension if there are no disable
-  // reasons left and is not blocked for another reason.
-  void RemoveDisableReasonAndMaybeEnable(const std::string& extension_id,
-                                         disable_reason::DisableReason reason);
-
   // Performs action based on Omaha attributes for the extension.
   void PerformActionBasedOnOmahaAttributes(const std::string& extension_id,
                                            const base::Value::Dict& attributes);

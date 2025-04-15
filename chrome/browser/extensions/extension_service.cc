@@ -479,13 +479,6 @@ void ExtensionService::OnBlocklistStateAdded(const std::string& extension_id) {
   extension_registrar_->OnBlocklistStateAdded(extension_id);
 }
 
-void ExtensionService::RemoveDisableReasonAndMaybeEnable(
-    const std::string& extension_id,
-    disable_reason::DisableReason reason_to_remove) {
-  extension_registrar_->RemoveDisableReasonAndMaybeEnable(extension_id,
-                                                          reason_to_remove);
-}
-
 void ExtensionService::EnableExtension(const std::string& extension_id) {
   CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   extension_registrar_->EnableExtension(extension_id);
