@@ -17,6 +17,9 @@
 
 namespace autofill {
 
+using IsPasswordRequestManuallyTriggered =
+    base::StrongAlias<class IsPasswordRequestManuallyTriggeredTag, bool>;
+
 // The length of the GUIDs used for local autofill data. It is different than
 // the length used for server autofill data.
 constexpr int kLocalGuidSize = 36;
@@ -83,7 +86,7 @@ bool IsAutofillManuallyTriggered(
 
 // Checks if the user triggered passwords Autofill on a field manually through
 // the Chrome context menu.
-bool IsPasswordsAutofillManuallyTriggered(
+IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source);
 
 // Checks if the user triggered plus addresses on a field manually through the

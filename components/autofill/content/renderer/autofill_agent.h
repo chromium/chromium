@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
@@ -27,6 +28,7 @@
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/timing.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data_predictions.h"
@@ -301,6 +303,14 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Fires Mojo messages for a given form submission.
   void FireHostSubmitEvents(const FormData& form_data,
                             mojom::SubmissionSource source);
+
+  // Tries to show the given `passwords_request` for the given fields and update
+  // `is_popup_possibly_visible` accordingly. Returns true if the password agent
+  // handles the request.
+  bool TryShowPasswordSuggestions(
+      const blink::WebInputElement& input,
+      IsPasswordRequestManuallyTriggered manually_triggered_password_request,
+      base::optional_ref<const PasswordSuggestionRequest> password_request);
 
   // blink::WebAutofillClient:
   void TextFieldCleared(const blink::WebFormControlElement&) override;

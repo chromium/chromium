@@ -21,6 +21,18 @@ PasswordAndMetadata& PasswordAndMetadata::operator=(PasswordAndMetadata&&) =
     default;
 PasswordAndMetadata::~PasswordAndMetadata() = default;
 
+TriggeringField::TriggeringField(const FormFieldData& field,
+                                 AutofillSuggestionTriggerSource trigger_source,
+                                 const std::u16string& typed_username,
+                                 const gfx::RectF& bounds)
+    : TriggeringField(
+          field.renderer_id(),
+          trigger_source,
+          field.text_direction(),
+          typed_username,
+          field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn,
+          bounds) {}
+
 TriggeringField::TriggeringField(FieldRendererId element_id,
                                  AutofillSuggestionTriggerSource trigger_source,
                                  base::i18n::TextDirection text_direction,

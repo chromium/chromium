@@ -780,12 +780,12 @@ void PasswordAutofillAgent::PasswordValueGatekeeper::ShowValue(
   }
 }
 
-bool PasswordAutofillAgent::TextDidChangeInTextField(
+std::optional<PasswordSuggestionRequest>
+PasswordAutofillAgent::CreateRequestForChangeInTextField(
     const WebInputElement& element,
     const SynchronousFormCache& form_cache) {
   CHECK(element);
-  // Show the popup with the list of available usernames.
-  return ShowSuggestions(
+  return CreateRequestForDomain(
       element, AutofillSuggestionTriggerSource::kTextFieldValueChanged,
       form_cache);
 }
@@ -1155,6 +1155,51 @@ void PasswordAutofillAgent::ClearPreviewedForm() {
   previewed_elements_.clear();
 }
 
+std::optional<PasswordSuggestionRequest>
+PasswordAutofillAgent::CreateSuggestionRequest(
+    const std::u16string& typed_username,
+    const WebInputElement& user_input,
+    AutofillSuggestionTriggerSource trigger_source,
+    const SynchronousFormCache& form_cache) {
+  base::UmaHistogramEnumeration("PasswordManager.SuggestionPopupTriggerSource",
+                                trigger_source);
+  // TODO(crbug.com/408843433): Don't extract the data here but pass it in from
+  // the caller who needs it anyways for autofill requests.
+  std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
+      form_and_field = form_util::FindFormAndFieldForFormControlElement(
+          user_input, field_data_manager(),
+          autofill_agent_->GetCallTimerState(
+              CallTimerState::CallSite::kShowSuggestionPopup),
+          autofill_agent_->button_titles_cache(),
+          /*extract_options=*/{}, form_cache);
+  if (!form_and_field) {
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/408843433): Don't find this data again. Pass it from caller.
+  WebInputElement username_element;
+  WebInputElement password_element;
+  PasswordInfo* password_info = nullptr;
+
+  // If false, neither info nor fields were found. Continue for fallback data.
+  FindPasswordInfoForElement(user_input, UseFallbackData(false),
+                             &username_element, &password_element,
+                             &password_info);
+
+  // These could be form.field.size() when the request is for fallback data.
+  const size_t username_field_index =
+      GetIndexOfElement(form_and_field->first, username_element);
+  const size_t password_field_index =
+      GetIndexOfElement(form_and_field->first, password_element);
+
+  return PasswordSuggestionRequest(
+      TriggeringField(*form_and_field->second, trigger_source, typed_username,
+                      gfx::RectF(render_frame()->ConvertViewportToWindow(
+                          user_input.BoundsInWidget()))),
+      std::move(form_and_field->first), username_field_index,
+      password_field_index);
+}
+
 bool PasswordAutofillAgent::FindPasswordInfoForElement(
     const WebInputElement& element,
     UseFallbackData use_fallback_data,
@@ -1284,14 +1329,9 @@ void PasswordAutofillAgent::MaybeCheckSafeBrowsingReputation(
 #endif
 }
 
-bool PasswordAutofillAgent::ShowSuggestions(
-    const WebInputElement& element,
-    AutofillSuggestionTriggerSource trigger_source,
-    const SynchronousFormCache& form_cache) {
-  return trigger_source ==
-                 AutofillSuggestionTriggerSource::kManualFallbackPasswords
-             ? ShowManualFallbackSuggestions(element, form_cache)
-             : ShowSuggestionsForDomain(element, trigger_source, form_cache);
+void PasswordAutofillAgent::ShowSuggestions(
+    const PasswordSuggestionRequest& password_request) {
+  GetPasswordManagerDriver().ShowPasswordSuggestions(password_request);
 }
 
 bool PasswordAutofillAgent::FrameCanAccessPasswordManager() {
@@ -1740,7 +1780,8 @@ void PasswordAutofillAgent::InformAboutFieldClearing(
     NotifyPasswordManagerAboutClearedForm(form);
 }
 
-bool PasswordAutofillAgent::ShowSuggestionsForDomain(
+std::optional<PasswordSuggestionRequest>
+PasswordAutofillAgent::CreateRequestForDomain(
     const WebInputElement& element,
     AutofillSuggestionTriggerSource trigger_source,
     const SynchronousFormCache& form_cache) {
@@ -1753,26 +1794,26 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
   if (!password_info) {
     MaybeCheckSafeBrowsingReputation(element);
     if (!CanShowPopupWithoutPasswords(password_element)) {
-      return false;
+      return std::nullopt;
     }
   }
 
   if (!element.IsTextField() || !IsElementEditable(element)) {
-    return false;
+    return std::nullopt;
   }
   // Check that at least one fillable element is editable.
   if (!IsUsernameOrPasswordFillable(username_element, password_element,
                                     password_info)) {
-    return false;
+    return std::nullopt;
   }
 
   // Don't attempt to autofill with values that are too large.
   if (element.Value().length() > kMaximumTextSizeForAutocomplete) {
-    return false;
+    return std::nullopt;
   }
 
   if (!HasDocumentWithValidFrame(element)) {
-    return false;
+    return std::nullopt;
   }
 
   // If a username element is focused, show suggestions unless all possible
@@ -1786,32 +1827,26 @@ bool PasswordAutofillAgent::ShowSuggestionsForDomain(
       if (!password_info ||
           !CanShowUsernameSuggestion(password_info->fill_data,
                                      element.Value().Utf16())) {
-        return false;
+        return std::nullopt;
       }
       username_prefix = element.Value().Utf16();
     }
-    ShowSuggestionPopup(username_prefix, element, trigger_source, form_cache);
-    return true;
+    return CreateSuggestionRequest(username_prefix, element, trigger_source,
+                                   form_cache);
   }
 
   // If the element is a password field, do not to show a popup if the user has
   // already accepted a password suggestion on another password field.
-  if (password_info && password_info->password_field_suggestion_was_accepted &&
-      element != password_info->password_field.GetField()) {
-    return true;
+  if (HasAcceptedSuggestionOnOtherField(element)) {
+    return std::nullopt;
   }
 
-  // Show suggestions for password fields only while they are empty.
-  if (!element.IsAutofilled() && !element.Value().IsEmpty()) {
-    HidePopup();
-    return false;
-  }
-
-  ShowSuggestionPopup(std::u16string(), element, trigger_source, form_cache);
-  return true;
+  return CreateSuggestionRequest(std::u16string(), element, trigger_source,
+                                 form_cache);
 }
 
-bool PasswordAutofillAgent::ShowManualFallbackSuggestions(
+std::optional<PasswordSuggestionRequest>
+PasswordAutofillAgent::CreateManualFallbackRequest(
     const WebInputElement& element,
     const SynchronousFormCache& form_cache) {
   WebInputElement username_element;
@@ -1826,56 +1861,28 @@ bool PasswordAutofillAgent::ShowManualFallbackSuggestions(
   }
 
   if (!FrameCanAccessPasswordManager()) {
-    return false;
+    return std::nullopt;
   }
 
   if (!HasDocumentWithValidFrame(element)) {
-    return false;
+    return std::nullopt;
   }
 
-  ShowSuggestionPopup(std::u16string(), element,
-                      AutofillSuggestionTriggerSource::kManualFallbackPasswords,
-                      form_cache);
-  return true;
+  return CreateSuggestionRequest(
+      std::u16string(), element,
+      AutofillSuggestionTriggerSource::kManualFallbackPasswords, form_cache);
 }
 
-void PasswordAutofillAgent::ShowSuggestionPopup(
-    const std::u16string& typed_username,
-    const WebInputElement& user_input,
-    AutofillSuggestionTriggerSource trigger_source,
-    const SynchronousFormCache& form_cache) {
-  base::UmaHistogramEnumeration("PasswordManager.SuggestionPopupTriggerSource",
-                                trigger_source);
-  FormData form;
-  FormFieldData field;
-  if (std::optional<std::pair<FormData, raw_ref<const FormFieldData>>>
-          form_and_field = form_util::FindFormAndFieldForFormControlElement(
-              user_input, field_data_manager(),
-              autofill_agent_->GetCallTimerState(
-                  CallTimerState::CallSite::kShowSuggestionPopup),
-              autofill_agent_->button_titles_cache(),
-              /*extract_options=*/{}, form_cache)) {
-    form = std::move(form_and_field->first);
-    field = *form_and_field->second;
-  }
-
+bool PasswordAutofillAgent::HasAcceptedSuggestionOnOtherField(
+    const WebInputElement& element) {
   WebInputElement username_element;
   WebInputElement password_element;
   PasswordInfo* password_info = nullptr;
-  FindPasswordInfoForElement(user_input, UseFallbackData(false),
-                             &username_element, &password_element,
-                             &password_info);
-
-  const bool show_webauthn_credentials =
-      field.parsed_autocomplete() && field.parsed_autocomplete()->webauthn;
-  GetPasswordManagerDriver().ShowPasswordSuggestions(PasswordSuggestionRequest(
-      TriggeringField(field.renderer_id(), trigger_source,
-                      field.text_direction(), typed_username,
-                      show_webauthn_credentials,
-                      gfx::RectF(render_frame()->ConvertViewportToWindow(
-                          user_input.BoundsInWidget()))),
-      form, GetIndexOfElement(form, username_element),
-      GetIndexOfElement(form, password_element)));
+  FindPasswordInfoForElement(element, UseFallbackData(true), &username_element,
+                             &password_element, &password_info);
+  return password_info &&
+         password_info->password_field_suggestion_was_accepted &&
+         element != password_info->password_field.GetField();
 }
 
 void PasswordAutofillAgent::CleanupOnDocumentShutdown() {

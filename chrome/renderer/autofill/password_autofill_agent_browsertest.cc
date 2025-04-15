@@ -5134,27 +5134,42 @@ TEST_F(PasswordAutofillAgentTest, NoFillingFallbackForBannedFields) {
   password_autofill_agent_->ApplyFillDataOnParsingCompletion(form_data);
 
   // Expect filling suggestion on credential forms.
-  EXPECT_TRUE(password_autofill_agent_->ShowSuggestions(
-      username_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*form_cache=*/{}));
-  EXPECT_TRUE(password_autofill_agent_->ShowSuggestions(
-      password_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*form_cache=*/{}));
+  EXPECT_TRUE(
+      password_autofill_agent_
+          ->CreateRequestForDomain(
+              username_field,
+              AutofillSuggestionTriggerSource::kFormControlElementClicked,
+              /*form_cache=*/{})
+          .has_value());
+  EXPECT_TRUE(
+      password_autofill_agent_
+          ->CreateRequestForDomain(
+              password_field,
+              AutofillSuggestionTriggerSource::kFormControlElementClicked,
+              /*form_cache=*/{})
+          .has_value());
   // Expect no filling suggestion on credit card forms.
-  EXPECT_FALSE(password_autofill_agent_->ShowSuggestions(
-      credit_card_full_name_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*form_cache=*/{}));
-  EXPECT_FALSE(password_autofill_agent_->ShowSuggestions(
-      credit_card_number_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*form_cache=*/{}));
-  EXPECT_FALSE(password_autofill_agent_->ShowSuggestions(
-      credit_card_cvc_field,
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*form_cache=*/{}));
+  EXPECT_FALSE(
+      password_autofill_agent_
+          ->CreateRequestForDomain(
+              credit_card_full_name_field,
+              AutofillSuggestionTriggerSource::kFormControlElementClicked,
+              /*form_cache=*/{})
+          .has_value());
+  EXPECT_FALSE(
+      password_autofill_agent_
+          ->CreateRequestForDomain(
+              credit_card_number_field,
+              AutofillSuggestionTriggerSource::kFormControlElementClicked,
+              /*form_cache=*/{})
+          .has_value());
+  EXPECT_FALSE(
+      password_autofill_agent_
+          ->CreateRequestForDomain(
+              credit_card_cvc_field,
+              AutofillSuggestionTriggerSource::kFormControlElementClicked,
+              /*form_cache=*/{})
+          .has_value());
 }
 
 // Tests that `SubmitChangePasswordForm` fills and submits change password form.

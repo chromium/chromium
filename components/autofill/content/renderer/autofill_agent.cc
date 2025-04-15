@@ -869,6 +869,58 @@ void AutofillAgent::FireHostSubmitEvents(const FormData& form_data,
   }
 }
 
+bool AutofillAgent::TryShowPasswordSuggestions(
+    const WebInputElement& input,
+    IsPasswordRequestManuallyTriggered manually_triggered_password_request,
+    base::optional_ref<const PasswordSuggestionRequest> password_request) {
+  bool is_field_empty = input.IsAutofilled() || input.Value().IsEmpty();
+  bool is_password_field = input.FormControlTypeForAutofill() ==
+                           blink::mojom::FormControlType::kInputPassword;
+
+  // Show suggestions empty password fields or for username fields with
+  // matching suggestions - even if non-empty.
+  if (is_password_field && !is_field_empty) {
+    if (auto* autofill_driver = unsafe_autofill_driver()) {
+      autofill_driver->HidePopup();
+      is_popup_possibly_visible_ = false;
+      return false;
+    }
+  }
+
+  if (password_request) {
+    password_autofill_agent_->ShowSuggestions(password_request.value());
+    is_popup_possibly_visible_ = true;
+    return true;
+  }
+  // Beyond this point, the renderer won't be called. Earlier renderer calls may
+  // have shown/suppressed popups, so update visibility & success of this call.
+
+  // Treat the popup as (still) visible if
+  //  - a suggestion was accepted on another field, or if
+  //  - it was already open and no manual request force-closes the popup.
+  is_popup_possibly_visible_ =
+      password_autofill_agent_->HasAcceptedSuggestionOnOtherField(input) ||
+      (is_popup_possibly_visible_ && !manually_triggered_password_request);
+
+  // Call `FormControlType()` instead of `FormControlTypeForAutofill()` to
+  // determine whether the focsed field is *currently* a password field, not
+  // whether it has ever been a password field.
+  bool is_password_field_now = input.FormControlType() ==  // nocheck
+                               blink::mojom::FormControlType::kInputPassword;
+
+  // Return whether the password autofill agent has handled this request. Above,
+  // we already returned true if suggestions were shown. But there are several
+  // cases were the AutofillAgent should not show non-password Autofill:
+  //   a) when the user request password explicitly.
+  //   b) when the focused field is a password field (right now).
+  // Special condition for b: if the autofill agent handles all requests, don't
+  // defer to the password agent either.
+  // TODO: crbug.com/410753794 - Check if an early return works better here.
+  return manually_triggered_password_request        // --> case a.
+         || (is_password_field_now &&               // --> case b.
+             !config_.query_password_suggestions);  // --> case b without PWM.
+}
+
 void AutofillAgent::TextFieldCleared(const WebFormControlElement& element) {
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
   CHECK(input_element || form_util::IsTextAreaElement(element));
@@ -943,14 +995,18 @@ void AutofillAgent::OnTextFieldValueChanged(
     return;
   }
 
-  if (input_element && password_autofill_agent_->TextDidChangeInTextField(
-                           input_element, form_cache)) {
-    is_popup_possibly_visible_ = true;
-    last_queried_element_ = FieldRef(element);
-    return;
-  }
-
   if (input_element) {
+    std::optional<PasswordSuggestionRequest> password_request =
+        password_autofill_agent_->CreateRequestForChangeInTextField(
+            input_element, form_cache);
+    if (password_request &&
+        TryShowPasswordSuggestions(input_element,
+                                   IsPasswordRequestManuallyTriggered(false),
+                                   password_request.value())) {
+      last_queried_element_ = FieldRef(element);
+      return;
+    }
+
     ShowSuggestions(element,
                     AutofillSuggestionTriggerSource::kTextFieldValueChanged,
                     form_cache);
@@ -1454,31 +1510,24 @@ void AutofillAgent::ShowSuggestions(
   // TODO(crbug.com/333990908): Test manual fallback on different form types.
   if (auto input_element = element.DynamicTo<WebInputElement>();
       input_element && !IsPlusAddressesManuallyTriggered(trigger_source)) {
-    if (IsPasswordsAutofillManuallyTriggered(trigger_source)) {
-      is_popup_possibly_visible_ = password_autofill_agent_->ShowSuggestions(
-          input_element, trigger_source, form_cache);
-      return;
-    }
-    if (password_generation_agent_ &&
+    // Only manually triggered requests override generation requests.
+    if (!IsPasswordsAutofillManuallyTriggered(trigger_source) &&
+        password_generation_agent_ &&
         password_generation_agent_->ShowPasswordGenerationSuggestions(
             input_element, form_cache)) {
       is_popup_possibly_visible_ = true;
       return;
     }
-    if (password_autofill_agent_->ShowSuggestions(input_element, trigger_source,
-                                                  form_cache)) {
-      is_popup_possibly_visible_ = true;
-      return;
-    }
-
-    // Password field elements should only have suggestions shown by the
-    // password AutofillAgent. We call `FormControlType()` instead of
-    // `FormControlTypeForAutofill()` because we are interested in whether the
-    // field is *currently* a password field, not whether it has ever been a
-    // password field.
-    if (input_element.FormControlType() ==  // nocheck
-            blink::mojom::FormControlType::kInputPassword &&
-        !config_.query_password_suggestions) {
+    const std::optional<PasswordSuggestionRequest> password_request =
+        IsPasswordsAutofillManuallyTriggered(trigger_source)
+            ? password_autofill_agent_->CreateManualFallbackRequest(
+                  input_element, form_cache)
+            : password_autofill_agent_->CreateRequestForDomain(
+                  input_element, trigger_source, form_cache);
+    bool password_agent_handled_request = TryShowPasswordSuggestions(
+        input_element, IsPasswordsAutofillManuallyTriggered(trigger_source),
+        password_request);
+    if (password_agent_handled_request) {
       return;
     }
   }

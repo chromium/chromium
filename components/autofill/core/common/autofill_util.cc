@@ -177,13 +177,14 @@ GURL StripAuthAndParams(const GURL& gurl) {
 
 bool IsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
-  return IsPasswordsAutofillManuallyTriggered(trigger_source);
+  return IsPasswordsAutofillManuallyTriggered(trigger_source).value();
 }
 
-bool IsPasswordsAutofillManuallyTriggered(
+IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
-  return trigger_source ==
-         AutofillSuggestionTriggerSource::kManualFallbackPasswords;
+  return IsPasswordRequestManuallyTriggered(
+      trigger_source ==
+      AutofillSuggestionTriggerSource::kManualFallbackPasswords);
 }
 
 bool IsPlusAddressesManuallyTriggered(

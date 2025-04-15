@@ -10,6 +10,7 @@
 
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 
 namespace autofill {
@@ -40,6 +41,10 @@ struct PasswordAndMetadata {
 // Minimal struct that describes and identifies a form field which triggered a
 // `PasswordSuggestionRequest`. Should be a password or username field.
 struct TriggeringField {
+  TriggeringField(const FormFieldData& field,
+                  AutofillSuggestionTriggerSource trigger_source,
+                  const std::u16string& typed_username,
+                  const gfx::RectF& bounds);
   TriggeringField(FieldRendererId element_id,
                   AutofillSuggestionTriggerSource trigger_source,
                   base::i18n::TextDirection text_direction,
