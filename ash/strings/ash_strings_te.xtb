@@ -580,7 +580,7 @@
 <translation id="2947835478872237115">ప్రస్తుత బ్యాటరీ స్థాయి <ph name="BATTERY_PERCENTAGE" />%, ఛార్జ్ పూర్తిగా అయిపోవడానికి <ph name="TIME" /> మిగిలి ఉంది</translation>
 <translation id="2949420361496057765"><ph name="MODIFIER" />ను నొక్కి, లింక్‌ను క్లిక్ చేయండి</translation>
 <translation id="2957159466053076448">మీరు ఈ ఫీచర్‌లను సెట్టింగ్‌లలో ఎప్పుడైనా ఆఫ్ చేయవచ్చు. <ph name="LINK_TO_LEARN_MORE" /></translation>
-<translation id="295852781144570696">పరికర ఆడియో</translation>
+<translation id="295852781144570696">డివైజ్ ఆడియో</translation>
 <translation id="2960314608273155470">క్యాప్చర్ మోడ్, ఆటోమేటిక్ సెట్టింగ్ <ph name="SOURCE" /> <ph name="TYPE" />. కీబోర్డ్ నావిగేషన్ కోసం Tabను నొక్కండి.</translation>
 <translation id="2961963223658824723">ఏదో తప్పు జరిగింది. కొన్ని క్షణాల తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="2963773877003373896">mod3</translation>
@@ -2124,7 +2124,7 @@
 <translation id="7901010467630324625"><ph name="EMAIL" />‌తో సైన్ ఇన్ చేసిన పరికరాలు మాత్రమే కనెక్ట్ అవుతాయి</translation>
 <translation id="7901190436359881020">విండోలను స్వాప్ చేయండి</translation>
 <translation id="7901405293566323524">ఫోన్ హబ్</translation>
-<translation id="7902625623987030061">వేలిముద్ర సెన్సార్‌ను తాకండి</translation>
+<translation id="7902625623987030061">వేలిముద్ర సెన్సర్‌ను తాకండి</translation>
 <translation id="7904094684485781019">ఈ ఖాతా నిర్వాహకులు బహుళ సైన్-ఇన్‌కు అనుమతించలేదు.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> పరికరాలు కనెక్ట్ అయ్యాయి</translation>
