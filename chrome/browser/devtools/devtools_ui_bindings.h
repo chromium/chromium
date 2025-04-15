@@ -24,6 +24,7 @@
 #include "chrome/browser/devtools/devtools_settings.h"
 #include "chrome/browser/devtools/devtools_targets_ui.h"
 #include "chrome/browser/devtools/visual_logging.h"
+#include "components/permissions/permission_util.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_frontend_host.h"
@@ -289,8 +290,16 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   void SearchCompleted(int request_id,
                        const std::string& file_system_path,
                        const std::vector<std::string>& file_paths);
+  void HandleDirectoryPermissions(const std::string& directory_path,
+                                  const std::u16string& message,
+                                  DevToolsInfoBarDelegate::Callback callback);
   void ShowDevToolsInfoBar(const std::u16string& message,
                            DevToolsInfoBarDelegate::Callback callback);
+  void ShowDirectoryPermissionDialog(
+      const std::string& directory_path,
+      DevToolsInfoBarDelegate::Callback callback);
+  void OnPermissionDialogResult(DevToolsInfoBarDelegate::Callback callback,
+                                permissions::PermissionAction result);
   bool MaybeStartLogging();
   base::TimeDelta GetTimeSinceSessionStart();
   void OnAidaConversationRequest(

@@ -4712,6 +4712,9 @@ are declared in tools/grit/grit_args.gni.
       <message name="IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE" desc="Message displayed in DevTools infobar when user attempts to add file system to DevTools.">
         DevTools requests full access to <ph name="FOLDER_PATH">$1<ex>C:\Projects\foo\</ex></ph>. Make sure you do not expose any sensitive information.
       </message>
+      <message name="IDS_DEV_TOOLS_EDIT_DIRECTORY_PERMISSION_TITLE" desc="Title of dialog asking user to confirm giving read and write access to (files in) a directory using DevTools">
+        Let DevTools edit files?
+      </message>
 
       <!-- DevTools confirm infobar button labels -->
       <message name="IDS_DEV_TOOLS_CONFIRM_ALLOW_BUTTON" desc="Used as an 'Allow' button label.">

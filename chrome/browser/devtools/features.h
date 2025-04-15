@@ -89,6 +89,8 @@ BASE_DECLARE_FEATURE(kDevToolsCssValueTracing);
 
 BASE_DECLARE_FEATURE(kDevToolsAiGeneratedTimelineLabels);
 
+BASE_DECLARE_FEATURE(kDevToolsNewPermissionDialog);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kDevToolsDebuggingRestrictions);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

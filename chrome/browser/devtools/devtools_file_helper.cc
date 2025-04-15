@@ -215,7 +215,7 @@ void DevToolsFileHelper::SaveToFileSelected(const std::string& url,
 void DevToolsFileHelper::AddFileSystem(
     const std::string& type,
     SelectFileCallback select_file_callback,
-    const ShowInfoBarCallback& show_info_bar_callback) {
+    const HandlePermissionsCallback& handle_permissions_callback) {
   // Make sure the |type| is not a valid UUID. These are reserved for automatic
   // file systems.
   if (type == kAutomaticFileSystemType ||
@@ -226,8 +226,8 @@ void DevToolsFileHelper::AddFileSystem(
 
   std::move(select_file_callback)
       .Run(base::BindOnce(&DevToolsFileHelper::InnerAddFileSystem,
-                          weak_factory_.GetWeakPtr(), show_info_bar_callback,
-                          type),
+                          weak_factory_.GetWeakPtr(),
+                          handle_permissions_callback, type),
            base::BindOnce(&DevToolsFileHelper::FailedToAddFileSystem,
                           weak_factory_.GetWeakPtr(), kSelectionCancelled),
            base::FilePath());
@@ -235,11 +235,11 @@ void DevToolsFileHelper::AddFileSystem(
 
 void DevToolsFileHelper::UpgradeDraggedFileSystemPermissions(
     const std::string& file_system_url,
-    const ShowInfoBarCallback& show_info_bar_callback) {
+    const HandlePermissionsCallback& handle_permissions_callback) {
   auto file_system_paths =
       storage_->GetDraggedFileSystemPaths(GURL(file_system_url));
   for (auto file_system_path : file_system_paths) {
-    InnerAddFileSystem(show_info_bar_callback, kDefaultFileSystemType,
+    InnerAddFileSystem(handle_permissions_callback, kDefaultFileSystemType,
                        file_system_path);
   }
 }
@@ -248,7 +248,7 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
     const std::string& file_system_path,
     const base::Uuid& file_system_uuid,
     bool add_if_missing,
-    const ShowInfoBarCallback& show_info_bar_callback,
+    const HandlePermissionsCallback& handle_permissions_callback,
     ConnectCallback connect_callback) {
   DCHECK(file_system_uuid.is_valid());
 
@@ -298,8 +298,8 @@ void DevToolsFileHelper::ConnectAutomaticFileSystem(
   std::u16string message =
       l10n_util::GetStringFUTF16(IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE,
                                  base::UTF8ToUTF16(file_system_path));
-  show_info_bar_callback.Run(
-      message,
+  handle_permissions_callback.Run(
+      file_system_path, message,
       BindOnce(&DevToolsFileHelper::ConnectUserConfirmedAutomaticFileSystem,
                weak_factory_.GetWeakPtr(), std::move(connect_callback),
                file_system_path, file_system_uuid));
@@ -346,7 +346,7 @@ void DevToolsFileHelper::DisconnectAutomaticFileSystem(
 }
 
 void DevToolsFileHelper::InnerAddFileSystem(
-    const ShowInfoBarCallback& show_info_bar_callback,
+    const HandlePermissionsCallback& handle_permissions_callback,
     const std::string& type,
     const base::FilePath& path) {
   std::string file_system_path = path.AsUTF8Unsafe();
@@ -359,9 +359,10 @@ void DevToolsFileHelper::InnerAddFileSystem(
   std::u16string message =
       l10n_util::GetStringFUTF16(IDS_DEV_TOOLS_CONFIRM_ADD_FILE_SYSTEM_MESSAGE,
                                  base::UTF8ToUTF16(path_display_name));
-  show_info_bar_callback.Run(
-      message, BindOnce(&DevToolsFileHelper::AddUserConfirmedFileSystem,
-                        weak_factory_.GetWeakPtr(), type, path));
+  handle_permissions_callback.Run(
+      file_system_path, message,
+      BindOnce(&DevToolsFileHelper::AddUserConfirmedFileSystem,
+               weak_factory_.GetWeakPtr(), type, path));
 }
 
 void DevToolsFileHelper::AddUserConfirmedFileSystem(const std::string& type,
