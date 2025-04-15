@@ -202,6 +202,13 @@ class SavedTabGroupKeyedService : public KeyedService,
   // Records the Unsaved TabGroup count and the Tab count per Unsaved TabGroup.
   void RecordTabGroupMetrics();
 
+  // Returns whether a given groups' cache guid doesnt match the current device.
+  bool IsRemoteDevice(const std::optional<std::string>& cache_guid) const;
+
+  // Record metrics similar to TabGroupSyncService when the model is
+  // initialized.
+  void RecordStartupMetrics();
+
   // Helper function to log a tab group event in histograms. This is implemented
   // in the same way as TabGroupSyncServiceImpl.
   void LogEvent(TabGroupEvent event,
