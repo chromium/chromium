@@ -15,6 +15,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_share_tab_group_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -213,13 +214,17 @@ void IOSCollaborationControllerDelegate::ShowAuthenticationUi(
       break;
   }
 
+  ChangeProfileContinuationProvider provider =
+      base::BindRepeating(&CreateChangeProfileShareTabGroupContinuation);
+
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:operation
-               identity:nil
-            accessPoint:access_point
-            promoAction:signin_metrics::PromoAction::
-                            PROMO_ACTION_NO_SIGNIN_PROMO
-             completion:completion_block];
+                      initWithOperation:operation
+                               identity:nil
+                            accessPoint:access_point
+                            promoAction:signin_metrics::PromoAction::
+                                            PROMO_ACTION_NO_SIGNIN_PROMO
+                             completion:completion_block
+      changeProfileContinuationProvider:provider];
 
   command.optionalHistorySync = NO;
   command.fullScreenPromo = fullScreenPromo;
