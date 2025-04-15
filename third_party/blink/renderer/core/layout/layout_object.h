@@ -4149,8 +4149,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   friend class LineLayoutItem;
   friend class LocalFrameView;
 
-  subtle::UncompressedMember<const ComputedStyle> style_;
-
+  Member<const ComputedStyle> style_;
   Member<Node> node_;
 
   Member<LayoutObject> parent_;
