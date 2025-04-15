@@ -18,6 +18,7 @@
 #import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/commerce_types.h"
+#import "components/commerce/core/commerce_utils.h"
 #import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/commerce/core/shopping_service.h"
@@ -215,6 +216,12 @@ void ConfigureTabResumptionItemForShopCard(
     item.shopCardData = [[ShopCardData alloc] init];
     item.shopCardData.shopCardItemType =
         ShopCardItemType::kPriceTrackableProductOnTab;
+
+    std::unique_ptr<commerce::ProductInfo> info =
+        commerce::OptGuideResultToProductInfo(decisionWithMetadata.metadata);
+    if (info) {
+      item.shopCardData.productInfo = std::move(*info);
+    }
   }
 }
 
@@ -490,7 +497,8 @@ class TabResumptionMediatorProxy {
 
   commerce::SetPriceTrackingStateForBookmark(
       _shoppingService, _bookmarkModel, bookmark, true,
-      base::BindOnce(completionHandler, item), isNewBookmark);
+      base::BindOnce(completionHandler, item), isNewBookmark,
+      item.shopCardData.productInfo);
 }
 
 - (void)onTracked:(BOOL)success item:(TabResumptionItem*)item {

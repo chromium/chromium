@@ -61,6 +61,7 @@ source_set("shop_card_data") {
   ]
   deps = [
     "//base:base",
+    "//components/commerce/core:commerce_types",
     "//url:url",
   ]
 }

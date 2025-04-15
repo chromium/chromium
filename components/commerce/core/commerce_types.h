@@ -141,15 +141,15 @@ struct ProductInfo {
   std::optional<BuyableProduct_PriceDisplayRecommendation>
       price_display_recommendation;
   std::vector<PriceSummary> price_summary;
-
- private:
-  friend class ShoppingService;
-
   // This is used to track whether the server provided an image with the rest
   // of the product info. This value being |true| does not necessarily mean an
   // image is available in the ProductInfo struct (as it is flag gated) and is
   // primarily used for recording metrics.
+  // TODO(crbug.com/410811501) make private again when we support synced tabs.
   bool server_image_available{false};
+
+ private:
+  friend class ShoppingService;
 };
 
 // Details about a particular URL.

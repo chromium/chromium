@@ -10,6 +10,8 @@
 #import <optional>
 #import <string>
 
+#import "components/commerce/core/commerce_types.h"
+
 class GURL;
 
 // Represents a price drop for a shopping URL -
@@ -57,6 +59,12 @@ class GURL;
 
 // URL for product image.
 @property(nonatomic, assign) std::optional<std::string> productImageURL;
+
+// ProductInfo from OptimizationGuide on demand API. Long term ShoppingService
+// will handle price tracking of synced Tabs TODO(crbug.com/410811501). However,
+// short term ProductInfo will be acquired from OptimizationGuide on demand API
+// and passed to price tracking API.
+@property(nonatomic, assign) std::optional<commerce::ProductInfo> productInfo;
 
 @end
 
