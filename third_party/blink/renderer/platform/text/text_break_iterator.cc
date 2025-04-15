@@ -40,65 +40,6 @@
 
 namespace blink {
 
-unsigned NumGraphemeClusters(const String& string) {
-  unsigned string_length = string.length();
-
-  if (!string_length)
-    return 0;
-
-  // The only Latin-1 Extended Grapheme Cluster is CR LF
-  if (string.Is8Bit() && !string.Contains('\r'))
-    return string_length;
-
-  NonSharedCharacterBreakIterator it(string);
-  if (!it)
-    return string_length;
-
-  unsigned num = 0;
-  while (it.Next() != kTextBreakDone)
-    ++num;
-  return num;
-}
-
-void GraphemesClusterList(const StringView& text, Vector<unsigned>* graphemes) {
-  const unsigned length = text.length();
-  graphemes->resize(length);
-  if (!length)
-    return;
-
-  NonSharedCharacterBreakIterator it(text);
-  int cursor_pos = it.Next();
-  unsigned count = 0;
-  unsigned pos = 0;
-  while (cursor_pos >= 0) {
-    for (; pos < static_cast<unsigned>(cursor_pos) && pos < length; ++pos) {
-      (*graphemes)[pos] = count;
-    }
-    cursor_pos = it.Next();
-    count++;
-  }
-}
-
-unsigned LengthOfGraphemeCluster(const String& string, unsigned offset) {
-  unsigned string_length = string.length();
-
-  if (string_length - offset <= 1)
-    return string_length - offset;
-
-  // The only Latin-1 Extended Grapheme Cluster is CRLF.
-  if (string.Is8Bit()) {
-    return 1 + (string[offset] == '\r' && string[offset + 1] == '\n');
-  }
-
-  NonSharedCharacterBreakIterator it(string);
-  if (!it)
-    return string_length - offset;
-
-  if (it.Following(offset) == kTextBreakDone)
-    return string_length - offset;
-  return it.Current() - offset;
-}
-
 // Pack 8 bits into one byte
 #define B(a, b, c, d, e, f, g, h)                                         \
   ((a) | ((b) << 1) | ((c) << 2) | ((d) << 3) | ((e) << 4) | ((f) << 5) | \
