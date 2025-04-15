@@ -27,7 +27,6 @@ source_set("autofill_private") {
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/autofill:autofill",
-    "//chrome/browser/autofill_ai:util",
     "//chrome/browser/extensions:extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines:search_engines",

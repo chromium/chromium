@@ -4274,7 +4274,6 @@ static_library("browser") {
       "//chrome/browser/accessibility/tree_fixing:service",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/apps/link_capturing",
-      "//chrome/browser/autofill_ai:util",
       "//chrome/browser/contextual_cueing",
       "//chrome/browser/contextual_cueing:impl",
       "//chrome/browser/enterprise/incognito",
@@ -4442,9 +4441,6 @@ static_library("browser") {
     allow_circular_includes_from += [
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
-
-      # TODO(crbug.com/366172297): Remove circular dependencies.
-      "//chrome/browser/autofill_ai:util",
 
       # TODO(b/220386256): Remove circular dependency from the browser.
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",

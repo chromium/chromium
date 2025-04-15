@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/autofill_ai/autofill_ai_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -96,6 +95,7 @@
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/bnpl_manager.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
@@ -601,6 +601,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
     const bool use_is_setting_visible = base::FeatureList::IsEnabled(
         optimization_guide::features::kAiSettingsPageEnterpriseDisabledUi);
 
+    const auto& autofill_client =
+        *autofill::ContentAutofillClient::FromWebContents(
+            web_ui->GetWebContents());
+
     std::pair<const std::string_view, bool> optimization_guide_features[] = {
         {"showTabOrganizationControl",
          use_is_setting_visible
@@ -627,8 +631,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
         // The code cannot dynamically check whether the Autofill Ai section
         // should be shown, because otherwise the user could reach weird states,
         // such as navigating to the Ai Page when the Ai Page has 0 entries.
-        {"showAutofillAiControl", autofill_ai::CanShowAutofillAiPageInSettings(
-                                      profile, web_ui->GetWebContents())},
+        {"showAutofillAiControl",
+         autofill::MayPerformAutofillAiAction(
+             autofill_client, autofill::AutofillAiAction::kOptIn) ||
+             autofill::MayPerformAutofillAiAction(
+                 autofill_client,
+                 autofill::AutofillAiAction::kListEntityInstancesInSettings)},
     };
 
     const bool show_ai_settings_for_testing =
