@@ -383,7 +383,7 @@
 <translation id="652937045869844725">サードパーティ Cookie を許可してみてください。保護の強度は低下しますが、サイトの機能が動作する可能性が高くなります</translation>
 <translation id="6530703012083415527">オンにすると、サイトはポップアップとリダイレクトを使用できます。オフにすると、サイトはポップアップとリダイレクトを使用できません。</translation>
 <translation id="6540488083026747005">このサイトのサードパーティ Cookie を許可しました</translation>
-<translation id="6545864417968258051">Bluetooth のスキャン</translation>
+<translation id="6545864417968258051">Bluetooth をスキャン</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}other{<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、他 <ph name="NUM_MORE" /> 個の権限がブロックされています}}</translation>
 <translation id="6554732001434021288">最終アクセス日: <ph name="NUM_DAYS" /> 日前</translation>
 <translation id="656065428026159829">もっと見る</translation>
