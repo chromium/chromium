@@ -212,12 +212,7 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  // The top padding must take into account the arrow of the popover view if the
-  // arrow is at the top of the view.
-  BOOL isPopoverUpArrow = self.popoverPresentationController.arrowDirection ==
-                          UIPopoverArrowDirectionUp;
-  _headerViewTopConstraint.active = !isPopoverUpArrow;
-  _headerViewPopoverTopConstraint.active = isPopoverUpArrow;
+  [self adjustTopHeaderViewConstraint];
 
   if (IsKeyboardAccessoryUpgradeWithShortManualFillMenuEnabled()) {
     // Set the view to be the same height as the keyboard and keyboard accessory
@@ -266,6 +261,8 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
                              trailingConstraint:_headerViewTrailingConstraint
                                        constant:_tableViewCellHorizontalInset];
   }
+
+  [self adjustTopHeaderViewConstraint];
 }
 
 #pragma mark - UITraitEnvironment
@@ -314,6 +311,15 @@ int GetSegmentIndexForDataType(ManualFillDataType data_type) {
 }
 
 #pragma mark - Private
+
+// Adjusts the top padding so that it takes into account the arrow of the
+// popover view if the arrow is at the top of the view.
+- (void)adjustTopHeaderViewConstraint {
+  BOOL isPopoverUpArrow = self.popoverPresentationController.arrowDirection ==
+                          UIPopoverArrowDirectionUp;
+  _headerViewTopConstraint.active = !isPopoverUpArrow;
+  _headerViewPopoverTopConstraint.active = isPopoverUpArrow;
+}
 
 // Creates and configures the header view.
 - (UIView*)createHeaderView {
