@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -33,6 +36,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.Space;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -85,6 +89,7 @@ public class TabGroupRowViewUnitTest {
     private ViewGroup mTabGroupFaviconCluster;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
+    private Space mTextSpace;
     private FrameLayout mImageTilesContainer;
     private ListMenuButton mListMenuButton;
     private PropertyModel mPropertyModel;
@@ -109,6 +114,7 @@ public class TabGroupRowViewUnitTest {
         mTabGroupFaviconCluster = mTabGroupRowView.findViewById(R.id.tab_group_favicon_cluster);
         mTitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_title);
         mSubtitleTextView = mTabGroupRowView.findViewById(R.id.tab_group_subtitle);
+        mTextSpace = mTabGroupRowView.findViewById(R.id.tab_group_text_space);
         mImageTilesContainer = mTabGroupRowView.findViewById(R.id.image_tiles_container);
         mListMenuButton = mTabGroupRowView.findViewById(R.id.tab_group_menu);
 
@@ -176,6 +182,16 @@ public class TabGroupRowViewUnitTest {
     }
 
     @Test
+    public void testSubtitleGoneWhenNull() {
+        remakeWithProperty(
+                TITLE_DATA,
+                new TabGroupRowViewTitleData(
+                        "", 1, R.string.tab_group_bottom_sheet_row_accessibility_text));
+        assertEquals(GONE, mTextSpace.getVisibility());
+        assertEquals(GONE, mSubtitleTextView.getVisibility());
+    }
+
+    @Test
     public void testSetCreationMillis() {
         long creationMillis = Clock.system(ZoneId.systemDefault()).millis();
         String timeAgoText = "Created just now";
@@ -183,6 +199,8 @@ public class TabGroupRowViewUnitTest {
         TabGroupTimeAgo timeAgo = new TabGroupTimeAgo(creationMillis, TimestampEvent.CREATED);
         remakeWithProperty(TabGroupRowProperties.TIMESTAMP_EVENT, timeAgo);
 
+        assertEquals(VISIBLE, mTextSpace.getVisibility());
+        assertEquals(VISIBLE, mSubtitleTextView.getVisibility());
         assertEquals(timeAgoText, mSubtitleTextView.getText());
     }
 
@@ -194,6 +212,8 @@ public class TabGroupRowViewUnitTest {
         TabGroupTimeAgo timeAgo = new TabGroupTimeAgo(creationMillis, TimestampEvent.UPDATED);
         remakeWithProperty(TabGroupRowProperties.TIMESTAMP_EVENT, timeAgo);
 
+        assertEquals(VISIBLE, mTextSpace.getVisibility());
+        assertEquals(VISIBLE, mSubtitleTextView.getVisibility());
         assertEquals(timeAgoText, mSubtitleTextView.getText());
     }
 
@@ -302,7 +322,7 @@ public class TabGroupRowViewUnitTest {
         remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(DISPLAY_AS_SHARED, true).build());
         assertEquals(View.VISIBLE, mImageTilesContainer.getVisibility());
         remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(DISPLAY_AS_SHARED, false).build());
-        assertEquals(View.GONE, mImageTilesContainer.getVisibility());
+        assertEquals(GONE, mImageTilesContainer.getVisibility());
     }
 
     @Test
@@ -316,7 +336,7 @@ public class TabGroupRowViewUnitTest {
     @Test
     public void testDisableMenu() {
         remakeWithModel(new PropertyModel.Builder(ALL_KEYS).with(OPEN_RUNNABLE, null).build());
-        assertEquals(View.GONE, mListMenuButton.getVisibility());
+        assertEquals(GONE, mListMenuButton.getVisibility());
     }
 
     @Test

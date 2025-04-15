@@ -53,8 +53,11 @@ found in the LICENSE file.
     </LinearLayout>
 
     <Space
+      android:id="@+id/tab_group_text_space"
       android:layout_width="match_parent"
-      android:layout_height="8dp" />
+      android:layout_height="8dp"
+      android:visibility="gone"
+      tools:visibility="visible"/>
 
     <TextView
       android:id="@+id/tab_group_subtitle"
@@ -63,7 +66,9 @@ found in the LICENSE file.
       android:ellipsize="end"
       android:maxLines="1"
       android:scrollHorizontally="true"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+      android:visibility="gone"
+      tools:visibility="visible"/>
 
   </LinearLayout>
 
