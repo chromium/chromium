@@ -32,6 +32,11 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
       color_space_ = color_space;
       return *this;
     }
+    Builder& WithVideoTransformation(
+        media::VideoTransformation transformation) {
+      transformation_ = transformation;
+      return *this;
+    }
     Builder& WithResolution(gfx::Size resolution) {
       resolution_ = resolution;
       return *this;
@@ -39,7 +44,7 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
     scoped_refptr<FakeEncodedVideoFrame> BuildRefPtr() {
       return base::MakeRefCounted<FakeEncodedVideoFrame>(
           is_key_frame_, std::move(data_), codec_, std::move(color_space_),
-          resolution_);
+          std::move(transformation_), resolution_);
     }
 
    private:
@@ -47,18 +52,22 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
     std::string data_;
     media::VideoCodec codec_ = media::VideoCodec::kVP8;
     std::optional<gfx::ColorSpace> color_space_;
+    std::optional<media::VideoTransformation> transformation_;
     gfx::Size resolution_{0, 0};
   };
 
-  FakeEncodedVideoFrame(bool is_key_frame,
-                        std::string data,
-                        media::VideoCodec codec,
-                        std::optional<gfx::ColorSpace> color_space,
-                        gfx::Size resolution)
+  FakeEncodedVideoFrame(
+      bool is_key_frame,
+      std::string data,
+      media::VideoCodec codec,
+      std::optional<gfx::ColorSpace> color_space,
+      std::optional<media::VideoTransformation> transformation,
+      gfx::Size resolution)
       : is_key_frame_(is_key_frame),
         data_(std::move(data)),
         codec_(codec),
         color_space_(std::move(color_space)),
+        transformation_(std::move(transformation)),
         resolution_(resolution) {}
 
   base::span<const uint8_t> Data() const override {
@@ -69,6 +78,9 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
   std::optional<gfx::ColorSpace> ColorSpace() const override {
     return color_space_;
   }
+  std::optional<media::VideoTransformation> Transformation() const override {
+    return transformation_;
+  }
   gfx::Size Resolution() const override { return resolution_; }
 
  private:
@@ -76,6 +88,7 @@ class FakeEncodedVideoFrame : public EncodedVideoFrame {
   std::string data_;
   media::VideoCodec codec_;
   std::optional<gfx::ColorSpace> color_space_;
+  std::optional<media::VideoTransformation> transformation_;
   gfx::Size resolution_;
 };
 

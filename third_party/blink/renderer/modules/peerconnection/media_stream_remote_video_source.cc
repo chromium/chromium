@@ -49,6 +49,9 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
     if (frame.color_space()) {
       color_space_ = WebRtcToGfxColorSpace(*frame.color_space());
     }
+    if (frame.video_rotation()) {
+      transformation_ = WebRtcToMediaVideoRotation(*frame.video_rotation());
+    }
   }
 
   base::span<const uint8_t> Data() const override { return *buffer_; }
@@ -61,6 +64,10 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
     return color_space_;
   }
 
+  std::optional<media::VideoTransformation> Transformation() const override {
+    return transformation_;
+  }
+
   gfx::Size Resolution() const override { return resolution_; }
 
  private:
@@ -68,6 +75,7 @@ class WebRtcEncodedVideoFrame : public EncodedVideoFrame {
   media::VideoCodec codec_;
   bool is_key_frame_;
   std::optional<gfx::ColorSpace> color_space_;
+  std::optional<media::VideoTransformation> transformation_;
   gfx::Size resolution_;
 };
 

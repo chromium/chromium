@@ -366,6 +366,62 @@ TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedColorSpaceIsIgnored) {
   track->RemoveSink(&sink);
 }
 
+TEST_F(MediaStreamRemoteVideoSourceTest, PreservesRotation) {
+  std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
+  blink::MockMediaStreamVideoSink sink;
+  track->AddSink(&sink, sink.GetDeliverFrameCB(),
+                 MediaStreamVideoSink::IsSecure::kNo,
+                 MediaStreamVideoSink::UsesAlpha::kDefault);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(sink, OnVideoFrame)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  webrtc::VideoRotation kRotation = webrtc::VideoRotation::kVideoRotation_90;
+  const webrtc::VideoFrame& input_frame = webrtc::VideoFrame::Builder()
+                                              .set_video_frame_buffer(buffer)
+                                              .set_rotation(kRotation)
+                                              .build();
+  source()->SinkInterfaceForTesting()->OnFrame(input_frame);
+  run_loop.Run();
+
+  EXPECT_EQ(1, sink.number_of_frames());
+  scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
+  EXPECT_TRUE(output_frame);
+  EXPECT_EQ(output_frame->metadata().transformation,
+            media::VideoTransformation(media::VideoRotation::VIDEO_ROTATION_90,
+                                       false));
+  track->RemoveSink(&sink);
+}
+
+TEST_F(MediaStreamRemoteVideoSourceTest, UnspecifiedRotationIsIgnored) {
+  base::test::ScopedFeatureList scoped_feauture_list;
+  scoped_feauture_list.InitAndEnableFeature(
+      blink::features::kWebRtcIgnoreUnspecifiedColorSpace);
+  std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
+  blink::MockMediaStreamVideoSink sink;
+  track->AddSink(&sink, sink.GetDeliverFrameCB(),
+                 MediaStreamVideoSink::IsSecure::kNo,
+                 MediaStreamVideoSink::UsesAlpha::kDefault);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(sink, OnVideoFrame)
+      .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
+  webrtc::scoped_refptr<webrtc::I420Buffer> buffer(
+      new webrtc::RefCountedObject<webrtc::I420Buffer>(320, 240));
+  const webrtc::VideoFrame& input_frame =
+      webrtc::VideoFrame::Builder().set_video_frame_buffer(buffer).build();
+  source()->SinkInterfaceForTesting()->OnFrame(input_frame);
+  run_loop.Run();
+
+  EXPECT_EQ(1, sink.number_of_frames());
+  scoped_refptr<media::VideoFrame> output_frame = sink.last_frame();
+  EXPECT_TRUE(output_frame);
+  EXPECT_FALSE(output_frame->metadata().transformation.has_value());
+  track->RemoveSink(&sink);
+}
+
 TEST_F(MediaStreamRemoteVideoSourceTest,
        PopulateRequestAnimationFrameMetadata) {
   std::unique_ptr<blink::MediaStreamVideoTrack> track(CreateTrack());
