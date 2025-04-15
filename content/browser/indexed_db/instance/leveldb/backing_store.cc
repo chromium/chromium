@@ -76,6 +76,7 @@
 #include "content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h"
 #include "content/browser/indexed_db/instance/leveldb_compaction_task.h"
 #include "content/browser/indexed_db/instance/leveldb_tombstone_sweeper.h"
+#include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
 #include "content/browser/indexed_db/status.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/blob/blob_data_handle.h"
@@ -92,6 +93,15 @@ using blink::IndexedDBKey;
 using blink::IndexedDBKeyRange;
 
 namespace content::indexed_db::level_db {
+
+std::unique_ptr<TransactionalLevelDBFactory>& GetTransactionalLevelDBFactory() {
+  static base::NoDestructor<std::unique_ptr<TransactionalLevelDBFactory>>
+      factory;
+  if (!*factory) {
+    *factory = std::make_unique<DefaultTransactionalLevelDBFactory>();
+  }
+  return *factory;
+}
 
 // An RAII helper to ensure that "DidCommitTransaction" is called
 // during this class's destruction.
@@ -1092,7 +1102,6 @@ BackingStore::BackingStore(
     Mode backing_store_mode,
     const storage::BucketLocator& bucket_locator,
     const base::FilePath& blob_path,
-    TransactionalLevelDBFactory& transactional_leveldb_factory,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
     BlobFilesCleanedCallback blob_files_cleaned,
     ReportOutstandingBlobsCallback report_outstanding_blobs)
@@ -1101,7 +1110,6 @@ BackingStore::BackingStore(
       blob_path_(backing_store_mode == Mode::kInMemory ? base::FilePath()
                                                        : blob_path),
       origin_identifier_(ComputeOriginIdentifier(bucket_locator)),
-      transactional_leveldb_factory_(transactional_leveldb_factory),
       db_(std::move(db)),
       blob_files_cleaned_(std::move(blob_files_cleaned)),
       level_db_cleanup_scheduler_(db_->db(), this) {
@@ -1572,7 +1580,7 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
 
   // Create the TransactionalLevelDBDatabase wrapper.
   std::unique_ptr<TransactionalLevelDBDatabase> database =
-      bucket_context.transactional_leveldb_factory()->CreateLevelDBDatabase(
+      GetTransactionalLevelDBFactory()->CreateLevelDBDatabase(
           std::move(database_state), std::move(scopes),
           base::SequencedTaskRunner::GetCurrentDefault(),
           TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase);
@@ -1599,8 +1607,7 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
 
   Mode backing_store_mode = in_memory ? Mode::kInMemory : Mode::kOnDisk;
   auto backing_store = std::make_unique<BackingStore>(
-      backing_store_mode, bucket_locator, blob_path,
-      *bucket_context.transactional_leveldb_factory(), std::move(database),
+      backing_store_mode, bucket_locator, blob_path, std::move(database),
       base::BindRepeating(bucket_context.delegate().on_files_written,
                           /*flushed=*/true),
       base::BindRepeating(&BucketContext::ReportOutstandingBlobs,
@@ -1674,7 +1681,8 @@ Status BackingStore::CreateDatabase(
     blink::IndexedDBDatabaseMetadata& metadata) {
   // TODO(jsbell): Don't persist metadata if open fails. http://crbug.com/395472
   std::unique_ptr<LevelDBDirectTransaction> transaction =
-      transactional_leveldb_factory().CreateLevelDBDirectTransaction(db_.get());
+      GetTransactionalLevelDBFactory()->CreateLevelDBDirectTransaction(
+          db_.get());
 
   int64_t row_id = 0;
   Status s = GetNewDatabaseId(transaction.get(), &row_id);
@@ -1734,7 +1742,7 @@ Status BackingStore::DeleteDatabase(const std::u16string& name,
   TRACE_EVENT0("IndexedDB", "BackingStore::DeleteDatabase");
 
   scoped_refptr<TransactionalLevelDBTransaction> transaction =
-      transactional_leveldb_factory_->CreateLevelDBTransaction(
+      GetTransactionalLevelDBFactory()->CreateLevelDBTransaction(
           db(), db()->scopes()->CreateScope(std::move(locks)));
   transaction->set_commit_cleanup_complete_callback(std::move(on_complete));
 
@@ -2577,7 +2585,8 @@ void BackingStore::ReportBlobUnused(int64_t database_id, int64_t blob_number) {
   bool all_blobs = blob_number == DatabaseMetaDataKey::kAllBlobsNumber;
   DCHECK(all_blobs || DatabaseMetaDataKey::IsValidBlobNumber(blob_number));
   std::unique_ptr<LevelDBDirectTransaction> transaction =
-      transactional_leveldb_factory().CreateLevelDBDirectTransaction(db_.get());
+      GetTransactionalLevelDBFactory()->CreateLevelDBDirectTransaction(
+          db_.get());
 
   BlobJournalType active_blob_journal, recovery_journal;
   if (!GetActiveBlobJournal(transaction.get(), &active_blob_journal).ok()) {
@@ -2700,7 +2709,8 @@ Status BackingStore::CleanUpBlobJournal(const std::string& level_db_key) const {
 
   DCHECK(!committing_transaction_count_);
   std::unique_ptr<LevelDBDirectTransaction> journal_transaction =
-      transactional_leveldb_factory().CreateLevelDBDirectTransaction(db_.get());
+      GetTransactionalLevelDBFactory()->CreateLevelDBDirectTransaction(
+          db_.get());
   BlobJournalType journal;
 
   Status s = GetBlobJournal(level_db_key, journal_transaction.get(), &journal);
@@ -2862,7 +2872,8 @@ bool BackingStore::ShouldRunTombstoneSweeper() {
 
 bool BackingStore::UpdateEarliestSweepTime() {
   std::unique_ptr<LevelDBDirectTransaction> txn =
-      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(db_.get());
+      GetTransactionalLevelDBFactory()->CreateLevelDBDirectTransaction(
+          db_.get());
   return content::indexed_db::UpdateEarliestSweepTime(txn.get()).ok() &&
          txn->Commit().ok();
 }
@@ -2878,7 +2889,8 @@ bool BackingStore::ShouldRunCompaction() {
 
 bool BackingStore::UpdateEarliestCompactionTime() {
   std::unique_ptr<LevelDBDirectTransaction> txn =
-      transactional_leveldb_factory_->CreateLevelDBDirectTransaction(db_.get());
+      GetTransactionalLevelDBFactory()->CreateLevelDBDirectTransaction(
+          db_.get());
   return content::indexed_db::UpdateEarliestCompactionTime(txn.get()).ok() &&
          txn->Commit().ok();
 }
@@ -4122,10 +4134,9 @@ void BackingStore::Transaction::Begin(std::vector<PartitionedLock> locks) {
   DCHECK(!transaction_.get());
   TRACE_EVENT0("IndexedDB", "BackingStore::Transaction::Begin");
 
-  transaction_ =
-      backing_store_->transactional_leveldb_factory().CreateLevelDBTransaction(
-          backing_store_->db_.get(),
-          backing_store_->db_->scopes()->CreateScope(std::move(locks)));
+  transaction_ = GetTransactionalLevelDBFactory()->CreateLevelDBTransaction(
+      backing_store_->db(),
+      backing_store_->db()->scopes()->CreateScope(std::move(locks)));
 
   // If in_memory, this snapshots blobs just as the above transaction_
   // constructor snapshots the leveldb.
@@ -4190,8 +4201,8 @@ Status BackingStore::Transaction::HandleBlobPreTransaction() {
   }
 
   std::unique_ptr<LevelDBDirectTransaction> direct_txn =
-      backing_store_->transactional_leveldb_factory()
-          .CreateLevelDBDirectTransaction(backing_store_->db_.get());
+      GetTransactionalLevelDBFactory()->CreateLevelDBDirectTransaction(
+          backing_store_->db_.get());
 
   int64_t next_blob_number = -1;
   bool result = GetBlobNumberGeneratorCurrentNumber(
@@ -4384,8 +4395,8 @@ Status BackingStore::Transaction::CommitPhaseTwo() {
     // Read the persisted states of the recovery/live blob journals,
     // so that they can be updated correctly by the transaction.
     std::unique_ptr<LevelDBDirectTransaction> journal_transaction =
-        backing_store_->transactional_leveldb_factory()
-            .CreateLevelDBDirectTransaction(backing_store_->db_.get());
+        GetTransactionalLevelDBFactory()->CreateLevelDBDirectTransaction(
+            backing_store_->db_.get());
     s = GetRecoveryBlobJournal(journal_transaction.get(), &recovery_journal);
     if (!s.ok()) {
       return s;
@@ -4466,8 +4477,8 @@ Status BackingStore::Transaction::CommitPhaseTwo() {
   }
 
   std::unique_ptr<LevelDBDirectTransaction> update_journal_transaction =
-      backing_store_->transactional_leveldb_factory()
-          .CreateLevelDBDirectTransaction(backing_store_->db_.get());
+      GetTransactionalLevelDBFactory()->CreateLevelDBDirectTransaction(
+          backing_store_->db_.get());
   UpdateRecoveryBlobJournal(update_journal_transaction.get(),
                             saved_recovery_journal);
   s = update_journal_transaction->Commit();
@@ -4719,6 +4730,13 @@ void BackingStore::Transaction::PutExternalObjects(
     record = it->second.get();
   }
   record->SetExternalObjects(external_objects);
+}
+
+void BindMockFailureSingletonForTesting(
+    mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
+  GetTransactionalLevelDBFactory() =
+      std::make_unique<MockBrowserTestIndexedDBClassFactory>(
+          std::move(receiver));
 }
 
 }  // namespace content::indexed_db::level_db

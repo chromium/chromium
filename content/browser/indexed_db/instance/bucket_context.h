@@ -24,7 +24,6 @@
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
@@ -253,10 +252,6 @@ class CONTENT_EXPORT BucketContext
     return file_system_access_context_.get();
   }
 
-  TransactionalLevelDBFactory* transactional_leveldb_factory() {
-    return transactional_leveldb_factory_.get();
-  }
-
   void AddReceiver(
       const storage::BucketClientInfo& client_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
@@ -419,7 +414,6 @@ class CONTENT_EXPORT BucketContext
   ClosingState closing_stage_ = ClosingState::kNotClosing;
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;
-  std::unique_ptr<TransactionalLevelDBFactory> transactional_leveldb_factory_;
   std::unique_ptr<BackingStore> backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 

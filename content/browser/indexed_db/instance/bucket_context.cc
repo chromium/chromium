@@ -10,67 +10,71 @@
 #include <algorithm>
 #include <atomic>
 #include <compare>
+#include <cstdint>
 #include <limits>
 #include <list>
+#include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
+#include <tuple>
 #include <type_traits>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_base.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/strcat.h"
+#include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "base/uuid.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_state.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
-#include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_transaction.h"
+#include "components/services/storage/privileged/cpp/bucket_client_info.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
+#include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-forward.h"
-#include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom-shared.h"
 #include "components/services/storage/privileged/mojom/indexed_db_internals_types.mojom.h"
-#include "components/services/storage/public/mojom/blob_storage_context.mojom-shared.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
+#include "components/services/storage/public/mojom/file_system_access_context.mojom.h"
+#include "content/browser/indexed_db/blob_reader.h"
 #include "content/browser/indexed_db/file_path_util.h"
-#include "content/browser/indexed_db/indexed_db_data_format_version.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/instance/active_blob_registry.h"
@@ -84,18 +88,13 @@
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/pending_connection.h"
 #include "content/browser/indexed_db/instance/transaction.h"
-#include "content/browser/indexed_db/list_set.h"
-#include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
-#include "content/public/common/content_features.h"
+#include "content/browser/indexed_db/status.h"
 #include "env_chromium.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "mojo/public/cpp/system/data_pipe.h"
-#include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
@@ -795,10 +794,7 @@ void BucketContext::WriteToIndexedDBForTesting(const std::string& key,
 
 void BucketContext::BindMockFailureSingletonForTesting(
     mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
-  CHECK(!backing_store_);
-  transactional_leveldb_factory_ =
-      std::make_unique<MockBrowserTestIndexedDBClassFactory>(
-          std::move(receiver));
+  level_db::BindMockFailureSingletonForTesting(std::move(receiver));  // IN-TEST
 }
 
 Database* BucketContext::AddDatabase(const std::u16string& name,
@@ -1021,11 +1017,6 @@ BucketContext::InitBackingStoreIfNeeded(bool create_if_missing) {
     if (!status.ok()) {
       return {status, CreateDefaultError(), IndexedDBDataLossInfo()};
     }
-  }
-
-  if (!transactional_leveldb_factory_) {
-    transactional_leveldb_factory_ =
-        std::make_unique<DefaultTransactionalLevelDBFactory>();
   }
 
   auto lock_manager = std::make_unique<PartitionedLockManager>();

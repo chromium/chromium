@@ -56,7 +56,6 @@ class BucketContext;
 class LevelDBWriteBatch;
 class PartitionedLockManager;
 class TransactionalLevelDBDatabase;
-class TransactionalLevelDBFactory;
 class TransactionalLevelDBIterator;
 class TransactionalLevelDBTransaction;
 struct IndexedDBDataLossInfo;
@@ -348,7 +347,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   BackingStore(Mode backing_store_mode,
                const storage::BucketLocator& bucket_locator,
                const base::FilePath& blob_path,
-               TransactionalLevelDBFactory& transactional_leveldb_factory,
                std::unique_ptr<TransactionalLevelDBDatabase> db,
                BlobFilesCleanedCallback blob_files_cleaned,
                ReportOutstandingBlobsCallback report_outstanding_blobs);
@@ -368,9 +366,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   ActiveBlobRegistry* active_blob_registry() {
     return active_blob_registry_.get();
-  }
-  TransactionalLevelDBFactory& transactional_leveldb_factory() const {
-    return *transactional_leveldb_factory_;
   }
 
   void OnTransactionComplete(bool tombstone_threshold_exceeded);
@@ -703,10 +698,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   mutable int num_blob_files_deleted_ = 0;
 #endif
 
-  // This factory is used to modify LevelDB behavior for tests. It's owned by
-  // the bucket context even though ideally it would be owned by `this`, which
-  // is due to poor encapsulation of LevelDB operations within `this`.
-  raw_ref<TransactionalLevelDBFactory> transactional_leveldb_factory_;
   const std::unique_ptr<TransactionalLevelDBDatabase> db_;
 
   const BlobFilesCleanedCallback blob_files_cleaned_;
@@ -729,6 +720,9 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   base::WeakPtrFactory<BackingStore> weak_factory_{this};
 };
+
+void BindMockFailureSingletonForTesting(
+    mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver);
 
 }  // namespace level_db
 }  // namespace content::indexed_db

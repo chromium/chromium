@@ -42,7 +42,7 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
   DefaultTransactionalLevelDBFactory factory;
   auto task_runner = base::SequencedTaskRunner::GetCurrentDefault();
   auto backing_store = std::make_unique<BackingStore>(
-      BackingStore::Mode::kInMemory, bucket_locator, path, factory,
+      BackingStore::Mode::kInMemory, bucket_locator, path,
       factory.CreateLevelDBDatabase(
           FakeLevelDBFactory::GetBrokenLevelDB(
               leveldb::Status::IOError("It's broken!"), path),
@@ -78,7 +78,7 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
   for (leveldb::Status error_status : errors) {
     DefaultTransactionalLevelDBFactory factory;
     auto backing_store = std::make_unique<BackingStore>(
-        BackingStore::Mode::kInMemory, bucket_locator, path, factory,
+        BackingStore::Mode::kInMemory, bucket_locator, path,
         factory.CreateLevelDBDatabase(
             FakeLevelDBFactory::GetBrokenLevelDB(error_status, path), nullptr,
             task_runner.get(),
