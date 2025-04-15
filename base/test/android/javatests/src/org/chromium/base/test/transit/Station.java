@@ -335,6 +335,6 @@ public abstract class Station<HostActivity extends Activity> extends Conditional
     public HostActivity getActivity() {
         assert mActivityElement != null
                 : "Requesting an ActivityElement for a station with no host activity.";
-        return mActivityElement.getChecked();
+        return mActivityElement.get();
     }
 }

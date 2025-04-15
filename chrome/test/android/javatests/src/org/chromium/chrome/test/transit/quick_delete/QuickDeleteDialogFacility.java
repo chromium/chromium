@@ -115,25 +115,25 @@ public class QuickDeleteDialogFacility extends Facility<Station<ChromeTabbedActi
 
     /** Returns the parent ModalDialogView. */
     public ModalDialogView getModalDialog() {
-        return (ModalDialogView) mDialog.getChecked();
+        return (ModalDialogView) mDialog.get();
     }
 
     /** Returns the custom View in the ModalDialog (without the button bar). */
     public View getModalDialogCustomView() {
-        return (View) mCustomView.getChecked();
+        return (View) mCustomView.get();
     }
 
     /** Returns the Spinner to select the time period to delete. */
     public Spinner getSpinner() {
-        return (Spinner) mSpinner.getChecked();
+        return (Spinner) mSpinner.get();
     }
 
     public TextView getHistoryInfo() {
-        return (TextView) mHistoryInfo.getChecked();
+        return (TextView) mHistoryInfo.get();
     }
 
     public TextView getTabsInfo() {
-        return (TextView) mTabsInfo.getChecked();
+        return (TextView) mTabsInfo.get();
     }
 
     /** Set the time period to delete in the Spinner. */

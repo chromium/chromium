@@ -19,7 +19,6 @@ import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -61,6 +60,7 @@ public class ConditionWaiter {
          * @param origin the origin of the |condition|.
          */
         ConditionWait(Condition condition, @ConditionOrigin int origin) {
+            condition.assertIsBound();
             mCondition = condition;
             mOrigin = origin;
         }
@@ -310,7 +310,7 @@ public class ConditionWaiter {
         for (ConditionalState conditionalState : mTransition.getExitedStates()) {
             final Elements originElements = conditionalState.getElements();
             for (Element<?> element : originElements.getElements()) {
-                Condition exitCondition = element.getExitCondition(destinationElementIds);
+                Condition exitCondition = element.getExitConditionFiltered(destinationElementIds);
                 if (exitCondition != null) {
                     ConditionWait conditionWait =
                             new ConditionWait(exitCondition, ConditionWaiter.ConditionOrigin.EXIT);
@@ -331,6 +331,7 @@ public class ConditionWaiter {
 
         // Add transition (TRSTN) conditions
         for (Condition condition : mTransition.getTransitionConditions()) {
+            condition.bindToTransition(mTransition);
             allWaits.add(new ConditionWait(condition, ConditionWaiter.ConditionOrigin.TRANSITION));
         }
 
@@ -358,7 +359,7 @@ public class ConditionWaiter {
     private List<ConditionWait> createEnterConditionWaits(BaseElements elements) {
         final List<ConditionWait> newWaits = new ArrayList<>();
         for (Element<?> element : elements.getElements()) {
-            @Nullable Condition enterCondition = element.getEnterCondition();
+            Condition enterCondition = element.getEnterCondition();
             if (enterCondition != null) {
                 newWaits.add(
                         new ConditionWait(enterCondition, ConditionWaiter.ConditionOrigin.ENTER));

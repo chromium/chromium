@@ -105,8 +105,7 @@ public class Elements extends BaseElements {
 
         /** Declare as a Condition that a View is not displayed. */
         public void declareNoView(Matcher<View> viewMatcher) {
-            assertNotBuilt();
-            mOtherEnterConditions.add(new ViewConditions.NotDisplayedAnymoreCondition(viewMatcher));
+            declareEnterCondition(new ViewConditions.NotDisplayedAnymoreCondition(viewMatcher));
         }
 
         /**
@@ -121,6 +120,7 @@ public class Elements extends BaseElements {
          */
         public <T extends Condition> T declareEnterCondition(T condition) {
             assertNotBuilt();
+            condition.bindToState(mOwner.mOwnerState);
             mOtherEnterConditions.add(condition);
             return condition;
         }
@@ -134,6 +134,7 @@ public class Elements extends BaseElements {
          */
         public <T extends Condition> T declareExitCondition(T condition) {
             assertNotBuilt();
+            condition.bindToState(mOwner.mOwnerState);
             mOtherExitConditions.add(condition);
             return condition;
         }

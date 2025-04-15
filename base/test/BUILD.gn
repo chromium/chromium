@@ -746,6 +746,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//base:base_junit_test_support",
       "//base:callback_java",
+      "//base:log_java",
       "//third_party/junit",
     ]
 

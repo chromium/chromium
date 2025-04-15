@@ -142,7 +142,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
                 mNumTabsBeingSelected = 0;
             }
             if (mTabAlreadySelected == null && mNumTabsBeingSelected == 0) {
-                mTabAlreadySelected = previousStation.mPageLoadedSupplier.get();
+                mTabAlreadySelected = previousStation.getLoadedTabFromPast();
             }
             // Cannot copy over facilities because we have no way to clone them. It's also not
             // obvious that we should...
@@ -169,7 +169,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
     public static final ViewSpec MENU_BUTTON = viewSpec(withId(R.id.menu_button));
     protected Supplier<Tab> mActivityTabSupplier;
     protected Supplier<Tab> mSelectedTabSupplier;
-    protected Supplier<Tab> mPageLoadedSupplier;
+    protected ConditionWithResult<Tab> mPageLoadedSupplier;
     private ViewElement mToolbar;
 
     /** Prefer the PageStation's subclass |newBuilder()|. */
@@ -548,8 +548,11 @@ public class PageStation extends Station<ChromeTabbedActivity> {
 
     /** Get the Tab corresponding to this active PageStation. */
     public Tab getLoadedTab() {
-        assertSuppliersCanBeUsed();
         return mPageLoadedSupplier.get();
+    }
+
+    private Tab getLoadedTabFromPast() {
+        return mPageLoadedSupplier.getFromPast();
     }
 
     private class TabAddedCondition extends CallbackCondition implements TabModelObserver {

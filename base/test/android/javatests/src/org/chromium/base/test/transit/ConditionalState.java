@@ -205,12 +205,22 @@ public abstract class ConditionalState {
         mLifecyclePhase = Phase.ACTIVE;
     }
 
-    protected void assertSuppliersCanBeUsed() {
+    /**
+     * Assert this ConditionalState is in the ACTIVE, TRANSITIONING_FROM or TRANSITIONING_TO phase,
+     * and thus it makes sense to use its {@link Element}s as Suppliers.
+     *
+     * <p>This avoids getting an out-of-date object from a state that was already transitioned away
+     * from, or getting an object from a state before transitioning to it.
+     */
+    void assertSuppliersMightBeValid() {
         int phase = getPhase();
-        if (phase != Phase.ACTIVE && phase != Phase.TRANSITIONING_FROM) {
+        if (phase != Phase.ACTIVE
+                && phase != Phase.TRANSITIONING_FROM
+                && phase != Phase.TRANSITIONING_TO) {
             fail(
                     String.format(
-                            "%s should have been ACTIVE or TRANSITIONING_FROM, but was %s",
+                            "%s should have been ACTIVE or TRANSITIONING_FROM or TRANSITIONING_TO,"
+                                    + " but was %s",
                             this, phaseToString(phase)));
         }
     }

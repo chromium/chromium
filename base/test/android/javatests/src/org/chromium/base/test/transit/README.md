@@ -300,7 +300,7 @@ An example of Test Layer code:
 ```java
 @Test
 public void testOpenTabSwitcher() {
-    BasePageStation page = mTransitEntryPoints.startOnBlankPage();
+    PageStation page = mTransitEntryPoints.startOnBlankPage();
     AppMenuFacility appMenu = page.openAppMenu();
     page = appMenu.openNewIncognitoTab();
     TabSwitcherStation tabSwitcher = page.openTabSwitcher();
@@ -348,17 +348,14 @@ Example of a concrete `Station`:
 
 ```java
 /** The tab switcher screen, with the tab grid and the tab management toolbar. */
-public class TabSwitcherStation extends Station {
+public class TabSwitcherStation extends Station<ChromeTabbedActivity> {
     public static final ViewSpec NEW_TAB_BUTTON =
             viewSpec(withId(R.id.new_tab_button));
     public static final ViewSpec INCOGNITO_TOGGLE_TABS =
             viewSpec(withId(R.id.incognito_toggle_tabs));
 
-    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
-
     @Override
     public void declareElements(Elements.Builder elements) {
-        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
         elements.declareView(NEW_TAB_BUTTON);
         elements.declareView(INCOGNITO_TOGGLE_TABS);
     }
@@ -440,9 +437,9 @@ method.
 
 Custom Conditions may require a dependency to be checked which might not exist
 before the transition's trigger is run. They should take the dependency as a
-constructor argument of type `Condition` that implements `Supplier<DependencyT>`
-and call `dependOnSupplier()`. The dependency should supply `DependencyT` when
-fulfilled.
+constructor argument of type `Condition` or `Element` that implements
+`Supplier<DependencyT>` and call `dependOnSupplier()`. The dependency should
+supply `DependencyT` when fulfilled.
 
 An example of a custom condition:
 
@@ -450,8 +447,8 @@ An example of a custom condition:
 class PageLoadedCondition extends UiThreadCondition {
     private Supplier<Tab> mTabSupplier;
 
-    PageLoadedCondition(ConditionWithResult<Tab> tabCondition) {
-        mTabSupplier = dependOnCondition(tabCondition, "Tab");
+    PageLoadedCondition(Supplier<Tab> tabCondition) {
+        mTabSupplier = dependOnSupplier(tabCondition, "Tab");
     }
 
     @Override

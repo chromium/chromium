@@ -24,7 +24,7 @@ public class IncognitoWebPageAppMenuFacility extends PageAppMenuFacility<WebPage
         declarePossibleStubMenuItem(items, TRANSLATE_ID);
 
         // None of these should exist.
-        declareAbsentMenuItem(items, ADD_TO_HOME_SCREEN__UNIVERSAL_INSTALL__ID);
+        declareAbsentMenuItem(items, ADD_TO_HOME_SCREEN_UNIVERSAL_INSTALL_ID);
         declareAbsentMenuItem(items, OPEN_WEBAPK_ID);
 
         declarePossibleStubMenuItem(items, DESKTOP_SITE_ID);

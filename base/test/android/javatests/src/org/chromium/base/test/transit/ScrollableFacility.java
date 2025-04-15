@@ -488,7 +488,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
         /** Returns the item rendered to an Android View. */
         public View getView() {
             assumeNonNull(mViewElement);
-            return mViewElement.getChecked();
+            return mViewElement.get();
         }
     }
 

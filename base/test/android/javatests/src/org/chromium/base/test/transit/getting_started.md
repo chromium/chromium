@@ -168,7 +168,7 @@ public class PageStation extends Station {
     }
 
 +   public ImageButton getTabSwitcherButton() {
-+       return (ImageButton) mTabSwitcherButton.getChecked();
++       return (ImageButton) mTabSwitcherButton.get();
 +   }
 }
 ```
@@ -324,7 +324,6 @@ public class TabSwitcherButtonFacility extends Facility<PageStation> {
     }
 
     public ImageButton getView() {
-        assertSuppliersCanBeUsed();
         return (ImageButton) mTabSwitcherButton.get();
     }
 
@@ -349,7 +348,6 @@ after all its Enter Conditions are met:
 ```java
 public class PageStation extends Station {
 -   public ImageButton getTabSwitcherButton() {
--       assertSuppliersCanBeUsed();
 -       return (ImageButton) mTabSwitcherButton.get();
 -   }
 

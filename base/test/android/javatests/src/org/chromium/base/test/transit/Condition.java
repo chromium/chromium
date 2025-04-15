@@ -37,6 +37,8 @@ public abstract class Condition {
 
     @VisibleForTesting boolean mHasStartedMonitoringForTesting;
     @VisibleForTesting boolean mHasStoppedMonitoringForTesting;
+    protected @Nullable ConditionalState mOwnerState;
+    protected @Nullable Transition mOwnerTransition;
 
     /**
      * @param isRunOnUiThread true if the Condition should be checked on the UI Thread, false if it
@@ -45,6 +47,34 @@ public abstract class Condition {
      */
     public Condition(boolean isRunOnUiThread) {
         mIsRunOnUiThread = isRunOnUiThread;
+    }
+
+    void bindToState(ConditionalState owner) {
+        assert mOwnerState == null
+                : String.format(
+                        "Condition already bound to %s, cannot bind to %s", mOwnerState, owner);
+        assert mOwnerTransition == null
+                : String.format(
+                        "Condition already bound to %s, cannot bind to %s",
+                        mOwnerTransition, owner);
+        mOwnerState = owner;
+    }
+
+    void bindToTransition(Transition transition) {
+        assert mOwnerState == null
+                : String.format(
+                        "Condition already bound to %s, cannot bind to %s",
+                        mOwnerState, transition);
+        assert mOwnerTransition == null
+                : String.format(
+                        "Condition already bound to %s, cannot bind to %s",
+                        mOwnerTransition, transition);
+        mOwnerTransition = transition;
+    }
+
+    void assertIsBound() {
+        assert mOwnerTransition != null || mOwnerState != null
+                : String.format("Condition \"%s\" is not bound.", getDescription());
     }
 
     /**

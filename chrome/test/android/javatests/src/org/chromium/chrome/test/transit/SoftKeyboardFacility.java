@@ -32,7 +32,7 @@ public class SoftKeyboardFacility extends Facility<Station<?>> {
      * @param viewElementsToSettle the ViewElements to wait to stop moving
      */
     public void close(ViewElement... viewElementsToSettle) {
-        assertSuppliersCanBeUsed();
+        assertInPhase(Phase.ACTIVE);
 
         if (mSoftKeyboardElement.get()) {
             // Keyboard was expected to be shown

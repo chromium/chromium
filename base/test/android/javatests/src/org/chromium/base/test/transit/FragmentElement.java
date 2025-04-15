@@ -51,6 +51,7 @@ public class FragmentElement<FragmentT extends Fragment, ActivityT extends Fragm
     private class FragmentExistsCondition extends ConditionWithResult<FragmentT> {
         public FragmentExistsCondition() {
             super(/* isRunOnUiThread= */ false);
+            dependOnSupplier(mActivityElement, "Activity");
         }
 
         @Override
@@ -61,7 +62,6 @@ public class FragmentElement<FragmentT extends Fragment, ActivityT extends Fragm
         @Override
         protected ConditionStatusWithResult<FragmentT> resolveWithSuppliers() throws Exception {
             ActivityT activity = mActivityElement.get();
-            if (activity == null) return awaiting("No activity found").withoutResult();
             List<Fragment> fragments = activity.getSupportFragmentManager().getFragments();
             FragmentT candidate = null;
             for (Fragment fragment : fragments) {

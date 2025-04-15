@@ -49,7 +49,7 @@ public class TopBottomLinksPageStation extends WebPageStation {
     /** Scrolls down the page using a drag gesture to dismiss browser controls. */
     private Transition.Trigger gestureScrollToBottomTrigger() {
         return () -> {
-            assertSuppliersCanBeUsed();
+            assertInPhase(Phase.ACTIVE);
             View contentView = mActivityTabSupplier.get().getView();
             float width = contentView.getWidth();
             float height = contentView.getHeight();

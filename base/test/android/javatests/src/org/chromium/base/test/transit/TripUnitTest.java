@@ -12,6 +12,7 @@ import android.app.Activity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 
@@ -20,6 +21,8 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Unit Tests for {@link Trip}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TripUnitTest {
+
+    private static final String TAG = "TripUnitTest";
 
     public static class NestedFactoryStation extends Station<Activity> {
         public final Condition mOuterCondition;
@@ -137,6 +140,7 @@ public class TripUnitTest {
                 new Thread.UncaughtExceptionHandler() {
                     @Override
                     public void uncaughtException(Thread thread, Throwable ex) {
+                        Log.e(TAG, "uncaughtException ", ex);
                         maybeException.set(ex);
                     }
                 });

@@ -34,24 +34,19 @@ import java.util.function.Function;
  */
 @NullMarked
 public class LogicalElement<ParamT> extends Element<Void> {
-
-    private static final ConditionWithResult<Void> CONDITION_WITH_NULL_RESULT =
-            new ConditionWithResult<>(/* isRunOnUiThread= */ false) {
+    private static final Supplier<Void> SUPPLIER_OF_NULL =
+            new Supplier<>() {
                 @Override
-                public String buildDescription() {
-                    return "Supplier of null";
+                public Void get() {
+                    return assumeNonNull(null);
                 }
 
                 @Override
                 public boolean hasValue() {
                     return true;
                 }
-
-                @Override
-                protected ConditionStatusWithResult<Void> resolveWithSuppliers() {
-                    return fulfilled().withResult(assumeNonNull(null));
-                }
             };
+
     private final boolean mIsRunOnUiThread;
     private final String mDescription;
     private final Function<ParamT, ConditionStatus> mCheckFunction;
@@ -99,7 +94,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
                 /* isRunOnUiThread= */ true,
                 description,
                 new CallableAsFunction(checkCallable),
-                CONDITION_WITH_NULL_RESULT,
+                SUPPLIER_OF_NULL,
                 /* id= */ null);
     }
 
@@ -145,7 +140,7 @@ public class LogicalElement<ParamT> extends Element<Void> {
                 /* isRunOnUiThread= */ false,
                 description,
                 new CallableAsFunction(checkCallable),
-                CONDITION_WITH_NULL_RESULT,
+                SUPPLIER_OF_NULL,
                 /* id= */ null);
     }
 

@@ -128,7 +128,7 @@ public class WebPageStation extends PageStation {
     /** Trigger to scroll WebContents to the bottom. */
     public Transition.Trigger scrollToBottomTrigger() {
         return () -> {
-            assertSuppliersCanBeUsed();
+            assertInPhase(Phase.ACTIVE);
             try {
                 JavaScriptUtils.executeJavaScriptAndWaitForResult(
                         mWebContentsSupplier.get(),
@@ -171,6 +171,9 @@ public class WebPageStation extends PageStation {
         public WebContents get() {
             // Do not return a WebContents that has been destroyed, so always get it from the
             // Tab instead of letting ConditionWithResult return its |mResult|.
+            if (!mLoadedTabSupplier.hasValue()) {
+                return null;
+            }
             Tab loadedTab = mLoadedTabSupplier.get();
             if (loadedTab == null) {
                 return null;

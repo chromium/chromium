@@ -20,8 +20,7 @@ import java.util.Set;
 public abstract class Element<ProductT extends @Nullable Object> implements Supplier<ProductT> {
     private final String mId;
     protected ConditionalState mOwner;
-    private boolean mExitConditionCreated;
-    private @Nullable ConditionWithResult<ProductT> mEnterCondition;
+    private ConditionWithResult<ProductT> mEnterCondition;
     private @Nullable Condition mExitCondition;
 
     /**
@@ -34,7 +33,17 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
 
     @Initializer
     void bind(ConditionalState owner) {
+        assert mOwner == null
+                : String.format("Element already bound to %s, cannot bind to %s", mOwner, owner);
         mOwner = owner;
+
+        mEnterCondition = createEnterCondition();
+        mEnterCondition.bindToState(owner);
+
+        mExitCondition = createExitCondition();
+        if (mExitCondition != null) {
+            mExitCondition.bindToState(owner);
+        }
     }
 
     /** Must create an ENTER Condition to ensure the element is present in the ConditionalState. */
@@ -47,21 +56,14 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
     public abstract @Nullable Condition createExitCondition();
 
     // Supplier implementation
-    @Override
-    public @Nullable ProductT get() {
-        return getEnterCondition().get();
-    }
-
     /**
      * @return the product of the element (View, Activity, etc.)
      * @throws AssertionError if the element is in a ConditionalState that's neither ACTIVE nor
      *     TRANSITIONING_FROM, or if the element has no value.
      */
-    public ProductT getChecked() {
-        mOwner.assertSuppliersCanBeUsed();
-        ProductT product = get();
-        assert product != null : "Element " + this + " has no value";
-        return product;
+    @Override
+    public ProductT get() {
+        return getEnterCondition().get();
     }
 
     // Supplier implementation
@@ -73,10 +75,7 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
     /**
      * @return an ENTER Condition to ensure the element is present in the ConditionalState.
      */
-    public ConditionWithResult<ProductT> getEnterCondition() {
-        if (mEnterCondition == null) {
-            mEnterCondition = createEnterCondition();
-        }
+    ConditionWithResult<ProductT> getEnterCondition() {
         return mEnterCondition;
     }
 
@@ -85,16 +84,17 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
      * @return an EXIT Condition to ensure the element is not present after transitioning to the
      *     destination.
      */
-    public @Nullable Condition getExitCondition(Set<String> destinationElementIds) {
-        if (!mExitConditionCreated) {
-            // Elements don't generate exit Conditions when the same element is in a
-            // destination state.
-            if (destinationElementIds.contains(getId())) {
-                return null;
-            }
-            mExitCondition = createExitCondition();
-            mExitConditionCreated = true;
+    @Nullable Condition getExitConditionFiltered(Set<String> destinationElementIds) {
+        if (mExitCondition == null) {
+            return null;
         }
+
+        // Elements don't generate exit Conditions when the same element is in a
+        // destination state.
+        if (destinationElementIds.contains(getId())) {
+            return null;
+        }
+
         return mExitCondition;
     }
 

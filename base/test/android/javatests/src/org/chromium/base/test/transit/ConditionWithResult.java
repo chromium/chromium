@@ -22,11 +22,49 @@ public abstract class ConditionWithResult<ResultT> extends Condition implements 
         super(isRunOnUiThread);
     }
 
+    // Supplier implementation
+    /**
+     * @return the product of the element (View, Activity, etc.)
+     * @throws AssertionError if any of:
+     *     <pre>
+     *     1) the Condition was neither bound to a ConditionalState nor to a Transition;
+     *     2) the Condition is bound to a ConditionalState that's NEW or FINISHED;
+     *     3) the result is null.
+     *     </pre>
+     */
     @Override
-    public @Nullable ResultT get() {
-        return mResult;
+    public ResultT get() {
+        assertIsBound();
+        if (mOwnerState != null) {
+            mOwnerState.assertSuppliersMightBeValid();
+        }
+        ResultT result = mResult;
+        assert result != null : String.format("Condition \"%s\" has null result", getDescription());
+        return result;
     }
 
+    @Override
+    public boolean hasValue() {
+        assertIsBound();
+        if (mOwnerState != null) {
+            mOwnerState.assertSuppliersMightBeValid();
+        }
+        return mResult != null;
+    }
+
+    /**
+     * @return the product of the element (View, Activity, etc.) from a FINISHED ConditionalState
+     *     <p>Same as get() but callable after the ConditionalState is transitions from. Use with
+     *     caution, as most of the time this means the product is not usable anymore.
+     */
+    public ResultT getFromPast() {
+        assertIsBound();
+        ResultT result = mResult;
+        assert result != null : String.format("Condition \"%s\" has null result", getDescription());
+        return result;
+    }
+
+    // Condition implementation
     @Override
     protected final ConditionStatus checkWithSuppliers() throws Exception {
         ConditionStatusWithResult<ResultT> statusWithResult = resolveWithSuppliers();

@@ -137,8 +137,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
     public static final @IdRes int SHARE_ID = R.id.share_menu_id;
     public static final @IdRes int FIND_IN_PAGE_ID = R.id.find_in_page_id;
     public static final @IdRes int TRANSLATE_ID = R.id.translate_id;
-    public static final @IdRes int ADD_TO_HOME_SCREEN__UNIVERSAL_INSTALL__ID =
-            R.id.universal_install;
+    public static final @IdRes int ADD_TO_HOME_SCREEN_UNIVERSAL_INSTALL_ID = R.id.universal_install;
     public static final @IdRes int OPEN_WEBAPK_ID = R.id.open_webapk_id;
     public static final @IdRes int DESKTOP_SITE_ID = R.id.request_desktop_site_id;
     public static final @IdRes int SETTINGS_ID = R.id.preferences_id;
@@ -240,7 +239,7 @@ public abstract class AppMenuFacility<HostStationT extends Station<?>>
 
     /** Get the menu list {@link ListView}. */
     public ListView getView() {
-        return (ListView) mMenuList.getChecked();
+        return (ListView) mMenuList.get();
     }
 
     /** Verify that the menu model has the expected menu item ids and nothing beyond them. */
