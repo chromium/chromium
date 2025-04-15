@@ -48,8 +48,10 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
-  if (!IsSharedTabGroupsJoinEnabled(profile) &&
-      !IsSharedTabGroupsCreateEnabled(profile)) {
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  if (!IsSharedTabGroupsJoinEnabled(collaboration_service) &&
+      !IsSharedTabGroupsCreateEnabled(collaboration_service)) {
     return nullptr;
   }
 
@@ -57,8 +59,6 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
   tab_groups::TabGroupSyncService* sync_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
-  collaboration::CollaborationService* collaboration_service =
-      collaboration::CollaborationServiceFactory::GetForProfile(profile);
   TabGroupService* tab_group_service =
       TabGroupServiceFactory::GetForProfile(profile);
 

@@ -332,14 +332,14 @@ using tab_groups::SharingState;
       ShareKitServiceFactory::GetForProfile(_profile);
   tab_groups::TabGroupSyncService* tabGroupSyncService =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile);
+  collaboration::CollaborationService* collaborationService =
+      collaboration::CollaborationServiceFactory::GetForProfile(_profile);
 
   SharingState sharingState = SharingState::kNotShared;
   BOOL isSharedTabGroupSupported =
       shareKitService && shareKitService->IsSupported();
 
   if (tab_groups::utils::IsTabGroupShared(group, tabGroupSyncService)) {
-    collaboration::CollaborationService* collaborationService =
-        collaboration::CollaborationServiceFactory::GetForProfile(_profile);
     data_sharing::MemberRole userRole = tab_groups::utils::GetUserRoleForGroup(
         group, tabGroupSyncService, collaborationService);
     sharingState = userRole == data_sharing::MemberRole::kOwner
@@ -362,7 +362,7 @@ using tab_groups::SharingState;
                          showRecentActivityForTabGroup:weakGroup];
                    }]];
   } else if (isSharedTabGroupSupported &&
-             IsSharedTabGroupsCreateEnabled(_profile)) {
+             IsSharedTabGroupsCreateEnabled(collaborationService)) {
     [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
                      [weakSelf.contextMenuDelegate shareTabGroup:weakGroup];
                    }]];

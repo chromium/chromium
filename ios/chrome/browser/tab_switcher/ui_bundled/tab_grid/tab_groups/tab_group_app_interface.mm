@@ -11,6 +11,7 @@
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -33,15 +34,19 @@ tab_groups::TabGroupSyncService* GetTabGroupSyncService() {
 // Returns the data sharing service from the first regular profile.
 data_sharing::DataSharingService* GetDataSharingService() {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  CHECK(IsSharedTabGroupsJoinEnabled(profile));
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  CHECK(IsSharedTabGroupsJoinEnabled(collaboration_service));
   return data_sharing::DataSharingServiceFactory::GetForProfile(profile);
 }
 
 // Returns the share kit service from the first regular profile.
 TestShareKitService* GetShareKitService() {
   ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
-  CHECK(IsSharedTabGroupsJoinEnabled(profile));
-  CHECK(IsSharedTabGroupsCreateEnabled(profile));
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  CHECK(IsSharedTabGroupsJoinEnabled(collaboration_service));
+  CHECK(IsSharedTabGroupsCreateEnabled(collaboration_service));
   return static_cast<TestShareKitService*>(
       ShareKitServiceFactory::GetForProfile(profile));
 }

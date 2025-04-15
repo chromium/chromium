@@ -6,25 +6,20 @@
 
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/service_status.h"
-#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
-bool IsSharedTabGroupsJoinEnabled(ProfileIOS* profile) {
-  if (!IsTabGroupSyncEnabled()) {
+bool IsSharedTabGroupsJoinEnabled(
+    collaboration::CollaborationService* collaboration_service) {
+  if (!collaboration_service || !IsTabGroupSyncEnabled()) {
     return false;
   }
-
-  collaboration::CollaborationService* collaboration_service =
-      collaboration::CollaborationServiceFactory::GetForProfile(profile);
   return collaboration_service->GetServiceStatus().IsAllowedToJoin();
 }
 
-bool IsSharedTabGroupsCreateEnabled(ProfileIOS* profile) {
-  if (!IsTabGroupSyncEnabled()) {
+bool IsSharedTabGroupsCreateEnabled(
+    collaboration::CollaborationService* collaboration_service) {
+  if (!collaboration_service || !IsTabGroupSyncEnabled()) {
     return false;
   }
-
-  collaboration::CollaborationService* collaboration_service =
-      collaboration::CollaborationServiceFactory::GetForProfile(profile);
   return collaboration_service->GetServiceStatus().IsAllowedToCreate();
 }

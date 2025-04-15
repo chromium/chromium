@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
@@ -357,9 +358,13 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     }
   }
 
-  if (IsSharedTabGroupsJoinEnabled(profile) && !is_off_the_record &&
-      !for_prerender) {
-    DataSharingTabHelper::CreateForWebState(web_state);
+  if (!is_off_the_record && !for_prerender) {
+    auto* collaboration_service =
+        collaboration::CollaborationServiceFactory::GetForProfile(profile);
+    if (IsSharedTabGroupsJoinEnabled(collaboration_service)) {
+      DataSharingTabHelper::CreateForWebState(web_state);
+    }
   }
+
   EditMenuTabHelper::CreateForWebState(web_state);
 }

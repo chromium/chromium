@@ -4,12 +4,14 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/recent_activity_coordinator.h"
 
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/recent_activity_commands.h"
@@ -35,7 +37,10 @@
                                    browser:(Browser*)browser
                                   tabGroup:
                                       (base::WeakPtr<const TabGroup>)tabGroup {
-  CHECK(IsSharedTabGroupsJoinEnabled(browser->GetProfile()));
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->GetProfile());
+  CHECK(IsSharedTabGroupsJoinEnabled(collaboration_service));
   self = [super initWithBaseViewController:baseViewController browser:browser];
   if (self) {
     _tabGroup = tabGroup;

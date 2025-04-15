@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service_factory.h"
 
+#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -15,8 +16,10 @@ namespace {
 std::unique_ptr<KeyedService> CreateService(web::BrowserState* context) {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
-  if (!IsSharedTabGroupsJoinEnabled(profile) &&
-      !IsSharedTabGroupsCreateEnabled(profile)) {
+  collaboration::CollaborationService* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(profile);
+  if (!IsSharedTabGroupsJoinEnabled(collaboration_service) &&
+      !IsSharedTabGroupsCreateEnabled(collaboration_service)) {
     return nullptr;
   }
 
@@ -49,6 +52,7 @@ TabGroupServiceFactory::TabGroupServiceFactory()
     : ProfileKeyedServiceFactoryIOS("TabGroupService",
                                     ServiceCreation::kCreateLazily,
                                     TestingCreation::kNoServiceForTests) {
+  DependsOn(collaboration::CollaborationServiceFactory::GetInstance());
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
 }
 
