@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 
+#include "ash/system/privacy_hub/camera_privacy_switch_controller.h"
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/wm/window_pin_util.h"
 #include "base/functional/bind.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -191,9 +193,42 @@ void OnTaskSystemWebAppManagerImpl::SetPauseStateForSystemWebAppWindow(
   if (!browser) {
     return;
   }
+
   if (paused) {
     // Focus on the boca homepage in pause mode.
     browser->tab_strip_model()->ActivateTabAt(0);
+
+    // Cache current camera and microphone states before pausing, only if not
+    // already cached.
+    if (!was_camera_disabled_.has_value()) {
+      auto* const camera_controller = ash::CameraPrivacySwitchController::Get();
+      if (camera_controller) {
+        was_camera_disabled_ = camera_controller->IsCameraAccessForceDisabled();
+      }
+    }
+    if (!was_microphone_disabled_.has_value()) {
+      auto* const audio_handler = ash::CrasAudioHandler::Get();
+      if (audio_handler) {
+        was_microphone_disabled_ = audio_handler->IsInputMuted();
+      }
+    }
+
+    // Force pause camera and microphone inputs.
+    PauseCameraInput(true);
+    PauseMicrophoneInput(true);
+  } else {
+    // Restore inputs to their cached states only if previous states were
+    // cached.
+    if (was_camera_disabled_.has_value()) {
+      PauseCameraInput(was_camera_disabled_.value());
+    }
+    if (was_microphone_disabled_.has_value()) {
+      PauseMicrophoneInput(was_microphone_disabled_.value());
+    }
+
+    // Clear the cached states.
+    was_camera_disabled_ = std::nullopt;
+    was_microphone_disabled_ = std::nullopt;
   }
   EnableOrDisableCommandsForTabSwitch(window_id, !paused);
 
@@ -227,6 +262,21 @@ void OnTaskSystemWebAppManagerImpl::EnableOrDisableCommandsForTabSwitch(
   command_controller->UpdateCommandEnabled(IDC_SELECT_TAB_5, enabled);
   command_controller->UpdateCommandEnabled(IDC_SELECT_TAB_6, enabled);
   command_controller->UpdateCommandEnabled(IDC_SELECT_TAB_7, enabled);
+}
+
+void OnTaskSystemWebAppManagerImpl::PauseCameraInput(bool paused) {
+  auto* const camera_controller = ash::CameraPrivacySwitchController::Get();
+  if (camera_controller) {
+    camera_controller->SetForceDisableCameraAccess(paused);
+  }
+}
+
+void OnTaskSystemWebAppManagerImpl::PauseMicrophoneInput(bool paused) {
+  auto* const audio_handler = ash::CrasAudioHandler::Get();
+  if (audio_handler) {
+    audio_handler->SetInputMute(
+        paused, ash::CrasAudioHandler::InputMuteChangeMethod::kOther);
+  }
 }
 
 // TODO(b/367417612): Add unit test for this function.
