@@ -88,7 +88,7 @@ void CreditCardOtpAuthenticator::OnUnmaskPromptClosed(bool user_closed_dialog) {
   }
 
   autofill_metrics::LogOtpAuthResult(
-      card_->record_type(), autofill_metrics::OtpAuthEvent::kFlowCancelled,
+      autofill_metrics::OtpAuthEvent::kFlowCancelled,
       selected_challenge_option_.type);
   Reset();
 }
@@ -132,8 +132,7 @@ void CreditCardOtpAuthenticator::OnChallengeOptionSelected(
   context_token_ = context_token;
   billing_customer_number_ = billing_customer_number;
 
-  autofill_metrics::LogOtpAuthAttempt(card_->record_type(),
-                                      selected_challenge_option_.type);
+  autofill_metrics::LogOtpAuthAttempt(selected_challenge_option_.type);
 
   // Asynchronously prepare `payments_network_interface`. This is only needed
   // once per session.
@@ -178,7 +177,6 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
 
   if (select_challenge_option_request_timestamp_.has_value()) {
     autofill_metrics::LogOtpAuthSelectChallengeOptionRequestLatency(
-        card_->record_type(),
         base::TimeTicks::Now() - *select_challenge_option_request_timestamp_,
         selected_challenge_option_.type);
   }
@@ -229,7 +227,6 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
     if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
         result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
       autofill_metrics::LogOtpAuthResult(
-          card_->record_type(),
           autofill_metrics::OtpAuthEvent::
               kSelectedChallengeOptionVirtualCardRetrievalError,
           selected_challenge_option_.type);
@@ -237,7 +234,6 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
           OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
     } else {
       autofill_metrics::LogOtpAuthResult(
-          card_->record_type(),
           autofill_metrics::OtpAuthEvent::kSelectedChallengeOptionGenericError,
           selected_challenge_option_.type);
       response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
@@ -289,7 +285,6 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     const payments::UnmaskResponseDetails& response_details) {
   if (unmask_card_request_timestamp_.has_value()) {
     autofill_metrics::LogOtpAuthUnmaskCardRequestLatency(
-        card_->record_type(),
         base::TimeTicks::Now() - *unmask_card_request_timestamp_,
         selected_challenge_option_.type);
   }
@@ -310,7 +305,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
         autofill_client_->GetPaymentsAutofillClient()
             ->OnUnmaskOtpVerificationResult(OtpUnmaskResult::kOtpMismatch);
         autofill_metrics::LogOtpAuthRetriableError(
-            card_->record_type(), autofill_metrics::OtpAuthEvent::kOtpMismatch,
+            autofill_metrics::OtpAuthEvent::kOtpMismatch,
             selected_challenge_option_.type);
       } else {
         CHECK(response_details.flow_status.find("EXPIRED_OTP") !=
@@ -318,7 +313,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
         autofill_client_->GetPaymentsAutofillClient()
             ->OnUnmaskOtpVerificationResult(OtpUnmaskResult::kOtpExpired);
         autofill_metrics::LogOtpAuthRetriableError(
-            card_->record_type(), autofill_metrics::OtpAuthEvent::kOtpExpired,
+            autofill_metrics::OtpAuthEvent::kOtpExpired,
             selected_challenge_option_.type);
       }
       return;
@@ -357,8 +352,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     autofill_client_->GetPaymentsAutofillClient()
         ->OnUnmaskOtpVerificationResult(OtpUnmaskResult::kSuccess);
 
-    autofill_metrics::LogOtpAuthResult(card_->record_type(),
-                                       autofill_metrics::OtpAuthEvent::kSuccess,
+    autofill_metrics::LogOtpAuthResult(autofill_metrics::OtpAuthEvent::kSuccess,
                                        selected_challenge_option_.type);
     Reset();
     return;
@@ -374,13 +368,11 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
       response.result =
           OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
       autofill_metrics::LogOtpAuthResult(
-          card_->record_type(),
           autofill_metrics::OtpAuthEvent::kUnmaskCardVirtualCardRetrievalError,
           selected_challenge_option_.type);
     } else {
       response.result = OtpAuthenticationResponse::Result::kAuthenticationError;
       autofill_metrics::LogOtpAuthResult(
-          card_->record_type(),
           autofill_metrics::OtpAuthEvent::kUnmaskCardAuthError,
           selected_challenge_option_.type);
     }
