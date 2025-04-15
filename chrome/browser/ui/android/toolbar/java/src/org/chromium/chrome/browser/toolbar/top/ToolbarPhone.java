@@ -41,6 +41,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.widget.ImageViewCompat;
@@ -182,6 +183,8 @@ public class ToolbarPhone extends ToolbarLayout
 
     /** The omnibox background (white with a shadow). */
     private GradientDrawable mLocationBarBackground;
+
+    private Drawable mActiveLocationBarBackground;
 
     protected boolean mForceDrawLocationBarBackground;
 
@@ -401,6 +404,7 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBarBackgroundVerticalInset =
                 res.getDimensionPixelSize(R.dimen.location_bar_vertical_margin);
         mLocationBarBackground = createModernLocationBarBackground(getContext());
+        mActiveLocationBarBackground = mLocationBarBackground;
     }
 
     /**
@@ -415,6 +419,23 @@ public class ToolbarPhone extends ToolbarLayout
         drawable.mutate();
         drawable.setColor(ContextCompat.getColor(context, R.color.toolbar_text_box_bg_color));
         return drawable;
+    }
+
+    private void updateBackground(final boolean hasFocus) {
+        if (hasFocus) {
+            mDropdownListScrolled = false;
+            mActiveLocationBarBackground = mLocationBarBackground;
+        } else if (isLocationBarShownInNtp()) {
+            updateToNtpBackground();
+        }
+    }
+
+    // Replace location bar background with NTB fakebox background.
+    private void updateToNtpBackground() {
+        Drawable ntpDrawable =
+                AppCompatResources.getDrawable(
+                        getContext(), R.drawable.home_surface_search_box_background);
+        mActiveLocationBarBackground = ntpDrawable;
     }
 
     /** Set the background color of the location bar to appropriately match the theme color. */
@@ -869,7 +890,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     protected boolean verifyDrawable(Drawable who) {
-        return super.verifyDrawable(who) || who == mLocationBarBackground;
+        return super.verifyDrawable(who) || who == mActiveLocationBarBackground;
     }
 
     private void onNtpScrollChanged(float scrollFraction) {
@@ -1227,6 +1248,7 @@ public class ToolbarPhone extends ToolbarLayout
         mLocationBarBackgroundNtpOffset.setEmpty();
         mLocationBarNtpOffsetLeft = 0;
         mLocationBarNtpOffsetRight = 0;
+        mActiveLocationBarBackground = mLocationBarBackground;
         mNtpSearchBoxTranslation.set(0, 0);
         mLocationBar.getPhoneCoordinator().setTranslationY(0);
         mLocationBar.getPhoneCoordinator().setTranslationX(0);
@@ -1485,13 +1507,13 @@ public class ToolbarPhone extends ToolbarLayout
         if (shouldDrawLocationBar()) {
             canvas.save();
             if (shouldDrawLocationBarBackground()) {
-                mLocationBarBackground.setBounds(
+                mActiveLocationBarBackground.setBounds(
                         mLocationBarBackgroundBounds.left + mLocationBarBackgroundNtpOffset.left,
                         mLocationBarBackgroundBounds.top + mLocationBarBackgroundNtpOffset.top,
                         mLocationBarBackgroundBounds.right + mLocationBarBackgroundNtpOffset.right,
                         mLocationBarBackgroundBounds.bottom
                                 + mLocationBarBackgroundNtpOffset.bottom);
-                mLocationBarBackground.draw(canvas);
+                mActiveLocationBarBackground.draw(canvas);
             }
 
             float locationBarClipLeft =
@@ -1993,12 +2015,8 @@ public class ToolbarPhone extends ToolbarLayout
     public void onUrlFocusChange(final boolean hasFocus) {
         super.onUrlFocusChange(hasFocus);
 
-        if (hasFocus) {
-            mDropdownListScrolled = false;
-        }
-
+        updateBackground(hasFocus);
         updateLocationBarForNtp(mVisualState, urlHasFocus());
-
         getTabSwitcherButtonCoordinator().getContainerView().setClickable(!hasFocus);
         triggerUrlFocusAnimation(hasFocus);
     }
@@ -2233,7 +2251,11 @@ public class ToolbarPhone extends ToolbarLayout
 
         invokeTransition(true);
         ntpDelegate.setSearchBoxScrollListener(this::onNtpScrollChanged);
-        if (wasShowingNtp) {
+        if (ntpDelegate.isLocationBarShown()) {
+            updateToNtpBackground();
+            ViewUtils.requestLayout(
+                    this, "ToolbarPhone.updateNtpAnimationState showing LocationBar");
+        } else if (wasShowingNtp) {
             // Convert the previous NTP scroll progress to URL focus progress because that
             // will give a nicer transition animation from the expanded NTP omnibox to the
             // collapsed normal omnibox on other non-NTP pages.
