@@ -386,11 +386,6 @@ void AndroidAutofillProvider::OnShowBottomSheetResult(
           ? PrefillRequestState::
                 kRequestSentStructureProvidedBottomSheetNotShown
           : PrefillRequestState::kRequestSentStructureNotProvided);
-  if (!provided_autofill_structure && cached_data_.has_value()) {
-    base::UmaHistogramTimes(
-        kPrefillRequestBottomsheetNoViewStructureDelayUma,
-        base::TimeTicks::Now() - cached_data_->prefill_request_creation_time);
-  }
 }
 
 void AndroidAutofillProvider::OnTextFieldValueChanged(
