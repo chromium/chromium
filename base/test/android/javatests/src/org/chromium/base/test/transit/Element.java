@@ -73,6 +73,16 @@ public abstract class Element<ProductT extends @Nullable Object> implements Supp
     }
 
     /**
+     * Same as get() but callable after the ConditionalState is transitioned from. Use with caution,
+     * as most of the time this means the product is not usable anymore.
+     *
+     * @return the product of the element (View, Activity, etc.) from a non-NEW ConditionalState
+     */
+    public ProductT getFromPast() {
+        return getEnterCondition().getFromPast();
+    }
+
+    /**
      * @return an ENTER Condition to ensure the element is present in the ConditionalState.
      */
     ConditionWithResult<ProductT> getEnterCondition() {

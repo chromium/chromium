@@ -74,7 +74,8 @@ public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     public void declareElements(Elements.Builder elements) {
         super.declareElements(elements);
         mTabModelSelectorSupplier =
-                elements.declareEnterCondition(new TabModelSelectorCondition(mActivityElement));
+                elements.declareEnterConditionAsElement(
+                        new TabModelSelectorCondition(mActivityElement));
 
         elements.declareView(HUB_TOOLBAR);
         elements.declareView(HUB_PANE_HOST);

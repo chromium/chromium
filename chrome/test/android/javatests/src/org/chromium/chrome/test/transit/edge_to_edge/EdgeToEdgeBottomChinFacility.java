@@ -44,14 +44,14 @@ public class EdgeToEdgeBottomChinFacility<CtaStationT extends Station<ChromeTabb
     @Override
     public void declareElements(Elements.Builder elements) {
         mEdgeToEdgeControllerSupplier =
-                elements.declareEnterCondition(
+                elements.declareEnterConditionAsElement(
                         new EdgeToEdgeControllerCondition(mHostStation.getActivityElement()));
         Supplier<BottomControlsStacker> bottomControlsStackerSupplier =
-                elements.declareEnterCondition(
+                elements.declareEnterConditionAsElement(
                         new BottomControlsStackerCondition(mHostStation.getActivityElement()));
 
         mEdgeToEdgeBottomChin =
-                elements.declareEnterCondition(
+                elements.declareEnterConditionAsElement(
                         new BottomChinCondition(bottomControlsStackerSupplier));
 
         if (mExpectPageOptIn != null) {

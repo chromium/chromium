@@ -68,7 +68,7 @@ public class ViewportFitCoverPageStation extends WebPageStation {
 
         // Ensure the bottom chin is on display.
         Supplier<BottomControlsStacker> bottomControlsStacker =
-                elements.declareEnterCondition(
+                elements.declareEnterConditionAsElement(
                         new BottomControlsStackerCondition(mActivityElement));
         elements.declareElement(
                 LogicalElement.uiThreadLogicalElement(

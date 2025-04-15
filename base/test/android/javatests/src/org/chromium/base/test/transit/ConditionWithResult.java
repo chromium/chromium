@@ -24,7 +24,7 @@ public abstract class ConditionWithResult<ResultT> extends Condition implements 
 
     // Supplier implementation
     /**
-     * @return the product of the element (View, Activity, etc.)
+     * @return the result of the Condition (View, Activity, etc.)
      * @throws AssertionError if any of:
      *     <pre>
      *     1) the Condition was neither bound to a ConditionalState nor to a Transition;
@@ -53,9 +53,10 @@ public abstract class ConditionWithResult<ResultT> extends Condition implements 
     }
 
     /**
-     * @return the product of the element (View, Activity, etc.) from a FINISHED ConditionalState
-     *     <p>Same as get() but callable after the ConditionalState is transitions from. Use with
-     *     caution, as most of the time this means the product is not usable anymore.
+     * Same as get() but callable after the ConditionalState is transitioned from. Use with caution,
+     * as most of the time this means the product is not usable anymore.
+     *
+     * @return the result of the Condition (View, Activity, etc.) from a non-NEW ConditionalState
      */
     public ResultT getFromPast() {
         assertIsBound();

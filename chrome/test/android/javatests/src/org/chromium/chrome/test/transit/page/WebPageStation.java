@@ -68,7 +68,7 @@ public class WebPageStation extends PageStation {
         super.declareElements(elements);
 
         mWebContentsSupplier =
-                elements.declareEnterCondition(
+                elements.declareEnterConditionAsElement(
                         new WebContentsPresentCondition(mPageLoadedSupplier));
         elements.declareEnterCondition(new FrameInfoUpdatedCondition(mWebContentsSupplier));
 

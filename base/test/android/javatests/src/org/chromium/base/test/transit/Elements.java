@@ -118,11 +118,39 @@ public class Elements extends BaseElements {
          * <p>Further, no promises are made that the Condition is false after exiting the State. Use
          * a scoped {@link LogicalElement} in this case.
          */
-        public <T extends Condition> T declareEnterCondition(T condition) {
+        public <T extends Condition> void declareEnterCondition(T condition) {
             assertNotBuilt();
             condition.bindToState(mOwner.mOwnerState);
             mOtherEnterConditions.add(condition);
-            return condition;
+        }
+
+        /**
+         * Declare as an element a generic enter Condition. It must be true for a transition into
+         * this ConditionalState to be complete.
+         *
+         * <p>No promises are made that the Condition is true as long as the ConditionalState is
+         * ACTIVE. For these cases, use {@link LogicalElement}.
+         *
+         * <p>Further, no promises are made that the Condition is false after exiting the State. Use
+         * a scoped {@link LogicalElement} in this case.
+         */
+        public <ProductT, T extends ConditionWithResult<ProductT>>
+                Element<ProductT> declareEnterConditionAsElement(T condition) {
+            assertNotBuilt();
+            Element<ProductT> element =
+                    new Element<>("CE/" + condition.getDescription()) {
+                        @Override
+                        public ConditionWithResult<ProductT> createEnterCondition() {
+                            return condition;
+                        }
+
+                        @Override
+                        public @Nullable Condition createExitCondition() {
+                            return null;
+                        }
+                    };
+            declareElement(element);
+            return element;
         }
 
         /**
