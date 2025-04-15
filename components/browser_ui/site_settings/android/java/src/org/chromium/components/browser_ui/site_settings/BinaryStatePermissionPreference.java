@@ -96,7 +96,7 @@ public class BinaryStatePermissionPreference extends Preference
             }
         }
 
-        if (mIconIds != null) {
+        if (mIconIds != null && mIconIds[0] != 0 && mIconIds[1] != 0) {
             mPositive.setIcon(mIconIds[0]);
             mNegative.setIcon(mIconIds[1]);
             mPositive.setIconMarginEnd(mIconMarginEnd);
