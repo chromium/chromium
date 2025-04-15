@@ -123,7 +123,7 @@ BASE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen,
 // is not interactable.
 BASE_FEATURE(kScrimForBrowserWindowModal,
              "ScrimForBrowserWindowModal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, a scrim is shown behind tab modal dialogs to cover the content
 // area. This gives user a visual cue that the content area is not interactable.
