@@ -439,6 +439,8 @@ using segmentation_platform::TipIdentifier;
          impressionLimitService:ImpressionLimitServiceFactory::GetForProfile(
                                     profile)];
     _shopCardMediator.NTPActionsDelegate = self.NTPActionsDelegate;
+    _shopCardMediator.contentSuggestionsMetricsRecorder =
+        self.contentSuggestionsMetricsRecorder;
     [moduleMediators addObject:_shopCardMediator];
     _shopCardMediator.shopCardActionDelegate = self;
   }

@@ -219,6 +219,27 @@ const float kMaxModuleEngagementIndex = 50;
   set_up_list_metrics::RecordItemSelected(type);
 }
 
+- (void)recordShopCardImpression:(ShopCardData*)shopCardData
+                         atIndex:(int)index {
+  if (shopCardData.shopCardItemType ==
+      ShopCardItemType::kPriceDropForTrackedProducts) {
+    UMA_HISTOGRAM_EXACT_LINEAR(kShopCardWithPriceTrackingImpression, index,
+                               kMaxModuleEngagementIndex);
+  } else if (shopCardData.shopCardItemType == ShopCardItemType::kReviews) {
+    UMA_HISTOGRAM_EXACT_LINEAR(kShopCardWithReviewsImpression, index,
+                               kMaxModuleEngagementIndex);
+  }
+}
+
+- (void)recordShopCardOpened:(ShopCardData*)shopCardData {
+  if (shopCardData.shopCardItemType ==
+      ShopCardItemType::kPriceDropForTrackedProducts) {
+    base::RecordAction(base::UserMetricsAction(kShopCardWithPriceTrackingOpen));
+  } else if (shopCardData.shopCardItemType == ShopCardItemType::kReviews) {
+    base::RecordAction(base::UserMetricsAction(kShopCardWithReviewsOpen));
+  }
+}
+
 - (void)recordContentNotificationSnackbarEvent:
     (ContentNotificationSnackbarEvent)event {
   UMA_HISTOGRAM_ENUMERATION(kContentNotificationSnackbarEventHistogram, event);

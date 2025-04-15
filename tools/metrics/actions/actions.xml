@@ -15159,6 +15159,28 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.MagicStack.ShopCard.PriceTracking.Open">
+  <owner>davidjm@chromium.org</owner>
+  <owner>thegreenfrog@google.com</owner>
+  <owner>gloriafang@google.com</owner>
+  <description>
+    Recorded when the user taps the ShopCard in the Magic Stack (which opens the
+    price tracking URL) when the ShopCard contains a price drop from a user's
+    tracked products.
+  </description>
+</action>
+
+<action name="IOS.MagicStack.ShopCard.Reviews.Open">
+  <owner>davidjm@chromium.org</owner>
+  <owner>thegreenfrog@google.com</owner>
+  <owner>gloriafang@google.com</owner>
+  <description>
+    Recorded when the user taps the ShopCard in the Magic Stack (which opens the
+    product reviews) when the ShopCard contains a reviews for a URL the user
+    recently navigated to.
+  </description>
+</action>
+
 <action name="IOS.MagicStack.TabResumption.PriceDrop.OpenTab">
   <owner>davidjm@chromium.org</owner>
   <owner>thegreenfrog@google.com</owner>

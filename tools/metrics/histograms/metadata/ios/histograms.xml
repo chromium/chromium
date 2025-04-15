@@ -2643,6 +2643,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.MagicStack.ShopCard.{Type}.Impression" units="index"
+    expires_after="2025-09-30">
+  <owner>davidjm@chromium.org</owner>
+  <owner>thegreenfrog@google.com</owner>
+  <owner>gloriafang@google.com</owner>
+  <summary>
+    Records impressions for different variations of the ShopCard module in the
+    magic stack. In this instance, {Type}.
+  </summary>
+  <token key="Type">
+    <variant name="PriceTracking"
+        summary="a price drop is shown on the ShopCard, if there is a price
+                 drop on the user's tracked products"/>
+    <variant name="Reviews"
+        summary="reviews are shown on the ShopCard, if the user recently
+                 navigated to a URL we have reviews for"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.MagicStack.Start.SegmentationRankingFetchTime" units="ms"
     expires_after="2025-08-10">
   <owner>thegreenfrog@chromium.org</owner>
