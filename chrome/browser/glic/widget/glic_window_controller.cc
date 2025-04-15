@@ -256,57 +256,6 @@ class GlicWindowController::WindowEventObserver : public ui::EventObserver {
   gfx::Point initial_press_loc_;
 };
 
-// This class observes the view and widget the glic widget anchors to and
-// notifies the controller whenever their bounds change.
-class GlicWindowController::AnchorObserver : public views::ViewObserver,
-                                             public views::WidgetObserver {
- public:
-  AnchorObserver(GlicWindowController* controller, views::View* anchor_view)
-      : controller_(controller) {
-    view_observation_.Observe(anchor_view);
-    CHECK(anchor_view->GetWidget());
-    widget_observation_.Observe(anchor_view->GetWidget());
-  }
-
- private:
-  // views::ViewObserver:
-  void OnViewAddedToWidget(views::View* anchor_view) override {
-    // This event is fired on entering and exiting mac fullscreen. The anchor
-    // view will be moved from the browser view to an overlay widget, or the
-    // other way around.
-    widget_observation_.Observe(anchor_view->GetWidget());
-  }
-
-  void OnViewRemovedFromWidget(views::View* anchor_view) override {
-    widget_observation_.Reset();
-  }
-
-  void OnViewBoundsChanged(views::View* anchor_view) override {
-    CHECK(controller_->attached_browser());
-    controller_->MovePositionToBrowserGlicButton(
-        *controller_->attached_browser(),
-        /*animate=*/false);
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetBoundsChanged(views::Widget* anchor_widget,
-                             const gfx::Rect& bounds) override {
-    CHECK(controller_->attached_browser());
-    controller_->MovePositionToBrowserGlicButton(
-        *controller_->attached_browser(),
-        /*animate=*/false);
-  }
-  // No need to observe widget destroy because the observed view will be removed
-  // from the widget and notifies this class.
-
-  base::ScopedObservation<views::View, views::ViewObserver> view_observation_{
-      this};
-  base::ScopedObservation<views::Widget, views::WidgetObserver>
-      widget_observation_{this};
-
-  raw_ptr<GlicWindowController> controller_;
-};
-
 GlicWindowController::GlicWindowController(
     Profile* profile,
     signin::IdentityManager* identity_manager,
@@ -750,9 +699,9 @@ void GlicWindowController::SetupGlicWidget(Browser* browser) {
   if (AlwaysDetached()) {
     SetGlicWindowToFloatingMode(true);
   } else if (!browser) {
-    // Detached window when no always detach. Be sure to reparent the widget and
-    // set its state first before showing it.
-    MaybeCreateHolderWindowAndReparent(AttachChangeReason::kInit);
+    // Detached window when no always detach. Be sure to set its state first
+    // before showing it.
+    // TODO(crbug.com/410629338): Reimplement attachment.
   }
 
   glic_widget_->Show();
@@ -1013,7 +962,7 @@ void GlicWindowController::Detach() {
   }
   SetWindowState(State::kDetaching);
   if (!AlwaysDetached()) {
-    MaybeCreateHolderWindowAndReparent(AttachChangeReason::kMenu);
+    // TODO(crbug.com/410629338): Reimplement attachment.
   }
 
   // Move down a little bit when detaching.
@@ -1037,26 +986,9 @@ void GlicWindowController::AttachToBrowser(Browser& browser,
 
   glic_service_->metrics()->OnAttachedToBrowser(reason);
 
-  // TODO(crbug.com/395734073): Investigate reparenting to a holder widget on
-  // Windows
-#if !BUILDFLAG(IS_MAC)
-  // Close the holder window.
-  holder_widget_.reset();
-#endif
-
   BrowserView* browser_view = browser.window()->AsBrowserView();
   CHECK(browser_view);
-  // Although the glic widget is conceptually anchored to the glic button, we
-  // intentionally observe its parent view, the tab strip region, for bounds
-  // changes. This is because views bounds changed events when its *local*
-  // bounds change. When the tab strip resizes, the glic button's local bounds
-  // (relative to the tab strip) typically remain constant.
-  views::View* anchor_view = browser_view->tab_strip_region_view();
-  anchor_observer_ = std::make_unique<AnchorObserver>(this, anchor_view);
 
-  // Makes the glic widget a child view of the anchor view's widget, which is
-  // different from the browser widget in mac immersive fullscreen.
-  glic_widget_->Reparent(anchor_view->GetWidget());
   if (!IsActive()) {
     GetGlicWidget()->Activate();
   }
@@ -1191,7 +1123,6 @@ void GlicWindowController::CloseFinish(
 
   SetWindowState(State::kClosed);
   attached_browser_ = nullptr;
-  anchor_observer_.reset();
   window_event_observer_.reset();
   browser_close_subscription_.reset();
   glic_widget_observation_.Reset();
@@ -1262,10 +1193,6 @@ void GlicWindowController::HandleWindowDragWithOffset(
       // focus by HandleGlicButtonIndicator won't show in front of glic.
       GetGlicWidget()->SetZOrderLevel(ui::ZOrderLevel::kFloatingWindow);
     }
-#if BUILDFLAG(IS_MAC)
-    // Mac: Make the glic widget a top-level widget before starting drag.
-    glic_widget_->Reparent(nullptr);
-#endif
     GetGlicWidget()->RunMoveLoop(
         GetClampedMouseDragOffset(mouse_offset), move_loop_source,
         views::Widget::MoveLoopEscapeBehavior::kDontHide);
@@ -1301,11 +1228,8 @@ gfx::Vector2d GlicWindowController::GetClampedMouseDragOffset(
 
 void GlicWindowController::OnDragComplete() {
   Browser* browser = FindBrowserForAttachment();
-  // No browser within attachment range so maybe reparent under an empty holder
-  // widget.
+  // No browser within attachment range.
   if (!browser) {
-    MaybeAdjustSizeForDisplay(/*animate=*/true);
-    MaybeCreateHolderWindowAndReparent(AttachChangeReason::kDrag);
     return;
   }
   // Attach to the found browser.
@@ -1428,42 +1352,6 @@ void GlicWindowController::MovePositionToBrowserGlicButton(
   glic_window_animator_->AnimatePosition(window_target_top_left, duration,
                                          base::DoNothing());
   NotifyIfPanelStateChanged();
-}
-
-void GlicWindowController::MaybeCreateHolderWindowAndReparent(
-    AttachChangeReason reason) {
-  attached_browser_ = nullptr;
-  anchor_observer_.reset();
-  browser_close_subscription_.reset();
-
-  glic_service_->metrics()->OnDetachedFromBrowser(reason);
-
-// TODO(crbug.com/395734073): Investigate reparenting to a holder widget on
-// Windows
-#if !BUILDFLAG(IS_MAC)
-  if (!holder_widget_) {
-    holder_widget_ = std::make_unique<views::Widget>();
-    views::Widget::InitParams params(
-        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
-        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-    params.activatable = views::Widget::InitParams::Activatable::kNo;
-    params.accept_events = false;
-    // Widget name is specified for debug purposes.
-    params.name = "HolderWindow";
-    params.bounds = glic_widget_->GetWindowBoundsInScreen();
-    params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-    holder_widget_->Init(std::move(params));
-    holder_widget_->ShowInactive();
-  }
-
-  glic_widget_->Reparent(holder_widget_.get());
-#else  // BUILDFLAG(IS_MAC)
-  // Mac: Make the glic widget a top-level widget
-  glic_widget_->Reparent(nullptr);
-#endif
-  NotifyIfPanelStateChanged();
-
-  SetGlicWindowToFloatingMode(true);
 }
 
 void GlicWindowController::AddStateObserver(StateObserver* observer) {

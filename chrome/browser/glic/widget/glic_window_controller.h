@@ -352,8 +352,8 @@ class GlicWindowController : public views::WidgetObserver,
   // browser window. The top right of the widget should be placed here.
   gfx::Point GetTopRightPositionForAttachedGlicWindow(GlicButton* glic_button);
 
-  // Reparents the glic widget under 'browser' and runs an animation to move it
-  // to its target position.
+  // Runs an animation to move glic to its target position.
+  // TODO(crbug.com/410629338): Reimplement attachment.
   void AttachToBrowser(Browser& browser, AttachChangeReason reason);
 
   // Clamp the mouse drag offsets to keep glic within the visible region.
@@ -373,10 +373,6 @@ class GlicWindowController : public views::WidgetObserver,
   // Find and return a browser within attachment distance. Returns nullptr if no
   // browsers are within attachment distance.
   Browser* FindBrowserForAttachment();
-
-  // Reparents the glic window to an empty holder Widget when in a detached
-  // state. Initializes the holder widget if it hasn't been created yet.
-  void MaybeCreateHolderWindowAndReparent(AttachChangeReason reason);
 
   // Updates the position of the glic window to that of the glic button of
   // `browser`'s window. This position change is animated if `animate` is true.
@@ -425,18 +421,12 @@ class GlicWindowController : public views::WidgetObserver,
   // List of callbacks to be notified when window activation has changed.
   base::RepeatingCallbackList<void(bool)> window_activation_callback_list_;
 
-#if !BUILDFLAG(IS_MAC)
-  // Empty holder widget to reparent to when detached.
-  std::unique_ptr<views::Widget> holder_widget_;
-#endif
-
   const raw_ptr<Profile> profile_;
   // Keep profile alive as long as the glic web contents. This object should be
   // destroyed when the profile needs to be destroyed.
   std::unique_ptr<WebUIContentsContainer> contents_;
 
-  // Contains the glic webview. In the attached state the parent is set to a
-  // browser window. In the detached state the parent is set to holder_widget_.
+  // Contains the glic webview.
   std::unique_ptr<GlicWidget> glic_widget_;
 
   std::unique_ptr<GlicWindowAnimator> glic_window_animator_;
@@ -455,11 +445,6 @@ class GlicWindowController : public views::WidgetObserver,
   // Used to monitor key and mouse events from native window.
   class WindowEventObserver;
   std::unique_ptr<WindowEventObserver> window_event_observer_;
-
-  // This class observes the anchor view in attached mode and moves the glic
-  // window to the desired position.
-  class AnchorObserver;
-  std::unique_ptr<AnchorObserver> anchor_observer_;
 
   // True while RunMoveLoop() has been called on a widget.
   bool in_move_loop_ = false;
