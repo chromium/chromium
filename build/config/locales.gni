@@ -181,6 +181,7 @@ if (is_chromeos) {
     "eu",
     "gl",
     "is",
+    "mn",
     "zu",
   ]
   platform_pak_locales -= [ "ur" ]
