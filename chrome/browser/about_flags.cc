@@ -5606,6 +5606,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebXrHandAnonymizationStrategyName,
      flag_descriptions::kWebXrHandAnonymizationStrategyDescription,
      kOsDesktop | kOsAndroid, MULTI_VALUE_TYPE(KWebXrHandAnonymizationChoices)},
+    {"webxr-depth-performance", flag_descriptions::kWebXRDepthPerformanceName,
+     flag_descriptions::kWebXRDepthPerformanceDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(blink::features::kWebXRDepthPerformance)},
 #if BUILDFLAG(IS_ANDROID)
     {"webxr-shared-buffers", flag_descriptions::kWebXrSharedBuffersName,
      flag_descriptions::kWebXrSharedBuffersDescription, kOsAndroid,

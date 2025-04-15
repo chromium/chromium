@@ -793,12 +793,21 @@ bool ArCoreImpl::ConfigureDepthSensing(
     return false;
   }
 
+  // We only support smooth depth. Not supporting the requested depth type is
+  // not a reason to reject the session, but only expose it as a part of the
+  // configuration if it matches what the site has asked for.
+  std::optional<mojom::XRDepthType> depth_type;
+  if (base::Contains(depth_sensing_config->depth_type_request,
+                     mojom::XRDepthType::kSmooth)) {
+    depth_type = mojom::XRDepthType::kSmooth;
+  }
+
   // Note that since both of our supported formats are the same size, we don't
   // currently need to store the value we return to the session since for our
   // purposes they are interchangeable.
   static_assert(kSupportedDepthFormats.size() == 2u);
   depth_configuration_ = device::mojom::XRDepthConfig(
-      device::mojom::XRDepthUsage::kCPUOptimized, *maybe_format);
+      device::mojom::XRDepthUsage::kCPUOptimized, *maybe_format, depth_type);
 
   return true;
 }

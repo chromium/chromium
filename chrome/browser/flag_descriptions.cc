@@ -8009,6 +8009,10 @@ const char kWebXrWebGpuBindingName[] = "WebXR/WebGPU Binding";
 const char kWebXrWebGpuBindingDescription[] =
     "Enables rendering with WebGPU for WebXR sessions. WebXR Projection "
     "Layers must be also be enabled to use this feature.";
+const char kWebXRDepthPerformanceName[] = "WebXR Depth Type";
+const char kWebXRDepthPerformanceDescription[] =
+    "Enables the ability for websites to request a specific XRDepthType when "
+    "configuring depth on a WebXR session.";
 const char kWebXrInternalsName[] = "WebXR Internals Debugging Page";
 const char kWebXrInternalsDescription[] =
     "Enables the webxr-internals developer page which can be used to help "
