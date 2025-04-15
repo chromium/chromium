@@ -21,7 +21,7 @@ PrivacySandboxNoticeServiceFactory::GetInstance() {
 
 privacy_sandbox::PrivacySandboxNoticeServiceInterface*
 PrivacySandboxNoticeServiceFactory::GetForProfile(Profile* profile) {
-  return static_cast<privacy_sandbox::PrivacySandboxNoticeService*>(
+  return static_cast<privacy_sandbox::PrivacySandboxNoticeServiceInterface*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 

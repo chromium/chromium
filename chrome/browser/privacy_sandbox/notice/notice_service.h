@@ -10,7 +10,6 @@
 #include "chrome/browser/privacy_sandbox/notice/notice_model.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_service_interface.h"
 #include "chrome/browser/privacy_sandbox/notice/notice_storage.h"
-#include "components/keyed_service/core/keyed_service.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/privacy_sandbox/notice/desktop_view_manager.h"
@@ -30,8 +29,7 @@ class NoticeCatalog;
 // 4. Keeps an internal registry to keep track of when notices were shown,
 // what actions were taken on them and how
 class PrivacySandboxNoticeService
-    : public KeyedService,
-      public PrivacySandboxNoticeServiceInterface {
+    : public PrivacySandboxNoticeServiceInterface {
  public:
   PrivacySandboxNoticeService(Profile* profile,
                               std::unique_ptr<NoticeCatalog> catalog,
