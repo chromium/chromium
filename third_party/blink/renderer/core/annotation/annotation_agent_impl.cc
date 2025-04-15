@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/html/html_details_element.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -38,6 +39,7 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -139,6 +141,11 @@ bool ShouldUseIsValidRangeAndMarkable(mojom::blink::AnnotationType type) {
       return false;
   }
 }
+
+// The maximum scroll distance for which an AnnotationAgent of type kGlic should
+// use a smooth (animated) scroll. For longer distances, the scroll will be
+// instant.
+int kGlicSmoothScrollThreshold = 7000;
 
 }  // namespace
 
@@ -306,9 +313,7 @@ void AnnotationAgentImpl::ScrollIntoView(bool applies_focus) const {
           ScrollAlignment::CenterAlways(), ScrollAlignment::CenterAlways(),
           mojom::blink::ScrollType::kProgrammatic);
   params->cross_origin_boundaries = false;
-  if (type_ == mojom::blink::AnnotationType::kGlic) {
-    params->behavior = mojom::blink::ScrollBehavior::kSmooth;
-  }
+  params->behavior = ComputeScrollIntoViewBehavior(bounding_box, *params);
 
   if (applies_focus) {
     // If the first node accepts keyboard focus, move focus there to aid users
@@ -492,6 +497,36 @@ bool AnnotationAgentImpl::IsRemoved() const {
   DCHECK(owning_container_ || !agent_host_.is_bound());
   DCHECK(owning_container_ || !receiver_.is_bound());
   return !owning_container_;
+}
+
+mojom::blink::ScrollBehavior AnnotationAgentImpl::ComputeScrollIntoViewBehavior(
+    const PhysicalRect& bounding_box,
+    const mojom::blink::ScrollIntoViewParams& params) const {
+  using mojom::blink::AnnotationType;
+  using mojom::blink::ScrollBehavior;
+  switch (type_) {
+    case AnnotationType::kSharedHighlight:
+    case AnnotationType::kTextFinder:
+    case AnnotationType::kUserNote:
+      return ScrollBehavior::kAuto;
+    case AnnotationType::kGlic:
+      // Use kInstant for long scroll distances, kSmooth otherwise.
+      if (LocalFrameView* view =
+              owning_container_->GetSupplementable()->GetFrame()->View()) {
+        ScrollOffset scroll_offset =
+            scroll_into_view_util::GetScrollOffsetToExpose(
+                *view->GetScrollableArea(), bounding_box, PhysicalBoxStrut(),
+                *params.align_x, *params.align_y);
+        gfx::Vector2dF scroll_distance =
+            scroll_offset - view->GetScrollableArea()->GetScrollOffset();
+        float max_distance = std::max(std::abs(scroll_distance.x()),
+                                      std::abs(scroll_distance.y()));
+        if (max_distance < kGlicSmoothScrollThreshold) {
+          return ScrollBehavior::kSmooth;
+        }
+      }
+      return ScrollBehavior::kInstant;
+  }
 }
 
 }  // namespace blink

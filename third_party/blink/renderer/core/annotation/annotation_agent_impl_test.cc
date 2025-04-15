@@ -9,6 +9,8 @@
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
@@ -44,6 +46,9 @@ class AnnotationAgentImplTest : public SimTest {
   }
 
  protected:
+  AnnotationAgentImplTest()
+      : SimTest(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
   // Helper to create a range to some text within a single element. Verifies
   // the Range selects the `expected` text.
   RangeInFlatTree* CreateRangeToExpectedText(Element* element,
@@ -1477,6 +1482,125 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntFindOffscreenFixed) {
 
     EXPECT_TRUE(agent_foo->IsAttached());
   }
+}
+
+TEST_F(AnnotationAgentImplTest, GlicShouldAnimateScroll) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        font: 10px/1 Ahem;
+      }
+      #foo {
+        position: absolute;
+        top: 1000px;
+      }
+      body {
+        height: 5000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo'>FOO<p>
+  )HTML");
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo, 0, 3, "FOO");
+  auto* agent_foo =
+      CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kGlic);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+  host_foo.FlushForTesting();
+
+  // Attachment must not cause any scrolling.
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  // Invoking ScrollIntoView on the agent will trigger a scroll, but the scroll
+  // will be animated (and so will not be in the viewport immediately).
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+  Compositor().BeginFrame();
+  EXPECT_TRUE(ExpectNotInViewport(*element_foo));
+
+  // Start and complete the animation (which should happen within 700 ms based
+  // on kDeltaBasedMaxDuration in scroll_offset_animation_curve.cc).
+  task_environment().FastForwardBy(base::Milliseconds(16));
+  Compositor().BeginFrame();
+  task_environment().FastForwardBy(base::Milliseconds(700));
+  Compositor().BeginFrame(/*time_delta_in_seconds*/ 0.7);
+
+  // The text should now be in the viewport.
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
+}
+
+TEST_F(AnnotationAgentImplTest, GlicShouldNotAnimateLongScroll) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      p {
+        font: 10px/1 Ahem;
+      }
+      #foo {
+        position: absolute;
+        top: 7500px;
+      }
+      body {
+        height: 10000px;
+        margin: 0;
+      }
+    </style>
+    <p id='foo'>FOO<p>
+  )HTML");
+
+  LoadAhem();
+  Compositor().BeginFrame();
+
+  Element* element_foo = GetDocument().getElementById(AtomicString("foo"));
+  RangeInFlatTree* range_foo =
+      CreateRangeToExpectedText(element_foo, 0, 3, "FOO");
+  auto* agent_foo =
+      CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kGlic);
+  ASSERT_TRUE(agent_foo);
+
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  MockAnnotationAgentHost host_foo;
+  host_foo.BindToAgent(*agent_foo);
+  Compositor().BeginFrame();
+  ASSERT_TRUE(agent_foo->IsAttached());
+  host_foo.FlushForTesting();
+
+  // Attachment must not cause any scrolling.
+  ASSERT_TRUE(ExpectNotInViewport(*element_foo));
+  ASSERT_EQ(GetDocument().View()->GetRootFrameViewport()->GetScrollOffset(),
+            ScrollOffset());
+
+  // Invoking ScrollIntoView on the agent will trigger an instant scroll
+  // (without any animation), as the distance exceeds the threshold for a
+  // smooth scroll.
+  host_foo.agent_->ScrollIntoView(/*applies_focus=*/false);
+  host_foo.FlushForTesting();
+  Compositor().BeginFrame();
+  EXPECT_TRUE(ExpectInViewport(*element_foo));
 }
 
 }  // namespace blink
