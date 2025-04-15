@@ -21,6 +21,7 @@ BubbleFrameViewBrowserTest.*
 BubbleSignInPromoInteractiveUITest.*
 ChromeLabs*UiTest.*
 ChromeSignoutConfirmationPromptPixelTest.*
+ChromeSignoutConfirmationPromptWithExtensionsPixelTest.*
 ConfirmBubbleTest.*
 ContentAnalysysDialogUiTest.*
 ContentSettingBubbleDialogTest.*
