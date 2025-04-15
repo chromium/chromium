@@ -36,7 +36,7 @@ class DevToolsAgentHost;
 }  // namespace content
 
 namespace extensions {
-
+class DelayedInstallManager;
 class Extension;
 class ExtensionHost;
 class ExtensionPrefs;
@@ -96,11 +96,6 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
         scoped_refptr<const Extension> extension,
         base::OnceClosure done_callback) = 0;
 
-    // Called after |extension| un-installation event has been notified to
-    // all observers.
-    virtual void PostNotifyUninstallExtension(
-        scoped_refptr<const Extension> extension) = 0;
-
     // Given an extension ID and/or path, loads that extension as a reload.
     virtual void LoadExtensionForReload(
         const ExtensionId& extension_id,
@@ -112,10 +107,6 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
     // because it was installed remotely.
     virtual void ShowExtensionDisabledError(const Extension* extension,
                                             bool is_remote_install) = 0;
-
-    // Finishes the delayed installations if there are any delayed
-    // extensions ready to be installed.
-    virtual void FinishDelayedInstallationsIfAny() = 0;
 
     // Returns true if the extension is allowed to be enabled or disabled,
     // respectively.
@@ -444,6 +435,7 @@ class ExtensionRegistrar : public KeyedService, public ProcessManagerObserver {
   const raw_ptr<ExtensionPrefs> extension_prefs_;
   const raw_ptr<ExtensionRegistry> registry_;
   const raw_ptr<RendererStartupHelper> renderer_helper_;
+  raw_ptr<DelayedInstallManager> delayed_install_manager_ = nullptr;
 
   // Map of DevToolsAgentHost instances that are detached,
   // waiting for an extension to be reloaded.

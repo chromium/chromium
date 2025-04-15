@@ -209,11 +209,8 @@ class StubExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
       scoped_refptr<const Extension> extension) override {}
   void PostUninstallExtension(scoped_refptr<const Extension> extension,
                               base::OnceClosure done_callback) override {}
-  void PostNotifyUninstallExtension(
-      scoped_refptr<const Extension> extension) override {}
   void ShowExtensionDisabledError(const Extension* extension,
                                   bool is_remote_install) override {}
-  void FinishDelayedInstallationsIfAny() override {}
   void LoadExtensionForReload(
       const ExtensionId& extension_id,
       const base::FilePath& path,

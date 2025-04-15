@@ -91,14 +91,11 @@ class TestExtensionRegistrarDelegate : public ExtensionRegistrar::Delegate {
   MOCK_METHOD2(PostUninstallExtension,
                void(scoped_refptr<const Extension> extension,
                     base::OnceClosure done_callback));
-  MOCK_METHOD1(PostNotifyUninstallExtension,
-               void(scoped_refptr<const Extension> extension));
   MOCK_METHOD3(LoadExtensionForReload,
                void(const ExtensionId& extension_id,
                     const base::FilePath& path,
                     LoadErrorBehavior load_error_behavior));
   MOCK_METHOD2(ShowExtensionDisabledError, void(const Extension*, bool));
-  MOCK_METHOD0(FinishDelayedInstallationsIfAny, void());
   MOCK_METHOD1(CanEnableExtension, bool(const Extension* extension));
   MOCK_METHOD1(CanDisableExtension, bool(const Extension* extension));
   MOCK_METHOD1(ShouldBlockExtension, bool(const Extension* extension));

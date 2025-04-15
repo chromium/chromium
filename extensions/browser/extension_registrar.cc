@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
+#include "extensions/browser/delayed_install_manager.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
@@ -90,6 +91,11 @@ void ExtensionRegistrar::Init(
   extensions_enabled_ = extensions_enabled;
   install_directory_ = install_directory;
   unpacked_install_directory_ = unpacked_install_directory;
+
+  // TODO(https://crbug.com/410635478): We can't put this in ctor because
+  // there's a KeyedService cycle between DelayedInstallManager and
+  // ExtensionRegistrar.
+  delayed_install_manager_ = DelayedInstallManager::Get(browser_context_);
 }
 
 base::WeakPtr<ExtensionRegistrar> ExtensionRegistrar::GetWeakPtr() {
@@ -101,6 +107,7 @@ void ExtensionRegistrar::Shutdown() {
   // the `ExtensionSystem` keyed service is destroyed.
   extension_system_ = nullptr;
   delegate_ = nullptr;
+  delayed_install_manager_ = nullptr;
 }
 
 void ExtensionRegistrar::AddExtension(
@@ -227,6 +234,8 @@ void ExtensionRegistrar::AddNewOrUpdatedExtension(
   extension_prefs_->OnExtensionInstalled(
       extension, disable_reasons, page_ordinal, install_flags,
       install_parameter, std::move(ruleset_install_prefs));
+
+  delayed_install_manager_->Remove(extension->id());
 
   delegate_->OnAddNewOrUpdatedExtension(extension);
 
@@ -644,6 +653,12 @@ void ExtensionRegistrar::ReloadExtension(
     path = unloaded_extension_paths_[extension_id];
   }
 
+  if (delayed_install_manager_->Contains(extension_id) &&
+      delayed_install_manager_->FinishDelayedInstallationIfReady(
+          extension_id, true /*install_immediately*/)) {
+    return;
+  }
+
   delegate_->LoadExtensionForReload(extension_id, path, load_error_behavior);
 }
 
@@ -714,7 +729,7 @@ bool ExtensionRegistrar::UninstallExtension(
 
   // Perform the necessary clean up work after extension un-installation event
   // has been notified to all observers.
-  delegate_->PostNotifyUninstallExtension(extension.get());
+  delayed_install_manager_->Remove(extension->id());
 
   extension_prefs_->OnExtensionUninstalled(
       extension->id(), extension->location(), external_uninstall);
@@ -763,7 +778,7 @@ void ExtensionRegistrar::FinishInstallation(const Extension* extension) {
   // Check extensions that may have been delayed only because this shared module
   // was not available.
   if (SharedModuleInfo::IsSharedModule(extension)) {
-    delegate_->FinishDelayedInstallationsIfAny();
+    delayed_install_manager_->MaybeFinishDelayedInstallations();
   }
 }
 

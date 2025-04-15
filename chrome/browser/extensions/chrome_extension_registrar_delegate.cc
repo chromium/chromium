@@ -96,7 +96,6 @@ ChromeExtensionRegistrarDelegate::ChromeExtensionRegistrarDelegate(
       system_(ExtensionSystem::Get(profile_)),
       extension_prefs_(ExtensionPrefs::Get(profile_)),
       registry_(ExtensionRegistry::Get(profile_)),
-      delayed_install_manager_(DelayedInstallManager::Get(profile_)),
       component_loader_(ComponentLoader::Get(profile_)) {}
 
 ChromeExtensionRegistrarDelegate::~ChromeExtensionRegistrarDelegate() = default;
@@ -112,7 +111,6 @@ void ChromeExtensionRegistrarDelegate::Shutdown() {
   system_ = nullptr;
   registry_ = nullptr;
   extension_registrar_ = nullptr;
-  delayed_install_manager_ = nullptr;
   component_loader_ = nullptr;
 }
 
@@ -134,7 +132,6 @@ void ChromeExtensionRegistrarDelegate::PreAddExtension(
 
 void ChromeExtensionRegistrarDelegate::OnAddNewOrUpdatedExtension(
     const Extension* extension) {
-  delayed_install_manager_->Remove(extension->id());
   if (InstallVerifier::NeedsVerification(*extension, profile_)) {
     InstallVerifier::Get(profile_)->VerifyExtension(extension->id());
   }
@@ -259,21 +256,10 @@ void ChromeExtensionRegistrarDelegate::PostUninstallExtension(
   DataDeleter::StartDeleting(profile_, extension.get(), subtask_done_callback);
 }
 
-void ChromeExtensionRegistrarDelegate::PostNotifyUninstallExtension(
-    scoped_refptr<const Extension> extension) {
-  delayed_install_manager_->Remove(extension->id());
-}
-
 void ChromeExtensionRegistrarDelegate::LoadExtensionForReload(
     const ExtensionId& extension_id,
     const base::FilePath& path,
     ExtensionRegistrar::LoadErrorBehavior load_error_behavior) {
-  if (delayed_install_manager_->Contains(extension_id) &&
-      delayed_install_manager_->FinishDelayedInstallationIfReady(
-          extension_id, true /*install_immediately*/)) {
-    return;
-  }
-
   // If we're reloading a component extension, use the component extension
   // loader's reloader.
   if (component_loader_->Exists(extension_id)) {
@@ -312,10 +298,6 @@ void ChromeExtensionRegistrarDelegate::ShowExtensionDisabledError(
     const Extension* extension,
     bool is_remote_install) {
   AddExtensionDisabledError(profile_, extension, is_remote_install);
-}
-
-void ChromeExtensionRegistrarDelegate::FinishDelayedInstallationsIfAny() {
-  delayed_install_manager_->MaybeFinishDelayedInstallations();
 }
 
 bool ChromeExtensionRegistrarDelegate::CanEnableExtension(
@@ -465,9 +447,12 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
 
   ExtensionAllowlist::Get(profile_)->OnExtensionInstalled(id, install_flags);
 
+  DelayedInstallManager* delayed_install_manager =
+      DelayedInstallManager::Get(profile_);
+
   ExtensionPrefs::DelayReason delay_reason;
   InstallGate::Action action =
-      delayed_install_manager_->ShouldDelayExtensionInstall(
+      delayed_install_manager->ShouldDelayExtensionInstall(
           extension, !!(install_flags & kInstallFlagInstallImmediately),
           &delay_reason);
   switch (action) {
@@ -482,7 +467,7 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
           install_parameter, std::move(ruleset_install_prefs));
 
       // Transfer ownership of |extension|.
-      delayed_install_manager_->Insert(extension);
+      delayed_install_manager->Insert(extension);
 
       if (delay_reason == ExtensionPrefs::DelayReason::kWaitForIdle) {
         ExtensionUpdater::Get(profile_)->NotifyAppUpdateAvailable(*extension);

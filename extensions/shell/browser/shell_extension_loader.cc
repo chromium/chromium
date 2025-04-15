@@ -156,9 +156,6 @@ void ShellExtensionLoader::PostUninstallExtension(
     scoped_refptr<const Extension> extension,
     base::OnceClosure done_callback) {}
 
-void ShellExtensionLoader::PostNotifyUninstallExtension(
-    scoped_refptr<const Extension> extension) {}
-
 void ShellExtensionLoader::LoadExtensionForReload(
     const ExtensionId& extension_id,
     const base::FilePath& path,
@@ -175,8 +172,6 @@ void ShellExtensionLoader::LoadExtensionForReload(
 void ShellExtensionLoader::ShowExtensionDisabledError(
     const Extension* extension,
     bool is_remote_install) {}
-
-void ShellExtensionLoader::FinishDelayedInstallationsIfAny() {}
 
 bool ShellExtensionLoader::CanEnableExtension(const Extension* extension) {
   return true;
