@@ -365,47 +365,6 @@ bool VisitSegmentDatabase::DeleteSegmentForURL(URLID url_id) {
   return delete_seg.Run();
 }
 
-bool VisitSegmentDatabase::MigratePresentationIndex() {
-  sql::Transaction transaction(&GetDB());
-  return transaction.Begin() &&
-      GetDB().Execute("DROP TABLE presentation") &&
-      GetDB().Execute("CREATE TABLE segments_tmp ("
-                      "id INTEGER PRIMARY KEY,"
-                      "name VARCHAR,"
-                      "url_id INTEGER NON NULL)") &&
-      GetDB().Execute("INSERT INTO segments_tmp SELECT "
-                      "id, name, url_id FROM segments") &&
-      GetDB().Execute("DROP TABLE segments") &&
-      GetDB().Execute("ALTER TABLE segments_tmp RENAME TO segments") &&
-      transaction.Commit();
-}
-
-bool VisitSegmentDatabase::MigrateVisitSegmentNames() {
-  sql::Statement select(
-      GetDB().GetUniqueStatement("SELECT id, name FROM segments"));
-  if (!select.is_valid())
-    return false;
-
-  bool success = true;
-  while (select.Step()) {
-    SegmentID id = select.ColumnInt64(0);
-    std::string_view old_name = select.ColumnStringView(1);
-    std::string new_name = ComputeSegmentName(GURL(old_name));
-    if (new_name.empty() || old_name == new_name)
-      continue;
-
-    SegmentID to_segment_id = GetSegmentNamed(new_name);
-    if (to_segment_id) {
-      // `new_name` is already in use, so merge.
-      success = success && MergeSegments(/*from_segment_id=*/id, to_segment_id);
-    } else {
-      // Trivial rename of the segment.
-      success = success && RenameSegment(id, new_name);
-    }
-  }
-  return success;
-}
-
 bool VisitSegmentDatabase::RenameSegment(SegmentID segment_id,
                                          const std::string& new_name) {
   sql::Statement statement(GetDB().GetCachedStatement(
