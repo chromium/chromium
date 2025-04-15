@@ -1005,7 +1005,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.Shared.LastTabClosed" enum="Boolean"
+<histogram name="TabGroups.Shared.LastTabClosed2" enum="Boolean"
     expires_after="2025-09-28">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
@@ -1014,6 +1014,8 @@ chromium-metrics-reviews@google.com.
     shared tab group.
 
     Recorded when the last tab is closed in a shared tab group.
+
+    Replaces TabGroups.Shared.LastTabClosed.
   </summary>
 </histogram>
 
@@ -1049,38 +1051,48 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.Shared.TabGroupAge" units="minutes"
+<histogram name="TabGroups.Shared.TabGroupAge2" units="minutes"
     expires_after="2025-10-25">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
-    [ All platforms ] Tracks the age of a SavedTabGroup (since creation).
+    [ All platforms ] Tracks the age of a SavedTabGroup (since creation). Only
+    records if the data sharing feature is enabled.
+
     Recorded once per group on startup 10 seconds after TabGroupSyncService
     initialization.
+
+    Replaces TabGroups.Shared.TabGroupAge.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.Shared.TotalTabGroupCount" units="groups"
+<histogram name="TabGroups.Shared.TotalTabGroupCount2" units="groups"
     expires_after="2025-10-25">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
     [ All platforms ] Tracks the number of total shared tab groups on startup
-    which includes both open and closed tab groups.
+    which includes both open and closed tab groups. Only records if the data
+    sharing feature is enabled.
 
     Recorded on startup 10 seconds after TabGroupSyncService initialization.
+
+    Replaces TabGroups.Shared.TotalTabGroupCount.
   </summary>
 </histogram>
 
-<histogram name="TabGroups.Shared.TotalTabGroupTabCount" units="tabs"
+<histogram name="TabGroups.Shared.TotalTabGroupTabCount2" units="tabs"
     expires_after="2025-10-25">
   <owner>dljames@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
-    [ All platforms ] Tracks the number of tabs in a shared tab group.
+    [ All platforms ] Tracks the number of tabs in a shared tab group. Only
+    records if the data sharing feature is enabled.
 
     Recorded once per group on startup 10 seconds after TabGroupSyncService
     initialization.
+
+    Replaces TabGroups.Shared.TotalTabGroupTabCount.
   </summary>
 </histogram>
 
