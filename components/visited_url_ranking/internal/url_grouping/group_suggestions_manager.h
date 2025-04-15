@@ -52,6 +52,9 @@ class GroupSuggestionsManager {
     GroupSuggestionsService::Scope scope;
   };
 
+  void OnFinishComputeSuggestions(const GroupSuggestionsService::Scope& scope,
+                                  std::optional<GroupSuggestions> suggestions);
+
   void ShowSuggestion(const GroupSuggestionsService::Scope& scope,
                       std::optional<GroupSuggestions> suggestions);
 

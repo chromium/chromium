@@ -120,7 +120,7 @@ void GroupSuggestionsManager::MaybeTriggerSuggestions(
   suggestion_computer_ = std::make_unique<GroupSuggestionComputer>(
       visited_url_ranking_service_, scope);
   suggestion_computer_->Start(
-      base::BindOnce(&GroupSuggestionsManager::ShowSuggestion,
+      base::BindOnce(&GroupSuggestionsManager::OnFinishComputeSuggestions,
                      weak_ptr_factory_.GetWeakPtr(), scope));
 }
 
@@ -144,7 +144,7 @@ bool GroupSuggestionsManager::GetCurrentComputationForTesting() const {
   return !!suggestion_computer_;
 }
 
-void GroupSuggestionsManager::ShowSuggestion(
+void GroupSuggestionsManager::OnFinishComputeSuggestions(
     const GroupSuggestionsService::Scope& scope,
     std::optional<GroupSuggestions> suggestions) {
   if (!suggestions) {
@@ -163,33 +163,33 @@ void GroupSuggestionsManager::ShowSuggestion(
     return;
   }
 
-  GroupSuggestionsDelegate* delegate = nullptr;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&GroupSuggestionsManager::ShowSuggestion,
+                                weak_ptr_factory_.GetWeakPtr(), scope,
+                                std::move(*suggestions)));
+}
+
+void GroupSuggestionsManager::ShowSuggestion(
+    const GroupSuggestionsService::Scope& scope,
+    std::optional<GroupSuggestions> suggestions) {
+  VLOG(1) << "Showing suggestion to group tabs "
+          << suggestions->suggestions.size();
+
   for (auto it : registered_delegates_) {
-    if (it.second.scope == scope) {
-      delegate = it.second.delegate;
+    if (it.second.scope != scope) {
+      continue;
     }
-  }
-  if (delegate) {
-    VLOG(1) << "Showing suggestion to group tabs "
-            << suggestions->suggestions.size();
+    GroupSuggestionsDelegate* delegate = it.second.delegate;
     auto result_callback =
         base::BindOnce(&GroupSuggestionsManager::OnSuggestionResult,
                        weak_ptr_factory_.GetWeakPtr(),
                        suggestions->suggestions.front().DeepCopy());
 
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReply(
-        FROM_HERE,
-        base::BindOnce(&GroupSuggestionsDelegate::ShowSuggestion,
-                       base::Unretained(delegate), std::move(*suggestions),
-                       std::move(result_callback)),
-        suggestion_computed_callback_.is_null()
-            ? base::DoNothing()
-            : suggestion_computed_callback_);
-  } else {
-    VLOG(1) << "Suggestion discarded for " << scope.tab_session_id;
-    if (!suggestion_computed_callback_.is_null()) {
-      suggestion_computed_callback_.Run();
-    }
+    delegate->ShowSuggestion(std::move(*suggestions),
+                             std::move(result_callback));
+  }
+  if (!suggestion_computed_callback_.is_null()) {
+    suggestion_computed_callback_.Run();
   }
 }
 
