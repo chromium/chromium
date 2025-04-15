@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadSizeMiB" units="MiB"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -165,7 +165,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Attempt.PayloadType"
-    enum="UpdateEnginePayloadFormat" expires_after="2025-08-10">
+    enum="UpdateEnginePayloadFormat" expires_after="2025-10-12">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

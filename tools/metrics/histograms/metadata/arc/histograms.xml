@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2025-08-10">
+<histogram name="Arc.Anr.{AnrPeriod}" units="ANRs" expires_after="2025-10-12">
   <owner>khmel@google.com</owner>
   <owner>arc-performance@google.com</owner>
   <summary>
@@ -1192,7 +1192,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.ButtonOptionsMenuFunctionTriggered"
-    enum="GameControlsButtonOptionsMenuFunction" expires_after="2025-08-10">
+    enum="GameControlsButtonOptionsMenuFunction" expires_after="2025-10-12">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -1203,7 +1203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.EditDeleteMenuFuctionTriggered"
-    enum="GameControlsEditDeleteMenuFunction" expires_after="2025-08-10">
+    enum="GameControlsEditDeleteMenuFunction" expires_after="2025-10-12">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -1214,7 +1214,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.GameControls.EditingListFunctionTriggered"
-    enum="GameControlsEditingListFunction" expires_after="2025-08-10">
+    enum="GameControlsEditingListFunction" expires_after="2025-10-12">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -1226,7 +1226,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Arc.GameControls.{FeatureOrHint}ToggleWithMappingSource.{OnOrOff}"
-    enum="GameControlsMappingSource" expires_after="2025-08-10">
+    enum="GameControlsMappingSource" expires_after="2025-10-12">
   <owner>cuicuiruan@google.com</owner>
   <owner>pjlee@google.com</owner>
   <owner>arc-gaming@google.com</owner>
@@ -2022,7 +2022,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.Provisioning.TimeDelta.Failure{ArcUserTypes}" units="ms"
-    expires_after="2025-08-12">
+    expires_after="2025-10-12">
   <owner>jhorwich@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>

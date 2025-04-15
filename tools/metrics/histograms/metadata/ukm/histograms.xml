@@ -104,7 +104,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped.RejectedByFilter.ByEntryHash"
-    enum="UkmEventNameHash" expires_after="2025-08-10">
+    enum="UkmEventNameHash" expires_after="2025-10-12">
   <owner>yrsun@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>

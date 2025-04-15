@@ -309,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageResult{SharingDevicePlatform}"
-    enum="SharingSendMessageResult" expires_after="2025-08-10">
+    enum="SharingSendMessageResult" expires_after="2025-10-12">
   <owner>peter@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -441,7 +441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
@@ -452,7 +452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherScreenOnAndUnlocked" enum="Boolean"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>

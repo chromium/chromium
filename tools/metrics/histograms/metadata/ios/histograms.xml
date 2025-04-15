@@ -749,7 +749,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.IsEnabled.Startup" enum="Boolean"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -818,7 +818,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.PasswordUseCount" units="count"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -840,7 +840,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.QuickPasswordUseCount" units="count"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>tmartino@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
   <summary>
@@ -935,7 +935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialProviderExtension.Promo.Impression{IsReminder}"
-    enum="IOSCredentialProviderPromoSource" expires_after="2025-08-10">
+    enum="IOSCredentialProviderPromoSource" expires_after="2025-10-12">
   <owner>huitingyu@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
@@ -953,7 +953,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.CredentialProviderExtension.Promo.{PromoSource}{IsReminder}"
-    enum="IOSCredentialProviderPromoAction" expires_after="2025-08-10">
+    enum="IOSCredentialProviderPromoAction" expires_after="2025-10-12">
   <owner>huitingyu@google.com</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
@@ -1107,7 +1107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.FETAvailabilityOnFRE"
-    enum="BooleanAvailable" expires_after="2025-08-10">
+    enum="BooleanAvailable" expires_after="2025-10-12">
   <owner>gayane@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -1174,7 +1174,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.DefaultBrowserPromo.SetUpList.Action"
-    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-08-05">
+    enum="IOSDefaultBrowserFullscreenPromoAction" expires_after="2025-10-12">
   <owner>sebsg@chromium.org</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -2055,7 +2055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.ParcelTracking.Enabled"
-    enum="Boolean" expires_after="2025-08-11">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2065,7 +2065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.SafetyCheck.Enabled"
-    enum="Boolean" expires_after="2025-08-11">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2075,7 +2075,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.SetUpList.Enabled"
-    enum="Boolean" expires_after="2025-08-11">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2085,7 +2085,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.TabResumption.Enabled"
-    enum="Boolean" expires_after="2025-08-11">
+    enum="Boolean" expires_after="2025-10-12">
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2095,7 +2095,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.MagicStack.Tips.Enabled" enum="Boolean"
-    expires_after="2025-08-11">
+    expires_after="2025-10-12">
   <owner>bwwilliams@google.com</owner>
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -2106,7 +2106,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.HomeCustomization.Opened"
-    enum="IOSHomeCustomizationEntrypoint" expires_after="2025-08-11">
+    enum="IOSHomeCustomizationEntrypoint" expires_after="2025-10-12">
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2116,7 +2116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.InactiveTabs.Settings.Threshold"
-    enum="InactiveTabsThresholdSettingType" expires_after="2025-08-10">
+    enum="InactiveTabsThresholdSettingType" expires_after="2025-10-12">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
   <summary>Logs the chosen inactive tab threshold at profile load.</summary>
@@ -2159,7 +2159,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Incognito.TimeSpent" units="ms" expires_after="2025-08-10">
+<histogram name="IOS.Incognito.TimeSpent" units="ms" expires_after="2025-10-12">
   <owner>olivierrobin@chromium.org</owner>
   <owner>qpubert@google.com</owner>
   <summary>
@@ -2307,7 +2307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.IsEnabled.Password.BottomSheet" enum="Boolean"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>sugoi@chromium.org</owner>
   <owner>veronguyen@google.com</owner>
   <owner>tmartino@chromium.org</owner>
@@ -2625,7 +2625,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.NTP.SegmentationRankingFetchTime" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -2663,7 +2663,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Start.SegmentationRankingFetchTime" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3317,7 +3317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.NTP.Impression.CustomizationState"
-    enum="IOSNTPImpressionCustomizationState" expires_after="2025-08-11">
+    enum="IOSNTPImpressionCustomizationState" expires_after="2025-10-12">
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3453,7 +3453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Omnibox.SteadyStatePositionAtStartup.Selected"
-    enum="OmniboxPositionType" expires_after="2025-08-10">
+    enum="OmniboxPositionType" expires_after="2025-10-12">
   <owner>christianxu@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -3733,7 +3733,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PageLoadCount.Counts"
-    enum="IOSPageLoadCountNavigationType" expires_after="2025-08-10">
+    enum="IOSPageLoadCountNavigationType" expires_after="2025-10-12">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>The number of navigation started events by navigation type.</summary>
@@ -3890,7 +3890,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PaymentsBottomSheet.TimeToSelection" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>vincb@google.com</owner>
   <owner>noemies@google.com</owner>
   <owner>bling-transactions@google.com</owner>
@@ -4117,7 +4117,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.APNSDeviceRegistration"
-    enum="BooleanSuccess" expires_after="2025-06-29">
+    enum="BooleanSuccess" expires_after="2025-10-12">
   <owner>danieltwhite@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <summary>
@@ -5139,7 +5139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SetUpList.DefaultBrowserPromo.Action"
-    enum="IOSSegmentedDefaultBrowserPromoAction" expires_after="2025-07-27">
+    enum="IOSSegmentedDefaultBrowserPromoAction" expires_after="2025-10-12">
   <owner>bmcclure@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -5171,7 +5171,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SetUpList.ItemDisplayed" enum="IOSSetUpListItemType"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -5199,7 +5199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ShareExtension.ReceivedEntry"
-    enum="IOSShareExtensionReceivedEntryType" expires_after="2025-08-10">
+    enum="IOSShareExtensionReceivedEntryType" expires_after="2025-10-12">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
   <summary>Type of the item received from the iOS share extension.</summary>
@@ -5216,7 +5216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ShareExtension.Source"
-    enum="IOSShareExtensionReceivedEntrySource" expires_after="2025-08-10">
+    enum="IOSShareExtensionReceivedEntrySource" expires_after="2025-10-12">
   <owner>olivierrobin@chromium.org</owner>
   <owner>rkgibson@chromium.org</owner>
   <summary>
@@ -5682,7 +5682,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.TabSwitcher.TimeSpent" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>alionadangla@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>
   <owner>chromeleon@google.com</owner>
@@ -6079,7 +6079,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.{AppVersion}AppLaunchesPerSession" units="launches"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>michaeldo@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>

@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.CSSHintShown" enum="DevToolsCSSHintShown"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>changhaohan@google.com</owner>
   <owner>mathiasb@google.com</owner>
   <owner>yangguo@google.com</owner>

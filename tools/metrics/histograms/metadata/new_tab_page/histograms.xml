@@ -185,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.BackgroundService.Images.Headers.StatusCode"
-    units="HttpResponseCode" expires_after="2025-08-10">
+    units="HttpResponseCode" expires_after="2025-10-12">
   <owner>danpeng@google.com</owner>
   <owner>pauladedeji@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -391,7 +391,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.CustomizeChromeSidePanelAction"
-    enum="NTPCustomizeChromeSidePanelAction" expires_after="2025-08-10">
+    enum="NTPCustomizeChromeSidePanelAction" expires_after="2025-10-12">
   <owner>pauladedeji@google.com</owner>
   <owner>tiborg@chromium.org</owner>
   <owner>rtatum@google.com</owner>
@@ -1581,7 +1581,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NewTabPage.Promos.MobilePromo.SegmentationPlatformQuery.{ResponseStatus}.Duration"
-    units="ms" expires_after="2025-08-10">
+    units="ms" expires_after="2025-10-12">
   <owner>rkgibson@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1797,7 +1797,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TabResumption.Visit.ClickSource"
-    enum="NtpURLVisitAggregateTypes" expires_after="2025-08-10">
+    enum="NtpURLVisitAggregateTypes" expires_after="2025-10-12">
   <owner>mfacey@google.com</owner>
   <owner>romanarora@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
@@ -1809,7 +1809,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="NewTabPage.TabResumption.VisitDismissIndex" units="index"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>mfacey@google.com</owner>
   <owner>romanarora@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>

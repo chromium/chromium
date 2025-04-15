@@ -844,7 +844,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.ChromeVox.PerformCommand"
-    enum="ChromeVoxCommand" expires_after="2025-08-08">
+    enum="ChromeVoxCommand" expires_after="2025-10-12">
   <owner>kyungjunlee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>Records when a user performs a ChromeVox command.</summary>
@@ -2093,7 +2093,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.Ash.Boca.Babelorca.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2025-06-08">
+    enum="LocaleCodeISO639" expires_after="2025-10-12">
   <owner>caott@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
@@ -2393,7 +2393,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.Performance.AXObjectCacheImpl.Snapshot"
-    units="bytes" expires_after="2025-08-10">
+    units="bytes" expires_after="2025-10-12">
   <owner>kevers@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3270,7 +3270,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ScreenAI.OCR.Latency.{ImageSize}" units="ms"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -3815,7 +3815,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="DomDistiller.ReaderShownForPageLoad" enum="Boolean"
-    expires_after="2025-08-10">
+    expires_after="2025-10-12">
   <owner>mdjones@chromium.org</owner>
   <owner>wylieb@google.com</owner>
   <owner>chrome-reader-mode-team@google.com</owner>
