@@ -9,6 +9,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
 
 import android.content.Context;
@@ -125,5 +126,12 @@ public class FeedSettingsCoordinatorUnitTest {
         Assert.assertTrue(feedSwitch.isChecked());
         mPropertyModel.set(IS_FEED_SWITCH_CHECKED, false);
         Assert.assertFalse(feedSwitch.isChecked());
+
+        // Verifies the feed list items title will get updated timely.
+        View feedListItemsTitle = feedBottomSheet.findViewById(R.id.feed_list_items_title);
+        mPropertyModel.set(IS_FEED_LIST_ITEMS_TITLE_VISIBLE, true);
+        Assert.assertEquals(View.VISIBLE, feedListItemsTitle.getVisibility());
+        mPropertyModel.set(IS_FEED_LIST_ITEMS_TITLE_VISIBLE, false);
+        Assert.assertEquals(View.GONE, feedListItemsTitle.getVisibility());
     }
 }

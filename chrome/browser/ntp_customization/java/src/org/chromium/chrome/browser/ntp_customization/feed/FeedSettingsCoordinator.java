@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ntp_customization.feed;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SETTINGS_KEYS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
 
 import android.content.Context;
@@ -94,8 +95,8 @@ public class FeedSettingsCoordinator {
     }
 
     /**
-     * Handles the binding of display and interaction for the feed toggle control in the feed
-     * settings bottom sheet.
+     * Handles the binding of display and interaction for the feed toggle control and feed list
+     * items title in the feed settings bottom sheet.
      */
     @VisibleForTesting
     static void bindFeedSettingsBottomSheet(
@@ -106,6 +107,10 @@ public class FeedSettingsCoordinator {
                     model.get(FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER));
         } else if (propertyKey == IS_FEED_SWITCH_CHECKED) {
             feedSwitch.setChecked(model.get(IS_FEED_SWITCH_CHECKED));
+        } else if (propertyKey == IS_FEED_LIST_ITEMS_TITLE_VISIBLE) {
+            View feedListItemsTitle = view.findViewById(R.id.feed_list_items_title);
+            feedListItemsTitle.setVisibility(
+                    model.get(IS_FEED_LIST_ITEMS_TITLE_VISIBLE) ? View.VISIBLE : View.GONE);
         }
     }
 

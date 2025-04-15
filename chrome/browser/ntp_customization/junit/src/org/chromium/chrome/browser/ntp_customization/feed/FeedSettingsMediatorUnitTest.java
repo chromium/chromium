@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.ACTIVITY;
@@ -109,6 +110,7 @@ public class FeedSettingsMediatorUnitTest {
         mBackPressHandlerCaptor.getValue().onClick(mView);
         verify(mDelegate).backPressOnCurrentBottomSheet();
 
+        verify(mFeedSettingsPropertyModel).set(eq(IS_FEED_LIST_ITEMS_TITLE_VISIBLE), anyBoolean());
         verify(mFeedSettingsPropertyModel)
                 .set(
                         eq(FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER),
@@ -148,6 +150,8 @@ public class FeedSettingsMediatorUnitTest {
     public void testCreateListContainerViewDelegate() {
         // Verifies that there is no sections when user has not signed in.
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(false);
+        mFeedSettingsMediator.setListItemsContentForTesting(
+                mFeedSettingsMediator.buildFeedListContent());
         ListContainerViewDelegate delegateForNotSignedIn =
                 mFeedSettingsMediator.createListDelegate();
         Assert.assertTrue(delegateForNotSignedIn.getListItems().isEmpty());
@@ -155,6 +159,8 @@ public class FeedSettingsMediatorUnitTest {
         // Verifies the sections when user has signed in and web feed is enabled.
         when(mFeedServiceBridgeJniMock.isSignedIn()).thenReturn(true);
         when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(true);
+        mFeedSettingsMediator.setListItemsContentForTesting(
+                mFeedSettingsMediator.buildFeedListContent());
         ListContainerViewDelegate delegateForWebFeedEnabled =
                 mFeedSettingsMediator.createListDelegate();
         List<Integer> content = delegateForWebFeedEnabled.getListItems();
@@ -164,6 +170,8 @@ public class FeedSettingsMediatorUnitTest {
 
         // Verifies the sections when user has signed in and web feed is disabled.
         when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(false);
+        mFeedSettingsMediator.setListItemsContentForTesting(
+                mFeedSettingsMediator.buildFeedListContent());
         ListContainerViewDelegate delegateForWebFeedDisabled =
                 mFeedSettingsMediator.createListDelegate();
         content = delegateForWebFeedDisabled.getListItems();

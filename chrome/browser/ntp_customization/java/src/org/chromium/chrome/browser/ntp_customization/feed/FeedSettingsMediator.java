@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ntp_customization.feed;
 
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.BACK_PRESS_HANDLER;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_LIST_ITEMS_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.IS_FEED_SWITCH_CHECKED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
 import static org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator.FeedSettingsBottomSheetSection.ACTIVITY;
@@ -65,6 +66,7 @@ public class FeedSettingsMediator {
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private static PrefService sPrefServiceForTest;
     private static PrefChangeRegistrar sPrefChangeRegistarForTest;
+    private List<Integer> mListItemsContent;
 
     public FeedSettingsMediator(
             PropertyModel containerPropertyModel,
@@ -77,9 +79,13 @@ public class FeedSettingsMediator {
         mFeedSettingsPropertyModel = feedSettingsPropertyModel;
         mProfile = profile;
 
+        mListItemsContent = buildFeedListContent();
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, createListDelegate());
         mBottomSheetPropertyModel.set(
                 BACK_PRESS_HANDLER, v -> delegate.backPressOnCurrentBottomSheet());
+        if (mListItemsContent.isEmpty()) {
+            mFeedSettingsPropertyModel.set(IS_FEED_LIST_ITEMS_TITLE_VISIBLE, false);
+        }
         mFeedSettingsPropertyModel.set(IS_FEED_SWITCH_CHECKED, isFeedTurnedOn());
         mFeedSettingsPropertyModel.set(
                 FEED_SWITCH_ON_CHECKED_CHANGE_LISTENER,
@@ -130,18 +136,7 @@ public class FeedSettingsMediator {
         return new ListContainerViewDelegate() {
             @Override
             public List<Integer> getListItems() {
-                List<Integer> content = new ArrayList<>();
-                if (FeedServiceBridge.isSignedIn()) {
-                    if (WebFeedBridge.isWebFeedEnabled()) {
-                        content.add(ACTIVITY);
-                        content.add(FOLLOWING);
-                        content.add(HIDDEN);
-                    } else {
-                        content.add(ACTIVITY);
-                        content.add(INTERESTS);
-                    }
-                }
-                return content;
+                return mListItemsContent;
             }
 
             @Override
@@ -164,6 +159,23 @@ public class FeedSettingsMediator {
                 return null;
             }
         };
+    }
+
+    /** Returns the content of the list displayed in the feed setting bottom sheet. */
+    @VisibleForTesting
+    List<Integer> buildFeedListContent() {
+        List<Integer> content = new ArrayList<>();
+        if (FeedServiceBridge.isSignedIn()) {
+            if (WebFeedBridge.isWebFeedEnabled()) {
+                content.add(ACTIVITY);
+                content.add(FOLLOWING);
+                content.add(HIDDEN);
+            } else {
+                content.add(ACTIVITY);
+                content.add(INTERESTS);
+            }
+        }
+        return content;
     }
 
     /**
@@ -291,5 +303,9 @@ public class FeedSettingsMediator {
         sPrefChangeRegistarForTest = prefChangeRegistrar;
         sPrefServiceForTest = prefService;
         ResettersForTesting.register(() -> sPrefServiceForTest = null);
+    }
+
+    void setListItemsContentForTesting(List<Integer> listItemsContent) {
+        mListItemsContent = listItemsContent;
     }
 }
