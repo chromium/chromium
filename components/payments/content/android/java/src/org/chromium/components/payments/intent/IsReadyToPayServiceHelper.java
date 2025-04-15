@@ -15,10 +15,8 @@ import android.os.RemoteException;
 import org.chromium.IsReadyToPayService;
 import org.chromium.IsReadyToPayServiceCallback;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.payments.PrePurchaseQuery;
 
 /** A helper to query the payment app's IsReadyToPay service. */
 @NullMarked
@@ -132,11 +130,6 @@ public class IsReadyToPayServiceHelper extends IsReadyToPayServiceCallback.Stub
             reportError();
             return;
         }
-
-        RecordHistogram.recordEnumeratedHistogram(
-                "PaymentRequest.PrePurchaseQuery",
-                PrePurchaseQuery.ANDROID_INTENT,
-                PrePurchaseQuery.MAX_VALUE);
 
         Log.i(TAG, "Querying \"%s\".", mServiceName);
         try {

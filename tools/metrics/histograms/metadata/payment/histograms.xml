@@ -253,18 +253,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PaymentRequest.PrePurchaseQuery"
-    enum="PaymentRequestPrePurchaseQuery" expires_after="2023-09-10">
-  <owner>rouslan@chromium.org</owner>
-  <owner>web-payments-team@google.com</owner>
-  <summary>
-    A count of the number of queries to the payment apps of different types,
-    where the query happens before the purchase flow is initiated. Recorded when
-    a PaymentRequest object is constructed with payment method parameters that
-    match with the already installed payment apps on the user device.
-  </summary>
-</histogram>
-
 <histogram name="PaymentRequest.Show.TryShowOutcome"
     enum="PaymentRequestTryShowOutcome" expires_after="2025-09-28">
   <owner>smcgruer@chromium.org</owner>
