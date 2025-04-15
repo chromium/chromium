@@ -71,8 +71,6 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.SigninFeatureMap;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -309,12 +307,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                     UserSelectableType.BOOKMARKS,
                     findPreference(PREF_ACCOUNT_SECTION_BOOKMARKS_TOGGLE));
             // HISTORY and TABS are bundled in the same switch in the new settings panel.
-            ChromeSwitchPreference historyAndTabsToggle =
-                    (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
-            mSyncTypeSwitchPreferencesMap.put(UserSelectableType.HISTORY, historyAndTabsToggle);
-            mSyncTypeSwitchPreferencesMap.put(UserSelectableType.TABS, historyAndTabsToggle);
-            historyAndTabsToggle.setViewId(R.id.account_section_history_toggle);
-
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.HISTORY,
+                    findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE));
+            mSyncTypeSwitchPreferencesMap.put(
+                    UserSelectableType.TABS, findPreference(PREF_ACCOUNT_SECTION_HISTORY_TOGGLE));
             ChromeSwitchPreference passwordsToggle =
                     (ChromeSwitchPreference) findPreference(PREF_ACCOUNT_SECTION_PASSWORDS_TOGGLE);
             mSyncTypeSwitchPreferencesMap.put(UserSelectableType.PASSWORDS, passwordsToggle);
@@ -578,7 +575,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                         ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS)) {
             mBatchUploadCardPreference.hideBatchUploadCardAndUpdate();
         }
-        updateSyncPreferences(/* isFromOnResume= */ true);
+        updateSyncPreferences();
     }
 
     @Override
@@ -628,8 +625,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         // update to let updateSyncStateFromSelectedTypes finish saving the state.
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
-                mCallbackController.makeCancelable(
-                        () -> updateSyncPreferences(/* isFromOnResume= */ false)));
+                mCallbackController.makeCancelable(this::updateSyncPreferences));
     }
 
     /** IdentityManager.Observer implementation. */
@@ -656,12 +652,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     /**
      * Gets the current state of data types from {@link SyncService} and updates UI elements from
      * this state.
-     *
-     * @param isFromOnResume whether the method is called on activity resumption. Certain UI
-     *     elements are only displayed when this is the case, as opposed to whenever the sync state
-     *     changes for example.
      */
-    private void updateSyncPreferences(boolean isFromOnResume) {
+    private void updateSyncPreferences() {
         String signedInAccountName =
                 CoreAccountInfo.getEmailFrom(
                         IdentityServicesProvider.get()
@@ -680,7 +672,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 SyncSettingsUtils.toOnClickListener(
                         this, () -> onGoogleActivityControlsClicked(signedInAccountName)));
 
-        updateDataTypeState(isFromOnResume);
+        updateDataTypeState();
         updateEncryptionState();
     }
 
@@ -693,8 +685,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         // Some calls to setSelectedTypes don't trigger syncStateChanged, so schedule update here.
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
-                mCallbackController.makeCancelable(
-                        () -> updateSyncPreferences(/* isFromOnResume= */ false)));
+                mCallbackController.makeCancelable(this::updateSyncPreferences));
     }
 
     /**
@@ -807,7 +798,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         // other cases where the dialog should stay open.
         closeDialogIfOpen(FRAGMENT_ENTER_PASSPHRASE);
         // Update our configuration UI.
-        updateSyncPreferences(/* isFromOnResume= */ false);
+        updateSyncPreferences();
         return true;
     }
 
@@ -971,7 +962,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     /** Gets the current state of data types from {@link SyncService} and updates the UI. */
-    private void updateDataTypeState(boolean shouldDisplayIphIfNeeded) {
+    private void updateDataTypeState() {
         if (mShouldReplaceSyncSettingsWithAccountSettings) {
             Set<Integer> selectedSyncTypes = mSyncService.getSelectedTypes();
 
@@ -983,10 +974,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 boolean enabled = !mSyncService.isTypeManagedByCustodian(type);
                 boolean checked = selectedSyncTypes.contains(type);
                 final boolean managed;
-                final boolean isTypeHistoryOrTabs =
-                        type == UserSelectableType.TABS || type == UserSelectableType.HISTORY;
 
-                if (isTypeHistoryOrTabs) {
+                if (type == UserSelectableType.TABS || type == UserSelectableType.HISTORY) {
                     // PREF_ACCOUNT_SECTION_HISTORY_TOGGLE toggle represents both History and Tabs
                     // in this case.
                     // History and Tabs should usually have the same value, but in some
@@ -1023,24 +1012,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                 return managed;
                             }
                         });
-
-                // Request display of an IPH bubble on the history and tabs row when history sync
-                // was declined by the user.
-                if (SigninFeatureMap.isEnabled(SigninFeatures.HISTORY_OPT_IN_IPH)
-                        && shouldDisplayIphIfNeeded
-                        && isTypeHistoryOrTabs
-                        && enabled
-                        && !managed
-                        && !checked) {
-                    final HistoryOptInIphController historyOptInIphController =
-                            HistoryOptInIphController.getInstance(getActivity(), getProfile());
-                    // TODO(crbug.com/388201776): We're using the history sync row's view Id, which
-                    // causes the bubble to point to the middle of the row, rather than the switch.
-                    // Ideally we should figure out how to get the view Id of the switch itself and
-                    // use that instead.
-                    historyOptInIphController.showIph(
-                            pref, getActivity().findViewById(R.id.account_section_history_toggle));
-                }
             }
             return;
         }

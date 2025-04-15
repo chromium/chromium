@@ -20,10 +20,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -67,7 +64,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
@@ -101,7 +97,6 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
-import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
@@ -129,7 +124,6 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "TODO(crbug.com/40743432): SyncTestRule doesn't support batching.")
-@Features.DisableFeatures(SigninFeatures.HISTORY_OPT_IN_IPH)
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 6;
 
@@ -194,7 +188,6 @@ public class ManageSyncSettingsTest {
     @Mock private HistorySyncHelper mHistorySyncHelperMock;
     @Mock private SyncService mSyncService;
     @Mock private ReauthenticatorBridge mReauthenticatorMock;
-    @Mock private HistoryOptInIphController mHistoryOptInIphControllerMock;
 
     @Before
     public void setUp() {
@@ -214,7 +207,6 @@ public class ManageSyncSettingsTest {
         when(mRegionalCapabilities.isInEeaCountry()).thenReturn(false);
 
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelperMock);
-        HistoryOptInIphController.setInstanceForTesting(mHistoryOptInIphControllerMock);
 
         mUiDataTypes = new HashMap<>();
         mUiDataTypes.put(UserSelectableType.AUTOFILL, ManageSyncSettings.PREF_SYNC_AUTOFILL);
@@ -514,86 +506,6 @@ public class ManageSyncSettingsTest {
                         });
         Assert.assertFalse(activeDataTypes.contains(DataType.HISTORY));
         Assert.assertFalse(activeDataTypes.contains(DataType.SESSIONS));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Sync"})
-    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_IPH)
-    public void testSyncHistoryAndTabsToggle_historyOptInIphEnabled() {
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        SyncTestUtil.waitForSyncTransportActive();
-
-        ManageSyncSettings fragment = startManageSyncPreferences();
-        ChromeSwitchPreference historyToggle =
-                (ChromeSwitchPreference)
-                        fragment.findPreference(
-                                ManageSyncSettings.PREF_ACCOUNT_SECTION_HISTORY_TOGGLE);
-        // Opening settings with the history toggle off triggers the request to display the IPH. The
-        // request is triggered twice: once for history and once for tabs.
-        verify(mHistoryOptInIphControllerMock, times(2)).showIph(any(), any());
-
-        SyncService syncService = mSyncTestRule.getSyncService();
-
-        // Switching history sync on from settings clears history sync declined prefs.
-        mSyncTestRule.togglePreference(historyToggle);
-        verify(mHistorySyncHelperMock).clearHistorySyncDeclinedPrefs();
-
-        Set<Integer> activeDataTypes =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return syncService.getActiveDataTypes();
-                        });
-        Assert.assertTrue(activeDataTypes.contains(DataType.HISTORY));
-        Assert.assertTrue(activeDataTypes.contains(DataType.SESSIONS));
-
-        // Switching history sync off from settings records history sync declined prefs but does not
-        // trigger the request to show the IPH.
-        mSyncTestRule.togglePreference(historyToggle);
-        verify(mHistorySyncHelperMock).recordHistorySyncDeclinedPrefs();
-        verifyNoMoreInteractions(mHistoryOptInIphControllerMock);
-
-        activeDataTypes =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return syncService.getActiveDataTypes();
-                        });
-        Assert.assertFalse(activeDataTypes.contains(DataType.HISTORY));
-        Assert.assertFalse(activeDataTypes.contains(DataType.SESSIONS));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    @DisabledTest(message = "https://crbug.com/394583571")
-    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_IPH)
-    public void testSyncHistoryAndTabsToggle_typeManagedByCustodian_historyOptInIphEnabled() {
-        setupMockSyncService();
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.HISTORY)).thenReturn(true);
-        when(mSyncService.isTypeManagedByCustodian(UserSelectableType.TABS)).thenReturn(true);
-
-        startManageSyncPreferences();
-
-        // We should not attempt to display the IPH.
-        verifyNoInteractions(mHistoryOptInIphControllerMock);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    @DisabledTest(message = "https://crbug.com/395041422")
-    @Features.EnableFeatures(SigninFeatures.HISTORY_OPT_IN_IPH)
-    public void testSyncHistoryAndTabsToggle_typesManagedByPolicy_historyOptInIphEnabled() {
-        setupMockSyncService();
-        mSyncTestRule.setUpAccountAndSignInForTesting();
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.HISTORY)).thenReturn(true);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.TABS)).thenReturn(true);
-
-        startManageSyncPreferences();
-
-        // We should not attempt to display the IPH.
-        verifyNoInteractions(mHistoryOptInIphControllerMock);
     }
 
     @Test
