@@ -86,12 +86,23 @@ struct ScrollAction {
   float distance;
 };
 
+// Action for selecting an option from a <select> element.
+struct SelectAction {
+  ToolTarget target;
+
+  // The value of the option to set as the currently selected option. The action
+  // fails if the given value doesn't match the value of one of the element's
+  // <option> children. Case-sensitive.
+  string value;
+};
+
 // Union of tool-specific actions.
 union ToolAction {
   ClickAction click;
   MouseMoveAction mouse_move;
   TypeAction type;
   ScrollAction scroll;
+  SelectAction select;
 };
 
 // All information required to invoke a tool in the renderer.

@@ -21,7 +21,7 @@ namespace {
 // Set mojom for click action based on proto. Returns false if the proto does
 // not contain correct/sufficient information, true otherwise.
 bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
-                      ActionInformation action_info) {
+                      const ActionInformation& action_info) {
   click->target = actor::mojom::ToolTarget::New(
       action_info.click().target().content_node_id());
   switch (action_info.click().click_type()) {
@@ -47,10 +47,9 @@ bool SetClickToolArgs(actor::mojom::ClickActionPtr& click,
   return true;
 }
 
-// Set mojom for mouse move action based on proto. Returns false if the proto
-// does not contain correct/sufficient information, true otherwise.
+// Set mojom for mouse move action based on proto.
 void SetMouseMoveToolArgs(actor::mojom::MouseMoveActionPtr& move,
-                          ActionInformation action_info) {
+                          const ActionInformation& action_info) {
   move->target = actor::mojom::ToolTarget::New(
       action_info.move_mouse().target().content_node_id());
 }
@@ -87,7 +86,7 @@ bool SetTypeToolArgs(actor::mojom::TypeActionPtr& type_action,
 }
 
 bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
-                       ActionInformation action_info) {
+                       const ActionInformation& action_info) {
   if (action_info.scroll().has_target()) {
     scroll->target = actor::mojom::ToolTarget::New(
         action_info.scroll().target().content_node_id());
@@ -110,6 +109,13 @@ bool SetScrollToolArgs(actor::mojom::ScrollActionPtr& scroll,
   }
   scroll->distance = action_info.scroll().distance();
   return true;
+}
+
+void SetSelectToolArgs(actor::mojom::SelectActionPtr& select,
+                       const ActionInformation& action_info) {
+  select->target = actor::mojom::ToolTarget::New(
+      action_info.select().target().content_node_id());
+  select->value = action_info.select().value();
 }
 
 }  // namespace
@@ -167,8 +173,13 @@ void PageTool::Invoke(InvokeCallback callback) {
       request->action = mojom::ToolAction::NewMouseMove(std::move(mouse_move));
       break;
     }
-    case ActionInformation::ActionInfoCase::kDragAndRelease:
     case ActionInformation::ActionInfoCase::kSelect: {
+      auto select = mojom::SelectAction::New();
+      SetSelectToolArgs(select, action_info);
+      request->action = mojom::ToolAction::NewSelect(std::move(select));
+      break;
+    }
+    case ActionInformation::ActionInfoCase::kDragAndRelease: {
       // Not implemented yet.
       NOTIMPLEMENTED();
       std::move(callback).Run(false);

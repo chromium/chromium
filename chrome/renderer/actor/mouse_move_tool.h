@@ -22,8 +22,7 @@ namespace actor {
 // A tool that can be invoked to perform a mouse move over a target.
 class MouseMoveTool : public ToolBase {
  public:
-  MouseMoveTool(mojom::MouseMoveActionPtr action,
-                base::raw_ref<content::RenderFrame> frame);
+  MouseMoveTool(mojom::MouseMoveActionPtr action, content::RenderFrame& frame);
 
   ~MouseMoveTool() override;
 
@@ -36,8 +35,6 @@ class MouseMoveTool : public ToolBase {
   // RenderFrame.
   base::raw_ref<content::RenderFrame> frame_;
   mojom::MouseMoveActionPtr action_;
-
-  base::WeakPtrFactory<MouseMoveTool> weak_factory_{this};
 };
 
 }  // namespace actor

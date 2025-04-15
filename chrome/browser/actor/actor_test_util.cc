@@ -18,6 +18,7 @@ using ::optimization_guide::proto::ClickAction;
 using ::optimization_guide::proto::MoveMouseAction;
 using ::optimization_guide::proto::NavigateAction;
 using ::optimization_guide::proto::ScrollAction;
+using ::optimization_guide::proto::SelectAction;
 using ::optimization_guide::proto::TypeAction;
 using ::optimization_guide::proto::TypeAction_TypeMode;
 
@@ -103,6 +104,15 @@ BrowserAction MakeScroll(std::optional<int> content_node_id,
     scroll->set_direction(ScrollAction::UP);
     scroll->set_distance(-scroll_offset_y);
   }
+  return action;
+}
+
+BrowserAction MakeSelect(int content_node_id, std::string_view value) {
+  BrowserAction action;
+  SelectAction* select_action =
+      action.add_action_information()->mutable_select();
+  select_action->mutable_target()->set_content_node_id(content_node_id);
+  select_action->set_value(value);
   return action;
 }
 

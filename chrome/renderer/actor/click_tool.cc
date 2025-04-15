@@ -37,8 +37,7 @@ using blink::WebInputEventResult;
 using blink::WebMouseEvent;
 using blink::WebNode;
 
-ClickTool::ClickTool(mojom::ClickActionPtr action,
-                     base::raw_ref<content::RenderFrame> frame)
+ClickTool::ClickTool(mojom::ClickActionPtr action, content::RenderFrame& frame)
     : frame_(frame), action_(std::move(action)) {}
 
 ClickTool::~ClickTool() = default;

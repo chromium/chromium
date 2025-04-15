@@ -20,7 +20,7 @@
 namespace actor {
 
 ScrollTool::ScrollTool(mojom::ScrollActionPtr action,
-                       base::raw_ref<content::RenderFrame> frame)
+                       content::RenderFrame& frame)
     : frame_(frame), action_(std::move(action)) {}
 
 ScrollTool::~ScrollTool() = default;

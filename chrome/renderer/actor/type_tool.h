@@ -8,7 +8,6 @@
 #include <cstdint>
 
 #include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/tool_base.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -26,8 +25,7 @@ namespace actor {
 // A tool that simulates typing text into a target DOM node.
 class TypeTool : public ToolBase {
  public:
-  TypeTool(mojom::TypeActionPtr action,
-           base::raw_ref<content::RenderFrame> frame);
+  TypeTool(mojom::TypeActionPtr action, content::RenderFrame& frame);
   ~TypeTool() override;
 
   void Execute(ToolFinishedCallback callback) override;

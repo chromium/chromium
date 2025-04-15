@@ -89,8 +89,7 @@ const std::unordered_map<char, KeyInfo>& GetKeyInfoMap() {
 
 }  // namespace
 
-TypeTool::TypeTool(mojom::TypeActionPtr action,
-                   base::raw_ref<content::RenderFrame> frame)
+TypeTool::TypeTool(mojom::TypeActionPtr action, content::RenderFrame& frame)
     : frame_(frame), action_(std::move(action)) {}
 
 TypeTool::~TypeTool() = default;
