@@ -527,7 +527,8 @@ DisplayMode ResolveEffectiveDisplayMode(
           app_display_mode, app_display_mode_overrides, user_display_mode);
   // TODO(https://crbug.com/389919693): Remove this if display mode restrictions
   // are added to the WebAppProvider system.
-  if (is_isolated && resolved_display_mode == DisplayMode::kMinimalUi) {
+  if (is_isolated && (resolved_display_mode == DisplayMode::kMinimalUi ||
+                      resolved_display_mode == DisplayMode::kTabbed)) {
     return DisplayMode::kStandalone;
   }
   CHECK(!(is_isolated && resolved_display_mode == DisplayMode::kBrowser));
