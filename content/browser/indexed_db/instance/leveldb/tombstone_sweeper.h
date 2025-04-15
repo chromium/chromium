@@ -34,6 +34,8 @@ class Iterator;
 namespace content::indexed_db {
 class BackingStore;
 
+namespace level_db {
+
 // Facilitates iterating a whole container with an abnormal starting position.
 // If the starting position is not 0, then the iteration will wrap to the
 // beginning of the container until the starting position is reached again.
@@ -163,6 +165,7 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
   base::WeakPtrFactory<LevelDbTombstoneSweeper> ptr_factory_{this};
 };
 
+}  // namespace level_db
 }  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_TOMBSTONE_SWEEPER_H_

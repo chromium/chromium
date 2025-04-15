@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/instance/leveldb_tombstone_sweeper.h"
+#include "content/browser/indexed_db/instance/leveldb/tombstone_sweeper.h"
 
 #include <string>
 #include <string_view>
@@ -18,7 +18,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 namespace {
 
 using blink::IndexedDBDatabaseMetadata;
@@ -344,4 +344,4 @@ bool LevelDbTombstoneSweeper::IterateIndex(
   return true;
 }
 
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/instance/leveldb_tombstone_sweeper.h"
+#include "content/browser/indexed_db/instance/leveldb/tombstone_sweeper.h"
 
 #include <memory>
 #include <string>
@@ -16,7 +16,7 @@
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
+#include "content/browser/indexed_db/instance/leveldb/indexed_db_leveldb_operations.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
@@ -28,17 +28,17 @@
 #include "third_party/leveldatabase/src/include/leveldb/filter_policy.h"
 #include "third_party/leveldatabase/src/include/leveldb/slice.h"
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 
-using ::testing::_;
-using ::testing::Eq;
-using ::testing::Return;
-using ::testing::StrictMock;
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
 using blink::IndexedDBKeyPath;
 using blink::IndexedDBObjectStoreMetadata;
+using ::testing::_;
+using ::testing::Eq;
+using ::testing::Return;
+using ::testing::StrictMock;
 
 constexpr int kRoundIterations = 11;
 constexpr int kMaxIterations = 100;
@@ -480,4 +480,4 @@ TEST_F(LevelDbTombstoneSweeperTest, LevelDBError) {
   ASSERT_TRUE(sweeper_->RunRound());
 }
 
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db

@@ -21,12 +21,11 @@ namespace leveldb {
 class DB;
 }  // namespace leveldb
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIdbInSessionDbCleanup);
 
 class LevelDbTombstoneSweeper;
-class BackingStore;
 
 // Sweeps the IndexedDB LevelDB database looking for index tombstones, followed
 // by a round of DB compaction. Sweeping is broken into phases so as to not
@@ -155,6 +154,6 @@ class CONTENT_EXPORT LevelDBCleanupScheduler {
   int active_transactions_count_ = 0;
 };
 
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_CLEANUP_SCHEDULER_H_

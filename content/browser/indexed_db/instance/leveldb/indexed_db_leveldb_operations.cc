@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
+#include "content/browser/indexed_db/instance/leveldb/indexed_db_leveldb_operations.h"
 
 #include <atomic>
 #include <optional>
@@ -157,13 +157,16 @@ Status GetVarInt(DBOrTransaction* db,
                  bool* found) {
   std::string result;
   Status s(db->Get(key, &result, found));
-  if (!s.ok())
+  if (!s.ok()) {
     return s;
-  if (!*found)
+  }
+  if (!*found) {
     return Status::OK();
+  }
   std::string_view slice(result);
-  if (DecodeVarInt(&slice, found_int) && slice.empty())
+  if (DecodeVarInt(&slice, found_int) && slice.empty()) {
     return s;
+  }
   return InternalInconsistencyStatus();
 }
 template Status GetVarInt<TransactionalLevelDBTransaction>(
@@ -205,13 +208,16 @@ Status GetString(DBOrTransaction* db,
   std::string result;
   *found = false;
   Status s(db->Get(key, &result, found));
-  if (!s.ok())
+  if (!s.ok()) {
     return s;
-  if (!*found)
+  }
+  if (!*found) {
     return Status::OK();
+  }
   std::string_view slice(result);
-  if (DecodeString(&slice, found_string) && slice.empty())
+  if (DecodeString(&slice, found_string) && slice.empty()) {
     return s;
+  }
   return InternalInconsistencyStatus();
 }
 
@@ -251,10 +257,12 @@ Status GetMaxObjectStoreId(DBOrTransaction* db,
   *max_object_store_id = -1;
   bool found = false;
   Status s = GetInt(db, max_object_store_id_key, max_object_store_id, &found);
-  if (!s.ok())
+  if (!s.ok()) {
     return s;
-  if (!found)
+  }
+  if (!found) {
     *max_object_store_id = 0;
+  }
 
   DCHECK_GE(*max_object_store_id, 0);
   return s;
@@ -278,10 +286,12 @@ Status SetMaxObjectStoreId(TransactionalLevelDBTransaction* transaction,
   bool found = false;
   Status s = GetInt(transaction, max_object_store_id_key, &max_object_store_id,
                     &found);
-  if (!s.ok())
+  if (!s.ok()) {
     return s;
-  if (!found)
+  }
+  if (!found) {
     max_object_store_id = 0;
+  }
 
   DCHECK_GE(max_object_store_id, 0);
   if (!s.ok()) {
@@ -311,8 +321,9 @@ Status GetNewVersionNumber(TransactionalLevelDBTransaction* transaction,
     INTERNAL_READ_ERROR(GET_NEW_VERSION_NUMBER);
     return s;
   }
-  if (!found)
+  if (!found) {
     last_version = 0;
+  }
 
   DCHECK_GE(last_version, 0);
 
@@ -343,8 +354,9 @@ Status SetMaxIndexId(TransactionalLevelDBTransaction* transaction,
     INTERNAL_READ_ERROR(SET_MAX_INDEX_ID);
     return s;
   }
-  if (!found)
+  if (!found) {
     max_index_id = kMinimumIndexId;
+  }
 
   if (index_id <= max_index_id) {
     INTERNAL_CONSISTENCY_ERROR(SET_MAX_INDEX_ID);
@@ -369,13 +381,15 @@ Status VersionExists(TransactionalLevelDBTransaction* transaction,
     INTERNAL_READ_ERROR(VERSION_EXISTS);
     return s;
   }
-  if (!*exists)
+  if (!*exists) {
     return s;
+  }
 
   std::string_view slice(data);
   int64_t decoded;
-  if (!DecodeInt(&slice, &decoded) || !slice.empty())
+  if (!DecodeInt(&slice, &decoded) || !slice.empty()) {
     return InternalInconsistencyStatus();
+  }
   *exists = (decoded == version);
   return s;
 }
@@ -399,8 +413,9 @@ Status GetNewDatabaseId(Transaction* transaction, int64_t* new_id) {
     INTERNAL_READ_ERROR(GET_NEW_DATABASE_ID);
     return s;
   }
-  if (!found)
+  if (!found) {
     max_database_id = 0;
+  }
 
   DCHECK_GE(max_database_id, 0);
 
@@ -418,18 +433,21 @@ bool CheckObjectStoreAndMetaDataType(const TransactionalLevelDBIterator* it,
                                      const std::string& stop_key,
                                      int64_t object_store_id,
                                      int64_t meta_data_type) {
-  if (!it->IsValid() || CompareKeys(it->Key(), stop_key) >= 0)
+  if (!it->IsValid() || CompareKeys(it->Key(), stop_key) >= 0) {
     return false;
+  }
 
   std::string_view slice(it->Key());
   ObjectStoreMetaDataKey meta_data_key;
   bool ok =
       ObjectStoreMetaDataKey::Decode(&slice, &meta_data_key) && slice.empty();
   DCHECK(ok);
-  if (meta_data_key.ObjectStoreId() != object_store_id)
+  if (meta_data_key.ObjectStoreId() != object_store_id) {
     return false;
-  if (meta_data_key.MetaDataType() != meta_data_type)
+  }
+  if (meta_data_key.MetaDataType() != meta_data_type) {
     return false;
+  }
   return ok;
 }
 
@@ -437,17 +455,20 @@ bool CheckIndexAndMetaDataKey(const TransactionalLevelDBIterator* it,
                               const std::string& stop_key,
                               int64_t index_id,
                               unsigned char meta_data_type) {
-  if (!it->IsValid() || CompareKeys(it->Key(), stop_key) >= 0)
+  if (!it->IsValid() || CompareKeys(it->Key(), stop_key) >= 0) {
     return false;
+  }
 
   std::string_view slice(it->Key());
   IndexMetaDataKey meta_data_key;
   bool ok = IndexMetaDataKey::Decode(&slice, &meta_data_key);
   DCHECK(ok);
-  if (meta_data_key.IndexId() != index_id)
+  if (meta_data_key.IndexId() != index_id) {
     return false;
-  if (meta_data_key.meta_data_type() != meta_data_type)
+  }
+  if (meta_data_key.meta_data_type() != meta_data_type) {
     return false;
+  }
   return true;
 }
 
@@ -466,19 +487,22 @@ bool FindGreatestKeyLessThanOrEqual(
   }
 
   *s = it->Seek(target);
-  if (!s->ok())
+  if (!s->ok()) {
     return false;
+  }
 
   if (!it->IsValid()) {
     *s = it->SeekToLast();
-    if (!s->ok() || !it->IsValid())
+    if (!s->ok() || !it->IsValid()) {
       return false;
+    }
   }
 
   while (CompareIndexKeys(it->Key(), target) > 0) {
     *s = it->Prev();
-    if (!s->ok() || !it->IsValid())
+    if (!s->ok() || !it->IsValid()) {
       return false;
+    }
   }
 
   do {
@@ -527,8 +551,9 @@ bool UpdateBlobNumberGeneratorCurrentNumber(
 #if DCHECK_IS_ON()
   int64_t old_number;
   if (!GetBlobNumberGeneratorCurrentNumber(leveldb_transaction, database_id,
-                                           &old_number))
+                                           &old_number)) {
     return false;
+  }
   DCHECK_LT(old_number, blob_number_generator_current_number);
 #endif
   DCHECK(DatabaseMetaDataKey::IsValidBlobNumber(

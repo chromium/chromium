@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/instance/leveldb_compaction_task.h"
+#include "content/browser/indexed_db/instance/leveldb/compaction_task.h"
 
 #include "base/trace_event/base_tracing.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 
 IndexedDBCompactionTask::IndexedDBCompactionTask(leveldb::DB* database)
     : BackingStorePreCloseTaskQueue::PreCloseTask(database) {}
@@ -24,4 +24,4 @@ bool IndexedDBCompactionTask::RunRound() {
   return true;
 }
 
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db

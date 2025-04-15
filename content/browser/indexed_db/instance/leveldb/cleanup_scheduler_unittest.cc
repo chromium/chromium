@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h"
+#include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -11,7 +11,7 @@
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_operations.h"
+#include "content/browser/indexed_db/instance/leveldb/indexed_db_leveldb_operations.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
@@ -20,7 +20,7 @@
 #include "third_party/leveldatabase/leveldb_chrome.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 
 namespace {
 constexpr int64_t kDb1 = 1;
@@ -257,4 +257,4 @@ TEST_F(LevelDBCleanupSchedulerTest, FeatureDisabled) {
   tester_.ExpectTotalCount("IndexedDB.LevelDbTombstoneSweeper.TombstonesFound",
                            0);
 }
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db

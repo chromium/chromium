@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h"
+#include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "content/browser/indexed_db/instance/leveldb_compaction_task.h"
-#include "content/browser/indexed_db/instance/leveldb_tombstone_sweeper.h"
+#include "content/browser/indexed_db/instance/leveldb/compaction_task.h"
+#include "content/browser/indexed_db/instance/leveldb/tombstone_sweeper.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_metadata.h"
 
-namespace content::indexed_db {
+namespace content::indexed_db::level_db {
 
 BASE_FEATURE(kIdbInSessionDbCleanup,
              "IdbInSessionDbCleanup",
@@ -174,4 +174,4 @@ bool LevelDBCleanupScheduler::RunTombstoneSweeper() {
 LevelDBCleanupScheduler::RunningState::RunningState() = default;
 LevelDBCleanupScheduler::RunningState::~RunningState() = default;
 
-}  // namespace content::indexed_db
+}  // namespace content::indexed_db::level_db

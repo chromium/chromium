@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_LEVELDB_OPERATIONS_H_
-#define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_LEVELDB_OPERATIONS_H_
+#ifndef CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_INDEXED_DB_LEVELDB_OPERATIONS_H_
+#define CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_INDEXED_DB_LEVELDB_OPERATIONS_H_
 
 #include <memory>
 #include <string>
@@ -75,13 +75,16 @@ Status GetInt(DBOrTransaction* db,
               bool* found) {
   std::string result;
   Status s(db->Get(key, &result, found));
-  if (!s.ok())
+  if (!s.ok()) {
     return s;
-  if (!*found)
+  }
+  if (!*found) {
     return Status::OK();
+  }
   std::string_view slice(result);
-  if (DecodeInt(&slice, found_int) && slice.empty())
+  if (DecodeInt(&slice, found_int) && slice.empty()) {
     return s;
+  }
   return InternalInconsistencyStatus();
 }
 
@@ -209,4 +212,4 @@ CONTENT_EXPORT const leveldb::Comparator* GetDefaultLevelDBComparator();
 
 }  // namespace content::indexed_db
 
-#endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_LEVELDB_OPERATIONS_H_
+#endif  // CONTENT_BROWSER_INDEXED_DB_INSTANCE_LEVELDB_INDEXED_DB_LEVELDB_OPERATIONS_H_
