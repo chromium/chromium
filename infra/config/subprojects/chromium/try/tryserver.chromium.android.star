@@ -1054,15 +1054,19 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-chrome-pie-x86-wpt-fyi-rel",
-    mirrors = ["ci/android-chrome-pie-x86-wpt-fyi-rel"],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-chrome-pie-x86-wpt-fyi-rel",
-            "release_try_builder",
-            "strip_debug_info",
-        ],
-    ),
+    name = "android-15-chrome-wpt-fyi-rel",
+    mirrors = ["ci/android-15-chrome-wpt-fyi-rel"],
+    gn_args = "ci/android-15-chrome-wpt-fyi-rel",
+    contact_team_email = "chrome-product-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
+    name = "android-15-webview-wpt-fyi-rel",
+    mirrors = ["ci/android-15-webview-wpt-fyi-rel"],
+    gn_args = "ci/android-15-webview-wpt-fyi-rel",
+    contact_team_email = "chrome-product-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -1131,13 +1135,6 @@ try_.builder(
         ],
     ),
     contact_team_email = "woa-engprod@google.com",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "android-webview-pie-x86-wpt-fyi-rel",
-    mirrors = ["ci/android-webview-pie-x86-wpt-fyi-rel"],
-    gn_args = "ci/android-webview-pie-x86-wpt-fyi-rel",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

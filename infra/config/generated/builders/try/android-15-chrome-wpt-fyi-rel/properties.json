@@ -2,14 +2,14 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/android-chrome-pie-x86-wpt-fyi-rel/gn-args.json"
+        "infra/config/generated/builders/try/android-15-chrome-wpt-fyi-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "android-chrome-pie-x86-wpt-fyi-rel",
+              "builder": "android-15-chrome-wpt-fyi-rel",
               "project": "chromium"
             },
             "builder_spec": {
@@ -26,7 +26,7 @@
                 "build_config": "Release",
                 "config": "main_builder",
                 "target_arch": "intel",
-                "target_bits": 32,
+                "target_bits": 64,
                 "target_platform": "android"
               },
               "legacy_gclient_config": {
@@ -42,30 +42,26 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "android-chrome-pie-x86-wpt-fyi-rel",
+          "builder": "android-15-chrome-wpt-fyi-rel",
           "project": "chromium"
         }
       ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-chrome-pie-x86-wpt-fyi-rel",
-          "group": "tryserver.chromium.android"
-        }
-      ],
-      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-chrome-pie-x86-wpt-fyi-rel/targets"
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-15-chrome-wpt-fyi-rel/targets"
     }
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
     "metrics_project": "chromium-reclient-metrics",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "output_local_strategy": "greedy",
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 150
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -74,6 +70,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android.fyi",
-  "recipe": "chromium"
+  "builder_group": "tryserver.chromium.android",
+  "recipe": "chromium_trybot"
 }

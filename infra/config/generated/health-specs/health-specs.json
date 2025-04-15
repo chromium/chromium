@@ -6731,6 +6731,27 @@
           }
         ]
       },
+      "android-15-chrome-wpt-fyi-rel": {
+        "contact_team_email": "chrome-product-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "android-15-tablet-landscape-x64-dbg-tests": {
         "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
@@ -6796,6 +6817,27 @@
       },
       "android-15-tablet-x64-rel": {
         "contact_team_email": "clank-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
+      "android-15-webview-wpt-fyi-rel": {
+        "contact_team_email": "chrome-product-engprod@google.com",
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -7171,26 +7213,6 @@
       },
       "android-chrome-13-x64-wpt-android-specific": {
         "contact_team_email": "chrome-blink-engprod@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "android-chrome-pie-x86-wpt-fyi-rel": {
         "problem_specs": [
           {
             "name": "Unhealthy",
@@ -8355,26 +8377,6 @@
       },
       "android-webview-code-coverage-native": {
         "contact_team_email": "woa-engprod@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "android-webview-pie-x86-wpt-fyi-rel": {
         "problem_specs": [
           {
             "name": "Unhealthy",

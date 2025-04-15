@@ -1,11 +1,12 @@
 {
-  "android-webview-pie-x86-wpt-fyi-rel": {
+  "android-15-webview-wpt-fyi-rel": {
     "isolated_scripts": [
       {
         "args": [
-          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64.textpb",
           "--use-upstream-wpt"
         ],
+        "description": "Run with android_35_google_apis_x64",
         "merge": {
           "args": [
             "--verbose"
@@ -31,13 +32,13 @@
           "hard_timeout": 14400,
           "named_caches": [
             {
-              "name": "android_28_google_apis_x86",
-              "path": ".android_emulator/android_28_google_apis_x86"
+              "name": "android_35_google_apis_x64",
+              "path": ".android_emulator/android_35_google_apis_x64"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "android_28_google_apis_x86"
+              "caches": "android_35_google_apis_x64"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
