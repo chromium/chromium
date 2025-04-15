@@ -424,13 +424,17 @@ public class ChromeTabCreator extends TabCreator
     }
 
     @Override
-    public boolean createTabWithWebContents(
-            @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, GURL url) {
+    public Tab createTabWithWebContents(
+            @Nullable Tab parent,
+            WebContents webContents,
+            @TabLaunchType int type,
+            GURL url,
+            boolean addTabToModel) {
         assert webContents != null;
 
         // The parent tab was already closed. Do not open child tabs.
         int parentId = parent != null ? parent.getId() : Tab.INVALID_TAB_ID;
-        if (mTabModel.isClosurePending(parentId)) return false;
+        if (mTabModel.isClosurePending(parentId)) return null;
 
         // Measure tab creation duration for different launch types to understand tab creation
         // performance using an existing WebContents.
@@ -479,8 +483,8 @@ public class ChromeTabCreator extends TabCreator
                                 ? TabCreationState.LIVE_IN_FOREGROUND
                                 : TabCreationState.LIVE_IN_BACKGROUND;
             }
-            mTabModel.addTab(tab, position, type, creationState);
-            return true;
+            if (addTabToModel) mTabModel.addTab(tab, position, type, creationState);
+            return tab;
         }
     }
 

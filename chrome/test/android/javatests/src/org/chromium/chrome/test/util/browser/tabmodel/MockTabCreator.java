@@ -89,9 +89,13 @@ public class MockTabCreator extends TabCreator {
     }
 
     @Override
-    public boolean createTabWithWebContents(
-            Tab parent, WebContents webContents, @TabLaunchType int type, GURL url) {
-        return false;
+    public Tab createTabWithWebContents(
+            Tab parent,
+            WebContents webContents,
+            @TabLaunchType int type,
+            GURL url,
+            boolean addTabToModel) {
+        return null;
     }
 
     @Override

@@ -91,26 +91,48 @@ public abstract class TabCreator {
     /**
      * Creates a Tab to host the given WebContents.
      *
-     * @param parent The parent tab, if present.
-     * @param webContents The web contents to create a tab around.
-     * @param type The TabLaunchType describing how this tab was created.
+     * @param parent The parent Tab, if present.
+     * @param webContents The web contents to create a Tab around.
+     * @param type The TabLaunchType describing how this Tab was created.
      * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
-     * @return Whether a Tab was created successfully.
+     * @param addTabToModel Whether the newly created Tab should be added to the tab model.
+     *     Typically this should be true, however, sometimes it is beneficial to create a Tab
+     *     without adding it to the current TabModel (e.g. if the Tab will ultimately be shown to
+     *     the user in a new window).
+     * @return The new Tab or null if a Tab was not created successfully.
      */
-    public abstract boolean createTabWithWebContents(
-            @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, GURL url);
+    public abstract Tab createTabWithWebContents(
+            @Nullable Tab parent,
+            WebContents webContents,
+            @TabLaunchType int type,
+            GURL url,
+            boolean addTabToModel);
 
     /**
-     * Creates a tab around the native web contents pointer.
+     * Creates a Tab to host the given WebContents and adds it to the TabModel.
      *
-     * @param parent The parent tab, if present.
-     * @param webContents The web contents to create a tab around.
-     * @param type The TabLaunchType describing how this tab was created.
-     * @return Whether a Tab was created successfully.
+     * @param parent The parent Tab, if present.
+     * @param webContents The web contents to create a Tab around.
+     * @param type The TabLaunchType describing how this Tab was created.
+     * @return The new Tab or null if a Tab was not created successfully.
      */
-    public final boolean createTabWithWebContents(
+    public final Tab createTabWithWebContents(
             Tab parent, WebContents webContents, @TabLaunchType int type) {
         return createTabWithWebContents(parent, webContents, type, webContents.getVisibleUrl());
+    }
+
+    /**
+     * Creates a Tab to host the given WebContents and adds it to the TabModel.
+     *
+     * @param parent The parent Tab, if present.
+     * @param webContents The web contents to create a Tab around.
+     * @param type The TabLaunchType describing how this Tab was created.
+     * @param url URL to show in the Tab. (Needed only for asynchronous tab creation.)
+     * @return The new Tab or null if a Tab was not created successfully.
+     */
+    public final Tab createTabWithWebContents(
+            @Nullable Tab parent, WebContents webContents, @TabLaunchType int type, GURL url) {
+        return createTabWithWebContents(parent, webContents, type, url, true);
     }
 
     /** Creates a new tab and loads the NTP. */

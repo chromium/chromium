@@ -232,7 +232,9 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
         Tab parentTab = mock(Tab.class);
         Tab newTab = mock(Tab.class);
         doReturn(Token.createRandom()).when(parentTab).getTabGroupId();
-        doReturn(true).when(mTabCreator).createTabWithWebContents(any(), any(), anyInt(), any());
+        doReturn(newTab)
+                .when(mTabCreator)
+                .createTabWithWebContents(any(), any(), anyInt(), any(), anyBoolean());
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(any());
         doReturn(true).when(mTabGroupModelFilter).isTabModelRestored();
         Map<WebContents, Tab> tabMap = Map.of(mWebContents, parentTab, newWebContents, newTab);

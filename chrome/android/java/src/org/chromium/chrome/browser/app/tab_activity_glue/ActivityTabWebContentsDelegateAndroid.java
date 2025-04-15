@@ -199,13 +199,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         // Skip opening a new Tab if it doesn't make sense.
         if (mTab.isClosing()) return false;
 
-        // Creating new Tabs asynchronously requires starting a new Activity to create the Tab,
-        // so the Tab returned will always be null.  There's no way to know synchronously
-        // whether the Tab is created, so assume it's always successful.
-        boolean success =
+        Tab tab =
                 tabCreator.createTabWithWebContents(
                         mTab, webContents, TabLaunchType.FROM_LONGPRESS_FOREGROUND, url);
-        if (!success) return false;
+        if (tab == null) return false;
 
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
             RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
