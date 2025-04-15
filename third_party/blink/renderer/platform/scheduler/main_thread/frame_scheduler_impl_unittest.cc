@@ -2933,24 +2933,13 @@ TEST_F(FrameSchedulerImplTestWithIntensiveWakeUpThrottlingPolicyOverride,
   EXPECT_FALSE(IsIntensiveWakeUpThrottlingEnabled());
 }
 
-class FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled
-    : public FrameSchedulerImplTest {
- public:
-  FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled()
-      : FrameSchedulerImplTest(
-            {features::kQuickIntensiveWakeUpThrottlingAfterLoading},
-            {}) {}
-};
-
-TEST_F(FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled,
-       LoadingPageGracePeriod) {
+TEST_F(FrameSchedulerImplTest, LoadingPageGracePeriod) {
   EXPECT_EQ(
       base::Seconds(kIntensiveWakeUpThrottling_GracePeriodSeconds_Default),
       GetIntensiveWakeUpThrottlingGracePeriod(true));
 }
 
-TEST_F(FrameSchedulerImplTestQuickIntensiveWakeUpThrottlingEnabled,
-       LoadedPageGracePeriod) {
+TEST_F(FrameSchedulerImplTest, LoadedPageGracePeriod) {
   EXPECT_EQ(base::Seconds(
                 kIntensiveWakeUpThrottling_GracePeriodSecondsLoaded_Default),
             GetIntensiveWakeUpThrottlingGracePeriod(false));
