@@ -4260,7 +4260,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="BubbleType" variants="Autofill.OfferNotification.Type"/>
 </histogram>
 
-<histogram name="Autofill.OtpAuth.{OtpAuthType}.Attempt"
+<histogram name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.Attempt"
     enum="BooleanAttempted" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4268,11 +4268,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Emits true when an OTP authentication starts and does not emit any value
     otherwise.
   </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
   <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
 </histogram>
 
 <histogram
-    name="Autofill.OtpAuth.{OtpAuthType}.RequestLatency.SelectChallengeOptionRequest"
+    name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.RequestLatency.SelectChallengeOptionRequest"
     units="ms" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4280,11 +4281,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Logs the roundtrip latency of the SelectChallengeOptionRequest in the OTP
     authentication.
   </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
   <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
 </histogram>
 
 <histogram
-    name="Autofill.OtpAuth.{OtpAuthType}.RequestLatency.UnmaskCardRequest"
+    name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.RequestLatency.UnmaskCardRequest"
     units="ms" expires_after="2025-08-31">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -4292,24 +4294,27 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     Logs the roundtrip latency of the UnmaskCardRequest in the OTP
     authentication.
   </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
   <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
 </histogram>
 
-<histogram name="Autofill.OtpAuth.{OtpAuthType}.Result"
+<histogram name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.Result"
     enum="AutofillOtpAuthEvent" expires_after="2025-08-31">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>Logs the result of the OTP authentication.</summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
   <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
 </histogram>
 
-<histogram name="Autofill.OtpAuth.{OtpAuthType}.RetriableError"
+<histogram name="Autofill.OtpAuth.{CardType}.{OtpAuthType}.RetriableError"
     enum="AutofillOtpAuthEvent" expires_after="2025-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Logs any retriable failure before the OTP authentication completes.
   </summary>
+  <token key="CardType" variants="Autofill.PaymentsRpcCardType"/>
   <token key="OtpAuthType" variants="Autofill.OtpAuth.Type"/>
 </histogram>
 

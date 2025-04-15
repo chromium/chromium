@@ -123,25 +123,31 @@ enum class OtpInputDialogError {
 };
 
 // Logs when an OTP authentication starts.
-void LogOtpAuthAttempt(CardUnmaskChallengeOptionType type);
+void LogOtpAuthAttempt(CreditCard::RecordType card_type,
+                       CardUnmaskChallengeOptionType type);
 
 // Logs the final reason the OTP authentication dialog is closed, even if
 // there were prior failures like OTP mismatch, and is done once per Attempt.
-void LogOtpAuthResult(OtpAuthEvent event, CardUnmaskChallengeOptionType type);
+void LogOtpAuthResult(CreditCard::RecordType card_type,
+                      OtpAuthEvent event,
+                      CardUnmaskChallengeOptionType type);
 
 // Logged every time a retriable error occurs, which could potentially be
 // several times in the same flow (mismatch then mismatch then cancel, etc.).
-void LogOtpAuthRetriableError(OtpAuthEvent event,
+void LogOtpAuthRetriableError(CreditCard::RecordType card_type,
+                              OtpAuthEvent event,
                               CardUnmaskChallengeOptionType type);
 
 // Logs the roundtrip latency for UnmaskCardRequest sent by OTP
 // authentication.
-void LogOtpAuthUnmaskCardRequestLatency(base::TimeDelta latency,
+void LogOtpAuthUnmaskCardRequestLatency(CreditCard::RecordType card_type,
+                                        base::TimeDelta latency,
                                         CardUnmaskChallengeOptionType type);
 
 // Logs the roundtrip latency for SelectChallengeOptionRequest sent by OTP
 // authentication.
 void LogOtpAuthSelectChallengeOptionRequestLatency(
+    CreditCard::RecordType card_type,
     base::TimeDelta latency,
     CardUnmaskChallengeOptionType type);
 

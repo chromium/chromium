@@ -36,37 +36,57 @@ void LogCvcAuthRetryableError(CreditCard::RecordType card_type,
       event);
 }
 
-void LogOtpAuthAttempt(CardUnmaskChallengeOptionType type) {
+void LogOtpAuthAttempt(CreditCard::RecordType card_type,
+                       CardUnmaskChallengeOptionType type) {
   base::UmaHistogramBoolean(
-      "Autofill.OtpAuth." + GetOtpAuthType(type) + ".Attempt", true);
+      base::StrCat({"Autofill.OtpAuth",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type), ".Attempt"}),
+      true);
 }
 
-void LogOtpAuthResult(OtpAuthEvent event, CardUnmaskChallengeOptionType type) {
+void LogOtpAuthResult(CreditCard::RecordType card_type,
+                      OtpAuthEvent event,
+                      CardUnmaskChallengeOptionType type) {
   DCHECK_LE(event, OtpAuthEvent::kMaxValue);
   base::UmaHistogramEnumeration(
-      "Autofill.OtpAuth." + GetOtpAuthType(type) + ".Result", event);
+      base::StrCat({"Autofill.OtpAuth",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type), ".Result"}),
+      event);
 }
 
-void LogOtpAuthRetriableError(OtpAuthEvent event,
+void LogOtpAuthRetriableError(CreditCard::RecordType card_type,
+                              OtpAuthEvent event,
                               CardUnmaskChallengeOptionType type) {
   DCHECK_LE(event, OtpAuthEvent::kMaxValue);
   base::UmaHistogramEnumeration(
-      "Autofill.OtpAuth." + GetOtpAuthType(type) + ".RetriableError", event);
+      base::StrCat({"Autofill.OtpAuth",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type), ".RetriableError"}),
+      event);
 }
 
-void LogOtpAuthUnmaskCardRequestLatency(base::TimeDelta duration,
+void LogOtpAuthUnmaskCardRequestLatency(CreditCard::RecordType card_type,
+                                        base::TimeDelta duration,
                                         CardUnmaskChallengeOptionType type) {
-  base::UmaHistogramLongTimes("Autofill.OtpAuth." + GetOtpAuthType(type) +
-                                  ".RequestLatency.UnmaskCardRequest",
-                              duration);
+  base::UmaHistogramLongTimes(
+      base::StrCat({"Autofill.OtpAuth",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type),
+                    ".RequestLatency.UnmaskCardRequest"}),
+      duration);
 }
 
 void LogOtpAuthSelectChallengeOptionRequestLatency(
+    CreditCard::RecordType card_type,
     base::TimeDelta duration,
     CardUnmaskChallengeOptionType type) {
   base::UmaHistogramLongTimes(
-      "Autofill.OtpAuth." + GetOtpAuthType(type) +
-          ".RequestLatency.SelectChallengeOptionRequest",
+      base::StrCat({"Autofill.OtpAuth",
+                    AutofillMetrics::GetHistogramStringForCardType(card_type),
+                    ".", GetOtpAuthType(type),
+                    ".RequestLatency.SelectChallengeOptionRequest"}),
       duration);
 }
 
