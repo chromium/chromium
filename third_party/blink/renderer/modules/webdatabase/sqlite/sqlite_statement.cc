@@ -191,7 +191,7 @@ int SQLiteStatement::BindText(int index, const String& text) {
   String text16(text);
   text16.Ensure16Bit();
   return restrictError(
-      sqlite3_bind_text16(statement_, index, text16.Characters16(),
+      sqlite3_bind_text16(statement_, index, UNSAFE_TODO(text16.Characters16()),
                           sizeof(UChar) * text16.length(), SQLITE_TRANSIENT));
 }
 

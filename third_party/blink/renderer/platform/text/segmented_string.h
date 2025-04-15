@@ -48,12 +48,12 @@ class PLATFORM_EXPORT SegmentedSubstring {
     if (len) {
       if (string_.Is8Bit()) {
         is_8bit_ = true;
-        data_.string8_ptr = string_.Characters8();
+        data_.string8_ptr = UNSAFE_TODO(string_.Characters8());
         // SAFETY: len is length of string and checked to be non-zero.
         data_last_char_ = UNSAFE_BUFFERS(data_.string8_ptr + len - 1);
       } else {
         is_8bit_ = false;
-        data_.string16_ptr = string_.Characters16();
+        data_.string16_ptr = UNSAFE_TODO(string_.Characters16());
         // SAFETY: len is length of string and checked to be non-zero.
         data_last_char_ = UNSAFE_BUFFERS(
             reinterpret_cast<const LChar*>(data_.string16_ptr + len - 1));

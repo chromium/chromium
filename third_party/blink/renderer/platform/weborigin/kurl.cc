@@ -897,8 +897,8 @@ bool ProtocolIs(const String& url, const char* protocol) {
     return url::FindAndCompareScheme(AsURLChar8Subtle(url), url.length(),
                                      protocol, nullptr);
   }
-  return url::FindAndCompareScheme(url.Characters16(), url.length(), protocol,
-                                   nullptr);
+  return url::FindAndCompareScheme(UNSAFE_TODO(url.Characters16()),
+                                   url.length(), protocol, nullptr);
 }
 
 void KURL::Init(const KURL& base,
@@ -929,10 +929,10 @@ void KURL::Init(const KURL& base,
                                      ClampTo<int>(relative_utf8.size()),
                                      charset_converter, &output, &parsed_);
   } else {
-    is_valid_ = url::ResolveRelative(base_utf8.data(), base_utf8.size(),
-                                     base.parsed_, relative.Characters16(),
-                                     ClampTo<int>(relative.length()),
-                                     charset_converter, &output, &parsed_);
+    is_valid_ = url::ResolveRelative(
+        base_utf8.data(), base_utf8.size(), base.parsed_,
+        UNSAFE_TODO(relative.Characters16()), ClampTo<int>(relative.length()),
+        charset_converter, &output, &parsed_);
   }
 
   // Constructing an AtomicString will re-hash the raw output and check the

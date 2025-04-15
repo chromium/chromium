@@ -87,7 +87,8 @@ String EmailInputType::ConvertEmailAddressToASCII(const ScriptRegexp& regexp,
   // build.) TODO(jshin): In an unlikely case this is a perf-issue, treat
   // 8bit and non-8bit strings separately.
   host.Ensure16Bit();
-  icu::UnicodeString idn_domain_name(host.Characters16(), host.length());
+  icu::UnicodeString idn_domain_name(UNSAFE_TODO(host.Characters16()),
+                                     host.length());
   icu::UnicodeString domain_name;
 
   // Leak |idna| at the end.

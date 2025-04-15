@@ -138,8 +138,7 @@ LinkHeaderSet::LinkHeaderSet(const String& header) {
     return;
 
   DCHECK(header.Is8Bit()) << "Headers should always be 8 bit";
-  std::string header_string(reinterpret_cast<const char*>(header.Characters8()),
-                            header.length());
+  std::string header_string = header.Latin1();
   for (const auto& value : link_header_util::SplitLinkHeader(header_string))
     header_set_.push_back(LinkHeader(value.first, value.second));
 }

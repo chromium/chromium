@@ -162,14 +162,16 @@ class WTF_EXPORT String {
     return impl_->RawByteSpan();
   }
 
-  const LChar* Characters8() const {
+  // Use Span8() instead.
+  UNSAFE_BUFFER_USAGE const LChar* Characters8() const {
     if (!impl_)
       return nullptr;
     DCHECK(impl_->Is8Bit());
     return impl_->Characters8();
   }
 
-  const UChar* Characters16() const {
+  // Use Span16() instead.
+  UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
     if (!impl_)
       return nullptr;
     DCHECK(!impl_->Is8Bit());
