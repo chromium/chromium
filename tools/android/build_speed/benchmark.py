@@ -94,6 +94,10 @@ _GN_ARGS = [
     'use_siso=true',
 ]
 
+_NO_SERVER = [
+    'android_static_analysis="on"',
+]
+
 _SERVER = [
     'android_static_analysis="build_server"',
 ]
@@ -544,7 +548,9 @@ def main():
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
     gn_args = _GN_ARGS
-    if not args.no_server:
+    if args.no_server:
+        gn_args += _NO_SERVER
+    else:
         gn_args += _SERVER
     if not args.no_incremental_install:
         gn_args += _INCREMENTAL_INSTALL
