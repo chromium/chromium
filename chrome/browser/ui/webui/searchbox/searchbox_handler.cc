@@ -94,9 +94,9 @@ const char* kJourneysIconResourceName =
     "//resources/cr_components/searchbox/icons/journeys.svg";
 const char* kPageIconResourceName =
     "//resources/cr_components/searchbox/icons/page.svg";
+const char* kPageSparkIconResourceName =
+    "//resources/cr_components/searchbox/icons/page_spark.svg";
 const char* kPedalsIconResourceName = "//theme/current-channel-logo";
-const char* kScreensaverAutoIconResourceName =
-    "//resources/cr_components/searchbox/icons/screensaver_auto.svg";
 const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
 const char* kSearchSparkIconResourceName =
     "//resources/cr_components/searchbox/icons/search_spark.svg";
@@ -597,6 +597,9 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
       icon.name == omnibox::kJourneysChromeRefreshIcon.name) {
     return kJourneysIconResourceName;
   }
+  if (icon.name == omnibox::kPageSparkIcon.name) {
+    return kPageSparkIconResourceName;
+  }
   if (icon.name == omnibox::kPedalIcon.name ||
       icon.name == omnibox::kProductChromeRefreshIcon.name) {
     return kPedalsIconResourceName;
@@ -624,9 +627,6 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
 #endif
   if (icon.name == omnibox::kSearchSparkIcon.name) {
     return kSearchSparkIconResourceName;
-  }
-  if (icon.name == omnibox::kScreensaverAutoIcon.name) {
-    return kScreensaverAutoIconResourceName;
   }
   if (icon.name == omnibox::kSparkIcon.name) {
     return kSparkIconResourceName;

@@ -554,7 +554,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       return IsTrendSuggestion() ? omnibox::kTrendingUpChromeRefreshIcon
              : (IsContextualSearchSuggestion() &&
                 OmniboxFieldTrial::IsStarterPackPageEnabled())
-                 ? omnibox::kScreensaverAutoIcon
+                 ? omnibox::kPageSparkIcon
                  : vector_icons::kSearchChromeRefreshIcon;
 
     case Type::PEDAL:
