@@ -935,7 +935,12 @@ float ShapeResult::ForEachGraphemeClusters(const StringView& text,
   return advance_so_far;
 }
 
-bool ShapeResult::IsCursiveScript(hb_script_t script) {
+namespace {
+
+// Checks if the given script is a cursive script.
+// Cursive scripts do not admit gaps between their letters for either
+// justification or letter-spacing.
+inline bool IsCursiveScript(hb_script_t script) {
   switch (script) {
     case HB_SCRIPT_ARABIC:
     case HB_SCRIPT_HANIFI_ROHINGYA:
@@ -949,6 +954,7 @@ bool ShapeResult::IsCursiveScript(hb_script_t script) {
       return false;
   }
 }
+}  // anonymous namespace
 
 // TODO(kojii): VC2015 fails to explicit instantiation of a member function.
 // Typed functions + this private function are to instantiate instances.
