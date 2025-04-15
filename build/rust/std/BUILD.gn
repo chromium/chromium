@@ -355,12 +355,6 @@ if (toolchain_has_rust) {
         ":stdlib_public_dependent_libs",
       ]
       deps = [ ":prebuilt_rustc_copy_to_sysroot" ]
-
-      # The host builds tools toolchain supports Rust only and does not use
-      # the allocator remapping to point it to PartitionAlloc.
-      if (!toolchain_for_rust_host_build_tools) {
-        deps += [ ":remap_alloc" ]
-      }
     }
   }
 }
