@@ -812,9 +812,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORD_SETTINGS_EXPORT_ACTION_DESCRIPTION" desc="The description of a menu item to trigger exporting passwords from the password settings.">
         Export passwords stored with Chrome
       </message>
-      <message name="IDS_SETTINGS_PASSWORDS_EXPORT_DESCRIPTION" desc="Text shown to the user who initiated exporting passwords, as a warning before any passwords have been exported.">
-        Your passwords will be exported and downloaded as a text file. They will be visible to anyone and any app with access to the destination folder.
-      </message>
       <message name="IDS_SETTINGS_PASSWORDS_PREPARING_EXPORT" desc="Text shown to the user above a progress bar, informing the user that passwords are being prepared for export.">
         Preparing passwords…
       </message>
@@ -1060,9 +1057,6 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       </message>
       <message name="IDS_LOCKSCREEN_DESCRIPTION_EXPORT" desc="When a user attempts to export saved passwords in Chrome's settings, Chrome launches a lock screen to verify the user's identity and displays the following explanation.">
         Unlock to export your passwords
-      </message>
-      <message name="IDS_PASSWORD_SETTINGS_EXPORT_SUBJECT" desc="Chrome sets this string to be the subject of the sharing intent for sharing exported passwords. How the subject is interpreted is up to the consumer app, e.g., Google Drive will make it the filename, GMail will make it the e-mail subject. In general, it describes what is being shared.">
-        Chrome Passwords
       </message>
 
       <!-- Homepage preferences -->
