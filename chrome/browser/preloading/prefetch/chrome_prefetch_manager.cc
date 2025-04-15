@@ -4,7 +4,6 @@
 
 #include "chrome/browser/preloading/prefetch/chrome_prefetch_manager.h"
 
-#include "base/trace_event/named_trigger.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
@@ -40,9 +39,6 @@ void ChromePrefetchManager::StartPrefetchFromCCT(
           features::kPrefetchBrowserInitiatedTriggers)) {
     return;
   }
-
-  base::trace_event::EmitNamedTrigger("cct-navigational-prefetch");
-
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(&GetWebContents());
 
