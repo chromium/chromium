@@ -104,6 +104,12 @@ export class SettingsImportDataDialogElement extends
     super.connectedCallback();
 
     this.browserProxy_.initializeImportDialog().then(data => {
+      if (!this.isConnected) {
+        // Element was disconnected while waiting for the backend call to
+        // return. Do nothing.
+        return;
+      }
+
       this.browserProfiles_ = data;
       this.selected_ = this.browserProfiles_[0];
 
