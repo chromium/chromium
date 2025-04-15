@@ -1310,6 +1310,9 @@ extern const char kHappyEyeballsV3Description[];
 extern const char kHardwareMediaKeyHandling[];
 extern const char kHardwareMediaKeyHandlingDescription[];
 
+extern const char kHeadlessTabModelName[];
+extern const char kHeadlessTabModelDescription[];
+
 extern const char kHeavyAdPrivacyMitigationsName[];
 extern const char kHeavyAdPrivacyMitigationsDescription[];
 

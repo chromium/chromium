@@ -284,6 +284,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kFullscreenInsetsApiMigration,
     &kFullscreenInsetsApiMigrationOnAutomotive,
     &kGroupNewTabWithParent,
+    &kHeadlessTabModel,
     &kHideTabletToolbarDownloadButton,
     &kHistoryPaneAndroid,
     &kLegacyTabStateDeprecation,
@@ -916,6 +917,10 @@ BASE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive,
 BASE_FEATURE(kGroupNewTabWithParent,
              "GroupNewTabWithParent",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kHeadlessTabModel,
+             "HeadlessTabModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kHistoryPaneAndroid,
              "HistoryPaneAndroid",

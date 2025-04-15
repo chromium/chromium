@@ -129,6 +129,7 @@ BASE_DECLARE_FEATURE(kForceTranslucentNotificationTrampoline);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigration);
 BASE_DECLARE_FEATURE(kFullscreenInsetsApiMigrationOnAutomotive);
 BASE_DECLARE_FEATURE(kGroupNewTabWithParent);
+BASE_DECLARE_FEATURE(kHeadlessTabModel);
 BASE_DECLARE_FEATURE(kHistoryPaneAndroid);
 BASE_DECLARE_FEATURE(kLockBackPressHandlerAtStart);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);

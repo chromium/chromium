@@ -19624,6 +19624,7 @@ from previous Chrome versions.
   <int value="2029804000" label="ClipboardContentsId:enabled"/>
   <int value="2030086360"
       label="EnableMachineLearningModelLoaderWebPlatformApi:disabled"/>
+  <int value="2030517002" label="HeadlessTabModel:enabled"/>
   <int value="2031620694"
       label="AvoidUnnecessaryNavigationCancellations:enabled"/>
   <int value="2032558514"
@@ -19660,6 +19661,7 @@ from previous Chrome versions.
   <int value="2047636405" label="MemorySaverModeAggressiveness:disabled"/>
   <int value="2047695652" label="DelegateOverscrollSwipes:enabled"/>
   <int value="2049432745" label="VaapiWebPImageDecodeAcceleration:enabled"/>
+  <int value="2049513703" label="HeadlessTabModel:disabled"/>
   <int value="2049674680" label="EnableAutomaticSnooze:enabled"/>
   <int value="2050597948" label="ExtensionsFSPInServiceWorkers:disabled"/>
   <int value="2050985807" label="AllowPopupsDuringPageUnload:enabled"/>

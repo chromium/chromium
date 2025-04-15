@@ -2288,6 +2288,10 @@ const char kHardwareMediaKeyHandlingDescription[] =
     "Enables using media keys to control the active media session. This "
     "requires MediaSessionService to be enabled too";
 
+const char kHeadlessTabModelName[] = "Headless tab model";
+const char kHeadlessTabModelDescription[] =
+    "Enables loading and mutating tab models on Android without an activity";
+
 const char kHeavyAdPrivacyMitigationsName[] = "Heavy ad privacy mitigations";
 const char kHeavyAdPrivacyMitigationsDescription[] =
     "Enables privacy mitigations for the heavy ad intervention. Disabling "

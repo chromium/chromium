@@ -5201,6 +5201,11 @@
     "expiry_milestone": 126
   },
   {
+    "name": "headless-tab-model",
+    "owners": [ "skym@chromium.org", "ckitagawa@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "heavy-ad-privacy-mitigations",
     "owners": [ "johnidel@chromium.org", "jkarlin@chromium.org" ],
     "expiry_milestone": 127
