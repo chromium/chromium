@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 """ Execute Media Router performance tests against miscellaneous test devices. """
+import sys
 
 # TODO(crbug.com/403338499): Implement tests.
 def main() -> int:
