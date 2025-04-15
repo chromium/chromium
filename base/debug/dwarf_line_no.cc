@@ -53,14 +53,14 @@ struct ProgramInfo {
   int8_t line_base;
   uint8_t line_range;
   uint8_t opcode_base;
-  uint8_t standard_opcode_lengths[256];
+  std::array<uint8_t, 256> standard_opcode_lengths;
   uint8_t include_directories_table_offset;
   uint8_t file_names_table_offset;
 
   // Store the directories as offsets.
   int num_directories = 1;
-  uint64_t directory_offsets[kMaxDirectories];
-  uint64_t directory_sizes[kMaxDirectories];
+  std::array<uint64_t, kMaxDirectories> directory_offsets;
+  std::array<uint64_t, kMaxDirectories> directory_sizes;
 
   // Store the file number table offsets.
   mutable unsigned int num_filenames = 1;

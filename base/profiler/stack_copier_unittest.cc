@@ -48,7 +48,7 @@ static constexpr size_t kTestStackBufferSize = sizeof(uintptr_t) * 4;
 
 union alignas(StackBuffer::kPlatformStackAlignment) TestStackBuffer {
   uintptr_t as_uintptr[kTestStackBufferSize / sizeof(uintptr_t)];
-  uint16_t as_uint16[kTestStackBufferSize / sizeof(uint16_t)];
+  std::array<uint16_t, kTestStackBufferSize / sizeof(uint16_t)> as_uint16;
   uint8_t as_uint8[kTestStackBufferSize / sizeof(uint8_t)];
 };
 

@@ -190,7 +190,8 @@ bool BufferedDwarfReader::BufferedRead(void* out, const size_t bytes) {
         return false;
       }
       const ssize_t unconsumed_amount = google::ReadFromOffset(
-          fd_, buf_, sizeof(buf_), static_cast<size_t>(next_chunk_start_));
+          fd_, buf_.data(), (buf_.size() * sizeof(decltype(buf_)::value_type)),
+          static_cast<size_t>(next_chunk_start_));
       if (unconsumed_amount <= 0) {
         // Read error.
         return false;

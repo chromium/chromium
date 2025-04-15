@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // Create a state machine for validating UTF-8. The algorithm in brief:
 // 1. Convert the complete unicode range of code points, except for the
 //    surrogate code points, to an ordered array of sequences of bytes in
@@ -183,14 +185,16 @@ PairVector InitializeCharacters() {
       // explicitly permitted.
       continue;
     }
-    uint8_t bytes[4];
+    std::array<uint8_t, 4> bytes;
     unsigned int offset = 0;
     UBool is_error = false;
     U8_APPEND(bytes, offset, std::size(bytes), i, is_error);
     DCHECK(!is_error);
     DCHECK_GT(offset, 0u);
     DCHECK_LE(offset, std::size(bytes));
-    Pair pair = {Character(bytes, bytes + offset), StringSet()};
+    Pair pair = {Character(bytes.data(),
+                           base::span<uint8_t>(bytes).subspan(offset).data()),
+                 StringSet()};
     vector.push_back(pair);
   }
   return vector;

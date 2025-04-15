@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 
@@ -445,9 +446,10 @@ void PrintLongString(char* buf, size_t sz) {
   // N.B.: It would be so much cleaner to use snprintf(). But unfortunately,
   //       Visual Studio doesn't support this function, and the work-arounds
   //       are all really awkward.
-  char ref[256];
-  CHECK_LE(sz, sizeof(ref));
-  snprintf(ref, sizeof(ref), "A long string: %%d 00DEADBEEF %lld 0x%llX <NULL>",
+  std::array<char, 256> ref;
+  CHECK_LE(sz, (ref.size() * sizeof(decltype(ref)::value_type)));
+  snprintf(ref.data(), (ref.size() * sizeof(decltype(ref)::value_type)),
+           "A long string: %%d 00DEADBEEF %lld 0x%llX <NULL>",
            static_cast<long long>(std::numeric_limits<intptr_t>::min()),
            static_cast<unsigned long long>(
                reinterpret_cast<uintptr_t>(PrintLongString)));
@@ -460,7 +462,8 @@ void PrintLongString(char* buf, size_t sz) {
 #endif
 
   // Compare the output from SafeSPrintf() to the one from snprintf().
-  EXPECT_EQ(std::string(ref).substr(0, kSSizeMax - 1), std::string(tmp.data()));
+  EXPECT_EQ(std::string(ref.data()).substr(0, kSSizeMax - 1),
+            std::string(tmp.data()));
 
   // We allocated a slightly larger buffer, so that we could perform some
   // extra sanity checks. Now that the tests have all passed, we copy the

@@ -15,6 +15,7 @@
 #include <wchar.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <optional>
 #include <string_view>
@@ -295,8 +296,14 @@ char HexDigitToInt(char c) {
                                 : static_cast<char>(c - 'a' + 10);
 }
 
-static const char* const kByteStringsUnlocalized[] = {" B",  " kB", " MB",
-                                                      " GB", " TB", " PB"};
+static const auto kByteStringsUnlocalized = std::to_array<const char*>({
+    " B",
+    " kB",
+    " MB",
+    " GB",
+    " TB",
+    " PB",
+});
 
 std::u16string FormatBytesUnlocalized(int64_t bytes) {
   double unit_amount = static_cast<double>(bytes);

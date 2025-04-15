@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <array>
 #include <utility>
 
 #include "base/debug/alias.h"
@@ -30,8 +31,12 @@ namespace base {
 namespace {
 
 // Values to write to the stack and look for in the copy.
-static const uint32_t kStackSentinels[] = {0xf312ecd9, 0x1fcd7f19, 0xe69e617d,
-                                           0x8245f94f};
+static const auto kStackSentinels = std::to_array<uint32_t>({
+    0xf312ecd9,
+    0x1fcd7f19,
+    0xe69e617d,
+    0x8245f94f,
+});
 
 class TargetThread : public SimpleThread {
  public:
@@ -47,7 +52,7 @@ class TargetThread : public SimpleThread {
 
     // Copy the sentinel values onto the stack. Volatile to defeat compiler
     // optimizations.
-    volatile uint32_t sentinels[std::size(kStackSentinels)];
+    std::array<volatile uint32_t, std::size(kStackSentinels)> sentinels;
     for (size_t i = 0; i < std::size(kStackSentinels); ++i) {
       sentinels[i] = kStackSentinels[i];
     }
@@ -124,7 +129,8 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
       reinterpret_cast<uint32_t*>(RegisterContextStackPointer(&context)), end,
       [](const uint32_t& location) {
         return memcmp(&location, &kStackSentinels[0],
-                      sizeof(kStackSentinels)) == 0;
+                      (kStackSentinels.size() *
+                       sizeof(decltype(kStackSentinels)::value_type))) == 0;
       });
   EXPECT_NE(end, sentinel_location);
 }
@@ -233,7 +239,8 @@ TEST(StackCopierSignalTest, MAYBE_CopyStackFromOtherThread) {
       reinterpret_cast<uint32_t*>(RegisterContextStackPointer(&context)), end,
       [](const uint32_t& location) {
         return memcmp(&location, &kStackSentinels[0],
-                      sizeof(kStackSentinels)) == 0;
+                      (kStackSentinels.size() *
+                       sizeof(decltype(kStackSentinels)::value_type))) == 0;
       });
   EXPECT_NE(end, sentinel_location);
 }

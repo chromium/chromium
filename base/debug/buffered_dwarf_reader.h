@@ -5,6 +5,7 @@
 #ifndef BASE_DEBUG_BUFFERED_DWARF_READER_H_
 #define BASE_DEBUG_BUFFERED_DWARF_READER_H_
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 
@@ -108,7 +109,7 @@ class BufferedDwarfReader {
   // bytes provides negligible benefit, while buffer sizes less than 4096 bytes
   // incur a significant performance penalty: compared to the original buffer
   // size of 256 bytes, 4096 bytes is 2x faster.
-  char buf_[4096];
+  std::array<char, 4096> buf_;
   size_t unconsumed_amount_ = 0;
   size_t cursor_in_buffer_ = 0;
 

@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 #include <utility>
 
@@ -183,11 +184,11 @@ TEST(FileTest, ReadWrite) {
   File file(file_path, File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE);
   ASSERT_TRUE(file.IsValid());
 
-  char data_to_write[] = "test";
+  std::array<char, 5> data_to_write{"test"};
   const int kTestDataSize = 4;
 
   // Write 0 bytes to the file.
-  int bytes_written = file.Write(0, data_to_write, 0);
+  int bytes_written = file.Write(0, data_to_write.data(), 0);
   EXPECT_EQ(0, bytes_written);
 
   // Write 0 bytes, with buf=nullptr.
@@ -195,7 +196,7 @@ TEST(FileTest, ReadWrite) {
   EXPECT_EQ(0, bytes_written);
 
   // Write "test" to the file.
-  bytes_written = file.Write(0, data_to_write, kTestDataSize);
+  bytes_written = file.Write(0, data_to_write.data(), kTestDataSize);
   EXPECT_EQ(kTestDataSize, bytes_written);
 
   // Read from EOF.
@@ -235,8 +236,8 @@ TEST(FileTest, ReadWrite) {
   // Write past the end of the file.
   const int kOffsetBeyondEndOfFile = 10;
   const int kPartialWriteLength = 2;
-  bytes_written =
-      file.Write(kOffsetBeyondEndOfFile, data_to_write, kPartialWriteLength);
+  bytes_written = file.Write(kOffsetBeyondEndOfFile, data_to_write.data(),
+                             kPartialWriteLength);
   EXPECT_EQ(kPartialWriteLength, bytes_written);
 
   // Make sure the file was extended.
@@ -278,7 +279,7 @@ TEST(FileTest, ReadWriteSpans) {
   EXPECT_EQ(data_to_write.size(), bytes_written.value());
 
   // Read from EOF.
-  uint8_t data_read_1[32];
+  std::array<uint8_t, 32> data_read_1;
   std::optional<size_t> bytes_read =
       file.Read(bytes_written.value(), data_read_1);
   ASSERT_TRUE(bytes_read.has_value());
@@ -322,7 +323,7 @@ TEST(FileTest, ReadWriteSpans) {
             file_size.value());
 
   // Make sure the file was zero-padded.
-  uint8_t data_read_2[32];
+  std::array<uint8_t, 32> data_read_2;
   bytes_read = file.Read(0, data_read_2);
   ASSERT_TRUE(bytes_read.has_value());
   EXPECT_EQ(file_size, static_cast<int64_t>(bytes_read.value()));
@@ -363,11 +364,11 @@ TEST(FileTest, Append) {
   File file(file_path, File::FLAG_CREATE | File::FLAG_APPEND);
   ASSERT_TRUE(file.IsValid());
 
-  char data_to_write[] = "test";
+  std::array<char, 5> data_to_write{"test"};
   const int kTestDataSize = 4;
 
   // Write 0 bytes to the file.
-  int bytes_written = file.Write(0, data_to_write, 0);
+  int bytes_written = file.Write(0, data_to_write.data(), 0);
   EXPECT_EQ(0, bytes_written);
 
   // Write 0 bytes, with buf=nullptr.
@@ -375,7 +376,7 @@ TEST(FileTest, Append) {
   EXPECT_EQ(0, bytes_written);
 
   // Write "test" to the file.
-  bytes_written = file.Write(0, data_to_write, kTestDataSize);
+  bytes_written = file.Write(0, data_to_write.data(), kTestDataSize);
   EXPECT_EQ(kTestDataSize, bytes_written);
 
   file.Close();
@@ -387,11 +388,11 @@ TEST(FileTest, Append) {
   EXPECT_FALSE(file2.IsValid());  // NOLINT(bugprone-use-after-move)
   ASSERT_TRUE(file.IsValid());
 
-  char append_data_to_write[] = "78";
+  std::array<char, 3> append_data_to_write{"78"};
   const int kAppendDataSize = 2;
 
   // Append "78" to the file.
-  bytes_written = file.Write(0, append_data_to_write, kAppendDataSize);
+  bytes_written = file.Write(0, append_data_to_write.data(), kAppendDataSize);
   EXPECT_EQ(kAppendDataSize, bytes_written);
 
   // Read the entire file.
@@ -415,9 +416,9 @@ TEST(FileTest, Length) {
   EXPECT_EQ(0, file.GetLength());
 
   // Write "test" to the file.
-  char data_to_write[] = "test";
+  std::array<char, 5> data_to_write{"test"};
   int kTestDataSize = 4;
-  int bytes_written = file.Write(0, data_to_write, kTestDataSize);
+  int bytes_written = file.Write(0, data_to_write.data(), kTestDataSize);
   EXPECT_EQ(kTestDataSize, bytes_written);
 
   // Extend the file.
@@ -597,7 +598,7 @@ TEST(FileTest, ReadAtCurrentPositionSpans) {
 
   EXPECT_EQ(0, file.Seek(File::FROM_BEGIN, 0));
 
-  uint8_t buffer[4];
+  std::array<uint8_t, 4> buffer;
   size_t first_chunk_size = 2;
   const auto [chunk1, chunk2] = span(buffer).split_at(first_chunk_size);
   EXPECT_EQ(chunk1.size(), file.ReadAtCurrentPos(chunk1));

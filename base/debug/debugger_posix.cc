@@ -19,6 +19,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 
@@ -169,9 +170,10 @@ Process GetDebuggerProcess() {
   // We assume our line will be in the first 1024 characters and that we can
   // read this much all at once.  In practice this will generally be true.
   // This simplifies and speeds up things considerably.
-  char buf[1024];
+  std::array<char, 1024> buf;
 
-  ssize_t num_read = HANDLE_EINTR(read(status_fd, buf, sizeof(buf)));
+  ssize_t num_read = HANDLE_EINTR(read(
+      status_fd, buf.data(), (buf.size() * sizeof(decltype(buf)::value_type))));
   if (IGNORE_EINTR(close(status_fd)) < 0) {
     return Process();
   }
@@ -180,7 +182,7 @@ Process GetDebuggerProcess() {
     return Process();
   }
 
-  std::string_view status(buf, static_cast<size_t>(num_read));
+  std::string_view status(buf.data(), static_cast<size_t>(num_read));
   std::string_view tracer("TracerPid:\t");
 
   std::string_view::size_type pid_index = status.find(tracer);
@@ -193,7 +195,8 @@ Process GetDebuggerProcess() {
     return Process();
   }
 
-  std::string_view pid_str(buf + pid_index, pid_end_index - pid_index);
+  std::string_view pid_str(base::span<char>(buf).subspan(pid_index).data(),
+                           pid_end_index - pid_index);
   int pid = 0;
   if (!StringToInt(pid_str, &pid)) {
     return Process();
