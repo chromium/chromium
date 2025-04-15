@@ -297,13 +297,6 @@ class AutofillField : public FormFieldData {
     return credit_card_number_offset_;
   }
 
-  void set_generated_password_changed(bool generated_password_changed) {
-    generated_password_changed_ = generated_password_changed;
-  }
-  bool generated_password_changed() const {
-    return generated_password_changed_;
-  }
-
   void set_vote_type(AutofillUploadContents::Field::VoteType type) {
     vote_type_ = type;
   }
@@ -539,9 +532,6 @@ class AutofillField : public FormFieldData {
   // The parseable label attribute is potentially only a part of the original
   // label when the label is divided between subsequent fields.
   std::u16string parseable_label_;
-
-  // Whether the generated password was changed by user.
-  bool generated_password_changed_ = false;
 
   // The vote type, if the autofill type is USERNAME or any password vote.
   // Otherwise, the field is ignored. |vote_type_| provides context as to what

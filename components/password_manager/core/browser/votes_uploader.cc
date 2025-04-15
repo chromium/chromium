@@ -752,7 +752,8 @@ void VotesUploader::AddGeneratedVote(
     if (field.renderer_id() == generation_element_) {
       options.fields[field.global_id()].generation_type = type;
       if (has_generated_password_) {
-        field.set_generated_password_changed(generated_password_changed_);
+        options.fields[field.global_id()].generated_password_changed =
+            generated_password_changed_;
         UMA_HISTOGRAM_BOOLEAN("PasswordGeneration.GeneratedPasswordWasEdited",
                               generated_password_changed_);
       }

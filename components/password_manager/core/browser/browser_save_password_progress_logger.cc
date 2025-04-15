@@ -368,10 +368,10 @@ std::string BrowserSavePasswordProgressLogger::FormStructureToFieldsLogString(
       if (!generation.empty()) {
         field_info += ", GENERATION_EVENT: " + generation;
       }
-    }
 
-    if (field->generated_password_changed()) {
-      field_info += ", generated password changed";
+      if (field_metadata.generated_password_changed) {
+        field_info += ", generated password changed";
+      }
     }
 
     if (field->password_requirements()) {

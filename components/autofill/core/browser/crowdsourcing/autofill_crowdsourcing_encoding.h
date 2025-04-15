@@ -60,6 +60,9 @@ struct EncodeUploadRequestOptions {
     // The type of password generation event, if it happened.
     AutofillUploadContents::Field::PasswordGenerationType generation_type =
         AutofillUploadContents::Field::NO_GENERATION;
+
+    // Whether the generated password was changed by user.
+    bool generated_password_changed = false;
   };
 
   EncodeUploadRequestOptions();

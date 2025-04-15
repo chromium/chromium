@@ -426,7 +426,7 @@ void EncodeFormFieldsForUpload(
       if (field_options->generation_type) {
         added_field->set_generation_type(field_options->generation_type);
         added_field->set_generated_password_changed(
-            field->generated_password_changed());
+            field_options->generated_password_changed);
       }
 
       if (field_options->single_username_vote_type) {
