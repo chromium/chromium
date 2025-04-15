@@ -390,7 +390,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.BounceCategory{DIPSRedirectType}{DIPSCookieMode}"
     enum="DIPSRedirectCategory" expires_after="2025-10-12">
-  <owner>rtarpine@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Whether a {DIPSRedirectType} redirect accessed cookies and whether its
@@ -418,7 +418,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.ClearedSitesCount{DIPSCookieMode}" units="sites"
     expires_after="2025-09-14">
-  <owner>wanderview@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The number of sites that may have had their storage cleared by DIPS.
@@ -457,7 +457,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.DatabaseEntryCount" units="entries"
     expires_after="2025-10-05">
-  <owner>wanderview@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Number of entries present in the `bounces` table of the user's DIPS database
@@ -471,7 +471,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.DatabaseErrors" enum="SqliteLoggedResultCode"
     expires_after="2025-10-12">
-  <owner>wanderview@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Errors reported by SQLite while initializing or using the DIPS database.
@@ -480,7 +480,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.DatabaseHealthMetricsTime" units="ms"
     expires_after="2025-07-06">
-  <owner>wanderview@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The time taken to gather DIPS database health metrics. For each user
@@ -495,7 +495,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.DatabaseInit" units="attempts"
     expires_after="2026-01-27">
-  <owner>wanderview@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Logs how many attempts it took to initialize the DIPS database. Logs a value
@@ -505,7 +505,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.DatabaseSize" units="KB"
     expires_after="2025-10-21">
-  <owner>wanderview@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The size of the DIPS database file. For each user profile, reported at
@@ -536,7 +536,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.DeletionLatency2" units="ms"
     expires_after="2025-10-12">
-  <owner>wanderview@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The amount of time it takes to complete the DIPS deletion process.
@@ -565,7 +565,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.DIPSErrorCodes" enum="DIPSErrorCode"
     expires_after="2025-09-07">
-  <owner>wanderview@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     Tracks certain errors that DIPS may encounter when running on a client.
@@ -606,7 +606,7 @@ Regular profiles start at bucket 1, we don't consider non-regular profiles. -->
 
 <histogram name="Privacy.DIPS.TimeFromNavigationCommitToClientBounce"
     units="ms" expires_after="2025-08-31">
-  <owner>rtarpine@chromium.org</owner>
+  <owner>liu@chromium.org</owner>
   <owner>src/content/browser/btm/OWNERS</owner>
   <summary>
     The amount of time after a navigation to a site commits until a renderer
