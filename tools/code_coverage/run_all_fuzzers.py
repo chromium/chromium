@@ -240,7 +240,7 @@ def _run_and_log(cmd: Sequence[str],
   Returns:
     True iff the command ran successfully.
   """
-  logging.debug(f"Trying command: {cmd} ({annotation})")
+  logging.debug('Trying command: %s (%s)', cmd, annotation)
   try:
     subprocess.run(cmd,
                    env=env,
@@ -251,12 +251,12 @@ def _run_and_log(cmd: Sequence[str],
     return True
   except Exception as e:
     if type(e) == subprocess.TimeoutExpired:
-      logging.warning(f"Command {cmd!s} ({annotation}) timed out " +
-                      f"after {e.timeout!s} seconds")
+      logging.warning('Command %s (%s) timed out after %s seconds', cmd,
+                      annotation, e.timeout)
     else:
       logging.warning(
-          f"Command {cmd!s} ({annotation}) return code: " +
-          f"{e.returncode!s}\nStdout:\n{e.output}\nStderr:\n{e.stderr}")
+          'Command %s (%s) return code: %i\nStdout:\n%s\nStderr:\n%s', cmd,
+          annotation, e.returncode, e.output, e.stderr)
   return False
 
 
@@ -370,7 +370,7 @@ def _run_full_corpus(target_details) -> bool:
   corpus_dir = target_details['corpus']
   target_profdata = target_details['profdata_file']
 
-  logging.info(f'[{target}][full corpus] starting.')
+  logging.info('[%s][full corpus] starting', target)
 
   profraw_dir = tempfile.TemporaryDirectory()
   fullcorpus_profraw = os.path.join(profraw_dir.name, target + "_%p.profraw")
@@ -378,13 +378,13 @@ def _run_full_corpus(target_details) -> bool:
   if cmd_runner.run_full_corpus(env, WHOLE_CORPUS_TIMEOUT_SECS,
                                 'full corpus attempt', corpus_dir):
     matching_profraws = list(_matching_profraws(fullcorpus_profraw))
-    logging.info(f'[{target}][full corpus] merging '
-                 f'{matching_profraws} into {target_profdata}')
+    logging.info('[%s][full corpus] merging %s into %s', target,
+                 matching_profraws, target_profdata)
     if _profdata_merge(matching_profraws, target_profdata):
-      logging.info(f'[{target}][full corpus] done, success.')
+      logging.info('[%s][full corpus] done, success', target)
       return True
 
-  logging.info(f'[{target}][full corpus] done, failure.')
+  logging.info('[%s][full corpus] done, failure', target)
   return False
 
 
@@ -406,28 +406,28 @@ def _run_corpus_in_chunks(target_details) -> bool:
 
   corpus_files = _get_target_corpus_files(target_details)
   if not corpus_files:
-    logging.info(
-        f'[{target}][chunk strategy] cannot get corpus files, aborting')
+    logging.info('[%s][chunk strategy] cannot get corpus files, aborting',
+                 target)
     return False
 
   if len(corpus_files) < MIN_FILES_FOR_CHUNK_STRATEGY:
-    logging.info(f'[{target}][chunk strategy] number of corpus files too '
-                 f'low ({len(corpus_files)})')
+    logging.info('[%s][chunk strategy] number of corpus files too low %i',
+                 target, len(corpus_files))
     return False
 
   chunks = _split_corpus_files_into_chunks(corpus_files)
   profdata_dir = tempfile.TemporaryDirectory()
   temp_target_profdata = os.path.join(profdata_dir.name, f'{target}.profdata')
   failed_chunks = []
-  logging.info(f'[{target}][chunk strategy] starting,'
-               f' {len(chunks)} chunks to run')
+  logging.info('[%s][chunk strategy] starting, %i chunks to run', target,
+               len(chunks))
 
   # Let's run the fuzzer chunks by chunks. If it fails too much, we early bail
   # out to avoid spending too much time on a target that most likely won't give
   # good results.
   for idx, chunk in enumerate(chunks):
-    logging.info(
-        f'[{target}][chunk strategy] running chunk {idx} / {len(chunks)}')
+    logging.info('[%s][chunk strategy] running chunk %i / %i', target, idx,
+                 len(chunks))
     profraw_dir = tempfile.TemporaryDirectory()
     fullcorpus_profraw = os.path.join(profraw_dir.name,
                                       f'{target}_{idx}_%p.profraw')
@@ -441,17 +441,20 @@ def _run_corpus_in_chunks(target_details) -> bool:
         if not _accumulated_profdata_merge([chunk_profdata],
                                            temp_target_profdata):
           logging.warning(
-              f'[{target}][chunk strategy] accumulation failed for chunk {idx}')
+              '[%s][chunk strategy] accumulation failed for chunk %i', target,
+              idx)
         continue
     failed_chunks.append(chunk)
     failure_rate = len(failed_chunks) / (idx + 1)
-    logging.debug(f'[{target}][chunk strategy] chunk failed '
-                  f'({idx} / {len(chunks)}), failure rate {failure_rate}')
+    logging.debug(
+        '[%s][chunk strategy] chunk failed (%i / %i), failure rate %.2f',
+        target, idx, len(chunks), failure_rate)
     if idx > 4 and failure_rate > 0.75:
       # This is mostly to exclude always failing fuzzers and avoid wasting time
       # on that.
-      logging.warning(f'[{target}][chunk strategy] chunk failure'
-                      f' rate ({failure_rate}) too high, stopping.')
+      logging.warning(
+          '[%s][chunk strategy] chunk failrue rate (%.2f) too high, stopping',
+          target, failure_rate)
       return False
 
   # Sometimes, some state sensitive fuzzers spuriously fail when ran in batch,
@@ -461,8 +464,9 @@ def _run_corpus_in_chunks(target_details) -> bool:
   # similarly (but very often better) than the test case per test case
   # strategy.
   if sum(len(c) for c in failed_chunks) > INDIVIDUAL_TESTCASES_MAX_TO_TRY:
-    logging.warning(f'[{target}][chunk strategy] flaky fuzzer,'
-                    ' will shrink the number of test cases to retry')
+    logging.warning(
+        '[%s][chunk strategy] flaky fuzzer,'
+        ' will shrink the number of test cases to retry', target)
     failed_testcases = [e for chunk in failed_chunks for e in chunk]
     failed_testcases = failed_testcases[:INDIVIDUAL_TESTCASES_MAX_TO_TRY]
     failed_chunks = _split_corpus_files_into_chunks(failed_testcases)
@@ -479,7 +483,7 @@ def _run_corpus_in_chunks(target_details) -> bool:
       _accumulated_profdata_merge([chunk_profdata], temp_target_profdata)
   if os.path.exists(temp_target_profdata):
     shutil.copy2(temp_target_profdata, target_profdata)
-  logging.info(f'[{target}][chunk strategy] done, success')
+  logging.info('[%s][chunk strategy] done, success', target)
   return os.path.exists(target_profdata)
 
 
@@ -504,12 +508,12 @@ def _run_testcases(target: str, runner: EngineRunner, env: Mapping[str, str],
   env['LLVM_PROFILE_FILE'] = profraw_file
   failures = 0
   total_runs = 0
-  logging.info(
-      f'[{target}][testcase strategy] starting, {len(testcases)} inputs to run')
+  logging.info('[%s][testcase strategy] starting, %i inputs to run', target,
+               len(testcases))
   for testcase in testcases:
     if total_runs > 5 and failures / total_runs > 0.75:
       logging.warning(
-          f'[{target}][testcase strategy] abandonning, too much failures...')
+          '[%s][testcase strategy] abandonning, too much failures...', target)
       break
     if not runner.run_testcases(env=env,
                                 timeout=INDIVIDUAL_TESTCASE_TIMEOUT_SECS,
@@ -521,7 +525,7 @@ def _run_testcases(target: str, runner: EngineRunner, env: Mapping[str, str],
     _accumulated_profdata_merge(matching_profraws, target_profdata)
   res = os.path.exists(target_profdata)
   res_str = 'success' if res else 'failure'
-  logging.info(f'[{target}][testcase strategy] done, {res_str}')
+  logging.info('[%s][testcase strategy] done, %s', target, res_str)
   return res
 
 
@@ -554,9 +558,10 @@ def _run_fuzzer_target(args):
   env = target_details['env']
   target_profdata = target_details['profdata_file']
 
-  logging.info("Starting target %s (completed %d/%d, of which %d succeeded)" %
-               (target, len(verified_fuzzer_targets) + len(failed_targets),
-                num_targets, len(verified_fuzzer_targets)))
+  logging.info('Starting target %s (completed %d/%d, of which %d succeeded)',
+               target,
+               len(verified_fuzzer_targets) + len(failed_targets), num_targets,
+               len(verified_fuzzer_targets))
 
   res = _run_full_corpus(target_details) or _run_corpus_in_chunks(
       target_details)
@@ -571,9 +576,10 @@ def _run_fuzzer_target(args):
   else:
     failed_targets.append(target)
 
-  logging.info("Finishing target %s (completed %d/%d, of which %d succeeded)" %
-               (target, len(verified_fuzzer_targets) + len(failed_targets),
-                num_targets, len(verified_fuzzer_targets)))
+  logging.info('Finishing target %s (completed %d/%d, of which %d succeeded)',
+               target,
+               len(verified_fuzzer_targets) + len(failed_targets), num_targets,
+               len(verified_fuzzer_targets))
 
 
 def _parse_command_arguments():
@@ -619,7 +625,7 @@ def _get_all_target_details(args):
   centipede_target_binpath = os.path.join(args.fuzzer_binaries_dir, "centipede")
   if args.fuzzer == CENTIPEDE:
     if not os.path.isfile(centipede_target_binpath):
-      logging.warning(f'{centipede_target_binpath} does not exist.')
+      logging.warning('%s does not exist.', centipede_target_binpath)
       return []
 
   for fuzzer_target in os.listdir(args.fuzzer_corpora_dir):
@@ -630,9 +636,9 @@ def _get_all_target_details(args):
 
     if not (os.path.isfile(fuzzer_target_binpath)
             and os.path.isdir(fuzzer_target_corporadir)):
-      logging.warning((
+      logging.warning(
           'Could not find binary file for %s, or, the provided corpora path is '
-          'not a directory') % fuzzer_target)
+          'not a directory', fuzzer_target)
       incomplete_targets.append(fuzzer_target)
     else:
       env = dict()
@@ -692,7 +698,7 @@ def _get_all_target_details(args):
         'files':
         None
     })
-  logging.warning("Incomplete targets (couldn't find binary): %s" %
+  logging.warning("Incomplete targets (couldn't find binary): %s",
                   incomplete_targets)
   return all_target_details
 
@@ -702,7 +708,7 @@ def _get_fuzzilli_target_details(args):
   fuzzer_target_binpath = os.path.join(args.fuzzer_binaries_dir, 'd8')
   source_dir = os.path.abspath(os.path.join(args.fuzzer_binaries_dir, '../../'))
   if not os.path.isfile(fuzzer_target_binpath):
-    logging.warning(f'Could not find binary file: {fuzzer_target_binpath}')
+    logging.warning('Could not find binary file: %s', fuzzer_target_binpath)
     return all_target_details
 
   for corpora_dir in os.listdir(args.fuzzer_corpora_dir):
@@ -744,7 +750,7 @@ def _get_fuzzilli_target_details(args):
 
 
 def main():
-  logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
+  logging.basicConfig(format='%(asctime)s %(message)s', level=logging.INFO)
   args = _parse_command_arguments()
 
   # First, we make sure the report directory exists.
@@ -755,11 +761,11 @@ def main():
   all_target_details = []
 
   if not (os.path.isfile(LLVM_PROFDATA)):
-    logging.warning('No valid llvm_profdata at %s' % LLVM_PROFDATA)
+    logging.warning('No valid llvm_profdata at %s', LLVM_PROFDATA)
     exit(2)
 
   if not (os.path.isdir(args.profdata_outdir)):
-    logging.warning('%s does not exist or is not a directory' %
+    logging.warning('%s does not exist or is not a directory',
                     args.profdata_outdir)
     exit(2)
 
@@ -771,17 +777,17 @@ def main():
   # Run the fuzzers in parallel.
   num_cpus = int(cpu_count())
   num_targets = len(all_target_details)
-  logging.info("Running %d fuzzers across %d CPUs" % (num_targets, num_cpus))
+  logging.info('Running %d fuzzers across %d CPUs', num_targets, num_cpus)
   with Pool(num_cpus) as p:
     results = p.map(
         _run_fuzzer_target,
         [(target_details, verified_fuzzer_targets, failed_targets, num_targets)
          for target_details in all_target_details])
 
-  logging.info("Successful targets: %s" % verified_fuzzer_targets)
-  logging.info("Failed targets: %s" % failed_targets)
+  logging.info('Successful targets: %s', verified_fuzzer_targets)
+  logging.info('Failed targets: %s', failed_targets)
 
-  logging.info("Finished getting coverage information. Copying to %s" %
+  logging.info('Finished getting coverage information. Copying to %s',
                args.profdata_outdir)
   for fuzzer in verified_fuzzer_targets:
     cmd = [
@@ -792,7 +798,7 @@ def main():
     try:
       subprocess.check_call(cmd)
     except:
-      logging.warning("Warning: failed to copy profdata for %s" % fuzzer)
+      logging.warning('Warning: failed to copy profdata for %s', fuzzer)
 
 
 if __name__ == '__main__':
