@@ -25,6 +25,16 @@
     "wpt:all": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
+  "exports": {
+    "./*": {
+      "import": "./lib/esm/*",
+      "require": "./lib/cjs/*"
+    },
+    "./lib/cjs/*": {
+      "types": "./lib/cjs/*",
+      "require": "./lib/cjs/*"
+    }
+  },
   "wireit": {
     "build": {
       "dependencies": [
