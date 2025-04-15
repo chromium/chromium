@@ -533,7 +533,7 @@ Otherwise submit an issue for a project maintainer.
 2. Update the mapper version:
 
 ```shell
-third_party/bidimapper/roll_bidmapper
+third_party/bidimapper/roll_bidimapper
 ```
 
 3. Submit a CL with bug `42323268` ([link](https://crbug.com/42323268)).
