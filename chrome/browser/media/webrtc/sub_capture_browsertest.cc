@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -383,7 +385,7 @@ class SubCaptureBrowserTestBase : public WebRtcTestBase {
   raw_ptr<base::CommandLine> command_line_ = nullptr;
 
   // Holds the tabs manipulated by this test.
-  TabInfo tabs_[kTabCount];
+  std::array<TabInfo, kTabCount> tabs_;
 
   // Each page is served from a distinct origin, thereby proving that
   // cropping/restricting works irrespective of whether iframes are

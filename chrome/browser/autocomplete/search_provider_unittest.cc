@@ -223,7 +223,7 @@ class BaseSearchProviderTest : public testing::Test,
   struct TestData {
     const std::u16string input;
     const size_t num_results;
-    const ResultInfo output[3];
+    const std::array<ResultInfo, 3> output;
   };
 
   struct ExpectedMatch {
@@ -1266,7 +1266,7 @@ TEST_F(SearchProviderTest, DefaultProviderNoSuggestRelevanceInKeywordMode) {
   struct {
     const std::string default_provider_json;
     const std::string keyword_provider_json;
-    const std::string matches[5];
+    const std::array<std::string, 5> matches;
   } cases[] = {
       // First, try an input where the keyword provider does not deliver
       // suggested relevance scores.
@@ -2312,7 +2312,7 @@ TEST_F(SearchProviderTest, LocalAndRemoteRelevances) {
   struct Cases {
     const std::u16string input;
     const std::string json;
-    const std::string matches[6];
+    const std::array<std::string, 6> matches;
   };
   auto cases = std::to_array<Cases>({
       // The history results outscore the default verbatim score.  term2 has

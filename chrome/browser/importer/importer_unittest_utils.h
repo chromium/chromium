@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <array>
+
 struct ImportedBookmarkEntry;
 
 const int kMaxPathSize = 5;
@@ -14,7 +16,7 @@ const int kMaxPathSize = 5;
 struct BookmarkInfo {
   const bool in_toolbar;
   const size_t path_size;
-  const char* path[kMaxPathSize];
+  std::array<const char*, kMaxPathSize> path;
   const wchar_t* title;
   const char* url;
 };

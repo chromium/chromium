@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/span.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -73,7 +75,7 @@ struct KeyEventTestData {
   bool suppress_textinput;
 
   int result_length;
-  const char* const result[kMaxResultLength];
+  const std::array<const char*, kMaxResultLength> result;
 };
 
 // A class to help wait for the finish of a key event test.
@@ -166,7 +168,9 @@ class BrowserKeyEventsTest : public InProcessBrowserTest {
         .ExtractInt();
   }
 
-  void CheckResult(int tab_index, int length, const char* const result[]) {
+  void CheckResult(int tab_index,
+                   int length,
+                   base::span<const char* const> result) {
     ASSERT_LT(tab_index, browser()->tab_strip_model()->count());
     int actual_length = GetResultLength(tab_index);
     ASSERT_GE(actual_length, length);

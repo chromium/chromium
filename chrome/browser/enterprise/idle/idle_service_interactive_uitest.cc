@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -239,8 +241,8 @@ class IdleServiceTest : public InProcessBrowserTest {
   }
 
  private:
-  testing::NiceMock<policy::MockConfigurationPolicyProvider>
-      policy_providers_[2];
+  std::array<testing::NiceMock<policy::MockConfigurationPolicyProvider>, 2>
+      policy_providers_;
   raw_ptr<MockIdleTimeProvider, AcrossTasksDanglingUntriaged>
       idle_time_provider_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
