@@ -194,9 +194,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // DisplayBlockingPage(), which creates it.
   static void CreateAllowlistForTesting(content::WebContents* web_contents);
 
-  static std::string GetThreatTypeStringForInterstitial(
-      safe_browsing::SBThreatType threat_type);
-
   // Add and remove observers. These methods must be invoked on the UI thread.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* remove);

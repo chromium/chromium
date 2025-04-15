@@ -25,9 +25,14 @@
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/programmatic_form_submission_handler_java_script_feature.h"
 #import "components/dom_distiller/core/url_constants.h"
+#import "components/enterprise/connectors/core/features.h"
+#import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/google/core/common/google_util.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
+#import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#import "components/safe_browsing/core/common/utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/translate/ios/browser/translate_java_script_feature.h"
@@ -36,6 +41,7 @@
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/enterprise/connectors/ios_enterprise_interstitial.h"
+#import "ios/chrome/browser/enterprise/connectors/reporting/ios_reporting_event_router_factory.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/follow/model/follow_java_script_feature.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
@@ -131,10 +137,29 @@ NSString* GetSafeBrowsingErrorPageHTML(web::WebState* web_state,
   // Construct the blocking page and associate it with the WebState.
   std::unique_ptr<security_interstitials::IOSSecurityInterstitialPage> page;
   switch (static_cast<SafeBrowsingErrorCode>(error_code)) {
-    case SafeBrowsingErrorCode::kUnsafeResource:
+    case SafeBrowsingErrorCode::kUnsafeResource: {
       page = SafeBrowsingBlockingPage::Create(*resource);
+      // Report the unsafe site visits events, guarding it behind a feature
+      // flag.
+      if (base::FeatureList::IsEnabled(
+              enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+        ProfileIOS* profile =
+            ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+        PrefService* prefs = profile->GetPrefs();
+        enterprise_connectors::ReportingEventRouter* router =
+            enterprise_connectors::IOSReportingEventRouterFactory::
+                GetForProfile(profile);
+        if (router) {
+          router->OnSecurityInterstitialShown(
+              resource->url,
+              safe_browsing::GetThreatTypeStringForInterstitial(
+                  resource->threat_type),
+              /*net_error_code=*/0,
+              prefs->GetBoolean(prefs::kSafeBrowsingProceedAnywayDisabled));
+        }
+      }
       break;
-
+    }
     case SafeBrowsingErrorCode::kEnterpriseBlock:
       page =
           enterprise_connectors::IOSEnterpriseInterstitial::CreateBlockingPage(
