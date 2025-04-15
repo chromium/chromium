@@ -157,6 +157,7 @@ public class PasswordGenerationIntegrationTest {
         GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30,
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
     })
+    @DisabledTest(message = "flaky, see crbug.com/401272905")
     public void testManualGenerationCancel() throws InterruptedException, TimeoutException {
         waitForGenerationLabel();
         focusField(PASSWORD_NODE_ID_MANUAL);
