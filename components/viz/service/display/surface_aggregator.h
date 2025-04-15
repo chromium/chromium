@@ -301,7 +301,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
       const gfx::Transform& parent_target_transform,
       const std::optional<gfx::Rect> dest_root_target_clip_rect,
       const gfx::Transform& dest_transform_to_root_target,
-      ResolvedFrameData* resolved_frame);
+      ResolvedFrameData* resolved_frame,
+      bool force_add_zero_damage_rect);
 
   void AddRenderPassFilterDamageToDamageList(
       const ResolvedFrameData& resolved_frame,

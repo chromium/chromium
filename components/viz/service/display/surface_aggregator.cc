@@ -515,7 +515,7 @@ void SurfaceAggregator::AddRenderPassFilterDamageToDamageList(
         /*parent_target_transform*/ gfx::Transform(),
         /*dest_root_target_clip_rect*/ {},
         /*dest_transform_to_root_target*/ gfx::Transform(),
-        /*resolved_frame=*/nullptr);
+        /*resolved_frame=*/nullptr, /*zero_damage_texture_draw_quad=*/false);
   }
 }
 
@@ -524,7 +524,8 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
     const gfx::Transform& parent_target_transform,
     const std::optional<gfx::Rect> dest_root_target_clip_rect,
     const gfx::Transform& dest_transform_to_root_target,
-    ResolvedFrameData* resolved_frame) {
+    ResolvedFrameData* resolved_frame,
+    bool zero_damage_texture_draw_quad) {
   gfx::Rect damage_rect;
   if (!resolved_frame) {
     // When the surface is null, it's either the surface is lost or it comes
@@ -538,7 +539,7 @@ void SurfaceAggregator::AddSurfaceDamageToDamageList(
     }
   }
 
-  if (damage_rect.IsEmpty()) {
+  if (damage_rect.IsEmpty() && !zero_damage_texture_draw_quad) {
     current_zero_damage_rect_is_not_recorded_ = true;
     return;
   }
@@ -773,10 +774,10 @@ void SurfaceAggregator::HandleSurfaceQuad(
     // |combined_clip_rect| is the transforming and clipping result of the
     // entire SurfaceDrawQuad visible_rect on the root target space of the
     // root surface.
-    AddSurfaceDamageToDamageList(surface_in_target_space, target_transform,
-                                 dest_root_target_clip_rect,
-                                 dest_pass->transform_to_root_target,
-                                 /*resolved_frame=*/nullptr);
+    AddSurfaceDamageToDamageList(
+        surface_in_target_space, target_transform, dest_root_target_clip_rect,
+        dest_pass->transform_to_root_target,
+        /*resolved_frame=*/nullptr, /*zero_damage_texture_draw_quad=*/false);
   }
 
     // combined_clip_rect is the result of |dest_root_target_clip_rect|
@@ -926,7 +927,7 @@ void SurfaceAggregator::EmitSurfaceContent(
     AddSurfaceDamageToDamageList(
         /*default_damage_rect =*/gfx::Rect(), combined_transform,
         dest_root_target_clip_rect, dest_pass->transform_to_root_target,
-        &resolved_frame);
+        &resolved_frame, /*zero_damage_texture_draw_quad=*/false);
   }
 
   if (frame_metadata.delegated_ink_metadata) {
@@ -1464,11 +1465,18 @@ void SurfaceAggregator::CopyQuadsToPass(
               GetOptionalDamageRectFromQuad(quad);
           dest_shared_quad_state->overlay_damage_index =
               surface_damage_rect_list_->size();
+          // This is the only place |zero_damage_texture_draw_quad| is set to
+          // true because we mark all texture draw quads from exo as
+          // per_quad_damage even though quad has zero damage rect. This zero
+          // damage rect is different from the zero surface damage rect we add
+          // when we check the surface damage from the render pass and this zero
+          // damage rect will have an |overlay_damage_index| assigned to it.
           AddSurfaceDamageToDamageList(damage_rect_in_target_space.value(),
                                        target_transform,
                                        new_dest_root_target_clip_rect,
                                        dest_pass->transform_to_root_target,
-                                       /*resolved_frame=*/nullptr);
+                                       /*resolved_frame=*/nullptr,
+                                       /*zero_damage_texture_draw_quad=*/true);
         } else if (quad == quad_with_overlay_damage_index) {
           dest_shared_quad_state->overlay_damage_index = overlay_damage_index;
         }
@@ -1609,7 +1617,8 @@ void SurfaceAggregator::CopyPasses(ResolvedFrameData& resolved_frame) {
           /*default_damage_rect=*/gfx::Rect(),
           /*parent_target_transform=*/surface_transform,
           /*dest_root_target_clip_rect=*/{},
-          copy_pass->transform_to_root_target, &resolved_frame);
+          copy_pass->transform_to_root_target, &resolved_frame,
+          /*zero_damage_texture_draw_quad=*/false);
     }
 
     CopyQuadsToPass(resolved_frame, resolved_pass, copy_pass.get(),
