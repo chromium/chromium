@@ -1709,6 +1709,11 @@ BASE_FEATURE(kSupportMappableSharedImageOverMojo,
              "SupportMappableSharedImageOverMojo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Controls headless Live Caption experiment, which is likely unstable.
+BASE_FEATURE(kHeadlessLiveCaption,
+             "HeadlessLiveCaption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool IsChromeWideEchoCancellationEnabled() {
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   return base::FeatureList::IsEnabled(kChromeWideEchoCancellation) &&

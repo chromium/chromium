@@ -3060,6 +3060,9 @@ extern const char kEnablePolicyTestPageDescription[];
 extern const char kEnableLiveCaptionMultilangName[];
 extern const char kEnableLiveCaptionMultilangDescription[];
 
+extern const char kEnableHeadlessLiveCaptionName[];
+extern const char kEnableHeadlessLiveCaptionDescription[];
+
 extern const char kEnableCrOSLiveTranslateName[];
 extern const char kEnableCrOSLiveTranslateDescription[];
 

@@ -3365,6 +3365,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "enable-headless-live-caption",
+    "owners": [ "liberato@chromium.org", "media-dev@chromium.org" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "enable-heatmap-palm-detection",
     "owners": [ "jiwan@chromium.org", "robsc@chromium.org", "hbarnor@chromium.org" ],
     "expiry_milestone": 140

@@ -7452,6 +7452,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableLiveCaptionMultilangDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kLiveCaptionMultiLanguage)},
 
+    {"enable-headless-live-caption",
+     flag_descriptions::kEnableHeadlessLiveCaptionName,
+     flag_descriptions::kEnableHeadlessLiveCaptionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media::kHeadlessLiveCaption)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"enable-chromeos-live-translate",
      flag_descriptions::kEnableCrOSLiveTranslateName,

@@ -5207,6 +5207,11 @@ const char kEnableLiveCaptionMultilangDescription[] =
     "Enables the multilingual Live Caption Feature which allows "
     "for many language choices and automated language choices.";
 
+const char kEnableHeadlessLiveCaptionName[] = "Headless Live Captions";
+const char kEnableHeadlessLiveCaptionDescription[] =
+    "Enable features related to headless captions exploration. These are "
+    "very likely unstable.";
+
 const char kEnableCrOSLiveTranslateName[] = "Live Translate CrOS";
 const char kEnableCrOSLiveTranslateDescription[] =
     "Enables the live translate feature on ChromeOS which allows for live "

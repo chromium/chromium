@@ -9644,6 +9644,7 @@ from previous Chrome versions.
   <int value="-1793587118"
       label="CompressionDictionaryTransportOverHttp1:enabled"/>
   <int value="-1793010019" label="DesktopPWAsKeepAlive:enabled"/>
+  <int value="-1792411049" label="HeadlessLiveCaption:disabled"/>
   <int value="-1792162033" label="WebID:enabled"/>
   <int value="-1791226955" label="BreakingNewsPush:enabled"/>
   <int value="-1791149148" label="FileSystemAccessGetCloudIdentifiers:enabled"/>
@@ -16616,6 +16617,7 @@ from previous Chrome versions.
   <int value="902839593" label="WebContentsForceDark:disabled"/>
   <int value="903267263" label="disable-offline-pages"/>
   <int value="903773754" label="DataSharingAndroidV2:enabled"/>
+  <int value="903777470" label="HeadlessLiveCaption:enabled"/>
   <int value="904047636"
       label="UnifiedPasswordManagerLocalPasswordsAndroidWithMigration:disabled"/>
   <int value="904159815" label="VideoPlayerAppHidden:disabled"/>
