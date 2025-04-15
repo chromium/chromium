@@ -135,6 +135,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "new_window.icon",
     "notes.icon",
     "open_in_browser.icon",
+    "open_in_full.icon",
     "open_in_new.icon",
     "open_in_new_chrome_refresh.icon",
     "open_in_new_off_chrome_refresh.icon",
