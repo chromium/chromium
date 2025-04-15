@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -4444,7 +4446,7 @@ class LayerTreeHostTestUIResource : public LayerTreeHostTest {
         FakeScopedUIResource::Create(layer_tree_host()->GetUIResourceManager());
   }
 
-  std::unique_ptr<FakeScopedUIResource> ui_resources_[5];
+  std::array<std::unique_ptr<FakeScopedUIResource>, 5> ui_resources_;
   int num_ui_resources_;
 };
 
@@ -6190,7 +6192,7 @@ class LayerTreeHostTestBreakSwapPromise : public LayerTreeHostTest {
 
   int commit_count_;
   int commit_complete_count_;
-  TestSwapPromiseResult swap_promise_result_[3];
+  std::array<TestSwapPromiseResult, 3> swap_promise_result_;
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestBreakSwapPromise);

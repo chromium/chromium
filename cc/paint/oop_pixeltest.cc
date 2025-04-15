@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -863,13 +865,13 @@ TEST_F(OopPixelTest, DrawGainmapImageCubic) {
 
   auto info = SkImageInfo::MakeN32Premul(kSrcSize, kSrcSize,
                                          SkColorSpace::MakeSRGBLinear());
-  sk_sp<FakePaintImageGenerator> generators[2];
-  uint8_t pixel_values[2][2] = {
-      {100, 20},
-      {static_cast<uint8_t>(
-           std::round(255.f * std::log(2.f) / std::log(kRatioMax))),
-       static_cast<uint8_t>(
-           std::round(255.f * std::log(3.f) / std::log(kRatioMax)))}};
+  std::array<sk_sp<FakePaintImageGenerator>, 2> generators;
+  std::array<std::array<uint8_t, 2>, 2> pixel_values = {
+      {{100, 20},
+       {static_cast<uint8_t>(
+            std::round(255.f * std::log(2.f) / std::log(kRatioMax))),
+        static_cast<uint8_t>(
+            std::round(255.f * std::log(3.f) / std::log(kRatioMax)))}}};
   for (int i = 0; i < 2; ++i) {
     generators[i] = sk_make_sp<FakePaintImageGenerator>(info);
     SkPixmap pm = generators[i]->GetPixmap();

@@ -3930,7 +3930,7 @@ TEST(PaintOpBufferTest, RecordShadersCached) {
   }
 
   // Hold onto records so PaintShader pointer comparisons are valid.
-  sk_sp<PaintOpBuffer> buffers[5];
+  std::array<sk_sp<PaintOpBuffer>, 5> buffers;
   SkPicture* last_shader = nullptr;
   std::vector<uint8_t> scratch_buffer;
   PaintOp::DeserializeOptions deserialize_options{
