@@ -139,13 +139,10 @@ void NavigationEntryScreenshotCache::SetScreenshotInternal(
     return;
   }
 
-  // Should never capture the last committed entry.
-  if (entry == nav_controller_->GetLastCommittedEntry()) {
-    if (kDumpWithoutCrashNavigationEntryScreenshotCache.Get()) {
-      SCOPED_CRASH_KEY_BOOL("dnt", "is_copied_from_embedder",
-                            is_copied_from_embedder);
-      base::debug::DumpWithoutCrashing();
-    }
+  // Skip storing a screenshot for an active entry. This conditional can be true
+  // when a cancelled animation tries to reinsert the screenshot in the cache
+  // and another navigation to the same entry happens at the same time.
+  if (entry == nav_controller_->GetActiveEntry()) {
     return;
   }
 
