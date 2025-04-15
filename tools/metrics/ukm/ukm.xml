@@ -3751,30 +3751,37 @@ be describing additional metrics about the same event.
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records performance metrics for FedCM(Federated Credential Management) API.
+    Records performance metrics for FedCM (Federated Credential Management) API.
+    Recorded when a FedCmMetrics object is destroyed, typically when cleaning up
+    a FederatedAuthRequestImpl object which is created and associated with a
+    call to the FedCM API.
   </summary>
   <metric name="AccountLabel.NumMatchingAccounts" enum="FedCmNumAccounts">
     <summary>
       Records the number of accounts that match an account label. Records at the
-      time the accounts received by the FedCM API are filtered.
+      time the API call is completed.
     </summary>
   </metric>
-  <metric name="AccountsDialogShown" enum="BooleanHit">
+  <metric name="AccountsDialogShown2">
     <summary>
-      Records a 1 each time an accounts dialog is shown.
+      Records the number of times an accounts dialog is shown per API call.
+      Records at the time the API call is completed. This is in units of
+      dialogs.
     </summary>
   </metric>
   <metric name="AccountSelectionScrollPosition">
     <summary>
       Records the page scroll (y-axis) position upon account selection. Records
       once per user selecting an account by clicking on a FedCM dialog.
-      Bucketized exponentially with a standard bucket spacing of 1.15. This is
-      in units of pixels.
+      Bucketized exponentially with a standard bucket spacing of 1.15. Records
+      at the time the API call is completed. This is in units of pixels.
     </summary>
   </metric>
-  <metric name="AccountsRequestSent" enum="BooleanHit">
+  <metric name="AccountsRequestSent2">
     <summary>
-      Records a 1 each time a request is sent to the accounts endpoint.
+      Records the number of requests sent to the accounts endpoint per API call.
+      Records at the time the API call is completed. This is in units of
+      requests.
     </summary>
   </metric>
   <metric name="AutoReauthn.BlockedByContentSettings" enum="Boolean">
@@ -3782,7 +3789,8 @@ be describing additional metrics about the same event.
       Records whether the FedCM auto re-authn call is blocked because the auto
       re-authn content settings permission is disabled. Records at most one
       sample per FedCM API with auto re-authn enabled: some failures could occur
-      before this metric is recorded.
+      before this metric is recorded. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="AutoReauthn.BlockedByEmbargo" enum="Boolean">
@@ -3790,7 +3798,8 @@ be describing additional metrics about the same event.
       Records whether the FedCM auto re-authn call is blocked because the auto
       re-authn is under embargo, i.e. due to cooldown. Records at most one
       sample per FedCM API with auto re-authn enabled: some failures could occur
-      before this metric is recorded.
+      before this metric is recorded. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="AutoReauthn.BlockedByPreventSilentAccess" enum="Boolean">
@@ -3798,7 +3807,8 @@ be describing additional metrics about the same event.
       Records whether the FedCM auto re-authn call is blocked because
       preventSilentAccess() has been called on this site. Records at most one
       sample per FedCM API with auto re-authn enabled: some failures could occur
-      before this metric is recorded.
+      before this metric is recorded. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="AutoReauthn.ReturningAccounts" enum="FedCmNumAccounts">
@@ -3806,7 +3816,7 @@ be describing additional metrics about the same event.
       Records whether there was zero, one, or multiple returning accounts when a
       site calls the FedCM API with autoReauthn: true. Records at most one
       sample per failed API call: some failures could occur before this metric
-      is recorded.
+      is recorded. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="AutoReauthn.Succeeded" enum="Boolean">
@@ -3817,7 +3827,8 @@ be describing additional metrics about the same event.
       and the false count would provide the number of attempts where auto
       re-authn was blocked for some non-network related reason. Records at most
       one sample per FedCM API with auto re-authn enabled: some failures could
-      occur before this metric is recorded.
+      occur before this metric is recorded. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="AutoReauthn.TimeFromEmbargoWhenBlocked">
@@ -3827,7 +3838,8 @@ be describing additional metrics about the same event.
       records a sample when there is an auto re-authn FedCM API call which is
       blocked due to embargo. Samples are exponentially bucketed, with a max
       bucket of 10 minutes, the embargo duration (see
-      `kFederatedIdentityAutoReauthnEmbargoDuration`).
+      `kFederatedIdentityAutoReauthnEmbargoDuration`). Records at the time the
+      API call is completed.
     </summary>
   </metric>
   <metric name="Button.AccountChooserResult" enum="FedCmAccountChooserResult">
@@ -3865,7 +3877,7 @@ be describing additional metrics about the same event.
       dialog close button). Recorded when the FedCM dialog is closed without the
       user selecting an account. This includes instances where the close action
       is less intentional such as the virtual keyboard showing triggering the
-      dialog close.
+      dialog close. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
@@ -3873,38 +3885,39 @@ be describing additional metrics about the same event.
       Records the type of frame that invokes disconnect(). Records once for each
       disconnect() call. Possible values are: main frame, same-site iframe, and
       cross-site iframe, where the site of the caller frame is compared with the
-      site of the main frame.
+      site of the main frame. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="DomainHint.NumMatchingAccounts" enum="FedCmNumAccounts">
     <summary>
       Records the number of accounts that match a domain hint. Records at the
-      time the accounts received by the FedCM API are filtered.
+      time the API call is completed.
     </summary>
   </metric>
   <metric name="Error.ErrorDialogResult" enum="FedCmErrorDialogResult">
     <summary>
       Records the outcome of the error dialog. Recorded at most once per API
-      call when the error dialog is displayed.
+      call when the API call is completed.
     </summary>
   </metric>
   <metric name="Error.ErrorDialogType" enum="FedCmErrorDialogType">
     <summary>
       Records the type of error dialog shown. Recorded at most once per API call
-      when the error dialog is displayed.
+      when the API call is completed.
     </summary>
   </metric>
   <metric name="Error.TokenResponseType" enum="FedCmTokenResponseType">
     <summary>
       Records the type of token response received. Recorded at most once per API
-      call when a token response received.
+      call when the API call is completed.
     </summary>
   </metric>
   <metric name="FedCmSessionID">
     <summary>
       Records the session ID associated to the FedCM call for which this event
       is recording metrics. Each FedCM call gets a random integer session id,
-      which helps group UKM events by the session id.
+      which helps group UKM events by the session id. Records at the time the
+      API call is completed.
     </summary>
   </metric>
   <metric name="FrameType" enum="FedCmRequesterFrameType">
@@ -3913,7 +3926,7 @@ be describing additional metrics about the same event.
       call. Possible values are: main frame, same-site iframe, and cross-site
       iframe, where the site of the caller frame is compared with the site of
       the main frame. Same-origin iframes are recorded under the same-site
-      category.
+      category. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="HasSigninAccount" enum="Boolean">
@@ -3922,33 +3935,37 @@ be describing additional metrics about the same event.
       successful account fetch from the IdP server after the accounts filtering.
       If there are multiple accounts, record the user as sign-in if IdP claims
       at least one of the accounts is sign-in. If an IdP does not share the
-      user's sign-in state, record the state stored in the browser.
+      user's sign-in state, record the state stored in the browser. Records at
+      the time the API call is completed.
     </summary>
   </metric>
   <metric name="IdentityProvidersCount">
     <summary>
       Records the count of identity providers right before fetching endpoints
       with multi IDP flag enabled. It counts distinct providers including the
-      ones a user is not signed in to. Recorded at most once per API call before
-      the browser starts fetching from the IdPs.
+      ones a user is not signed in to. Recorded at most once per API call.
+      Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="LoginHint.NumMatchingAccounts" enum="FedCmNumAccounts">
     <summary>
       Records the number of accounts that match a login hint. Records at the
-      time the accounts received by the FedCM API are filtered.
+      time the API call is completed.
     </summary>
   </metric>
-  <metric name="MismatchDialogShown" enum="BooleanHit">
+  <metric name="MismatchDialogShown2">
     <summary>
-      Records a 1 each time a mismatch dialog is shown.
+      Records the number of times a mismatch dialog is shown per API call.
+      Records at the time the API call is completed. This is in units of
+      dialogs.
     </summary>
   </metric>
   <metric name="MultipleRequestsFromDifferentIdPs" enum="Boolean">
     <summary>
       Records whether an API call is rejected due to there's an existing
       in-flight API call initiated by other IdPs. Recorded once per promise
-      rejection because of an existing API call.
+      rejection because of an existing API call. Records at the time the API
+      call is completed.
     </summary>
   </metric>
   <metric name="MultipleRequestsRpMode" enum="FedCmMultipleRequestsRpMode">
@@ -3960,16 +3977,16 @@ be describing additional metrics about the same event.
   <metric name="NumIdpsMismatch">
     <summary>
       Records the number of IDPs that result in a 'mismatch' status from a
-      single FedCM get() invocation. Recorded every time a FedCM get() call is
-      resolved. Records some integer 0 or greater. Uses exponential count
+      single FedCM get() invocation. Records at the time the API call is
+      completed. Records some integer 0 or greater. Uses exponential count
       bucketing.
     </summary>
   </metric>
   <metric name="NumIdpsRequested">
     <summary>
       Records the number of IDPs that are requested from a single FedCM get()
-      invocation. Recorded every time a FedCM get() call is resolved. Records
-      some integer greater than or equal to 1. Uses exponential count bucketing.
+      invocation. Records at the time the API call is completed. Records some
+      integer greater than or equal to 1. Uses exponential count bucketing.
     </summary>
   </metric>
   <metric name="NumRequestsPerDocument">
@@ -3978,7 +3995,8 @@ be describing additional metrics about the same event.
       document. Requests made when FedCM is disabled or when there is a pending
       FedCM request are not counted. Records at most one sample for every
       document where at least one navigator.credentials.get() request is made.
-      No samples are recorded if the count is 0. The bucketing method used is
+      No samples are recorded if the count is 0. Records at the time the API
+      call is completed. The bucketing method used is
       base::UmaHistogramCounts100.
     </summary>
   </metric>
@@ -3989,20 +4007,21 @@ be describing additional metrics about the same event.
       some frame in the page invokes the preventSilentAccess() JavaScript call.
       Possible values are: main frame, same-site iframe, and cross-site iframe,
       where the site of the caller frame is compared with the site of the main
-      frame.
+      frame. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="RpMode" enum="FedCmRpMode">
     <summary>
       Records the RP mode of the FedCM API. Recorded once per API call together
       with Status.RequestIdToken when the request is fulfilled (either resolved
-      or rejected).
+      or rejected). Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="RpUrlHasPath" enum="Boolean">
     <summary>
       Whether the accounts dialog is shown on an RP URL which has a path.
-      Recorded each time the user is shown an accounts dialog.
+      Recorded each time the user is shown an accounts dialog. Records at the
+      time the API call is completed.
     </summary>
   </metric>
   <metric name="Status.Disconnect" enum="FedCmDisconnectStatus">
@@ -4030,7 +4049,8 @@ be describing additional metrics about the same event.
   <metric name="Status.SignInStateMatch" enum="FedCmSignInStateMatchStatus">
     <summary>
       Records whether user sign-in states between IDP and browser match after
-      browser receives an account list from IDP prior to showing UI.
+      browser receives an account list from IDP prior to showing UI. Records at
+      the time the API call is completed.
     </summary>
   </metric>
   <metric name="ThirdPartyCookiesStatus" enum="FedCmThirdPartyCookiesStatus">
@@ -4047,19 +4067,22 @@ be describing additional metrics about the same event.
       developer aborts the request. This duration includes the time when the
       accounts dialog is inactive e.g. user switches to a different tab. Samples
       are at most 10 minutes. Records a sample when an accounts dialog which is
-      not the verifying UI for auto re-authentication is shown.
+      not the verifying UI for auto re-authentication is shown. Records at the
+      time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.CancelOnDialog">
     <summary>
       Records the time (in milliseconds) from when the accounts dialog is shown
-      to when the user closes the dialog without selecting any account.
+      to when the user closes the dialog without selecting any account. Records
+      at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.ContinueOnDialog">
     <summary>
       Records the time (in milliseconds) from when the accounts dialog is shown
-      to when the user presses the Continue button.
+      to when the user presses the Continue button. Records at the time the API
+      call is completed.
     </summary>
   </metric>
   <metric name="Timing.Disconnect">
@@ -4068,6 +4091,7 @@ be describing additional metrics about the same event.
       received by the browser process to the time in which it is completed, e.g.
       right before sending the response back to the renderer process. Records
       one sample for every disconnect call which sends a disconnect request.
+      Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.GetUserInfoToButtonMode">
@@ -4076,13 +4100,15 @@ be describing additional metrics about the same event.
       the getUserInfo() API to the time when the Button Mode API is called.
       Recorded when the Button mode is invoked and there was a successful
       accounts fetch via the getUserInfo API call on this page. Recorded at most
-      once per getUserInfo API call.
+      once per getUserInfo API call. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="Timing.IdTokenResponse">
     <summary>
       Records the time (in milliseconds) from when the user presses the Continue
-      button to when the id token response is received.
+      button to when the id token response is received. Records at the time the
+      API call is completed.
     </summary>
   </metric>
   <metric name="Timing.MismatchDialogShownDuration">
@@ -4091,13 +4117,15 @@ be describing additional metrics about the same event.
       triggers IDP sign-in pop-up window or when dialog is destroyed e.g. user
       closes the dialog. This duration includes the time when the mismatch
       dialog is inactive e.g. user switches to a different tab. Samples are at
-      most 10 minutes. Records a sample when a mismatch dialog is shown.
+      most 10 minutes. Records a sample when a mismatch dialog is shown, at the
+      time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.ShowAccountsDialog">
     <summary>
       Records the time (in milliseconds) from when a call to the API was made to
-      when the accounts dialog is shown.
+      when the accounts dialog is shown. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="Timing.ShowAccountsDialogBreakdown.AccountsFetch">
@@ -4106,6 +4134,7 @@ be describing additional metrics about the same event.
       to when the fetch response is received. Only recorded when the accounts
       are ready to show which means all fetches are done. In case of multiple
       identity providers, the fetch that takes the longest will be recorded.
+      Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.ShowAccountsDialogBreakdown.ClientMetadataFetch">
@@ -4114,7 +4143,7 @@ be describing additional metrics about the same event.
       was made to when the fetch response is received. Only recorded when the
       accounts are ready to show which means all fetches are done. In case of
       multiple identity providers, the fetch that takes the longest will be
-      recorded.
+      recorded. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.ShowAccountsDialogBreakdown.WellKnownAndConfigFetch">
@@ -4123,13 +4152,14 @@ be describing additional metrics about the same event.
       when the well-known and config files fetch are received. Only recorded
       when the accounts are ready to show which means all fetches are done. In
       case of multiple identity providers, the fetch that takes the longest will
-      be recorded.
+      be recorded. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.TurnaroundTime">
     <summary>
       Records the overall time (in milliseconds) from when the API is called to
-      when the id token response is received.
+      when the id token response is received. Records at the time the API call
+      is completed.
     </summary>
   </metric>
   <metric name="UseOtherAccountResult" enum="FedCmUseOtherAccountResult">
@@ -4139,7 +4169,7 @@ be describing additional metrics about the same event.
       attempts to login with a new account via the &quot;use other account&quot;
       button, when the request is fulfilled (either resolved or rejected). Only
       considers the last &quot;use other account&quot; button clicked if there
-      are multiple attempts.
+      are multiple attempts. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="VerifyingDialogResult" enum="FedCmVerifyingDialogResult">
@@ -4156,20 +4186,24 @@ be describing additional metrics about the same event.
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records performance metrics for FedCM (Federated Credential Management) API.
-    Recorded when the web developer calls the FedCM API. Individual metrics are
-    recorded eagerly, whenever the value has been computed.
+    Recorded when a FedCmMetrics object is destroyed, typically when cleaning up
+    a FederatedAuthRequestImpl object which is created and associated with a
+    call to the FedCM API.
 
     This event uses the specific WEB_IDENTITY ukm_source_id which is generated
     from the identity provider's origin.
   </summary>
-  <metric name="AccountsDialogShown" enum="BooleanHit">
+  <metric name="AccountsDialogShown2">
     <summary>
-      Records a 1 each time an accounts dialog is shown.
+      Records the number of times an accounts dialog is shown per API call.
+      Records at the time the API call is completed. This is in units of
+      dialogs.
     </summary>
   </metric>
-  <metric name="AccountsRequestSent" enum="BooleanHit">
+  <metric name="AccountsRequestSent2">
     <summary>
-      Records a 1 each time a request is sent to the accounts endpoint.
+      Records the number of requests sent to the accounts endpoint per API call.
+      This is in units of requests.
     </summary>
   </metric>
   <metric name="Disconnect.FrameType" enum="FedCmRequesterFrameType">
@@ -4177,39 +4211,44 @@ be describing additional metrics about the same event.
       Records the type of frame that invokes disconnect(). Records once for each
       disconnect() call. Possible values are: main frame, same-site iframe, and
       cross-site iframe, where the site of the caller frame is compared with the
-      site of the main frame.
+      site of the main frame. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Error.ErrorDialogResult" enum="FedCmErrorDialogResult">
     <summary>
       Records the outcome of the error dialog. Recorded at most once per API
-      call when the error dialog is displayed.
+      call when the error dialog is displayed. Records at the time the API call
+      is completed.
     </summary>
   </metric>
   <metric name="Error.ErrorDialogType" enum="FedCmErrorDialogType">
     <summary>
       Records the type of error dialog shown. Recorded at most once per API call
-      when the error dialog is displayed.
+      when the error dialog is displayed. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="Error.ErrorUrlType" enum="FedCmErrorUrlType">
     <summary>
       Records whether the error URL is same-origin, cross-origin but same-site
       or cross-site with the config URL. Recorded at most once per API call when
-      a valid error URL is received.
+      a valid error URL is received. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="Error.TokenResponseType" enum="FedCmTokenResponseType">
     <summary>
       Records the type of token response received. Recorded at most once per API
-      call when a token response received.
+      call when a token response received. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="FedCmSessionID">
     <summary>
       Records the session ID associated to the FedCM call for which this event
       is recording metrics. Each FedCM call gets a random integer session id,
-      which helps group UKM events by the session id.
+      which helps group UKM events by the session id. Records at the time the
+      API call is completed.
     </summary>
   </metric>
   <metric name="FrameType" enum="FedCmRequesterFrameType">
@@ -4218,7 +4257,7 @@ be describing additional metrics about the same event.
       call. Possible values are: main frame, same-site iframe, and cross-site
       iframe, where the site of the caller frame is compared with the site of
       the main frame. Same-origin iframes are recorded under the same-site
-      category.
+      category. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="HasSigninAccount" enum="Boolean">
@@ -4227,12 +4266,15 @@ be describing additional metrics about the same event.
       successful account fetch from the IdP server after the accounts filtering.
       If there are multiple accounts, record the user as sign-in if IdP claims
       at least one of the accounts is sign-in. If an IdP does not share the
-      user's sign-in state, record the state stored in the browser.
+      user's sign-in state, record the state stored in the browser. Records at
+      the time the API call is completed.
     </summary>
   </metric>
-  <metric name="MismatchDialogShown" enum="BooleanHit">
+  <metric name="MismatchDialogShown2">
     <summary>
-      Records a 1 each time a mismatch dialog is shown.
+      Records the number of times a mismatch dialog is shown per API call.
+      Records at the time the API call is completed. This is in units of
+      dialogs.
     </summary>
   </metric>
   <metric name="MultipleRequestsRpMode" enum="FedCmMultipleRequestsRpMode">
@@ -4245,8 +4287,8 @@ be describing additional metrics about the same event.
     <summary>
       Records the number of IDPs that result in a 'mismatch' status from a
       single FedCM get() invocation. Recorded every time a FedCM get() call is
-      resolved. Records some integer 0 or greater. Uses exponential count
-      bucketing.
+      resolved. Records at the time the API call is completed. Records some
+      integer 0 or greater. Uses exponential count bucketing.
     </summary>
   </metric>
   <metric name="NumIdpsRequested">
@@ -4288,7 +4330,8 @@ be describing additional metrics about the same event.
   <metric name="Status.SignInStateMatch" enum="FedCmSignInStateMatchStatus">
     <summary>
       Records whether user sign-in states between IDP and browser match after
-      browser receives an account list from IDP prior to showing UI.
+      browser receives an account list from IDP prior to showing UI. Records at
+      the time the API call is completed.
     </summary>
   </metric>
   <metric name="ThirdPartyCookiesStatus" enum="FedCmThirdPartyCookiesStatus">
@@ -4305,19 +4348,22 @@ be describing additional metrics about the same event.
       developer aborts the request. This duration includes the time when the
       accounts dialog is inactive e.g. user switches to a different tab. Samples
       are at most 10 minutes. Records a sample when an accounts dialog which is
-      not the verifying UI for auto re-authentication is shown.
+      not the verifying UI for auto re-authentication is shown. Records at the
+      time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.CancelOnDialog">
     <summary>
       Records the time (in milliseconds) from when the accounts dialog is shown
-      to when the user closes the dialog without selecting any account.
+      to when the user closes the dialog without selecting any account. Records
+      at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.ContinueOnDialog">
     <summary>
       Records the time (in milliseconds) from when the accounts dialog is shown
-      to when the user presses the Continue button.
+      to when the user presses the Continue button. Records at the time the API
+      call is completed.
     </summary>
   </metric>
   <metric name="Timing.Disconnect">
@@ -4326,12 +4372,14 @@ be describing additional metrics about the same event.
       received by the browser process to the time in which it is completed, e.g.
       right before sending the response back to the renderer process. Records
       one sample for every disconnect call which sends a disconnect request.
+      Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.IdTokenResponse">
     <summary>
       Records the time (in milliseconds) from when the user presses the Continue
-      button to when the id token response is received.
+      button to when the id token response is received. Records at the time the
+      API call is completed.
     </summary>
   </metric>
   <metric name="Timing.MismatchDialogShownDuration">
@@ -4340,19 +4388,22 @@ be describing additional metrics about the same event.
       triggers IDP sign-in pop-up window or when dialog is destroyed e.g. user
       closes the dialog. This duration includes the time when the mismatch
       dialog is inactive e.g. user switches to a different tab. Samples are at
-      most 10 minutes. Records a sample when a mismatch dialog is shown.
+      most 10 minutes. Records a sample when a mismatch dialog is shown. Records
+      at the time the API call is completed.
     </summary>
   </metric>
   <metric name="Timing.ShowAccountsDialog">
     <summary>
       Records the time (in milliseconds) from when a call to the API was made to
-      when the accounts dialog is shown.
+      when the accounts dialog is shown. Records at the time the API call is
+      completed.
     </summary>
   </metric>
   <metric name="Timing.TurnaroundTime">
     <summary>
       Records the overall time (in milliseconds) from when the API is called to
-      when the id token response is received.
+      when the id token response is received. Records at the time the API call
+      is completed.
     </summary>
   </metric>
   <metric name="UseOtherAccountResult" enum="FedCmUseOtherAccountResult">
@@ -4362,7 +4413,7 @@ be describing additional metrics about the same event.
       attempts to login with a new account via the &quot;use other account&quot;
       button, when the request is fulfilled (either resolved or rejected). Only
       considers the last &quot;use other account&quot; button clicked if there
-      are multiple attempts.
+      are multiple attempts. Records at the time the API call is completed.
     </summary>
   </metric>
   <metric name="VerifyingDialogResult" enum="FedCmVerifyingDialogResult">

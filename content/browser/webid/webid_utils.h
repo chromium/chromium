@@ -103,10 +103,6 @@ bool IsFedCmAuthzEnabled();
 
 FederatedAuthRequestPageData* GetPageData(Page& page);
 
-// Returns a new session ID. Used to record UKM metrics corresponding to a new
-// API invocation, like get() or disconnect().
-int GetNewSessionID();
-
 // Returns the frame type of the requester.
 FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
                                                   const url::Origin& requester,

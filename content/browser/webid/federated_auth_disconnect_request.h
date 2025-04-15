@@ -47,6 +47,8 @@ class CONTENT_EXPORT FederatedAuthDisconnectRequest {
       FederatedIdentityApiPermissionContextDelegate* api_permission_delegate);
 
  private:
+  friend class FederatedAuthDisconnectRequestTest;
+
   FederatedAuthDisconnectRequest(
       std::unique_ptr<IdpNetworkRequestManager> network_manager,
       FederatedIdentityPermissionContextDelegate* permission_delegate,

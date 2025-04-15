@@ -760,6 +760,7 @@ void FederatedAuthRequestImpl::RequestToken(
     std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
+    fedcm_metrics_.reset();
     return;
   }
 
@@ -772,6 +773,7 @@ void FederatedAuthRequestImpl::RequestToken(
     std::move(callback).Run(RequestTokenStatus::kError, std::nullopt, "",
                             /*error=*/nullptr,
                             /*is_auto_selected=*/false);
+    fedcm_metrics_.reset();
     return;
   }
 
@@ -779,8 +781,6 @@ void FederatedAuthRequestImpl::RequestToken(
       render_frame_host().HasTransientUserActivation();
 
   MaybeCreateFedCmMetrics();
-  int old_session_id = fedcm_metrics_->session_id();
-  fedcm_metrics_->SetSessionID(webid::GetNewSessionID());
   // Store the previous `idp_order_` value from this class. Note that this is {}
   // unless there is a pending request from the same RFH. In particular, this is
   // still {} if there is a pending request but from a different RFH.
@@ -839,17 +839,17 @@ void FederatedAuthRequestImpl::RequestToken(
       // call will be rejected. The two requests may be from different RFHs so
       // we should calculate properly.
       if (old_idp_order.empty()) {
-        fedcm_metrics_->SetSessionID(
-            pending_request->fedcm_metrics_->session_id());
         fedcm_metrics_->RecordMultipleRequestsFromDifferentIdPs(
             idp_order_ != pending_request->idp_order_);
       } else {
-        // The old request is alive, so set the session ID to the old one.
-        fedcm_metrics_->SetSessionID(old_session_id);
         fedcm_metrics_->RecordMultipleRequestsFromDifferentIdPs(idp_order_ !=
                                                                 old_idp_order);
       }
 
+      // Reset to record kErrorTooManyRequests but recreate to continue
+      // recording for the pending request.
+      fedcm_metrics_.reset();
+      MaybeCreateFedCmMetrics();
       idp_order_ = std::move(old_idp_order);
       return;
     }
@@ -857,9 +857,7 @@ void FederatedAuthRequestImpl::RequestToken(
     // Cancel the pending request before starting the new active flow request.
     // Set the old values before completing in case the pending request
     // corresponds to one in this object.
-    int new_session_id = fedcm_metrics_->session_id();
     std::vector<GURL> new_idp_order = std::move(idp_order_);
-    fedcm_metrics_->SetSessionID(old_session_id);
     idp_order_ = std::move(old_idp_order);
     pending_request->CompleteRequestWithError(
         FederatedAuthRequestResult::kReplacedByActiveMode,
@@ -870,7 +868,7 @@ void FederatedAuthRequestImpl::RequestToken(
     // Some members were reset to false during CleanUp when replacing a passive
     // flow from the same frame so we need to set them again.
     had_transient_user_activation_ = true;
-    fedcm_metrics_->SetSessionID(new_session_id);
+    MaybeCreateFedCmMetrics();
     idp_order_ = std::move(new_idp_order);
   }
 
@@ -1447,6 +1445,7 @@ void FederatedAuthRequestImpl::CompleteDisconnectRequest(
   }
   std::move(callback).Run(status);
   disconnect_request_.reset();
+  fedcm_metrics_.reset();
 }
 
 void FederatedAuthRequestImpl::OnClientMetadataResponseReceived(
@@ -3222,6 +3221,7 @@ void FederatedAuthRequestImpl::CleanUp() {
   // Given that |request_dialog_controller_| has reference to this web content
   // instance we destroy that first.
   provider_fetcher_.reset();
+  fedcm_metrics_.reset();
   account_id_ = std::string();
   start_time_ = base::TimeTicks();
   well_known_and_config_fetched_time_ = base::TimeTicks();
@@ -3769,8 +3769,6 @@ void FederatedAuthRequestImpl::Disconnect(
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
     DisconnectCallback callback) {
   MaybeCreateFedCmMetrics();
-  // FedCMMetrics is used to record disconnect metrics, but does not use the
-  // session_id_, which belongs to token request calls.
   if (disconnect_request_) {
     // Since we do not send any fetches in this case, consider the request to be
     // instant, e.g. duration is 0.
@@ -3782,7 +3780,7 @@ void FederatedAuthRequestImpl::Disconnect(
         FedCmDisconnectStatus::kTooManyRequests, std::nullopt,
         webid::ComputeRequesterFrameType(render_frame_host(), origin(),
                                          GetEmbeddingOrigin()),
-        options->config->config_url, webid::GetNewSessionID());
+        options->config->config_url);
     std::move(callback).Run(DisconnectStatus::kErrorTooManyRequests);
     return;
   }
