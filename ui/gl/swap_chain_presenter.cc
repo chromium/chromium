@@ -509,33 +509,31 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     return DXGI_FORMAT_R10G10B10A2_UNORM;
   }
 
-  // Prefer P010 swapchain when playing P010 SDR content on SDR system with
-  // P010 displayable.
-  if (base::FeatureList::IsEnabled(kP010MPOForSDR) &&
-      use_p010_for_sdr_swap_chain) {
-    return DXGI_FORMAT_P010;
-  }
-
-  DXGI_FORMAT yuv_overlay_format = GetDirectCompositionSDROverlayFormat();
-  // Always prefer YUV swap chain for hardware protected video for now.
-  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected)
-    return yuv_overlay_format;
-
   if (failed_to_create_yuv_swapchain_ ||
       !DirectCompositionHardwareOverlaysSupported()) {
     return DXGI_FORMAT_B8G8R8A8_UNORM;
   }
 
-  // Start out as YUV.
-  if (!presentation_history_.Valid())
-    return yuv_overlay_format;
+  DXGI_FORMAT sdr_yuv_overlay_format =
+      use_p010_for_sdr_swap_chain ? DXGI_FORMAT_P010
+                                  : GetDirectCompositionSDROverlayFormat();
+  // Always prefer YUV swap chain for hardware protected video for now.
+  if (protected_video_type == gfx::ProtectedVideoType::kHardwareProtected) {
+    return sdr_yuv_overlay_format;
+  }
+
+  if (!presentation_history_.Valid()) {
+    // Prefer P010 swapchain when playing P010 SDR content on SDR system with
+    // P010 displayable.
+    return sdr_yuv_overlay_format;
+  }
 
   int composition_count = presentation_history_.composed_count();
 
   // It's more efficient to use a BGRA backbuffer instead of YUV if overlays
   // aren't being used, as otherwise DWM will use the video processor a second
   // time to convert it to BGRA before displaying it on screen.
-  if (swap_chain_format_ == yuv_overlay_format) {
+  if (swap_chain_format_ != DXGI_FORMAT_B8G8R8A8_UNORM) {
     // Switch to BGRA once 3/4 of presents are composed.
     if (composition_count >= (PresentationHistory::kPresentsToStore * 3 / 4)) {
       switched_to_BGRA8888_time_tick_ = base::TimeTicks::Now();
@@ -550,7 +548,7 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
         base::TimeTicks::Now() - switched_to_BGRA8888_time_tick_;
     if (time_delta >= kDelayForRetryingYUVFormat) {
       presentation_history_.Clear();
-      return yuv_overlay_format;
+      return sdr_yuv_overlay_format;
     }
   }
   return swap_chain_format_;
@@ -1586,6 +1584,8 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   // P010 pixel format is also detected as displayable surface, due to the
   // better quality over 8-bit swapchain.
   bool use_p010_for_sdr_swap_chain =
+      base::FeatureList::IsEnabled(kP010MPOForSDR) &&
+      (gl::GetDirectCompositionOverlaySupportFlags(DXGI_FORMAT_P010) != 0) &&
       !DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
       CheckDisplayableSupportForP010() && params.video_params.is_p010_content;
 
