@@ -145,7 +145,10 @@ class BrowserTabStripController::TabContextMenuContents
     // native context menus. (See crbug.com/1109256.)
     const int run_flags =
         views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
-    menu_runner_ = std::make_unique<views::MenuRunner>(model_.get(), run_flags);
+    menu_runner_ = std::make_unique<views::MenuRunner>(
+        model_.get(), run_flags,
+        base::BindRepeating(&TabContextMenuContents::OnMenuClosed,
+                            base::Unretained(this)));
   }
   TabContextMenuContents(const TabContextMenuContents&) = delete;
   TabContextMenuContents& operator=(const TabContextMenuContents&) = delete;
@@ -157,6 +160,8 @@ class BrowserTabStripController::TabContextMenuContents
       menu_runner_->Cancel();
     }
   }
+
+  void OnMenuClosed() { tab_ = nullptr; }
 
   void RunMenuAt(const gfx::Point& point,
                  ui::mojom::MenuSourceType source_type) {
@@ -205,10 +210,10 @@ class BrowserTabStripController::TabContextMenuContents
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
   // The tab we're showing a menu for.
-  raw_ptr<Tab, DanglingUntriaged> tab_;
+  raw_ptr<Tab> tab_;
 
   // A pointer back to our hosting controller, for command state information.
-  raw_ptr<BrowserTabStripController, DanglingUntriaged> controller_;
+  raw_ptr<BrowserTabStripController> controller_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
