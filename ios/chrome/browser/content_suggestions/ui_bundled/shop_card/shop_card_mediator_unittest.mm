@@ -38,6 +38,17 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
+namespace {
+
+const char* kPrefsToRegister[] = {
+    shop_card_prefs::kShopCardPriceDropUrlImpressions,
+    tab_resumption_prefs::kTabResumptionRegularUrlImpressions,
+    tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions,
+    tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions,
+};
+
+}  // namespace
+
 class ShopCardMediatorTest : public PlatformTest {
  public:
   ShopCardMediatorTest() {
@@ -55,10 +66,9 @@ class ShopCardMediatorTest : public PlatformTest {
     builder.AddTestingFactory(ios::HistoryServiceFactory::GetInstance(),
                               ios::HistoryServiceFactory::GetDefaultFactory());
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
-    pref_service_.registry()->RegisterDictionaryPref(
-        shop_card_prefs::kShopCardPriceDropUrlImpressions);
-    pref_service_.registry()->RegisterDictionaryPref(
-        tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
+    for (auto* const pref : kPrefsToRegister) {
+      pref_service_.registry()->RegisterDictionaryPref(pref);
+    }
     builder.AddTestingFactory(
         ImpressionLimitServiceFactory::GetInstance(),
         base::BindRepeating(

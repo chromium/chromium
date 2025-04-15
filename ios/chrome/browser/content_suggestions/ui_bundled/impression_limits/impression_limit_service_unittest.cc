@@ -28,6 +28,7 @@
 #include "ios/chrome/browser/content_suggestions/ui_bundled/impression_limits/impression_limit_service_factory.h"
 #include "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_prefs.h"
 #include "ios/chrome/browser/history/model/history_service_factory.h"
+#include "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #include "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -55,6 +56,13 @@ const base::Time kNow = TimeFromString("31 Mar 2025 10:00");
 const base::Time kYesterday = TimeFromString("30 Mar 2025 10:30");
 const base::Time kLastMonth = TimeFromString("25 Feb 2025 9:00");
 const uint64_t kValidId = 67890L;
+
+const char* kPrefsToRegister[] = {
+    shop_card_prefs::kShopCardPriceDropUrlImpressions,
+    tab_resumption_prefs::kTabResumptionRegularUrlImpressions,
+    tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions,
+    tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions,
+};
 
 history::URLRows CreateURLRows(const std::vector<GURL>& urls) {
   history::URLRows url_rows;
@@ -107,10 +115,9 @@ class ImpressionLimitServiceTest : public PlatformTest {
 
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForProfile(profile_.get()));
-
-    pref_service_.registry()->RegisterDictionaryPref(kImpressionsPref);
-    pref_service_.registry()->RegisterDictionaryPref(
-        shop_card_prefs::kShopCardPriceDropUrlImpressions);
+    for (auto* const pref : kPrefsToRegister) {
+      pref_service_.registry()->RegisterDictionaryPref(pref);
+    }
     impression_limit_service_ =
         ImpressionLimitServiceFactory::GetForProfile(profile_.get());
   }

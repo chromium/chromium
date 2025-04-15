@@ -204,13 +204,27 @@ void ConfigureTabResumptionItemForShopCard(
 }
 
 bool IsShopCardImpressionLimitsEnabled() {
-  return base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits);
+  return base::FeatureList::IsEnabled(commerce::kShopCardImpressionLimits) &&
+         (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm4 ||
+          commerce::kShopCardVariation.Get() == commerce::kShopCardArm5);
 }
 
 int GetImpressionLimit() {
   return base::GetFieldTrialParamByFeatureAsInt(
       commerce::kShopCard, commerce::kShopCardMaxImpressions,
       kShopCardMaxImpressions);
+}
+
+const char* GetImpressionLimitPref() {
+  if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3) {
+    return tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions;
+  } else if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
+    return tab_resumption_prefs::kTabResumptionWithPriceTrackableUrlImpressions;
+  } else if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm5) {
+    return tab_resumption_prefs::kTabResumptionRegularUrlImpressions;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -462,13 +476,10 @@ class TabResumptionMediatorProxy {
           static_cast<TabResumptionItem*>(magicStackModule).shopCardData
                                              atIndex:index];
 
-  TabResumptionItem* item = static_cast<TabResumptionItem*>(magicStackModule);
   if (IsShopCardImpressionLimitsEnabled() && index == 0 &&
-      _impressionLimitService && item.shopCardData &&
-      item.shopCardData.shopCardItemType == ShopCardItemType::kPriceDropOnTab) {
-    _impressionLimitService->LogImpressionForURL(
-        self.itemConfig.tabURL,
-        tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
+      _impressionLimitService) {
+    _impressionLimitService->LogImpressionForURL(self.itemConfig.tabURL,
+                                                 GetImpressionLimitPref());
   }
 }
 
@@ -590,20 +601,18 @@ class TabResumptionMediatorProxy {
 
 - (void)fetchShopCardDataForItemIfApplicable:(TabResumptionItem*)item
                                          url:(const GURL&)resumptionURL {
+  if (IsShopCardImpressionLimitsEnabled() && _impressionLimitService) {
+    // TODO(crbug.com/408252386) Add unit tests for impression count
+    // integration.
+    std::optional<int> count = _impressionLimitService->GetImpressionCount(
+        resumptionURL, GetImpressionLimitPref());
+    if (count.has_value() && count.value() >= GetImpressionLimit()) {
+      return;
+    }
+  }
+
   if (commerce::kShopCardVariation.Get() == commerce::kShopCardArm3 ||
       commerce::kShopCardVariation.Get() == commerce::kShopCardArm4) {
-    if (IsShopCardImpressionLimitsEnabled() && _impressionLimitService &&
-        commerce::kShopCardVariation.Get() == commerce::kShopCardArm3) {
-      // TODO(crbug.com/408252386) Add unit tests for impression count
-      // integration.
-      std::optional<int> count = _impressionLimitService->GetImpressionCount(
-          resumptionURL,
-          tab_resumption_prefs::kTabResumptionWithPriceDropUrlImpressions);
-      if (count.has_value() && count.value() >= GetImpressionLimit()) {
-        return;
-      }
-    }
-
     __weak __typeof(self) weakSelf = self;
     TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
         _optimizationGuideService, resumptionURL,
