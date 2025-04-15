@@ -569,7 +569,11 @@ void WaylandToplevelWindow::OnSequencePoint(int64_t seq) {
 bool WaylandToplevelWindow::OnInitialize(
     PlatformWindowInitProperties properties,
     PlatformWindowDelegate::State* state) {
-  state->window_state = PlatformWindowState::kNormal;
+  // State is kept as "unknown" until the first configure sequence arrives, when
+  // it's possible to which state it should transition to. That's also when
+  // xdg_surface.set_window_geometry must be sent for the first time in. See
+  // WaylandWindow::LatchStateRequest for more details.
+  CHECK_EQ(state->window_state, PlatformWindowState::kUnknown);
 
   app_id_ = properties.wayland_app_id;
   SetWaylandToplevelExtension(this, this);

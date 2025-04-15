@@ -284,8 +284,8 @@ class WaylandBufferManagerTest : public WaylandTest {
     properties.bounds = gfx::Rect(0, 0, 800, 600);
     properties.type = type;
     properties.parent_widget = parent_widget;
-    auto new_window = WaylandWindow::Create(&delegate_, connection_.get(),
-                                            std::move(properties));
+    auto new_window =
+        delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
     EXPECT_TRUE(new_window);
     WaylandTestBase::SyncDisplay();
 
@@ -1411,6 +1411,8 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
     ProcessCreatedBufferResourcesWithExpectation(1u /* expected size */,
                                                  false /* fail */);
 
+    // Buffer commits before surface configure are expected to be
+    // discarded.
     PostToServerAndWait(
         [temp_window_surface_id](wl::TestWaylandServerThread* server) {
           auto* mock_surface =
@@ -1422,11 +1424,11 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
           EXPECT_CALL(*mock_surface, Frame(_)).Times(0);
           EXPECT_CALL(*mock_surface, Commit()).Times(0);
         });
-
     CommitBuffer(widget, kDmabufBufferId, kDmabufBufferId,
                  gfx::FrameData(delegate_.viz_seq()),
-                 window_->GetBoundsInPixels(), gfx::RoundedCornersF(),
-                 kDefaultScale, window_->GetBoundsInPixels());
+                 temp_window->GetBoundsInPixels(), gfx::RoundedCornersF(),
+                 kDefaultScale, temp_window->GetBoundsInPixels());
+
     PostToServerAndWait(
         [temp_window_surface_id](wl::TestWaylandServerThread* server) {
           auto* mock_surface =
@@ -1434,22 +1436,26 @@ TEST_P(WaylandBufferManagerTest, TestCommitBufferConditionsAckConfigured) {
           auto* xdg_surface = mock_surface->xdg_surface();
           testing::Mock::VerifyAndClearExpectations(mock_surface);
 
-          EXPECT_CALL(*xdg_surface, SetWindowGeometry(_)).Times(0);
-          EXPECT_CALL(*xdg_surface, AckConfigure(_)).Times(1);
-          EXPECT_CALL(*mock_surface, Attach(_, _, _)).Times(1);
-          EXPECT_CALL(*mock_surface, Frame(_)).Times(1);
-          // Commit() can be called a second time as part of the configure->ack
-          // sequence.
-          EXPECT_CALL(*mock_surface, Commit()).Times(testing::Between(1, 2));
+          EXPECT_CALL(*xdg_surface, SetWindowGeometry(_));
+          EXPECT_CALL(*xdg_surface, AckConfigure(10U));
+          EXPECT_CALL(*mock_surface, Attach(_, _, _));
+          EXPECT_CALL(*mock_surface, Frame(_));
+          EXPECT_CALL(*mock_surface, Commit());
         });
+    ActivateSurface(delegate_, 10U);
+    CommitBuffer(widget, kDmabufBufferId, kDmabufBufferId,
+                 gfx::FrameData(delegate_.viz_seq()),
+                 temp_window->GetBoundsInPixels(), gfx::RoundedCornersF(),
+                 kDefaultScale, temp_window->GetBoundsInPixels());
 
-    ActivateSurface(temp_window_surface_id);
-    PostToServerAndWait(
-        [temp_window_surface_id](wl::TestWaylandServerThread* server) {
-          testing::Mock::VerifyAndClearExpectations(
-              server->GetObject<wl::MockSurface>(temp_window_surface_id));
-        });
+    PostToServerAndWait([id = temp_window_surface_id](
+                            wl::TestWaylandServerThread* server) {
+      wl::MockSurface* mock_surface = server->GetObject<wl::MockSurface>(id);
+      testing::Mock::VerifyAndClearExpectations(mock_surface);
+      testing::Mock::VerifyAndClearExpectations(mock_surface->xdg_surface());
+    });
 
+    testing::Mock::VerifyAndClearExpectations(&delegate_);
     SetPointerFocusedWindow(nullptr);
     temp_window.reset();
     DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
@@ -1469,17 +1475,12 @@ TEST_P(WaylandBufferManagerTest,
   constexpr uint32_t kDmabufBufferId = 1;
 
   testing::Mock::VerifyAndClearExpectations(&delegate_);
-  PlatformWindowInitProperties properties;
-  properties.type = PlatformWindowType::kWindow;
-  properties.bounds = kNormalBounds;
-  gfx::Insets insets;
-  EXPECT_CALL(delegate_, CalculateInsetsInDIP(PlatformWindowState::kNormal))
-      .WillRepeatedly(testing::Return(insets));
-  auto window = WaylandWindow::Create(&delegate_, connection_.get(),
-                                      std::move(properties));
+  PlatformWindowInitProperties properties(kNormalBounds);
+  auto window =
+      delegate_.CreateWaylandWindow(connection_.get(), std::move(properties));
   ASSERT_TRUE(window);
   ASSERT_NE(window->GetWidget(), gfx::kNullAcceleratedWidget);
-  auto widget = window->GetWidget();
+  widget_ = window->GetWidget();
 
   // Set restored bounds to a value different from the initial window bounds in
   // order to force WaylandWindow::ProcessPendingConfigureState() to defer the
@@ -1491,7 +1492,7 @@ TEST_P(WaylandBufferManagerTest,
   window->Show(false);
 
   const uint32_t surface_id = window->root_surface()->get_surface_id();
-  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget);
+  MockSurfaceGpu mock_surface_gpu(buffer_manager_gpu_.get(), widget_);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
@@ -1538,14 +1539,18 @@ TEST_P(WaylandBufferManagerTest,
     EXPECT_CALL(*mock_surface, Commit()).Times(1);
   });
 
-  CommitBuffer(widget, kDmabufBufferId, kDmabufBufferId,
+  CommitBuffer(widget_, kDmabufBufferId, kDmabufBufferId,
                gfx::FrameData(delegate_.viz_seq() - 1), gfx::Rect{55, 55},
                gfx::RoundedCornersF(), kDefaultScale, gfx::Rect{55, 55});
-  ActivateSurface(surface_id, kActivateSerial);
 
-  CommitBuffer(widget, kDmabufBufferId, kDmabufBufferId,
+  EXPECT_CALL(delegate_, CalculateInsetsInDIP(PlatformWindowState::kNormal))
+      .WillRepeatedly(testing::Return(gfx::Insets()));
+  ActivateSurface(delegate_, kActivateSerial);
+
+  CommitBuffer(widget_, kDmabufBufferId, kDmabufBufferId,
                gfx::FrameData(delegate_.viz_seq()), kRestoredBounds,
                gfx::RoundedCornersF(), kDefaultScale, kRestoredBounds);
+
   SetPointerFocusedWindow(nullptr);
   window.reset();
   DestroyBufferAndSetTerminateExpectation(kDmabufBufferId, false /*fail*/);
@@ -1750,7 +1755,7 @@ TEST_P(WaylandBufferManagerTest, DestroyedWindowNoSubmissionMultipleBuffers) {
         ASSERT_TRUE(server->GetObject<wl::MockSurface>(temp_window_surface_id));
       });
 
-  ActivateSurface(temp_window_surface_id);
+  ActivateSurface(delegate_);
 
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     EXPECT_CALL(*server->zwp_linux_dmabuf_v1(), CreateParams(_, _, _)).Times(1);
@@ -2959,7 +2964,7 @@ class WaylandBufferManagerViewportTest : public WaylandBufferManagerTest {
       ASSERT_TRUE(server->GetObject<wl::MockSurface>(surface_id));
     });
 
-    ActivateSurface(surface_id);
+    ActivateSurface(delegate_);
 
     constexpr uint32_t kBufferId1 = 1;
     constexpr uint32_t kBufferId2 = 2;
