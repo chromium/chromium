@@ -342,9 +342,9 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
                 onView(mOnScreenViewMatcher)
                         .withFailureHandler(RawFailureHandler.getInstance())
                         .check(matches(isCompletelyDisplayed()));
-                return getHostStation().enterFacilitySync(focusedItem, /* trigger= */ null);
+                return mHostStation.enterFacilitySync(focusedItem, /* trigger= */ null);
             } catch (AssertionError | NoMatchingViewException e) {
-                return getHostStation().enterFacilitySync(focusedItem, this::triggerScrollTo);
+                return mHostStation.enterFacilitySync(focusedItem, this::triggerScrollTo);
             }
         }
 
@@ -414,11 +414,8 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             throw new RuntimeException(e);
         }
 
-        return getHostStation()
-                .swapFacilitySync(
-                        List.of(this, itemOnScreenFacility),
-                        destination,
-                        item.getViewSpec()::click);
+        return mHostStation.swapFacilitySync(
+                List.of(this, itemOnScreenFacility), destination, item.getViewSpec()::click);
     }
 
     private <DestinationStationT extends Station<?>> DestinationStationT travelToStation(
@@ -432,7 +429,7 @@ public abstract class ScrollableFacility<HostStationT extends Station<?>>
             throw new RuntimeException(e);
         }
 
-        return getHostStation().travelToSync(destination, item.getViewSpec()::click);
+        return mHostStation.travelToSync(destination, item.getViewSpec()::click);
     }
 
     /** Get all {@link Item}s declared in this {@link ScrollableFacility}. */

@@ -5,7 +5,6 @@
 package org.chromium.base.test.transit;
 
 import org.chromium.base.test.transit.Transition.Trigger;
-import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -32,21 +31,15 @@ public abstract class Facility<HostStationT extends Station<?>> extends Conditio
     private static int sLastFacilityId = 1000;
     private final int mId = ++sLastFacilityId;
 
-    // Use getHostStation() instead and make this private.
-    @Deprecated protected @MonotonicNonNull HostStationT mHostStation;
+    // Until setHostStation() this is null, but this field is accessed very often and asserting
+    // doesn't add much value.
+    @SuppressWarnings("NullAway")
+    protected HostStationT mHostStation;
 
     void setHostStation(Station station) {
         assert mHostStation == null
                 : "Facility " + this + " already added to a station. Tried to add it to " + station;
         mHostStation = (HostStationT) station;
-    }
-
-    /**
-     * @return the host {@link Station} this facility is scoped to.
-     */
-    public HostStationT getHostStation() {
-        assert mHostStation != null : "setHostStation was not called for " + this;
-        return mHostStation;
     }
 
     @Override
