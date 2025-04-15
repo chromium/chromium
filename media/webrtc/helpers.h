@@ -30,8 +30,8 @@ webrtc::StreamConfig CreateStreamConfig(const AudioParameters& parameters);
 // (APM), based on the provided parameters and on features and field trials.
 // Returns nullptr if settings.NeedWebrtcAudioProcessing() is false.
 COMPONENT_EXPORT(MEDIA_WEBRTC)
-rtc::scoped_refptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
-    const AudioProcessingSettings& settings);
+webrtc::scoped_refptr<webrtc::AudioProcessing>
+CreateWebRtcAudioProcessingModule(const AudioProcessingSettings& settings);
 
 // Starts the echo cancellation dump in
 // |audio_processing|. |worker_queue| must be kept alive until either

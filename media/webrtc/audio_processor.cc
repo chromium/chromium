@@ -249,7 +249,7 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
       "AudioProcessor::Create({multi_channel_capture_processing=%s})",
       base::ToString(settings.multi_channel_capture_processing)));
 
-  rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing =
+  webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing =
       media::CreateWebRtcAudioProcessingModule(settings);
 
   return std::make_unique<AudioProcessor>(
@@ -263,7 +263,7 @@ AudioProcessor::AudioProcessor(
     LogCallback log_callback,
     const media::AudioParameters& input_format,
     const media::AudioParameters& output_format,
-    rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
+    webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
     bool needs_playout_reference)
     : webrtc_audio_processing_(webrtc_audio_processing),
       needs_playout_reference_(needs_playout_reference),

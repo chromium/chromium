@@ -498,7 +498,7 @@ class AudioProcessorPlayoutTest : public AudioProcessorTest {
  protected:
   AudioProcessorPlayoutTest()
       : mock_webrtc_apm_(
-            rtc::make_ref_counted<webrtc::test::MockAudioProcessing>()),
+            webrtc::make_ref_counted<webrtc::test::MockAudioProcessing>()),
         audio_processor_(mock_capture_callback_.Get(),
                          LogCallbackForTesting(),
                          params_,
@@ -506,7 +506,7 @@ class AudioProcessorPlayoutTest : public AudioProcessorTest {
                          mock_webrtc_apm_,
                          /*needs_playout_reference=*/true) {}
 
-  rtc::scoped_refptr<webrtc::test::MockAudioProcessing> mock_webrtc_apm_;
+  webrtc::scoped_refptr<webrtc::test::MockAudioProcessing> mock_webrtc_apm_;
   AudioProcessor audio_processor_;
 };
 
