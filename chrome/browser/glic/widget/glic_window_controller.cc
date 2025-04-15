@@ -676,6 +676,10 @@ void GlicWindowController::Show(Browser* browser,
     // This indicates that we've warmed the web client and it has hit a login
     // page. See LoginPageCommitted.
     GlicLoadedAndAnimationDone();
+  } else {
+    // This adds dragging functionality to special case panels (e.g. error,
+    // offline, loading).
+    SetDraggingAreasAndWatchForMouseEvents();
   }
 
   NotifyIfPanelStateChanged();
@@ -897,13 +901,21 @@ void GlicWindowController::GlicLoadedAndAnimationDone() {
   // TODO(crbug.com/390637019): Fully fix and remove this comment.
   GetGlicView()->web_view()->GetWebContents()->Focus();
 
+  SetDraggingAreasAndWatchForMouseEvents();
+  NotifyIfPanelStateChanged();
+}
+
+void GlicWindowController::SetDraggingAreasAndWatchForMouseEvents() {
+  if (window_event_observer_) {
+    return;
+  }
+
   window_event_observer_ =
       std::make_unique<WindowEventObserver>(this, GetGlicView());
 
   // Set the draggable area to the top bar of the window, by default.
   GetGlicView()->SetDraggableAreas(
       {{0, 0, GetGlicView()->width(), GlicWidget::GetInitialSize().height()}});
-  NotifyIfPanelStateChanged();
 }
 
 GlicView* GlicWindowController::GetGlicView() {

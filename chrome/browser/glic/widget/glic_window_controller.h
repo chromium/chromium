@@ -329,6 +329,8 @@ class GlicWindowController : public views::WidgetObserver,
   // This is the end of the opening process and |state_| will be set to kOpen.
   void GlicLoadedAndAnimationDone();
 
+  void SetDraggingAreasAndWatchForMouseEvents();
+
   // Internal closing implementation. reopen_detached_source must be set
   // if and only if the internal state is kClosingToReopenDetached.
   void CloseInternal(
