@@ -23,6 +23,19 @@ promise_test(async t => {
 }, 'Simple LanguageDetector.detect() call');
 
 promise_test(async t => {
+  const error = new Error('CreateMonitorCallback threw an error');
+  function monitor(m) {
+    m.addEventListener('downloadprogress', e => {
+      assert_unreached(
+          'This should never be reached since monitor throws an error.');
+    });
+    throw error;
+  }
+
+  await promise_rejects_exactly(t, error, LanguageDetector.create({monitor}));
+}, 'If monitor throws an error, LanguageDetector.create() rejects with that error');
+
+promise_test(async t => {
   testMonitor(LanguageDetector.create);
 }, 'LanguageDetector.create() notifies its monitor on downloadprogress');
 

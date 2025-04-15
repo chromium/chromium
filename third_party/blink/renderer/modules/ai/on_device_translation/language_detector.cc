@@ -74,8 +74,20 @@ class LanguageDetectorCreateTask
     if (options->hasMonitor()) {
       monitor_ = MakeGarbageCollected<AICreateMonitor>(GetExecutionContext(),
                                                        task_runner_);
-      std::ignore = options->monitor()->Invoke(nullptr, monitor_);
+
+      // If an exception is thrown, don't initiate language detection model
+      // download. `AICreateMonitorCallback`'s `Invoke` will automatically
+      // reject the promise with the thrown exception.
+      if (options->monitor()->Invoke(nullptr, monitor_).IsNothing()) {
+        return;
+      }
     }
+
+    AIInterfaceProxy::GetLanguageDetectionModel(
+        GetExecutionContext(),
+        WTF::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
+                      WrapPersistent(this))
+            .Then(RejectOnDestruction(resolver)));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -187,15 +199,8 @@ ScriptPromise<LanguageDetector> LanguageDetector::create(
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<LanguageDetector>>(
           script_state);
-  LanguageDetectorCreateTask* create_task =
-      MakeGarbageCollected<LanguageDetectorCreateTask>(script_state, resolver,
-                                                       options);
-
-  AIInterfaceProxy::GetLanguageDetectionModel(
-      ExecutionContext::From(script_state),
-      WTF::BindOnce(&LanguageDetectorCreateTask::OnModelLoaded,
-                    WrapPersistent(create_task))
-          .Then(RejectOnDestruction(resolver)));
+  MakeGarbageCollected<LanguageDetectorCreateTask>(script_state, resolver,
+                                                   options);
 
   return resolver->Promise();
 }
