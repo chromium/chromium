@@ -370,6 +370,12 @@ std::optional<MONITORINFOEX> ScreenWinHeadless::GetMONITORINFOFromDisplayId(
   return it->second;
 }
 
+DISPLAY_EXPORT ScreenWinHeadless* GetScreenWinHeadless() {
+  ScreenWin* screen_win = GetScreenWin();
+  CHECK(screen_win->IsHeadless());
+  return static_cast<ScreenWinHeadless*>(screen_win);
+}
+
 namespace internal {
 bool VerifyHeadlessDisplayDeviceName(int64_t id,
                                      const MONITORINFOEX& monitor_info) {

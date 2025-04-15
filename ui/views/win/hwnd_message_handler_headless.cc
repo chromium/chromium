@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/win/screen_win.h"
+#include "ui/display/win/screen_win_headless.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,11 +25,6 @@ namespace {
 // creation params.
 constexpr gfx::Rect kDefaultHeadlessWindowSize(800, 600);
 
-// In headless mode there is no screen size that would define maximized window
-// dimensions. So just double the current window size assuming the user will
-// expect it to increase.
-constexpr int kZoomedWindowSizeScaleFactor = 2;
-
 // In headless mode where we have to manually scale window bounds because we
 // cannot rely on the platform window size since it gets clamped to the monitor
 // work area.
@@ -44,11 +40,9 @@ gfx::Rect ScaleWindowBoundsMaybe(HWND hwnd, const gfx::Rect& bounds) {
 }
 
 gfx::Rect GetZoomedWindowBounds(const gfx::Rect& bounds) {
-  gfx::Rect zoomed_bounds = bounds;
-  zoomed_bounds.set_width(bounds.width() * kZoomedWindowSizeScaleFactor);
-  zoomed_bounds.set_height(bounds.height() * kZoomedWindowSizeScaleFactor);
-
-  return zoomed_bounds;
+  return display::win::GetScreenWinHeadless()
+      ->GetDisplayMatching(bounds)
+      .work_area();
 }
 
 }  // namespace

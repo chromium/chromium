@@ -106,6 +106,9 @@ class DISPLAY_EXPORT ScreenWinHeadless : public ScreenWin {
   gfx::Point cursor_screen_point_;
 };
 
+// Returns a ScreenWinHeadless instance. CHECK crashes if it is not active.
+DISPLAY_EXPORT ScreenWinHeadless* GetScreenWinHeadless();
+
 namespace internal {
 // Exposed for internal::DisplayInfo::ctor check only!
 bool VerifyHeadlessDisplayDeviceName(int64_t id,
