@@ -4,6 +4,11 @@
 
 import("//build/config/zip.gni")
 import("//remoting/build/config/remoting_build.gni")
+import("//remoting/host/installer/credits.gni")
+
+remoting_credits("credits") {
+  gn_target = "//remoting/host/installer/mac:remoting_me2me_host_archive"
+}
 
 action("remoting_me2me_host_archive") {
   _installer_mac_files = [

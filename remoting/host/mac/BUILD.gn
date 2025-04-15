@@ -190,7 +190,7 @@ bundle_data("remoting_host_resources") {
 
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 
-  public_deps = [ "//remoting/host/installer:credits" ]
+  public_deps = [ "//remoting/host/installer/mac:credits" ]
 }
 
 target("mac_app_bundle", "remoting_me2me_host") {
@@ -210,7 +210,7 @@ target("mac_app_bundle", "remoting_me2me_host") {
 
   deps = [
     "//remoting/host:entry_point",
-    "//remoting/host/installer:credits",
+    "//remoting/host/installer/mac:credits",
     "//remoting/resources",
   ]
 

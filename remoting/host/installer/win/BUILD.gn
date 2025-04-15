@@ -3,8 +3,13 @@
 # found in the LICENSE file.
 
 import("//remoting/build/config/remoting_build.gni")
+import("//remoting/host/installer/credits.gni")
 import("//remoting/host/installer/win/generate_clsids.gni")
 import("//remoting/host/installer/win/wix_path.gni")
+
+remoting_credits("credits") {
+  gn_target = "//remoting/host/installer/win:remoting_me2me_host_archive"
+}
 
 action("remoting_me2me_host_archive") {
   script = "//remoting/host/installer/build-installer-archive.py"
@@ -15,9 +20,9 @@ action("remoting_me2me_host_archive") {
   ]
 
   deps = [
+    ":credits",
     "//remoting/host:remoting_native_messaging_manifests",
     "//remoting/host:remoting_start_host",
-    "//remoting/host/installer:credits",
     "//remoting/host/it2me:remote_assistance_host",
     "//remoting/host/it2me:remote_assistance_host_uiaccess",
     "//remoting/host/remote_open_url",
