@@ -28,6 +28,7 @@ build_webui("build") {
     "icons.html.ts",
     "main.ts",
     "observable.ts",
+    "timer.ts",
     "webview.ts",
   ]
 

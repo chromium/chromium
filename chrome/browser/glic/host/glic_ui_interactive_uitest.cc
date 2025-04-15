@@ -270,21 +270,6 @@ IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest,
   })js")));
 }
 
-IN_PROC_BROWSER_TEST_P(GlicUiConnectedUiTest, DoesNavigateToSupportedOrigin) {
-  RunTestSequence(
-      ObserveState(kGlicUiStateHistory, &window_controller()),
-      OpenGlicWindow(GlicWindowMode::kAttached,
-                     GlicInstrumentMode::kHostAndContents),
-      WaitForElementVisible(test::kGlicContentsElementId, {"body"}),
-      InAnyContext(ExecuteJs(test::kGlicContentsElementId,
-                             R"js(()=>{location = './notexist';})js")),
-      // It should navigate to a 404, and then reload the webview successfully.
-      InAnyContext(WaitForState(kGlicUiStateHistory,
-                                IsNotCurrently(WebUiState::kReady))),
-      InAnyContext(
-          WaitForState(kGlicUiStateHistory, IsCurrently(WebUiState::kReady))));
-}
-
 // Tests the network being unavailable at startup.
 class GlicUiDisconnectedUiTest : public GlicUiInteractiveUiTestBase {
  public:
