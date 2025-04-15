@@ -37,7 +37,7 @@ class TabGroupSyncService;
 @property(nonatomic, weak) id<RecentActivityCommands> recentActivityHandler;
 
 // Designated initializer.
-- (instancetype)initWithtabGroup:(base::WeakPtr<const TabGroup>)tabGroup
+- (instancetype)initWithTabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                 messagingService:
                     (collaboration::messaging::MessagingBackendService*)
                         messagingService

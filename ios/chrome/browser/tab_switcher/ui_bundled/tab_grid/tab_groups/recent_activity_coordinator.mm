@@ -50,7 +50,7 @@
 
   ProfileIOS* profile = self.profile;
   _mediator = [[RecentActivityMediator alloc]
-            initWithtabGroup:_tabGroup
+            initWithTabGroup:_tabGroup
             messagingService:collaboration::messaging::
                                  MessagingBackendServiceFactory::GetForProfile(
                                      profile)

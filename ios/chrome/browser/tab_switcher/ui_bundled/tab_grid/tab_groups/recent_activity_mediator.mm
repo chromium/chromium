@@ -59,7 +59,7 @@ const int kMaxNumberOfLogs = 5;
   std::unique_ptr<web::WebState::CreateParams> _webStateCreationParams;
 }
 
-- (instancetype)initWithtabGroup:(base::WeakPtr<const TabGroup>)tabGroup
+- (instancetype)initWithTabGroup:(base::WeakPtr<const TabGroup>)tabGroup
                 messagingService:
                     (collaboration::messaging::MessagingBackendService*)
                         messagingService
