@@ -4,6 +4,9 @@
 
 #include "net/dns/host_resolver_manager_service_endpoint_request_impl.h"
 
+#include <sstream>
+
+#include "base/containers/to_vector.h"
 #include "base/memory/safe_ref.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
@@ -174,6 +177,20 @@ void HostResolverManager::ServiceEndpointRequestImpl::ChangeRequestPriority(
     return;
   }
   job_.value()->ChangeServiceEndpointRequestPriority(this, priority);
+}
+
+std::string HostResolverManager::ServiceEndpointRequestImpl::DebugString()
+    const {
+  std::stringstream ss;
+  ss << "it=[";
+  for (const auto& task : initial_tasks_) {
+    ss << base::strict_cast<int>(task) << ",";
+  }
+  ss << "],j=" << job_.has_value();
+  if (job_) {
+    ss << ",rm=" << (!!job_.value()->dns_task_results_manager());
+  }
+  return ss.str();
 }
 
 void HostResolverManager::ServiceEndpointRequestImpl::AssignJob(
@@ -395,6 +412,7 @@ int HostResolverManager::ServiceEndpointRequestImpl::DoResolveLocally() {
 }
 
 int HostResolverManager::ServiceEndpointRequestImpl::DoStartJob() {
+  initial_tasks_ = base::ToVector(tasks_);
   manager_->CreateAndStartJobForServiceEndpointRequest(std::move(*job_key_),
                                                        std::move(tasks_), this);
   return ERR_IO_PENDING;
