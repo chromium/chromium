@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
+#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
@@ -232,6 +233,21 @@ SVGResourceTarget* SVGResourceDocumentContent::GetResourceTarget(
   }
   auto* svg_target =
       DynamicTo<SVGElement>(document->getElementById(element_id));
+  if (!svg_target) {
+    return nullptr;
+  }
+  return &svg_target->EnsureResourceTarget();
+}
+
+// TODO(dmangal): incorporate the below function into `GetResourceTarget`.
+SVGResourceTarget* SVGResourceDocumentContent::GetResourceTargetForRoot()
+    const {
+  Document* document = GetDocument();
+  if (!document) {
+    return nullptr;
+  }
+  auto* svg_target = DynamicTo<SVGSVGElement>(document->documentElement());
+
   if (!svg_target) {
     return nullptr;
   }

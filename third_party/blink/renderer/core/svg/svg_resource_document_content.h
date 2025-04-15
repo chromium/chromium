@@ -100,6 +100,7 @@ class CORE_EXPORT SVGResourceDocumentContent final
   void NotifyObservers();
 
   SVGResourceTarget* GetResourceTarget(const AtomicString& element_id);
+  SVGResourceTarget* GetResourceTargetForRoot() const;
   void Trace(Visitor*) const;
 
  private:

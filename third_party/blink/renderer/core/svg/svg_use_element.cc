@@ -207,14 +207,21 @@ void SVGUseElement::UpdateTargetReference() {
   const String& url_string = HrefString();
   element_url_ = GetDocument().CompleteURL(url_string);
   element_url_is_local_ = url_string.StartsWith('#');
-  if (!IsStructurallyExternal() || !GetDocument().IsActive()) {
+  if (!IsStructurallyExternal() || !GetDocument().IsActive() ||
+      !element_url_.IsValid()) {
     UpdateDocumentContent(nullptr);
     pending_event_.Cancel();
     return;
   }
-  if (!element_url_.HasFragmentIdentifier() ||
-      (document_content_ && EqualIgnoringFragmentIdentifier(
-                                element_url_, document_content_->Url()))) {
+
+  if (!element_url_.HasFragmentIdentifier() &&
+      !RuntimeEnabledFeatures::
+          AllowSvgUseToReferenceExternalDocumentRootEnabled()) {
+    return;
+  }
+
+  if (document_content_ &&
+      EqualIgnoringFragmentIdentifier(element_url_, document_content_->Url())) {
     return;
   }
 
@@ -311,8 +318,22 @@ void SVGUseElement::ClearResourceReference() {
 }
 
 Element* SVGUseElement::ResolveTargetElement() {
-  if (!element_url_.HasFragmentIdentifier())
+  if (!element_url_.HasFragmentIdentifier()) {
+    // TODO(dmangal): Cleanup the below code to integrate more with the rest of
+    // the logic in this function
+    if (RuntimeEnabledFeatures::
+            AllowSvgUseToReferenceExternalDocumentRootEnabled() &&
+        IsStructurallyExternal() && document_content_) {
+      // Take the root SVG element from the external document
+      external_resource_target_ = document_content_->GetResourceTargetForRoot();
+
+      return external_resource_target_ ? external_resource_target_->target
+                                       : nullptr;
+    }
+
     return nullptr;
+  }
+
   AtomicString element_identifier(DecodeURLEscapeSequences(
       element_url_.FragmentIdentifier(), DecodeURLMode::kUTF8OrIsomorphic));
 

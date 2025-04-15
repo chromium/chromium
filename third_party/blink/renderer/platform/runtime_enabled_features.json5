@@ -391,6 +391,10 @@
       status: "stable",
     },
     {
+      name: "AllowSvgUseToReferenceExternalDocumentRoot",
+      status: "experimental",
+    },
+    {
       name: "AllowSyntheticTimingForCanvasCapture",
       base_feature: "none",
       status: {
