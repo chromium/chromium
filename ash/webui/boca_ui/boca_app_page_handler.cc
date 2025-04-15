@@ -166,26 +166,31 @@ mojom::ConfigPtr SessionConfigProtoToMojom(::boca::Session* session) {
 std::vector<mojom::IdentifiedActivityPtr> SessionActivityProtoToMojom(
     const std::map<std::string, ::boca::StudentStatus>& activities) {
   std::vector<mojom::IdentifiedActivityPtr> result;
-  for (auto item : activities) {
+  for (auto& item : activities) {
+    auto student_status_detail =
+        mojom::StudentStatusDetail(item.second.state());
+    bool device_active = false;
+    std::string active_tab;
+    std::string connection_code;
     if (auto const device = item.second.devices().begin();
         device != item.second.devices().end()) {
       // Only update state and active tab for the first device now.
       // TODO - crbug.com/403655119: Ideally we should support multi-device. But
       // since now UI only supports single device, always parse the first one to
       // make the behavior deterministic.
-      auto identity_ptr = mojom::IdentifiedActivity::New(
-          item.first,
-          mojom::StudentActivity::New(
-              mojom::StudentStatusDetail(item.second.state()),
-              device->second.state() == ::boca::StudentDevice::ACTIVE,
-              device->second.activity().active_tab().title(),
-              /*is_caption_enabled=*/false,
-              /*is_hand_raised=*/false, mojom::JoinMethod::kRoster,
-              device->second.view_screen_config()
-                  .connection_param()
-                  .connection_code()));
-      result.push_back(std::move(identity_ptr));
+      device_active = device->second.state() == ::boca::StudentDevice::ACTIVE;
+      active_tab = device->second.activity().active_tab().title();
+      connection_code = device->second.view_screen_config()
+                            .connection_param()
+                            .connection_code();
     }
+    auto identity_ptr = mojom::IdentifiedActivity::New(
+        item.first, mojom::StudentActivity::New(
+                        student_status_detail, device_active, active_tab,
+                        /*is_caption_enabled=*/false,
+                        /*is_hand_raised=*/false, mojom::JoinMethod::kRoster,
+                        connection_code));
+    result.push_back(std::move(identity_ptr));
   }
   return result;
 }

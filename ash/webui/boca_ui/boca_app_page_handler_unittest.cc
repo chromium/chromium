@@ -1665,6 +1665,27 @@ TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
   EXPECT_TRUE(result[1]->activity->is_active);
 }
 
+TEST_F(BocaAppPageHandlerTest,
+       UpdateStudentActivityWithEmptyDeviceStateSucceed) {
+  std::map<std::string, ::boca::StudentStatus> activities;
+  ::boca::StudentStatus status_1;
+  status_1.set_state(::boca::StudentStatus::REMOVED_BY_OTHER_SESSION);
+  activities.emplace("1", std::move(status_1));
+
+  base::test::TestFuture<std::vector<mojom::IdentifiedActivityPtr>> future;
+  fake_page()->SetActivityInterceptorCallback(future.GetCallback());
+  boca_app_handler()->OnConsumerActivityUpdated(activities);
+  auto result = future.Take();
+  EXPECT_EQ(1u, result.size());
+  // Verify only first device added.
+  EXPECT_EQ("1", result[0]->id);
+  EXPECT_EQ(mojom::StudentStatusDetail::kRemovedByOtherSession,
+            result[0]->activity->student_status_detail);
+  EXPECT_FALSE(result[0]->activity->is_active);
+  EXPECT_EQ("", result[0]->activity->active_tab);
+  EXPECT_EQ("", result[0]->activity->view_screen_session_code);
+}
+
 TEST_F(BocaAppPageHandlerTest, RemoveStudentSucceedAlsoRemoveFromLocalSession) {
   auto* session_id = "123";
   auto session = std::make_unique<::boca::Session>();
