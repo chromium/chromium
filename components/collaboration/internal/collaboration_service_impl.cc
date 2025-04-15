@@ -104,6 +104,8 @@ void CollaborationServiceImpl::StartShareOrManageFlow(
     std::unique_ptr<CollaborationControllerDelegate> delegate,
     const tab_groups::EitherGroupID& either_id,
     CollaborationServiceShareOrManageEntryPoint entry) {
+  metrics::RecordShareOrManageEntryPoint(data_sharing_service_->GetLogger(),
+                                         entry);
   auto it = share_controllers_.find(either_id);
   if (it != share_controllers_.end()) {
     it->second->delegate()->PromoteCurrentScreen();
