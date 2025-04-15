@@ -84,7 +84,6 @@ class CONTENT_EXPORT DownloadManagerImpl
   // retains ownership.
   void CreateSavePackageDownloadItem(
       const base::FilePath& main_file_path,
-      const base::FilePath& main_file_display_name,
       const GURL& page_url,
       const std::string& mime_type,
       int render_process_id,
@@ -203,7 +202,6 @@ class CONTENT_EXPORT DownloadManagerImpl
 
   void CreateSavePackageDownloadItemWithId(
       const base::FilePath& main_file_path,
-      const base::FilePath& main_file_display_name,
       const GURL& page_url,
       const std::string& mime_type,
       int render_process_id,

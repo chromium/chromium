@@ -335,8 +335,7 @@ bool SavePackage::Init(
 
   RenderFrameHost& frame_host = page_->GetMainDocument();
   download_manager_->CreateSavePackageDownloadItem(
-      saved_main_file_path_, saved_main_file_display_name_, page_url_,
-      GetMimeTypeForSaveType(save_type_),
+      saved_main_file_path_, page_url_, GetMimeTypeForSaveType(save_type_),
       frame_host.GetProcess()->GetDeprecatedID(), frame_host.GetRoutingID(),
       base::BindOnce(&CancelSavePackage, weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SavePackage::InitWithDownloadItem,
@@ -1505,15 +1504,6 @@ void SavePackage::OnPathPicked(
     return;
   // Ensure the filename is safe.
   saved_main_file_path_ = params.file_path;
-
-#if BUILDFLAG(IS_ANDROID)
-  if (saved_main_file_path_.IsContentUri()) {
-    save_type_ = SAVE_PAGE_TYPE_AS_MHTML;
-    saved_main_file_display_name_ = params.display_name;
-    Init(std::move(download_created_callback));
-    return;
-  }
-#endif
   // TODO(asanka): This call may block on IO and shouldn't be made
   // from the UI thread.  See http://crbug.com/61827.
   std::string mime_type =

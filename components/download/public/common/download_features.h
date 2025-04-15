@@ -68,12 +68,6 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kCopyImageFilenameToClipboard);
 // Whether to enable async notification manager for downloads.
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kEnableAsyncNotificationManagerForDownload);
-
-#if BUILDFLAG(IS_ANDROID)
-// Whether to enable save package for off the record mode.
-COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
-    kEnableSavePackageForOffTheRecord);
-#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace features
 
 }  // namespace download

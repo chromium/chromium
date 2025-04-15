@@ -236,7 +236,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItemImpl
   DownloadItemImpl(DownloadItemImplDelegate* delegate,
                    uint32_t id,
                    const base::FilePath& path,
-                   const base::FilePath& display_name,
                    const GURL& url,
                    const std::string& mime_type,
                    DownloadJob::CancelRequestCallback cancel_request_callback);

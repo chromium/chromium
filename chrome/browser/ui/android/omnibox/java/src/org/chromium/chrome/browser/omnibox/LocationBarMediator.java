@@ -1258,10 +1258,7 @@ class LocationBarMediator
         if (tab == null) return false;
         // The save offline button should not be shown on native pages. Currently, trying to
         // save an offline page in incognito crashes, so don't show it on incognito either.
-        return shouldShowPageActionButtons()
-                && (!tab.isOffTheRecord()
-                        || ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.ENABLE_SAVE_PACKAGE_FOR_OFF_THE_RECORD));
+        return shouldShowPageActionButtons() && !tab.isOffTheRecord();
     }
 
     private boolean isSaveOfflineButtonEnabled() {
