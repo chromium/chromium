@@ -30,7 +30,7 @@ enum {
 // Returns the block ID closest to (but less or equal than) |pos| from |index|.
 template <class T>
 static MultiBuffer::BlockId ClosestPreviousEntry(
-    const std::map<MultiBuffer::BlockId, T>& index,
+    const base::flat_map<MultiBuffer::BlockId, T>& index,
     MultiBuffer::BlockId pos) {
   auto i = index.upper_bound(pos);
   DCHECK(i == index.end() || i->first > pos);
@@ -46,7 +46,7 @@ static MultiBuffer::BlockId ClosestPreviousEntry(
 // from |index|.
 template <class T>
 static MultiBuffer::BlockId ClosestNextEntry(
-    const std::map<MultiBuffer::BlockId, T>& index,
+    const base::flat_map<MultiBuffer::BlockId, T>& index,
     MultiBuffer::BlockId pos) {
   auto i = index.lower_bound(pos);
   if (i == index.end()) {
