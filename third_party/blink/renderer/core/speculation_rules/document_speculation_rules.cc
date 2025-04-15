@@ -645,7 +645,7 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
   }
 
   HeapVector<Member<SpeculationCandidate>> candidates;
-  auto push_candidates = [&candidates, &document](
+  auto push_candidates = [&candidates, &document, this](
                              mojom::blink::SpeculationAction action,
                              SpeculationRuleSet* rule_set,
                              const HeapVector<Member<SpeculationRule>>& rules) {
@@ -675,6 +675,10 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
           // Put the default value.
           if (tags.empty()) {
             tags.push_back(g_null_atom);
+          } else {
+            // Record that the valid tag is specified by the page.
+            UseCounter::Count(GetSupplementable(),
+                              WebFeature::kSpeculationRulesTags);
           }
         }
 
