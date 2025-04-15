@@ -12,11 +12,14 @@
 
 #include "base/component_export.h"
 #include "base/files/file.h"
+#include "base/time/time.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -36,6 +39,7 @@ class OriginAccessList;
 }  // namespace cors
 
 namespace mojom {
+enum class IPAddressSpace;
 enum class RequestDestination;
 class URLLoaderFactoryParams;
 }  // namespace mojom
@@ -128,6 +132,19 @@ const mojom::ClientSecurityState* SelectClientSecurityState(
     const mojom::ClientSecurityState*
         url_loader_factory_params_client_security_state,
     const mojom::ClientSecurityState* trusted_params_client_security_state);
+
+// Constructs a mojom::URLResponseHead based on the state of a
+// net::URLRequest and additional context provided by the URLLoader.
+mojom::URLResponseHeadPtr BuildResponseHead(
+    const net::URLRequest& url_request,
+    const net::cookie_util::ParsedRequestCookies& request_cookies,
+    network::mojom::IPAddressSpace client_address_space,
+    network::mojom::IPAddressSpace response_address_space,
+    int32_t url_load_options,
+    bool load_with_storage_access,
+    bool is_load_timing_enabled,
+    bool include_load_timing_internal_info_with_response,
+    base::TimeTicks response_start);
 
 }  // namespace url_loader_util
 }  // namespace network

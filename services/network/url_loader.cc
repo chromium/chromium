@@ -1066,95 +1066,15 @@ int URLLoader::ProcessAcceptCHFrameOnConnected(
 }
 
 mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
-  auto response = mojom::URLResponseHead::New();
-
-  response->request_time = url_request_->request_time();
-  response->response_time = url_request_->response_time();
-  response->original_response_time = url_request_->original_response_time();
-  response->headers = url_request_->response_headers();
-  response->parsed_headers =
-      PopulateParsedHeaders(response->headers.get(), url_request_->url());
-
-  url_request_->GetCharset(&response->charset);
-  response->content_length = url_request_->GetExpectedContentSize();
-  url_request_->GetMimeType(&response->mime_type);
-  net::HttpResponseInfo response_info = url_request_->response_info();
-  response->was_fetched_via_spdy = response_info.was_fetched_via_spdy;
-  response->was_alpn_negotiated = response_info.was_alpn_negotiated;
-  response->alpn_negotiated_protocol = response_info.alpn_negotiated_protocol;
-  response->alternate_protocol_usage = response_info.alternate_protocol_usage;
-  response->connection_info = response_info.connection_info;
-  response->remote_endpoint = response_info.remote_endpoint;
-  response->was_fetched_via_cache = url_request_->was_cached();
-  response->is_validated = (response_info.cache_entry_status ==
-                            net::HttpResponseInfo::ENTRY_VALIDATED);
-  response->proxy_chain = url_request_->proxy_chain();
-  response->network_accessed = response_info.network_accessed;
-  response->async_revalidation_requested =
-      response_info.async_revalidation_requested;
-  response->was_in_prefetch_cache =
-      !(url_request_->load_flags() & net::LOAD_PREFETCH) &&
-      response_info.unused_since_prefetch;
-  response->did_use_shared_dictionary = response_info.did_use_shared_dictionary;
-
-  response->was_cookie_in_request = false;
-  for (const auto& cookie_with_access_result :
-       url_request_->maybe_sent_cookies()) {
-    if (cookie_with_access_result.access_result.status.IsInclude()) {
-      // IsInclude() true means the cookie was sent.
-      response->was_cookie_in_request = true;
-      break;
-    }
-  }
-
-  if (is_load_timing_enabled_)
-    url_request_->GetLoadTimingInfo(&response->load_timing);
-
-  if (include_load_timing_internal_info_with_response_) {
-    response->load_timing_internal_info =
-        url_request_->GetLoadTimingInternalInfo();
-  }
-  CHECK(include_load_timing_internal_info_with_response_ ||
-        !response->load_timing_internal_info);
-
-  if (url_request_->ssl_info().cert.get()) {
-    response->cert_status = url_request_->ssl_info().cert_status;
-    if ((options_ & mojom::kURLLoadOptionSendSSLInfoWithResponse) ||
-        (net::IsCertStatusError(url_request_->ssl_info().cert_status) &&
-         (options_ & mojom::kURLLoadOptionSendSSLInfoForCertificateError))) {
-      response->ssl_info = url_request_->ssl_info();
-    }
-  }
-
-  if (request_cookies_.size()) {
-    CHECK(include_request_cookies_with_response_);
-    response->request_cookies = request_cookies_;
-  }
-
-  response->request_start = url_request_->creation_time();
-  response->response_start = base::TimeTicks::Now();
-  response->encoded_data_length = url_request_->GetTotalReceivedBytes();
-  response->auth_challenge_info = url_request_->auth_challenge_info();
-  response->has_range_requested =
-      url_request_->extra_request_headers().HasHeader(
-          net::HttpRequestHeaders::kRange);
-  std::ranges::copy(url_request_->response_info().dns_aliases,
-                    std::back_inserter(response->dns_aliases));
-  // [spec]: https://fetch.spec.whatwg.org/#http-network-or-cache-fetch
-  // 13. Set response’s request-includes-credentials to includeCredentials.
-  response->request_include_credentials = url_request_->allow_credentials();
-
-  response->response_address_space =
+  CHECK(request_cookies_.empty() || include_request_cookies_with_response_);
+  return url_loader_util::BuildResponseHead(
+      *url_request_, request_cookies_,
+      private_network_access_interceptor_.ClientAddressSpace(),
       private_network_access_interceptor_.ResponseAddressSpace().value_or(
-          mojom::IPAddressSpace::kUnknown);
-  response->client_address_space =
-      private_network_access_interceptor_.ClientAddressSpace();
-
-  response->load_with_storage_access = ShouldSetLoadWithStorageAccess();
-  url_request_->GetClientSideContentDecodingTypes(
-      &response->client_side_content_decoding_types);
-
-  return response;
+          mojom::IPAddressSpace::kUnknown),
+      options_, ShouldSetLoadWithStorageAccess(), is_load_timing_enabled_,
+      include_load_timing_internal_info_with_response_,
+      /*response_start=*/base::TimeTicks::Now());
 }
 
 void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
