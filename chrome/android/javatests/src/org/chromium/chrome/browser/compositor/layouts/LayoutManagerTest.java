@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.is;
 
+import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.chrome.browser.tab.TabCreationState.LIVE_IN_BACKGROUND;
 import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
@@ -44,6 +45,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -86,6 +88,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 import java.util.concurrent.TimeoutException;
 
 /** Unit tests for {@link org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome} */
+@Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class LayoutManagerTest implements MockTabModelDelegate {
     private static final String TAG = "LayoutManagerTest";
