@@ -183,7 +183,6 @@ void ExternalFileRemoverImpl::Shutdown() {
     tab_restore_service_->RemoveObserver(this);
     tab_restore_service_ = nullptr;
   }
-  delayed_file_remove_requests_.clear();
 }
 
 void ExternalFileRemoverImpl::TabRestoreServiceChanged(
@@ -195,34 +194,12 @@ void ExternalFileRemoverImpl::TabRestoreServiceChanged(
 
   tab_restore_service_->RemoveObserver(this);
   tab_restore_service_ = nullptr;
-
-  std::vector<DelayedFileRemoveRequest> delayed_file_remove_requests;
-  delayed_file_remove_requests = std::move(delayed_file_remove_requests_);
-  for (DelayedFileRemoveRequest& request : delayed_file_remove_requests) {
-    RemoveFiles(request.remove_all_files, std::move(request.closure_runner));
-  }
 }
 
 void ExternalFileRemoverImpl::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   NOTREACHED() << "Should never happen as unregistration happen in Shutdown";
-}
-
-void ExternalFileRemoverImpl::Remove(bool all_files,
-                                     base::ScopedClosureRunner closure_runner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!tab_restore_service_) {
-    RemoveFiles(all_files, std::move(closure_runner));
-    return;
-  }
-  // Removal is delayed until tab restore loading completes.
-  DCHECK(!tab_restore_service_->IsLoaded());
-  DelayedFileRemoveRequest request = {all_files, std::move(closure_runner)};
-  delayed_file_remove_requests_.push_back(std::move(request));
-  if (delayed_file_remove_requests_.size() == 1) {
-    tab_restore_service_->LoadTabsFromLastSession();
-  }
 }
 
 void ExternalFileRemoverImpl::RemoveFiles(
