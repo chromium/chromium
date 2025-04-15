@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Page with text input</title>
+  </head>
+  <body>
+    <!-- method=dialog prevents the form from navigating the page -->
+    <form id="form" method="dialog">
+      <input type="text" name="input" id="input">
+      <input type="submit" id="submit">
+    </form>
+    <script>
+      let input_event_log = [];
+      let log_handler = e => input_event_log.push(`${e.type}`);
+
+      document.getElementById('input').addEventListener('change', log_handler);
+      document.getElementById('input').addEventListener('input', log_handler);
+      document.getElementById('input').addEventListener('keydown', log_handler);
+      document.getElementById('input').addEventListener('keyup', log_handler);
+      document.getElementById('submit').addEventListener('click', log_handler);
+    </script>
+  </body>
+</html>

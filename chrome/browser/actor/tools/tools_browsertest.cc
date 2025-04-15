@@ -203,20 +203,143 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
   EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
 }
 
-// Basic test of the TypeTool.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool) {
-  const GURL url = embedded_test_server()->GetURL("/simple.html");
+// Basic test of the TypeTool - ensure typed string is entered into an input
+// box.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInput) {
+  const GURL url = embedded_test_server()->GetURL("/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
-  BrowserAction action = MakeType(kNonExistentContentNodeId,
-                                  /*text=*/"test", /*follow_by_enter=*/true);
+  std::string typed_string = "test";
+  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  BrowserAction action =
+      MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
 
-  TestFuture<bool> result_fail;
-  actor_coordinator().Act(action, result_fail.GetCallback());
-  // The node id doesn't exist so the tool will return false.
-  // TODO(crbug.com/402218570): Add function to extract real DOMNodeId from the
-  // test page so we can expect a true click returning here.
-  EXPECT_FALSE(result_fail.Get());
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+
+  EXPECT_EQ(typed_string,
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
+// TypeTool fails when target is non-existent.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_NonExistentNode) {
+  const GURL url = embedded_test_server()->GetURL("/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  std::string typed_string = "test";
+  BrowserAction action = MakeType(kNonExistentContentNodeId, typed_string,
+                                  /*follow_by_enter=*/true);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_FALSE(result.Get());
+  EXPECT_EQ("",
+            EvalJs(web_contents(), "document.getElementById('input').value"));
+}
+
+// Ensure type tool sends the expected events to an input box.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_Events) {
+  const GURL url = embedded_test_server()->GetURL("/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  std::string typed_string = "ab";
+
+  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  BrowserAction action =
+      MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+
+  EXPECT_EQ(
+      // a
+      "keydown,input,keyup,"
+      // b
+      "keydown,input,keyup,"
+      // enter (causes submit to "click")
+      "keydown,change,click,keyup",
+      EvalJs(web_contents(), "input_event_log.join(',')"));
+}
+
+// Ensure the type tool can be used without text to send an enter key in an
+// input.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EmptyText) {
+  const GURL url = embedded_test_server()->GetURL("/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  std::string typed_string = "";
+
+  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+  BrowserAction action =
+      MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
+
+  TestFuture<bool> result;
+  actor_coordinator().Act(action, result.GetCallback());
+  EXPECT_TRUE(result.Get());
+
+  EXPECT_EQ(
+      // enter (causes submit to "click")
+      "keydown,click,keyup",
+      EvalJs(web_contents(), "input_event_log.join(',')"));
+}
+
+// Ensure the type tool correctly sends the enter key after input if specified.
+IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
+  const GURL url = embedded_test_server()->GetURL("/input.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  // The log starts empty.
+  ASSERT_EQ("", EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  std::optional<int> input_id = FindContentNodeId(*main_frame(), "#input");
+  ASSERT_TRUE(input_id);
+
+  // Send 'a' followed by enter. Ensure the click event is seen.
+  {
+    std::string typed_string = "a";
+    BrowserAction action =
+        MakeType(input_id.value(), typed_string, /*follow_by_enter=*/true);
+
+    TestFuture<bool> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    EXPECT_TRUE(result.Get());
+  }
+
+  EXPECT_EQ(
+      // a
+      "keydown,input,keyup,"
+      // enter (causes submit to "click")
+      "keydown,change,click,keyup",
+      EvalJs(web_contents(), "input_event_log.join(',')"));
+
+  ASSERT_TRUE(ExecJs(web_contents(), "input_event_log = []"));
+
+  // Send 'b' without an enter. Ensure the click event is _not_ seen.
+  {
+    std::string typed_string = "b";
+    BrowserAction action =
+        MakeType(input_id.value(), typed_string, /*follow_by_enter=*/false);
+
+    TestFuture<bool> result;
+    actor_coordinator().Act(action, result.GetCallback());
+    EXPECT_TRUE(result.Get());
+  }
+
+  EXPECT_EQ(
+      // b
+      "keydown,input,keyup",
+      EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
 // Test the MouseMove tool fails on a non-existent content node.
