@@ -1207,8 +1207,14 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/410745060): Flaky on android bots
+#define MAYBE_CheckNestedCallsToGetData DISABLED_CheckNestedCallsToGetData
+#else
+#define MAYBE_CheckNestedCallsToGetData CheckNestedCallsToGetData
+#endif
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       CheckNestedCallsToGetData) {
+                       MAYBE_CheckNestedCallsToGetData) {
   // Verify that we can call GetData while in a callback from GetData.
   base::RunLoop run_loop;
   InstallableParams params = GetWebAppParams();
