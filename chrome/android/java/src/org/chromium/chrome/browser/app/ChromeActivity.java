@@ -641,6 +641,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
             ShareDelegate shareDelegate =
                     new ShareDelegateImpl(
+                            this,
                             mRootUiCoordinator.getBottomSheetController(),
                             getLifecycleDispatcher(),
                             getActivityTabProvider(),

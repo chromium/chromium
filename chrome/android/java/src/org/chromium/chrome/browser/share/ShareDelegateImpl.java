@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -50,6 +52,7 @@ import java.util.Set;
 public class ShareDelegateImpl implements ShareDelegate {
     static final String CANONICAL_URL_RESULT_HISTOGRAM = "Mobile.CanonicalURLResult";
 
+    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Supplier<Tab> mTabProvider;
@@ -63,6 +66,7 @@ public class ShareDelegateImpl implements ShareDelegate {
     /**
      * Constructs a new {@link ShareDelegateImpl}.
      *
+     * @param context The context for the current activity.
      * @param controller The BottomSheetController for the current activity.
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events, e.g. configuration
      *     changes.
@@ -75,6 +79,7 @@ public class ShareDelegateImpl implements ShareDelegate {
      * @param dataSharingTabManager Tab data sharing helpers, for collaboration actions.
      */
     public ShareDelegateImpl(
+            Context context,
             BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             Supplier<Tab> tabProvider,
@@ -83,6 +88,7 @@ public class ShareDelegateImpl implements ShareDelegate {
             ShareSheetDelegate delegate,
             boolean isCustomTab,
             DataSharingTabManager dataSharingTabManager) {
+        mContext = context;
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabProvider = tabProvider;
@@ -297,8 +303,7 @@ public class ShareDelegateImpl implements ShareDelegate {
 
     @Override
     public boolean isSharingHubEnabled() {
-        if (DeviceInfo.isAutomotive()
-                && Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (DeviceInfo.isAutomotive() && !AutomotiveUtils.doesDeviceSupportOsShareSheet(mContext)) {
             return true;
         }
         return !(mIsCustomTab || Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE);

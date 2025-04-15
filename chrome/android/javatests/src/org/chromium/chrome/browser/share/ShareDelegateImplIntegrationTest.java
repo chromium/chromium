@@ -144,6 +144,7 @@ public class ShareDelegateImplIntegrationTest {
                             };
 
                     new ShareDelegateImpl(
+                                    sActivityTestRule.getActivity(),
                                     sActivityTestRule
                                             .getActivity()
                                             .getRootUiCoordinatorForTesting()
