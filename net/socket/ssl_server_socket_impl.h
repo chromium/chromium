@@ -18,6 +18,9 @@ namespace net {
 
 class SSLServerContextImpl : public SSLServerContext {
  public:
+  SSLServerContextImpl(std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
+                       EVP_PKEY* pkey,
+                       const SSLServerConfig& ssl_server_config);
   SSLServerContextImpl(X509Certificate* certificate,
                        EVP_PKEY* pkey,
                        const SSLServerConfig& ssl_server_config);
@@ -39,8 +42,8 @@ class SSLServerContextImpl : public SSLServerContext {
   // Options for the SSL socket.
   SSLServerConfig ssl_server_config_;
 
-  // Certificate for the server.
-  scoped_refptr<X509Certificate> cert_;
+  // Certificate chain for the server.
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain_;
 
   // Private key used by the server.
   // Only one representation should be set at any time.

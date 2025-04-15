@@ -248,4 +248,24 @@ bool SetSSLChainAndKey(SSL* ssl,
   return true;
 }
 
+bool SetSSLChainAndKey(
+    SSL* ssl,
+    base::span<const bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain,
+    EVP_PKEY* pkey,
+    const SSL_PRIVATE_KEY_METHOD* custom_key) {
+  std::vector<CRYPTO_BUFFER*> chain_raw;
+  chain_raw.reserve(cert_chain.size());
+  for (const auto& handle : cert_chain) {
+    chain_raw.push_back(handle.get());
+  }
+
+  if (!SSL_set_chain_and_key(ssl, chain_raw.data(), chain_raw.size(), pkey,
+                             custom_key)) {
+    LOG(WARNING) << "Failed to set client certificate";
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace net

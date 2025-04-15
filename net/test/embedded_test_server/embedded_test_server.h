@@ -356,6 +356,13 @@ class EmbeddedTestServer {
 
     // Generate embedded SCTList in the certificate for the specified logs.
     std::vector<CertBuilder::SctConfig> embedded_scts;
+
+    // If non-empty, raw bytes to use as the leaf subject. If empty, a random
+    // valid subject will be generated.
+    // (This can be used for testing behavior with invalid or weird encodings,
+    // if we need tests to set specific subjects for more normal cases, we
+    // should consider adding a more ergonomic API for that.)
+    std::vector<uint8_t> subject_tlv;
   };
 
   using UpgradeResultOrHttpResponse =
@@ -712,6 +719,8 @@ class EmbeddedTestServer {
   net::SSLServerConfig ssl_config_;
   ServerCertificate cert_ = CERT_OK;
   ServerCertificateConfig cert_config_;
+  // If non-empty, will be used instead of `x509_cert_`.
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> cert_chain_;
   scoped_refptr<X509Certificate> x509_cert_;
   // May be null if no intermediate is generated.
   scoped_refptr<X509Certificate> intermediate_;

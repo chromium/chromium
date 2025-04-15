@@ -467,6 +467,10 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   leaf->SetBasicConstraints(/*is_ca=*/cert_config_.leaf_is_ca, /*path_len=*/-1);
   leaf->SetExtendedKeyUsages({bssl::der::Input(bssl::kServerAuth)});
 
+  if (!cert_config_.subject_tlv.empty()) {
+    leaf->SetSubjectTLV(cert_config_.subject_tlv);
+  }
+
   if (!cert_config_.policy_oids.empty()) {
     leaf->SetCertificatePolicies(cert_config_.policy_oids);
     if (intermediate)
@@ -550,13 +554,14 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
     leaf->SetCaIssuersAndOCSPUrls(leaf_ca_issuers_urls, leaf_ocsp_urls);
   }
 
-  if (cert_config_.intermediate == IntermediateType::kByAIA ||
-      cert_config_.intermediate == IntermediateType::kMissing) {
-    // Server certificate chain does not include the intermediate.
-    x509_cert_ = leaf->GetX509Certificate();
-  } else {
-    // Server certificate chain will include the intermediate, if there is one.
+  cert_chain_.push_back(leaf->DupCertBuffer());
+  if (cert_config_.intermediate == IntermediateType::kInHandshake) {
+    // Server certificate chain will include the intermediate.
     x509_cert_ = leaf->GetX509CertificateChain();
+    cert_chain_.push_back(intermediate->DupCertBuffer());
+  } else {
+    // Server certificate chain does not include the intermediate (if any).
+    x509_cert_ = leaf->GetX509Certificate();
   }
 
   if (intermediate) {
@@ -648,8 +653,13 @@ bool EmbeddedTestServer::InitializeSSLServerContext() {
     }
   }
 
-  context_ =
-      CreateSSLServerContext(x509_cert_.get(), private_key_.get(), ssl_config_);
+  if (!cert_chain_.empty()) {
+    context_ =
+        CreateSSLServerContext(cert_chain_, private_key_.get(), ssl_config_);
+  } else {
+    context_ = CreateSSLServerContext(x509_cert_.get(), private_key_.get(),
+                                      ssl_config_);
+  }
   return true;
 }
 
