@@ -744,6 +744,11 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   classification_request_->Start();
 }
 
+void ClientSideDetectionHost::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  current_navigation_id_ = navigation_handle->GetNavigationId();
+}
+
 void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
   // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
   // that don't call this method on the UI thread.
@@ -1358,6 +1363,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
           SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
       resource.threat_source =
           safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION;
+      resource.navigation_id = current_navigation_id_;
       // When we present a scam warning, we want to add separate interstitial
       // metrics to track specifics.
       if (should_show_scam_warning) {

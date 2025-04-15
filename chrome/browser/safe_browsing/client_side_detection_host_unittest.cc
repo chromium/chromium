@@ -591,6 +591,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
   EXPECT_EQ(web_contents(),
             unsafe_resource_util::GetWebContentsForResource(resource));
+  EXPECT_TRUE(resource.navigation_id.has_value());
 
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
