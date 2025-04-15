@@ -331,7 +331,7 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
   // Skip if there aren't at least 1 strong match or 2 weak matches.
   if (!in_keyword_mode && strong_word_matches == 0 && weak_word_matches < 2) {
     return {0, strong_word_matches, weak_word_matches,
-            "less than 1 strong or 2 weak word matches"};
+            "local, less than 1 strong or 2 weak word matches"};
   }
 
   // Skip when less than half the input words had matches. The backend
@@ -339,7 +339,7 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
   // input word to match.
   if ((strong_word_matches + weak_word_matches) * 2 < input_words.size()) {
     return {0, strong_word_matches, weak_word_matches,
-            "less than half the input words matched"};
+            "local, less than half the input words matched"};
   }
 
   // Compute `relevance` using text similarity. See comments for
@@ -364,7 +364,7 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
       AutocompleteMatch::EnterpriseSearchAggregatorType::PEOPLE) {
     if (strong_word_matches + weak_word_matches < input_words.size()) {
       return {0, strong_word_matches, weak_word_matches,
-              "unmatched input word for PEOPLE type"};
+              "local, unmatched input word for PEOPLE type"};
     } else {
       // See comment for `kPeopleScoreBoost`.
       relevance += kPeopleScoreBoost();
@@ -380,7 +380,7 @@ EnterpriseSearchAggregatorProvider::RelevanceData CalculateRelevanceData(
     relevance += 10;
   }
 
-  return {relevance, strong_word_matches, weak_word_matches, "scored"};
+  return {relevance, strong_word_matches, weak_word_matches, "local"};
 }
 
 void LogResultCounts(const base::Value::List* queryResults,
@@ -704,7 +704,7 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
       }
       icon_url = template_url_->favicon_url().spec();
     } else if (suggestion_type == SuggestionType::CONTENT) {
-      icon_url = ptr_to_string(result.FindStringByDottedPath("iconUri"));
+      icon_url = ptr_to_string(result.FindString("iconUri"));
     } else if (suggestion_type == SuggestionType::QUERY &&
                !adjusted_input_.InKeywordMode()) {
       icon_url = template_url_->favicon_url().spec();
@@ -722,11 +722,24 @@ void EnterpriseSearchAggregatorProvider::ParseResultList(
       continue;
     }
 
-    auto additional_scoring_fields =
-        GetAdditionalScoringFields(result, suggestion_type);
-    auto relevance_data = CalculateRelevanceData(
-        input_words, adjusted_input_.InKeywordMode(), suggestion_type,
-        description, contents, additional_scoring_fields);
+    EnterpriseSearchAggregatorProvider::RelevanceData relevance_data;
+    // If server relevance scoring is enabled, return a simple mapping to the
+    // appropriate scoring range.
+    if (omnibox_feature_configs::SearchAggregatorProvider::Get()
+            .use_server_relevance_scores) {
+      relevance_data = {0, 0, 0, "server"};
+      std::optional<double> server_score = result.FindDouble("score");
+      if (server_score.has_value()) {
+        relevance_data.relevance =
+            static_cast<int>(server_score.value() * 1000);
+      }
+    } else {
+      auto additional_scoring_fields =
+          GetAdditionalScoringFields(result, suggestion_type);
+      relevance_data = CalculateRelevanceData(
+          input_words, adjusted_input_.InKeywordMode(), suggestion_type,
+          description, contents, additional_scoring_fields);
+    }
     if (relevance_data.relevance) {
       // Decrement scores to keep sorting stable. Add 10 to avoid going below
       // "weak" threshold or change the hundred's digit; e.g. a score of
@@ -963,7 +976,7 @@ AutocompleteMatch EnterpriseSearchAggregatorProvider::CreateMatch(
   match.RecordAdditionalInfo(
       "relevance weak word matches",
       static_cast<int>(relevance_data.weak_word_matches));
-  match.RecordAdditionalInfo("relevance rule", relevance_data.rule);
+  match.RecordAdditionalInfo("relevance source", relevance_data.source);
 
   return match;
 }

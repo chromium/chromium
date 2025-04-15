@@ -107,6 +107,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                 }
               }
             },
+            "score": 0.8,
             "dataStore": "project 1"
           }
         ],
@@ -128,6 +129,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
             },
             "destinationUri": "https://www.example.com",
             "iconUri": "https://example.com/icon.png",
+            "score": 0.4,
             "dataStore": "project2"
           }
         ]
@@ -426,7 +428,10 @@ class EnterpriseSearchAggregatorProviderTest : public testing::Test {
         .WillRepeatedly(Return(true));
   }
 
-  void InitFeature() { scoped_config_.Get().enabled = true; }
+  void InitFeature() {
+    scoped_config_.Get().enabled = true;
+    scoped_config_.Get().use_server_relevance_scores = false;
+  }
 
   void InitTemplateUrlService() {
     TemplateURLData data;
@@ -705,6 +710,8 @@ TEST_F(EnterpriseSearchAggregatorProviderTest,
 
 // Test response is parsed accurately.
 TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
+  scoped_config_.Get().use_server_relevance_scores = true;
+
   provider_->adjusted_input_ = CreateInput(u"john d", true);
   ParseResponse(kGoodJsonResponse);
 
@@ -712,7 +719,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   ASSERT_EQ(matches.size(), 3u);
 
   EXPECT_EQ(matches[0].type, AutocompleteMatchType::NAVSUGGEST);
-  EXPECT_EQ(matches[0].relevance, 610);
+  EXPECT_EQ(matches[0].relevance, 810);
   EXPECT_EQ(matches[0].contents, u"www.google.com/?q=john%40example.com");
   EXPECT_EQ(matches[0].description, u"John Doe");
   EXPECT_EQ(matches[0].destination_url,
@@ -725,7 +732,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
             u"keyword https://www.google.com/?q=john%40example.com");
 
   EXPECT_EQ(matches[1].type, AutocompleteMatchType::NAVSUGGEST);
-  EXPECT_EQ(matches[1].relevance, 520);
+  EXPECT_EQ(matches[1].relevance, 410);
   EXPECT_EQ(matches[1].contents, u"10/15/07 - John Doe - Google Docs");
   EXPECT_EQ(matches[1].description, u"John's doodle");
   EXPECT_EQ(matches[1].destination_url, GURL("https://www.example.com"));
@@ -736,7 +743,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Parse) {
   EXPECT_EQ(matches[1].fill_into_edit, u"keyword https://www.example.com");
 
   EXPECT_EQ(matches[2].type, AutocompleteMatchType::SEARCH_SUGGEST);
-  EXPECT_EQ(matches[2].relevance, 510);
+  EXPECT_EQ(matches[2].relevance, 0);
   EXPECT_EQ(matches[2].contents, u"John's Document 1");
   EXPECT_EQ(matches[2].description, u"");
   EXPECT_EQ(matches[2].destination_url,
@@ -1273,7 +1280,7 @@ TEST_F(EnterpriseSearchAggregatorProviderTest, Limits) {
           ScoredMatch{u"https://www.google.com/?q=mango-2-query", 206}));
 }
 
-TEST_F(EnterpriseSearchAggregatorProviderTest, Relevance) {
+TEST_F(EnterpriseSearchAggregatorProviderTest, LocalRelevanceScoring) {
   // Results that don't match the input should be filtered out.
   provider_->adjusted_input_ = CreateInput(u"match m", true);
   ParseResponse(CreateResponse(

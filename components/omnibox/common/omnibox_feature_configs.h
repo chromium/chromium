@@ -208,6 +208,9 @@ struct SearchAggregatorProvider : Config<SearchAggregatorProvider> {
   // If true, the `EnterpriseSearchAggregatorSuggestionsService` will make
   // parallel requests for each type of suggestion.
   bool multiple_requests;
+  // If true, the `EnterpriseSearchAggregatorProvider` will use server-provided
+  // relevance scores instead of client-side scoring.
+  bool use_server_relevance_scores;
 
   // See comments in enterprise_search_aggregator_provider.cc
   size_t scoring_max_matches_created_per_type;

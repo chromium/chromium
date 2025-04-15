@@ -40,7 +40,7 @@ class EnterpriseSearchAggregatorProvider : public AutocompleteProvider {
     int relevance;
     size_t strong_word_matches;
     size_t weak_word_matches;
-    std::string rule;
+    std::string source;
   };
 
   EnterpriseSearchAggregatorProvider(AutocompleteProviderClient* client,

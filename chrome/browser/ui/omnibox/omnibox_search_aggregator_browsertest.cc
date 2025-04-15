@@ -58,6 +58,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
         "querySuggestions": [
           {
             "suggestion": "John's Demise",
+            "score": 0.1,
             "dataStore": []
           }
         ],
@@ -87,6 +88,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
                 }
               }
             },
+            "score": 0.8,
             "dataStore": "project 1"
           }
         ],
@@ -108,6 +110,7 @@ const std::string kGoodJsonResponse = base::StringPrintf(
               }
             },
             "destinationUri": "https://www.example.com/",
+            "score": 0.4,
             "dataStore": "project2"
           }
         ]

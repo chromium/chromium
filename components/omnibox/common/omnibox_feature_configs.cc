@@ -124,6 +124,11 @@ SearchAggregatorProvider::SearchAggregatorProvider() {
                                                "multiple_requests", false)
                           .Get();
 
+  use_server_relevance_scores =
+      base::FeatureParam<bool>(&kSearchAggregatorProvider,
+                               "use_server_relevance_scores", true)
+          .Get();
+
   scoring_max_matches_created_per_type =
       base::FeatureParam<size_t>(&kSearchAggregatorProvider,
                                  "scoring_max_matches_created_per_type", 40)
