@@ -20,6 +20,7 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
   private entityInstancesChangedListener_: EntityInstancesChangedListener|null =
       null;
   private optInStatus_: boolean = false;
+  private setOptInStatusResponse_: boolean = true;
 
   constructor() {
     super([
@@ -56,6 +57,10 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
 
   setGetOptInStatusResponse(optInStatus: boolean): void {
     this.optInStatus_ = optInStatus;
+  }
+
+  setSetOptInStatusResponse(setOptInStatus: boolean): void {
+    this.setOptInStatusResponse_ = setOptInStatus;
   }
 
   callEntityInstancesChangedListener(
@@ -112,7 +117,8 @@ export class TestEntityDataManagerProxy extends TestBrowserProxy implements
     return Promise.resolve(this.optInStatus_);
   }
 
-  setOptInStatus(optInStatus: boolean): void {
+  setOptInStatus(optInStatus: boolean): Promise<boolean> {
     this.methodCalled('setOptInStatus', optInStatus);
+    return Promise.resolve(this.setOptInStatusResponse_);
   }
 }
