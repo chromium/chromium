@@ -574,13 +574,14 @@ gfx::Range TabStripModel::InsertDetachedTabGroupImpl(
   }
 
   index = ConstrainInsertionIndex(index, false);
+  tabs::TabInterface* old_active_tab = GetActiveTab();
 
   for (int i = index;
        i < index + static_cast<int>(group_collection->ChildCount()); i++) {
     selection_model_.IncrementFrom(index);
   }
 
-  TabStripSelectionChange selection(GetActiveTab(), selection_model_);
+  TabStripSelectionChange selection(old_active_tab, selection_model());
 
   if (detached_group->active_index_.has_value()) {
     selection_model_.SetSelectedIndex(index +
