@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/hash/sha1.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/deletion_origin.h"
@@ -135,8 +136,6 @@ bool ProcessorEntity::IsUnsynced() const {
   return metadata_.sequence_number() > metadata_.acked_sequence_number();
 }
 
-// TODO(crbug.com/40725000): simplify the API and consider changing
-// RequiresCommitRequest() with IsUnsynced().
 bool ProcessorEntity::RequiresCommitRequest() const {
   return metadata_.sequence_number() > commit_requested_sequence_number_;
 }
@@ -210,7 +209,7 @@ void ProcessorEntity::RecordForcedRemoteUpdate(
     const UpdateResponseData& update,
     sync_pb::EntitySpecifics trimmed_specifics,
     std::optional<sync_pb::UniquePosition> unique_position) {
-  DCHECK(IsUnsynced());
+  CHECK(IsUnsynced(), base::NotFatalUntil::M141);
   // There was a conflict and the server just won it. Explicitly ack all
   // pending commits so they are never enqueued again.
   metadata_.set_acked_sequence_number(metadata_.sequence_number());
@@ -341,8 +340,10 @@ void ProcessorEntity::InitializeCommitRequestData(CommitRequestData* request) {
 
 void ProcessorEntity::ReceiveCommitResponse(const CommitResponseData& data,
                                             bool commit_only) {
-  DCHECK_EQ(metadata_.client_tag_hash(), data.client_tag_hash.value());
-  DCHECK_GT(data.sequence_number, metadata_.acked_sequence_number());
+  CHECK_EQ(metadata_.client_tag_hash(), data.client_tag_hash.value(),
+           base::NotFatalUntil::M141);
+  CHECK_GT(data.sequence_number, metadata_.acked_sequence_number(),
+           base::NotFatalUntil::M141);
   // Version is not valid for commit only types, as it's stripped before being
   // sent to the server, so it cannot behave correctly.
   // Ignore the response if the server responds with an unexpected version.
@@ -364,7 +365,6 @@ void ProcessorEntity::ReceiveCommitResponse(const CommitResponseData& data,
     // If local change was made while server assigned a new id to the entity,
     // update id in cached commit data.
     if (HasCommitData() && commit_data_->id != metadata_.server_id()) {
-      DCHECK(commit_data_->id.empty());
       commit_data_->id = metadata_.server_id();
     }
   }
@@ -377,13 +377,13 @@ void ProcessorEntity::ClearTransientSyncState() {
 }
 
 void ProcessorEntity::IncrementSequenceNumber(base::Time modification_time) {
-  DCHECK(metadata_.has_sequence_number());
+  CHECK(metadata_.has_sequence_number(), base::NotFatalUntil::M141);
   if (!IsUnsynced()) {
     // Update the base specifics hash if this entity wasn't already out of sync.
     metadata_.set_base_specifics_hash(metadata_.specifics_hash());
   }
   metadata_.set_sequence_number(metadata_.sequence_number() + 1);
-  DCHECK(IsUnsynced());
+  CHECK(IsUnsynced(), base::NotFatalUntil::M141);
 }
 
 size_t ProcessorEntity::EstimateMemoryUsage() const {
