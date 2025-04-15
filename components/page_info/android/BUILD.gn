@@ -35,7 +35,6 @@ static_library("android") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/page_info_bg.xml",
     "java/res/drawable/tp_cookie.xml",
     "java/res/drawable/tp_cookie_off.xml",
     "java/res/drawable/tp_fingerprint.xml",
@@ -51,7 +50,6 @@ android_resources("java_resources") {
     "java/res/layout/page_info_title.xml",
     "java/res/layout/tracking_protection_managed_title.xml",
     "java/res/layout/tracking_protection_status.xml",
-    "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
     "java/res/xml/page_info_ad_personalization_preference.xml",
