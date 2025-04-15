@@ -157,10 +157,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
     return (setting == CONTENT_SETTING_ALLOW);
   }
 
-  // Returns true if Storage Access Headers are enabled in the given context.
-  bool IsStorageAccessHeadersEnabled(
-      const GURL& url,
-      base::optional_ref<const url::Origin> top_frame_origin) const;
+  // Returns true if Storage Access Headers are enabled.
+  static bool IsStorageAccessHeadersEnabled();
 
   bool ShouldAlwaysAllowCookiesForTesting(const GURL& url,
                                           const GURL& first_party_url) const;

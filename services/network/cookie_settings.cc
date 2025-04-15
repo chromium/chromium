@@ -468,9 +468,8 @@ void CookieSettings::AugmentInclusionStatus(
 
 // TODO(crbug.com/366284840): Deprecate this function when moving storage access
 // status out of //net.
-bool CookieSettings::IsStorageAccessHeadersEnabled(
-    const GURL& url,
-    base::optional_ref<const url::Origin> top_frame_origin) const {
+// static
+bool CookieSettings::IsStorageAccessHeadersEnabled() {
   return base::FeatureList::IsEnabled(network::features::kStorageAccessHeaders);
 }
 

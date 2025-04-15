@@ -5475,6 +5475,9 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
 }
 
 TEST_F(StorageAccessHeaderURLLoaderTest, NoLoadWhenHeaderNotEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      network::features::kStorageAccessHeaders);
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
       "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
@@ -5494,7 +5497,7 @@ TEST_F(StorageAccessHeaderURLLoaderTest, NoLoadWhenHeaderNotEnabled) {
   client()->RunUntilComplete();
   delete_run_loop.Run();
 
-  // `TestNetworkDelegate::`OnIsStorageAccessHeaderEnabled` should have returned
+  // `CookieSettings::IsStorageAccessHeadersEnabled()` should have returned
   // false when called during the request, so `load_with_storage_access` should
   // still be false.
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);

@@ -82,6 +82,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/accept_ch_frame_interceptor.h"
 #include "services/network/ad_heuristic_cookie_overrides.h"
+#include "services/network/cookie_settings.h"
 #include "services/network/file_opener_for_upload.h"
 #include "services/network/orb/orb_impl.h"
 #include "services/network/public/cpp/client_hints.h"
@@ -2622,10 +2623,7 @@ bool URLLoader::ShouldSetLoadWithStorageAccess() const {
 
   auto determine_storage_access_load_outcome =
       [&]() -> net::cookie_util::ActivateStorageAccessLoadOutcome {
-    if (!url_request_context_->network_delegate()->IsStorageAccessHeaderEnabled(
-            base::OptionalToPtr(
-                url_request_->isolation_info().top_frame_origin()),
-            url_request_->url())) {
+    if (!CookieSettings::IsStorageAccessHeadersEnabled()) {
       return net::cookie_util::ActivateStorageAccessLoadOutcome::
           kFailureHeaderDisabled;
     }

@@ -88,8 +88,7 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
       const URLRequest& request,
       base::optional_ref<const RedirectInfo> redirect_info) const override;
 
-  bool OnIsStorageAccessHeaderEnabled(const url::Origin* top_frame_origin,
-                                      const GURL& url) const override;
+  bool OnIsStorageAccessHeaderEnabled() const override;
 
   NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const URLRequest& request) const override;

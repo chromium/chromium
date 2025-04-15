@@ -1603,9 +1603,7 @@ bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
   auto determine_storage_access_retry_outcome =
       [&]() -> cookie_util::ActivateStorageAccessRetryOutcome {
     using enum cookie_util::ActivateStorageAccessRetryOutcome;
-    if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
-            base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
-            request_->url())) {
+    if (!request_->network_delegate()->IsStorageAccessHeaderEnabled()) {
       return kFailureHeaderDisabled;
     }
     if (!ShouldAddCookieHeader() ||
