@@ -1467,25 +1467,27 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
   TRACE_EVENT_BEGIN(
       kTraceCategory, "PipelineReporter", trace_track, args_.frame_time,
       [&](perfetto::EventContext context) {
-        using perfetto::protos::pbzero::ChromeFrameReporter;
-        ChromeFrameReporter::State state;
+        using perfetto::protos::pbzero::ChromeFrameReporter2;
+        ChromeFrameReporter2::State state;
         switch (info.final_state) {
           case FrameInfo::FrameFinalState::kPresentedAll:
-            state = ChromeFrameReporter::STATE_PRESENTED_ALL;
+            state = ChromeFrameReporter2::STATE_PRESENTED_ALL;
             break;
           case FrameInfo::FrameFinalState::kPresentedPartialNewMain:
           case FrameInfo::FrameFinalState::kPresentedPartialOldMain:
-            state = ChromeFrameReporter::STATE_PRESENTED_PARTIAL;
+            state = ChromeFrameReporter2::STATE_PRESENTED_PARTIAL;
             break;
           case FrameInfo::FrameFinalState::kNoUpdateDesired:
-            state = ChromeFrameReporter::STATE_NO_UPDATE_DESIRED;
+            state = ChromeFrameReporter2::STATE_NO_UPDATE_DESIRED;
             break;
           case FrameInfo::FrameFinalState::kDropped:
-            state = ChromeFrameReporter::STATE_DROPPED;
+            state = ChromeFrameReporter2::STATE_DROPPED;
             break;
         }
 
-        auto* reporter = context.event()->set_chrome_frame_reporter();
+        auto* reporter =
+            context.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                ->set_frame_reporter();
         reporter->set_state(state);
         reporter->set_frame_source(args_.frame_id.source_id);
         reporter->set_frame_sequence(args_.frame_id.sequence_number);
@@ -1497,23 +1499,23 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
         reporter->set_checkerboarded_needs_record(
             info.checkerboarded_needs_record);
         if (info.IsDroppedAffectingSmoothness()) {
-          DCHECK(state == ChromeFrameReporter::STATE_DROPPED ||
-                 state == ChromeFrameReporter::STATE_PRESENTED_PARTIAL);
+          DCHECK(state == ChromeFrameReporter2::STATE_DROPPED ||
+                 state == ChromeFrameReporter2::STATE_PRESENTED_PARTIAL);
         }
         reporter->set_affects_smoothness(info.IsDroppedAffectingSmoothness());
-        ChromeFrameReporter::ScrollState scroll_state;
+        ChromeFrameReporter2::ScrollState scroll_state;
         switch (info.scroll_thread) {
           case FrameInfo::SmoothEffectDrivingThread::kMain:
-            scroll_state = ChromeFrameReporter::SCROLL_MAIN_THREAD;
+            scroll_state = ChromeFrameReporter2::SCROLL_MAIN_THREAD;
             break;
           case FrameInfo::SmoothEffectDrivingThread::kCompositor:
-            scroll_state = ChromeFrameReporter::SCROLL_COMPOSITOR_THREAD;
+            scroll_state = ChromeFrameReporter2::SCROLL_COMPOSITOR_THREAD;
             break;
           case FrameInfo::SmoothEffectDrivingThread::kRaster:
-            scroll_state = ChromeFrameReporter::SCROLL_RASTER;
+            scroll_state = ChromeFrameReporter2::SCROLL_RASTER;
             break;
           case FrameInfo::SmoothEffectDrivingThread::kUnknown:
-            scroll_state = ChromeFrameReporter::SCROLL_NONE;
+            scroll_state = ChromeFrameReporter2::SCROLL_NONE;
             break;
         }
         reporter->set_scroll_state(scroll_state);
@@ -1531,9 +1533,9 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
             (frame_termination_time_ - args_.frame_time) > kHighLatencyMin);
 
         if (is_forked_) {
-          reporter->set_frame_type(ChromeFrameReporter::FORKED);
+          reporter->set_frame_type(ChromeFrameReporter2::FORKED);
         } else if (is_backfill_) {
-          reporter->set_frame_type(ChromeFrameReporter::BACKFILL);
+          reporter->set_frame_type(ChromeFrameReporter2::BACKFILL);
         }
 
         for (auto stage : high_latency_substages_) {
