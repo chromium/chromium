@@ -55,7 +55,7 @@ BASE_FEATURE(kUsingCorrectWorkArea,
 
 BASE_FEATURE(kUseNewEtc1Encoder,
              "UseNewEtc1Encoder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidWindowOcclusion,
              "AndroidWindowOcclusion",
