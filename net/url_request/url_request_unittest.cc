@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/android/android_info.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "net/url_request/url_request.h"
 
 #include <stdint.h>
 
@@ -55,6 +54,7 @@
 #include "build/buildflag.h"
 #include "crypto/sha2.h"
 #include "net/base/chunked_upload_data_stream.h"
+#include "net/base/cronet_buildflags.h"
 #include "net/base/directory_listing.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/features.h"
@@ -148,6 +148,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/storage_access_status_cache.h"
+#include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
@@ -11161,6 +11162,17 @@ class HTTPSOCSPVerifyTest
       public testing::WithParamInterface<OCSPVerifyTestData> {};
 
 TEST_P(HTTPSOCSPVerifyTest, VerifyResult) {
+#if BUILDFLAG(CRONET_BUILD)
+  // Previously, OCSP stapling would never be passed to the platform verifier
+  // which meant that the only layer performing the verification was BoringSSL.
+  // However, this has changed with Android 16 where we started passing the OCSP
+  // stapling data to Conscrypt. This meant certificates with bad OCSP stapling
+  // that were previously passing the Conscrypt check are now failing the check.
+  // See crbug.com/408137065 for more information.
+  if (base::android::android_info::sdk_int() >= 36) {
+    GTEST_SKIP();
+  }
+#endif
   OCSPVerifyTestData test = GetParam();
 
   scoped_refptr<X509Certificate> root_cert =
