@@ -35,8 +35,8 @@ suite('AsyncMapDirectiveTest', function() {
       };
     }
 
-    name: string = '';
-    featureEnabled: boolean = false;
+    accessor name: string = '';
+    accessor featureEnabled: boolean = false;
   }
 
   customElements.define(TestChildElement.is, TestChildElement);
@@ -67,7 +67,7 @@ suite('AsyncMapDirectiveTest', function() {
       };
     }
 
-    items: string[] = [
+    accessor items: string[] = [
       'One',
       'Two',
       'Three',
@@ -81,7 +81,7 @@ suite('AsyncMapDirectiveTest', function() {
       'Eleven',
       'Twelve',
     ];
-    featureEnabled: boolean = false;
+    accessor featureEnabled: boolean = false;
     private itemsRendered_: number[] = [];
     private allItemsRendered_: PromiseResolver<number[]> =
         new PromiseResolver<number[]>();

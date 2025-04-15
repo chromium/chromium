@@ -249,7 +249,7 @@ class TestBookmarksElement extends CrLitElement {
     };
   }
 
-  bookmarks: Bookmark[] = [];
+  accessor bookmarks: Bookmark[] = [];
 }
 
 declare global {

@@ -352,11 +352,14 @@ suite('cr-radio-group', () => {
 
       static get properties() {
         return {
-          parentSelected: String,
+          parentSelected: {
+            type: String,
+            value: 'one',
+          },
         };
       }
 
-      parentSelected: string = 'one';
+      declare parentSelected: string;
       changes: string[] = [];
 
       onSelectedChanged(e: CustomEvent<{value: string}>) {

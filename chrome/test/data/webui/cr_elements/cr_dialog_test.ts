@@ -360,9 +360,9 @@ suite('cr-dialog', function() {
         };
       }
 
-      showDialog: boolean = false;
-      autofocusCrInput: boolean = false;
-      autofocusCrTextarea: boolean = false;
+      accessor showDialog: boolean = false;
+      accessor autofocusCrInput: boolean = false;
+      accessor autofocusCrTextarea: boolean = false;
     }
 
     customElements.define(TestElement.is, TestElement);

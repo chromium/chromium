@@ -18,8 +18,8 @@ class TestElement extends TestElementBase {
     };
   }
 
-  newRoute: Route|undefined;
-  oldRoute: Route|undefined;
+  declare newRoute: Route|undefined;
+  declare oldRoute: Route|undefined;
 
   override currentRouteChanged(newRoute: Route, oldRoute: Route): void {
     this.newRoute = newRoute;

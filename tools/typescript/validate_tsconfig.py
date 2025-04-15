@@ -53,9 +53,16 @@ _allowed_compiler_options = {
     'target': ['ESNext', 'ES2024'],
     'typeRoots': None,
     'types': None,
-    'useDefineForClassFields': None,
 }
 
+_ash_configs = [
+    'ash/webui/camera_app_ui/resources/tsconfig_base.json',
+    'ash/webui/recorder_app_ui/resources/tsconfig_base.json',
+    'chrome/browser/resources/chromeos/desk_api/tsconfig_base.json',
+    'chrome/test/data/webui/chromeos/ash_common/tsconfig_base.json',
+    'tools/typescript/tsconfig_base_polymer_cros.json',
+    'third_party/cros-components/tsconfig_base.json',
+]
 
 def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
   # Special exception for material_web_components, which uses ts_library()
@@ -92,8 +99,10 @@ def validateTsconfigJson(tsconfig, tsconfig_file, is_base_tsconfig):
     if not is_base_tsconfig:
       for param, param_value in tsconfig['compilerOptions'].items():
         if param not in _allowed_compiler_options:
-          return False, f'Disallowed |{param}| flag detected in '+ \
-              f'\'{tsconfig_file}\'.'
+          if param != 'useDefineForClassFields' or \
+             tsconfig_file not in _ash_configs:
+            return False, f'Disallowed |{param}| flag detected in '+ \
+                f'\'{tsconfig_file}\'.'
         else:
           allowed_values = _allowed_compiler_options[param]
           if (allowed_values is not None and param_value not in allowed_values):

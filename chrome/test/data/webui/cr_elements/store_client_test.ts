@@ -46,13 +46,19 @@ class StoreClientTestElement extends TestStoreClientMixin
 
   static get properties() {
     return {
-      value: Number,
-      neverTwo: Number,
+      value: {
+        type: Number,
+        value: -1,
+      },
+      neverTwo: {
+        type: Number,
+        value: -1,
+      },
     };
   }
 
-  value: number = -1;
-  neverTwo: number = -1;
+  declare value: number;
+  declare neverTwo: number;
 
   static get template() {
     return html`<div>

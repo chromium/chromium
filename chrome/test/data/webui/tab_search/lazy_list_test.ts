@@ -41,7 +41,7 @@ class TestItem extends CrLitElement {
     this.shadowRoot.querySelector('button')!.focus();
   }
 
-  name: string = '';
+  accessor name: string = '';
 }
 
 customElements.define('test-item', TestItem);
@@ -58,8 +58,8 @@ class TestApp extends CrLitElement {
     };
   }
 
-  listItems: Array<{name: string}> = [];
-  private restoreFocusElement_: HTMLElement|null = null;
+  accessor listItems: Array<{name: string}> = [];
+  private accessor restoreFocusElement_: HTMLElement|null = null;
 
   override render() {
     return html`

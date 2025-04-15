@@ -289,11 +289,14 @@ suite('cr-checkbox', function() {
 
       static get properties() {
         return {
-          parentChecked: Boolean,
+          parentChecked: {
+            type: Boolean,
+            value: false,
+          },
         };
       }
 
-      parentChecked: boolean = false;
+      declare parentChecked: boolean;
       private events_: string[] = [];
 
       onCheckedChanged(e: CustomEvent<{value: boolean}>) {
