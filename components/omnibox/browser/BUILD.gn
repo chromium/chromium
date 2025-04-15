@@ -84,6 +84,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "product_chrome_refresh.icon",
     "product_specifications_add.icon",
     "product_specifications_added.icon",
+    "screensaver_auto.icon",
     "search_spark.icon",
     "secure_page_info_chrome_refresh.icon",
     "share.icon",
@@ -354,7 +355,6 @@ static_library("browser") {
 
   deps = [
     "//build:branding_buildflags",
-    "//components/vector_icons",
     "//components/bookmarks/browser",
     "//components/component_updater",
     "//components/dom_distiller/core:core",
@@ -382,6 +382,7 @@ static_library("browser") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/net",
+    "//components/vector_icons",
     "//extensions/buildflags",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",

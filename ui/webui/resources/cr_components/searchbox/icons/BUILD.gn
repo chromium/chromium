@@ -46,6 +46,7 @@ generate_grd("build_grdp") {
     "note.svg",
     "page_cr23.svg",
     "page.svg",
+    "screensaver_auto.svg",
     "search_cr23.svg",
     "share_cr23.svg",
     "share.svg",

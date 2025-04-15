@@ -95,6 +95,8 @@ const char* kJourneysIconResourceName =
 const char* kPageIconResourceName =
     "//resources/cr_components/searchbox/icons/page.svg";
 const char* kPedalsIconResourceName = "//theme/current-channel-logo";
+const char* kScreensaverAutoIconResourceName =
+    "//resources/cr_components/searchbox/icons/screensaver_auto.svg";
 const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
 const char* kSearchSparkIconResourceName =
     "//resources/cr_components/searchbox/icons/search_spark.svg";
@@ -622,6 +624,9 @@ std::string SearchboxHandler::ActionVectorIconToResourceName(
 #endif
   if (icon.name == omnibox::kSearchSparkIcon.name) {
     return kSearchSparkIconResourceName;
+  }
+  if (icon.name == omnibox::kScreensaverAutoIcon.name) {
+    return kScreensaverAutoIconResourceName;
   }
   if (icon.name == omnibox::kSparkIcon.name) {
     return kSparkIconResourceName;

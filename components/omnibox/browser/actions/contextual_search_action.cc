@@ -84,7 +84,7 @@ void ContextualSearchSelectRegionAction::Execute(
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 const gfx::VectorIcon& ContextualSearchAskAboutPageAction::GetVectorIcon()
     const {
-  return omnibox::kSearchSparkIcon;
+  return omnibox::kScreensaverAutoIcon;
 }
 #endif  // defined(SUPPORT_PEDALS_VECTOR_ICONS)
 
