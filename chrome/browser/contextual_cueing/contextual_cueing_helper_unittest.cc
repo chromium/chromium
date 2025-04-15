@@ -46,8 +46,7 @@ std::unique_ptr<KeyedService> CreateContextualCueingService(
       page_content_annotations::PageContentExtractionServiceFactory::
           GetForProfile(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      /*loading_predictor=*/nullptr, profile->GetPrefs(),
-      /*template_url_service=*/nullptr);
+      /*loading_predictor=*/nullptr, profile->GetPrefs());
 }
 
 class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {

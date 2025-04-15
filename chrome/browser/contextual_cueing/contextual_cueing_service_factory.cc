@@ -12,7 +12,6 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace contextual_cueing {
@@ -41,7 +40,6 @@ ContextualCueingServiceFactory::ContextualCueingServiceFactory()
                 GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(predictors::LoadingPredictorFactory::GetInstance());
-  DependsOn(TemplateURLServiceFactory::GetInstance());
 }
 
 ContextualCueingServiceFactory::~ContextualCueingServiceFactory() = default;
@@ -60,7 +58,7 @@ ContextualCueingServiceFactory::BuildServiceInstanceForBrowserContext(
           GetForProfile(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
       predictors::LoadingPredictorFactory::GetForProfile(profile),
-      profile->GetPrefs(), TemplateURLServiceFactory::GetForProfile(profile));
+      profile->GetPrefs());
 }
 
 bool ContextualCueingServiceFactory::ServiceIsCreatedWithBrowserContext()

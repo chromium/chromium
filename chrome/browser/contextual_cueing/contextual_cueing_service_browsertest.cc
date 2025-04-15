@@ -15,13 +15,11 @@
 #include "chrome/browser/extensions/keyed_services/browser_context_keyed_service_factories.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
-#include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
@@ -114,57 +112,6 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
       "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
       "ZeroStateSuggestions",
       1);
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
-                       IgnoresNewTabPage) {
-  base::HistogramTester histogram_tester;
-
-  auto* service =
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-
-  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  service->GetContextualGlicZeroStateSuggestions(web_contents, /*is_fre=*/false,
-                                                 future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  histogram_tester.ExpectTotalCount(
-      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 0);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
-      "ZeroStateSuggestions",
-      0);
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualCueingServiceBrowserTestZSSFlag,
-                       IgnoresSearchResultsPage) {
-  base::HistogramTester histogram_tester;
-
-  auto* service =
-      ContextualCueingServiceFactory::GetForProfile(browser()->profile());
-  auto* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
-
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      template_url_service->GenerateSearchURLForDefaultSearchProvider(u"foo")));
-
-  base::test::TestFuture<std::optional<std::vector<std::string>>> future;
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  service->GetContextualGlicZeroStateSuggestions(web_contents, /*is_fre=*/false,
-                                                 future.GetCallback());
-  ASSERT_TRUE(future.Wait());
-  histogram_tester.ExpectTotalCount(
-      "ContextualCueing.ZeroStateSuggestions.ContextExtractionDone", 0);
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecutionFetcher.RequestStatus."
-      "ZeroStateSuggestions",
-      0);
 }
 #endif
 
