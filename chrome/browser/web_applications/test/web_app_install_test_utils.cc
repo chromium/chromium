@@ -48,7 +48,7 @@ void WaitUntilReady(WebAppProvider* provider) {
   if (provider->on_registry_ready().is_signaled())
     return;
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
@@ -60,7 +60,7 @@ void WaitUntilWebAppProviderAndSubsystemsReady(WebAppProvider* provider) {
     return;
   }
 
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   provider->on_external_managers_synchronized().Post(FROM_HERE,
                                                      run_loop.QuitClosure());
   run_loop.Run();

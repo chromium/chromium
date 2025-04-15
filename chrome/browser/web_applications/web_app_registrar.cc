@@ -235,6 +235,7 @@ void WebAppRegistrar::RemoveObserver(WebAppRegistrarObserver* observer) {
 }
 
 void WebAppRegistrar::NotifyWebAppProtocolSettingsChanged() {
+  DVLOG(1) << "NotifyWebAppProtocolSettingsChanged";
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppProtocolSettingsChanged();
   }
@@ -242,6 +243,7 @@ void WebAppRegistrar::NotifyWebAppProtocolSettingsChanged() {
 
 void WebAppRegistrar::NotifyWebAppFileHandlerApprovalStateChanged(
     const webapps::AppId& app_id) {
+  DVLOG(1) << "NotifyWebAppFileHandlerApprovalStateChanged";
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppFileHandlerApprovalStateChanged(app_id);
   }
@@ -249,6 +251,7 @@ void WebAppRegistrar::NotifyWebAppFileHandlerApprovalStateChanged(
 
 void WebAppRegistrar::NotifyWebAppsWillBeUpdatedFromSync(
     const std::vector<const WebApp*>& new_apps_state) {
+  DVLOG(1) << "NotifyWebAppsWillBeUpdatedFromSync";
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppsWillBeUpdatedFromSync(new_apps_state);
   }
@@ -257,12 +260,15 @@ void WebAppRegistrar::NotifyWebAppsWillBeUpdatedFromSync(
 void WebAppRegistrar::NotifyWebAppDisabledStateChanged(
     const webapps::AppId& app_id,
     bool is_disabled) {
+  DVLOG(1) << "NotifyWebAppDisabledStateChanged " << app_id << ", "
+           << is_disabled;
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppDisabledStateChanged(app_id, is_disabled);
   }
 }
 
 void WebAppRegistrar::NotifyWebAppsDisabledModeChanged() {
+  DVLOG(1) << "NotifyWebAppsDisabledModeChanged";
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppsDisabledModeChanged();
   }
@@ -271,6 +277,7 @@ void WebAppRegistrar::NotifyWebAppsDisabledModeChanged() {
 void WebAppRegistrar::NotifyWebAppLastBadgingTimeChanged(
     const webapps::AppId& app_id,
     const base::Time& time) {
+  DVLOG(1) << "NotifyWebAppLastBadgingTimeChanged " << app_id << ", " << time;
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppLastBadgingTimeChanged(app_id, time);
   }
@@ -279,6 +286,7 @@ void WebAppRegistrar::NotifyWebAppLastBadgingTimeChanged(
 void WebAppRegistrar::NotifyWebAppLastLaunchTimeChanged(
     const webapps::AppId& app_id,
     const base::Time& time) {
+  DVLOG(1) << "NotifyWebAppLastLaunchTimeChanged " << app_id << ", " << time;
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppLastLaunchTimeChanged(app_id, time);
   }
@@ -287,6 +295,7 @@ void WebAppRegistrar::NotifyWebAppLastLaunchTimeChanged(
 void WebAppRegistrar::NotifyWebAppFirstInstallTimeChanged(
     const webapps::AppId& app_id,
     const base::Time& time) {
+  DVLOG(1) << "NotifyWebAppFirstInstallTimeChanged " << app_id << ", " << time;
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppFirstInstallTimeChanged(app_id, time);
   }
@@ -295,6 +304,8 @@ void WebAppRegistrar::NotifyWebAppFirstInstallTimeChanged(
 void WebAppRegistrar::NotifyWebAppUserDisplayModeChanged(
     const webapps::AppId& app_id,
     mojom::UserDisplayMode user_display_mode) {
+  DVLOG(1) << "NotifyWebAppUserDisplayModeChanged " << app_id << ", "
+           << user_display_mode;
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppUserDisplayModeChanged(app_id, user_display_mode);
   }
@@ -303,12 +314,15 @@ void WebAppRegistrar::NotifyWebAppUserDisplayModeChanged(
 void WebAppRegistrar::NotifyWebAppRunOnOsLoginModeChanged(
     const webapps::AppId& app_id,
     RunOnOsLoginMode run_on_os_login_mode) {
+  DVLOG(1) << "NotifyWebAppRunOnOsLoginModeChanged " << app_id << ", "
+           << run_on_os_login_mode;
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppRunOnOsLoginModeChanged(app_id, run_on_os_login_mode);
   }
 }
 
 void WebAppRegistrar::NotifyWebAppSettingsPolicyChanged() {
+  DVLOG(1) << "NotifyWebAppSettingsPolicyChanged";
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppSettingsPolicyChanged();
   }
@@ -318,6 +332,8 @@ void WebAppRegistrar::NotifyWebAppSettingsPolicyChanged() {
 void WebAppRegistrar::NotifyWebAppUserLinkCapturingPreferencesChanged(
     const webapps::AppId& app_id,
     bool is_preferred) {
+  DVLOG(1) << "NotifyWebAppUserLinkCapturingPreferencesChanged " << app_id
+           << ", " << is_preferred;
   for (WebAppRegistrarObserver& observer : observers_) {
     observer.OnWebAppUserLinkCapturingPreferencesChanged(app_id, is_preferred);
   }

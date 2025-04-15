@@ -38,6 +38,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_database.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_proto_utils.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -544,8 +545,16 @@ void WebAppSyncBridge::UpdateSync(
     // if IsSynced flag becomes false.
     if (new_state->IsSynced()) {
       CHECK(new_state->manifest_id().is_valid(), base::NotFatalUntil::M125);
-      change_processor()->Put(app_id, CreateSyncEntityData(*new_state),
-                              metadata_change_list);
+      // Only call 'Put' if it wasn't synced, or if the sync data has changed.
+      // TODO(https://crbug.com/409867622): We can remove this optimization
+      // after tests are updated to use a Fake version instead of the Mock
+      // version of the processor.
+      if (!current_state->IsSynced() ||
+          (current_state->sync_proto().SerializeAsString() !=
+           new_state->sync_proto().SerializeAsString())) {
+        change_processor()->Put(app_id, CreateSyncEntityData(*new_state),
+                                metadata_change_list);
+      }
     } else if (current_state->IsSynced()) {
       change_processor()->Delete(app_id, syncer::DeletionOrigin::Unspecified(),
                                  metadata_change_list);
@@ -716,6 +725,8 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
       // when all asynchronous uninstallation tasks are complete then the entity
       // is deleted from the database.
       app_copy->SetIsUninstalling(true);
+    } else {
+      install_manager_->NotifyWebAppSourceRemoved(app_id);
     }
     update_local_data->apps_to_update.push_back(std::move(app_copy));
     return ManifestIdParseResult::kSuccess;
@@ -819,25 +830,18 @@ void WebAppSyncBridge::ApplyIncrementalSyncChangesToRegistrar(
     auto callback =
         base::BindRepeating(&WebAppSyncBridge::OnWebAppUninstallComplete,
                             weak_ptr_factory_.GetWeakPtr());
-    if (uninstall_from_sync_before_registry_update_callback_for_testing_) {
-      uninstall_from_sync_before_registry_update_callback_for_testing_.Run(
-          apps_to_delete, callback);
-    } else {
-      for (const webapps::AppId& app_id : apps_to_delete) {
-        command_scheduler_->RemoveAllManagementTypesAndUninstall(
-            base::PassKey<WebAppSyncBridge>(), app_id,
-            webapps::WebappUninstallSource::kSync,
-            base::BindOnce(callback, app_id));
-      }
+    for (const webapps::AppId& app_id : apps_to_delete) {
+      command_scheduler_->RemoveAllManagementTypesAndUninstall(
+          base::PassKey<WebAppSyncBridge>(), app_id,
+          webapps::WebappUninstallSource::kSync,
+          base::BindOnce(callback, app_id));
     }
   }
 
   // Do a full follow up install for all remote entities that don’t exist
   // locally.
   if (!apps_to_install.empty()) {
-    // TODO(dmurph): Just call the InstallFromSync command.
-    // https://crbug.com/1328968
-    InstallWebAppsAfterSync(std::move(apps_to_install), base::DoNothing());
+    InstallWebAppsAfterSync(std::move(apps_to_install));
   }
 }
 
@@ -1003,22 +1007,6 @@ bool WebAppSyncBridge::IsEntityDataValid(
   return false;
 }
 
-void WebAppSyncBridge::SetRetryIncompleteUninstallsCallbackForTesting(
-    RetryIncompleteUninstallsCallback callback) {
-  retry_incomplete_uninstalls_callback_for_testing_ = std::move(callback);
-}
-
-void WebAppSyncBridge::SetInstallWebAppsAfterSyncCallbackForTesting(
-    InstallWebAppsAfterSyncCallback callback) {
-  install_web_apps_after_sync_callback_for_testing_ = std::move(callback);
-}
-
-void WebAppSyncBridge::SetUninstallFromSyncCallbackForTesting(
-    UninstallFromSyncCallback callback) {
-  uninstall_from_sync_before_registry_update_callback_for_testing_ =
-      std::move(callback);
-}
-
 void WebAppSyncBridge::SetAppNotLocallyInstalledForTesting(
     const webapps::AppId& app_id) {
   {
@@ -1044,10 +1032,6 @@ void WebAppSyncBridge::MaybeUninstallAppsPendingUninstall() {
 
   // Retrying incomplete uninstalls
   if (!apps_uninstalling.empty()) {
-    if (retry_incomplete_uninstalls_callback_for_testing_) {
-      retry_incomplete_uninstalls_callback_for_testing_.Run(apps_uninstalling);
-      return;
-    }
     auto callback =
         base::BindRepeating(&WebAppSyncBridge::OnWebAppUninstallComplete,
                             weak_ptr_factory_.GetWeakPtr());
@@ -1069,23 +1053,11 @@ void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation() {
   }
 
   if (!apps_in_sync_install.empty()) {
-    if (install_web_apps_after_sync_callback_for_testing_) {
-      install_web_apps_after_sync_callback_for_testing_.Run(
-          std::move(apps_in_sync_install), base::DoNothing());
-      return;
-    }
-    InstallWebAppsAfterSync(std::move(apps_in_sync_install), base::DoNothing());
+    InstallWebAppsAfterSync(std::move(apps_in_sync_install));
   }
 }
 
-void WebAppSyncBridge::InstallWebAppsAfterSync(
-    std::vector<WebApp*> web_apps,
-    RepeatingInstallCallback callback) {
-  if (install_web_apps_after_sync_callback_for_testing_) {
-    install_web_apps_after_sync_callback_for_testing_.Run(std::move(web_apps),
-                                                          callback);
-    return;
-  }
+void WebAppSyncBridge::InstallWebAppsAfterSync(std::vector<WebApp*> web_apps) {
   for (WebApp* web_app : web_apps) {
     command_scheduler_->InstallFromSync(*web_app, base::DoNothing());
   }

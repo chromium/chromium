@@ -112,13 +112,10 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
 
   void SetSubsystems(AbstractWebAppDatabaseFactory* database_factory,
                      WebAppCommandManager* command_manager,
-                     WebAppCommandScheduler* command_scheduler_,
-                     WebAppInstallManager* install_manager_);
+                     WebAppCommandScheduler* command_scheduler,
+                     WebAppInstallManager* install_manager);
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
-  using RepeatingInstallCallback =
-      base::RepeatingCallback<void(const webapps::AppId& app_id,
-                                   webapps::InstallResultCode code)>;
   using RepeatingUninstallCallback =
       base::RepeatingCallback<void(const webapps::AppId& app_id,
                                    webapps::UninstallResultCode code)>;
@@ -228,20 +225,6 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
     disable_checks_for_testing_ = disable_checks_for_testing;
   }
 
-  using RetryIncompleteUninstallsCallback = base::RepeatingCallback<void(
-      const base::flat_set<webapps::AppId>& apps_to_uninstall)>;
-  void SetRetryIncompleteUninstallsCallbackForTesting(
-      RetryIncompleteUninstallsCallback callback);
-  using InstallWebAppsAfterSyncCallback =
-      base::RepeatingCallback<void(std::vector<WebApp*> web_apps,
-                                   RepeatingInstallCallback callback)>;
-  void SetInstallWebAppsAfterSyncCallbackForTesting(
-      InstallWebAppsAfterSyncCallback callback);
-  using UninstallFromSyncCallback =
-      base::RepeatingCallback<void(const std::vector<webapps::AppId>& web_apps,
-                                   RepeatingUninstallCallback callback)>;
-  void SetUninstallFromSyncCallbackForTesting(
-      UninstallFromSyncCallback callback);
   WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
 
   // TODO(crbug.com/41490924): Remove this and make it so tests can
@@ -296,8 +279,7 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
   void MaybeUninstallAppsPendingUninstall();
   void MaybeInstallAppsFromSyncAndPendingInstallation();
 
-  void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
-                               RepeatingInstallCallback callback);
+  void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps);
 
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
@@ -312,13 +294,6 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
 
   bool is_in_update_ = false;
   bool disable_checks_for_testing_ = false;
-
-  RetryIncompleteUninstallsCallback
-      retry_incomplete_uninstalls_callback_for_testing_;
-  InstallWebAppsAfterSyncCallback
-      install_web_apps_after_sync_callback_for_testing_;
-  UninstallFromSyncCallback
-      uninstall_from_sync_before_registry_update_callback_for_testing_;
 
   base::WeakPtrFactory<WebAppSyncBridge> weak_ptr_factory_{this};
 };
