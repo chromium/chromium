@@ -340,7 +340,7 @@ static_library("browser") {
     "integrators/optimization_guide/autofill_optimization_guide.h",
     "integrators/password_form_classification.h",
     "integrators/plus_addresses/autofill_plus_address_delegate.h",
-    "integrators/touch_to_fill_delegate.h",
+    "integrators/touch_to_fill/touch_to_fill_delegate.h",
     "logging/log_buffer_submitter.cc",
     "logging/log_buffer_submitter.h",
     "logging/log_manager.cc",
