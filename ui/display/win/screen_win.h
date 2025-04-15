@@ -26,8 +26,6 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 
-class VirtualDisplayUtilWinInteractiveUitest;
-
 namespace display::win {
 
 class ScreenWinDisplay;
@@ -199,10 +197,6 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
 
   FRIEND_TEST_ALL_PREFIXES(ScreenWinTestSingleDisplay1x,
                            DisconnectPrimaryDisplay);
-
-  // Allow virtual display test to access default constructor that picks up the
-  // system monitor configuration.
-  friend class ::VirtualDisplayUtilWinInteractiveUitest;
 
   ScreenWin();
 

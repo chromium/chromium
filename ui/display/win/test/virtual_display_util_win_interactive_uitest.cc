@@ -9,6 +9,17 @@
 #include "ui/display/win/screen_win.h"
 #include "ui/display/win/test/virtual_display_util_win.h"
 
+// ScreenWin has a protected ctor so use a derived class to instantiate it.
+class VirtualDisplayScreenWin : public display::win::ScreenWin {
+ public:
+  VirtualDisplayScreenWin() = default;
+
+  VirtualDisplayScreenWin(const VirtualDisplayScreenWin&) = delete;
+  VirtualDisplayScreenWin& operator=(const VirtualDisplayScreenWin&) = delete;
+
+  ~VirtualDisplayScreenWin() override = default;
+};
+
 // This test suite requires the host to have a special driver installed.
 // If the driver is not detected, this test will skip.
 // See: //docs/ui/display/multiscreen_testing.md
@@ -34,7 +45,7 @@ class VirtualDisplayUtilWinInteractiveUitest : public testing::Test {
   display::Screen* screen() { return &screen_; }
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  display::win::ScreenWin screen_;
+  VirtualDisplayScreenWin screen_;
   display::test::VirtualDisplayUtilWin virtual_display_util_win_;
 };
 
