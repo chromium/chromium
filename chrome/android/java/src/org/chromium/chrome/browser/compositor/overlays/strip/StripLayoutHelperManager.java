@@ -192,7 +192,7 @@ public class StripLayoutHelperManager
     private final LayoutUpdateHost mUpdateHost;
 
     // Event Filters
-    private final AreaMotionEventFilter mEventFilter;
+    private AreaMotionEventFilter mEventFilter;
 
     // Internal state
     private boolean mIsIncognito;
@@ -687,13 +687,18 @@ public class StripLayoutHelperManager
         }
     }
 
-    /** Cleans up internal state. */
+    /** Cleans up internal state. An instance should not be used after this method is called. */
     public void destroy() {
         mTabStripTreeProvider.destroy();
         mTabStripTreeProvider = null;
+        mLifecycleDispatcher.unregister(this);
+        // Remove the observer to prevent any updates on a destroyed EventFilter.
+        mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
+        // Delete the EventFilter to avoid any updates on destroyed StripLayoutHelpers.
+        mEventFilter = null;
+        mTabStripEventHandler = null;
         mIncognitoHelper.destroy();
         mNormalHelper.destroy();
-        mLifecycleDispatcher.unregister(this);
         if (mTabModelSelector != null) {
             mTabModelSelector
                     .getTabGroupModelFilterProvider()
@@ -710,7 +715,6 @@ public class StripLayoutHelperManager
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
         }
-        mStripVisibilityStateSupplier.removeObserver(mStripVisibilityStateObserver);
     }
 
     /** Mark whether tab strip is hidden by a height transition. */
@@ -881,7 +885,7 @@ public class StripLayoutHelperManager
                 mWidth - mRightPadding,
                 Math.min(getHeight(), visibleViewportOffsetY));
         // Avoid handling motion events when invisible strip state persists after a size change.
-        if (getStripVisibilityState() == StripVisibilityState.VISIBLE) {
+        if (mEventFilter != null && getStripVisibilityState() == StripVisibilityState.VISIBLE) {
             mEventFilter.setEventArea(mStripFilterArea);
         }
     }

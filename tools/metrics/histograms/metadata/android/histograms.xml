@@ -5200,6 +5200,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabStrip.NullTabHoverCardView.ShowDelayed"
+    enum="Boolean" expires_after="2025-07-01">
+  <owner>renkens@google.com</owner>
+  <owner>aishwaryarj@google.com</owner>
+  <summary>
+    Emitted when mTabHoverCardView object is unexpectedly null during a
+    StripLayoutHelper.showTabHoverCardView call. The value is True if the
+    showTabHoverCardView call was delayed, and False if it was immediate.
+
+    Recorded once per call, if the mLastHoveredTab is not null and
+    mTabHoverCardView is null.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabStrip.PlaceholderStripLeftoverTabsCount"
     units="tabs" expires_after="2025-02-09">
   <owner>nemco@google.com</owner>

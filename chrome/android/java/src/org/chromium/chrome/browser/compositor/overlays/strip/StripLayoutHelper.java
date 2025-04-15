@@ -199,6 +199,10 @@ public class StripLayoutHelper
     private static final String PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME =
             "Android.TabStrip.PlaceholderStripVisibleDuration";
 
+    @VisibleForTesting
+    static final String NULL_TAB_HOVER_CARD_VIEW_SHOW_DELAYED_HISTOGRAM_NAME =
+            "Android.TabStrip.NullTabHoverCardView.ShowDelayed";
+
     // Hover card constants
     @VisibleForTesting static final int MAX_HOVER_CARD_DELAY_MS = 800;
     @VisibleForTesting static final int MIN_HOVER_CARD_DELAY_MS = 300;
@@ -724,7 +728,7 @@ public class StripLayoutHelper
         mIsFirstLayoutPass = true;
     }
 
-    /** Cleans up internal state. */
+    /** Cleans up internal state. An instance should not be used after this method is called. */
     public void destroy() {
         mStripTabEventHandler.removeCallbacksAndMessages(null);
         mLastHoveredTab = null;
@@ -2427,8 +2431,9 @@ public class StripLayoutHelper
     }
 
     private void clearLastHoveredTab() {
-        if (mLastHoveredTab == null) return;
-        assert mTabHoverCardView != null : "Hover card view should not be null.";
+        if (mLastHoveredTab == null) {
+            return;
+        }
 
         // Clear close button hover state.
         mLastHoveredTab.setCloseHovered(false);
@@ -2472,7 +2477,7 @@ public class StripLayoutHelper
         // Just in case, cancel the previous delayed hover card event.
         mStripTabEventHandler.removeMessages(MESSAGE_HOVER_CARD);
         if (shouldShowHoverCardImmediately()) {
-            showTabHoverCardView();
+            showTabHoverCardView(/* isDelayedCall= */ false);
         } else {
             mStripTabEventHandler.sendEmptyMessageDelayed(
                     MESSAGE_HOVER_CARD, getHoverCardDelay(mLastHoveredTab.getWidth()));
@@ -2522,8 +2527,15 @@ public class StripLayoutHelper
         return delay;
     }
 
-    private void showTabHoverCardView() {
+    private void showTabHoverCardView(boolean isDelayedCall) {
         if (mLastHoveredTab == null) {
+            return;
+        }
+        // TODO(crbug.com/396683827): If there are no calls with unexpectedly null
+        // mTabHoverCardView, the early null-check return and histogram should be removed.
+        if (mTabHoverCardView == null) {
+            RecordHistogram.recordBooleanHistogram(
+                    NULL_TAB_HOVER_CARD_VIEW_SHOW_DELAYED_HISTOGRAM_NAME, isDelayedCall);
             return;
         }
 
@@ -4182,7 +4194,7 @@ public class StripLayoutHelper
                     mUpdateHost.requestUpdate();
                     break;
                 case MESSAGE_HOVER_CARD:
-                    showTabHoverCardView();
+                    showTabHoverCardView(/* isDelayedCall= */ true);
                     mUpdateHost.requestUpdate();
                     break;
                 default:
