@@ -5253,7 +5253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstPartySets.Database.InitStatus"
-    enum="FirstPartySetsDatabaseInitStatus" expires_after="M139">
+    enum="FirstPartySetsDatabaseInitStatus" expires_after="M149">
   <owner>shuuran@google.com</owner>
   <owner>kaustubhag@google.com</owner>
   <summary>
@@ -5296,7 +5296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstPartySets.NavigationThrottle.ResumeDelta" units="ms"
-    expires_after="M139">
+    expires_after="M149">
   <owner>shuuran@google.com</owner>
   <owner>kaustubhag@google.com</owner>
   <summary>
@@ -5309,7 +5309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FirstPartySets.NavigationThrottle.ResumeOnTimeout"
-    enum="BooleanTimedOut" expires_after="M139">
+    enum="BooleanTimedOut" expires_after="M149">
   <owner>shuuran@google.com</owner>
   <owner>kaustubhag@google.com</owner>
   <summary>
