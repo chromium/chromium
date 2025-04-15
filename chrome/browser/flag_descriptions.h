@@ -1838,6 +1838,9 @@ extern const char kPerformanceInterventionDemoModeDescription[];
 extern const char kPermissionsAIv1Name[];
 extern const char kPermissionsAIv1Description[];
 
+extern const char kPermissionsAIv3Name[];
+extern const char kPermissionsAIv3Description[];
+
 extern const char kPermissionSiteSettingsRadioButtonName[];
 extern const char kPermissionSiteSettingsRadioButtonDescription[];
 

@@ -17586,9 +17586,27 @@
             ],
             "experiments": [
                 {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "PermissionsAIv1"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PermissionsAIv3": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
                     "name": "Enabled",
                     "enable_features": [
-                        "PermissionsAIv1"
+                        "PermissionsAIv3"
                     ]
                 }
             ]
