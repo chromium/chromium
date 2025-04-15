@@ -81,8 +81,10 @@ class ModuleSystemTestEnvironment {
 
  private:
   raw_ptr<v8::Isolate> isolate_;
-  std::unique_ptr<gin::ContextHolder> context_holder_;
   v8::HandleScope handle_scope_;
+  // The `ContextHolder` must come after the `HandleScope` so it gets
+  // deallocated first (the destructor still allocates a handle).
+  std::unique_ptr<gin::ContextHolder> context_holder_;
 
   scoped_refptr<const Extension> extension_;
   raw_ptr<ScriptContextSet> context_set_;

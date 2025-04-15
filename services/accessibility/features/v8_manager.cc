@@ -168,6 +168,7 @@ V8Environment::~V8Environment() {
 
   {
     v8::Isolate::Scope isolate_scope(isolate_holder_->isolate());
+    v8::HandleScope handle_scope(isolate_holder_->isolate());
     NotifyIsolateWillDestroy();
     isolate_holder_->isolate()->TerminateExecution();
 

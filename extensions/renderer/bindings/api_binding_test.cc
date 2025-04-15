@@ -76,8 +76,8 @@ void APIBindingTest::DisposeAllContexts() {
           OnWillDisposeContext(context);
           if (exit)
             context->Exit();
+          holder.reset();
         }
-        holder.reset();
 
         // Garbage collect everything so that we find any issues where we might
         // be double-freeing.
