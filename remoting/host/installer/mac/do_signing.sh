@@ -41,6 +41,7 @@ setup() {
   ME2ME_HOST="PrivilegedHelperTools/${HOST_BUNDLE_NAME}"
   ME2ME_EXE_DIR="${ME2ME_HOST}/Contents/MacOS/"
   REMOTING_CORE="${ME2ME_EXE_DIR}/libremoting_core.dylib"
+  REMOTE_WEBAUTHN="${ME2ME_EXE_DIR}/remote_webauthn"
   ME2ME_AGENT_PROCESS_BROKER="${ME2ME_EXE_DIR}/remoting_agent_process_broker"
   ME2ME_LAUNCHD_SERVICE="${ME2ME_EXE_DIR}/remoting_me2me_host_service"
   ME2ME_NM_HOST="${ME2ME_EXE_DIR}/${NATIVE_MESSAGING_HOST_BUNDLE_NAME}/"
@@ -155,6 +156,7 @@ sign_binaries() {
 
   local binaries=(\
     "${REMOTING_CORE}" \
+    "${REMOTE_WEBAUTHN}" \
     "${ME2ME_AGENT_PROCESS_BROKER}" \
     "${ME2ME_LAUNCHD_SERVICE}" \
     "${ME2ME_NM_HOST}" \

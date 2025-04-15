@@ -45,11 +45,13 @@ const char kBrokerPlistPath[] = LAUNCH_DAEMONS_DIR BROKER_NAME ".plist";
 const char kLogFilePath[] = LOG_DIR SERVICE_NAME ".log";
 const char kLogFileConfigPath[] = LOG_CONFIG_DIR SERVICE_NAME ".conf";
 
-const char* kNativeMessagingManifestPaths[4] = {
+const char* kNativeMessagingManifestPaths[5] = {
     "/Library/Google/Chrome/NativeMessagingHosts/"
     "com.google.chrome.remote_desktop.json",
     "/Library/Google/Chrome/NativeMessagingHosts/"
     "com.google.chrome.remote_assistance.json",
+    "/Library/Google/Chrome/NativeMessagingHosts/"
+    "com.google.chrome.remote_webauthn.json",
     "/Library/Application Support/Mozilla/NativeMessagingHosts/"
     "com.google.chrome.remote_desktop.json",
     "/Library/Application Support/Mozilla/NativeMessagingHosts/"

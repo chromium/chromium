@@ -27,8 +27,8 @@ namespace {
 
 bool g_initialized = false;
 
-mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer() {
-  auto server_name = GetChromotingHostServicesServerName();
+mojo::PendingRemote<mojom::ChromotingHostServices> ConnectToServer(
+    const mojo::NamedPlatformChannel::ServerName& server_name) {
   auto endpoint = named_mojo_ipc_server::ConnectToServer(server_name);
   if (!endpoint.is_valid()) {
     LOG(WARNING) << "Cannot connect to IPC through server name " << server_name
@@ -68,8 +68,13 @@ constexpr char
 #endif
 
 ChromotingHostServicesClient::ChromotingHostServicesClient()
-    : ChromotingHostServicesClient(base::Environment::Create(),
-                                   base::BindRepeating(&ConnectToServer)) {
+    : ChromotingHostServicesClient(GetChromotingHostServicesServerName()) {}
+
+ChromotingHostServicesClient::ChromotingHostServicesClient(
+    const mojo::NamedPlatformChannel::ServerName& server_name)
+    : ChromotingHostServicesClient(
+          base::Environment::Create(),
+          base::BindRepeating(&ConnectToServer, server_name)) {
   DCHECK(g_initialized)
       << "ChromotingHostServicesClient::Initialize() has not been called.";
 }

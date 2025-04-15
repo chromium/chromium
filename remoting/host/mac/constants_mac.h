@@ -59,7 +59,7 @@ extern const char kLogFilePath[];
 extern const char kLogFileConfigPath[];
 
 // Paths to the native messaging host manifests
-extern const char* kNativeMessagingManifestPaths[4];
+extern const char* kNativeMessagingManifestPaths[5];
 
 // The branded and unbranded names for the uninstaller.
 // This is the only file that changes names based on branding. We define both

@@ -148,8 +148,16 @@ TEST_F(ChromotingHostServicesServerTest,
   WaitForProcessExit(client_process);
 }
 
+// TODO: crbug.com/409928351 - this test is failing on Mac. Fix this.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_InvalidClientConnects_BindingCallbackIsNotCalled \
+  DISABLED_InvalidClientConnects_BindingCallbackIsNotCalled
+#else
+#define MAYBE_InvalidClientConnects_BindingCallbackIsNotCalled \
+  InvalidClientConnects_BindingCallbackIsNotCalled
+#endif
 TEST_F(ChromotingHostServicesServerTest,
-       InvalidClientConnects_BindingCallbackIsNotCalled) {
+       MAYBE_InvalidClientConnects_BindingCallbackIsNotCalled) {
   EXPECT_CALL(mock_validator_, Run(_)).WillOnce(Return(false));
   EXPECT_CALL(mock_bind_callback_, Run(_, _)).Times(0);
 

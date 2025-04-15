@@ -8,14 +8,17 @@
 #include <string_view>
 
 #include "base/environment.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "base/process/process_handle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_path.h"
-#include "base/process/process_handle.h"
 #include "remoting/host/base/process_util.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -28,8 +31,12 @@
 #include "remoting/host/win/trust_util.h"
 #endif
 
-#else  // !IS_LINUX && !IS_WIN
-#include "base/notreached.h"
+#if BUILDFLAG(IS_MAC)
+#include <Security/Security.h>
+#include <mach/kern_return.h>
+#include <unistd.h>
+
+#include "remoting/host/mac/trust_util.h"
 #endif
 
 namespace remoting {
@@ -154,7 +161,34 @@ bool IsLaunchedByTrustedProcess() {
   }
   // Caller's path is not allowlisted.
   return false;
-#else  // !IS_LINUX && !IS_WIN
+#elif BUILDFLAG(IS_MAC)
+  // TODO: crbug.com/410903981 - move away from PID-based security checks, which
+  // might be susceptible of PID reuse attacks, if Apple provides APIs to query
+  // parent process audit token without using a PPID.
+  base::ProcessId parent_pid = getppid();
+  kern_return_t kern_return;
+  task_name_t task;
+
+  kern_return = task_name_for_pid(mach_task_self(), parent_pid, &task);
+  if (kern_return != KERN_SUCCESS) {
+    LOG(ERROR) << "Failed to get task name for parent PID " << parent_pid
+               << ": " << kern_return;
+    return false;
+  }
+
+  mach_msg_type_number_t size = TASK_AUDIT_TOKEN_COUNT;
+  audit_token_t audit_token;
+  kern_return =
+      task_info(task, TASK_AUDIT_TOKEN, (task_info_t)&audit_token, &size);
+  mach_port_deallocate(mach_task_self(), task);
+  if (kern_return != KERN_SUCCESS) {
+    LOG(ERROR) << "Failed to get audit token for parent PID " << parent_pid
+               << ": " << kern_return;
+    return false;
+  }
+
+  return IsProcessTrusted(audit_token);
+#else  // Unsupported platform
   NOTIMPLEMENTED();
   return true;
 #endif

@@ -60,6 +60,22 @@ source_set("permission_checking") {
   frameworks = [ "AVFoundation.framework" ]
 }
 
+source_set("trust_util") {
+  sources = [
+    "trust_util.cc",
+    "trust_util.h",
+  ]
+  deps = [
+    "//base",
+    "//remoting/host:remoting_version",
+    "//remoting/host/mac:constants",
+  ]
+  frameworks = [
+    "Security.framework",
+    "Carbon.framework",
+  ]
+}
+
 source_set("agent_process_broker_constants") {
   sources = [ "agent_process_broker_constants.h" ]
 }
@@ -125,6 +141,7 @@ source_set("agent_process_broker") {
     "//components/named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
     "//remoting/base",
+    "//remoting/host:chromoting_host_services_server",
     "//remoting/host:ipc_constants",
     "//remoting/host:mojo_caller_security_checker",
     "//remoting/host/base",
@@ -150,6 +167,7 @@ source_set("agent_process_broker_main") {
     "//mojo/core/embedder",
     "//remoting/base",
     "//remoting/base:logging",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 
@@ -171,6 +189,12 @@ bundle_data("remoting_core_bundle_data") {
   sources = [ "$root_out_dir/libremoting_core.dylib" ]
   outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
   public_deps = [ "//remoting/host:remoting_core" ]
+}
+
+bundle_data("remote_webauthn_bundle_data") {
+  sources = [ "$root_out_dir/remote_webauthn" ]
+  outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
+  public_deps = [ "//remoting/host/webauthn:remote_webauthn" ]
 }
 
 # remoting_me2me_host-InfoPlist.strings
@@ -221,6 +245,7 @@ target("mac_app_bundle", "remoting_me2me_host") {
     ]
   }
   deps += [
+    ":remote_webauthn_bundle_data",
     ":remoting_agent_process_broker_bundle_data",
     ":remoting_core_bundle_data",
     ":remoting_host_resources",
@@ -314,6 +339,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/named_mojo_ipc_server:named_mojo_ipc_server",
     "//mojo/public/cpp/platform",
+    "//remoting/host:chromoting_host_services_client",
+    "//remoting/host:chromoting_host_services_server",
     "//remoting/host/mojom",
     "//testing/gmock",
     "//testing/gtest",

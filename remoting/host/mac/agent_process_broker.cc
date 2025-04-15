@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -28,6 +29,7 @@
 #include "remoting/host/mac/agent_process_broker_constants.h"
 #include "remoting/host/mojo_caller_security_checker.h"
 #include "remoting/host/mojom/agent_process_broker.mojom.h"
+#include "remoting/host/mojom/remoting_host.mojom.h"
 
 namespace remoting {
 
@@ -42,12 +44,14 @@ bool IsRootProcess(audit_token_t audit_token) {
 AgentProcessBroker::AgentProcess::AgentProcess(
     size_t reference_id,
     base::ProcessId pid,
-    mojo::Remote<mojom::AgentProcess> remote,
+    mojo::Remote<mojom::AgentProcess> agent_process_remote,
+    mojo::Remote<mojom::RemotingHostControl> remoting_host_control_remote,
     bool is_root,
     bool is_active)
     : reference_id(reference_id),
       pid(pid),
-      remote(std::move(remote)),
+      agent_process_remote(std::move(agent_process_remote)),
+      remoting_host_control_remote(std::move(remoting_host_control_remote)),
       is_root(is_root),
       is_active(is_active) {}
 AgentProcessBroker::AgentProcess::AgentProcess(AgentProcess&&) = default;
@@ -59,7 +63,7 @@ void AgentProcessBroker::AgentProcess::ResumeProcess() {
   if (is_active) {
     return;
   }
-  remote->ResumeProcess();
+  agent_process_remote->ResumeProcess();
   is_active = true;
   HOST_LOG << GetAgentProcessLogString("resumed");
 }
@@ -68,13 +72,13 @@ void AgentProcessBroker::AgentProcess::SuspendProcess() {
   if (!is_active) {
     return;
   }
-  remote->SuspendProcess();
+  agent_process_remote->SuspendProcess();
   is_active = false;
   HOST_LOG << GetAgentProcessLogString("suspended");
 }
 
 void AgentProcessBroker::AgentProcess::TerminateProcess() {
-  remote.ResetWithReason(
+  agent_process_remote.ResetWithReason(
       kTerminateAgentProcessBrokerReason,
       "Agent process requested to be terminated by the broker.");
   HOST_LOG << GetAgentProcessLogString("terminated");
@@ -103,7 +107,12 @@ AgentProcessBroker::AgentProcessBroker(
                     return is_valid ? interface : nullptr;
                   },
                   this))),
-      is_root_process_(std::move(is_root_process)) {}
+      is_root_process_(std::move(is_root_process)) {
+  chromoting_host_services_server_ =
+      std::make_unique<ChromotingHostServicesServer>(
+          base::BindRepeating(&AgentProcessBroker::BindChromotingHostServices,
+                              base::Unretained(this)));
+}
 
 AgentProcessBroker::~AgentProcessBroker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -112,6 +121,7 @@ AgentProcessBroker::~AgentProcessBroker() {
 void AgentProcessBroker::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   server_.StartServer();
+  chromoting_host_services_server_->StartServer();
   HOST_LOG << "Agent process broker has started.";
 }
 
@@ -125,10 +135,15 @@ void AgentProcessBroker::OnAgentProcessLaunched(
   process_remote.set_disconnect_handler(
       base::BindOnce(&AgentProcessBroker::OnAgentProcessDisconnected,
                      base::Unretained(this), next_reference_id_));
+  mojo::Remote<mojom::RemotingHostControl> remoting_host_control_remote;
+  process_remote->BindRemotingHostControl(
+      remoting_host_control_remote.BindNewPipeAndPassReceiver());
   auto result = agent_processes_.emplace(
-      next_reference_id_, AgentProcess{next_reference_id_, connection_info.pid,
-                                       std::move(process_remote), is_root,
-                                       /* is_active= */ false});
+      next_reference_id_,
+      AgentProcess{next_reference_id_, connection_info.pid,
+                   std::move(process_remote),
+                   std::move(remoting_host_control_remote), is_root,
+                   /* is_active= */ false});
   DCHECK(result.second);  // Assert success.
   HOST_LOG << result.first->second.GetAgentProcessLogString("launched");
   next_reference_id_++;
@@ -136,6 +151,25 @@ void AgentProcessBroker::OnAgentProcessLaunched(
   if (on_agent_process_launched_) {
     std::move(on_agent_process_launched_).Run();
   }
+}
+
+void AgentProcessBroker::BindChromotingHostServices(
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+    base::ProcessId peer_pid) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto active_iter = std::ranges::find_if(
+      agent_processes_,
+      [](const auto& process) { return process.second.is_active; });
+  if (active_iter == std::ranges::end(agent_processes_)) {
+    LOG(WARNING) << "Binding rejected. No active agent process is found.";
+    return;
+  }
+  AgentProcess& process = active_iter->second;
+  process.remoting_host_control_remote->BindChromotingHostServices(
+      std::move(receiver), peer_pid);
+  HOST_LOG << process.GetAgentProcessLogString(base::StringPrintf(
+      "bound ChromotingHostServices for peer PID %d", peer_pid));
 }
 
 void AgentProcessBroker::OnAgentProcessDisconnected(size_t reference_id) {

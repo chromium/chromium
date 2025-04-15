@@ -33,9 +33,12 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "remoting/host/chromoting_host_services_client.h"
 #include "remoting/host/mac/agent_process_broker_client.h"
 #include "remoting/host/mojom/agent_process_broker.mojom.h"
+#include "remoting/host/mojom/remoting_host.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -49,6 +52,8 @@ using testing::Return;
 
 static constexpr char kRemotingTestAgentProcessName[] =
     "RemotingTestAgentProcess";
+static constexpr char kRemotingTestChromotingHostServicesClientProcessName[] =
+    "RemotingTestChromotingHostServicesClientProcess";
 
 static constexpr char kServerNameSwitch[] = "server-name";
 static constexpr char kAgentStateFilePathSwitch[] = "state-file";
@@ -56,6 +61,8 @@ static constexpr char kAgentStateFilePathSwitch[] = "state-file";
 static constexpr char kAgentStateAwaiting[] = "awaiting";
 static constexpr char kAgentStateResumed[] = "resumed";
 static constexpr char kAgentStateSuspended[] = "suspended";
+static constexpr char kAgentStateChromotingHostServicesBound[] =
+    "chromotingHostServicesBound";
 
 static constexpr int kAgentExitCodeTerminatedByBroker = 1;
 static constexpr int kAgentExitCodeBrokerDisconnected = 2;
@@ -70,18 +77,25 @@ struct Process {
 // A test AgentProcess implementation that simply writes state changes to
 // `agent_state_file_path`. It will immediately write `kAgentStateAwaiting`
 // when the object is constructed.
-class TestAgentProcess : public mojom::AgentProcess {
+class TestAgentProcess : public mojom::AgentProcess,
+                         public mojom::RemotingHostControl {
  public:
   explicit TestAgentProcess(const base::FilePath& agent_state_file_path);
   ~TestAgentProcess() override;
 
   void ResumeProcess() override;
   void SuspendProcess() override;
+  void BindRemotingHostControl(
+      mojo::PendingReceiver<mojom::RemotingHostControl> receiver) override;
+  void BindChromotingHostServices(
+      mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+      int32_t peer_pid) override;
 
  private:
   void WriteAgentState(std::string_view state);
 
   base::File agent_state_file_;
+  mojo::Receiver<mojom::RemotingHostControl> remoting_host_control_{this};
 };
 
 TestAgentProcess::TestAgentProcess(
@@ -100,6 +114,17 @@ void TestAgentProcess::ResumeProcess() {
 
 void TestAgentProcess::SuspendProcess() {
   WriteAgentState(kAgentStateSuspended);
+}
+
+void TestAgentProcess::BindRemotingHostControl(
+    mojo::PendingReceiver<mojom::RemotingHostControl> receiver) {
+  remoting_host_control_.Bind(std::move(receiver));
+}
+
+void TestAgentProcess::BindChromotingHostServices(
+    mojo::PendingReceiver<mojom::ChromotingHostServices> receiver,
+    int32_t peer_pid) {
+  WriteAgentState(kAgentStateChromotingHostServicesBound);
 }
 
 void TestAgentProcess::WriteAgentState(std::string_view state) {
@@ -125,6 +150,7 @@ class AgentProcessBrokerTest : public testing::Test {
   base::MockCallback<AgentProcessBroker::IsRootProcessGetter>
       is_root_process_getter_;
   std::unique_ptr<AgentProcessBroker> agent_process_broker_;
+  mojo::NamedPlatformChannel::ServerName chromoting_host_services_server_name_;
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -138,11 +164,23 @@ AgentProcessBrokerTest::AgentProcessBrokerTest() {
   server_name_ = mojo::NamedPlatformChannel::ServerNameFromUTF8(
       base::StringPrintf("remoting_agent_process_broker_test_server.%" PRIu64,
                          base::RandUint64()));
+  chromoting_host_services_server_name_ =
+      mojo::NamedPlatformChannel::ServerNameFromUTF8(base::StringPrintf(
+          "chromoting_host_services_test_server.%" PRIu64, base::RandUint64()));
   agent_process_broker_ = base::WrapUnique(new AgentProcessBroker(
       server_name_,
       base::BindRepeating(
           [](const named_mojo_ipc_server::ConnectionInfo&) { return true; }),
       is_root_process_getter_.Get()));
+  agent_process_broker_->chromoting_host_services_server_ =
+      std::make_unique<ChromotingHostServicesServer>(
+          chromoting_host_services_server_name_,
+          /* validator= */
+          base::BindRepeating([](const named_mojo_ipc_server::ConnectionInfo&) {
+            return true;
+          }),
+          base::BindRepeating(&AgentProcessBroker::BindChromotingHostServices,
+                              base::Unretained(agent_process_broker_.get())));
   agent_process_broker_->Start();
 }
 
@@ -178,7 +216,8 @@ std::optional<std::string> AgentProcessBrokerTest::GetTestAgentState(
                   base::File::FLAG_OPEN | base::File::FLAG_READ);
   std::vector<char> buffer(
       std::max({sizeof(kAgentStateAwaiting), sizeof(kAgentStateResumed),
-                sizeof(kAgentStateSuspended)}));
+                sizeof(kAgentStateSuspended),
+                sizeof(kAgentStateChromotingHostServicesBound)}));
   std::optional<size_t> num_bytes_read =
       file.Read(0, base::as_writable_byte_span(buffer));
   if (!num_bytes_read.has_value()) {
@@ -300,6 +339,23 @@ TEST_F(AgentProcessBrokerTest,
   ASSERT_EQ(exit_code, kAgentExitCodeBrokerDisconnected);
 }
 
+TEST_F(AgentProcessBrokerTest, BindChromotingHostServices) {
+  auto user_process = LaunchTestAgentProcess(/* is_root= */ false);
+  ASSERT_TRUE(WaitForTestAgentState(user_process, kAgentStateResumed));
+
+  base::CommandLine services_client_cmd_line =
+      base::GetMultiProcessTestChildBaseCommandLine();
+  services_client_cmd_line.AppendSwitchNative(
+      kServerNameSwitch, chromoting_host_services_server_name_);
+  base::Process process = base::SpawnMultiProcessTestChild(
+      kRemotingTestChromotingHostServicesClientProcessName,
+      services_client_cmd_line,
+      /* options= */ {});
+
+  ASSERT_TRUE(WaitForTestAgentState(user_process,
+                                    kAgentStateChromotingHostServicesBound));
+}
+
 MULTIPROCESS_TEST_MAIN(RemotingTestAgentProcess) {
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::IO};
@@ -324,6 +380,19 @@ MULTIPROCESS_TEST_MAIN(RemotingTestAgentProcess) {
   broker_client.OnAgentProcessLaunched(&test_process);
   run_loop.Run();
   return exit_code;
+}
+
+MULTIPROCESS_TEST_MAIN(RemotingTestChromotingHostServicesClientProcess) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::MainThreadType::IO};
+  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  mojo::NamedPlatformChannel::ServerName server_name =
+      cmd_line->GetSwitchValueNative(kServerNameSwitch);
+  ChromotingHostServicesClient::Initialize();
+  ChromotingHostServicesClient client{server_name};
+  client.GetSessionServices();
+  base::RunLoop().Run();
+  return 0;
 }
 
 }  // namespace remoting

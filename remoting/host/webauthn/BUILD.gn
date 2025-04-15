@@ -35,6 +35,10 @@ source_set("webauthn") {
   if (is_win) {
     deps += [ "//remoting/host/win:trust_util" ]
   }
+
+  if (is_mac) {
+    deps += [ "//remoting/host/mac:trust_util" ]
+  }
 }
 
 source_set("remote_webauthn_main_headers") {
@@ -86,7 +90,7 @@ source_set("unit_tests") {
   ]
 }
 
-if (is_win || is_linux) {
+if (is_win || is_linux || is_mac) {
   executable("remote_webauthn") {
     sources = [ "remote_webauthn_entry_point.cc" ]
 

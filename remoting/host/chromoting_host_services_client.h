@@ -12,6 +12,7 @@
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "remoting/host/chromoting_host_services_provider.h"
 #include "remoting/host/mojom/chromoting_host_services.mojom.h"
 
@@ -29,6 +30,8 @@ class ChromotingHostServicesClient final
     : public ChromotingHostServicesProvider {
  public:
   ChromotingHostServicesClient();
+  explicit ChromotingHostServicesClient(
+      const mojo::NamedPlatformChannel::ServerName& server_name);
   ChromotingHostServicesClient(const ChromotingHostServicesClient&) = delete;
   ChromotingHostServicesClient& operator=(const ChromotingHostServicesClient&) =
       delete;
