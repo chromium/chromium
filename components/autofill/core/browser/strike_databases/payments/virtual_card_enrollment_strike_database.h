@@ -37,6 +37,8 @@ class VirtualCardEnrollmentStrikeDatabase
 
   std::optional<base::TimeDelta> GetRequiredDelaySinceLastStrike()
       const override;
+
+  std::optional<base::TimeDelta> GetExpiryTimeDelta() const override;
 };
 
 }  // namespace autofill
