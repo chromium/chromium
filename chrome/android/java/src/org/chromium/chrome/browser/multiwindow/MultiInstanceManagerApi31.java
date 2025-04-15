@@ -79,7 +79,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-class MultiInstanceManagerApi31 extends MultiInstanceManager implements ActivityStateListener {
+class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
     private static final String TAG = "MIMApi31";
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
 
@@ -1041,12 +1041,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    /**
-     * Open a new instance of the ChromeTabbedActivity window and move the specified tab from
-     * existing instance to the new one.
-     *
-     * @param tab Tab that is to be moved to a new Chrome instance.
-     */
     @Override
     public void moveTabToNewWindow(Tab tab) {
         // Check if the new Chrome instance can be opened.
@@ -1065,13 +1059,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    /**
-     * Move the specified tab to the current instance of the ChromeTabbedActivity window.
-     *
-     * @param activity Activity of the Chrome Window in which the tab is to be moved.
-     * @param tab Tab that is to be moved to the current instance.
-     * @param atIndex Tab position index in the destination window instance.
-     */
     @Override
     public void moveTabToWindow(Activity activity, Tab tab, int atIndex) {
         // Get the current instance and move tab there.
@@ -1083,14 +1070,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         }
     }
 
-    /**
-     * Move an entire tab group to the current instance of the ChromeTabbedActivity window.
-     *
-     * @param activity Activity of the Chrome Window in which the tab group is to be moved.
-     * @param tabGroupMetadata The object containing the metadata of the tab group.
-     * @param atIndex Tab position index in the destination window instance.
-     * @param onFinishedRunnable Runnable to execute after the group reparenting is finished.
-     */
     @Override
     public void moveTabGroupToWindow(
             Activity activity,

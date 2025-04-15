@@ -39,9 +39,9 @@ import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 
-/** Unit tests for {@link MultiInstanceManager}. */
+/** Unit tests for {@link MultiInstanceManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class MultiInstanceManagerUnitTest {
+public class MultiInstanceManagerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -83,8 +83,8 @@ public class MultiInstanceManagerUnitTest {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {});
         when(mMultiWindowModeStateDispatcher.isMultiInstanceRunning()).thenReturn(true);
-        MultiInstanceManager multiInstanceManager =
-                new MultiInstanceManager(
+        MultiInstanceManagerImpl multiInstanceManager =
+                new MultiInstanceManagerImpl(
                         mActivity,
                         mTabModelOrchestratorSupplier,
                         mMultiWindowModeStateDispatcher,
