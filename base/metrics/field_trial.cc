@@ -43,7 +43,7 @@
 #include "base/process/launch.h"
 #endif
 
-#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK) && !BUILDFLAG(IS_IOS_TVOS)
 #include "base/apple/mach_port_rendezvous.h"
 #endif
 
@@ -96,7 +96,8 @@ const char kAllocatorName[] = "FieldTrialAllocator";
 const size_t kFieldTrialAllocationSize = 256 << 10;  // 256 KiB
 
 #if BUILDFLAG(IS_APPLE) && BUILDFLAG(USE_BLINK)
-constexpr MachPortsForRendezvous::key_type kFieldTrialRendezvousKey = 'fldt';
+using shared_memory::SharedMemoryMachPortRendezvousKey;
+constexpr SharedMemoryMachPortRendezvousKey kFieldTrialRendezvousKey = 'fldt';
 #endif
 
 // Writes out string1 and then string2 to pickle.

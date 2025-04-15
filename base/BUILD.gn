@@ -2197,8 +2197,6 @@ component("base") {
 
     if (use_blink) {
       sources += [
-        "apple/mach_port_rendezvous.cc",
-        "apple/mach_port_rendezvous.h",
         "files/file_path_watcher_kqueue.cc",
         "files/file_path_watcher_kqueue.h",
         "files/file_path_watcher_mac.cc",
@@ -2216,20 +2214,22 @@ component("base") {
         "synchronization/waitable_event_watcher_posix.cc",
       ]
 
-      if (target_platform == "tvos") {
+      if (target_platform == "iphoneos") {
+        sources += [
+          "apple/mach_port_rendezvous.cc",
+          "apple/mach_port_rendezvous.h",
+          "apple/mach_port_rendezvous_ios.cc",
+          "apple/mach_port_rendezvous_ios.h",
+          "power_monitor/power_monitor_device_source_ios.mm",
+          "process/process_mac.cc",
+        ]
+      } else {
         sources += [
           "power_monitor/power_monitor_device_source_stub.cc",
 
           # tvOS apps must be single-process. Build a Process version that does
           # the bare minimum and does not use Mach ports.
           "process/process_tvos.cc",
-        ]
-      } else {
-        sources += [
-          "apple/mach_port_rendezvous_ios.cc",
-          "apple/mach_port_rendezvous_ios.h",
-          "power_monitor/power_monitor_device_source_ios.mm",
-          "process/process_mac.cc",
         ]
       }
 

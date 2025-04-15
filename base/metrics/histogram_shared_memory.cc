@@ -9,7 +9,6 @@
 #include "base/base_switches.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/memory/shared_memory_switch.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -24,7 +23,7 @@
 
 // On Apple platforms, the shared memory handle is shared using a Mach port
 // rendezvous key.
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
 #include "base/apple/mach_port_rendezvous.h"
 #endif
 
@@ -72,8 +71,8 @@ BASE_FEATURE(kPassHistogramSharedMemoryOnLaunch,
              FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_APPLE)
-const MachPortsForRendezvous::key_type HistogramSharedMemory::kRendezvousKey =
-    'hsmr';
+const shared_memory::SharedMemoryMachPortRendezvousKey
+    HistogramSharedMemory::kRendezvousKey = 'hsmr';
 #endif
 
 HistogramSharedMemory::SharedMemory::SharedMemory(

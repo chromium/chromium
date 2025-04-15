@@ -49,6 +49,18 @@ enum class SharedMemoryError {
   kUnexpectedSize,
 };
 
+#if BUILDFLAG(IS_APPLE)
+#if !BUILDFLAG(IS_IOS_TVOS)
+using SharedMemoryMachPortRendezvousKey = MachPortsForRendezvous::key_type;
+#else
+// Mach port rendezvous is unused on tvOS as it cannot launch new processes.
+// This type is provided so the function interface remains compatible with
+// other Apple platforms. Functions with this type in their interface are
+// not called on tvOS.
+using SharedMemoryMachPortRendezvousKey = uint32_t;
+#endif
+#endif
+
 // Updates `command_line` and `launch_options` to use `switch_name` to pass
 // `read_only_memory_region` to child process that is about to be launched.
 // This should be called in the parent process as a part of setting up the
@@ -61,7 +73,7 @@ BASE_EXPORT void AddToLaunchParameters(
     std::string_view switch_name,
     const ReadOnlySharedMemoryRegion& read_only_memory_region,
 #if BUILDFLAG(IS_APPLE)
-    MachPortsForRendezvous::key_type rendezvous_key,
+    SharedMemoryMachPortRendezvousKey rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
     GlobalDescriptors::Key descriptor_key,
     ScopedFD& out_descriptor_to_share,
@@ -81,7 +93,7 @@ BASE_EXPORT void AddToLaunchParameters(
     std::string_view switch_name,
     const UnsafeSharedMemoryRegion& unsafe_memory_region,
 #if BUILDFLAG(IS_APPLE)
-    MachPortsForRendezvous::key_type rendezvous_key,
+    SharedMemoryMachPortRendezvousKey rendezvous_key,
 #elif BUILDFLAG(IS_POSIX)
     GlobalDescriptors::Key descriptor_key,
     ScopedFD& out_descriptor_to_share,

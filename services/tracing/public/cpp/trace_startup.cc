@@ -25,7 +25,7 @@
 #include "components/tracing/common/etw_export_win.h"
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
 #include "base/apple/mach_port_rendezvous.h"
 #endif
 
@@ -33,10 +33,9 @@ namespace tracing {
 namespace {
 
 #if BUILDFLAG(IS_APPLE)
-constexpr base::MachPortsForRendezvous::key_type kTraceConfigRendezvousKey =
-    'trcc';
-constexpr base::MachPortsForRendezvous::key_type kTraceBufferRendezvousKey =
-    'trbc';
+using base::shared_memory::SharedMemoryMachPortRendezvousKey;
+constexpr SharedMemoryMachPortRendezvousKey kTraceConfigRendezvousKey = 'trcc';
+constexpr SharedMemoryMachPortRendezvousKey kTraceBufferRendezvousKey = 'trbc';
 #endif
 
 constexpr uint32_t kStartupTracingTimeoutMs = 30 * 1000;  // 30 sec

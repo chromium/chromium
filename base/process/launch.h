@@ -72,7 +72,7 @@ static_assert(__builtin_constant_p(PTHREAD_STACK_MIN_CONST),
 BASE_EXPORT void CheckPThreadStackMinIsSafe();
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
 class MachRendezvousPort;
 using MachPortsForRendezvous = std::map<uint32_t, MachRendezvousPort>;
 #endif
@@ -261,6 +261,7 @@ struct BASE_EXPORT LaunchOptions {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK))
+#if !BUILDFLAG(IS_IOS_TVOS)
   // Mach ports that will be accessible to the child process. These are not
   // directly inherited across process creation, but they are stored by a Mach
   // IPC server that a child process can communicate with to retrieve them.
@@ -270,6 +271,7 @@ struct BASE_EXPORT LaunchOptions {
   //
   // See base/apple/mach_port_rendezvous.h for details.
   MachPortsForRendezvous mach_ports_for_rendezvous;
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 
   // Apply a process scheduler policy to enable mitigations against CPU side-
   // channel attacks.
