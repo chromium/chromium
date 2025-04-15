@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_coordinator.h"
+#import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_coordinator.h"
 
 #import "base/feature_list.h"
 #import "components/favicon/core/large_icon_service.h"
@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/history/model/top_sites_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_image_fetcher.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
@@ -28,7 +29,6 @@
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/content_providing.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/debugger/omnibox_debugger_view_controller.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_presenter.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_controller.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_view_ios.h"

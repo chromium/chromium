@@ -63,6 +63,8 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/main/ui_bundled:default_browser_scene_agent",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/ntp/model:util",
+    "//ios/chrome/browser/omnibox/coordinator",
+    "//ios/chrome/browser/omnibox/coordinator/popup",
     "//ios/chrome/browser/omnibox/model/omnibox_position",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_popup_shared",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_MEDIATOR_H_
-#define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_MEDIATOR_H_
+#ifndef IOS_CHROME_BROWSER_OMNIBOX_COORDINATOR_POPUP_OMNIBOX_POPUP_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_OMNIBOX_COORDINATOR_POPUP_OMNIBOX_POPUP_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
 
@@ -12,9 +12,9 @@
 #import "components/history/core/browser/top_sites.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller_delegate.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/carousel/carousel_item_menu_provider.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/image_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mutator.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/favicon_retriever.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/image_retriever.h"
 #import "ui/base/window_open_disposition.h"
 
 @protocol ApplicationCommands;
@@ -102,4 +102,4 @@ class Tracker;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_POPUP_OMNIBOX_POPUP_MEDIATOR_H_
+#endif  // IOS_CHROME_BROWSER_OMNIBOX_COORDINATOR_POPUP_OMNIBOX_POPUP_MEDIATOR_H_

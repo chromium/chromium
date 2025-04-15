@@ -105,10 +105,6 @@ source_set("omnibox_internal") {
     "omnibox_consumer.h",
     "omnibox_container_view.h",
     "omnibox_container_view.mm",
-    "omnibox_coordinator.h",
-    "omnibox_coordinator.mm",
-    "omnibox_mediator.h",
-    "omnibox_mediator.mm",
     "omnibox_mutator.h",
     "omnibox_text_field_ios.mm",
     "omnibox_text_field_paste_delegate.h",
@@ -228,6 +224,7 @@ source_set("test_support") {
     ":ui_bundled",
     "//base",
     "//components/omnibox/browser:location_bar",
+    "//ios/chrome/browser/omnibox/coordinator",
     "//ios/web/public",
     "//url",
   ]

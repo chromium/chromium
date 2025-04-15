@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_COORDINATOR_TESTING_H_
 #define IOS_CHROME_BROWSER_OMNIBOX_UI_BUNDLED_OMNIBOX_COORDINATOR_TESTING_H_
 
-#import "ios/chrome/browser/omnibox/ui_bundled/omnibox_coordinator.h"
+#import "ios/chrome/browser/omnibox/coordinator/omnibox_coordinator.h"
 
 class OmniboxController;
 

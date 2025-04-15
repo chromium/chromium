@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator.h"
+#import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_mediator.h"
 
 #import <memory>
 #import <vector>
@@ -26,6 +26,7 @@
 #import "components/search_engines/search_engines_test_environment.h"
 #import "components/search_engines/template_url_service.h"
 #import "components/search_engines/template_url_service_client.h"
+#import "ios/chrome/browser/omnibox/coordinator/popup/omnibox_popup_mediator+Testing.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_result_wrapper.h"
 #import "ios/chrome/browser/omnibox/model/autocomplete_suggestion.h"
@@ -34,10 +35,9 @@
 #import "ios/chrome/browser/omnibox/model/omnibox_pedal.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_pedal_swift.h"
 #import "ios/chrome/browser/omnibox/model/suggest_action.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/favicon_retriever.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/image_retriever.h"
 #import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_consumer.h"
-#import "ios/chrome/browser/omnibox/ui_bundled/popup/omnibox_popup_mediator+Testing.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/favicon_retriever.h"
+#import "ios/chrome/browser/omnibox/ui_bundled/popup/row/image_retriever.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"

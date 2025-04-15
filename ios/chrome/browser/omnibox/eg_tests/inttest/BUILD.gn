@@ -29,6 +29,7 @@ source_set("inttest") {
     "//ios/chrome/browser/bookmarks/model:model_utils",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/https_upgrades/model",
+    "//ios/chrome/browser/omnibox/coordinator",
     "//ios/chrome/browser/omnibox/public:features",
     "//ios/chrome/browser/omnibox/ui_bundled",
     "//ios/chrome/browser/omnibox/ui_bundled:omnibox_internal",
