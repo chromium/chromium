@@ -1091,6 +1091,10 @@ public class FeedSurfaceCoordinator
         }
     }
 
+    public boolean isHeaderVisible() {
+        return mHeaderView.getVisibility() == View.VISIBLE;
+    }
+
     public FeedSurfaceMediator getMediatorForTesting() {
         return mMediator;
     }

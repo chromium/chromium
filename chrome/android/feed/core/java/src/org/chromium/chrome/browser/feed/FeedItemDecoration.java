@@ -21,6 +21,8 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
 
     private final FeedSurfaceCoordinator mCoordinator;
     private final Drawable mTopRoundedBackground;
+    private final Drawable mTopLeftRoundedBackground;
+    private final Drawable mTopRightRoundedBackground;
     private final Drawable mBottomRoundedBackground;
     private final Drawable mBottomLeftRoundedBackground;
     private final Drawable mBottomRightRoundedBackground;
@@ -42,6 +44,12 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
         mBottomRoundedBackground =
                 drawableProvider.getDrawable(R.drawable.home_surface_ui_background_bottom_rounded);
         if (mCoordinator.useStaggeredLayout()) {
+            mTopLeftRoundedBackground =
+                    drawableProvider.getDrawable(
+                            R.drawable.home_surface_ui_background_topleft_rounded);
+            mTopRightRoundedBackground =
+                    drawableProvider.getDrawable(
+                            R.drawable.home_surface_ui_background_topright_rounded);
             mBottomLeftRoundedBackground =
                     drawableProvider.getDrawable(
                             R.drawable.home_surface_ui_background_bottomleft_rounded);
@@ -49,6 +57,8 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
                     drawableProvider.getDrawable(
                             R.drawable.home_surface_ui_background_bottomright_rounded);
         } else {
+            mTopLeftRoundedBackground = null;
+            mTopRightRoundedBackground = null;
             mBottomLeftRoundedBackground = null;
             mBottomRightRoundedBackground = null;
         }
@@ -212,15 +222,23 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
             }
 
             // Draw the background for the extended bounds.
-            Drawable background;
-            if (multiColumn
-                    && reachLastViewInFeedContainment
-                    && bounds.bottom == maxBottom + mAdditionalBottomCardPadding) {
-                background =
-                        (columnIndex == 0)
-                                ? mBottomLeftRoundedBackground
-                                : mBottomRightRoundedBackground;
-            } else {
+            Drawable background = null;
+            if (multiColumn) {
+                if (bounds.bottom == maxBottom + mAdditionalBottomCardPadding) {
+                    background =
+                            (columnIndex == 0)
+                                    ? mBottomLeftRoundedBackground
+                                    : mBottomRightRoundedBackground;
+                } else if (!mCoordinator.isHeaderVisible()) {
+                    int headerPosition = mCoordinator.getHeaderPosition();
+                    if (position == headerPosition) {
+                        background = mTopLeftRoundedBackground;
+                    } else if (position == headerPosition + 1) {
+                        background = mTopRightRoundedBackground;
+                    }
+                }
+            }
+            if (background == null) {
                 background = getBackgroundDrawable(position);
             }
             background.setBounds(bounds);
