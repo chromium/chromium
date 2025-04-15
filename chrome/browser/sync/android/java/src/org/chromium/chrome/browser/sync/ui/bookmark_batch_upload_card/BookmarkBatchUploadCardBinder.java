@@ -9,10 +9,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.sync.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class BookmarkBatchUploadCardBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view accordingly.

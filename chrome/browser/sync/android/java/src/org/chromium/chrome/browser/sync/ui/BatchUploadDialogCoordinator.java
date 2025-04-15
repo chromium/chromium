@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +16,8 @@ import androidx.annotation.PluralsRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.sync.R;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary;
 import org.chromium.components.sync.DataType;
@@ -35,6 +39,7 @@ import java.util.Set;
  * types to upload. Data type switches will be displayed only if the user has local data for that
  * particular type.
  */
+@NullMarked
 public final class BatchUploadDialogCoordinator {
     public interface Listener {
         /** Called when the user clicks the button. */
@@ -44,9 +49,9 @@ public final class BatchUploadDialogCoordinator {
     private final ModalDialogManager mDialogManager;
     private final PropertyModel mModel;
     private final Context mContext;
-    private final MaterialSwitchWithTitleAndSummary mBookmarkSwitch;
-    private final MaterialSwitchWithTitleAndSummary mReadingListSwitch;
-    private final MaterialSwitchWithTitleAndSummary mPasswordsSwitch;
+    private final @Nullable MaterialSwitchWithTitleAndSummary mBookmarkSwitch;
+    private final @Nullable MaterialSwitchWithTitleAndSummary mReadingListSwitch;
+    private final @Nullable MaterialSwitchWithTitleAndSummary mPasswordsSwitch;
 
     @MainThread
     public static void show(
@@ -136,7 +141,7 @@ public final class BatchUploadDialogCoordinator {
         }
     }
 
-    private MaterialSwitchWithTitleAndSummary updateDataTypeSwitch(
+    private @Nullable MaterialSwitchWithTitleAndSummary updateDataTypeSwitch(
             Context context,
             View view,
             int dataType,
@@ -144,10 +149,7 @@ public final class BatchUploadDialogCoordinator {
             @PluralsRes int switchTextId,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap) {
         LocalDataDescription typeLocalDataDescription = localDataDescriptionsMap.get(dataType);
-        boolean shouldShowSwitch =
-                typeLocalDataDescription != null && typeLocalDataDescription.itemCount() > 0;
-
-        if (shouldShowSwitch) {
+        if (typeLocalDataDescription != null && typeLocalDataDescription.itemCount() > 0) {
             MaterialSwitchWithTitleAndSummary typeSwitch =
                     (MaterialSwitchWithTitleAndSummary) view.findViewById(switchViewId);
             typeSwitch.setOnCheckedChangeListener(
@@ -199,7 +201,7 @@ public final class BatchUploadDialogCoordinator {
             Set<Integer> types, HashMap<Integer, LocalDataDescription> localDataDescriptionsMap) {
         int itemsCount = 0;
         for (int type : types) {
-            itemsCount += localDataDescriptionsMap.get(type).itemCount();
+            itemsCount += assumeNonNull(localDataDescriptionsMap.get(type)).itemCount();
         }
         return itemsCount;
     }
