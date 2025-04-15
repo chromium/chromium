@@ -37,8 +37,8 @@ class GroupIndicatorLayer : public Layer {
                      int bubble_tint,
                      bool incognito,
                      bool foreground,
+                     bool collapsed,
                      bool show_bubble,
-                     bool show_reorder_background,
                      float x,
                      float y,
                      float width,
@@ -61,8 +61,8 @@ class GroupIndicatorLayer : public Layer {
  private:
   static inline int reorder_background_top_margin_;
   static inline int reorder_background_bottom_margin_;
-  static inline int reorder_background_padding_start_;
-  static inline int reorder_background_padding_end_;
+  static inline int reorder_background_padding_short_;
+  static inline int reorder_background_padding_long_;
   static inline int reorder_background_corner_radius_;
 
   raw_ptr<LayerTitleCache> layer_title_cache_;

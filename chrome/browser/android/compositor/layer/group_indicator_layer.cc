@@ -20,17 +20,17 @@ scoped_refptr<GroupIndicatorLayer> GroupIndicatorLayer::Create(
 // static
 void GroupIndicatorLayer::SetConstants(int reorder_background_top_margin,
                                        int reorder_background_bottom_margin,
-                                       int reorder_background_padding_start,
-                                       int reorder_background_padding_end,
+                                       int reorder_background_padding_short,
+                                       int reorder_background_padding_long,
                                        int reorder_background_corner_radius) {
   GroupIndicatorLayer::reorder_background_top_margin_ =
       reorder_background_top_margin;
   GroupIndicatorLayer::reorder_background_bottom_margin_ =
       reorder_background_bottom_margin;
-  GroupIndicatorLayer::reorder_background_padding_start_ =
-      reorder_background_padding_start;
-  GroupIndicatorLayer::reorder_background_padding_end_ =
-      reorder_background_padding_end;
+  GroupIndicatorLayer::reorder_background_padding_short_ =
+      reorder_background_padding_short;
+  GroupIndicatorLayer::reorder_background_padding_long_ =
+      reorder_background_padding_long;
   GroupIndicatorLayer::reorder_background_corner_radius_ =
       reorder_background_corner_radius;
 }
@@ -42,8 +42,8 @@ void GroupIndicatorLayer::SetProperties(
     int bubble_tint,
     bool incognito,
     bool foreground,
+    bool collapsed,
     bool show_bubble,
-    bool show_reorder_background,
     float x,
     float y,
     float width,
@@ -141,25 +141,30 @@ void GroupIndicatorLayer::SetProperties(
   bottom_outline_->SetBackgroundColor(SkColor4f::FromColor(tint));
 
   // Set reorder background if needed.
-  if (show_reorder_background) {
+  if (foreground) {
     reorder_background_->SetIsDrawable(true);
     reorder_background_->SetBackgroundColor(
         SkColor4f::FromColor(reorder_background_tint));
 
     float reorder_background_x = x;
     float reorder_background_y = reorder_background_top_margin_;
+    float reorder_background_width = collapsed ? width : bottom_indicator_width;
+    float reorder_background_padding_start = reorder_background_padding_short_;
+    float reorder_background_padding_end =
+        collapsed ? reorder_background_padding_short_
+                  : reorder_background_padding_long_;
     if (is_rtl) {
       reorder_background_x -=
-          (bottom_indicator_width + reorder_background_padding_end_ - width);
+          (reorder_background_width + reorder_background_padding_end - width);
     } else {
-      reorder_background_x -= reorder_background_padding_start_;
+      reorder_background_x -= reorder_background_padding_start;
     }
     reorder_background_->SetPosition(
         gfx::PointF(reorder_background_x, reorder_background_y));
 
-    float reorder_background_width = reorder_background_padding_start_ +
-                                     bottom_indicator_width +
-                                     reorder_background_padding_end_;
+    reorder_background_width = reorder_background_padding_start +
+                               reorder_background_width +
+                               reorder_background_padding_end;
     float reorder_background_height = tab_strip_height -
                                       reorder_background_top_margin_ -
                                       reorder_background_bottom_margin_;

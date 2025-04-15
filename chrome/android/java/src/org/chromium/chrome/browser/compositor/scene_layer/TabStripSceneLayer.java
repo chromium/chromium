@@ -296,7 +296,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             TabStripSceneLayer.this,
                             gt.isIncognito(),
                             gt.isForegrounded(),
-                            gt.shouldShowReorderBackground(),
+                            gt.isCollapsed(),
                             gt.getNotificationBubbleShown(),
                             gt.getTabGroupId(),
                             gt.getTint(),
@@ -331,8 +331,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 long nativeTabStripSceneLayer,
                 int reorderBackgroundTopMargin,
                 int reorderBackgroundBottomMargin,
-                int reorderBackgroundPaddingStart,
-                int reorderBackgroundPaddingEnd,
+                int reorderBackgroundPaddingShort,
+                int reorderBackgroundPaddingLong,
                 int reorderBackgroundCornerRadius);
 
         void beginBuildingFrame(
@@ -444,7 +444,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 TabStripSceneLayer caller,
                 boolean incognito,
                 boolean foreground,
-                boolean showReorderBackground,
+                boolean collapsed,
                 boolean showBubble,
                 Token groupToken,
                 int tint,

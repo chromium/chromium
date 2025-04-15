@@ -94,12 +94,12 @@ TabStripSceneLayer::~TabStripSceneLayer() = default;
 void TabStripSceneLayer::SetConstants(JNIEnv* env,
                                       jint reorder_background_top_margin,
                                       jint reorder_background_bottom_margin,
-                                      jint reorder_background_padding_start,
-                                      jint reorder_background_padding_end,
+                                      jint reorder_background_padding_short,
+                                      jint reorder_background_padding_long,
                                       jint reorder_background_corner_radius) {
   GroupIndicatorLayer::SetConstants(
       reorder_background_top_margin, reorder_background_bottom_margin,
-      reorder_background_padding_start, reorder_background_padding_end,
+      reorder_background_padding_short, reorder_background_padding_long,
       reorder_background_corner_radius);
 }
 
@@ -467,7 +467,7 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
     const base::android::JavaParamRef<jobject>& jobj,
     jboolean incognito,
     jboolean foreground,
-    jboolean show_reorder_background,
+    jboolean collapsed,
     jboolean show_bubble,
     const base::android::JavaParamRef<jobject>& jgroup_token,
     jint tint,
@@ -504,12 +504,12 @@ void TabStripSceneLayer::PutGroupIndicatorLayer(
   const tab_groups::TabGroupId& group_token =
       tab_groups::TabGroupId::FromRawToken(
           base::android::TokenAndroid::FromJavaToken(env, jgroup_token));
-  layer->SetProperties(
-      group_token, tint, reorder_background_tint, bubble_tint, incognito,
-      foreground, show_bubble, show_reorder_background, x, y, width, height,
-      title_start_padding, title_end_padding, corner_radius,
-      bottom_indicator_width, bottom_indicator_height, bubble_padding,
-      bubble_size, tab_strip_layer_->bounds().height());
+  layer->SetProperties(group_token, tint, reorder_background_tint, bubble_tint,
+                       incognito, foreground, collapsed, show_bubble, x, y,
+                       width, height, title_start_padding, title_end_padding,
+                       corner_radius, bottom_indicator_width,
+                       bottom_indicator_height, bubble_padding, bubble_size,
+                       tab_strip_layer_->bounds().height());
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextTabLayer(

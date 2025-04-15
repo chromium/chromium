@@ -316,14 +316,6 @@ public class StripLayoutGroupTitle extends StripLayoutView {
         return BOTTOM_INDICATOR_HEIGHT_DP;
     }
 
-    /**
-     * Returns {@code true} if the reorder background should be visible. This is the case when the
-     * group indicator is foregrounded for reorder and is not collapsed.
-     */
-    public boolean shouldShowReorderBackground() {
-        return isForegrounded() && !isCollapsed();
-    }
-
     /** Returns the {@link ColorInt} for the reorder background. */
     public @ColorInt int getReorderBackgroundTint() {
         return mReorderBackgroundTint;
