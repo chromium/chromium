@@ -22,6 +22,7 @@
 class GURL;
 class OptimizationGuideKeyedService;
 class PrefService;
+class TemplateURLService;
 
 namespace content {
 class WebContents;
@@ -46,7 +47,8 @@ class ContextualCueingService
           page_content_extraction_service,
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
       predictors::LoadingPredictor* loading_predictor,
-      PrefService* pref_service);
+      PrefService* pref_service,
+      TemplateURLService* template_url_service);
   ~ContextualCueingService() override;
 
   // Reports a page load happened to `url`, and is used to keep track of quiet
@@ -105,6 +107,10 @@ class ContextualCueingService
   // Returns true if nudge should not be shown due to the backoff rule.
   bool IsNudgeBlockedByBackoffRule() const;
 
+  // Returns true if the given url is of a page type eligible for contextual
+  // suggestions.
+  bool IsPageTypeEligibleForContextualSuggestions(GURL url) const;
+
   // Tracker to limit the number of nudges shown over a certain duration.
   NudgeCapTracker recent_nudge_tracker_;
 
@@ -132,6 +138,8 @@ class ContextualCueingService
   raw_ptr<predictors::LoadingPredictor> loading_predictor_ = nullptr;
 
   raw_ptr<PrefService> pref_service_ = nullptr;
+
+  raw_ptr<TemplateURLService> template_url_service_ = nullptr;
 
   // Stores model execution url to save look up time.
   GURL mes_url_;
