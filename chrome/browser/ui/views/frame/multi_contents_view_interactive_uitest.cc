@@ -199,5 +199,9 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
       // recently focused half of the split it should become the active tab, but
       // both tabs will be visible.
       SelectTab(kTabStripElementId, 1, InputType::kMouse, 0),
+      CheckResult([this]() { return tab_strip_model()->active_index(); }, 0),
+      // Select another tab in the split view and ensure the active index
+      // doesn't change since it isn't the currently focused tab.
+      SelectTab(kTabStripElementId, 1, InputType::kMouse, 0),
       CheckResult([this]() { return tab_strip_model()->active_index(); }, 0));
 }

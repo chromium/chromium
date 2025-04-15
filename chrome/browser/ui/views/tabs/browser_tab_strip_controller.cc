@@ -1043,8 +1043,8 @@ int BrowserTabStripController::GetIndexOfLastFocusedTabInSplit(
               GetTabLifecycleUnitExternal(tab->GetContents())
                   ->GetLastFocusedTime();
         };
-        return get_last_focused_time_for_tab(a) >
-               get_last_focused_time_for_tab(b);
+        return get_last_focused_time_for_tab(b) >
+               get_last_focused_time_for_tab(a);
       });
   return browser()->tab_strip_model()->GetIndexOfTab(recently_active);
 }
