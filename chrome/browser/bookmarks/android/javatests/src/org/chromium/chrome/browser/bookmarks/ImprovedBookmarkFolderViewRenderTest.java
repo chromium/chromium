@@ -45,7 +45,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.payments.ui.CurrencyFormatter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -160,8 +159,8 @@ public class ImprovedBookmarkFolderViewRenderTest {
                                     BookmarkRowDisplayPref.VISUAL));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_AREA_BACKGROUND_COLOR,
-                            ChromeColors.getSurfaceColor(
-                                    mActivityTestRule.getActivity(), R.dimen.default_elevation_1));
+                            SemanticColorUtils.getColorSurfaceContainerLow(
+                                    mActivityTestRule.getActivity()));
                     mModel.set(
                             ImprovedBookmarkRowProperties.FOLDER_START_ICON_TINT,
                             AppCompatResources.getColorStateList(

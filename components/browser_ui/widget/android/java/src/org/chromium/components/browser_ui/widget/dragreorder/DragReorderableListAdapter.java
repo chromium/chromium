@@ -18,7 +18,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 
 import java.util.ArrayList;
@@ -168,7 +168,7 @@ public abstract class DragReorderableListAdapter<T> extends RecyclerView.Adapter
         // Set the alpha to 90% when dragging which is 230/255
         mDraggedBackgroundColor =
                 ColorUtils.setAlphaComponent(
-                        ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_1),
+                        SemanticColorUtils.getColorSurfaceContainerLow(context),
                         resources.getInteger(R.integer.list_item_dragged_alpha));
         mDraggedElevation = resources.getDimension(R.dimen.list_item_dragged_elevation);
     }

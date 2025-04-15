@@ -168,7 +168,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
 
         // Set the styling of the view.
         mUnfocusedBackgroundColor = ChromeSemanticColorUtils.getPaymentRequestBg(context);
-        mFocusedBackgroundColor = SemanticColorUtils.getDefaultBgColorElev1(context);
+        mFocusedBackgroundColor = SemanticColorUtils.getColorSurfaceContainerLow(context);
         mLargeSpacing =
                 getResources().getDimensionPixelSize(R.dimen.editor_dialog_section_large_spacing);
         mVerticalSpacing =

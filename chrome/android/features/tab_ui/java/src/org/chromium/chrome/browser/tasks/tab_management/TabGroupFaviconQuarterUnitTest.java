@@ -30,7 +30,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.TestActivity;
 
@@ -120,7 +119,7 @@ public class TabGroupFaviconQuarterUnitTest {
         assertEquals("+123", mTextView.getText());
         assertEquals(
                 mBackground.getColor().getDefaultColor(),
-                ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_1));
+                SemanticColorUtils.getColorSurfaceContainerLow(mActivity));
     }
 
     @Test
@@ -132,6 +131,6 @@ public class TabGroupFaviconQuarterUnitTest {
         assertTrue(TextUtils.isEmpty(mTextView.getText()));
         assertEquals(
                 mBackground.getColor().getDefaultColor(),
-                ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_1));
+                SemanticColorUtils.getColorSurfaceContainerLow(mActivity));
     }
 }

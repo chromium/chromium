@@ -34,6 +34,6 @@ public class TouchToFillUtil {
                 new RippleDrawable(ColorStateList.valueOf(themeRes.data), background, null);
         view.setBackground(rippleDrawable);
         view.setBackgroundTintList(
-                ColorStateList.valueOf(SemanticColorUtils.getDefaultBgColorElev1(context)));
+                ColorStateList.valueOf(SemanticColorUtils.getColorSurfaceContainerLow(context)));
     }
 }

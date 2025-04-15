@@ -15,13 +15,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.DimenRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.Arrays;
@@ -73,13 +72,13 @@ public class TabGroupFaviconQuarter extends FrameLayout {
         mTextView.setVisibility(View.VISIBLE);
         String text = getResources().getString(R.string.plus_hidden_tab_count, plusCount);
         mTextView.setText(text);
-        updateBackgroundColor(R.dimen.default_elevation_1);
+        updateBackgroundColor(SemanticColorUtils.getColorSurfaceContainerLow(getContext()));
     }
 
     void clear() {
         hideImage();
         hideText();
-        updateBackgroundColor(R.dimen.default_elevation_1);
+        updateBackgroundColor(SemanticColorUtils.getColorSurfaceContainerLow(getContext()));
     }
 
     private void hideImage() {
@@ -132,7 +131,7 @@ public class TabGroupFaviconQuarter extends FrameLayout {
         return radii;
     }
 
-    private void updateBackgroundColor(@DimenRes int elevation) {
-        mBackground.setColor(ChromeColors.getSurfaceColor(getContext(), elevation));
+    private void updateBackgroundColor(@ColorInt int color) {
+        mBackground.setColor(color);
     }
 }
