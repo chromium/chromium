@@ -38,6 +38,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.UiController;
 import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.action.EspressoKey;
 import androidx.test.filters.MediumTest;
 
@@ -53,7 +54,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -85,6 +85,7 @@ import java.util.stream.IntStream;
 @Restriction({DeviceFormFactor.TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class BookmarkBarTest {
+
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
@@ -120,10 +121,9 @@ public class BookmarkBarTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "Flaky, crbug.com/409610521")
     public void testOnAllBookmarksButtonClick() {
-        onViewWaiting(bookmarkBarItemWithText("All Bookmarks")).perform(click());
-        onViewWaiting(bookmarkManagerToolbarWithText("Bookmarks")).check(matches(isDisplayed()));
+        onViewDisplayed(bookmarkBarItemWithText("All Bookmarks")).perform(click());
+        onViewDisplayed(bookmarkManagerToolbarWithText("Bookmarks"));
     }
 
     @Test
@@ -351,6 +351,10 @@ public class BookmarkBarTest {
         final var activity = mCtaTestRule.getActivity();
         final var newConfig = new Configuration(activity.getSavedConfigurationForTesting());
         activity.onConfigurationChanged(newConfig);
+    }
+
+    private ViewInteraction onViewDisplayed(@NonNull Matcher<View> viewMatcher) {
+        return onViewWaiting(allOf(viewMatcher, isDisplayed()));
     }
 
     private <T> @NonNull Optional<T> optionalOfThrowable(@NonNull Callable<T> callable) {
