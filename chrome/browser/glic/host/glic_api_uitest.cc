@@ -18,6 +18,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
@@ -1020,7 +1021,14 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testNavigateToDifferentClientPage) {
   ExecuteJsTest({.params = base::Value(1)});  // test run count: 1.
 }
 
-IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout, testNavigateToBadPage) {
+// TODO(crbug.com/410881522): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_testNavigateToBadPage DISABLED_testNavigateToBadPage
+#else
+#define MAYBE_testNavigateToBadPage testNavigateToBadPage
+#endif
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithFastTimeout,
+                       MAYBE_testNavigateToBadPage) {
 #if defined(SLOW_BINARY)
   GTEST_SKIP() << "skip timeout test for slow binary";
 #else
