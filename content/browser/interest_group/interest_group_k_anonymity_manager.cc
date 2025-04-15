@@ -50,9 +50,7 @@ InterestGroupKAnonymityManager::InterestGroupKAnonymityManager(
       k_anonymity_service_callback_(k_anonymity_service_callback),
       weak_ptr_factory_(this) {}
 
-InterestGroupKAnonymityManager::~InterestGroupKAnonymityManager() {
-  DCHECK(queries_in_progress_.empty());
-}
+InterestGroupKAnonymityManager::~InterestGroupKAnonymityManager() = default;
 
 InterestGroupKAnonymityManager::InProgressQueryState::InProgressQueryState(
     base::Time update_time,

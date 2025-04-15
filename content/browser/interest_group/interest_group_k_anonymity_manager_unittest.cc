@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -28,6 +29,22 @@
 #include "url/origin.h"
 
 namespace content {
+
+class InterestGroupManagerImplTestPeer {
+ public:
+  static const InterestGroupKAnonymityManager& GetKAnonymityManager(
+      const InterestGroupManagerImpl& interest_group_manager) {
+    return *interest_group_manager.k_anonymity_manager_;
+  }
+};
+
+class InterestGroupKAnonymityManagerTestPeer {
+ public:
+  static size_t GetNumQueriesInProgress(
+      const InterestGroupKAnonymityManager& k_anonymity_manager) {
+    return k_anonymity_manager.queries_in_progress_.size();
+  }
+};
 
 namespace {
 
@@ -1008,6 +1025,10 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
     base::HistogramTester histograms;
     manager->JoinInterestGroup(group, top_frame);
     task_environment().FastForwardBy(base::Minutes(1));
+    EXPECT_EQ(
+        0,
+        InterestGroupKAnonymityManagerTestPeer::GetNumQueriesInProgress(
+            InterestGroupManagerImplTestPeer::GetKAnonymityManager(*manager)));
     EXPECT_THAT(delegate()->TakeQueryIDs(),
                 testing::ElementsAre(std::vector<std::string>(
                     {adKAnonKey, reportingIdsKAnonKey})));
@@ -1030,6 +1051,10 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
     base::HistogramTester histograms;
     manager->JoinInterestGroup(group, top_frame);
     task_environment().FastForwardBy(base::Minutes(1));
+    EXPECT_EQ(
+        0,
+        InterestGroupKAnonymityManagerTestPeer::GetNumQueriesInProgress(
+            InterestGroupManagerImplTestPeer::GetKAnonymityManager(*manager)));
     EXPECT_THAT(delegate()->TakeQueryIDs(), testing::IsEmpty());
     auto maybe_group = GetGroup(manager.get(), group.owner, group.name);
     ASSERT_TRUE(maybe_group);
@@ -1050,6 +1075,10 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
     base::HistogramTester histograms;
     manager->JoinInterestGroup(group, top_frame);
     task_environment().FastForwardBy(base::Minutes(1));
+    EXPECT_EQ(
+        0,
+        InterestGroupKAnonymityManagerTestPeer::GetNumQueriesInProgress(
+            InterestGroupManagerImplTestPeer::GetKAnonymityManager(*manager)));
     EXPECT_THAT(delegate()->TakeQueryIDs(),
                 testing::ElementsAre(std::vector<std::string>(
                     {adKAnonKey, reportingIdsKAnonKey})));
@@ -1061,76 +1090,6 @@ TEST_F(InterestGroupKAnonymityManagerTestWithMock,
     histograms.ExpectUniqueSample(
         "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 0, 1);
   }
-}
-
-// Same as above, but it ends on a case where all of the keys were retrieved
-// from the cache. We specifically handle this special case, otherwise we
-// would leak the last `InProgressQueryState` in `queries_in_progress_`. The
-// test above doesn't verify this behavior because the final call to
-// `JoinInterestGroup` replaces the leaked `InProgressQueryState` -- since they
-// both use the same `InterestGroupKey` -- with a new one that doesn't leak
-// because some of the keys it tries to fetch aren't in the cache.
-TEST_F(InterestGroupKAnonymityManagerTestWithMock,
-       QuerySetMustNotLeakInProgressQueryState) {
-  base::test::ScopedFeatureList scoped_feature_to_enable_kanon_cache;
-  scoped_feature_to_enable_kanon_cache.InitAndEnableFeatureWithParameters(
-      features::kFledgeCacheKAnonHashedKeys,
-      {{"CacheKAnonHashedKeysTtl", "4h"}});
-
-  auto manager = CreateManager(/*has_error=*/false);
-  const GURL top_frame = GURL("https://www.example.com/foo");
-  const url::Origin owner = url::Origin::Create(top_frame);
-
-  blink::InterestGroup group = MakeInterestGroup(owner, "foo");
-  blink::InterestGroupKey group_key(group.owner, group.name);
-
-  std::string adKAnonKey = blink::HashedKAnonKeyForAdBid(group, kAdURL);
-  std::string reportingIdsKAnonKey =
-      HashedKAnonKeyForAdNameReporting(group, group.ads->at(0), std::nullopt);
-
-  delegate()->ReturnFalseForId(reportingIdsKAnonKey);
-
-  // Rejoin the interest group and wait for the k-anonymity query triggered by
-  // that join to complete. Nothing is cached yet, so this does go to the k-anon
-  // service.
-  {
-    base::HistogramTester histograms;
-    manager->JoinInterestGroup(group, top_frame);
-    task_environment().FastForwardBy(base::Minutes(1));
-    EXPECT_THAT(delegate()->TakeQueryIDs(),
-                testing::ElementsAre(std::vector<std::string>(
-                    {adKAnonKey, reportingIdsKAnonKey})));
-    auto maybe_group = GetGroup(manager.get(), group.owner, group.name);
-    ASSERT_TRUE(maybe_group);
-    // One for the renderURL k-anon key, and one for the reporting IDs.
-    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys,
-                testing::ElementsAre(adKAnonKey));
-    histograms.ExpectUniqueSample(
-        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 0, 1);
-  }
-
-  // Long enough has passed where the query interval has passed but not the TTL.
-  task_environment().FastForwardBy(1.5 * kQueryInterval);
-
-  // Rejoin the interest group and wait for the k-anonymity query triggered by
-  // that join to complete. This one is cached, so doesn't go to the k-anon
-  // service.
-  {
-    base::HistogramTester histograms;
-    manager->JoinInterestGroup(group, top_frame);
-    task_environment().FastForwardBy(base::Minutes(1));
-    EXPECT_THAT(delegate()->TakeQueryIDs(), testing::IsEmpty());
-    auto maybe_group = GetGroup(manager.get(), group.owner, group.name);
-    ASSERT_TRUE(maybe_group);
-    // One for the renderURL k-anon key, and one for the reporting IDs.
-    EXPECT_THAT(maybe_group.value()->hashed_kanon_keys,
-                testing::ElementsAre(adKAnonKey));
-    histograms.ExpectUniqueSample(
-        "Storage.InterestGroup.KAnonymityKeysCacheHitRate", 100, 1);
-  }
-
-  // Long enough has passed where the query interval has passed AND the TTL.
-  task_environment().FastForwardBy(1.5 * kQueryInterval);
 }
 
 }  // namespace content

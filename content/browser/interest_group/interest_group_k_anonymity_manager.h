@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
@@ -54,6 +55,8 @@ class CONTENT_EXPORT InterestGroupKAnonymityManager {
   void RegisterAdKeysAsJoined(base::flat_set<std::string> hashed_keys);
 
  private:
+  friend class InterestGroupKAnonymityManagerTestPeer;
+
   struct InProgressQueryState {
     InProgressQueryState(base::Time update_time, bool replace_existing_values);
     InProgressQueryState(const InProgressQueryState&);
