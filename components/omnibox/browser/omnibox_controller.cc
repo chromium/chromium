@@ -81,15 +81,6 @@ void OmniboxController::StartZeroSuggestPrefetch() {
   auto page_classification =
       client_->GetPageClassification(/*is_prefetch=*/true);
 
-  // TODO(crbug.com/406826913): Remove this check from OmniboxController and
-  // fix associated tests.
-  if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
-          page_classification) &&
-      !omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get()
-           .MostVisitedPrefetchingEnabled()) {
-    return;
-  }
-
   GURL current_url = client_->GetURL();
   std::u16string text = base::UTF8ToUTF16(current_url.spec());
 

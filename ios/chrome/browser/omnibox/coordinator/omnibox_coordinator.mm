@@ -190,11 +190,9 @@
   _keyboardMediator.omniboxTextField = self.textField;
   _keyboardMediator.delegate = self;
 
-  if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestPrefetching)) {
-    self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
-        initWithWebStateList:self.browser->GetWebStateList()
-                  controller:_editView->controller()];
-  }
+  self.zeroSuggestPrefetchHelper = [[ZeroSuggestPrefetchHelper alloc]
+      initWithWebStateList:self.browser->GetWebStateList()
+                controller:_editView->controller()];
 
   _omniboxAutocompleteController = [[OmniboxAutocompleteController alloc]
       initWithOmniboxController:_editView->controller()

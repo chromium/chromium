@@ -184,10 +184,6 @@ void AutocompleteControllerAndroid::StartPrefetch(
     jint j_page_classification) {
   auto page_classification =
       OmniboxEventProto::PageClassification(j_page_classification);
-  if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
-          page_classification)) {
-    return;
-  }
 
   GURL current_url;
   std::u16string auto_complete_text;

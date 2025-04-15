@@ -758,7 +758,12 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
 void AutocompleteController::StartPrefetch(const AutocompleteInput& input) {
   TRACE_EVENT1("omnibox", "AutocompleteController::StartPrefetch", "text",
                base::UTF16ToUTF8(input.text()));
-
+  if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
+          input.current_page_classification()) &&
+      !omnibox_feature_configs::OmniboxUrlSuggestionsOnFocus::Get()
+           .MostVisitedPrefetchingEnabled()) {
+    return;
+  }
   for (auto provider : providers_) {
     if (!ShouldRunProvider(provider.get())) {
       continue;
