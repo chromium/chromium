@@ -1697,6 +1697,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="NewTabPage.SuggestionsImpression{NewTabPageProviders}"
+    enum="MostVisitedTileIndex" expires_after="2025-08-24">
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Histogram for impressions on the various most visited tiles. The value is
+    equal to the index of the thumbnail. {NewTabPageProviders}
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.SuggestTiles.DeletedTileType"
     enum="SuggestTileType" expires_after="2025-09-14">
   <owner>ender@google.com</owner>
