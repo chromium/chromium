@@ -296,10 +296,6 @@ const StaticOobeScreenId kResumableOobeScreens[] = {
     WelcomeView::kScreenId,
     NetworkScreenView::kScreenId,
     UpdateView::kScreenId,
-    EnrollmentScreenView::kScreenId,
-    AutoEnrollmentCheckScreenView::kScreenId,
-    UserCreationView::kScreenId,
-    AddChildScreenView::kScreenId,
     ConsumerUpdateScreenView::kScreenId,
 };
 

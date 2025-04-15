@@ -2005,67 +2005,143 @@ class WizardControllerOobeResumeTest : public WizardControllerTest {
       const WizardControllerOobeResumeTest&) = delete;
 
  protected:
-  WizardControllerOobeResumeTest() = default;
+  WizardControllerOobeResumeTest() {
+    fake_statistics_provider_.SetMachineStatistic(system::kSerialNumberKey,
+                                                  "test");
+    fake_statistics_provider_.SetMachineStatistic(system::kActivateDateKey,
+                                                  "2000-01");
+    fake_statistics_provider_.SetVpdStatus(
+        system::StatisticsProvider::VpdStatus::kValid);
+    // Make all requests to DMServer fail with net::ERR_CONNECTION_REFUSED.
+    // (This prevents unexpected successful enrollment checks unless mocked
+    // otherwise)
+    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {
+          if (request.url.spec().starts_with(kDMServerURLPrefix)) {
+            test_url_loader_factory_.AddResponse(
+                request.url, network::mojom::URLResponseHead::New(),
+                std::string(),
+                network::URLLoaderCompletionStatus(
+                    net::ERR_CONNECTION_REFUSED));
+          }
+        }));
+  }
+
+  void PreRunTestOnMainThread() override {
+    // Make sure that OOBE is run as an "official" build.
+    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
+        true;
+  }
+
   // WizardControllerTest:
   void SetUpOnMainThread() override {
     WizardControllerTest::SetUpOnMainThread();
 
-    // Make sure that OOBE is run as an "official" build.
-    LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
-        true;
+    ShillManagerClient::Get()->GetTestInterface()->SetupDefaultEnvironment();
 
     WizardController* wizard_controller =
         WizardController::default_controller();
-    wizard_controller->SetCurrentScreen(nullptr);
+    WaitForOobeUI();
+    wizard_controller->SetSharedURLLoaderFactoryForTesting(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+    SimpleGeolocationProvider::GetInstance()
+        ->SetSharedUrlLoaderFactoryForTesting(
+            test_url_loader_factory_.GetSafeWeakWrapper());
 
-    // Set up the mocks for all screens.
-    mock_welcome_view_ = std::make_unique<MockWelcomeView>();
-    mock_welcome_screen_ =
-        MockScreenExpectLifecycle(std::make_unique<MockWelcomeScreen>(
-            mock_welcome_view_->AsWeakPtr(),
-            base::BindRepeating(&WizardController::OnWelcomeScreenExit,
-                                base::Unretained(wizard_controller))));
-
-    mock_enrollment_screen_view_ = std::make_unique<MockEnrollmentScreenView>();
-    mock_enrollment_screen_ =
-        MockScreenExpectLifecycle(std::make_unique<MockEnrollmentScreen>(
-            mock_enrollment_screen_view_->AsWeakPtr(), GetErrorScreen(),
-            base::BindRepeating(&WizardController::OnEnrollmentScreenExit,
-                                base::Unretained(wizard_controller))));
+    mock_auto_enrollment_check_screen_view_ =
+        std::make_unique<MockAutoEnrollmentCheckScreenView>();
+    mock_auto_enrollment_check_screen_ = MockScreen(
+        std::make_unique<testing::NiceMock<MockAutoEnrollmentCheckScreen>>(
+            mock_auto_enrollment_check_screen_view_.get()->AsWeakPtr(),
+            GetErrorScreen(),
+            base::BindRepeating(
+                &WizardController::OnAutoEnrollmentCheckScreenExit,
+                base::Unretained(wizard_controller))));
   }
 
-  std::unique_ptr<MockWelcomeView> mock_welcome_view_;
-  raw_ptr<MockWelcomeScreen, DanglingUntriaged> mock_welcome_screen_;
+  void TearDownOnMainThread() override {
+    mock_auto_enrollment_check_screen_ = nullptr;
+    mock_auto_enrollment_check_screen_view_.reset();
 
-  std::unique_ptr<MockEnrollmentScreenView> mock_enrollment_screen_view_;
-  raw_ptr<MockEnrollmentScreen, DanglingUntriaged> mock_enrollment_screen_;
+    test_url_loader_factory_.ClearResponses();
+    WizardControllerTest::TearDownOnMainThread();
+  }
 
-  std::unique_ptr<base::AutoReset<bool>> branded_build_override_;
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WizardControllerTest::SetUpCommandLine(command_line);
+
+    // Ensure unified state determination logic is used for enrollment checks
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationAlways);
+  }
+
+  static policy::AutoEnrollmentController* auto_enrollment_controller() {
+    return WizardController::default_controller()
+        ->GetAutoEnrollmentController();
+  }
+
+  static void WaitForAutoEnrollmentState(policy::AutoEnrollmentState state) {
+    base::RunLoop loop;
+    base::CallbackListSubscription progress_subscription =
+        auto_enrollment_controller()->RegisterProgressCallback(
+            base::BindRepeating(&QuitLoopOnAutoEnrollmentProgress, state,
+                                &loop));
+    loop.Run();
+  }
+
+  void ProgressUntilAutoEnrollmentCheckScreen() {
+    // Start OOBE at Welcome Screen
+    WizardController::default_controller()->AdvanceToScreen(
+        WelcomeView::kScreenId);
+    test::WaitForWelcomeScreen();
+
+    test::TapWelcomeNext();
+
+    test::WaitForNetworkSelectionScreen();
+    test::TapNetworkSelectionNext();
+
+    test::WaitForUpdateScreen();
+    test::ExitUpdateScreenNoUpdate();
+
+    CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
+    mock_auto_enrollment_check_screen_->RealShow();
+  }
+
+  std::unique_ptr<MockAutoEnrollmentCheckScreenView>
+      mock_auto_enrollment_check_screen_view_;
+  raw_ptr<testing::NiceMock<MockAutoEnrollmentCheckScreen>, DanglingUntriaged>
+      mock_auto_enrollment_check_screen_ = nullptr;
+
+  system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
+
+  DeviceStateMixin device_state_{&mixin_host_,
+                                 DeviceStateMixin::State::BEFORE_OOBE};
 };
 
+// PRE-Test: Run OOBE until after AutoEnrollmentCheck determines no enrollment,
+// landing on UserCreation screen.
 IN_PROC_BROWSER_TEST_F(WizardControllerOobeResumeTest,
                        PRE_ControlFlowResumeInterruptedOobe) {
-  // Switch to the initial screen.
-  EXPECT_CALL(*mock_welcome_screen_, ShowImpl()).Times(1);
-  WizardController::default_controller()->AdvanceToScreen(
-      WelcomeView::kScreenId);
-  CheckCurrentScreen(WelcomeView::kScreenId);
-  EXPECT_CALL(*mock_enrollment_screen_view_,
-              SetEnrollmentConfig(
-                  EnrollmentModeMatches(policy::EnrollmentConfig::MODE_MANUAL)))
-      .Times(1);
-  EXPECT_CALL(*mock_enrollment_screen_, ShowImpl()).Times(1);
-  EXPECT_CALL(*mock_welcome_screen_, HideImpl()).Times(1);
+  ScopedEnrollmentStateFetcherFactory fetcher_factory(
+      auto_enrollment_controller());
+  ProgressUntilAutoEnrollmentCheckScreen();
+  fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
 
-  WizardController::default_controller()->AdvanceToScreen(
-      EnrollmentScreenView::kScreenId);
-  CheckCurrentScreen(EnrollmentScreenView::kScreenId);
+  fetcher_factory.ReportEnrollmentState(
+      policy::AutoEnrollmentResult::kNoEnrollment);
+
+  CheckCurrentScreen(UserCreationView::kScreenId);
+  EXPECT_EQ(policy::AutoEnrollmentResult::kNoEnrollment,
+            auto_enrollment_controller()->state());
 }
 
+// Main Test: Resume OOBE after the interruption simulated in the PRE_ test.
 IN_PROC_BROWSER_TEST_F(WizardControllerOobeResumeTest,
                        ControlFlowResumeInterruptedOobe) {
-  EXPECT_EQ(EnrollmentScreenView::kScreenId.AsId(),
-            WizardController::default_controller()->first_screen_for_testing());
+  WaitForOobeUI();
+  CheckCurrentScreen(UpdateView::kScreenId);
 }
 
 class WizardControllerOnboardingResumeTest : public WizardControllerTest {
