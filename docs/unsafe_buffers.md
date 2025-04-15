@@ -34,10 +34,6 @@ a warning similar to
 ```
 error: function 'memcpy' is unsafe [-Werror,-Wunsafe-buffer-usage-in-libc-call]
 ```
-These warnings are not yet enabled by default for chromium builds.
-Suppressions are being incrementally added prior to enabling these
-warnings.
-
 ## Unsafe buffer warning suppressions
 
 Because the Chromium codebase is not yet compliant with these warnings,
