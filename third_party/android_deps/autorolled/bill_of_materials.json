@@ -67,12 +67,12 @@
     {
         "name": "asynclayoutinflater",
         "group": "androidx.asynclayoutinflater",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "asynclayoutinflater-appcompat",
         "group": "androidx.asynclayoutinflater",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "autofill",
@@ -447,7 +447,7 @@
     {
         "name": "dynamicanimation",
         "group": "androidx.dynamicanimation",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "emoji2",
@@ -512,7 +512,7 @@
     {
         "name": "gridlayout",
         "group": "androidx.gridlayout",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "interpolator",
