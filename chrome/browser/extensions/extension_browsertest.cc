@@ -102,7 +102,6 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
       common_start_menu_override_(base::DIR_COMMON_START_MENU)
 #endif
 {
-  EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
 
 ExtensionBrowserTest::~ExtensionBrowserTest() = default;

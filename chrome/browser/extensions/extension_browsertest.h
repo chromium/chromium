@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_path_override.h"
@@ -93,9 +92,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
 #endif
 
  private:
-  // Temporary directory for testing.
-  base::ScopedTempDir temp_dir_;
-
   // A convenience method to get the ExtensionTestNotificationObserver as its
   // Chrome-side implementation.
   ChromeExtensionTestNotificationObserver*
