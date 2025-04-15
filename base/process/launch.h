@@ -19,10 +19,12 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/blink_buildflags.h"
 #include "build/build_config.h"
 
@@ -47,6 +49,8 @@
 
 namespace base {
 
+enum TerminationStatus : int;
+
 #if BUILDFLAG(IS_POSIX)
 // Some code (e.g. the sandbox) relies on PTHREAD_STACK_MIN
 // being async-signal-safe, which is no longer guaranteed by POSIX
@@ -54,7 +58,7 @@ namespace base {
 // To work around this, use a hardcoded value unless it's already
 // defined as a constant.
 
-// These constants are borrowed from glibc’s (arch)/bits/pthread_stack_min.h.
+// These constants are borrowed from glibc's (arch)/bits/pthread_stack_min.h.
 #if defined(ARCH_CPU_ARM64) || defined(ARCH_CPU_LOONGARCH64)
 #define PTHREAD_STACK_MIN_CONST \
   (__builtin_constant_p(PTHREAD_STACK_MIN) ? PTHREAD_STACK_MIN : 131072)
@@ -455,6 +459,32 @@ BASE_EXPORT bool GetAppOutputWithExitCode(const CommandLine& cl,
 // control the command line arguments directly.
 BASE_EXPORT bool GetAppOutput(CommandLine::StringViewType cl,
                               std::string* output);
+
+// A Windows-specific version of `GetAppOutput` that allows the ability to
+// specify:
+// * an optional `output` providing the complete output of `cl`.
+// * an optional `timeout` if `cl` does not complete in time.
+// * an optional `FunctionRef`, called multiple times while waiting, with
+//   streaming partial output received since the last call to the `FunctionRef`
+//   from stdout/stderr of the running `cl` process. The implementation of the
+//   `FunctionRef` can log the output, or concatenate the partial outputs over
+//   successive calls to effectively produce the full `output` from the `cl`
+//   process.
+// * an optional `final_status` `TerminationStatus` value on function return.
+// Note that the expected use cases for this function do not expect `cl` to
+// produce a lot of output. This function will not work optimally with lots of
+// output from the `cl` process, since it waits a second each time between
+// reading the output.
+BASE_EXPORT bool GetAppOutputWithExitCodeAndTimeout(
+    const CommandLine& cl,
+    bool include_stderr,
+    std::string* output,
+    int* exit_code,
+    TimeDelta timeout = TimeDelta::Max(),
+    FunctionRef<void(std::string_view)> still_waiting =
+        [](std::string_view partial_output) {},
+    TerminationStatus* final_status = nullptr);
+
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // A POSIX-specific version of GetAppOutput that takes an argv array
 // instead of a CommandLine.  Useful for situations where you need to

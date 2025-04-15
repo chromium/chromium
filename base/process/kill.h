@@ -52,7 +52,7 @@ const DWORD kProcessKilledExitCode = 1;
 // Do not repurpose previously used indexes.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.base
 // GENERATED_JAVA_PREFIX_TO_STRIP: TERMINATION_STATUS_
-enum TerminationStatus {
+enum TerminationStatus : int {
   // Zero exit status.
   TERMINATION_STATUS_NORMAL_TERMINATION = 0,
   // Other abnormal termination reason.
