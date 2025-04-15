@@ -5,6 +5,7 @@
 #include "chrome/browser/smart_card/smart_card_permission_context.h"
 
 #include "base/check_deref.h"
+#include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -26,7 +27,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
+using testing::ElementsAre;
+using testing::Field;
 using testing::InSequence;
+using testing::Pointee;
+using testing::ResultOf;
 using testing::StrictMock;
 
 namespace {
@@ -383,12 +388,17 @@ TEST_F(SmartCardPermissionContextTest, AllowedByPolicy) {
 
   EXPECT_TRUE(HasReaderPermission(permission_context, origin_1, kDummyReader));
 
-  auto grants = permission_context.GetGrantedObjects(origin_1);
-  ASSERT_EQ(1u, grants.size());
-  EXPECT_EQ(content_settings::SettingSource::kPolicy, grants[0]->source);
-  EXPECT_EQ(l10n_util::GetStringUTF8(
-                IDS_SMART_CARD_POLICY_DESCRIPTION_FOR_ANY_DEVICE),
-            CHECK_DEREF(grants[0]->value.FindString("reader-name")));
+  auto matcher = ElementsAre(Pointee(AllOf(
+      Field(&SmartCardPermissionContext::Object::source,
+            content_settings::SettingSource::kPolicy),
+      Field(&SmartCardPermissionContext::Object::value,
+            AllOf(base::test::DictionaryHasValue(
+                "reader-name",
+                base::Value(l10n_util::GetStringUTF8(
+                    IDS_SMART_CARD_POLICY_DESCRIPTION_FOR_ANY_DEVICE))))))));
+
+  EXPECT_THAT(permission_context.GetGrantedObjects(origin_1), matcher);
+  EXPECT_THAT(permission_context.GetAllGrantedObjects(), matcher);
 }
 
 TEST_F(SmartCardPermissionContextTest, BlockedByPolicy) {

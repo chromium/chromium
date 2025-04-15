@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -25,13 +26,17 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker.h"
 #include "chrome/browser/smart_card/smart_card_reader_tracker_factory.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
@@ -472,4 +477,23 @@ void SmartCardPermissionContext::RevokeEphemeralPermissionIfLongTimeoutOccured(
     }
     NotifyPermissionRevoked(origin);
   }
+}
+
+std::vector<std::unique_ptr<SmartCardPermissionContext::Object>>
+SmartCardPermissionContext::GetAllGrantedObjects() {
+  auto objects = ObjectPermissionContextBase::GetAllGrantedObjects();
+  const auto& allowlisted_origins = profile_->GetPrefs()->GetList(
+      prefs::kManagedSmartCardConnectAllowedForUrls);
+  for (const auto& allowlisted_origin : allowlisted_origins) {
+    CHECK(allowlisted_origin.is_string());
+    GURL url = GURL(allowlisted_origin.GetString());
+    CHECK(url.is_valid());
+
+    objects.push_back(std::make_unique<Object>(
+        url::Origin::Create(url),
+        ReaderNameToValue(l10n_util::GetStringUTF16(
+            IDS_SMART_CARD_POLICY_DESCRIPTION_FOR_ANY_DEVICE)),
+        content_settings::SettingSource::kPolicy, IsOffTheRecord()));
+  }
+  return objects;
 }
