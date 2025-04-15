@@ -491,9 +491,12 @@ SwapChainPresenter::SwapChainPresenter(
       is_on_battery_power_(
           base::PowerMonitor::GetInstance()
               ->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
-          base::PowerStateObserver::BatteryPowerStatus::kBatteryPower) {}
+          base::PowerStateObserver::BatteryPowerStatus::kBatteryPower) {
+  DVLOG(1) << __func__ << "(" << this << ")";
+}
 
 SwapChainPresenter::~SwapChainPresenter() {
+  DVLOG(1) << __func__ << "(" << this << ")";
   base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
 }
 
@@ -1414,6 +1417,7 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
       return false;
     }
     DCHECK(decode_swap_chain_);
+    DVLOG(2) << "Update visual's content. " << __func__ << "(" << this << ")";
     SetSwapChainPresentDuration();
 
     Microsoft::WRL::ComPtr<IDCompositionDesktopDevice> desktop_device;
@@ -1997,6 +2001,7 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
 
 void SwapChainPresenter::ReleaseDCOMPSurfaceResourcesIfNeeded() {
   if (dcomp_surface_handle_ != INVALID_HANDLE_VALUE) {
+    DVLOG(2) << __func__ << "(" << this << ")";
     dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
     last_overlay_image_.reset();
     content_.Reset();
@@ -2256,6 +2261,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
 
 void SwapChainPresenter::ReleaseSwapChainResources() {
   if (swap_chain_ || decode_swap_chain_) {
+    DVLOG(2) << __func__ << "(" << this << ")";
     output_view_.Reset();
     swap_chain_.Reset();
     swap_chain_handle_.Close();
@@ -2360,6 +2366,9 @@ bool SwapChainPresenter::ReallocateSwapChain(
                   << "\nFalling back to BGRA";
       use_yuv_swap_chain = false;
       swap_chain_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    } else {
+      DVLOG(2) << "Update visual's content (yuv). " << __func__ << "(" << this
+               << ")";
     }
   }
   if (!use_yuv_swap_chain) {
@@ -2400,6 +2409,8 @@ bool SwapChainPresenter::ReallocateSwapChain(
                   << ". Disable overlay swap chains";
       return false;
     }
+
+    DVLOG(2) << "Update visual's content. " << __func__ << "(" << this << ")";
   }
 
   if (DXGIWaitableSwapChainEnabled()) {
