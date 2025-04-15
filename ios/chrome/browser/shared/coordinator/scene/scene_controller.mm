@@ -1443,6 +1443,12 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
   DCHECK(!self.signinCoordinator)
       << base::SysNSStringToUTF8([self.signinCoordinator description]);
 
+  // SignoutActionSheetCoordinator may be deallocated before the sign-out
+  // completion is run (for example when switching profile), make sure that the
+  // coordintor is correctly stopped also in this scenario.
+  [self.signoutActionSheetCoordinator stop];
+  self.signoutActionSheetCoordinator = nil;
+
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
 
