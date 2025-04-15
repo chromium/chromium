@@ -405,7 +405,7 @@ public abstract class ChromeFeatureList {
     public static final String MINI_ORIGIN_BAR = "MiniOriginBar";
     public static final String MOST_VISITED_TILES_CUSTOMIZATION = "MostVisitedTilesCustomization";
     public static final String MOST_VISITED_TILES_RESELECT = "MostVisitedTilesReselect";
-    public static final String MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
+    public static final String MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP =
             "MultiInstanceApplicationStatusCleanup";
     public static final String NATIVE_PAGE_TRANSITION_HARDWARE_CAPTURE =
             "NativePageTransitionHardwareCapture";
@@ -778,7 +778,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sMostVisitedTilesReselect =
             newCachedFlag(MOST_VISITED_TILES_RESELECT, false);
     public static final CachedFlag sMultiInstanceApplicationStatusCleanup =
-            newCachedFlag(MUlTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
+            newCachedFlag(MULTI_INSTANCE_APPLICATION_STATUS_CLEANUP, false);
     public static final CachedFlag sNavBarColorAnimation =
             newCachedFlag(NAV_BAR_COLOR_ANIMATION, false);
     public static final CachedFlag sNavBarColorMatchesTabBackground =
@@ -1309,14 +1309,15 @@ public abstract class ChromeFeatureList {
 
     public static final BooleanCachedFeatureParam sMagicStackAndroidShowAllModules =
             newBooleanCachedFeatureParam(MAGIC_STACK_ANDROID, "show_all_modules", false);
-    public static final BooleanCachedFeatureParam mMostVisitedTilesReselectLaxSchemeHost =
+    public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxSchemeHost =
             newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_scheme_host", false);
-    public static final BooleanCachedFeatureParam mMostVisitedTilesReselectLaxRef =
+    public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxRef =
             newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_ref", false);
-    public static final BooleanCachedFeatureParam mMostVisitedTilesReselectLaxQuery =
+    public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxQuery =
             newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_query", false);
-    public static final BooleanCachedFeatureParam mMostVisitedTilesReselectLaxPath =
+    public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxPath =
             newBooleanCachedFeatureParam(MOST_VISITED_TILES_RESELECT, "lax_path", false);
+
     public static final BooleanCachedFeatureParam
             sNavBarColorMatchesTabBackgroundColorAnimationDisabled =
                     newBooleanCachedFeatureParam(
@@ -1426,10 +1427,10 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeEverywhereOemMinVersions,
                     sEdgeToEdgeEverywhereOemList,
                     sMagicStackAndroidShowAllModules,
-                    mMostVisitedTilesReselectLaxSchemeHost,
-                    mMostVisitedTilesReselectLaxRef,
-                    mMostVisitedTilesReselectLaxQuery,
-                    mMostVisitedTilesReselectLaxPath,
+                    sMostVisitedTilesReselectLaxSchemeHost,
+                    sMostVisitedTilesReselectLaxRef,
+                    sMostVisitedTilesReselectLaxQuery,
+                    sMostVisitedTilesReselectLaxPath,
                     sNavBarColorAnimationDisableBottomChinColorAnimation,
                     sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation,
                     sNavBarColorMatchesTabBackgroundColorAnimationDisabled,
