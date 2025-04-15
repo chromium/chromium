@@ -38,13 +38,13 @@ std::string HashSpecifics(const sync_pb::EntitySpecifics& specifics) {
 std::unique_ptr<ProcessorEntity> ProcessorEntity::CreateNew(
     const std::string& storage_key,
     const ClientTagHash& client_tag_hash,
-    const std::string& id,
+    const std::string& server_id,
     base::Time creation_time) {
-  // Initialize metadata
+  // Initialize metadata.
   sync_pb::EntityMetadata metadata;
   metadata.set_client_tag_hash(client_tag_hash.value());
-  if (!id.empty()) {
-    metadata.set_server_id(id);
+  if (!server_id.empty()) {
+    metadata.set_server_id(server_id);
   }
   metadata.set_sequence_number(0);
   metadata.set_acked_sequence_number(0);
@@ -66,10 +66,10 @@ std::unique_ptr<ProcessorEntity> ProcessorEntity::CreateFromMetadata(
 ProcessorEntity::ProcessorEntity(const std::string& storage_key,
                                  sync_pb::EntityMetadata metadata)
     : storage_key_(storage_key),
-      commit_requested_sequence_number_(metadata.acked_sequence_number()) {
-  DCHECK(metadata.has_client_tag_hash());
-  DCHECK(metadata.has_creation_time());
-  metadata_ = std::move(metadata);
+      metadata_(std::move(metadata)),
+      commit_requested_sequence_number_(metadata_.acked_sequence_number()) {
+  DCHECK(metadata_.has_client_tag_hash());
+  DCHECK(metadata_.has_creation_time());
 }
 
 ProcessorEntity::~ProcessorEntity() = default;

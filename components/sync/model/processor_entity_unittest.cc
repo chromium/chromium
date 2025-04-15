@@ -248,7 +248,8 @@ TEST_F(ProcessorEntityTest, NewLocalItem) {
   EXPECT_FALSE(entity->IsVersionAlreadyKnown(1));
   EXPECT_TRUE(entity->HasCommitData());
 
-  EXPECT_EQ(kValue1, entity->commit_data().specifics.preference().value());
+  EXPECT_EQ(kValue1,
+            entity->GetCommitDataForTesting().specifics.preference().value());
 
   // Generate a commit request. The metadata should not change.
   const sync_pb::EntityMetadata metadata_v1 = entity->metadata();
