@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.signin.SigninFeatureMap;
@@ -111,6 +112,14 @@ public class HistoryPageSigninPromoDelegate extends SigninPromoDelegate {
         boolean wasStateChanged = mPromoState != newState;
         mPromoState = newState;
         return wasStateChanged;
+    }
+
+    @Override
+    AccountPickerBottomSheetStrings getBottomSheetStrings() {
+        return new AccountPickerBottomSheetStrings.Builder(
+                        R.string.signin_account_picker_bottom_sheet_title)
+                .setSubtitleStringId(R.string.signin_account_picker_bottom_sheet_benefits_subtitle)
+                .build();
     }
 
     @Override

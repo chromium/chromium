@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
@@ -248,10 +249,48 @@ public class SigninPromoCoordinatorTest {
         assertEquals(NoAccountSigninMode.BOTTOM_SHEET, config.noAccountSigninMode);
         assertEquals(
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET, config.withAccountSigninMode);
-        assertEquals(config.historyOptInMode, historyOptInMode);
+        assertEquals(historyOptInMode, config.historyOptInMode);
         assertNull(config.selectedCoreAccountId);
         histogramWatcher.assertExpected();
         impressionHistogramWatcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @ParameterAnnotations.UseMethodParameter(AccessPointParams.class)
+    public void testSigninBottomSheetStrings(@SigninAccessPoint int accessPoint) {
+        signinAndOptOutHistorySyncIfNeeded(accessPoint);
+        setUpSignInPromo(accessPoint);
+
+        onView(withId(R.id.sync_promo_signin_button)).perform(click());
+
+        // Extract the config passed to the sign-in flow launcher.
+        ArgumentCaptor<BottomSheetSigninAndHistorySyncConfig> configCaptor =
+                ArgumentCaptor.forClass(BottomSheetSigninAndHistorySyncConfig.class);
+        verify(mLauncher)
+                .createBottomSheetSigninIntentOrShowError(
+                        eq(mActivityTestRule.getActivity()),
+                        eq(mProfile),
+                        configCaptor.capture(),
+                        eq(accessPoint));
+        BottomSheetSigninAndHistorySyncConfig config = configCaptor.getValue();
+
+        // Verify bottom sheet strings.
+        AccountPickerBottomSheetStrings expectedStrings;
+        if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
+            expectedStrings =
+                    new AccountPickerBottomSheetStrings.Builder(
+                                    R.string.signin_account_picker_bottom_sheet_title)
+                            .setSubtitleStringId(
+                                    R.string.signin_account_picker_bottom_sheet_benefits_subtitle)
+                            .build();
+        } else {
+            expectedStrings =
+                    new AccountPickerBottomSheetStrings.Builder(
+                                    R.string.signin_account_picker_bottom_sheet_title)
+                            .build();
+        }
+        assertEquals(expectedStrings, config.bottomSheetStrings);
     }
 
     @Test
