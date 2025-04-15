@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/base/cursor/platform_cursor.h"
+#include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/ozone/platform/headless/headless_window_manager.h"
@@ -174,10 +175,9 @@ void HeadlessWindow::SetWindowIcons(const gfx::ImageSkia& window_icon,
 void HeadlessWindow::SizeConstraintsChanged() {}
 
 void HeadlessWindow::ZoomWindowBounds() {
-  gfx::Rect new_bounds = bounds_;
-  new_bounds.set_width(bounds_.width() * 2);
-  new_bounds.set_height(bounds_.height() * 2);
-  UpdateBounds(new_bounds);
+  gfx::Rect zoomed_bounds =
+      display::Screen::GetScreen()->GetDisplayMatching(bounds_).work_area();
+  UpdateBounds(zoomed_bounds);
 }
 
 void HeadlessWindow::RestoreWindowBounds() {
