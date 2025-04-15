@@ -19388,6 +19388,7 @@ from previous Chrome versions.
   <int value="1942911276" label="enable-grouped-history"/>
   <int value="1943083555" label="NotificationScheduleService:enabled"/>
   <int value="1944156526" label="sync-url"/>
+  <int value="1944880313" label="ShimlessRMADynamicDeviceInfoInputs:enabled"/>
   <int value="1945031120" label="LanguageSettingsUpdate2:disabled"/>
   <int value="1945637293" label="SurfacePolish:disabled"/>
   <int value="1946014982"
@@ -19439,6 +19440,7 @@ from previous Chrome versions.
   <int value="1963766060"
       label="AutofillEnableFixedPaymentsBubbleLogging:enabled"/>
   <int value="1964036852" label="AuxiliarySearchThirdParty:disabled"/>
+  <int value="1964557360" label="ShimlessRMADynamicDeviceInfoInputs:disabled"/>
   <int value="1964778659" label="TailoredSecurityRetryForSyncUsers:disabled"/>
   <int value="1964816410" label="AndroidPayIntegrationV2:enabled"/>
   <int value="1965055310" label="SyncSetupFriendlySettings:enabled"/>

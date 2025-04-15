@@ -4269,6 +4269,9 @@ extern const char kShimlessRMAOsUpdateDescription[];
 extern const char kShimlessRMAHardwareValidationSkipName[];
 extern const char kShimlessRMAHardwareValidationSkipDescription[];
 
+extern const char kShimlessRMADynamicDeviceInfoInputsName[];
+extern const char kShimlessRMADynamicDeviceInfoInputsDescription[];
+
 extern const char kSchedulerConfigurationName[];
 extern const char kSchedulerConfigurationDescription[];
 

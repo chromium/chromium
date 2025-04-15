@@ -2741,6 +2741,12 @@ BASE_FEATURE(kShimlessRMAHardwareValidationSkip,
              "ShimlessRMAHardwareValidationSkip",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the option of grey out specific input fields on Shimless
+// RMA device information page.
+BASE_FEATURE(kShimlessRMADynamicDeviceInfoInputs,
+             "ShimlessRMADynamicDeviceInfoInputs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, system shortcuts will utilize state machiens instead of
 // keeping track of entire history of keys pressed.
 BASE_FEATURE(kShortcutStateMachines,
@@ -4517,6 +4523,10 @@ bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled() {
 
 bool IsShimlessRMAHardwareValidationSkipEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAHardwareValidationSkip);
+}
+
+bool IsShimlessRMADynamicDeviceInfoInputsEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMADynamicDeviceInfoInputs);
 }
 
 bool IsShowSharingUserInLauncherContinueSectionEnabled() {

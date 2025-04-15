@@ -892,6 +892,8 @@ BASE_DECLARE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShimlessRMAHardwareValidationSkip);
 COMPONENT_EXPORT(ASH_CONSTANTS)
+BASE_DECLARE_FEATURE(kShimlessRMADynamicDeviceInfoInputs);
+COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShortcutStateMachines);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShowBluetoothDebugLogToggle);
@@ -1387,6 +1389,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShimlessRMAHardwareValidationSkipEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsShimlessRMADynamicDeviceInfoInputs();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShowSharingUserInLauncherContinueSectionEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsSnoopingProtectionEnabled();

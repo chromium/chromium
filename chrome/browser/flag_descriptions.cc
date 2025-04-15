@@ -7236,6 +7236,11 @@ const char kShimlessRMAHardwareValidationSkipName[] =
 const char kShimlessRMAHardwareValidationSkipDescription[] =
     "Turns on Hardware Validation Skip in Shimless RMA";
 
+const char kShimlessRMADynamicDeviceInfoInputsName[] =
+    "Enable Dynamic Device Info Inputs in Shimless RMA";
+const char kShimlessRMADynamicDeviceInfoInputsDescription[] =
+    "Turns on Dynamic Device Info Inputs in Shimless RMA";
+
 const char kSchedulerConfigurationName[] = "Scheduler Configuration";
 const char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";
