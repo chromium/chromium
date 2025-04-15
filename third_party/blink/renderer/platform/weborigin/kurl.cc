@@ -352,7 +352,7 @@ StringView KURL::LastPathComponent() const {
   if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), path, &file);
   } else {
-    url::ExtractFileName(string_.Characters16(), path, &file);
+    url::ExtractFileName(UNSAFE_TODO(string_.Characters16()), path, &file);
   }
 
   // Bug: https://bugs.webkit.org/show_bug.cgi?id=21015 this function returns
@@ -376,9 +376,10 @@ uint16_t KURL::Port() const {
   if (!is_valid_ || parsed_.port.is_empty())
     return 0;
   DCHECK(!string_.IsNull());
-  int port = string_.Is8Bit()
-                 ? url::ParsePort(AsURLChar8Subtle(string_), parsed_.port)
-                 : url::ParsePort(string_.Characters16(), parsed_.port);
+  int port =
+      string_.Is8Bit()
+          ? url::ParsePort(AsURLChar8Subtle(string_), parsed_.port)
+          : url::ParsePort(UNSAFE_TODO(string_.Characters16()), parsed_.port);
   DCHECK_NE(port, url::PORT_UNSPECIFIED);  // Checked port.len <= 0 already.
   DCHECK_NE(port, url::PORT_INVALID);      // Checked is_valid_ already.
 
@@ -829,7 +830,8 @@ bool KURL::IsStandard() const {
     return false;
   return string_.Is8Bit()
              ? url::IsStandard(AsURLChar8Subtle(string_), parsed_.scheme)
-             : url::IsStandard(string_.Characters16(), parsed_.scheme);
+             : url::IsStandard(UNSAFE_TODO(string_.Characters16()),
+                               parsed_.scheme);
 }
 
 bool EqualIgnoringFragmentIdentifier(const KURL& a, const KURL& b) {
@@ -882,7 +884,8 @@ unsigned KURL::PathAfterLastSlash() const {
   if (string_.Is8Bit()) {
     url::ExtractFileName(AsURLChar8Subtle(string_), parsed_.path, &filename);
   } else {
-    url::ExtractFileName(string_.Characters16(), parsed_.path, &filename);
+    url::ExtractFileName(UNSAFE_TODO(string_.Characters16()), parsed_.path,
+                         &filename);
   }
   return filename.begin;
 }
