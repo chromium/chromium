@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -1146,7 +1148,7 @@ TEST_F(AutocompleteResultTest, SortAndCullWithDemotionsByType) {
   // Check the new ordering.  The history-title results should be omitted.
   // HistoryURL should still be first because type demotion is not applied to
   // the top match.
-  size_t expected_order[] = {0, 1, 3};
+  auto expected_order = std::to_array<size_t>({0, 1, 3});
 
   ASSERT_EQ(std::size(expected_order), result.size());
   for (size_t i = 0; i < std::size(expected_order); ++i) {
@@ -1977,7 +1979,7 @@ TEST_F(AutocompleteResultTest,
   result.GroupSuggestionsBySearchVsURL(std::next(result.matches_.begin()),
                                        result.matches_.end());
 
-  TestData expected_data[] = {
+  auto expected_data = std::to_array<TestData>({
       {0, 2, 400, true, {}, AutocompleteMatchType::HISTORY_TITLE},
       {1, 1, 800, false, {}, AutocompleteMatchType::CLIPBOARD_URL},
       {2, 1, 700, false, {}, AutocompleteMatchType::TILE_NAVSUGGEST},
@@ -1985,11 +1987,10 @@ TEST_F(AutocompleteResultTest,
       {5, 1, 900, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {6, 1, 800, false, {}, AutocompleteMatchType::SEARCH_SUGGEST},
       {4, 1, 1000, false, {}, AutocompleteMatchType::HISTORY_URL},
-  };
+  });
 
-  AssertResultMatches(
-      result,
-      {expected_data, expected_data + AutocompleteResult::GetMaxMatches()});
+  AssertResultMatches(result, base::span<TestData>(expected_data)
+                                  .first(AutocompleteResult::GetMaxMatches()));
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -2106,14 +2107,14 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
 
     // Expect the search suggest to be moved about URL suggestions due to
     // the logic which groups searches and URLs together.
-    AutocompleteMatchType::Type expected_types[] = {
+    auto expected_types = std::to_array<AutocompleteMatchType::Type>({
         AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
         AutocompleteMatchType::SEARCH_HISTORY,
         AutocompleteMatchType::SEARCH_SUGGEST,
         AutocompleteMatchType::HISTORY_URL,
         AutocompleteMatchType::HISTORY_TITLE,
         AutocompleteMatchType::URL_WHAT_YOU_TYPED,
-    };
+    });
     EXPECT_EQ(result.size(), AutocompleteResult::GetMaxMatches());
     for (size_t i = 0; i < result.size(); ++i)
       EXPECT_EQ(result.match_at(i)->type, expected_types[i]);
@@ -2144,14 +2145,14 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
                        triggered_feature_service());
 
     EXPECT_EQ(result.size(), AutocompleteResult::GetMaxMatches());
-    AutocompleteMatchType::Type expected_types[] = {
+    auto expected_types = std::to_array<AutocompleteMatchType::Type>({
         AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED,
         AutocompleteMatchType::SEARCH_HISTORY,
         AutocompleteMatchType::HISTORY_URL,
         AutocompleteMatchType::HISTORY_TITLE,
         AutocompleteMatchType::URL_WHAT_YOU_TYPED,
         AutocompleteMatchType::CLIPBOARD_URL,
-    };
+    });
     for (size_t i = 0; i < result.size(); ++i)
       EXPECT_EQ(result.match_at(i)->type, expected_types[i]) << i;
   }
@@ -2209,7 +2210,7 @@ TEST_F(AutocompleteResultTest, AttachesPedals) {
                std::string contents)
           : AutocompleteMatchTestData{url, type}, contents(contents) {}
     };
-    const TestData data[] = {
+    const auto data = std::to_array<TestData>({
         {"http://clear-history/", AutocompleteMatchType::SEARCH_SUGGEST,
          "clear history"},
         {"http://search-what-you-typed/",
@@ -2228,8 +2229,9 @@ TEST_F(AutocompleteResultTest, AttachesPedals) {
          "bookmark title"},
         {"http://entity-clear-history/",
          AutocompleteMatchType::SEARCH_SUGGEST_ENTITY, "clear history"},
-    };
-    PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
+    });
+    PopulateAutocompleteMatchesFromTestData(data.data(), std::size(data),
+                                            &matches);
     for (size_t i = 0; i < std::size(data); i++) {
       matches[i].contents = base::UTF8ToUTF16(data[i].contents);
     }
@@ -2992,7 +2994,7 @@ TEST_F(AutocompleteResultTest, SplitActionsToSuggestions) {
                std::string contents)
           : AutocompleteMatchTestData{url, type}, contents(contents) {}
     };
-    const TestData data[] = {
+    const auto data = std::to_array<TestData>({
         {"http://clear-history/", AutocompleteMatchType::SEARCH_SUGGEST,
          "clear history"},
         {"http://search-what-you-typed/",
@@ -3001,8 +3003,9 @@ TEST_F(AutocompleteResultTest, SplitActionsToSuggestions) {
          "search history"},
         {"http://history-url/", AutocompleteMatchType::HISTORY_URL,
          "history url"},
-    };
-    PopulateAutocompleteMatchesFromTestData(data, std::size(data), &matches);
+    });
+    PopulateAutocompleteMatchesFromTestData(data.data(), std::size(data),
+                                            &matches);
     for (size_t i = 0; i < std::size(data); i++) {
       matches[i].contents = base::UTF8ToUTF16(data[i].contents);
     }
