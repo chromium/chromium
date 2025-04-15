@@ -1486,14 +1486,14 @@ void BrowserView::ShowSplitView() {
       browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
 
   CHECK(split_tab_id.has_value());
-  const split_tabs::SplitTabData* split_tab_data =
-      browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
 
-  std::vector<tabs::TabInterface*> split_tabs = split_tab_data->ListTabs();
+  std::vector<tabs::TabModel*> split_tabs =
+      browser_->tab_strip_model()
+          ->GetSplitData(split_tab_id.value())
+          ->ListTabs();
 
-  for (int i = 0; i < static_cast<int>(split_tabs.size()); i++) {
-    multi_contents_view_->SetWebContentsAtIndex(split_tabs[i]->GetContents(),
-                                                i);
+  for (size_t i = 0; tabs::TabModel* tab : split_tabs) {
+    multi_contents_view_->SetWebContentsAtIndex(tab->GetContents(), i++);
   }
   const int first_split_tab_index =
       browser_->tab_strip_model()->GetIndexOfTab(split_tabs[0]);
@@ -1514,13 +1514,12 @@ void BrowserView::UpdateActiveSplitView() {
       browser_->tab_strip_model()->GetTabAtIndex(active_index)->GetSplit();
 
   CHECK(split_tab_id.has_value());
-  const split_tabs::SplitTabData* split_tab_data =
-      browser_->tab_strip_model()->GetSplitData(split_tab_id.value());
 
-  std::vector<tabs::TabInterface*> split_tabs = split_tab_data->ListTabs();
-
+  tabs::TabInterface* first_tab = browser_->tab_strip_model()
+                                      ->GetSplitData(split_tab_id.value())
+                                      ->ListTabs()[0];
   const int first_split_tab_index =
-      browser_->tab_strip_model()->GetIndexOfTab(split_tabs[0]);
+      browser_->tab_strip_model()->GetIndexOfTab(first_tab);
   const int relative_active_position = active_index - first_split_tab_index;
   multi_contents_view_->SetActiveIndex(relative_active_position);
 }

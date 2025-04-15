@@ -10,11 +10,13 @@
 
 #include "base/containers/adapters.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/unpinned_tab_collection.h"
+#include "components/tabs/public/split_tab_id.h"
 
 namespace tabs {
 
@@ -233,6 +235,62 @@ void TabStripCollection::CreateTabGroup(
 void TabStripCollection::CloseDetachedTabGroup(
     const tab_groups::TabGroupId& group_id) {
   PopDetachedGroupCollection(group_id).reset();
+}
+
+SplitTabCollection* TabStripCollection::GetSplitTabCollection(
+    split_tabs::SplitTabId split_id) {
+  if (!split_mapping_.contains(split_id)) {
+    return nullptr;
+  }
+  return split_mapping_.at(split_id);
+}
+
+split_tabs::SplitTabId TabStripCollection::CreateSplit(
+    std::vector<TabModel*> tabs,
+    tabs::SplitTabLayout tab_layout) {
+  CHECK(tabs.size() >= 2);
+  TabCollection* parent_collection = tabs[0]->GetParentCollection(GetPassKey());
+  CHECK(std::all_of(
+      tabs.begin(), tabs.end(), [this, parent_collection](auto tab) {
+        return parent_collection == tab->GetParentCollection(GetPassKey());
+      }));
+
+  size_t dst_index = parent_collection->GetIndexOfTab(tabs[0]).value();
+
+  // Move tabs from parent to new split.
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+  std::unique_ptr<SplitTabCollection> split =
+      std::make_unique<SplitTabCollection>(split_id, tab_layout);
+  for (TabModel* tab : tabs) {
+    split->AddTab(parent_collection->MaybeRemoveTab(tab), split->ChildCount());
+  }
+
+  // Insert split back into the parent.
+  split_mapping_.insert({split_id, split.get()});
+  parent_collection->AddCollection(std::move(split), dst_index);
+
+  return split_id;
+}
+
+void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {
+  SplitTabCollection* split = GetSplitTabCollection(split_id);
+  if (!split) {
+    return;
+  }
+
+  CHECK(split_mapping_.contains(split_id));
+  // Insert tabs removed from the split into the parent collection. Does so in
+  // reverse to preserve the ordering of the tabs without having to increment
+  // the index of the insertion point.
+  TabCollection* parent_collection = split->GetParentCollection();
+  size_t dst_index = parent_collection->GetIndexOfCollection(split).value();
+  for (std::vector<TabModel*> tabs = split->GetTabsRecursive();
+       TabModel* tab : base::Reversed(tabs)) {
+    parent_collection->AddTab(split->MaybeRemoveTab(tab), dst_index);
+  }
+
+  split_mapping_.erase(split->GetSplitTabId());
+  parent_collection->MaybeRemoveCollection(split).reset();
 }
 
 void TabStripCollection::ValidateData() const {

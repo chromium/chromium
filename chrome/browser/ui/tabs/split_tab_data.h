@@ -8,16 +8,14 @@
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "components/tabs/public/split_tab_id.h"
 #include "components/tabs/public/tab_interface.h"
-#include "ui/gfx/range/range.h"
-
-class TabStripModel;
 
 namespace split_tabs {
 
+// Contains metadata for a split tab collection such as the id and split layout
+// orientation. Also provides a way to access a the list of tabs in the split.
 class SplitTabData {
  public:
-  // TODO(crbug.com/392951786): Replace TabStripModel with SplitTabCollection.
-  SplitTabData(TabStripModel* controller,
+  SplitTabData(tabs::SplitTabCollection* controller,
                const split_tabs::SplitTabId& id,
                tabs::SplitTabLayout split_layout);
   ~SplitTabData();
@@ -29,10 +27,10 @@ class SplitTabData {
   }
   tabs::SplitTabLayout split_layout() const { return split_layout_; }
 
-  std::vector<tabs::TabInterface*> ListTabs() const;
+  std::vector<tabs::TabModel*> ListTabs() const;
 
  private:
-  raw_ptr<TabStripModel> controller_;
+  raw_ptr<tabs::SplitTabCollection> controller_;
   tabs::SplitTabLayout split_layout_;
   split_tabs::SplitTabId id_;
 };

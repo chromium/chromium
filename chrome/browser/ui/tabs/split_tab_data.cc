@@ -4,27 +4,19 @@
 
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
 
 namespace split_tabs {
 
-SplitTabData::SplitTabData(TabStripModel* controller,
+SplitTabData::SplitTabData(tabs::SplitTabCollection* controller,
                            const split_tabs::SplitTabId& id,
                            tabs::SplitTabLayout split_layout)
     : controller_(controller), split_layout_(split_layout), id_(id) {}
 
 SplitTabData::~SplitTabData() = default;
 
-std::vector<tabs::TabInterface*> SplitTabData::ListTabs() const {
-  std::vector<tabs::TabInterface*> tabs;
-  for (int i = 0; i < controller_->GetTabCount(); i++) {
-    tabs::TabInterface* tab = controller_->GetTabAtIndex(i);
-    if (tab->GetSplit() == id_) {
-      tabs.emplace_back(tab);
-    }
-  }
-  return tabs;
+std::vector<tabs::TabModel*> SplitTabData::ListTabs() const {
+  return controller_->GetTabsRecursive();
 }
 
 }  // namespace split_tabs

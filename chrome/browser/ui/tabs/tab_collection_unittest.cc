@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -219,7 +220,8 @@ TEST_F(PinnedTabCollectionTest, CollectionOperations) {
 
   std::unique_ptr<tabs::TabCollection> collection =
       std::make_unique<tabs::SplitTabCollection>(
-          split_tabs::SplitTabId::GenerateNew());
+          split_tabs::SplitTabId::GenerateNew(),
+          tabs::SplitTabLayout::kHorizontal);
   tabs::TabCollection* collection_ptr = collection.get();
   EXPECT_EQ(pinned_collection_instance->GetIndexOfCollection(collection_ptr),
             std::nullopt);
@@ -320,7 +322,8 @@ class SplitTabCollectionTest : public TabCollectionBaseTest {
  public:
   SplitTabCollectionTest() {
     split_collection_ = std::make_unique<tabs::SplitTabCollection>(
-        split_tabs::SplitTabId::GenerateNew());
+        split_tabs::SplitTabId::GenerateNew(),
+        tabs::SplitTabLayout::kHorizontal);
   }
   SplitTabCollectionTest(const SplitTabCollectionTest&) = delete;
   SplitTabCollectionTest& operator=(const SplitTabCollectionTest&) = delete;
@@ -670,6 +673,86 @@ TEST_F(TabStripCollectionTest, GroupOperations) {
   EXPECT_EQ(nullptr, tab_strip_collection->GetTabGroupCollection(group_two_id));
 }
 
+TEST_F(TabStripCollectionTest, SplitOperations) {
+  PerformBasicSetup();
+  tabs::TabStripCollection* tab_strip_collection = GetCollection();
+  tabs::PinnedTabCollection* pinned_collection =
+      tab_strip_collection->pinned_collection();
+  tabs::UnpinnedTabCollection* unpinned_collection =
+      tab_strip_collection->unpinned_collection();
+
+  // Get the group collection from the basic setup.
+  tabs::TabGroupTabCollection* group_collection =
+      static_cast<tabs::TabGroupTabCollection*>(
+          GetCollectionInCollectionStorage(
+              unpinned_collection->GetTabCollectionStorageForTesting(), 2));
+
+  auto createSplitAtIndices = [tab_strip_collection](std::vector<int> indices) {
+    std::vector<tabs::TabModel*> tabs;
+    for (int i : indices) {
+      tabs.push_back(tab_strip_collection->GetTabAtIndexRecursive(i));
+    }
+    split_tabs::SplitTabId split_id = tab_strip_collection->CreateSplit(
+        tabs, tabs::SplitTabLayout::kHorizontal);
+    return std::tuple{
+        tabs, tab_strip_collection->GetSplitTabCollection(split_id), split_id};
+  };
+
+  // Add split to pinned container
+  // 0p 1ps 2ps 3p 4u 5u 6ug 7ug 8u
+  EXPECT_EQ(4ul, pinned_collection->ChildCount());
+  EXPECT_EQ(4ul, pinned_collection->TabCountRecursive());
+
+  auto [tabs, split, split_id] = createSplitAtIndices({1, 2});
+  EXPECT_EQ(split_id, split->GetSplitTabId());
+  EXPECT_EQ(3ul, pinned_collection->ChildCount());
+  EXPECT_EQ(4ul, pinned_collection->TabCountRecursive());
+  EXPECT_EQ(1ul, pinned_collection->GetIndexOfCollection(split));
+  EXPECT_EQ(2ul, split->ChildCount());
+  EXPECT_EQ(tabs, split->GetTabsRecursive());
+
+  tab_strip_collection->Unsplit(split_id);
+  EXPECT_EQ(nullptr, tab_strip_collection->GetSplitTabCollection(split_id));
+  EXPECT_EQ(4ul, pinned_collection->ChildCount());
+  EXPECT_EQ(4ul, pinned_collection->TabCountRecursive());
+
+  // Add split to unpinned container.
+  // 0p 1p 2p 3p 4us 5us 6ug 7ug 8u
+  EXPECT_EQ(4ul, unpinned_collection->ChildCount());
+  EXPECT_EQ(5ul, unpinned_collection->TabCountRecursive());
+
+  std::tie(tabs, split, split_id) = createSplitAtIndices({4, 5});
+  EXPECT_EQ(split_id, split->GetSplitTabId());
+  EXPECT_EQ(3ul, unpinned_collection->ChildCount());
+  EXPECT_EQ(5ul, unpinned_collection->TabCountRecursive());
+  EXPECT_EQ(0ul, unpinned_collection->GetIndexOfCollection(split));
+  EXPECT_EQ(2ul, split->ChildCount());
+  EXPECT_EQ(tabs, split->GetTabsRecursive());
+
+  tab_strip_collection->Unsplit(split_id);
+  EXPECT_EQ(nullptr, tab_strip_collection->GetSplitTabCollection(split_id));
+  EXPECT_EQ(4ul, unpinned_collection->ChildCount());
+  EXPECT_EQ(5ul, unpinned_collection->TabCountRecursive());
+
+  // Add split to group container.
+  // 0p 1p 2p 3p 4u 5u 6ugs 7ugs 8u
+  EXPECT_EQ(2ul, group_collection->ChildCount());
+  EXPECT_EQ(2ul, group_collection->TabCountRecursive());
+
+  std::tie(tabs, split, split_id) = createSplitAtIndices({6, 7});
+  EXPECT_EQ(split_id, split->GetSplitTabId());
+  EXPECT_EQ(1ul, group_collection->ChildCount());
+  EXPECT_EQ(2ul, group_collection->TabCountRecursive());
+  EXPECT_EQ(0ul, group_collection->GetIndexOfCollection(split));
+  EXPECT_EQ(2ul, split->ChildCount());
+  EXPECT_EQ(tabs, split->GetTabsRecursive());
+
+  tab_strip_collection->Unsplit(split_id);
+  EXPECT_EQ(nullptr, tab_strip_collection->GetSplitTabCollection(split_id));
+  EXPECT_EQ(2ul, group_collection->ChildCount());
+  EXPECT_EQ(2ul, group_collection->TabCountRecursive());
+}
+
 TEST_F(TabStripCollectionTest, TabOperations) {
   tabs::TabStripCollection* tab_strip_collection = GetCollection();
 
@@ -945,7 +1028,8 @@ TEST_F(TabStripCollectionTest, UpdateProperties) {
   tabs::SplitTabCollection* split_collection =
       unpinned_collection->AddCollection(
           std::make_unique<tabs::SplitTabCollection>(
-              split_tabs::SplitTabId::GenerateNew()),
+              split_tabs::SplitTabId::GenerateNew(),
+              tabs::SplitTabLayout::kHorizontal),
           unpinned_collection->ChildCount());
   AppendTab(split_collection, std::make_unique<tabs::TabModel>(
                                   MakeWebContents(), GetTabStripModel()));

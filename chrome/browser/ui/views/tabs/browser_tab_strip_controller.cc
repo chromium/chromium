@@ -1029,7 +1029,7 @@ void BrowserTabStripController::OnDiscardRingTreatmentEnabledChanged() {
 
 int BrowserTabStripController::GetIndexOfLastFocusedTabInSplit(
     int model_index) {
-  const std::vector<tabs::TabInterface*> split_tabs =
+  const std::vector<tabs::TabModel*> split_tabs =
       browser()
           ->tab_strip_model()
           ->GetSplitData(tabstrip_->tab_at(model_index)->split().value())
@@ -1037,8 +1037,8 @@ int BrowserTabStripController::GetIndexOfLastFocusedTabInSplit(
 
   tabs::TabInterface* recently_active = *std::max_element(
       split_tabs.begin(), split_tabs.end(),
-      [](tabs::TabInterface* a, tabs::TabInterface* b) {
-        auto get_last_focused_time_for_tab = [](const tabs::TabInterface* tab) {
+      [](tabs::TabModel* a, tabs::TabModel* b) {
+        auto get_last_focused_time_for_tab = [](const tabs::TabModel* tab) {
           return resource_coordinator::TabLifecycleUnitSource::
               GetTabLifecycleUnitExternal(tab->GetContents())
                   ->GetLastFocusedTime();

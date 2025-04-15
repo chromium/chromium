@@ -23,6 +23,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
@@ -283,6 +284,11 @@ class TabStripModel : public TabGroupController {
   // Closes the WebContents at the specified index. This causes the
   // WebContents to be destroyed, but it may not happen immediately.
   // |close_types| is a bitmask of CloseTypes.
+  // TODO(crbug.com/392950857): Currently many call sites of CloseWebContentsAt
+  // convert a tab/webcontents to an index, which gets converted back to a
+  // webcontents within this function. Provide a CloseWebContents function that
+  // directly closes a web contents so that we don't have to convert back and
+  // forth.
   void CloseWebContentsAt(int index, uint32_t close_types);
 
   // Discards the WebContents at |index| and replaces it with |new_contents|.
@@ -453,8 +459,7 @@ class TabStripModel : public TabGroupController {
   // closed.
   bool IsTabClosable(const content::WebContents* contents) const;
 
-  const split_tabs::SplitTabData* GetSplitData(
-      split_tabs::SplitTabId split_id) const;
+  split_tabs::SplitTabData* GetSplitData(split_tabs::SplitTabId split_id) const;
 
   bool ContainsSplit(split_tabs::SplitTabId split_id) const;
 
@@ -948,8 +953,7 @@ class TabStripModel : public TabGroupController {
   std::vector<int> GetSelectedPinnedTabs();
   std::vector<int> GetSelectedUnpinnedTabs();
 
-  split_tabs::SplitTabId AddToSplitImpl(split_tabs::SplitTabId split_id,
-                                        std::vector<int> indices,
+  split_tabs::SplitTabId AddToSplitImpl(std::vector<int> indices,
                                         tabs::SplitTabLayout tab_layout);
 
   void RemoveSplitImpl(split_tabs::SplitTabId split_id);
@@ -1146,11 +1150,6 @@ class TabStripModel : public TabGroupController {
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;
-
-  // TODO(crbug.com/392951786): Remove this and use the information from
-  // collections.
-  std::map<split_tabs::SplitTabId, std::unique_ptr<split_tabs::SplitTabData>>
-      split_tab_data_map_;
 
   base::WeakPtrFactory<TabStripModel> weak_factory_{this};
 };

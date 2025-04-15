@@ -1430,28 +1430,27 @@ void TabStripModel::MoveTabPrevious() {
   MoveTabRelative(TabRelativeDirection::kPrevious);
 }
 
-const split_tabs::SplitTabData* TabStripModel::GetSplitData(
+split_tabs::SplitTabData* TabStripModel::GetSplitData(
     split_tabs::SplitTabId split_id) const {
-  CHECK(ContainsSplit(split_id));
-  return split_tab_data_map_.at(split_id).get();
+  const tabs::SplitTabCollection* split =
+      contents_data_->GetSplitTabCollection(split_id);
+  CHECK(split);
+  return split->data();
 }
 
 bool TabStripModel::ContainsSplit(split_tabs::SplitTabId split_id) const {
-  return split_tab_data_map_.find(split_id) != split_tab_data_map_.end();
+  return contents_data_->GetSplitTabCollection(split_id);
 }
 
 bool TabStripModel::InsertionBreaksSplitContiguity(int index) {
   CHECK(index >= 0 && index <= count());
-
-  if (!ContainsIndex(index - 1) || !ContainsIndex(index)) {
+  if (!ContainsIndex(index)) {
     return false;
   }
-
-  std::optional<split_tabs::SplitTabId> split_id_previous =
-      GetSplitForTab(index - 1);
-  std::optional<split_tabs::SplitTabId> split_id_next = GetSplitForTab(index);
-
-  return split_id_previous.has_value() && split_id_previous == split_id_next;
+  tabs::TabInterface* tab = GetTabAtIndex(index);
+  return tab->IsSplit() &&
+         contents_data_->GetSplitTabCollection(tab->GetSplit().value())
+                 ->GetIndexOfTab(tab) > 0;
 }
 
 std::optional<split_tabs::SplitTabId> TabStripModel::MoveBreaksSplitContiguity(
@@ -1521,7 +1520,7 @@ void TabStripModel::UpdateSplitLayout(split_tabs::SplitTabId split_id,
                                       tabs::SplitTabLayout tab_layout) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  split_tab_data_map_[split_id]->set_split_layout(tab_layout);
+  GetSplitData(split_id)->set_split_layout(tab_layout);
 
   for (TabStripModelObserver& observer : observers_) {
     observer.OnSplitTabOrientationChanged(split_id, tab_layout);
@@ -1568,8 +1567,7 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   CHECK(active_index() != kNoTab);
   CHECK(active_index() != indices[0]);
 
-  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
-  return AddToSplitImpl(split_id, indices, tab_layout);
+  return AddToSplitImpl(indices, tab_layout);
 }
 
 void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
@@ -3165,7 +3163,6 @@ std::vector<int> TabStripModel::GetSelectedUnpinnedTabs() {
 }
 
 split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
-    split_tabs::SplitTabId split_id,
     std::vector<int> indices,
     tabs::SplitTabLayout tab_layout) {
   // Insert the active index into the sorted `indices`.
@@ -3184,16 +3181,13 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
                                GetTabGroupForTab(active_index()),
                                IsTabPinned(active_index()));
 
+  split_tabs::SplitTabId split_id =
+      contents_data_->CreateSplit(tabs, tab_layout);
+
   std::vector<std::pair<tabs::TabInterface*, int>> tabs_with_indices;
   for (tabs::TabModel* tab : tabs) {
     tabs_with_indices.emplace_back(tab, GetIndexOfTab(tab));
-    // TODO(crbug.com/392950857): Once SplitTabCollection is hooked up, remove
-    // this and handle in the  `MoveTabRecursive` call.
-    tab->set_split(split_id);
   }
-
-  split_tab_data_map_[split_id] =
-      std::make_unique<split_tabs::SplitTabData>(this, split_id, tab_layout);
 
   // Since the split contains the active tabs, all tabs in the split must be
   // selected.
@@ -3222,12 +3216,7 @@ void TabStripModel::RemoveSplitImpl(split_tabs::SplitTabId split_id) {
   std::vector<std::pair<tabs::TabInterface*, int>> tabs_with_indices =
       GetTabsAndIndicesInSplit(split_id);
 
-  // TODO(crbug.com/392950857): Use collection API to remove the split.
-  for (const auto& tab_pair : tabs_with_indices) {
-    GetTabModelAtIndex(tab_pair.second)->set_split(std::nullopt);
-  }
-
-  split_tab_data_map_.erase(split_id);
+  contents_data_->Unsplit(split_id);
 
   for (TabStripModelObserver& observer : observers_) {
     observer.OnSplitTabRemoved(
@@ -4274,13 +4263,19 @@ std::optional<int> TabStripModel::DetermineNewSelectedIndex(
 std::vector<std::pair<tabs::TabInterface*, int>>
 TabStripModel::GetTabsAndIndicesInSplit(split_tabs::SplitTabId split_id) {
   std::vector<std::pair<tabs::TabInterface*, int>> split_tabs_with_indices;
-  if (split_tab_data_map_.find(split_id) == split_tab_data_map_.end()) {
+  const tabs::SplitTabCollection* split =
+      contents_data_->GetSplitTabCollection(split_id);
+  if (!split) {
     return split_tabs_with_indices;
   }
 
-  for (tabs::TabInterface* split_tab :
-       split_tab_data_map_[split_id]->ListTabs()) {
-    split_tabs_with_indices.emplace_back(split_tab, GetIndexOfTab(split_tab));
+  // All the tabs in a split should be contiguous. Instead of using
+  // GetIndexOfTab multiple times, call it on the first tab, then increment by
+  // one for each subsequent tab.
+  std::vector<tabs::TabModel*> tabs = split->GetTabsRecursive();
+  for (size_t index = GetIndexOfTab(tabs[0]);
+       tabs::TabInterface* split_tab : tabs) {
+    split_tabs_with_indices.emplace_back(split_tab, index++);
   }
 
   return split_tabs_with_indices;
