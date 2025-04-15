@@ -1480,15 +1480,22 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserNonClientFrameViewChromeOSTest,
           views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
   EXPECT_FALSE(immersive_controller->IsEnabled());
 
+  // Caption buttons should be hidden because immersive mode is disabled.
+  BrowserNonClientFrameViewChromeOS* const frame_view =
+      GetFrameViewChromeOS(browser_view);
+  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
+
   EnterTabletMode();
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
+  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 
   ExitTabletMode();
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
+  EXPECT_FALSE(frame_view->caption_button_container()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserNonClientFrameViewChromeOSTest,
@@ -1517,15 +1524,22 @@ IN_PROC_BROWSER_TEST_P(LockedFullscreenBrowserNonClientFrameViewChromeOSTest,
           views::Widget::GetWidgetForNativeView(widget->GetNativeWindow()));
   EXPECT_TRUE(immersive_controller->IsEnabled());
 
+  // Verify caption buttons are visible before entering tablet mode.
+  BrowserNonClientFrameViewChromeOS* const frame_view =
+      GetFrameViewChromeOS(browser_view);
+  EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
+
   EnterTabletMode();
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
   EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
+  EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 
   ExitTabletMode();
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
   EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
   EXPECT_FALSE(IsShelfVisible());
+  EXPECT_TRUE(frame_view->caption_button_container()->GetVisible());
 }
 
 using BrowserNonClientFrameViewAshTestNoWebUiTabStrip =

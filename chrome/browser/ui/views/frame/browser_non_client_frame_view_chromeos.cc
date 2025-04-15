@@ -865,6 +865,12 @@ bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtons() const {
 
 bool BrowserNonClientFrameViewChromeOS::GetShowCaptionButtonsWhenNotInOverview()
     const {
+  // Show the caption buttons if the app happens to be locked for OnTask. Only
+  // relevant for non-web browser scenarios.
+  if (browser_view()->browser()->IsLockedForOnTask()) {
+    return true;
+  }
+
   if (GetHideCaptionButtonsForFullscreen()) {
     return false;
   }
