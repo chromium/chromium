@@ -16,6 +16,8 @@
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/optimization_guide/mock_autofill_optimization_guide.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/payments/bnpl_manager_test_api.h"
 #include "components/autofill/core/browser/payments/constants.h"
@@ -34,6 +36,30 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+namespace autofill {
+class MockCreditCardFormEventLogger
+    : public autofill_metrics::CreditCardFormEventLogger {
+ public:
+  using autofill_metrics::CreditCardFormEventLogger::CreditCardFormEventLogger;
+  MOCK_METHOD(void, OnBnplSuggestionShown, (), (override));
+};
+
+class MockBrowserAutofillManager : public TestBrowserAutofillManager {
+ public:
+  explicit MockBrowserAutofillManager(TestAutofillDriver* driver)
+      : TestBrowserAutofillManager(driver) {}
+  MockBrowserAutofillManager(const MockBrowserAutofillManager&) = delete;
+  MockBrowserAutofillManager& operator=(const MockBrowserAutofillManager&) =
+      delete;
+  ~MockBrowserAutofillManager() override = default;
+
+  MOCK_METHOD(autofill_metrics::CreditCardFormEventLogger&,
+              GetCreditCardFormEventLogger,
+              (),
+              (override));
+};
+}  // namespace autofill
+
 namespace autofill::payments {
 
 using testing::_;
@@ -42,7 +68,9 @@ using testing::Eq;
 using testing::Field;
 using testing::FieldsAre;
 using testing::InSequence;
+using ::testing::NiceMock;
 using testing::Property;
+using testing::ReturnRef;
 using testing::Test;
 
 namespace {
@@ -159,8 +187,17 @@ class BnplManagerTest : public Test {
         ->set_payments_network_interface(std::move(payments_network_interface));
     autofill_driver_ =
         std::make_unique<TestAutofillDriver>(autofill_client_.get());
-    autofill_driver_->set_autofill_manager(
-        std::make_unique<TestBrowserAutofillManager>(autofill_driver_.get()));
+    auto mock_manager_unique_ptr =
+        std::make_unique<NiceMock<MockBrowserAutofillManager>>(
+            autofill_driver_.get());
+    credit_card_form_event_logger_ =
+        std::make_unique<NiceMock<autofill::MockCreditCardFormEventLogger>>(
+            mock_manager_unique_ptr.get());
+
+    ON_CALL(*mock_manager_unique_ptr, GetCreditCardFormEventLogger())
+        .WillByDefault(ReturnRef(*credit_card_form_event_logger_));
+
+    autofill_driver_->set_autofill_manager(std::move(mock_manager_unique_ptr));
     bnpl_manager_ =
         std::make_unique<BnplManager>(static_cast<BrowserAutofillManager*>(
             &autofill_driver_->GetAutofillManager()));
@@ -225,10 +262,17 @@ class BnplManagerTest : public Test {
         autofill_client_->GetPaymentsAutofillClient());
   }
 
+  void TearDown() override {
+    credit_card_form_event_logger_->OnDestroyed();
+    credit_card_form_event_logger_.reset();
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestAutofillClient> autofill_client_;
   std::unique_ptr<TestAutofillDriver> autofill_driver_;
+  std::unique_ptr<autofill::MockCreditCardFormEventLogger>
+      credit_card_form_event_logger_;
   std::unique_ptr<BnplManager> bnpl_manager_;
   raw_ptr<PaymentsNetworkInterfaceMock> payments_network_interface_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -1576,6 +1620,54 @@ TEST_F(BnplManagerTest, InitBnplFlow_SuggestionAcceptedLogged) {
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAcceptedOnce,
       /*expected_bucket_count=*/1);
+}
+
+TEST_F(BnplManagerTest,
+       AddBnplSuggestion_SuggestionUpdatedAndOnBnplSuggestionShownCalled) {
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        std::string(kBnplAffirmIssuerId),
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          std::string(kBnplZipIssuerId));
+
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+
+  EXPECT_CALL(callback, Run);
+  EXPECT_CALL(*credit_card_form_event_logger_, OnBnplSuggestionShown());
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  bnpl_manager_->OnAmountExtractionReturned(50'000'000ULL);
+}
+
+TEST_F(
+    BnplManagerTest,
+    AddBnplSuggestion_SuggestionNotUpdatedAndOnBnplSuggestionShownNotCalled) {
+  SetUpLinkedBnplIssuer(40, 1000, std::string(kBnplAffirmIssuerId), 1234);
+  SetUpUnlinkedBnplIssuer(1000, 2000, std::string(kBnplZipIssuerId));
+
+  base::MockCallback<UpdateSuggestionsCallback> callback;
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry),
+      Suggestion(SuggestionType::kManageCreditCard)};
+
+  EXPECT_CALL(callback, Run).Times(0);
+  EXPECT_CALL(*credit_card_form_event_logger_, OnBnplSuggestionShown())
+      .Times(0);
+
+  bnpl_manager_->NotifyOfSuggestionGeneration(
+      AutofillSuggestionTriggerSource::kUnspecified);
+  bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
+  bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL);
 }
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
