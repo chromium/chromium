@@ -6,24 +6,6 @@
 
 namespace tab_groups {
 
-SelectedTabInfo::SelectedTabInfo() = default;
-
-SelectedTabInfo::SelectedTabInfo(const std::optional<base::Uuid>& tab_group_id,
-                                 const std::optional<base::Uuid>& tab_id,
-                                 const std::optional<std::u16string>& tab_title)
-    : tab_group_id(tab_group_id), tab_id(tab_id), tab_title(tab_title) {}
-
-SelectedTabInfo::SelectedTabInfo(const SelectedTabInfo&) = default;
-
-SelectedTabInfo& SelectedTabInfo::operator=(const SelectedTabInfo&) = default;
-
-SelectedTabInfo::~SelectedTabInfo() = default;
-
-bool SelectedTabInfo::operator==(const SelectedTabInfo& other) const {
-  return tab_group_id == other.tab_group_id && tab_id == other.tab_id &&
-         tab_title == other.tab_title;
-}
-
 CollaborationFinder* TabGroupSyncService::GetCollaborationFinderForTesting() {
   return nullptr;
 }

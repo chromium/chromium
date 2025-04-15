@@ -43,31 +43,6 @@ class ScopedLocalObservationPauser {
   virtual ~ScopedLocalObservationPauser() = default;
 };
 
-// Contains information about the currently selected tab.
-struct SelectedTabInfo {
-  SelectedTabInfo();
-  SelectedTabInfo(const std::optional<base::Uuid>& tab_group_id,
-                  const std::optional<base::Uuid>& tab_id,
-                  const std::optional<std::u16string>& tab_title);
-  ~SelectedTabInfo();
-
-  // Copy / assign.
-  SelectedTabInfo(const SelectedTabInfo&);
-  SelectedTabInfo& operator=(const SelectedTabInfo&);
-
-  // Sync ID of the tab group that the tab belongs to, std::nullopt if the tab
-  // isn't part of any tab group.
-  std::optional<base::Uuid> tab_group_id;
-
-  // Sync ID of the tab.
-  std::optional<base::Uuid> tab_id;
-
-  // Title of the tab.
-  std::optional<std::u16string> tab_title;
-
-  bool operator==(const SelectedTabInfo& other) const;
-};
-
 // The core service class for handling tab group sync across devices. Provides
 // mutation methods to propagate local changes to remote and observer interface
 // to propagate remote changes to the local client.
