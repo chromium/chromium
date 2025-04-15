@@ -27,6 +27,10 @@ base::CallbackListSubscription FakeTabInterface::RegisterWillDeactivate(
   return deactivation_callbacks_.Add(cb);
 }
 
+content::WebContents* FakeTabInterface::GetContents() const {
+  return contents_;
+}
+
 void FakeTabInterface::Activate() {
   is_activated_ = true;
   activation_callbacks_.Notify(this);

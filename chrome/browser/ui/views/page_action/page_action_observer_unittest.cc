@@ -78,14 +78,10 @@ class PageActionObserverTest : public ::testing::Test {
   PageActionObserverTest() : tab_(&profile_) {}
 
   void SetUp() override {
-    controller_ = std::make_unique<PageActionController>(
-        TestPageActionPropertiesProvider(kTestProperties), nullptr,
-        &model_factory_);
-    controller_->Initialize(tab_, {kTestPageActionId});
-  }
-
-  void TearDown() override {
-    controller_.reset();
+    controller_ =
+        std::make_unique<PageActionController>(nullptr, &model_factory_);
+    controller_->Initialize(tab_, {kTestPageActionId},
+                            TestPageActionPropertiesProvider(kTestProperties));
   }
 
   MockPageActionObserver& observer() { return observer_; }

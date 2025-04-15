@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -34,6 +35,7 @@ namespace page_actions {
 class PageActionModelFactory;
 class PageActionModelInterface;
 class PageActionModelObserver;
+class PageActionMetricsRecorder;
 
 // Configuration for a page action's suggestion chip.
 struct SuggestionChipConfig {
@@ -47,15 +49,16 @@ struct SuggestionChipConfig {
 class PageActionController : public PinnedToolbarActionsModel::Observer {
  public:
   explicit PageActionController(
-      const PageActionPropertiesProviderInterface& properties_provider,
       PinnedToolbarActionsModel* pinned_actions_model,
       PageActionModelFactory* page_action_model_factory = nullptr);
   PageActionController(const PageActionController&) = delete;
   PageActionController& operator=(const PageActionController&) = delete;
   ~PageActionController() override;
 
-  void Initialize(tabs::TabInterface& tab_interface,
-                  const std::vector<actions::ActionId>& action_ids);
+  void Initialize(
+      tabs::TabInterface& tab_interface,
+      const std::vector<actions::ActionId>& action_ids,
+      const PageActionPropertiesProviderInterface& properties_provider);
 
   // Request that the page action be shown or hidden.
   void Show(actions::ActionId action_id);
@@ -146,6 +149,10 @@ class PageActionController : public PinnedToolbarActionsModel::Observer {
   const raw_ptr<PageActionModelFactory> page_action_model_factory_ = nullptr;
 
   PageActionModelsMap page_actions_;
+
+  // Metrics recorders associated with ephemeral page actions.
+  // Each recorder handles logging UMA metrics for one specific action id.
+  std::vector<std::unique_ptr<PageActionMetricsRecorder>> metrics_recorders_;
 
   base::ScopedObservation<PinnedToolbarActionsModel,
                           PinnedToolbarActionsModel::Observer>

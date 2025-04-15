@@ -29,6 +29,7 @@ class FakeTabInterface : public tabs::MockTabInterface {
       base::RepeatingCallback<void(TabInterface*)> cb) override;
   base::CallbackListSubscription RegisterWillDeactivate(
       base::RepeatingCallback<void(TabInterface*)> cb) override;
+  content::WebContents* GetContents() const override;
 
   void Activate();
   void Deactivate();

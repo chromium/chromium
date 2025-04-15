@@ -24,6 +24,8 @@ source_set("page_action") {
   sources = [
     "page_action_container_view.cc",
     "page_action_controller.cc",
+    "page_action_metrics_recorder.cc",
+    "page_action_metrics_recorder.h",
     "page_action_model.cc",
     "page_action_model.h",
     "page_action_model_observer.h",
@@ -55,6 +57,7 @@ source_set("unit_tests") {
     "page_action_container_view_unittest.cc",
     "page_action_controller_unittest.cc",
     "page_action_icon_view_unittest.cc",
+    "page_action_metric_recorder_unittest.cc",
     "page_action_model_unittest.cc",
     "page_action_observer_unittest.cc",
     "page_action_view_unittest.cc",

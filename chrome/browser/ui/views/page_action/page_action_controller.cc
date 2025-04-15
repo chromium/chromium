@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
+#include "chrome/browser/ui/views/page_action/page_action_metrics_recorder.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
+#include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/actions/action_id.h"
@@ -16,7 +18,6 @@ namespace page_actions {
 using PassKey = base::PassKey<PageActionController>;
 
 PageActionController::PageActionController(
-    const PageActionPropertiesProviderInterface& properties_provider,
     PinnedToolbarActionsModel* pinned_actions_model,
     PageActionModelFactory* page_action_model_factory)
     : page_action_model_factory_(page_action_model_factory) {
@@ -29,7 +30,8 @@ PageActionController::~PageActionController() = default;
 
 void PageActionController::Initialize(
     tabs::TabInterface& tab_interface,
-    const std::vector<actions::ActionId>& action_ids) {
+    const std::vector<actions::ActionId>& action_ids,
+    const PageActionPropertiesProviderInterface& properties_provider) {
   tab_activated_callback_subscription_ =
       tab_interface.RegisterDidActivate(base::BindRepeating(
           &PageActionController::OnTabActivated, base::Unretained(this)));
@@ -38,6 +40,11 @@ void PageActionController::Initialize(
           &PageActionController::OnTabWillDeactivate, base::Unretained(this)));
   for (actions::ActionId id : action_ids) {
     Register(id, tab_interface.IsActivated());
+
+    auto metric_recorder = std::make_unique<PageActionMetricsRecorder>(
+        tab_interface, properties_provider.GetProperties(id),
+        FindPageActionModel(id));
+    metrics_recorders_.push_back(std::move(metric_recorder));
   }
   if (pinned_actions_observation_.GetSource()) {
     PinnedActionsModelChanged();

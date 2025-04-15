@@ -499,6 +499,12 @@ void PageActionIconController::RecordOverallMetrics() {
 void PageActionIconController::RecordIndividualMetrics(
     PageActionIconType type,
     PageActionIconView* view) const {
+  if (base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
+    // The page action with type `type` has been migrated and associated metrics
+    // will be recorded in the new framework.
+    return;
+  }
+
   CHECK(view->ephemeral());
   base::UmaHistogramEnumeration("PageActionController.Icon.CTR2",
                                 PageActionCTREvent::kShown);

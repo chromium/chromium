@@ -26,6 +26,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -123,9 +125,9 @@ class PageActionViewWithControllerTest : public ChromeViewsTestBase {
   std::unique_ptr<PageActionController> NewPageActionController(
       tabs::TabInterface& tab) const {
     auto controller = std::make_unique<PageActionController>(
-        TestPageActionPropertiesProvider(kTestProperties),
         pinned_actions_model_.get());
-    controller->Initialize(tab, {action_item_->GetActionId().value()});
+    controller->Initialize(tab, {action_item_->GetActionId().value()},
+                           TestPageActionPropertiesProvider(kTestProperties));
     return controller;
   }
 
