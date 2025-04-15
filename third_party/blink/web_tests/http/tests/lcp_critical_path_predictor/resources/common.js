@@ -15,7 +15,6 @@ export async function setupLCPTest(params = {}) {
     const hint = new LCPCriticalPathPredictorNavigationTimeHint();
     // All fields are non-nullable.
     hint.lcpElementLocators = [];
-    hint.lcpElementLocatorsAll = [];
     hint.lcpInfluencerScripts = params.lcpInfluencerScripts || [];
     hint.fetchedFonts = params.fetchedFonts || [];
     hint.preconnectOrigins = params.preconnectOrigins || [];
@@ -35,11 +34,6 @@ export async function setupLCPTest(params = {}) {
         Array.isArray(params) ? params : params.lcp_locator_protos || [];
     for (let proto of lcp_locator_protos) {
       hint.lcpElementLocators.push(await getLCPBytes(proto));
-    }
-
-    const lcp_locator_protos_all = params.lcp_locator_protos_all || [];
-    for (let proto of lcp_locator_protos_all) {
-      hint.lcpElementLocatorsAll.push(await getLCPBytes(proto));
     }
 
     const web_test_control_host_remote =

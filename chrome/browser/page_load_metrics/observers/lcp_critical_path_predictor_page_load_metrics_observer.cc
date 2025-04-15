@@ -624,7 +624,6 @@ LcpCriticalPathPredictorPageLoadMetricsObserver::OnCommit(
       navigation_handle->GetLCPPNavigationHint();
   if (hint) {
     if (!hint->lcp_element_locators.empty() ||
-        !hint->lcp_element_locators_all.empty() ||
         !hint->lcp_influencer_scripts.empty() ||
         !hint->preconnect_origins.empty()) {
       is_lcpp_hinted_navigation_ = true;
