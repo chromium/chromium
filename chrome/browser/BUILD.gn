@@ -6776,6 +6776,8 @@ static_library("browser") {
       "enterprise/signin/user_policy_oidc_signin_service.h",
       "enterprise/signin/user_policy_oidc_signin_service_factory.cc",
       "enterprise/signin/user_policy_oidc_signin_service_factory.h",
+      "enterprise/webstore/chrome_web_store_navigation_throttle.cc",
+      "enterprise/webstore/chrome_web_store_navigation_throttle.h",
       "enterprise/webstore/features.cc",
       "enterprise/webstore/features.h",
       "policy/cloud/profile_token_policy_web_signin_service.cc",
