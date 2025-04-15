@@ -34,6 +34,7 @@
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_paths.h"
@@ -53,6 +54,10 @@
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/test/base/android/android_ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
 #endif
 
 namespace extensions {
@@ -209,6 +214,16 @@ ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
       // TODO(crbug.com/40261741): Move this ScopedCurrentChannel down into
       // tests that specifically require it.
       current_channel_(version_info::Channel::UNKNOWN),
+      override_prompt_for_external_extensions_(
+          FeatureSwitch::prompt_for_external_extensions(),
+          false),
+#if BUILDFLAG(IS_WIN)
+      user_desktop_override_(base::DIR_USER_DESKTOP),
+      common_desktop_override_(base::DIR_COMMON_DESKTOP),
+      user_quick_launch_override_(base::DIR_USER_QUICK_LAUNCH),
+      start_menu_override_(base::DIR_START_MENU),
+      common_start_menu_override_(base::DIR_COMMON_START_MENU),
+#endif
       verifier_format_override_(crx_file::VerifierFormat::CRX3) {
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
 }
@@ -243,6 +258,8 @@ const Extension* ExtensionPlatformBrowserTest::GetExtensionByPath(
 }
 
 void ExtensionPlatformBrowserTest::SetUp() {
+  test_extension_cache_ = std::make_unique<ExtensionCacheFake>();
+
   EnsureBrowserContextKeyedServiceFactoriesBuilt();
   PlatformBrowserTest::SetUp();
 }
@@ -261,6 +278,22 @@ void ExtensionPlatformBrowserTest::SetUpCommandLine(
     ignore_content_verification_ =
         std::make_unique<ScopedIgnoreContentVerifierForTest>();
   }
+
+  if (!ShouldEnableInstallVerification()) {
+    ignore_install_verification_ =
+        std::make_unique<ScopedInstallVerifierBypassForTest>();
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (set_chromeos_user_) {
+    // This makes sure that we create the Default profile first, with no
+    // ExtensionService and then the real profile with one, as we do when
+    // running on chromeos.
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
+                                    "testuser@gmail.com");
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
+  }
+#endif
 }
 
 void ExtensionPlatformBrowserTest::SetUpOnMainThread() {

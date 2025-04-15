@@ -8,7 +8,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_path_override.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
+#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/disable_reason.h"
@@ -19,6 +23,7 @@
 #include "extensions/browser/sandboxed_unpacker.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 
 class Profile;
@@ -32,6 +37,7 @@ class WebContents;
 namespace extensions {
 class Extension;
 class ExtensionBrowserTestPlatformDelegate;
+class ExtensionCache;
 class ExtensionHost;
 class ExtensionRegistrar;
 class ExtensionSet;
@@ -337,6 +343,8 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
     return test_notification_observer_.get();
   }
 
+  ExtensionCache* extension_cache() { return test_extension_cache_.get(); }
+
   // Set to "chrome/test/data/extensions". Derived classes may override.
   base::FilePath test_data_dir_;
 
@@ -345,6 +353,12 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   // An override so that chrome-extensions://<extension_id>/_test_resources/foo
   // maps to chrome/test/data/extensions/foo.
   ExtensionProtocolTestHandler test_protocol_handler_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // True if the command line should be tweaked as if ChromeOS user is
+  // already logged in.
+  bool set_chromeos_user_ = true;
+#endif
 
  private:
   // Common implementation for all our various install and update methods.
@@ -380,6 +394,24 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   // its own scoped channel override. As this stands, it means we don't really
   // have non-trunk coverage for most extension browser tests.
   ScopedCurrentChannel current_channel_;
+
+  // Disable external install UI.
+  FeatureSwitch::ScopedOverride override_prompt_for_external_extensions_;
+
+#if BUILDFLAG(IS_WIN)
+  // Use mock shortcut directories to ensure app shortcuts are cleaned up.
+  base::ScopedPathOverride user_desktop_override_;
+  base::ScopedPathOverride common_desktop_override_;
+  base::ScopedPathOverride user_quick_launch_override_;
+  base::ScopedPathOverride start_menu_override_;
+  base::ScopedPathOverride common_start_menu_override_;
+#endif
+
+  std::unique_ptr<ExtensionCache> test_extension_cache_;
+
+  // Conditionally disable install verification.
+  std::unique_ptr<ScopedInstallVerifierBypassForTest>
+      ignore_install_verification_;
 
   // Conditionally disable content verification.
   std::unique_ptr<ScopedIgnoreContentVerifierForTest>

@@ -66,7 +66,6 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/uninstall_reason.h"
-#include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/common/api/web_accessible_resources.h"
 #include "extensions/common/api/web_accessible_resources_mv2.h"
 #include "extensions/common/constants.h"
@@ -78,10 +77,6 @@
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_background_page_waiter.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "ash/constants/ash_switches.h"
-#endif
-
 using extensions::mojom::ManifestLocation;
 
 namespace extensions {
@@ -89,20 +84,7 @@ namespace extensions {
 using extensions::service_worker_test_utils::TestServiceWorkerContextObserver;
 
 ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
-    : ExtensionPlatformBrowserTest(context_type),
-      override_prompt_for_external_extensions_(
-          FeatureSwitch::prompt_for_external_extensions(),
-          false)
-#if BUILDFLAG(IS_WIN)
-      ,
-      user_desktop_override_(base::DIR_USER_DESKTOP),
-      common_desktop_override_(base::DIR_COMMON_DESKTOP),
-      user_quick_launch_override_(base::DIR_USER_QUICK_LAUNCH),
-      start_menu_override_(base::DIR_START_MENU),
-      common_start_menu_override_(base::DIR_COMMON_START_MENU)
-#endif
-{
-}
+    : ExtensionPlatformBrowserTest(context_type) {}
 
 ExtensionBrowserTest::~ExtensionBrowserTest() = default;
 
@@ -129,33 +111,12 @@ Profile* ExtensionBrowserTest::profile() {
   return profile_;
 }
 
-void ExtensionBrowserTest::SetUp() {
-  test_extension_cache_ = std::make_unique<ExtensionCacheFake>();
-  ExtensionPlatformBrowserTest::SetUp();
-}
-
 void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   ExtensionPlatformBrowserTest::SetUpCommandLine(command_line);
-
-  if (!ShouldEnableInstallVerification()) {
-    ignore_install_verification_ =
-        std::make_unique<ScopedInstallVerifierBypassForTest>();
-  }
 
   if (ShouldAllowMV2Extensions()) {
     mv2_enabler_.emplace();
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  if (set_chromeos_user_) {
-    // This makes sure that we create the Default profile first, with no
-    // ExtensionService and then the real profile with one, as we do when
-    // running on chromeos.
-    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
-                                    "testuser@gmail.com");
-    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
-  }
-#endif
 }
 
 void ExtensionBrowserTest::SetUpOnMainThread() {
@@ -163,7 +124,7 @@ void ExtensionBrowserTest::SetUpOnMainThread() {
 
   ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
   if (updater->enabled()) {
-    updater->SetExtensionCacheForTesting(test_extension_cache_.get());
+    updater->SetExtensionCacheForTesting(extension_cache());
   }
 
   content::URLDataSource::Add(profile(),
