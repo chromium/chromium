@@ -356,10 +356,10 @@ std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
     return result;
 
   for (const auto& value : link_header_util::SplitLinkHeader(link_header)) {
-    std::string link_url;
     std::unordered_map<std::string, std::optional<std::string>> link_params;
-    if (!link_header_util::ParseLinkHeaderValue(value.first, value.second,
-                                                &link_url, &link_params)) {
+    std::optional<std::string> link_url =
+        link_header_util::ParseLinkHeaderValue(value, link_params);
+    if (!link_url) {
       continue;
     }
 
@@ -373,7 +373,7 @@ std::map<GURL, net::SHA256HashValue> GetAllowedAltSXG(
             &header_integrity_value)) {
       continue;
     }
-    result[main_exchange.inner_url().Resolve(link_url)] =
+    result[main_exchange.inner_url().Resolve(*link_url)] =
         header_integrity_value;
   }
   return result;

@@ -19,9 +19,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   for (const auto& pair : result) {
     assert(pair.first < pair.second);
-    std::string url;
     std::unordered_map<std::string, std::optional<std::string>> params;
-    std::ignore = ParseLinkHeaderValue(pair.first, pair.second, &url, &params);
+    std::ignore = ParseLinkHeaderValue(pair, params);
   }
 
   return 0;

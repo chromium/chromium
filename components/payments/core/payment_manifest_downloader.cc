@@ -307,10 +307,10 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
   }
 
   for (const auto& value : link_header_util::SplitLinkHeader(link_header)) {
-    std::string link_url;
     std::unordered_map<std::string, std::optional<std::string>> params;
-    if (!link_header_util::ParseLinkHeaderValue(value.first, value.second,
-                                                &link_url, &params)) {
+    std::optional<std::string> link_url =
+        link_header_util::ParseLinkHeaderValue(value, params);
+    if (!link_url) {
       continue;
     }
 
@@ -323,7 +323,7 @@ void PaymentManifestDownloader::OnURLLoaderCompleteInternal(
         base::SplitString(rel->second.value_or(""), HTTP_LWS,
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (base::Contains(rel_parts, "payment-method-manifest")) {
-      GURL payment_method_manifest_url = final_url.Resolve(link_url);
+      GURL payment_method_manifest_url = final_url.Resolve(*link_url);
 
       if (!IsValidManifestUrl(payment_method_manifest_url, *log_,
                               &error_message)) {

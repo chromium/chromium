@@ -5,6 +5,9 @@
 #include "components/link_header_util/link_header_util.h"
 
 #include <algorithm>
+#include <string>
+#include <string_view>
+#include <unordered_map>
 
 #include "base/strings/string_util.h"
 #include "net/http/http_util.h"
@@ -101,34 +104,32 @@ class ValueTokenizer {
   std::string::const_iterator end_;
 };
 
-// Parses the URL part of a Link header. When successful |url_begin| points
-// to the beginning of the url, |url_end| points to the end of the url and
-// |params_begin| points to the first character after the '>' character at the
-// end of the url.
-bool ExtractURL(std::string::const_iterator begin,
-                std::string::const_iterator end,
-                std::string::const_iterator* url_begin,
-                std::string::const_iterator* url_end,
-                std::string::const_iterator* params_begin) {
+// Parses the URL part of a Link header. When successful, returns the URL and
+// sets `params_string` to include the portion of the header after the
+// '>' character at the end of the URL.
+std::optional<std::string> ExtractURL(std::string_view header,
+                                      std::string_view& params_string) {
   // Extract the URL part (everything between '<' and first '>' character).
-  if (*begin != '<')
-    return false;
+  // ParseLinkHeaderValue() ensures `header` is non-empty, so no need to check
+  // for that.
+  if (header.front() != '<') {
+    return std::nullopt;
+  }
 
-  ++begin;
-  *url_begin = begin;
-  *url_end = std::find(begin, end, '>');
+  size_t url_begin = 1;
+  size_t url_end = header.find('>');
 
   // Fail if we did not find a '>'.
-  if (*url_end == end)
-    return false;
+  if (url_end == std::string_view::npos) {
+    return std::nullopt;
+  }
 
-  *params_begin = *url_end;
   // Skip the '>' at the end of the URL.
-  ++*params_begin;
+  params_string = header.substr(url_end + 1);
 
-  // Trim whitespace from the URL.
-  net::HttpUtil::TrimLWS(url_begin, url_end);
-  return true;
+  // Trim whitespace around the URL, and copy to a string.
+  return std::string(
+      net::HttpUtil::TrimLWS(header.substr(url_begin, url_end - url_begin)));
 }
 
 }  // namespace
@@ -145,53 +146,64 @@ std::vector<StringIteratorPair> SplitLinkHeader(const std::string& header) {
 
 // Parses one link in a link header into its url and parameters.
 // A link is of the form "<some-url>; param1=value1; param2=value2".
-// Returns false if parsing the link failed, returns true on success. This
-// method is more lenient than the RFC. It doesn't fail on things like invalid
-// characters in the URL, and also doesn't verify that certain parameters should
-// or shouldn't be quoted strings.
+// Returns nullopt if parsing the link failed, returns the URL as a string on
+// success. This method is more lenient than the RFC. It doesn't fail on things
+// like invalid characters in the URL, and also doesn't verify that certain
+// parameters should or shouldn't be quoted strings.
+//
 // If a parameter occurs more than once in the link, only the first value is
 // returned in params as this is the required behavior for all attributes chrome
 // currently cares about in link headers.
-bool ParseLinkHeaderValue(
-    std::string::const_iterator begin,
-    std::string::const_iterator end,
-    std::string* url,
-    std::unordered_map<std::string, std::optional<std::string>>* params) {
+std::optional<std::string> ParseLinkHeaderValue(
+    std::string_view header,
+    std::unordered_map<std::string, std::optional<std::string>>& params) {
   // Can't parse an empty string.
-  if (begin == end)
-    return false;
+  if (header.empty()) {
+    return std::nullopt;
+  }
 
   // Extract the URL part (everything between '<' and first '>' character).
-  std::string::const_iterator url_begin;
-  std::string::const_iterator url_end;
-  if (!ExtractURL(begin, end, &url_begin, &url_end, &begin))
-    return false;
-  *url = std::string(url_begin, url_end);
+  std::string_view params_string;
+  auto url = ExtractURL(header, params_string);
+  if (!url) {
+    return std::nullopt;
+  }
 
   // Trim any remaining whitespace, and make sure there is a ';' separating
   // parameters from the URL.
-  std::string_view value = net::HttpUtil::TrimLWS(std::string_view(begin, end));
-  if (!value.empty() && value.front() != ';') {
-    return false;
+  params_string = net::HttpUtil::TrimLWS(params_string);
+  if (!params_string.empty() && params_string.front() != ';') {
+    return std::nullopt;
   }
 
   // Parse all the parameters.
   net::HttpUtil::NameValuePairsIterator params_iterator(
-      value, /*delimiter=*/';',
+      params_string, /*delimiter=*/';',
       net::HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (params_iterator.GetNext()) {
     if (!net::HttpUtil::IsParmName(params_iterator.name())) {
-      return false;
+      return std::nullopt;
     }
     std::string name = base::ToLowerASCII(params_iterator.name());
     if (!params_iterator.value_is_quoted() && params_iterator.value().empty()) {
-      params->insert(std::make_pair(name, std::nullopt));
+      params.emplace(std::move(name), std::nullopt);
     } else {
-      params->insert(std::make_pair(name, params_iterator.value()));
+      params.emplace(std::move(name), params_iterator.value());
     }
   }
-  return params_iterator.valid();
+  if (!params_iterator.valid()) {
+    return std::nullopt;
+  }
+  return url;
+}
+
+std::optional<std::string> ParseLinkHeaderValue(
+    const StringIteratorPair& string_iterator_pair,
+    std::unordered_map<std::string, std::optional<std::string>>& params) {
+  return ParseLinkHeaderValue(
+      std::string_view(string_iterator_pair.first, string_iterator_pair.second),
+      params);
 }
 
 }  // namespace link_header_util
