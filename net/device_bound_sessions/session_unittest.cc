@@ -311,7 +311,7 @@ TEST_F(SessionTest, NotDeferredSubdomain) {
   EXPECT_FALSE(is_deferred);
 }
 
-TEST_F(SessionTest, DeferredIncludedSubdomain) {
+TEST_F(SessionTest, NotDeferredIncludedSubdomain) {
   // Unless include site is specified, only same origin will be
   // matched even if the spec adds an include for a different
   // origin.
@@ -323,6 +323,30 @@ TEST_F(SessionTest, DeferredIncludedSubdomain) {
   spec.domain = "test.example.test";
   spec.path = "/index.html";
   params.scope.specifications.push_back(spec);
+  auto session_or_error = Session::CreateIfValid(params);
+  ASSERT_TRUE(session_or_error.has_value());
+  std::unique_ptr<Session> session = std::move(*session_or_error);
+  ASSERT_TRUE(session);
+  net::TestDelegate delegate;
+  std::unique_ptr<URLRequest> request =
+      context_->CreateRequest(url_subdomain, IDLE, &delegate, kDummyAnnotation);
+  request->set_site_for_cookies(SiteForCookies::FromUrl(url_subdomain));
+  ASSERT_FALSE(
+      session->ShouldDeferRequest(request.get(), FirstPartySetMetadata()));
+}
+
+TEST_F(SessionTest, DeferredIncludedSubdomain) {
+  // Since `include_site` is true, a different origin can be
+  // matched when the spec includes it.
+  const char subdomain[] = "https://test.example.test/index.html";
+  const GURL url_subdomain(subdomain);
+  auto params = CreateValidParams();
+  SessionParams::Scope::Specification spec;
+  spec.type = SessionParams::Scope::Specification::Type::kInclude;
+  spec.domain = "test.example.test";
+  spec.path = "/index.html";
+  params.scope.specifications.push_back(spec);
+  params.scope.include_site = true;
   auto session_or_error = Session::CreateIfValid(params);
   ASSERT_TRUE(session_or_error.has_value());
   std::unique_ptr<Session> session = std::move(*session_or_error);

@@ -30,11 +30,6 @@ bool IsIncludeSiteAllowed(const url::Origin& origin) {
   return !domain_and_registry.empty() && origin.host() == domain_and_registry;
 }
 
-SessionInclusionRules::InclusionResult AsInclusionResult(bool should_include) {
-  return should_include ? SessionInclusionRules::kInclude
-                        : SessionInclusionRules::kExclude;
-}
-
 // Types of characters valid in IPv6 addresses.
 // Derived from logic in url::DoIPv6AddressToNumber() and url::DoParseIPv6().
 bool IsValidIPv6Char(char c) {
@@ -245,7 +240,11 @@ bool SessionInclusionRules::AddUrlRuleIfValid(InclusionResult rule_type,
 SessionInclusionRules::InclusionResult
 SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
   bool same_origin = origin_.IsSameOriginWith(url);
-  if (!may_include_site_ && !same_origin) {
+  if (include_site_ && !include_site_->IsSameSiteWith(url)) {
+    return SessionInclusionRules::kExclude;
+  }
+
+  if (!include_site_ && !same_origin) {
     return SessionInclusionRules::kExclude;
   }
 
@@ -261,12 +260,7 @@ SessionInclusionRules::EvaluateRequestUrl(const GURL& url) const {
     }
   }
 
-  // None of the specific rules apply. Evaluate against the basic include rule.
-  if (include_site_) {
-    return AsInclusionResult(include_site_->IsSameSiteWith(url));
-  }
-
-  return AsInclusionResult(same_origin);
+  return SessionInclusionRules::kInclude;
 }
 
 bool SessionInclusionRules::UrlRule::MatchesHostAndPath(const GURL& url) const {

@@ -261,19 +261,20 @@ TEST(SessionInclusionRulesTest, AddUrlRuleToOriginThatMayIncludeSite) {
 
   EXPECT_EQ(inclusion_rules.num_url_rules_for_testing(), 3u);
 
-  CheckEvaluateUrlTestCases(inclusion_rules,
-                            {// Path is excluded by rule.
-                             {"https://site.test/static", Result::kExclude},
-                             // Rule excludes URL explicitly.
-                             {"https://excluded.site.test", Result::kExclude},
-                             // Rule includes URL explicitly.
-                             {"https://included.site.test", Result::kInclude},
-                             // Rule does not apply to wrong scheme.
-                             {"http://included.site.test", Result::kExclude},
-                             // No rules applies to these URLs, so the basic
-                             // rules (origin) applies.
-                             {"https://other.site.test", Result::kExclude},
-                             {"https://site.test/stuff", Result::kInclude}});
+  CheckEvaluateUrlTestCases(
+      inclusion_rules,
+      {// Path is excluded by rule.
+       {"https://site.test/static", Result::kExclude},
+       // Rule excludes URL explicitly.
+       {"https://excluded.site.test", Result::kExclude},
+       // Session is origin-scoped, so this rule is ignored.
+       {"https://included.site.test", Result::kExclude},
+       // Rule does not apply to wrong scheme.
+       {"http://included.site.test", Result::kExclude},
+       // No rules applies to these URLs, so the basic
+       // rules (origin) applies.
+       {"https://other.site.test", Result::kExclude},
+       {"https://site.test/stuff", Result::kInclude}});
 }
 
 TEST(SessionInclusionRulesTest, AddUrlRuleToRulesIncludingSite) {
@@ -316,20 +317,21 @@ TEST(SessionInclusionRulesTest, AddUrlRuleToRulesIncludingSite) {
        {"https://other.site.test", Result::kInclude},
        {"https://site.test/stuff", Result::kInclude}});
 
-  // Note that the rules are independent of "include_site", so even if that is
-  // "revoked" the rules still work the same way.
+  // "include_site" takes priority over session inclusion rules, so when
+  // it is revoked, cross-origin rules are now excluded.
   inclusion_rules.SetIncludeSite(false);
-  CheckEvaluateUrlTestCases(inclusion_rules,
-                            {// Path is excluded by rule.
-                             {"https://site.test/static", Result::kExclude},
-                             // Rule excludes URL explicitly.
-                             {"https://excluded.site.test", Result::kExclude},
-                             // Rule includes URL explicitly.
-                             {"https://included.site.test", Result::kInclude},
-                             // No rules applies to these URLs, so the basic
-                             // rules (which is now the origin) applies.
-                             {"https://other.site.test", Result::kExclude},
-                             {"https://site.test/stuff", Result::kInclude}});
+  CheckEvaluateUrlTestCases(
+      inclusion_rules,
+      {// Path is excluded by rule.
+       {"https://site.test/static", Result::kExclude},
+       // Rule excludes URL explicitly.
+       {"https://excluded.site.test", Result::kExclude},
+       // Rule includes URL explicitly, but is cross-origin.
+       {"https://included.site.test", Result::kExclude},
+       // No rules applies to these URLs, so the basic
+       // rules (which is now the origin) applies.
+       {"https://other.site.test", Result::kExclude},
+       {"https://site.test/stuff", Result::kInclude}});
 }
 
 TEST(SessionInclusionRulesTest, UrlRuleParsing) {
