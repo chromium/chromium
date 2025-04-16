@@ -1588,6 +1588,10 @@ TEST_F(SplitViewControllerTest, DoubleTapAndClickDivider) {
   EXPECT_EQ(split_view_controller()->secondary_window(), window2.get());
   EXPECT_EQ(left_bounds, window1->GetBoundsInScreen());
   EXPECT_EQ(right_bounds, window2->GetBoundsInScreen());
+
+  // Make sure the dividier is not focused.
+  EXPECT_NE(window_util::GetFocusedWindow(),
+            split_view_divider()->GetDividerWindow());
 }
 
 // Verify the left and right windows do not get swapped when the divider is
@@ -2488,10 +2492,13 @@ TEST_F(SplitViewControllerTest, ExitTabletModeDuringResizeCompletesDrags) {
       split_view_divider()->GetDividerBoundsInScreen(false /* is_dragging */);
   const int screen_width =
       screen_util::GetDisplayWorkAreaBoundsInParent(window1.get()).width();
-  GetEventGenerator()->set_current_screen_location(
-      divider_bounds.CenterPoint());
+  GetEventGenerator()->MoveMouseTo(divider_bounds.CenterPoint());
   GetEventGenerator()->PressLeftButton();
   GetEventGenerator()->MoveMouseTo(screen_width * 0.67f, 0);
+
+  // Make sure the dividier is not focused.
+  EXPECT_NE(window_util::GetFocusedWindow(),
+            split_view_divider()->GetDividerWindow());
 
   // Drag is started for both windows.
   EXPECT_TRUE(window_state_delegate1->drag_in_progress());
@@ -2532,10 +2539,13 @@ TEST_F(SplitViewControllerTest,
       screen_util::GetDisplayWorkAreaBoundsInParentForActiveDeskContainer(
           window1.get())
           .width();
-  GetEventGenerator()->set_current_screen_location(
-      divider_bounds.CenterPoint());
+  GetEventGenerator()->MoveMouseTo(divider_bounds.CenterPoint());
   GetEventGenerator()->PressLeftButton();
   GetEventGenerator()->MoveMouseTo(screen_width * 0.67f, 0);
+
+  // Make sure the dividier is not focused.
+  EXPECT_NE(window_util::GetFocusedWindow(),
+            split_view_divider()->GetDividerWindow());
 
   // Drag is started.
   EXPECT_TRUE(window_state_delegate1->drag_in_progress());
@@ -2575,10 +2585,13 @@ TEST_F(SplitViewControllerTest,
       split_view_divider()->GetDividerBoundsInScreen(false /* is_dragging */);
   const int screen_width =
       screen_util::GetDisplayWorkAreaBoundsInParent(window1.get()).width();
-  GetEventGenerator()->set_current_screen_location(
-      divider_bounds.CenterPoint());
+  GetEventGenerator()->MoveMouseTo(divider_bounds.CenterPoint());
   GetEventGenerator()->PressLeftButton();
   GetEventGenerator()->MoveMouseTo(screen_width * 0.67f, 0);
+
+  // Make sure the dividier is not focused.
+  EXPECT_NE(window_util::GetFocusedWindow(),
+            split_view_divider()->GetDividerWindow());
 
   // Drag is started for both windows.
   EXPECT_TRUE(window_state_delegate1->drag_in_progress());
@@ -2908,6 +2921,9 @@ TEST_F(SplitViewControllerTest,
                               display::Display::RotationSource::ACTIVE);
   // Expect that the divider closest position ratio is updated to one third.
   EXPECT_EQ(divider_closest_ratio(), chromeos::kOneThirdSnapRatio);
+
+  EXPECT_NE(window_util::GetFocusedWindow(),
+            split_view_divider()->GetDividerWindow());
 }
 
 // Test that pinning a window ends split view mode.

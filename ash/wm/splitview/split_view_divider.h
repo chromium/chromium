@@ -11,6 +11,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/core/transient_window_observer.h"
 
@@ -258,6 +259,9 @@ class ASH_EXPORT SplitViewDivider : public aura::WindowObserver,
 
   // True *while* a resize event is being processed.
   bool processing_resize_event_ = false;
+
+  // Divider widget's delegate.
+  std::unique_ptr<views::WidgetDelegate> widget_delegate_;
 
   display::ScopedDisplayObserver display_observer_{this};
 };
