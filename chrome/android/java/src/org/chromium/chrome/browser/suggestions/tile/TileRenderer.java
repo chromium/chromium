@@ -65,7 +65,8 @@ public class TileRenderer {
     private boolean mNativeInitializationComplete;
     private Profile mProfile;
 
-    @LayoutRes private final int mLayout;
+    @LayoutRes private final int mTileLayoutResId;
+    private final float mDividerWidthDp;
 
     private class LargeIconCallbackImpl implements LargeIconBridge.LargeIconCallback {
         private final WeakReference<Tile> mTile;
@@ -132,7 +133,7 @@ public class TileRenderer {
         mTitleLinesCount = titleLines;
 
         mContext = context;
-        Resources res = context.getResources();
+        Resources res = mContext.getResources();
         mDesiredIconSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_size);
         mIconCornerRadius = res.getDimension(R.dimen.tile_view_icon_corner_radius);
         int minIconSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_min_size);
@@ -140,9 +141,10 @@ public class TileRenderer {
         // On ldpi devices, mDesiredIconSize could be even smaller than the global limit.
         mMinIconSize = Math.min(mDesiredIconSize, minIconSize);
 
-        mLayout = getLayout();
+        mTileLayoutResId = getTileLayoutResId();
+        mDividerWidthDp = res.getDimension(R.dimen.tile_view_divider_width);
 
-        int iconColor = context.getColor(R.color.default_favicon_background_color);
+        int iconColor = mContext.getColor(R.color.default_favicon_background_color);
         int iconTextSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
         mIconGenerator =
                 new RoundedIconGenerator(
@@ -178,9 +180,6 @@ public class TileRenderer {
             // to be added back in the correct order.
             parent.removeAllViews();
 
-            Resources resources = mContext.getResources();
-            float dividerWidthDp = resources.getDimension(R.dimen.tile_view_divider_width);
-
             Tile prevTile = null;
             for (Tile tile : sectionTiles) {
                 SuggestionsTileView tileView = oldTileViews.remove(tile.getData());
@@ -191,7 +190,7 @@ public class TileRenderer {
                 if (prevTile != null
                         && (prevTile.getData().source == TileSource.CUSTOM_LINKS)
                                 != (tile.getData().source == TileSource.CUSTOM_LINKS)) {
-                    parent.addNonTileViewWithWidth(buildDivider(parent), dividerWidthDp);
+                    parent.addNonTileViewWithWidth(buildDivider(parent), mDividerWidthDp);
                 }
                 parent.addTile(tileView);
                 prevTile = tile;
@@ -231,7 +230,8 @@ public class TileRenderer {
             Tile tile, TilesLinearLayout parent, TileGroup.TileSetupDelegate setupDelegate) {
         SuggestionsTileView tileView =
                 (SuggestionsTileView)
-                        LayoutInflater.from(parent.getContext()).inflate(mLayout, parent, false);
+                        LayoutInflater.from(parent.getContext())
+                                .inflate(mTileLayoutResId, parent, false);
 
         tileView.initialize(tile, mTitleLinesCount);
         // TODO(crbug.com/403353768): Unify tile background.
@@ -356,16 +356,8 @@ public class TileRenderer {
      */
     public void updateIcon(final Tile tile, TileGroup.TileSetupDelegate setupDelegate) {
         if (isSearchTile(tile)) {
-            // We already have an icon, and could trigger the update instantly.
-            // Problem is, the TileView is likely not attached yet and the update would not be
-            // properly reflected. Yield.
-            final Runnable iconCallback = setupDelegate.createIconLoadCallback(tile);
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        setTileIconFromRes(tile, R.drawable.ic_suggestion_magnifier);
-                        if (iconCallback != null) iconCallback.run();
-                    });
+            setTileIconFromResAsync(tile, setupDelegate, R.drawable.ic_suggestion_magnifier);
+
         } else if (mImageFetcher != null) {
             mImageFetcher.makeLargeIconRequest(
                     tile.getUrl(),
@@ -386,11 +378,22 @@ public class TileRenderer {
         tile.setType(TileVisualType.ICON_REAL);
     }
 
-    public void setTileIconFromRes(Tile tile, @DrawableRes int res) {
-        tile.setIcon(ResourcesCompat.getDrawable(mContext.getResources(), res, null));
-        tile.setIconTint(
-                ChromeColors.getSecondaryIconTint(mContext, /* forceLightIconTint= */ false));
-        tile.setType(TileVisualType.ICON_DEFAULT);
+    public void setTileIconFromResAsync(
+            Tile tile, TileGroup.TileSetupDelegate setupDelegate, @DrawableRes int res) {
+        // We already have an icon, and could trigger the update instantly.
+        // Problem is, the TileView is likely not attached yet and the update would not be
+        // properly reflected. Yield.
+        final Runnable iconCallback = setupDelegate.createIconLoadCallback(tile);
+        PostTask.postTask(
+                TaskTraits.UI_DEFAULT,
+                () -> {
+                    tile.setIcon(ResourcesCompat.getDrawable(mContext.getResources(), res, null));
+                    tile.setIconTint(
+                            ChromeColors.getSecondaryIconTint(
+                                    mContext, /* forceLightIconTint= */ false));
+                    tile.setType(TileVisualType.ICON_DEFAULT);
+                    if (iconCallback != null) iconCallback.run();
+                });
     }
 
     public void setTileIconFromColor(Tile tile, int fallbackColor, boolean isFallbackColorDefault) {
@@ -402,7 +405,7 @@ public class TileRenderer {
                 isFallbackColorDefault ? TileVisualType.ICON_DEFAULT : TileVisualType.ICON_COLOR);
     }
 
-    private @LayoutRes int getLayout() {
+    private @LayoutRes int getTileLayoutResId() {
         switch (mStyle) {
             case TileStyle.MODERN:
                 return R.layout.suggestions_tile_view;

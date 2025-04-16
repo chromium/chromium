@@ -394,10 +394,9 @@ public class TileGroup implements MostVisitedSites.Observer {
         SparseArray<List<Tile>> newSites = createEmptyTileData();
         for (int i = 0; i < mPendingTiles.size(); ++i) {
             SiteSuggestion suggestion = mPendingTiles.get(i);
-            Tile tile = findTile(suggestion);
-            if (tile == null) {
+            if (findTile(suggestion) == null) {
+                // Don't reuse the Tile found, since index might change.
                 dataChanged = true;
-                tile = new Tile(suggestion, i);
             }
 
             List<Tile> sectionTiles = newSites.get(suggestion.sectionType);
@@ -406,10 +405,10 @@ public class TileGroup implements MostVisitedSites.Observer {
                 newSites.append(suggestion.sectionType, sectionTiles);
             }
 
-            // This is not supposed to happen but does. See https://crbug.com/703628
-            if (findTile(suggestion.url, sectionTiles) != null) continue;
+            // Duplicate should not exist but they may. See https://crbug.com/703628
+            if (findTileByUrl(suggestion.url, sectionTiles) != null) continue;
 
-            sectionTiles.add(tile);
+            sectionTiles.add(new Tile(suggestion, i));
         }
 
         mTileSections = newSites;
@@ -448,7 +447,7 @@ public class TileGroup implements MostVisitedSites.Observer {
      * @param tiles The section to search in, represented by the contained list of tiles.
      * @return A tile matching the provided URL and section, or {@code null} if none is found.
      */
-    private Tile findTile(GURL url, @Nullable List<Tile> tiles) {
+    private Tile findTileByUrl(GURL url, @Nullable List<Tile> tiles) {
         if (tiles == null) return null;
         for (Tile tile : tiles) {
             if (tile.getUrl().equals(url)) return tile;
