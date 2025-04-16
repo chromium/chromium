@@ -8780,7 +8780,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.TabDrag.PresentationTime.MaxLatency.{TabletOrClamshellMode}"
-    units="ms" expires_after="2025-05-28">
+    units="ms" expires_after="2026-04-14">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
@@ -8790,7 +8790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.TabDrag.PresentationTime.{TabletOrClamshellMode}"
-    units="ms" expires_after="2025-05-28">
+    units="ms" expires_after="2026-04-14">
   <owner>yichenz@chromium.org</owner>
   <owner>chromeos-wm@google.com</owner>
   <summary>
