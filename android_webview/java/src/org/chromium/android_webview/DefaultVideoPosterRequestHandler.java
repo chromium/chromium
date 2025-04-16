@@ -10,6 +10,8 @@ import android.util.Log;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
 import java.io.IOException;
@@ -27,6 +29,7 @@ import java.util.Random;
  * mDefaultVideoPosterUrl.
  */
 @Lifetime.WebView
+@NullMarked
 public class DefaultVideoPosterRequestHandler {
     private static InputStream getInputStream(final AwContentsClient contentClient)
             throws IOException {
@@ -70,8 +73,8 @@ public class DefaultVideoPosterRequestHandler {
     }
 
     private static final String TAG = "DefaultVideoPosterRequestHandler";
-    private String mDefaultVideoPosterUrl;
-    private AwContentsClient mContentClient;
+    private final String mDefaultVideoPosterUrl;
+    private final AwContentsClient mContentClient;
 
     public DefaultVideoPosterRequestHandler(AwContentsClient contentClient) {
         mDefaultVideoPosterUrl = generateDefaulVideoPosterUrl();
@@ -85,7 +88,7 @@ public class DefaultVideoPosterRequestHandler {
      * @return WebResourceResponseInfo which caller can get the image if the url is the default
      *     video poster URL, otherwise null is returned.
      */
-    public WebResourceResponseInfo shouldInterceptRequest(final String url) {
+    public @Nullable WebResourceResponseInfo shouldInterceptRequest(final String url) {
         if (!mDefaultVideoPosterUrl.equals(url)) return null;
 
         try {

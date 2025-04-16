@@ -712,7 +712,7 @@ public class AwContents implements SmartClipProvider {
         public void shouldInterceptRequest(
                 AwWebResourceRequest request,
                 WebResponseCallback callback,
-                AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
+                @Nullable AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback) {
             String url = request.getUrl();
             WebResourceResponseInfo webResourceResponseInfo;
             callback.setAwContentsClient(mContentsClient);

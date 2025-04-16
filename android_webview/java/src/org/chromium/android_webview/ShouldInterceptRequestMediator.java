@@ -21,6 +21,7 @@ import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.JniOnceCallback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.lang.reflect.Method;
@@ -31,6 +32,7 @@ import java.lang.reflect.Method;
  */
 @Lifetime.WebView
 @JNINamespace("android_webview")
+@NullMarked
 public abstract class ShouldInterceptRequestMediator {
     private static final String TAG = "shouldIntReqMed";
 
@@ -123,7 +125,7 @@ public abstract class ShouldInterceptRequestMediator {
     }
 
     @AnyThread
-    public void setNoSkipUrl(String url) {
+    public void setNoSkipUrl(@Nullable String url) {
         mNoSkipUrl = url;
     }
 
@@ -136,7 +138,7 @@ public abstract class ShouldInterceptRequestMediator {
     public abstract void shouldInterceptRequest(
             AwWebResourceRequest request,
             WebResponseCallback responseCallback,
-            AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback);
+            @Nullable AsyncShouldInterceptRequestCallback asyncShouldInterceptRequestCallback);
 
     // Protected methods ---------------------------------------------------------------------------
 
