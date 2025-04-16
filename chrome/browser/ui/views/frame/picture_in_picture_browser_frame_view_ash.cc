@@ -7,10 +7,12 @@
 #include "ash/wm/splitview/layout_divider_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/check.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/frame_utils.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/views/background.h"
 
 PictureInPictureBrowserFrameViewAsh::PictureInPictureBrowserFrameViewAsh(
     BrowserFrame* frame,
@@ -38,9 +40,8 @@ void PictureInPictureBrowserFrameViewAsh::UpdateWindowRoundedCorners() {
   window->SetProperty(aura::client::kWindowCornerRadiusKey, corner_radius);
 
   const gfx::RoundedCornersF radii(corner_radius, corner_radius, 0, 0);
-  top_bar_container_view()->SetPaintToLayer();
-  top_bar_container_view()->layer()->SetRoundedCornerRadius(radii);
-  top_bar_container_view()->layer()->SetIsFastRoundedCorner(/*enable=*/true);
+  top_bar_container_view()->SetBackground(views::CreateRoundedRectBackground(
+      kColorPipWindowTopBarBackground, radii));
 
   GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
 }
