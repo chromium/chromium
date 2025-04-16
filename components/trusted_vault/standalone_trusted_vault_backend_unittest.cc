@@ -56,6 +56,7 @@ using testing::Ne;
 using testing::NotNull;
 using testing::Return;
 using testing::SaveArg;
+using testing::SizeIs;
 
 MATCHER_P(MatchTrustedVaultKeyAndVersions, expected, "") {
   const auto* trusted_vault_keys =
@@ -198,7 +199,7 @@ class FakeLocalRecoveryFactor : public LocalRecoveryFactor {
     }
   }
 
-  bool ExpectAttemptRecovery() const { return attempt_recovery_was_called_; }
+  bool AttemptRecoveryWasCalled() const { return attempt_recovery_was_called_; }
 
   bool MaybeRegisterWasCalled() const { return maybe_register_was_called_; }
 
@@ -289,7 +290,10 @@ class ForwardingLocalRecoveryFactor : public LocalRecoveryFactor {
 class TestLocalRecoveryFactorsFactory
     : public StandaloneTrustedVaultBackend::LocalRecoveryFactorsFactory {
  public:
-  explicit TestLocalRecoveryFactorsFactory() = default;
+  explicit TestLocalRecoveryFactorsFactory(size_t num_local_recovery_factors)
+      : num_local_recovery_factors_(num_local_recovery_factors) {
+    CHECK(num_local_recovery_factors_ > 0);
+  }
   TestLocalRecoveryFactorsFactory(const TestLocalRecoveryFactorsFactory&) =
       delete;
   TestLocalRecoveryFactorsFactory& operator=(
@@ -299,37 +303,55 @@ class TestLocalRecoveryFactorsFactory
   std::vector<std::unique_ptr<LocalRecoveryFactor>> CreateLocalRecoveryFactors(
       StandaloneTrustedVaultStorage* storage,
       const std::optional<CoreAccountInfo>& account) override {
-    FakeLocalRecoveryFactor* fake_recovery_factor =
-        GetOrCreateRecoveryFactor(account);
-    fake_recovery_factor->ResetCallInfo();
+    std::vector<FakeLocalRecoveryFactor*> fake_recovery_factors =
+        GetOrCreateRecoveryFactors(account);
 
     std::vector<std::unique_ptr<LocalRecoveryFactor>> local_recovery_factors;
-    local_recovery_factors.emplace_back(
-        std::make_unique<ForwardingLocalRecoveryFactor>(fake_recovery_factor));
+    for (auto* fake_recovery_factor : fake_recovery_factors) {
+      fake_recovery_factor->ResetCallInfo();
+      local_recovery_factors.emplace_back(
+          std::make_unique<ForwardingLocalRecoveryFactor>(
+              fake_recovery_factor));
+    }
     return local_recovery_factors;
   }
 
-  std::map<std::optional<GaiaId>, std::unique_ptr<FakeLocalRecoveryFactor>>
+  std::map<std::optional<GaiaId>,
+           std::vector<std::unique_ptr<FakeLocalRecoveryFactor>>>
   GetRecoveryFactors() {
     return std::move(recovery_factors_);
   }
 
   void SetRecoveryFactors(
       std::map<std::optional<GaiaId>,
-               std::unique_ptr<FakeLocalRecoveryFactor>>&& recovery_factors) {
+               std::vector<std::unique_ptr<FakeLocalRecoveryFactor>>>&&
+          recovery_factors) {
     recovery_factors_ = std::move(recovery_factors);
   }
 
-  FakeLocalRecoveryFactor* GetOrCreateRecoveryFactor(
+  std::vector<FakeLocalRecoveryFactor*> GetOrCreateRecoveryFactors(
       const std::optional<CoreAccountInfo>& account) {
     const auto gaia = account ? std::optional(account->gaia) : std::nullopt;
-    recovery_factors_.try_emplace(
-        gaia, std::make_unique<FakeLocalRecoveryFactor>(account));
-    return recovery_factors_[gaia].get();
+    if (!recovery_factors_.contains(gaia)) {
+      std::vector<std::unique_ptr<FakeLocalRecoveryFactor>> recovery_factors;
+      for (size_t i = 0; i < num_local_recovery_factors_; ++i) {
+        recovery_factors.emplace_back(
+            std::make_unique<FakeLocalRecoveryFactor>(account));
+      }
+      recovery_factors_.emplace(gaia, std::move(recovery_factors));
+    }
+
+    std::vector<FakeLocalRecoveryFactor*> ret;
+    for (const auto& it : recovery_factors_[gaia]) {
+      ret.push_back(it.get());
+    }
+    return ret;
   }
 
  private:
-  std::map<std::optional<GaiaId>, std::unique_ptr<FakeLocalRecoveryFactor>>
+  const size_t num_local_recovery_factors_;
+  std::map<std::optional<GaiaId>,
+           std::vector<std::unique_ptr<FakeLocalRecoveryFactor>>>
       recovery_factors_;
 };
 
@@ -362,7 +384,8 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     connection_ = connection.get();
 
     auto local_recovery_factors_factory =
-        std::make_unique<TestLocalRecoveryFactorsFactory>();
+        std::make_unique<TestLocalRecoveryFactorsFactory>(
+            num_local_recovery_factors_);
     if (local_recovery_factors_factory_) {
       // We only want to reset the backend, not the underlying faked recovery
       // factors incl. their state.
@@ -377,13 +400,25 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     backend_->ReadDataFromDisk();
   }
 
+  // Sets the number of local recovery factors to create during tests.
+  // Note: This only takes effect when ResetBackend() is called.
+  void SetNumLocalRecoveryFactors(size_t num_local_recovery_factors) {
+    num_local_recovery_factors_ = num_local_recovery_factors;
+  }
+
   FakeFileAccess* file_access() { return file_access_; }
 
   MockTrustedVaultThrottlingConnection* connection() { return connection_; }
 
+  std::vector<FakeLocalRecoveryFactor*> GetOrCreateRecoveryFactors(
+      const std::optional<CoreAccountInfo>& account) {
+    return local_recovery_factors_factory_->GetOrCreateRecoveryFactors(account);
+  }
+
+  // Shorthand to get/create the first recovery factor.
   FakeLocalRecoveryFactor* GetOrCreateRecoveryFactor(
       const std::optional<CoreAccountInfo>& account) {
-    return local_recovery_factors_factory_->GetOrCreateRecoveryFactor(account);
+    return GetOrCreateRecoveryFactors(account)[0];
   }
 
   std::string GetRecoveryFactorTypeForUMA(
@@ -421,16 +456,18 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     SetPrimaryAccountWithUnknownAuthError(account_info);
 
     // Pretend that the registration completed successfully.
-    GetOrCreateRecoveryFactor(account_info)
-        ->ExpectMaybeRegisterAndRunCallback(
-            TrustedVaultRegistrationStatus::kSuccess, last_vault_key_version,
-            true);
+    for (auto* recovery_factor : GetOrCreateRecoveryFactors(account_info)) {
+      recovery_factor->ExpectMaybeRegisterAndRunCallback(
+          TrustedVaultRegistrationStatus::kSuccess, last_vault_key_version,
+          true);
+    }
 
     // Reset primary account.
     SetPrimaryAccountWithUnknownAuthError(/*primary_account=*/std::nullopt);
   }
 
  private:
+  size_t num_local_recovery_factors_ = 1;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
   raw_ptr<FakeFileAccess> file_access_ = nullptr;
   raw_ptr<testing::NiceMock<MockTrustedVaultThrottlingConnection>> connection_ =
@@ -843,7 +880,8 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   // doesn't trigger a new registration attempt.
   backend()->FetchKeys(account_info, fetch_keys_callback.Get());
 
-  EXPECT_TRUE(GetOrCreateRecoveryFactor(account_info)->ExpectAttemptRecovery());
+  EXPECT_TRUE(
+      GetOrCreateRecoveryFactor(account_info)->AttemptRecoveryWasCalled());
   EXPECT_FALSE(
       GetOrCreateRecoveryFactor(account_info)->MaybeRegisterWasCalled());
 }
@@ -1041,6 +1079,48 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldNotThrottleUponNetworkError) {
           TrustedVaultRegistrationStatus::kNetworkError, 0, true);
 }
 
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRegisterAllLocalRecoveryFactors) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+
+  SetNumLocalRecoveryFactors(2);
+  ResetBackend();
+
+  backend()->StoreKeys(kAccountInfo.gaia, {kVaultKey}, kLastKeyVersion);
+
+  // Setting the primary account will trigger device registration.
+  base::HistogramTester histogram_tester;
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+
+  std::vector<FakeLocalRecoveryFactor*> recovery_factors =
+      GetOrCreateRecoveryFactors(kAccountInfo);
+  ASSERT_THAT(recovery_factors, SizeIs(2));
+
+  // Pretend that the registration completed successfully for the first factor.
+  recovery_factors[0]->ExpectMaybeRegisterAndRunCallback(
+      TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion, true);
+  EXPECT_TRUE(recovery_factors[0]->IsRegistered());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/"TrustedVault.DeviceRegistrationOutcome." +
+          GetRecoveryFactorTypeForUMA(recovery_factors[0]) + "." +
+          security_domain_name_for_uma(),
+      /*sample=*/TrustedVaultDeviceRegistrationOutcomeForUMA::kSuccess,
+      /*expected_count=*/1);
+
+  // Pretend that the registration failed for the second factor.
+  recovery_factors[1]->ExpectMaybeRegisterAndRunCallback(
+      TrustedVaultRegistrationStatus::kNetworkError, kLastKeyVersion, true);
+  EXPECT_FALSE(recovery_factors[1]->IsRegistered());
+  histogram_tester.ExpectBucketCount(
+      /*name=*/"TrustedVault.DeviceRegistrationOutcome." +
+          GetRecoveryFactorTypeForUMA(recovery_factors[1]) + "." +
+          security_domain_name_for_uma(),
+      /*sample=*/TrustedVaultDeviceRegistrationOutcomeForUMA::kNetworkError,
+      /*expected_count=*/1);
+}
+
 // Unless keys marked as stale, FetchKeys() should be completed immediately,
 // without keys download attempt.
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldFetchKeysImmediately) {
@@ -1170,7 +1250,8 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldThrottleKeysDownloading) {
   EXPECT_CALL(*connection(), AreRequestsThrottled);
   GetOrCreateRecoveryFactor(account_info)->ResetCallInfo();
   backend()->FetchKeys(account_info, base::DoNothing());
-  EXPECT_TRUE(GetOrCreateRecoveryFactor(account_info)->ExpectAttemptRecovery());
+  EXPECT_TRUE(
+      GetOrCreateRecoveryFactor(account_info)->AttemptRecoveryWasCalled());
 }
 
 TEST_F(StandaloneTrustedVaultBackendTest,
@@ -1197,6 +1278,115 @@ TEST_F(StandaloneTrustedVaultBackendTest,
   histogram_tester.ExpectUniqueSample(
       "TrustedVault.DownloadKeysStatus." + security_domain_name_for_uma(),
       /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNoNewKeys,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldDownloadKeysFromFirstRecoveryFactorFirst) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kInitialLastKeyVersion = 1;
+
+  SetNumLocalRecoveryFactors(2u);
+  ResetBackend();
+
+  StoreKeysAndMimicDeviceRegistration({GetConstantTrustedVaultKey()},
+                                      kInitialLastKeyVersion, kAccountInfo);
+  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(kAccountInfo));
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+
+  // FetchKeys() should trigger keys downloading.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
+
+  // Fetch should be completed once keys are downloaded.
+  const std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
+  EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kVaultKey, kNewVaultKey)));
+
+  std::vector<FakeLocalRecoveryFactor*> recovery_factors =
+      GetOrCreateRecoveryFactors(kAccountInfo);
+  ASSERT_THAT(recovery_factors, SizeIs(2));
+  // First recovery factor should have been called to attempt recovery.
+  recovery_factors[0]->ExpectAttemptRecoveryAndRunCallback(
+      TrustedVaultDownloadKeysStatus::kSuccess, {kVaultKey, kNewVaultKey},
+      kInitialLastKeyVersion + 1);
+  // Second recovery factor should not have been called.
+  EXPECT_FALSE(recovery_factors[1]->AttemptRecoveryWasCalled());
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldDownloadKeysFromSecondRecoveryFactorIfFirstFails) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kInitialLastKeyVersion = 1;
+
+  SetNumLocalRecoveryFactors(2u);
+  ResetBackend();
+
+  StoreKeysAndMimicDeviceRegistration({GetConstantTrustedVaultKey()},
+                                      kInitialLastKeyVersion, kAccountInfo);
+  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(kAccountInfo));
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+
+  // FetchKeys() should trigger keys downloading.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
+
+  // Fetch should be completed once keys are downloaded.
+  const std::vector<uint8_t> kNewVaultKey = {2, 3, 5};
+  EXPECT_CALL(fetch_keys_callback, Run(ElementsAre(kVaultKey, kNewVaultKey)));
+
+  std::vector<FakeLocalRecoveryFactor*> recovery_factors =
+      GetOrCreateRecoveryFactors(kAccountInfo);
+  ASSERT_THAT(recovery_factors, SizeIs(2));
+  // First recovery factor should have been called to attempt recovery. Let it
+  // fail.
+  recovery_factors[0]->ExpectAttemptRecoveryAndRunCallback(
+      TrustedVaultDownloadKeysStatus::kMemberNotFound, {}, 0);
+  // Second recovery factor should have been called.
+  recovery_factors[1]->ExpectAttemptRecoveryAndRunCallback(
+      TrustedVaultDownloadKeysStatus::kSuccess, {kVaultKey, kNewVaultKey},
+      kInitialLastKeyVersion + 1);
+}
+
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldFailWithLastRecoveryFactorStatus) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user");
+  const int kInitialLastKeyVersion = 1;
+
+  SetNumLocalRecoveryFactors(2u);
+  ResetBackend();
+
+  StoreKeysAndMimicDeviceRegistration({GetConstantTrustedVaultKey()},
+                                      kInitialLastKeyVersion, kAccountInfo);
+  ASSERT_TRUE(backend()->MarkLocalKeysAsStale(kAccountInfo));
+  SetPrimaryAccountWithUnknownAuthError(kAccountInfo);
+
+  // FetchKeys() should trigger keys downloading.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  backend()->FetchKeys(kAccountInfo, fetch_keys_callback.Get());
+
+  // Fetch should be completed once last key downloading failed.
+  EXPECT_CALL(fetch_keys_callback, Run(IsEmpty()));
+
+  base::HistogramTester histogram_tester;
+  std::vector<FakeLocalRecoveryFactor*> recovery_factors =
+      GetOrCreateRecoveryFactors(kAccountInfo);
+  ASSERT_THAT(recovery_factors, SizeIs(2));
+  // First recovery factor should have been called to attempt recovery. Let it
+  // fail.
+  recovery_factors[0]->ExpectAttemptRecoveryAndRunCallback(
+      TrustedVaultDownloadKeysStatus::kMemberNotFound, {}, 0);
+  // Second recovery factor should have been called. Let it also fail.
+  recovery_factors[1]->ExpectAttemptRecoveryAndRunCallback(
+      TrustedVaultDownloadKeysStatus::kNetworkError, {}, 0);
+  // Status of the last recovery factor should be recorded.
+  histogram_tester.ExpectUniqueSample(
+      "TrustedVault.DownloadKeysStatus." + security_domain_name_for_uma(),
+      /*sample=*/TrustedVaultDownloadKeysStatusForUMA::kNetworkError,
       /*expected_bucket_count=*/1);
 }
 
