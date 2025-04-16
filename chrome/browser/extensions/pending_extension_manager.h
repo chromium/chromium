@@ -167,15 +167,6 @@ class PendingExtensionManager : public KeyedService {
       bool mark_acknowledged,
       bool remote_install);
 
-// TODO(crbug.com/399192132): Chrome apps have been deprecated and will NOT
-// be supported on Android. We don't need to migrate default chrome apps unless
-// we changed the decision in the future.
-#if !BUILDFLAG(IS_ANDROID)
-  // Caches the set of Chrome app IDs undergoing migration to web apps because
-  // it is expensive to generate every time (multiple SkBitmap copies).
-  void EnsureMigratedDefaultChromeAppIdsCachePopulated();
-#endif
-
   // Add a pending extension record directly.  Used for unit tests that need
   // to set an inital state. Use friendship to allow the tests to call this
   // method.
@@ -190,11 +181,6 @@ class PendingExtensionManager : public KeyedService {
   raw_ptr<content::BrowserContext, DanglingUntriaged> context_;
 
   std::map<std::string, PendingExtensionInfo> pending_extensions_;
-
-#if !BUILDFLAG(IS_ANDROID)
-  std::optional<base::flat_set<std::string>>
-      migrating_default_chrome_app_ids_cache_;
-#endif
 
   base::ObserverList<Observer> observers_;
 

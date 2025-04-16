@@ -24,10 +24,6 @@
 #include "extensions/common/extension.h"
 #include "url/gurl.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
-#endif
-
 namespace {
 
 // Install predicate used by AddFromExternalUpdateUrl().
@@ -126,15 +122,6 @@ bool PendingExtensionManager::AddFromSync(
   if (id == extensions::kWebStoreAppId) {
     return false;
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  EnsureMigratedDefaultChromeAppIdsCachePopulated();
-  if (migrating_default_chrome_app_ids_cache_->contains(id)) {
-    base::UmaHistogramBoolean("Extensions.SyncBlockedByDefaultWebAppMigration",
-                              true);
-    return false;
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   static const bool kIsFromSync = true;
   static const mojom::ManifestLocation kSyncLocation =
@@ -334,28 +321,6 @@ bool PendingExtensionManager::AddExtensionImpl(
 
   return true;
 }
-
-// TODO(crbug.com/399192132): Chrome apps have been deprecated and will NOT
-// be supported on Android. We don't need to migrate default chrome apps unless
-// we changed the decision in the future.
-#if !BUILDFLAG(IS_ANDROID)
-void PendingExtensionManager::
-    EnsureMigratedDefaultChromeAppIdsCachePopulated() {
-  if (migrating_default_chrome_app_ids_cache_)
-    return;
-
-  std::vector<web_app::PreinstalledWebAppMigration> migrations =
-      web_app::GetPreinstalledWebAppMigrations(
-          *Profile::FromBrowserContext(context_.get()));
-
-  std::vector<std::string> chrome_app_ids;
-  chrome_app_ids.reserve(migrations.size());
-  for (const web_app::PreinstalledWebAppMigration& migration : migrations)
-    chrome_app_ids.push_back(migration.old_chrome_app_id);
-
-  migrating_default_chrome_app_ids_cache_.emplace(std::move(chrome_app_ids));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PendingExtensionManager::AddForTesting(
     PendingExtensionInfo pending_extension_info) {

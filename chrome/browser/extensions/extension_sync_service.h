@@ -7,9 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -139,6 +141,11 @@ class ExtensionSyncService : public syncer::SyncableService,
   // can be uploaded to the sync server).
   bool ShouldSync(const extensions::Extension& extension) const;
 
+  // Returns true if the given `extension_id` corresponds to an item that has
+  // migrated to a pre-installed web app.
+  bool IsMigratingPreinstalledWebApp(
+      const extensions::ExtensionId& extension_id);
+
   // The normal profile associated with this ExtensionSyncService.
   raw_ptr<Profile> profile_;
 
@@ -171,6 +178,11 @@ class ExtensionSyncService : public syncer::SyncableService,
   // have started happening. It will cause sync to call us back
   // asynchronously via MergeDataAndStartSyncing as soon as possible.
   SyncableService::StartSyncFlare flare_;
+
+  // Caches the set of Chrome app IDs undergoing migration to web apps because
+  // it is expensive to generate every time (multiple SkBitmap copies).
+  std::optional<base::flat_set<std::string>>
+      migrating_default_chrome_app_ids_cache_;
 
   base::WeakPtrFactory<ExtensionSyncService> weak_ptr_factory_{this};
 };
