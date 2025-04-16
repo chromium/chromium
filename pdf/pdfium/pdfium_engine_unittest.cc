@@ -2277,12 +2277,12 @@ TEST_P(PDFiumEngineInkDrawTest, StrokeData) {
       CreateInkInputBatch(kHighlighterInputs);
   ASSERT_TRUE(highlighter_inputs.has_value());
   ink::Stroke pen_stroke(pen_brush->ink_brush(), pen_inputs.value());
-  ink::Stroke highligter_stroke(highlighter_brush->ink_brush(),
-                                highlighter_inputs.value());
+  ink::Stroke highlighter_stroke(highlighter_brush->ink_brush(),
+                                 highlighter_inputs.value());
   constexpr InkStrokeId kPenStrokeId(1);
   constexpr InkStrokeId kHighlighterStrokeId(2);
   engine->ApplyStroke(kPageIndex, kPenStrokeId, pen_stroke);
-  engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highligter_stroke);
+  engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highlighter_stroke);
 
   PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
 
@@ -2533,12 +2533,12 @@ TEST_P(PDFiumEngineInkDrawTest, ThumbnailsDoNotContainStrokes) {
       CreateInkInputBatch(kHighlighterInputs);
   ASSERT_TRUE(highlighter_inputs.has_value());
   ink::Stroke pen_stroke(pen_brush->ink_brush(), pen_inputs.value());
-  ink::Stroke highligter_stroke(highlighter_brush->ink_brush(),
-                                highlighter_inputs.value());
+  ink::Stroke highlighter_stroke(highlighter_brush->ink_brush(),
+                                 highlighter_inputs.value());
   static constexpr InkStrokeId kPenStrokeId(1);
   static constexpr InkStrokeId kHighlighterStrokeId(2);
   engine->ApplyStroke(kPageIndex, kPenStrokeId, pen_stroke);
-  engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highligter_stroke);
+  engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highlighter_stroke);
 
   {
     base::test::TestFuture<Thumbnail> future;
@@ -2551,6 +2551,57 @@ TEST_P(PDFiumEngineInkDrawTest, ThumbnailsDoNotContainStrokes) {
     EXPECT_THAT(thumbnail.GetImageData(),
                 Contains(0xFF).Times(kExpectedWhiteComponentCount));
   }
+}
+
+TEST_P(PDFiumEngineInkDrawTest, RotatedPdf) {
+  NiceMock<MockTestClient> client;
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("rotated_multi_page_cropped.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Draw 2 strokes.
+  auto pen_brush = std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen,
+                                                 SK_ColorRED, /*size=*/4.0f);
+  constexpr auto kPenInputs = std::to_array<PdfInkInputData>({
+      {{5.0f, 5.0f}, base::Seconds(0.0f)},
+      {{50.0f, 5.0f}, base::Seconds(0.1f)},
+  });
+  auto highlighter_brush = std::make_unique<PdfInkBrush>(
+      PdfInkBrush::Type::kHighlighter, SK_ColorCYAN, /*size=*/6.0f);
+  constexpr auto kHighlighterInputs = std::to_array<PdfInkInputData>({
+      {{75.0f, 5.0f}, base::Seconds(0.0f)},
+      {{75.0f, 60.0f}, base::Seconds(0.1f)},
+  });
+  std::optional<ink::StrokeInputBatch> pen_inputs =
+      CreateInkInputBatch(kPenInputs);
+  ASSERT_TRUE(pen_inputs.has_value());
+  std::optional<ink::StrokeInputBatch> highlighter_inputs =
+      CreateInkInputBatch(kHighlighterInputs);
+  ASSERT_TRUE(highlighter_inputs.has_value());
+  ink::Stroke pen_stroke(pen_brush->ink_brush(), pen_inputs.value());
+  ink::Stroke highlighter_stroke(highlighter_brush->ink_brush(),
+                                 highlighter_inputs.value());
+  constexpr InkStrokeId kPenStrokeId(1);
+  constexpr InkStrokeId kHighlighterStrokeId(2);
+  constexpr int kPageIndex = 1;
+  engine->ApplyStroke(kPageIndex, kPenStrokeId, pen_stroke);
+  engine->ApplyStroke(kPageIndex, kHighlighterStrokeId, highlighter_stroke);
+
+  PDFiumPage& page = GetPDFiumPageForTest(*engine, kPageIndex);
+
+  // Verify the visibility of strokes for in-memory PDF.
+  constexpr gfx::Size kPageSizeInPoints(500, 350);
+  const base::FilePath kExpectedFilePath(GetInkTestDataFilePath(
+      FILE_PATH_LITERAL("rotated_multi_page_cropped1.png")));
+  CheckPdfRendering(page.GetPage(), kPageSizeInPoints, kExpectedFilePath);
+
+  // Getting the save data should now have the new strokes.
+  // Verify visibility of strokes in that copy.  Must call GetSaveData()
+  // before checking mark objects count, so that the PDF gets regenerated.
+  std::vector<uint8_t> saved_pdf_data = engine->GetSaveData();
+  ASSERT_FALSE(saved_pdf_data.empty());
+  CheckPdfRendering(saved_pdf_data, kPageIndex, kPageSizeInPoints,
+                    kExpectedFilePath);
 }
 
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,

@@ -9,14 +9,16 @@
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "pdf/page_rotation.h"
 #include "printing/units.h"
 #include "third_party/ink/src/ink/geometry/envelope.h"
 #include "third_party/ink/src/ink/geometry/rect.h"
-#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 using printing::kUnitConversionFactorPixelsToPoints;
@@ -200,14 +202,37 @@ gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
   return gfx::ToEnclosingRect(gfx::RectF(x, y, w, h));
 }
 
-gfx::AxisTransform2d GetCanonicalToPdfTransform(
-    float page_height,
-    const gfx::Vector2dF& translate) {
-  CHECK_GE(page_height, 0);
-  return gfx::AxisTransform2d::FromScaleAndTranslation(
-      {kUnitConversionFactorPixelsToPoints,
-       -kUnitConversionFactorPixelsToPoints},
-      {translate.x(), page_height + translate.y()});
+gfx::Transform GetCanonicalToPdfTransform(const gfx::SizeF& page_size,
+                                          PageRotation page_rotation,
+                                          const gfx::Vector2dF& translate) {
+  CHECK_GE(page_size.width(), 0);
+  CHECK_GE(page_size.height(), 0);
+
+  auto transform =
+      gfx::Transform::MakeScale(kUnitConversionFactorPixelsToPoints,
+                                -kUnitConversionFactorPixelsToPoints);
+
+  switch (page_rotation) {
+    case PageRotation::kRotate0:
+      transform.PostTranslate(
+          {translate.x(), page_size.height() + translate.y()});
+      return transform;
+    case PageRotation::kRotate90:
+      transform.PostConcat(gfx::Transform::Make90degRotation());
+      transform.PostTranslate({translate.x(), translate.y()});
+      return transform;
+    case PageRotation::kRotate180:
+      transform.PostConcat(gfx::Transform::Make180degRotation());
+      transform.PostTranslate(
+          {page_size.width() + translate.x(), translate.y()});
+      return transform;
+    case PageRotation::kRotate270:
+      transform.PostConcat(gfx::Transform::Make270degRotation());
+      transform.PostTranslate({page_size.height() + translate.x(),
+                               page_size.width() + translate.y()});
+      return transform;
+  }
+  NOTREACHED();
 }
 
 }  // namespace chrome_pdf

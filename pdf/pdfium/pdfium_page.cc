@@ -26,10 +26,12 @@
 #include "pdf/accessibility_helper.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/buildflags.h"
+#include "pdf/page_rotation.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_ocr.h"
+#include "pdf/pdfium/pdfium_rotation.h"
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 #include "pdf/ui/thumbnail.h"
 #include "printing/units.h"
@@ -69,29 +71,6 @@ constexpr float k360DegreesInRadians = base::DegToRad(360.0f);
 
 constexpr float kPointsToPixels = static_cast<float>(printing::kPixelsPerInch) /
                                   static_cast<float>(printing::kPointsPerInch);
-
-// Page rotations in clockwise degrees.
-enum class Rotation {
-  kRotate0 = 0,
-  kRotate90 = 1,
-  kRotate180 = 2,
-  kRotate270 = 3,
-};
-
-std::optional<Rotation> GetRotationFromRawValue(int rotation) {
-  switch (rotation) {
-    case 0:
-      return Rotation::kRotate0;
-    case 1:
-      return Rotation::kRotate90;
-    case 2:
-      return Rotation::kRotate180;
-    case 3:
-      return Rotation::kRotate270;
-    default:
-      return std::nullopt;
-  }
-}
 
 gfx::SizeF GetPageSizeInPoints(FPDF_PAGE page) {
   return gfx::SizeF(FPDF_GetPageWidthF(page), FPDF_GetPageHeightF(page));
@@ -362,37 +341,38 @@ FS_RECTF GetLargestBounds(const FS_RECTF& largest_bounds,
           std::min(largest_bounds.bottom, bounds.bottom)};
 }
 
-gfx::RectF GetRotatedRectF(Rotation rotation,
+gfx::RectF GetRotatedRectF(PageRotation rotation,
                            gfx::SizeF page_size,
                            const FS_RECTF& original_bounds) {
   FS_RECTF bounds;
 
   // When the page is rotated 90 degrees or 270 degrees, the page width and
   // height are swapped. Swap it back for calculations.
-  if (rotation == Rotation::kRotate90 || rotation == Rotation::kRotate270) {
+  if (rotation == PageRotation::kRotate90 ||
+      rotation == PageRotation::kRotate270) {
     page_size.Transpose();
   }
 
   switch (rotation) {
-    case Rotation::kRotate0: {
+    case PageRotation::kRotate0: {
       bounds = original_bounds;
       break;
     }
-    case Rotation::kRotate90: {
+    case PageRotation::kRotate90: {
       bounds.left = original_bounds.bottom;
       bounds.top = page_size.width() - original_bounds.left;
       bounds.right = original_bounds.top;
       bounds.bottom = page_size.width() - original_bounds.right;
       break;
     }
-    case Rotation::kRotate180: {
+    case PageRotation::kRotate180: {
       bounds.left = page_size.width() - original_bounds.right;
       bounds.top = page_size.height() - original_bounds.bottom;
       bounds.right = page_size.width() - original_bounds.left;
       bounds.bottom = page_size.height() - original_bounds.top;
       break;
     }
-    case Rotation::kRotate270: {
+    case PageRotation::kRotate270: {
       bounds.left = page_size.height() - original_bounds.top;
       bounds.top = original_bounds.right;
       bounds.right = page_size.height() - original_bounds.bottom;
@@ -409,7 +389,7 @@ gfx::RectF GetRotatedRectF(Rotation rotation,
 // crop box, default to a `gfx::RectF` with dimensions page width by page
 // height.
 gfx::RectF GetEffectiveCropBox(FPDF_PAGE page,
-                               Rotation rotation,
+                               PageRotation rotation,
                                const gfx::SizeF& page_size) {
   gfx::RectF effective_crop_box;
   FS_RECTF effective_crop_bounds;
@@ -832,12 +812,7 @@ gfx::RectF PDFiumPage::GetCroppedRect() {
 
 gfx::RectF PDFiumPage::GetBoundingBox() {
   FPDF_PAGE page = GetPage();
-  if (!page) {
-    return gfx::RectF();
-  }
-
-  std::optional<Rotation> rotation =
-      GetRotationFromRawValue(FPDFPage_GetRotation(page));
+  std::optional<PageRotation> rotation = GetPageRotation(page);
   if (!rotation.has_value()) {
     return gfx::RectF();
   }

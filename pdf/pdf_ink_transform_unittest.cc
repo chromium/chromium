@@ -7,6 +7,7 @@
 #include <array>
 
 #include "pdf/page_orientation.h"
+#include "pdf/page_rotation.h"
 #include "pdf/pdf_ink_conversions.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "printing/units.h"
@@ -14,10 +15,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
 #include "third_party/ink/src/ink/geometry/envelope.h"
-#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 using printing::kUnitConversionFactorPixelsToPoints;
@@ -661,29 +662,68 @@ TEST(PdfInkTransformTest,
 }
 
 TEST(PdfInkTransformTest, GetCanonicalToPdfTransform) {
+  static constexpr gfx::SizeF kPageSize(300, 600);
+  static constexpr gfx::SizeF kRotated90PageSize(600, 300);
+
+  static constexpr gfx::Vector2dF kNoTranslate;
+  static constexpr gfx::Vector2dF kTranslate(50, 60);
+
   {
-    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
-        /*page_height=*/0, /*translate=*/gfx::Vector2dF());
-    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
-    EXPECT_EQ(gfx::Vector2dF(0, 0), tr.translation());
+    gfx::Transform tr = GetCanonicalToPdfTransform(
+        kPageSize, PageRotation::kRotate0, kNoTranslate);
+    EXPECT_EQ(gfx::PointF(0, 600), tr.MapPoint(gfx::PointF(0, 0)));
+    EXPECT_EQ(gfx::PointF(0, 0), tr.MapPoint(gfx::PointF(0, 800)));
+    EXPECT_EQ(gfx::PointF(300, 600), tr.MapPoint(gfx::PointF(400, 0)));
   }
   {
-    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
-        /*page_height=*/712, /*translate=*/gfx::Vector2dF());
-    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
-    EXPECT_EQ(gfx::Vector2dF(0, 712), tr.translation());
+    gfx::Transform tr = GetCanonicalToPdfTransform(
+        kPageSize, PageRotation::kRotate0, kTranslate);
+    EXPECT_EQ(gfx::PointF(50, 660), tr.MapPoint(gfx::PointF(0, 0)));
+    EXPECT_EQ(gfx::PointF(50, 60), tr.MapPoint(gfx::PointF(0, 800)));
+    EXPECT_EQ(gfx::PointF(350, 660), tr.MapPoint(gfx::PointF(400, 0)));
   }
   {
-    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
-        /*page_height=*/0, /*translate=*/gfx::Vector2dF(50, 60));
-    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
-    EXPECT_EQ(gfx::Vector2dF(50, 60), tr.translation());
+    gfx::Transform tr = GetCanonicalToPdfTransform(
+        kRotated90PageSize, PageRotation::kRotate90, kNoTranslate);
+    EXPECT_EQ(gfx::PointF(0, 0), tr.MapPoint(gfx::PointF(0, 0)));
+    EXPECT_EQ(gfx::PointF(0, 600), tr.MapPoint(gfx::PointF(800, 0)));
+    EXPECT_EQ(gfx::PointF(300, 0), tr.MapPoint(gfx::PointF(0, 400)));
   }
   {
-    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(
-        /*page_height=*/1008, /*translate=*/gfx::Vector2dF(50, 60));
-    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
-    EXPECT_EQ(gfx::Vector2dF(50, 1068), tr.translation());
+    gfx::Transform tr = GetCanonicalToPdfTransform(
+        kRotated90PageSize, PageRotation::kRotate90, kTranslate);
+    EXPECT_EQ(gfx::PointF(50, 60), tr.MapPoint(gfx::PointF(0, 0)));
+    EXPECT_EQ(gfx::PointF(50, 660), tr.MapPoint(gfx::PointF(800, 0)));
+    EXPECT_EQ(gfx::PointF(350, 60), tr.MapPoint(gfx::PointF(0, 400)));
+  }
+  {
+    gfx::Transform tr = GetCanonicalToPdfTransform(
+        kPageSize, PageRotation::kRotate180, kTranslate);
+    EXPECT_EQ(gfx::PointF(350, 60), tr.MapPoint(gfx::PointF(0, 0)));
+    EXPECT_EQ(gfx::PointF(350, 660), tr.MapPoint(gfx::PointF(0, 800)));
+    EXPECT_EQ(gfx::PointF(50, 60), tr.MapPoint(gfx::PointF(400, 0)));
+  }
+  {
+    gfx::Transform tr = GetCanonicalToPdfTransform(
+        kPageSize, PageRotation::kRotate180, kNoTranslate);
+    EXPECT_EQ(gfx::PointF(300, 0), tr.MapPoint(gfx::PointF(0, 0)));
+    EXPECT_EQ(gfx::PointF(300, 600), tr.MapPoint(gfx::PointF(0, 800)));
+    EXPECT_EQ(gfx::PointF(0, 0), tr.MapPoint(gfx::PointF(400, 0)));
+  }
+  {
+    gfx::Transform tr = GetCanonicalToPdfTransform(
+        kRotated90PageSize, PageRotation::kRotate270, kTranslate);
+    EXPECT_EQ(gfx::PointF(350, 660), tr.MapPoint(gfx::PointF(0, 0)));
+    EXPECT_EQ(gfx::PointF(350, 60), tr.MapPoint(gfx::PointF(800, 0)));
+    EXPECT_EQ(gfx::PointF(50, 660), tr.MapPoint(gfx::PointF(0, 400)));
+  }
+  {
+    gfx::Transform tr =
+        GetCanonicalToPdfTransform(kRotated90PageSize, PageRotation::kRotate270,
+                                   /*translate=*/gfx::Vector2dF());
+    EXPECT_EQ(gfx::PointF(300, 600), tr.MapPoint(gfx::PointF(0, 0)));
+    EXPECT_EQ(gfx::PointF(300, 0), tr.MapPoint(gfx::PointF(800, 0)));
+    EXPECT_EQ(gfx::PointF(0, 600), tr.MapPoint(gfx::PointF(0, 400)));
   }
 }
 

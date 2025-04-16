@@ -8,14 +8,15 @@
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
-#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/transform.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
 
 namespace gfx {
 class Size;
+class SizeF;
 class Vector2dF;
 }  // namespace gfx
 
@@ -24,6 +25,8 @@ class Envelope;
 }  // namespace ink
 
 namespace chrome_pdf {
+
+enum class PageRotation;
 
 // Converts a screen-based event input position into a page-based CSS pixels
 // position.  This canonical format is relative to the upper-left corner of a
@@ -134,14 +137,13 @@ gfx::Rect CanonicalInkEnvelopeToInvalidationScreenRect(
 // bottom-left origin).  The translation accounts for any difference from the
 // defined physical page size to the cropped, visible portion of the PDF page.
 //
-// `page_height` is in points. It must not be negative.
-// `translate` is in points.
-//
-// Note that callers can call gfx::AxisTransform2d::Invert() to get a transform
-// that does conversions in the opposite direction.
-gfx::AxisTransform2d GetCanonicalToPdfTransform(
-    float page_height,
-    const gfx::Vector2dF& translate);
+// - `page_size` is in points. It must not contain negative values.
+// - `page_rotation` is the rotation of the page, as specified in the PDF.
+//   Note that this is different from the user-chosen orientation in the viewer.
+// - `translate` is in points.
+gfx::Transform GetCanonicalToPdfTransform(const gfx::SizeF& page_size,
+                                          PageRotation page_rotation,
+                                          const gfx::Vector2dF& translate);
 
 }  // namespace chrome_pdf
 
