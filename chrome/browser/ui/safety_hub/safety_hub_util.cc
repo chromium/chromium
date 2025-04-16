@@ -106,6 +106,24 @@ bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
   return false;
 }
 
+bool IsUrlRevokedDisruptiveNotification(HostContentSettingsMap* hcsm,
+                                        const GURL& url) {
+  CHECK(url.is_valid());
+  content_settings::SettingInfo info;
+  base::Value stored_value(hcsm->GetWebsiteSetting(
+      url, url,
+      ContentSettingsType::REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS, &info));
+  if (stored_value.is_none()) {
+    return false;
+  }
+  CHECK(stored_value.is_dict());
+  const std::string& setting_val =
+      stored_value.GetDict()
+          .Find(safety_hub::kRevokedStatusDictKeyStr)
+          ->GetString();
+  return setting_val == safety_hub::kRevokeStr;
+}
+
 void SetRevokedAbusiveNotificationPermission(
     HostContentSettingsMap* hcsm,
     GURL url,
