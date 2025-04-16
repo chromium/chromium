@@ -28,6 +28,7 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/sockets_udp/test_udp_echo_server.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_constants.h"

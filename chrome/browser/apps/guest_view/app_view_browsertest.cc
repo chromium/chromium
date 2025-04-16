@@ -27,6 +27,7 @@
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/guest_view/app_view/app_view_constants.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"

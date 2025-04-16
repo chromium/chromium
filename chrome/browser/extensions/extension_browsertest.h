@@ -5,42 +5,14 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 
-#include "base/command_line.h"
-#include "base/files/file_path.h"
-#include "base/memory/raw_ptr.h"
-#include "base/scoped_observation.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_platform_browsertest.h"
-#include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_creator.h"
-#include "extensions/browser/extension_host.h"
-#include "extensions/browser/extension_protocols.h"
-#include "extensions/browser/extension_registrar.h"
-#include "extensions/browser/extension_system.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_id.h"
-#include "extensions/common/manifest.h"
-#include "extensions/common/mojom/manifest.mojom-shared.h"
 
 namespace extensions {
-class ExtensionBrowserTestPlatformDelegate;
 
-// Base class for extension browser tests. Provides utilities for loading,
-// unloading, and installing extensions.
+// DO NOT ADD MORE CODE. This will go away soon.
+// See https://crbug.com/404581990.
 class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
- public:
-  using ContextType = extensions::browser_test_util::ContextType;
-  using LoadOptions = extensions::browser_test_util::LoadOptions;
-
-  ExtensionBrowserTest(const ExtensionBrowserTest&) = delete;
-  ExtensionBrowserTest& operator=(const ExtensionBrowserTest&) = delete;
-
  protected:
-  // The platform delegate is an implementation detail of the test harness
-  // and should be able to access anything any general test would access.
-  friend class ExtensionBrowserTestPlatformDelegate;
-
   explicit ExtensionBrowserTest(ContextType context_type = ContextType::kNone);
   ~ExtensionBrowserTest() override;
 };
