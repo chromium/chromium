@@ -102,15 +102,6 @@ source_set("host_main_headers") {
   ]
 }
 
-source_set("capturer_interfaces") {
-  visibility = [ ":*" ]
-  sources = [ "desktop_and_cursor_composer.h" ]
-  deps = [
-    "//base:base",
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
-}
-
 source_set("common_headers") {
   visibility = [ "//remoting/host/*" ]
   sources = [
@@ -131,12 +122,13 @@ source_set("common_headers") {
     sources += [ "me2me_desktop_environment.h" ]
   }
   deps = [
-    ":capturer_interfaces",
     ":platform_interfaces",
+    "//base:base",
     "//ipc",
     "//remoting/base",
     "//remoting/host/base",
     "//remoting/protocol",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 
@@ -359,7 +351,6 @@ static_library("common") {
     "create_desktop_interaction_strategy_factory.cc",
     "daemon_process.cc",
     "daemon_process.h",
-    "desktop_and_cursor_composer.h",
     "desktop_and_cursor_composer_notifier.cc",
     "desktop_and_cursor_composer_notifier.h",
     "desktop_and_cursor_conditional_composer.cc",
