@@ -3759,6 +3759,46 @@ TEST_P(CookieSettingsTopLevelTpcdOriginTrialTest, IsCookieAccessible) {
       IsTopLevel3pcdOriginTrialEligible());
 }
 
+TEST_P(CookieSettingsTopLevelTpcdOriginTrialTest,
+       OverridesHavePrecedenceOverMitigations) {
+  CookieSettings settings;
+  net::CookieInclusionStatus status;
+  settings.set_block_third_party_cookies(false);
+  settings.set_mitigations_enabled_for_3pcd(false);
+  GURL top_level_url = GURL(kURL);
+  GURL url = GURL(kOtherURL);
+
+  AddSettingForTopLevelTpcdOriginTrial(settings, top_level_url);
+  std::unique_ptr<net::CanonicalCookie> cookie =
+      MakeCanonicalSameSiteNoneCookie("name", kOtherURL);
+
+  // Third-party cookies are not blocked in general, but the OT blocks them when
+  // it is enabled. See that cookie gets blocked when there is a top level 3pcd
+  // origin trial.
+  EXPECT_NE(settings.IsCookieAccessible(*cookie, url, net::SiteForCookies(),
+                                        url::Origin::Create(top_level_url),
+                                        net::FirstPartySetMetadata(),
+                                        GetCookieSettingOverrides(), &status),
+            IsTopLevel3pcdOriginTrialEligible());
+
+  // Create a metadata grant to allow cookies for `url` under `top_level_url`.
+  network::tpcd::metadata::Manager manager;
+  manager.SetGrants(
+      {CreateSetting(url.host(), top_level_url.host(), CONTENT_SETTING_ALLOW)});
+  settings.set_tpcd_metadata_manager(&manager);
+
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *cookie, url, net::SiteForCookies(), url::Origin::Create(top_level_url),
+      net::FirstPartySetMetadata(), GetCookieSettingOverrides(), &status));
+
+  // Ensure cookie access is always blocked when cookies are blocked from
+  // overrides.
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *cookie, url, net::SiteForCookies(), url::Origin::Create(top_level_url),
+      net::FirstPartySetMetadata(),
+      {net::CookieSettingOverride::kForceDisableThirdPartyCookies}, &status));
+}
+
 TEST_P(CookieSettingsTopLevelTpcdOriginTrialTest, UnblockedByMitigations) {
   GURL top_level_url = GURL(kURL);
   GURL url = GURL(kOtherURL);

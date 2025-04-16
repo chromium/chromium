@@ -510,10 +510,38 @@ bool CookieSettingsBase::IsAllowedByTopLevel3pcdTrialSettings(
                            /*info=*/nullptr) == CONTENT_SETTING_ALLOW;
 }
 
-bool CookieSettingsBase::Are3pcsForceDisabledByOverride(
+CookieSettingsBase::ModifierMode CookieSettingsBase::GetModifierMode(
+    base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides) const {
-  return overrides.Has(
-      net::CookieSettingOverride::kForceDisableThirdPartyCookies);
+  if (overrides.HasAll(
+          {net::CookieSettingOverride::kForceDisableThirdPartyCookies,
+           net::CookieSettingOverride::
+               kForceEnableThirdPartyCookieMitigations})) {
+    return ModifierMode::kPhaseout;
+  }
+  if (overrides.Has(
+          net::CookieSettingOverride::kForceDisableThirdPartyCookies)) {
+    return ModifierMode::kBlock;
+  }
+  if (top_frame_origin &&
+      IsBlockedByTopLevel3pcdOriginTrial(top_frame_origin->GetURL())) {
+    return ModifierMode::kPhaseout;
+  }
+  return ModifierMode::kUndefined;
+}
+
+std::optional<bool> CookieSettingsBase::MaybeBlockThirdPartyCookiesPerModifiers(
+    base::optional_ref<const url::Origin> top_frame_origin,
+    net::CookieSettingOverrides overrides) const {
+  switch (GetModifierMode(top_frame_origin, overrides)) {
+    case ModifierMode::kAllow:
+      return false;
+    case ModifierMode::kPhaseout:
+    case ModifierMode::kBlock:
+      return true;
+    case ModifierMode::kUndefined:
+      return std::nullopt;
+  }
 }
 
 bool CookieSettingsBase::ShouldConsider3pcdMetadataGrantsSettings(
