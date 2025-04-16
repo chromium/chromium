@@ -968,6 +968,74 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN, 10), 7, 360));
     return config;
   }
+  if (kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryWebFeature.name ==
+      feature->name) {
+    // A config that allows the web page summary toolbar button IPH to be shown:
+    // * Once per day. 3 times max in 90 days
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("adaptive_toolbar_page_summary_web_iph_trigger",
+                    Comparator(LESS_THAN, 1), 1, 360);
+    config.used = EventConfig("adaptive_toolbar_page_summary_web_used",
+                              Comparator(EQUAL, 0), 90, 360);
+    config.event_configs.insert(
+        EventConfig("adaptive_toolbar_page_summary_web_iph_trigger",
+                    Comparator(LESS_THAN, 3), 90, 360));
+    return config;
+  }
+  if (kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryPdfFeature.name ==
+      feature->name) {
+    // A config that allows the pdf page summary toolbar button IPH to be shown:
+    // * Once per day. 3 times max in 90 days
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger =
+        EventConfig("adaptive_toolbar_page_summary_pdf_iph_trigger",
+                    Comparator(LESS_THAN, 1), 1, 360);
+    config.used = EventConfig("adaptive_toolbar_page_summary_pdf_used",
+                              Comparator(EQUAL, 0), 90, 360);
+    config.event_configs.insert(
+        EventConfig("adaptive_toolbar_page_summary_pdf_iph_trigger",
+                    Comparator(LESS_THAN, 3), 90, 360));
+    return config;
+  }
+  if (kIPHPageSummaryWebMenuFeature.name == feature->name) {
+    // A config that allows the web page summary menu item IPH to be shown:
+    // * Once per day. 3 times max in 90 days
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger = EventConfig("menu_item_page_summary_web_iph_trigger",
+                                 Comparator(LESS_THAN, 1), 1, 360);
+    config.used = EventConfig("menu_item_page_summary_web_used",
+                              Comparator(EQUAL, 0), 90, 360);
+    config.event_configs.insert(
+        EventConfig("menu_item_page_summary_web_iph_trigger",
+                    Comparator(LESS_THAN, 3), 90, 360));
+    return config;
+  }
+  if (kIPHPageSummaryPdfMenuFeature.name == feature->name) {
+    // A config that allows the pdf page summary menu item IPH to be shown:
+    // * Once per day. 3 times max in 90 days
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(EQUAL, 0);
+    config.trigger = EventConfig("menu_item_page_summary_pdf_iph_trigger",
+                                 Comparator(LESS_THAN, 1), 1, 360);
+    config.used = EventConfig("menu_item_page_summary_pdf_used",
+                              Comparator(EQUAL, 0), 90, 360);
+    config.event_configs.insert(
+        EventConfig("menu_item_page_summary_pdf_iph_trigger",
+                    Comparator(LESS_THAN, 3), 90, 360));
+    return config;
+  }
 
   // A generic feature that always returns true.
   if (kIPHGenericAlwaysTriggerHelpUiFeature.name == feature->name) {

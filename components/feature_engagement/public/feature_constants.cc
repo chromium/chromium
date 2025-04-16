@@ -266,6 +266,18 @@ BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature,
 BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature,
              "IPH_AdaptiveButtonInTopToolbarCustomization_ReadAloud",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryWebFeature,
+             "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Web",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryPdfFeature,
+             "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Pdf",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPageSummaryWebMenuFeature,
+             "IPH_PageSummaryWebMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHPageSummaryPdfMenuFeature,
+             "IPH_PageSummaryPdfMenu",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHAppSpecificHistory,
              "IPH_AppSpecificHistory",
              base::FEATURE_ENABLED_BY_DEFAULT);

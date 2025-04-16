@@ -230,6 +230,11 @@ public final class EventConstants {
     /** An app menu pdf page download event. */
     public static final String APP_MENU_PDF_PAGE_DOWNLOADED = "app_menu_pdf_page_downloaded";
 
+    public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_WEB_USED =
+            "adaptive_toolbar_page_summary_web_used";
+    public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_PDF_USED =
+            "adaptive_toolbar_page_summary_pdf_used";
+
     /** Do not instantiate. */
     private EventConstants() {}
 }

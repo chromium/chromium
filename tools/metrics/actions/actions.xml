@@ -48190,6 +48190,11 @@ should be able to be added at any place in this file.
              feature."/>
   <suffix name="AdaptiveButtonInTopToolbarCustomization_NewTab"
       label="For AdaptiveButtonInTopToolbarCustomization new tab feature."/>
+  <suffix name="AdaptiveButtonInTopToolbarCustomization_PageSummary_Pdf"
+      label="For AdaptiveButtonInTopToolbarCustomization analyze pdf feature."/>
+  <suffix name="AdaptiveButtonInTopToolbarCustomization_PageSummary_Web"
+      label="For AdaptiveButtonInTopToolbarCustomization web page summary
+             feature."/>
   <suffix name="AdaptiveButtonInTopToolbarCustomization_Share"
       label="For AdaptiveButtonInTopToolbarCustomization share feature."/>
   <suffix name="AdaptiveButtonInTopToolbarCustomization_Translate"
@@ -48521,6 +48526,10 @@ should be able to be added at any place in this file.
   <suffix name="NewTabTip" label="For NewTabTip feature."/>
   <suffix name="PageInfo" label="In product help for opening PageInfo."/>
   <suffix name="PageInfoStoreInfo" label="For PageInfoStoreInfo feature."/>
+  <suffix name="PageSummaryPdfMenu"
+      label="For analyze pdf menu option feature."/>
+  <suffix name="PageSummaryWebMenu"
+      label="For page summary menu option feature."/>
   <suffix name="PageZoom" label="For Page Zoom feature."/>
   <suffix name="PasswordManagerShortcut"
       label="For password manager shortcut feature."/>

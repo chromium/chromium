@@ -196,7 +196,8 @@ public class AdaptiveToolbarUiCoordinator {
                         mContext,
                         mModalDialogManagerSupplier.get(),
                         mActivityTabProvider,
-                        AiAssistantService.getInstance());
+                        AiAssistantService.getInstance(),
+                        trackerSupplier);
 
         if (ChromeFeatureList.sEnableDiscountInfoApi.isEnabled()) {
             DiscountsButtonController discountsButtonController =

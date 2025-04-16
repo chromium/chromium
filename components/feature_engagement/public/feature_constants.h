@@ -137,6 +137,12 @@ FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(
     kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(
+    kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryWebFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(
+    kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryPdfFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHPageSummaryWebMenuFeature);
+FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHPageSummaryPdfMenuFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAppSpecificHistory);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAutoDarkOptOutFeature);
 FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHAutoDarkUserEducationMessageFeature);

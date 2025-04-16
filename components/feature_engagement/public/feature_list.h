@@ -69,6 +69,14 @@ DEFINE_VARIATION_PARAM(
 DEFINE_VARIATION_PARAM(
     kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature,
     "IPH_AdaptiveButtonInTopToolbarCustomization_ReadAloud");
+DEFINE_VARIATION_PARAM(
+    kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryWebFeature,
+    "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Web");
+DEFINE_VARIATION_PARAM(
+    kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryPdfFeature,
+    "IPH_AdaptiveButtonInTopToolbarCustomization_PageSummary_Pdf");
+DEFINE_VARIATION_PARAM(kIPHPageSummaryWebMenuFeature, "IPH_PageSummaryWebMenu");
+DEFINE_VARIATION_PARAM(kIPHPageSummaryPdfMenuFeature, "IPH_PageSummaryPdfMenu");
 DEFINE_VARIATION_PARAM(kIPHAutoDarkOptOutFeature, "IPH_AutoDarkOptOut");
 DEFINE_VARIATION_PARAM(kIPHAutoDarkUserEducationMessageFeature,
                        "IPH_AutoDarkUserEducationMessage");
@@ -567,6 +575,12 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
             kIPHAdaptiveButtonInTopToolbarCustomizationAddToBookmarksFeature),
         VARIATION_ENTRY(
             kIPHAdaptiveButtonInTopToolbarCustomizationReadAloudFeature),
+        VARIATION_ENTRY(
+            kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryWebFeature),
+        VARIATION_ENTRY(
+            kIPHAdaptiveButtonInTopToolbarCustomizationPageSummaryPdfFeature),
+        VARIATION_ENTRY(kIPHPageSummaryWebMenuFeature),
+        VARIATION_ENTRY(kIPHPageSummaryPdfMenuFeature),
         VARIATION_ENTRY(kIPHAndroidTabDeclutter),
         VARIATION_ENTRY(kIPHAutoDarkOptOutFeature),
         VARIATION_ENTRY(kIPHAutoDarkUserEducationMessageFeature),
