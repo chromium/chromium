@@ -111,7 +111,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
         "description": "Run with android_35_google_apis_tablet_x64",
         "merge": {
           "args": [
@@ -159,7 +158,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
         "description": "Run with android_35_google_apis_tablet_x64",
         "merge": {
           "args": [
