@@ -8,6 +8,7 @@ import "content/test/data/web_ui_ts_test_other_types.test-mojom";
 import "content/test/data/web_ui_ts_test_types.test-mojom";
 import "mojo/public/mojom/base/jserror.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 
 enum TestEnum {
@@ -71,7 +72,10 @@ interface WebUITsMojoTestCache {
           NestedMappedType nested_mapped_type,
           StringDict? other_mapped_type);
 
-  EchoTypemaps(mojo_base.mojom.JSTime time) => (mojo_base.mojom.JSTime time);
+  EchoTypemaps(
+      mojo_base.mojom.JSTime time, mojo_base.mojom.UnguessableToken token)
+      => (mojo_base.mojom.JSTime time,
+          mojo_base.mojom.UnguessableToken token);
 
   EchoOptionalTypemaps(OptionalTypemap container) => (OptionalTypemap result);
 

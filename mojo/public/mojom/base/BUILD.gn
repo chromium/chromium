@@ -670,6 +670,31 @@ mojom_component("base") {
         },
       ]
     },
+    {
+      source = "unguessable_token_converter.ts"
+      types = [
+        {
+          converter = "UnguessableTokenConverter"
+          mojom = "mojo_base.mojom.UnguessableToken"
+
+          # Tokens will be in the form of a 32 char hexadecimal string
+          # which represents the underlying 128 bits of token. E.g.:
+          #   "00001111222233334444555566667777"
+          # Note that *all* tokens must be 32 char strings, it is not
+          # permissible to use a truncated representation of a token,
+          # for example:
+          #   "01" <== not permissible!
+          # this is because APIs would typically use string operations
+          # when working with the mapped token. Therefore, the equality
+          # and comparison operators should be transitive between the mapped
+          # type and the mojo type. For example:
+          #   str(token) === str(mojo(str(token)))
+          # we do NOT want to allow the following scenario:
+          #   "0x1" != "0x00001", but mojo("0x1") == mojo("0x00001)
+          ts = "string"
+        },
+      ]
+    },
   ]
 }
 

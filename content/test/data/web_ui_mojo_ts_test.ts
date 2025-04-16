@@ -247,10 +247,15 @@ async function doTest(): Promise<boolean> {
   }
 
   {
-    const result = await cache.echoTypemaps(new Date(12321));
+    const token = '0123456789ABCDEFBEEFDEADDEADBEEF';
+    const result = await cache.echoTypemaps(
+        new Date(12321),
+        token,
+    );
     assert(
         result.time.getTime() === new Date(12321).getTime(),
         `unexpected date received ${result.time.getTime()}`);
+    assert(result.token === token, `unexpected token ${token}`);
   }
 
   const assertTypemapContainerEquals =

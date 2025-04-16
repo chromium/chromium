@@ -116,7 +116,7 @@ export class IndexedDbDatabase extends CustomElement {
       const tokenValue = client.documentToken ?
           client.documentToken.value :
           this.getExecutionContextTokenValue(client.contextToken);
-      if (tokenValue && this.tokenToHexString(tokenValue) === token) {
+      if (tokenValue && tokenValue === token) {
         matchedClients.push(client);
       }
     }
@@ -138,14 +138,6 @@ export class IndexedDbDatabase extends CustomElement {
       return token.sharedWorkerToken.value;
     }
     throw new Error('Unrecognized ExecutionContextToken');
-  }
-
-  // This is the equivalent of `base::UnguessableToken::ToString()`.
-  private tokenToHexString(token: UnguessableToken) {
-    // Return the concatenation of the upper-case hexadecimal representations
-    // of high and low, both padded to be 16 characters long.
-    return token.high.toString(16).padStart(16, '0').toUpperCase() +
-        token.low.toString(16).padStart(16, '0').toUpperCase();
   }
 }
 

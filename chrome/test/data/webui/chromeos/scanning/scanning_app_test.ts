@@ -15,7 +15,6 @@ import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import type {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
@@ -26,7 +25,7 @@ import type {MultiPageScanControllerInterface, MultiPageScanControllerRemote, Sc
 import type {ScanningAppElement} from 'chrome://scanning/scanning_app.js';
 import {MAX_NUM_SAVED_SCANNERS} from 'chrome://scanning/scanning_app_types.js';
 import type {ScannerCapabilitiesResponse, ScannerSetting, ScannersReceivedResponse, ScanSettings, StartMultiPageScanResponse} from 'chrome://scanning/scanning_app_types.js';
-import {getColorModeString, getPageSizeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {getColorModeString, getPageSizeString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/chromeos/test_util.js';
@@ -60,16 +59,12 @@ const thirdPageSizes: PageSize[] = [PageSize.kMax];
 const thirdColorModes: ColorMode[] = [ColorMode.kBlackAndWhite];
 const thirdResolutions: number[] = [75, 200];
 
-const firstScannerId: UnguessableToken = {
-  high: BigInt(0),
-  low: BigInt(1),
-};
+const UNGUESSABLE_TOKEN_LENGTH = 32;
+
+const firstScannerId = 1n.toString(16).padStart(UNGUESSABLE_TOKEN_LENGTH, '0');
 const firstScannerName = 'Scanner 1';
 
-const secondScannerId: UnguessableToken = {
-  high: BigInt(0),
-  low: BigInt(2),
-};
+const secondScannerId = 2n.toString(16).padStart(UNGUESSABLE_TOKEN_LENGTH, '0');
 const secondScannerName = 'Scanner 2';
 
 const firstCapabilities = {
@@ -98,7 +93,7 @@ class FakeScanService implements ScanServiceInterface {
   resolverMap = new Map<string, PromiseResolver<void>>();
   multiPageScanController: MultiPageScanControllerInterface|null = null;
   scanners: Scanner[] = [];
-  capabilities = new Map<UnguessableToken, ScannerCapabilities>();
+  capabilities = new Map<string, ScannerCapabilities>();
   scanJobObserverRemote: ScanJobObserverRemote|null = null;
   failStartScan = false;
 
@@ -149,8 +144,7 @@ class FakeScanService implements ScanServiceInterface {
     this.scanners = this.scanners.concat(scanner);
   }
 
-  setCapabilities(capabilities: Map<UnguessableToken, ScannerCapabilities>):
-      void {
+  setCapabilities(capabilities: Map<string, ScannerCapabilities>): void {
     this.capabilities = capabilities;
   }
 
@@ -207,7 +201,7 @@ class FakeScanService implements ScanServiceInterface {
     });
   }
 
-  getScannerCapabilities(scannerId: UnguessableToken):
+  getScannerCapabilities(scannerId: string):
       Promise<ScannerCapabilitiesResponse> {
     return new Promise(resolve => {
       this.methodCalled('getScannerCapabilities');
@@ -218,7 +212,7 @@ class FakeScanService implements ScanServiceInterface {
   }
 
   startScan(
-      scannerId: UnguessableToken, settings: ScanSettingsMojom,
+      scannerId: string, settings: ScanSettingsMojom,
       remote: ScanJobObserverRemote): Promise<{success: boolean}> {
     assert(scannerId);
     assert(settings);
@@ -230,7 +224,7 @@ class FakeScanService implements ScanServiceInterface {
   }
 
   startMultiPageScan(
-      scannerId: UnguessableToken, settings: ScanSettingsMojom,
+      scannerId: string, settings: ScanSettingsMojom,
       remote: ScanJobObserverRemote): Promise<StartMultiPageScanResponse> {
     assert(scannerId);
     assert(settings);
@@ -285,7 +279,7 @@ class FakeMultiPageScanController implements MultiPageScanControllerInterface {
     });
   }
 
-  scanNextPage(scannerId: UnguessableToken, settings: ScanSettingsMojom):
+  scanNextPage(scannerId: string, settings: ScanSettingsMojom):
       Promise<{success: boolean}> {
     assert(scannerId);
     assert(settings);
@@ -299,9 +293,8 @@ class FakeMultiPageScanController implements MultiPageScanControllerInterface {
     this.pageIndexToRemove = pageIndex;
   }
 
-  rescanPage(
-      scannerId: UnguessableToken, settings: ScanSettingsMojom,
-      pageIndex: number): Promise<{success: boolean}> {
+  rescanPage(scannerId: string, settings: ScanSettingsMojom, pageIndex: number):
+      Promise<{success: boolean}> {
     assert(scannerId);
     assert(settings);
     this.pageIndexToRescan = pageIndex;
@@ -345,7 +338,7 @@ suite('scanningAppTest', function() {
   let scannedImages: HTMLElement|null = null;
   let linkEl: HTMLLinkElement|null = null;
 
-  const capabilities = new Map<UnguessableToken, ScannerCapabilities>();
+  const capabilities = new Map<string, ScannerCapabilities>();
   capabilities.set(firstScannerId, firstCapabilities);
   capabilities.set(secondScannerId, secondCapabilities);
   const expectedScanners: Scanner[] = [
@@ -397,7 +390,7 @@ suite('scanningAppTest', function() {
 
   function initializeScanningApp(
       scanners: Scanner[],
-      capabilities: Map<UnguessableToken, ScannerCapabilities>): Promise<void> {
+      capabilities: Map<string, ScannerCapabilities>): Promise<void> {
     fakeScanService.setMultiPageScanController(fakeMultiPageScanController);
     fakeScanService.setScanners(scanners);
     fakeScanService.setCapabilities(capabilities);
@@ -556,7 +549,7 @@ suite('scanningAppTest', function() {
         strictQuery('#scannedImages', scanPreview.shadowRoot, HTMLElement);
     await getScannerCapabilities();
 
-    assertEquals(tokenToString(firstScannerId), scanningApp.selectedScannerId);
+    assertEquals(firstScannerId, scanningApp.selectedScannerId);
     // A scanner with type "FLATBED" will be used as the selectedSource
     // if it exists.
     assertEquals(
@@ -1709,9 +1702,7 @@ suite('scanningAppTest', function() {
     assert(scanningApp);
     await getScannerCapabilities();
 
-    assertEquals(
-        tokenToString(firstScannerId),
-        getSettingSelect('#scannerSelect').value);
+    assertEquals(firstScannerId, getSettingSelect('#scannerSelect').value);
     assertEquals(PLATEN, getSettingSelect('#sourceSelect').value);
     assertEquals(
         loadTimeData.getString('myFilesSelectOption'),
@@ -1733,9 +1724,7 @@ suite('scanningAppTest', function() {
     assert(scanningApp);
     await getScannerCapabilities();
 
-    assertEquals(
-        tokenToString(secondScannerId),
-        getSettingSelect('#scannerSelect').value);
+    assertEquals(secondScannerId, getSettingSelect('#scannerSelect').value);
     assertEquals(ADF_SIMPLEX, getSettingSelect('#sourceSelect').value);
     assertEquals(
         loadTimeData.getString('myFilesSelectOption'),
@@ -1776,9 +1765,7 @@ suite('scanningAppTest', function() {
     // Set up from saved settings occurs after next render on app state change.
     await waitAfterNextRender(scanningApp);
 
-    assertEquals(
-        tokenToString(firstScannerId),
-        getSettingSelect('#scannerSelect').value);
+    assertEquals(firstScannerId, getSettingSelect('#scannerSelect').value);
     assertEquals(PLATEN, getSettingSelect('#sourceSelect').value);
     assertEquals(
         loadTimeData.getString('myFilesSelectOption'),
@@ -1823,7 +1810,7 @@ suite('scanningAppTest', function() {
     await waitAfterNextRender(scanningApp);
 
     assertEquals(
-        tokenToString(firstScannerId), getSettingSelect('#scannerSelect').value,
+        firstScannerId, getSettingSelect('#scannerSelect').value,
         'Scanner select');
     assertEquals(
         PLATEN, getSettingSelect('#sourceSelect').value, 'Source select');
@@ -1870,9 +1857,7 @@ suite('scanningAppTest', function() {
     assert(scanningApp);
     await getScannerCapabilities();
 
-    assertEquals(
-        tokenToString(firstScannerId),
-        getSettingSelect('#scannerSelect').value);
+    assertEquals(firstScannerId, getSettingSelect('#scannerSelect').value);
     assertEquals(PLATEN, getSettingSelect('#sourceSelect').value);
     assertEquals(
         loadTimeData.getString('myFilesSelectOption'),
@@ -1968,7 +1953,7 @@ suite('scanningAppTest', function() {
     await getScannerCapabilities();
 
     const scannerSelect = getSettingSelect('#scannerSelect');
-    assertEquals(tokenToString(secondScannerId), scannerSelect.value);
+    assertEquals(secondScannerId, scannerSelect.value);
   });
 
   // Verify the scan settings are sent to the Pref service to be saved.
@@ -1994,7 +1979,7 @@ suite('scanningAppTest', function() {
 
     // Set dropdowns to match `scannerSettings` properties.
     await changeSelectedValue(
-        getSettingSelect('#scannerSelect'), tokenToString(secondScannerId));
+        getSettingSelect('#scannerSelect'), secondScannerId);
     await changeSelectedValue(
         getSettingSelect('#sourceSelect'),
         scannerSetting.sourceName.toString());
@@ -2087,7 +2072,7 @@ suite('scanningAppTest', function() {
     assert(scanningApp);
     await getScannerCapabilities();
 
-    scanningApp.selectedScannerId = tokenToString(secondScannerId);
+    scanningApp.selectedScannerId = secondScannerId;
     scanningApp.selectedSource = newSecondScannerSetting.sourceName;
     scanningApp.selectedFileType = newSecondScannerSetting.fileType.toString();
     scanningApp.selectedColorMode =

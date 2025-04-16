@@ -15,10 +15,7 @@ import {ColorModel, DuplexMode, MarginType, PrinterType, ScalingType} from '../u
 export function getFakePreviewTicket(requestId: number = 1): PreviewTicket {
   const previewTicket: PreviewTicket = {
     requestId: requestId,
-    printPreviewId: {
-      high: 0n,
-      low: 0n,
-    },
+    printPreviewId: '0'.repeat(32 /* token length */),
     destinationId: 'Default Printer',
     collate: true,
     color: ColorModel.COLOR,

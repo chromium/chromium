@@ -7,27 +7,22 @@ import 'chrome://scanning/scanner_select.js';
 
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ScannerSelectElement} from 'chrome://scanning/scanner_select.js';
 import type {Scanner} from 'chrome://scanning/scanning.mojom-webui.js';
 import type {ScannerInfo} from 'chrome://scanning/scanning_app_types.js';
-import {getScannerDisplayName, tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {getScannerDisplayName} from 'chrome://scanning/scanning_app_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertOrderedAlphabetically, createScanner} from './scanning_app_test_utils.js';
 
-const firstScannerId: UnguessableToken = {
-  high: BigInt(0),
-  low: BigInt(1),
-};
+const UNGUESSABLE_TOKEN_LENGTH = 32;
+
+const firstScannerId = 1n.toString().padStart(UNGUESSABLE_TOKEN_LENGTH, '0');
 const firstScannerName = 'Scanner 1';
 
-const secondScannerId: UnguessableToken = {
-  high: BigInt(0),
-  low: BigInt(2),
-};
+const secondScannerId = 2n.toString().padStart(UNGUESSABLE_TOKEN_LENGTH, '0');
 const secondScannerName = 'Scanner 2';
 
 suite('scannerSelectTest', function() {
@@ -80,7 +75,7 @@ suite('scannerSelectTest', function() {
     assertEquals(2, select.length);
     assertEquals(firstScannerName, getOption(0).textContent!.trim());
     assertEquals(secondScannerName, getOption(1).textContent!.trim());
-    assertEquals(tokenToString(firstScannerId), select.value);
+    assertEquals(firstScannerId, select.value);
   });
 
   // Verify the scanners are sorted alphabetically.
@@ -98,15 +93,14 @@ suite('scannerSelectTest', function() {
     assertOrderedAlphabetically(
         scannerSelect.scanners,
         (scanner: Scanner) => getScannerDisplayName(scanner));
-    assertEquals(
-        tokenToString(firstScannerId), scannerSelect.selectedScannerId);
+    assertEquals(firstScannerId, scannerSelect.selectedScannerId);
   });
 
   // Verify the last used scanner is selected if available.
   test('selectLastUsedScanner', async () => {
     assert(scannerSelect);
     assert(scannerSelect);
-    const secondScannerIdString = tokenToString(secondScannerId);
+    const secondScannerIdString = secondScannerId;
     const secondScannerInfo: ScannerInfo = {
       token: secondScannerId,
       displayName: secondScannerName,
@@ -137,7 +131,7 @@ suite('scannerSelectTest', function() {
     scannerSelect.lastUsedScannerId = '';
     scannerSelect.scanners = scanners;
 
-    const firstScannerIdString = tokenToString(firstScannerId);
+    const firstScannerIdString = firstScannerId;
     await waitAfterNextRender(scannerSelect);
     assertEquals(firstScannerIdString, scannerSelect.selectedScannerId);
     assertEquals(firstScannerIdString, getSelect().value);

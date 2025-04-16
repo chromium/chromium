@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/browser/webui/web_ui_impl.h"
@@ -115,8 +116,10 @@ class WebUITsMojoTestCacheImpl : public mojom::WebUITsMojoTestCache {
         dict_ptr ? dict_ptr->Clone() : nullptr);
   }
 
-  void EchoTypemaps(base::Time time, EchoTypemapsCallback cb) override {
-    std::move(cb).Run(time);
+  void EchoTypemaps(base::Time time,
+                    const base::UnguessableToken& token,
+                    EchoTypemapsCallback cb) override {
+    std::move(cb).Run(time, token);
   }
 
   void EchoOptionalTypemaps(mojom::OptionalTypemapPtr container,
