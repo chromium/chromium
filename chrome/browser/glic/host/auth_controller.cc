@@ -241,6 +241,10 @@ void AuthController::OnGlicWindowOpened() {
   after_signin_callback_.Reset();
 }
 
+bool AuthController::RequiresSignIn() const {
+  return GetTokenState() == TokenState::kRequiresSignIn;
+}
+
 void AuthController::CookieSyncBeforeLoadDone(
     base::OnceCallback<void(mojom::PrepareForClientResult)> callback,
     bool sync_success) {

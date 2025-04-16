@@ -245,25 +245,15 @@ void GlicFreController::TryPreload() {
   // Callers should not attempt to preload if the widget is showing.
   CHECK(!fre_widget_);
 
-  if (fre_view_) {
+  if (fre_view_ || auth_controller_.RequiresSignIn()) {
     return;
   }
-  auth_controller_.CheckAuthBeforeShow(
-      AuthController::FallbackBehavior::kNone,
-      base::BindOnce(&GlicFreController::TryPreloadAfterAuthCheck,
-                     GetWeakPtr()));
+
+  CreateView();
 }
 
 bool GlicFreController::IsWarmed() const {
   return !!fre_view_;
-}
-
-void GlicFreController::TryPreloadAfterAuthCheck(
-    AuthController::BeforeShowResult result) {
-  if (result != AuthController::BeforeShowResult::kReady) {
-    return;
-  }
-  CreateView();
 }
 
 content::WebContents* GlicFreController::GetWebContents() {

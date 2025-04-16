@@ -74,6 +74,8 @@ class AuthController : public signin::IdentityManager::Observer {
   void ShowReauthForAccount(base::OnceClosure after_signin);
   void OnGlicWindowOpened();
 
+  bool RequiresSignIn() const;
+
   void SetCookieSynchronizerForTesting(
       std::unique_ptr<GlicCookieSynchronizer> synchronizer);
 

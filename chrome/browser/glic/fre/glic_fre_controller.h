@@ -117,7 +117,6 @@ class GlicFreController {
                            UpdateLauncherOnFreCompletion);
   void ShowFreDialogAfterAuthCheck(base::WeakPtr<Browser> browser,
                                    AuthController::BeforeShowResult result);
-  void TryPreloadAfterAuthCheck(AuthController::BeforeShowResult result);
   static void OnCheckIsDefaultBrowserFinished(
       version_info::Channel channel,
       shell_integration::DefaultWebClientState state);
