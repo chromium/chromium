@@ -530,9 +530,10 @@ void AutocompleteResult::SortAndCull(
         }
 #endif
       } else {
-        sections.push_back(std::make_unique<DesktopWebZpsSection>(
-            suggestion_groups_map_, max_suggestions, max_search_suggestions,
-            max_url_suggestions));
+        sections.push_back(std::make_unique<DesktopWebURLZpsSection>(
+            suggestion_groups_map_, max_url_suggestions));
+        sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
+            suggestion_groups_map_, max_search_suggestions));
         if (OmniboxFieldTrial::IsStarterPackPageEnabled()) {
           sections.push_back(std::make_unique<DesktopWebZpsActionsSection>(
               suggestion_groups_map_));

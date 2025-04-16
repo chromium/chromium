@@ -446,33 +446,35 @@ DesktopSRPZpsSection::DesktopSRPZpsSection(
           },
           group_configs) {}
 
-DesktopWebZpsSection::DesktopWebZpsSection(
+DesktopWebURLZpsSection::DesktopWebURLZpsSection(
     omnibox::GroupConfigMap& group_configs,
-    size_t max_suggestions,
-    size_t search_limit,
-    size_t url_limit)
-    : ZpsSection(
-          max_suggestions,
-          {
-              Group(url_limit,
-                    {
-                        {omnibox::GROUP_MOST_VISITED, url_limit},
-                    }),
-              Group(search_limit,
-                    {
-                        {omnibox::GROUP_CONTEXTUAL_SEARCH, search_limit},
-                    }),
-              Group(search_limit,
-                    {
-                        {omnibox::GROUP_VISITED_DOC_RELATED, search_limit},
-                    }),
-              Group(
-                  search_limit,
-                  {
-                      {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, search_limit},
-                  }),
-          },
-          group_configs) {}
+    size_t limit)
+    : ZpsSection(limit,
+                 {
+                     Group(limit,
+                           {
+                               {omnibox::GROUP_MOST_VISITED, limit},
+                           }),
+                 },
+                 group_configs) {}
+
+DesktopWebSearchZpsSection::DesktopWebSearchZpsSection(
+    omnibox::GroupConfigMap& group_configs,
+    size_t limit)
+    : Section(limit,
+              {
+                  Group(limit,
+                        {
+                            {omnibox::GROUP_VISITED_DOC_RELATED, limit},
+                            {omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST, limit},
+                        }),
+                  Group(limit,
+                        {
+                            {omnibox::GROUP_CONTEXTUAL_SEARCH, limit},
+                        }),
+              },
+              group_configs,
+              omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
 
 DesktopWebZpsActionsSection::DesktopWebZpsActionsSection(
     omnibox::GroupConfigMap& group_configs)

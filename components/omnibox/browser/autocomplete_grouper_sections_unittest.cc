@@ -1797,9 +1797,12 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsSectionWithUrls) {
     group_configs[omnibox::GROUP_MOST_VISITED];
     group_configs[omnibox::GROUP_PREVIOUS_SEARCH_RELATED];
     group_configs[omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST];
-    // Max 8 suggestions, with an upper limit of 4 url suggestions.
+    // Max 4 url suggestions.
     sections.push_back(
-        std::make_unique<DesktopWebZpsSection>(group_configs, 8u, 4u, 4u));
+        std::make_unique<DesktopWebURLZpsSection>(group_configs, 4u));
+    // Max 4 search suggestions.
+    sections.push_back(
+        std::make_unique<DesktopWebSearchZpsSection>(group_configs, 4u));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -1852,8 +1855,12 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsWithActionsSection) {
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
+    // Max 3 suggestions, with an upper limit of 3 url suggestions.
     sections.push_back(
-        std::make_unique<DesktopWebZpsSection>(group_configs, 8, 3, 3));
+        std::make_unique<DesktopWebURLZpsSection>(group_configs, 3u));
+    // Max 3 suggestions, with an upper limit of 3 search suggestions.
+    sections.push_back(
+        std::make_unique<DesktopWebSearchZpsSection>(group_configs, 3u));
     sections.push_back(
         std::make_unique<DesktopWebZpsActionsSection>(group_configs));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
@@ -1863,16 +1870,25 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsWithActionsSection) {
     SCOPED_TRACE("ZPS action matches group after contextual search matches");
     test(
         {
+            CreateMatch(300, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
+            CreateMatch(299, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
+            CreateMatch(200, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(199, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(100, omnibox::GROUP_MOST_VISITED),
             CreateMatch(99, omnibox::GROUP_MOST_VISITED),
-            CreateMatch(98, omnibox::GROUP_VISITED_DOC_RELATED),
-            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(96, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
-            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
-            CreateMatch(94, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
-            CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(98, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(97, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(96, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(95, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(94, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(93, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(92, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(91, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(90, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(89, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
         },
-        // URLs, then searches, then actions, stable sorted.
-        {99, 95, 93, 98, 97, 96, 94});
+        // 3 URLs, 1 other search, 2 contextual searches, and 2 actions.
+        {100, 99, 98, 94, 200, 199, 300, 299});
   }
 }
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
