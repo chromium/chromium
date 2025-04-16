@@ -767,9 +767,10 @@ gpu::SyncToken SkiaOutputSurfaceImpl::ReleaseImageContexts(
 std::unique_ptr<ExternalUseClient::ImageContext>
 SkiaOutputSurfaceImpl::CreateImageContext(const TransferableResource& resource,
                                           bool maybe_concurrent_reads,
-                                          bool raw_draw_if_possible) {
+                                          bool raw_draw_if_possible,
+                                          uint32_t client_id) {
   return std::make_unique<ImageContextImpl>(resource, maybe_concurrent_reads,
-                                            raw_draw_if_possible);
+                                            raw_draw_if_possible, client_id);
 }
 
 DBG_FLAG_FBOOL("skia_gpu.swap_buffers.force_disable_makecurrent",

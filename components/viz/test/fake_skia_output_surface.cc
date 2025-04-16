@@ -148,7 +148,8 @@ gpu::SyncToken FakeSkiaOutputSurface::ReleaseImageContexts(
 std::unique_ptr<ExternalUseClient::ImageContext>
 FakeSkiaOutputSurface::CreateImageContext(const TransferableResource& resource,
                                           bool concurrent_reads,
-                                          bool raw_draw_if_possible) {
+                                          bool raw_draw_if_possible,
+                                          uint32_t client_id) {
   return std::make_unique<ExternalUseClient::ImageContext>(resource);
 }
 

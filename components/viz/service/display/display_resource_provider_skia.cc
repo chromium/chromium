@@ -152,10 +152,12 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     resources_.emplace_back(id, &resource);
 
     if (!resource.image_context) {
+      uint32_t client_id =
+          resource_provider_->GetSurfaceId(id).frame_sink_id().client_id();
       resource.image_context =
           resource_provider_->external_use_client_->CreateImageContext(
               resource.transferable, maybe_concurrent_reads,
-              raw_draw_is_possible);
+              raw_draw_is_possible, client_id);
     }
     resource.locked_for_external_use = true;
 

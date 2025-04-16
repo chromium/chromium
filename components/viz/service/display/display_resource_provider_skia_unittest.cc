@@ -68,11 +68,12 @@ class MockExternalUseClient : public ExternalUseClient {
   MOCK_METHOD1(ReleaseImageContexts,
                gpu::SyncToken(
                    std::vector<std::unique_ptr<ImageContext>> image_contexts));
-  MOCK_METHOD3(
+  MOCK_METHOD4(
       CreateImageContext,
       std::unique_ptr<ImageContext>(const TransferableResource& resource,
                                     bool,
-                                    bool));
+                                    bool,
+                                    uint32_t));
 };
 
 class DisplayResourceProviderSkiaTest : public testing::Test {
@@ -169,7 +170,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUse) {
   auto* image_context = owned_image_context.get();
 
   TransferableResource resource_out;
-  EXPECT_CALL(client_, CreateImageContext(_, _, _))
+  EXPECT_CALL(client_, CreateImageContext(_, _, _, _))
       .WillOnce(DoAll(SaveArg<0>(&resource_out),
                       Return(ByMove(std::move(owned_image_context)))));
 
@@ -250,7 +251,7 @@ TEST_F(DisplayResourceProviderSkiaTest, LockForExternalUseWebView) {
   auto* image_context = owned_image_context.get();
 
   TransferableResource resource_out;
-  EXPECT_CALL(client_, CreateImageContext(_, _, _))
+  EXPECT_CALL(client_, CreateImageContext(_, _, _, _))
       .WillOnce(DoAll(SaveArg<0>(&resource_out),
                       Return(ByMove(std::move(owned_image_context)))));
 

@@ -48,7 +48,8 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
  public:
   ImageContextImpl(const TransferableResource& resource,
                    bool maybe_concurrent_reads,
-                   bool raw_draw_if_possible);
+                   bool raw_draw_if_possible,
+                   uint32_t client_id);
 
   // Used only for creating promise image from RenderPass.
   ImageContextImpl(const gpu::Mailbox& mailbox,
@@ -154,6 +155,10 @@ class ImageContextImpl final : public ExternalUseClient::ImageContext {
   // Viz for the promise image and the YCbCr info computed at the time of
   // fulfilling the promise image.
   bool graphite_ycbcr_info_mismatch_ = false;
+
+  // Comes from the SurfaceId for resource in DisplayResourceProviderSkia to
+  // identify client ids in crash dumps. Set to -1 by default.
+  int32_t client_id_ = -1;
 };
 
 }  // namespace viz

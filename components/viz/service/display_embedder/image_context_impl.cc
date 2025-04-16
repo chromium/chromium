@@ -82,7 +82,8 @@ enum class CreatePromiseImageResult {
 // GPU integration tests can go through here.
 void SetCrashKeysAndDump(
     viz::TransferableResource::ResourceSource resource_source,
-    viz::SharedImageFormat format) {
+    viz::SharedImageFormat format,
+    int32_t client_id) {
 #if BUILDFLAG(IS_ANDROID) && !DCHECK_IS_ON()
   using ResourceSource = viz::TransferableResource::ResourceSource;
   auto resource_source_to_string_fn = [resource_source] {
@@ -121,9 +122,10 @@ void SetCrashKeysAndDump(
         return "WebGPUSwapBuffer";
     }
   };
+  SCOPED_CRASH_KEY_NUMBER("image context imp", "client id", client_id);
   SCOPED_CRASH_KEY_STRING32("image context imp", "resource source",
                             resource_source_to_string_fn());
-  SCOPED_CRASH_KEY_STRING32("image context imp", "si format",
+  SCOPED_CRASH_KEY_STRING64("image context imp", "si format",
                             format.ToString());
   base::debug::DumpWithoutCrashing();
 #endif  //  BUILDFLAG(IS_ANDROID) && !DCHECK_IS_ON()
@@ -188,10 +190,12 @@ namespace viz {
 
 ImageContextImpl::ImageContextImpl(const TransferableResource& resource,
                                    bool maybe_concurrent_reads,
-                                   bool raw_draw_if_possible)
+                                   bool raw_draw_if_possible,
+                                   uint32_t client_id)
     : ImageContext(resource),
       maybe_concurrent_reads_(maybe_concurrent_reads),
-      raw_draw_if_possible_(raw_draw_if_possible) {}
+      raw_draw_if_possible_(raw_draw_if_possible),
+      client_id_(client_id) {}
 
 ImageContextImpl::ImageContextImpl(const gpu::Mailbox& mailbox,
                                    const gfx::Size& size,
@@ -471,7 +475,7 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
       DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                      "mailbox not found in SharedImageManager.";
       result = CreatePromiseImageResult::kFailedCreateRepresentation;
-      SetCrashKeysAndDump(resource_source(), format());
+      SetCrashKeysAndDump(resource_source(), format(), client_id_);
       return false;
     }
 
@@ -501,7 +505,7 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
     DLOG(ERROR) << "Failed to fulfill the promise texture - SharedImage "
                    "begin read access failed..";
     result = CreatePromiseImageResult::kFailedBeginReadAccess;
-    SetCrashKeysAndDump(resource_source(), format());
+    SetCrashKeysAndDump(resource_source(), format(), client_id_);
     return false;
   }
 
@@ -536,7 +540,7 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
       result = CreatePromiseImageResult::kFailedYcbcrMismatch;
       base::debug::Alias(&promise_texture_ycbcr_desc);
       base::debug::Alias(&fulfillment_texture_ycbcr_desc);
-      SetCrashKeysAndDump(resource_source(), format());
+      SetCrashKeysAndDump(resource_source(), format(), client_id_);
       return false;
     }
 #endif
