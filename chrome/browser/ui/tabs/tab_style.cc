@@ -27,6 +27,9 @@ constexpr int kChromeRefreshSeparatorHeight = 16;
 constexpr int kChromeRefreshTabVerticalPadding = 6;
 constexpr int kChromeRefreshTabHorizontalPadding = 8;
 
+// The standard tab width is 232 DIP, excluding separators and overlap.
+constexpr int kTabWidth = 232;
+
 class ChromeRefresh2023TabStyle : public TabStyle {
  public:
   ~ChromeRefresh2023TabStyle() override = default;
@@ -57,15 +60,14 @@ class ChromeRefresh2023TabStyle : public TabStyle {
 TabStyle::~TabStyle() = default;
 
 int ChromeRefresh2023TabStyle::GetStandardWidth() const {
-  // The standard tab width is 240 DIP including both separators.
-  constexpr int kTabWidth = 240;
-  // The overlap includes one separator, so subtract it here.
-  return kTabWidth + GetTabOverlap() - GetSeparatorSize().width();
+  // The full width includes two extensions with the bottom corner radius.
+  return kTabWidth + 2 * GetBottomCornerRadius();
 }
 
 int ChromeRefresh2023TabStyle::GetStandardSplitWidth() const {
-  // TODO(agale): Update to a more precise calculation.
-  return GetStandardWidth() / 2;
+  // Split tabs appear as half width with one bottom extension. They also must
+  // include half the tab overlap as the tabs fill the space between them.
+  return kTabWidth / 2 + GetBottomCornerRadius() + GetTabOverlap() / 2;
 }
 
 int ChromeRefresh2023TabStyle::GetPinnedWidth() const {
