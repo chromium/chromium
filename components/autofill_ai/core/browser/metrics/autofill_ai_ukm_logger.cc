@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
+#include "components/autofill/core/browser/permissions/autofill_ai/autofill_ai_permission_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -109,7 +110,9 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
                                         bool opt_in_status) {
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           autofill_client_->GetMqlsUploadService();
-      uploader_ && opt_in_status) {
+      uploader_ && autofill::MayPerformAutofillAiAction(
+                       autofill_client_->GetAutofillClient(),
+                       autofill::AutofillAiAction::kLogToMqls)) {
     // Note that the actual logging of the metric happens when `log_entry` goes
     // out of scope and is destroyed.
     optimization_guide::ModelQualityLogEntry log_entry(uploader_->GetWeakPtr());
@@ -174,7 +177,9 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
 
   if (optimization_guide::ModelQualityLogsUploaderService* uploader_ =
           autofill_client_->GetMqlsUploadService();
-      uploader_) {
+      uploader_ && autofill::MayPerformAutofillAiAction(
+                       autofill_client_->GetAutofillClient(),
+                       autofill::AutofillAiAction::kLogToMqls)) {
     // Note that the actual logging of the metric happens when `log_entry` goes
     // out of scope and is destroyed. Also note that in this case it is not
     // necessary to check if the user is opted in because it is assumed that all
