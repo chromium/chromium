@@ -9,7 +9,6 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/scoped_observation.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/collaboration/public/collaboration_service.h"
 #import "components/collaboration/public/messaging/message.h"
 #import "components/collaboration/public/messaging/messaging_backend_service.h"
 #import "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -68,8 +67,6 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
   // The share kit service.
   raw_ptr<ShareKitService> _shareKitService;
-  // The collaboration service.
-  raw_ptr<collaboration::CollaborationService> _collaborationService;
   // The bridge between the service C++ observer and this Objective-C class.
   std::unique_ptr<TabGroupSyncServiceObserverBridge> _syncServiceObserver;
   std::unique_ptr<ScopedTabGroupSyncObservation> _scopedSyncServiceObservation;
@@ -92,15 +89,11 @@ constexpr CGFloat kFacePileAvatarSize = 16;
       initWithModeHolder:(TabGridModeHolder*)modeHolder
      tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
          shareKitService:(ShareKitService*)shareKitService
-    collaborationService:
-        (collaboration::CollaborationService*)collaborationService
         messagingService:(collaboration::messaging::MessagingBackendService*)
                              messagingService {
   if ((self = [super initWithModeHolder:modeHolder])) {
-    CHECK(collaborationService);
     _tabGroupSyncService = tabGroupSyncService;
     _shareKitService = shareKitService;
-    _collaborationService = collaborationService;
     _syncServiceObserver =
         std::make_unique<TabGroupSyncServiceObserverBridge>(self);
 
@@ -252,7 +245,6 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   _scopedSyncServiceObservation.reset();
   _syncServiceObserver.reset();
   _tabGroupSyncService = nullptr;
-  _collaborationService = nullptr;
   _shareKitService = nullptr;
   [super disconnect];
 }
@@ -489,7 +481,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
   const TabGroup* tabGroup = itemID.tabGroupItem.tabGroup;
 
   if (!_shareKitService || !_shareKitService->IsSupported() ||
-      !_collaborationService || !_tabGroupSyncService || !tabGroup) {
+      !_tabGroupSyncService || !tabGroup) {
     return nil;
   }
 

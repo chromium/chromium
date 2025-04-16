@@ -7,7 +7,6 @@
 #import "base/containers/contains.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
-#import "components/collaboration/test_support/mock_collaboration_service.h"
 #import "components/collaboration/test_support/mock_messaging_backend_service.h"
 #import "components/data_sharing/public/features.h"
 #import "components/policy/core/common/policy_pref_names.h"
@@ -15,7 +14,6 @@
 #import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -69,14 +67,11 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
     mode_holder_ = [[TabGridModeHolder alloc] init];
     share_kit_service_ = std::make_unique<TestShareKitService>(
         nullptr, nullptr, nullptr, tab_group_service_);
-    collaboration_service_ =
-        std::make_unique<collaboration::MockCollaborationService>();
 
     mediator_ = [[TestRegularGridMediator alloc]
           initWithModeHolder:mode_holder_
          tabGroupSyncService:tab_group_sync_service_.get()
              shareKitService:share_kit_service_.get()
-        collaborationService:collaboration_service_.get()
             messagingService:&messaging_backend_];
     mediator_.consumer = consumer_;
     mediator_.browser = browser_.get();
@@ -96,8 +91,6 @@ class RegularGridMediatorTest : public GridMediatorTestClass {
   base::test::ScopedFeatureList scoped_feature_list_;
   TestRegularGridMediator* mediator_ = nullptr;
   std::unique_ptr<ShareKitService> share_kit_service_;
-  std::unique_ptr<collaboration::MockCollaborationService>
-      collaboration_service_;
   raw_ptr<sessions::TabRestoreService> tab_restore_service_ = nullptr;
   TabGridModeHolder* mode_holder_;
   collaboration::messaging::MockMessagingBackendService messaging_backend_;

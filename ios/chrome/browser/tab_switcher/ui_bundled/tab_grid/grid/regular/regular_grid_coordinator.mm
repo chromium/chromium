@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/regular/regular_grid_coordinator.h"
 
-#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_factory.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -145,8 +144,6 @@
        tabGroupSyncService:tab_groups::TabGroupSyncServiceFactory::
                                GetForProfile(profile)
            shareKitService:ShareKitServiceFactory::GetForProfile(profile)
-      collaborationService:collaboration::CollaborationServiceFactory::
-                               GetForProfile(profile)
           messagingService:collaboration::messaging::
                                MessagingBackendServiceFactory::GetForProfile(
                                    profile)];

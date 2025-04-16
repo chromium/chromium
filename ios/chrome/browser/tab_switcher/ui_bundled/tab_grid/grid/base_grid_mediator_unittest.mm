@@ -15,14 +15,12 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
-#import "components/collaboration/test_support/mock_collaboration_service.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/saved_tab_groups/public/saved_tab_group.h"
 #import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
-#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
@@ -95,14 +93,11 @@ class BaseGridMediatorTest
     } else {
       share_kit_service_ = std::make_unique<TestShareKitService>(
           nullptr, nullptr, nullptr, tab_group_service_);
-      collaboration_service_ =
-          std::make_unique<collaboration::MockCollaborationService>();
 
       mediator_ = [[RegularGridMediator alloc]
             initWithModeHolder:mode_holder_
            tabGroupSyncService:tab_group_sync_service_.get()
                shareKitService:share_kit_service_.get()
-          collaborationService:collaboration_service_.get()
               messagingService:nil];
     }
     mediator_.consumer = consumer_;
@@ -124,8 +119,6 @@ class BaseGridMediatorTest
 
  protected:
   std::unique_ptr<ShareKitService> share_kit_service_;
-  std::unique_ptr<collaboration::MockCollaborationService>
-      collaboration_service_;
   BaseGridMediator* mediator_;
   base::HistogramTester histogram_tester_;
   TabGridModeHolder* mode_holder_;

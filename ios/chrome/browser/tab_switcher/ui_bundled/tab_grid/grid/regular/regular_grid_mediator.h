@@ -7,10 +7,6 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/base_grid_mediator.h"
 
-namespace collaboration {
-class CollaborationService;
-}  // namespace collaboration
-
 namespace collaboration::messaging {
 class MessagingBackendService;
 }  // namespace collaboration::messaging
@@ -36,8 +32,6 @@ class ShareKitService;
       initWithModeHolder:(TabGridModeHolder*)modeHolder
      tabGroupSyncService:(tab_groups::TabGroupSyncService*)tabGroupSyncService
          shareKitService:(ShareKitService*)shareKitService
-    collaborationService:
-        (collaboration::CollaborationService*)collaborationService
         messagingService:
             (collaboration::messaging::MessagingBackendService*)messagingService
     NS_DESIGNATED_INITIALIZER;
