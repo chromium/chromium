@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -962,20 +963,24 @@ void BrowserTabStripController::OnSplitTabCreated(
     split_tabs::SplitTabId split_id,
     TabStripModelObserver::SplitTabAddReason reason,
     split_tabs::SplitTabVisualData visual_data) {
-  for (const auto& tab_pair : tabs) {
-    int index = tab_pair.second;
-    tabstrip_->SetSplit(index, split_id);
-  }
+  std::vector<int> split_indices;
+  std::transform(
+      tabs.begin(), tabs.end(), std::back_inserter(split_indices),
+      [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
+
+  tabstrip_->SetSplit(split_indices, split_id);
 }
 
 void BrowserTabStripController::OnSplitTabRemoved(
     std::vector<std::pair<tabs::TabInterface*, int>> tabs,
     split_tabs::SplitTabId split_id,
     SplitTabRemoveReason reason) {
-  for (const auto& tab_pair : tabs) {
-    int index = tab_pair.second;
-    tabstrip_->SetSplit(index, std::nullopt);
-  }
+  std::vector<int> split_indices;
+  std::transform(
+      tabs.begin(), tabs.end(), std::back_inserter(split_indices),
+      [](const std::pair<tabs::TabInterface*, int>& p) { return p.second; });
+
+  tabstrip_->SetSplit(split_indices, std::nullopt);
 }
 
 BrowserNonClientFrameView* BrowserTabStripController::GetFrameView() {
