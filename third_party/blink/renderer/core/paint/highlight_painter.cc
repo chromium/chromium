@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/custom_highlight_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
+#include "third_party/blink/renderer/core/editing/markers/glic_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/styleable_marker.h"
 #include "third_party/blink/renderer/core/editing/markers/text_match_marker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -614,6 +615,12 @@ void HighlightPainter::PaintNonCssMarkers(Phase phase) {
         }
         break;
       }
+      case DocumentMarker::kGlic: {
+        if (phase == kBackground) {
+          PaintBackgroundForGlicMarker(marker, text, paint_start_offset,
+                                       paint_end_offset);
+        }
+      } break;
       case DocumentMarker::kSpelling:
       case DocumentMarker::kGrammar:
       case DocumentMarker::kTextFragment:
@@ -784,107 +791,6 @@ void HighlightPainter::PaintOriginatingShadow(const TextPaintStyle& text_style,
     text_painter_.Paint(fragment_paint_info_, text_style, node_id,
                         foreground_auto_dark_mode_, TextPainter::kShadowsOnly);
   }
-}
-
-Vector<LayoutSelectionStatus> HighlightPainter::GetHighlights(
-    const HighlightLayer& layer) {
-  Vector<LayoutSelectionStatus> result{};
-  const auto* text_node = DynamicTo<Text>(node_);
-  switch (layer.type) {
-    case HighlightLayerType::kOriginating:
-      NOTREACHED();
-    case HighlightLayerType::kCustom: {
-      DCHECK(text_node);
-      const MarkerRangeMappingContext mapping_context(*text_node,
-                                                      *fragment_dom_offsets_);
-      for (const auto& marker : custom_) {
-        // Filter custom highlight markers to one highlight at a time.
-        auto* custom = To<CustomHighlightMarker>(marker.Get());
-        if (custom->GetHighlightName() != layer.PseudoArgument()) {
-          continue;
-        }
-        std::optional<TextOffsetRange> marker_offsets =
-            mapping_context.GetTextContentOffsets(*marker);
-        if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
-          result.push_back(
-              LayoutSelectionStatus{marker_offsets->start, marker_offsets->end,
-                                    SelectSoftLineBreak::kNotSelected});
-        }
-      }
-      break;
-    }
-    case HighlightLayerType::kGrammar: {
-      DCHECK(text_node);
-      const MarkerRangeMappingContext mapping_context(*text_node,
-                                                      *fragment_dom_offsets_);
-      for (const auto& marker : grammar_) {
-        std::optional<TextOffsetRange> marker_offsets =
-            mapping_context.GetTextContentOffsets(*marker);
-        if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
-          result.push_back(
-              LayoutSelectionStatus{marker_offsets->start, marker_offsets->end,
-                                    SelectSoftLineBreak::kNotSelected});
-        }
-      }
-      break;
-    }
-    case HighlightLayerType::kSpelling: {
-      DCHECK(text_node);
-      const MarkerRangeMappingContext mapping_context(*text_node,
-                                                      *fragment_dom_offsets_);
-      for (const auto& marker : spelling_) {
-        std::optional<TextOffsetRange> marker_offsets =
-            mapping_context.GetTextContentOffsets(*marker);
-        if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
-          result.push_back(
-              LayoutSelectionStatus{marker_offsets->start, marker_offsets->end,
-                                    SelectSoftLineBreak::kNotSelected});
-        }
-      }
-      break;
-    }
-    case HighlightLayerType::kTargetText: {
-      DCHECK(text_node);
-      const MarkerRangeMappingContext mapping_context(*text_node,
-                                                      *fragment_dom_offsets_);
-      for (const auto& marker : target_) {
-        std::optional<TextOffsetRange> marker_offsets =
-            mapping_context.GetTextContentOffsets(*marker);
-        if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
-          result.push_back(
-              LayoutSelectionStatus{marker_offsets->start, marker_offsets->end,
-                                    SelectSoftLineBreak::kNotSelected});
-        }
-      }
-      break;
-    }
-    case HighlightLayerType::kSearchText:
-    case HighlightLayerType::kSearchTextActiveMatch: {
-      DCHECK(text_node);
-      const MarkerRangeMappingContext mapping_context(*text_node,
-                                                      *fragment_dom_offsets_);
-      for (const auto& marker : search_) {
-        auto* text_match_marker = To<TextMatchMarker>(marker.Get());
-        bool is_current =
-            layer.type == HighlightLayerType::kSearchTextActiveMatch;
-        if (text_match_marker->IsActiveMatch() != is_current) {
-          continue;
-        }
-        std::optional<TextOffsetRange> marker_offsets =
-            mapping_context.GetTextContentOffsets(*marker);
-        if (marker_offsets && (marker_offsets->start != marker_offsets->end)) {
-          result.push_back(
-              LayoutSelectionStatus{marker_offsets->start, marker_offsets->end,
-                                    SelectSoftLineBreak::kNotSelected});
-        }
-      }
-      break;
-    }
-    case HighlightLayerType::kSelection:
-      result.push_back(*GetSelectionStatus(selection_));
-      break;
-  }
-  return result;
 }
 
 TextOffsetRange HighlightPainter::GetFragmentDOMOffsets(const Text& text,
@@ -1331,6 +1237,20 @@ void HighlightPainter::PaintTextForCompositionMarker(
       text_style, kInvalidDOMNodeId, foreground_auto_dark_mode_);
 
   decoration_painter.PaintOnlyLineThrough();
+}
+
+void HighlightPainter::PaintBackgroundForGlicMarker(
+    const DocumentMarker* marker,
+    const StringView& text,
+    unsigned paint_start_offset,
+    unsigned paint_end_offset) {
+  const auto& glic_highlight = To<GlicMarker>(*marker);
+  gfx::RectF text_box(
+      ComputeBackgroundRect(text, paint_start_offset, paint_end_offset));
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(glic_highlight.BackgroundColor().toSkColor4f());
+  paint_info_.context.Canvas()->drawRect(RectFToSkRect(text_box), flags);
 }
 
 }  // namespace blink

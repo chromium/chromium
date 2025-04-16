@@ -49,6 +49,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     kSuggestionMarkerIndex,
     kTextFragmentMarkerIndex,
     kCustomHighlightMarkerIndex,
+    kGlicMarkerIndex,
     kMarkerTypeIndexesCount
   };
 
@@ -60,7 +61,8 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     kActiveSuggestion = 1 << kActiveSuggestionMarkerIndex,
     kSuggestion = 1 << kSuggestionMarkerIndex,
     kTextFragment = 1 << kTextFragmentMarkerIndex,
-    kCustomHighlight = 1 << kCustomHighlightMarkerIndex
+    kCustomHighlight = 1 << kCustomHighlightMarkerIndex,
+    kGlic = 1 << kGlicMarkerIndex,
   };
 
   class MarkerTypesIterator {
@@ -142,6 +144,7 @@ class CORE_EXPORT DocumentMarker : public GarbageCollected<DocumentMarker> {
     static MarkerTypes CustomHighlight() {
       return MarkerTypes(kCustomHighlight);
     }
+    static MarkerTypes Glic() { return MarkerTypes(kGlic); }
 
     bool Contains(MarkerType type) const { return mask_ & type; }
     bool Intersects(const MarkerTypes& types) const {

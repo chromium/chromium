@@ -223,7 +223,6 @@ class CORE_EXPORT HighlightPainter {
                                            unsigned end_offset);
   const PhysicalRect ComputeBackgroundRectForSelection(unsigned start_offset,
                                                        unsigned end_offset);
-  Vector<LayoutSelectionStatus> GetHighlights(const HighlightLayer& layer);
   void FastPaintSpellingGrammarDecorations(const Text& text_node,
                                            const StringView& text,
                                            const DocumentMarkerVector& markers);
@@ -258,6 +257,11 @@ class CORE_EXPORT HighlightPainter {
                                      const Color& text_color,
                                      unsigned paint_start_offset,
                                      unsigned paint_end_offset);
+
+  void PaintBackgroundForGlicMarker(const DocumentMarker* marker,
+                                    const StringView& text,
+                                    unsigned paint_start_offset,
+                                    unsigned paint_end_offset);
 
   const TextFragmentPaintInfo& fragment_paint_info_;
 

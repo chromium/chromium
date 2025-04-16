@@ -163,6 +163,19 @@ bool ShouldUseIsValidRangeAndMarkable(mojom::blink::AnnotationType type) {
 // instant.
 int kGlicSmoothScrollThreshold = 7000;
 
+std::optional<DocumentMarker::MarkerTypes> GetMarkerTypesForAnnotationType(
+    mojom::blink::AnnotationType annotation_type) {
+  switch (annotation_type) {
+    case mojom::blink::AnnotationType::kSharedHighlight:
+    case mojom::blink::AnnotationType::kUserNote:
+      return DocumentMarker::MarkerTypes::TextFragment();
+    case mojom::blink::AnnotationType::kGlic:
+      return DocumentMarker::MarkerTypes::Glic();
+    case mojom::blink::AnnotationType::kTextFinder:
+      return std::nullopt;
+  }
+}
+
 }  // namespace
 
 AnnotationAgentImpl::AnnotationAgentImpl(
@@ -279,8 +292,11 @@ void AnnotationAgentImpl::Remove() {
       frame->GetDocument()->UpdateStyleAndLayout(
           DocumentUpdateReason::kFindInPage);
 
-      document->Markers().RemoveMarkersInRange(
-          dom_range, DocumentMarker::MarkerTypes::TextFragment());
+      std::optional<DocumentMarker::MarkerTypes> marker_types =
+          GetMarkerTypesForAnnotationType(type_);
+      if (marker_types.has_value()) {
+        document->Markers().RemoveMarkersInRange(dom_range, *marker_types);
+      }
     }
   }
 
@@ -456,12 +472,26 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
     Document* document = attached_range_->StartPosition().GetDocument();
     DCHECK(document);
 
-    // TextFinder type is used only to determine whether a given text can be
-    // found in the page, it should have no side-effects.
-    if (type_ != mojom::blink::AnnotationType::kTextFinder) {
-      document->Markers().AddTextFragmentMarker(dom_range);
-      document->Markers().MergeOverlappingMarkers(
-          DocumentMarker::kTextFragment);
+    switch (type_) {
+      case mojom::blink::AnnotationType::kUserNote:
+      case mojom::blink::AnnotationType::kSharedHighlight: {
+        document->Markers().AddTextFragmentMarker(dom_range);
+        document->Markers().MergeOverlappingMarkers(
+            DocumentMarker::kTextFragment);
+        break;
+      }
+      case mojom::blink::AnnotationType::kGlic: {
+        document->Markers().AddGlicMarker(dom_range);
+        // TODO(crbug.com/407967372): Should only start the animation after the
+        // annotated target is scrolled into the viewport.
+        document->Markers().StartGlicMarkerAnimation();
+        break;
+      }
+      case mojom::blink::AnnotationType::kTextFinder: {
+        // TextFinder type is used only to determine whether a given text can be
+        // found in the page, it should have no side-effects.
+        break;
+      }
     }
 
     if (type_ != mojom::blink::AnnotationType::kUserNote) {

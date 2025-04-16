@@ -2352,6 +2352,8 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/core/annotation/annotation_agent_impl_test.cc'
+            'third_party/blink/renderer/core/editing/markers/glic_marker.cc',
             'third_party/blink/renderer/core/highlight/highlight_style_utils.cc',
         ],
         'allowed': [
