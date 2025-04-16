@@ -1154,13 +1154,8 @@ bool MigrateLegacyUpdaters(
          it.Valid(); ++it) {
       const std::wstring app_id = it.Name();
 
-      // Skip importing the legacy updater.
+      // Skip importing legacy updater.
       if (base::EqualsCaseInsensitiveASCII(app_id, kLegacyGoogleUpdateAppID)) {
-        continue;
-      }
-
-      // Skip importing this updater.
-      if (base::EqualsCaseInsensitiveASCII(app_id, kUpdaterAppId)) {
         continue;
       }
 

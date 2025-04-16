@@ -665,46 +665,35 @@ void UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA(
     base::OnceClosure callback,
     bool is_cloud_managed) {
   VLOG(1) << __func__;
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_cloud_managed) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, std::move(callback));
+    std::move(callback).Run();
     return;
   }
 
   VLOG(1) << "Starting an OTA installation of the enterprise companion app.";
-  RegistrationRequest registration;
-  registration.app_id = enterprise_companion::kCompanionAppId;
-  registration.version = base::Version("0.0.0.0");
-  RegisterApp(
-      registration,
-      base::BindOnce([](int registration_result) {})
-          .Then(base::BindPostTask(
-              main_task_runner_,
-              base::BindOnce(
-                  base::IgnoreResult(&update_client::UpdateClient::Install),
-                  update_client_, enterprise_companion::kCompanionAppId,
-                  base::BindOnce(&internal::GetComponents,
-                                 config_->GetPolicyService(),
-                                 config_->GetCrxVerifierFormat(),
-                                 config_->GetUpdaterPersistedData(),
-                                 kEmptyFlatMap, kEmptyFlatMap,
-                                 kInstallSourcePolicy, Priority::kForeground,
-                                 /*update_blocked=*/false,
-                                 PolicySameVersionUpdate::kNotAllowed),
-                  MakeUpdateClientCrxStateChangeCallback(
-                      config_, config_->GetUpdaterPersistedData(),
-                      /*new_install=*/false,
-                      /*language=*/{},
-                      /*callback=*/base::DoNothing()),
-                  MakeUpdateClientCallback(base::BindOnce([](Result result) {
-                                             VLOG(1)
-                                                 << "OTA installation of the "
-                                                    "enterprise companion app "
-                                                    "completed with result: "
-                                                 << result;
-                                           }).Then(std::move(callback)))))));
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&update_client::UpdateClient::Install),
+          update_client_, enterprise_companion::kCompanionAppId,
+          base::BindOnce(
+              &internal::GetComponents, config_->GetPolicyService(),
+              config_->GetCrxVerifierFormat(),
+              config_->GetUpdaterPersistedData(), kEmptyFlatMap, kEmptyFlatMap,
+              kInstallSourcePolicy, Priority::kForeground,
+              /*update_blocked=*/false, PolicySameVersionUpdate::kNotAllowed),
+          MakeUpdateClientCrxStateChangeCallback(
+              config_, config_->GetUpdaterPersistedData(),
+              /*new_install=*/false,
+              /*language=*/{},
+              /*callback=*/base::DoNothing()),
+          MakeUpdateClientCallback(
+              base::BindOnce([](Result result) {
+                VLOG(1) << "OTA installation of the enterprise companion app "
+                           "completed with result: "
+                        << result;
+              }).Then(std::move(callback)))));
 }
 
 void UpdateServiceImplImpl::FetchPolicies(
@@ -742,40 +731,15 @@ void UpdateServiceImplImpl::RegisterApp(
     VLOG(1) << "Existence check path " << request.existence_checker_path
             << " is on read-only file system. Registration of "
             << request.app_id << " is skipped.";
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), kRegistrationError));
+    std::move(callback).Run(kRegistrationError);
     return;
   }
 
   if (!IsUpdaterOrCompanionApp(request.app_id)) {
     config_->GetUpdaterPersistedData()->SetHadApps();
   }
-  bool send_event = !config_->GetUpdaterPersistedData()
-                         ->GetProductVersion(request.app_id)
-                         .IsValid() &&
-                    request.version.IsValid() &&
-                    request.version > base::Version("0") &&
-                    !config_->GetUpdaterPersistedData()->GetEulaRequired();
   config_->GetUpdaterPersistedData()->RegisterApp(request);
-  if (send_event) {
-    update_client::CrxComponent install_data;
-    install_data.ap = request.ap;
-    install_data.app_id = request.app_id;
-    install_data.brand = request.brand_code;
-    install_data.lang = request.lang;
-    install_data.requires_network_encryption = false;
-    install_data.version = request.version;
-    update_client_->SendPing(
-        install_data,
-        {.event_type = update_client::protocol_request::kEventInstall,
-         .result = update_client::protocol_request::kEventResultSuccess},
-        base::BindOnce([](update_client::Error error) {
-          // Ignore event ping errors; registration has been successful.
-        }).Then(base::BindOnce(std::move(callback), kRegistrationSuccess)));
-    return;
-  }
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), kRegistrationSuccess));
+  std::move(callback).Run(kRegistrationSuccess);
 }
 
 void UpdateServiceImplImpl::GetAppStates(
