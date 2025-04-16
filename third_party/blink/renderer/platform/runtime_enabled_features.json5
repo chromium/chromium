@@ -627,11 +627,6 @@
       status: "experimental",
     },
     {
-      name: "BrowserInitiatedAutomaticPictureInPicture",
-      public: true,
-      status: "experimental",
-    },
-    {
       name: "BrowserVerifiedUserActivationKeyboard",
       base_feature: "none",
       public: true,

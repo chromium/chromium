@@ -122,8 +122,7 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
         {media_session::features::kMediaSessionService,
          media_session::features::kAudioFocusEnforcement,
          media::kGlobalMediaControlsPictureInPicture,
-         blink::features::kMediaSessionEnterPictureInPicture,
-         blink::features::kBrowserInitiatedAutomaticPictureInPicture},
+         blink::features::kMediaSessionEnterPictureInPicture},
         {});
 
     RenderViewHostTestHarness::SetUp();
@@ -1027,85 +1026,6 @@ TEST_F(MediaSessionImplTest, AutoPictureInPictureInfoChanged) {
   EXPECT_EQ(
       1,
       player_observer_->received_auto_picture_in_picture_info_changed_calls());
-}
-
-TEST_F(MediaSessionImplTest,
-       DoesNotEntersBrowserInitiatedAutoPip_MoreThanOnePlayer) {
-  MockMediaSessionMojoObserver observer(*GetMediaSession());
-  FlushForTesting(GetMediaSession());
-
-  EXPECT_FALSE(base::Contains(observer.actions(),
-                              MediaSessionAction::kEnterAutoPictureInPicture));
-  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
-
-  int player1 = player_observer_->StartNewPlayer();
-  player_observer_->SetIsPictureInPictureAvailable(player1, true);
-  GetMediaSession()->AddPlayer(player_observer_.get(), player1);
-  observer.WaitForState(MediaSessionInfo::SessionState::kActive);
-  FlushForTesting(GetMediaSession());
-
-  EXPECT_TRUE(base::Contains(observer.actions(),
-                             MediaSessionAction::kEnterAutoPictureInPicture));
-
-  int player2 = player_observer_->StartNewPlayer();
-  player_observer_->SetIsPictureInPictureAvailable(player2, true);
-  GetMediaSession()->AddPlayer(player_observer_.get(), player2);
-  observer.WaitForState(MediaSessionInfo::SessionState::kActive);
-  FlushForTesting(GetMediaSession());
-
-  EXPECT_FALSE(GetMediaSession()->ShouldRouteAction(
-      MediaSessionAction::kEnterPictureInPicture));
-  EXPECT_FALSE(base::Contains(observer.actions(),
-                              MediaSessionAction::kEnterAutoPictureInPicture));
-
-  GetMediaSession()->EnterAutoPictureInPicture();
-  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
-}
-
-TEST_F(MediaSessionImplTest,
-       DoesNotEntersBrowserInitiatedAutoPip_SinglePlayerNotPlaying) {
-  MockMediaSessionMojoObserver observer(*GetMediaSession());
-  FlushForTesting(GetMediaSession());
-
-  EXPECT_FALSE(base::Contains(observer.actions(),
-                              MediaSessionAction::kEnterAutoPictureInPicture));
-  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
-
-  int player = player_observer_->StartNewPlayer(/*is_playing=*/false);
-  player_observer_->SetIsPictureInPictureAvailable(player, true);
-  GetMediaSession()->AddPlayer(player_observer_.get(), player);
-  FlushForTesting(GetMediaSession());
-
-  EXPECT_FALSE(GetMediaSession()->ShouldRouteAction(
-      MediaSessionAction::kEnterPictureInPicture));
-  EXPECT_FALSE(base::Contains(observer.actions(),
-                              MediaSessionAction::kEnterAutoPictureInPicture));
-
-  GetMediaSession()->EnterAutoPictureInPicture();
-  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
-}
-
-TEST_F(MediaSessionImplTest,
-       EntersBrowserInitiatedAutoPip_SinglePlayerPlaying) {
-  MockMediaSessionMojoObserver observer(*GetMediaSession());
-  FlushForTesting(GetMediaSession());
-
-  EXPECT_FALSE(base::Contains(observer.actions(),
-                              MediaSessionAction::kEnterAutoPictureInPicture));
-  EXPECT_EQ(0, player_observer_->received_enter_picture_in_picture_calls());
-
-  int player = player_observer_->StartNewPlayer();
-  player_observer_->SetIsPictureInPictureAvailable(player, true);
-  GetMediaSession()->AddPlayer(player_observer_.get(), player);
-  FlushForTesting(GetMediaSession());
-
-  EXPECT_FALSE(GetMediaSession()->ShouldRouteAction(
-      MediaSessionAction::kEnterPictureInPicture));
-  EXPECT_TRUE(base::Contains(observer.actions(),
-                             MediaSessionAction::kEnterAutoPictureInPicture));
-
-  GetMediaSession()->EnterAutoPictureInPicture();
-  EXPECT_EQ(1, player_observer_->received_enter_picture_in_picture_calls());
 }
 
 class MediaSessionImplWithMediaSessionClientTest : public MediaSessionImplTest {

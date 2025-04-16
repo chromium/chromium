@@ -1295,12 +1295,8 @@ void MediaSessionImpl::EnterPictureInPicture() {
     return;
   }
 
+  // There should be one and only one player when we enter picture-in-picture.
   DCHECK_EQ(normal_players_.size(), 1u);
-  if (normal_players_.size() != 1u) {
-    // There should be one and only one player when we enter picture-in-picture.
-    return;
-  }
-
   normal_players_.begin()->first.observer->OnEnterPictureInPicture(
       normal_players_.begin()->first.player_id);
   uma_helper_.RecordEnterPictureInPicture(
@@ -1318,7 +1314,6 @@ void MediaSessionImpl::EnterAutoPictureInPicture() {
   }
   if (!ShouldRouteAction(
           media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
-    MaybeEnterBrowserInitiatedAutomaticPictureInPicture();
     return;
   }
 
@@ -1890,15 +1885,6 @@ void MediaSessionImpl::RebuildAndNotifyActionsChanged() {
     }
   }
 
-  // If the website could enter browser initiated automatic picture in picture,
-  // then we should expose EnterAutoPictureInPicture as an available action.
-  if (CouldEnterBrowserInitiatedAutomaticPictureInPicture()) {
-    actions.insert(
-        media_session::mojom::MediaSessionAction::kEnterAutoPictureInPicture);
-    actions.insert(
-        media_session::mojom::MediaSessionAction::kExitPictureInPicture);
-  }
-
   if (base::FeatureList::IsEnabled(
           media::kGlobalMediaControlsSeamlessTransfer) &&
       IsAudioOutputDeviceSwitchingSupported()) {
@@ -2194,43 +2180,6 @@ void MediaSessionImpl::ResetDurationUpdateGuard() {
 void MediaSessionImpl::SetShouldThrottleDurationUpdateForTest(
     bool should_throttle) {
   should_throttle_duration_update_ = should_throttle;
-}
-
-bool MediaSessionImpl::CouldEnterBrowserInitiatedAutomaticPictureInPicture()
-    const {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kBrowserInitiatedAutomaticPictureInPicture)) {
-    return false;
-  }
-
-  if (!IsPictureInPictureAvailable()) {
-    return false;
-  }
-
-  // There should be one and only one player when we could enter browser
-  // initiated automatic picture-in-picture.
-  CHECK_EQ(normal_players_.size(), 1u);
-
-  auto& first = normal_players_.begin()->first;
-  if (first.observer->IsPaused(first.player_id)) {
-    return false;
-  }
-
-  return true;
-}
-
-void MediaSessionImpl::MaybeEnterBrowserInitiatedAutomaticPictureInPicture()
-    const {
-  if (!CouldEnterBrowserInitiatedAutomaticPictureInPicture()) {
-    return;
-  }
-
-  // There should be one and only one player when we could enter browser
-  // initiated automatic picture-in-picture.
-  CHECK_EQ(normal_players_.size(), 1u);
-
-  auto& first = normal_players_.begin()->first;
-  first.observer->OnEnterPictureInPicture(first.player_id);
 }
 
 bool MediaSessionImpl::HasImageCacheForTest(const GURL& image_url) const {
