@@ -54,6 +54,8 @@ source_set("util") {
   ]
 
   deps = [
+    ":connectors",
+    ":features",
     "//base",
     "//components/enterprise",
     "//components/enterprise/common/proto:upload_request_response",

@@ -13,6 +13,8 @@ class ProfileIOS;
 
 namespace enterprise_connectors {
 
+class ConnectorsService;
+
 // Fetches additional information that is common to every event. Fetches and
 // returns corresponding info to a Device, Browser and Profile protos defined in
 // google3/google/internal/chrome/reporting/v1/chromereporting.proto.
@@ -38,6 +40,10 @@ base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile);
 // Profile fields set.
 ::chrome::cros::reporting::proto::UploadEventsRequest CreateUploadEventsRequest(
     ProfileIOS* profile);
+
+// Helper that checks feature flags and policies to determine if Enterprise Url
+// Filtering is enabled.
+bool IsEnterpriseUrlFilteringEnabled(ConnectorsService* connectors_service);
 
 }  // namespace enterprise_connectors
 

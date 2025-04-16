@@ -6,9 +6,12 @@
 
 #import <optional>
 
+#import "components/enterprise/connectors/core/common.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
+#import "ios/chrome/browser/enterprise/connectors/features.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
@@ -141,6 +144,18 @@ base::flat_set<std::string> GetUserAffiliationIds(ProfileIOS* profile) {
   }
 
   return request;
+}
+
+bool IsEnterpriseUrlFilteringEnabled(ConnectorsService* connectors_service) {
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kIOSEnterpriseRealtimeUrlFiltering)) {
+    return false;
+  }
+
+  return connectors_service &&
+         connectors_service->GetAppliedRealTimeUrlCheck() ==
+             EnterpriseRealTimeUrlCheckMode::
+                 REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED;
 }
 
 }  // namespace enterprise_connectors
