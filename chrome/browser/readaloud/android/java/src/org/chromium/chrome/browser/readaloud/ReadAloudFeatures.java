@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.readaloud;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,6 +24,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 
 /** Functions for reading feature flags and params and checking eligibility. */
 @JNINamespace("readaloud")
+@NullMarked
 public final class ReadAloudFeatures {
     private static final String API_KEY_OVERRIDE_PARAM_NAME = "api_key_override";
     private static final String VOICES_OVERRIDE_PARAM_NAME = "voices_override";
@@ -153,8 +154,7 @@ public final class ReadAloudFeatures {
     }
 
     /** Returns the API key override feature param if present, or null otherwise. */
-    @Nullable
-    public static String getApiKeyOverride() {
+    public static @Nullable String getApiKeyOverride() {
         String apiKeyOverride =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.READALOUD, API_KEY_OVERRIDE_PARAM_NAME);
