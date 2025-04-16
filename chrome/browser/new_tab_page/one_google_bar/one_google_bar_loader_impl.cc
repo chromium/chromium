@@ -382,11 +382,10 @@ void OneGoogleBarLoaderImpl::LoadDone(
   response.swap(*response_body);
 
   // The response may start with )]}'. Ignore this.
-  if (base::StartsWith(response, kResponsePreamble,
-                       base::CompareCase::SENSITIVE)) {
-    response = response.substr(strlen(kResponsePreamble));
+  auto remainder = base::RemovePrefix(response, kResponsePreamble);
+  if (remainder) {
+    response = std::string(*remainder);
   }
-
   data_decoder::DataDecoder::ParseJsonIsolated(
       response, base::BindOnce(&OneGoogleBarLoaderImpl::JsonParsed,
                                weak_ptr_factory_.GetWeakPtr()));

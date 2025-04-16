@@ -250,11 +250,10 @@ void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
   response.swap(*response_body);
 
   // The response may start with )]}'. Ignore this.
-  if (base::StartsWith(response, kXSSIResponsePreamble,
-                       base::CompareCase::SENSITIVE)) {
-    response = response.substr(strlen(kXSSIResponsePreamble));
+  auto remainder = base::RemovePrefix(response, kXSSIResponsePreamble);
+  if (remainder) {
+    response = std::string(*remainder);
   }
-
   data_decoder::DataDecoder::ParseJsonIsolated(
       response, base::BindOnce(&PromoService::OnJsonParsed,
                                weak_ptr_factory_.GetWeakPtr()));
