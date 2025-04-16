@@ -1632,7 +1632,7 @@ TEST_F(ChromeContentBrowserClientTest, ShouldUseSpareRenderProcessHost) {
                 &profile_, GURL("chrome-search://test")));
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Extension URL
   EXPECT_EQ(SpareProcessRefusedByEmbedderReason::ExtensionProcess,
             browser_client.ShouldUseSpareRenderProcessHost(
