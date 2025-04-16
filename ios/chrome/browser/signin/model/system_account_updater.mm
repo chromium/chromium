@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/signin/model/account_widget_updater.h"
+#import "ios/chrome/browser/signin/model/system_account_updater.h"
 
 #import "base/task/single_thread_task_runner.h"
 #import "base/task/task_traits.h"
@@ -55,22 +55,22 @@ void UpdateAvatarData(NSDictionary* avatars) {
 
 }  // namespace
 
-AccountWidgetUpdater::AccountWidgetUpdater(
+SystemAccountUpdater::SystemAccountUpdater(
     SystemIdentityManager* system_identity_manager)
     : system_identity_manager_(system_identity_manager) {
   system_identity_manager_observation_.Observe(system_identity_manager_);
   HandleMigrationIfNeeded();
 }
 
-AccountWidgetUpdater::~AccountWidgetUpdater() = default;
+SystemAccountUpdater::~SystemAccountUpdater() = default;
 
-void AccountWidgetUpdater::OnIdentityListChanged() {
+void SystemAccountUpdater::OnIdentityListChanged() {
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   UpdateLoadedAccounts();
 #endif
 }
 
-void AccountWidgetUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
+void SystemAccountUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   UIImage* image =
       system_identity_manager_->GetCachedAvatarForIdentity(identity);
@@ -93,7 +93,7 @@ void AccountWidgetUpdater::OnIdentityUpdated(id<SystemIdentity> identity) {
 #pragma mark - Private
 
 // Callback for SystemIdentityManager::IterateOverIdentities().
-SystemIdentityManager::IteratorResult AccountWidgetUpdater::IdentitiesOnDevice(
+SystemIdentityManager::IteratorResult SystemAccountUpdater::IdentitiesOnDevice(
     NSMutableDictionary* accounts,
     NSMutableDictionary* avatars,
     id<SystemIdentity> identity) {
@@ -113,14 +113,14 @@ SystemIdentityManager::IteratorResult AccountWidgetUpdater::IdentitiesOnDevice(
   return SystemIdentityManager::IteratorResult::kContinueIteration;
 }
 
-void AccountWidgetUpdater::UpdateLoadedAccounts() {
+void SystemAccountUpdater::UpdateLoadedAccounts() {
   NSMutableDictionary* accounts = [[NSMutableDictionary alloc] init];
   NSMutableDictionary* avatars = [[NSMutableDictionary alloc] init];
 
   // base::Unretained(...) is safe because the callback is
   // called synchronously from IterateOverIdentities(...).
   system_identity_manager_->IterateOverIdentities(
-      base::BindRepeating(&AccountWidgetUpdater::IdentitiesOnDevice,
+      base::BindRepeating(&SystemAccountUpdater::IdentitiesOnDevice,
                           base::Unretained(this), accounts, avatars));
 
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
@@ -161,7 +161,7 @@ void AccountWidgetUpdater::UpdateLoadedAccounts() {
       base::BindOnce(&ReloadAllTimelines));
 }
 
-void AccountWidgetUpdater::HandleMigrationIfNeeded() {
+void SystemAccountUpdater::HandleMigrationIfNeeded() {
 #if BUILDFLAG(ENABLE_WIDGETS_FOR_MIM)
   PrefService* local_state = GetApplicationContext()->GetLocalState();
 

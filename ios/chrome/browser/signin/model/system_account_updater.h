@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_WIDGET_UPDATER_H_
-#define IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_WIDGET_UPDATER_H_
+#ifndef IOS_CHROME_BROWSER_SIGNIN_MODEL_SYSTEM_ACCOUNT_UPDATER_H_
+#define IOS_CHROME_BROWSER_SIGNIN_MODEL_SYSTEM_ACCOUNT_UPDATER_H_
 
 #import <UIKit/UIKit.h>
 
@@ -15,11 +15,11 @@
 @protocol RefreshAccessTokenError;
 @protocol SystemIdentity;
 
-// Helper class that handles widget updates.
-class AccountWidgetUpdater : public SystemIdentityManagerObserver {
+// Helper class that handles system account updates.
+class SystemAccountUpdater : public SystemIdentityManagerObserver {
  public:
-  explicit AccountWidgetUpdater(SystemIdentityManager* system_identity_manager);
-  ~AccountWidgetUpdater() override;
+  explicit SystemAccountUpdater(SystemIdentityManager* system_identity_manager);
+  ~SystemAccountUpdater() override;
 
   // SystemIdentityManagerObserver implementation.
   void OnIdentityListChanged() final;
@@ -38,7 +38,7 @@ class AccountWidgetUpdater : public SystemIdentityManagerObserver {
   base::ScopedObservation<SystemIdentityManager, SystemIdentityManagerObserver>
       system_identity_manager_observation_{this};
 
-  base::WeakPtrFactory<AccountWidgetUpdater> weak_ptr_factory_{this};
+  base::WeakPtrFactory<SystemAccountUpdater> weak_ptr_factory_{this};
 };
 
-#endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_ACCOUNT_WIDGET_UPDATER_H_
+#endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SYSTEM_ACCOUNT_UPDATER_H_

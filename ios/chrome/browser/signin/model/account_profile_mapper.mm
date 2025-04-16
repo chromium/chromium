@@ -830,8 +830,8 @@ AccountProfileMapper::AccountProfileMapper(
   }
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  widget_updater_ =
-      std::make_unique<AccountWidgetUpdater>(system_identity_manager_);
+  system_account_updater_ =
+      std::make_unique<SystemAccountUpdater>(system_identity_manager_);
 
   assigner_ = std::make_unique<Assigner>(
       system_identity_manager_, profile_manager_,

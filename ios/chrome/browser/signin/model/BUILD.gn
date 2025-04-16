@@ -22,8 +22,6 @@ source_set("model") {
     "account_profile_mapper.mm",
     "account_reconcilor_factory.cc",
     "account_reconcilor_factory.h",
-    "account_widget_updater.h",
-    "account_widget_updater.mm",
     "chrome_account_manager_service.h",
     "chrome_account_manager_service.mm",
     "chrome_account_manager_service_factory.h",
@@ -54,6 +52,8 @@ source_set("model") {
     "signin_profile_info_updater.mm",
     "signin_profile_info_updater_factory.h",
     "signin_profile_info_updater_factory.mm",
+    "system_account_updater.h",
+    "system_account_updater.mm",
   ]
   deps = [
     ":capabilities_types",
