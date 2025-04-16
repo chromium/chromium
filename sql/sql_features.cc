@@ -18,4 +18,9 @@ BASE_FEATURE(kPreOpenPreloadDatabase,
              "PreOpenPreloadDatabase",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Explicitly unlock the database on close to ensure lock is released.
+BASE_FEATURE(kUnlockDatabaseOnClose,
+             "UnlockDatabaseOnClose",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace sql::features

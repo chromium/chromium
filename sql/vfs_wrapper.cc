@@ -19,6 +19,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "sql/sql_features.h"
 #include "third_party/sqlite/sqlite3.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -32,6 +33,10 @@
 
 namespace sql {
 namespace {
+
+#if !BUILDFLAG(IS_FUCHSIA)
+int Unlock(sqlite3_file* sqlite_file, int file_lock);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 // https://www.sqlite.org/vfs.html - documents the overall VFS system.
 //
@@ -62,6 +67,21 @@ int Close(sqlite3_file* sqlite_file) {
   // explicit unlock on close.
   Unlock(sqlite_file, SQLITE_LOCK_NONE);
 #endif
+
+  // On Windows, the file lock is taken with a call to LockFileEx using the
+  // flags 'LOCKFILE_FAIL_IMMEDIATELY'. The documentation state the fhe lock
+  // will be released but it is also stating that it will "eventually" released
+  // and it's better that the application release it on exit.
+  //
+  // see:
+  // https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-lockfileex
+  //
+  // A side effect of not releasing the lock is that the next startup may get
+  // a database open error (kBusy). This will cause the next launch to not use
+  // the database.
+  if (base::FeatureList::IsEnabled(sql::features::kUnlockDatabaseOnClose)) {
+    Unlock(sqlite_file, SQLITE_LOCK_NONE);
+  }
 
   VfsFile* file = AsVfsFile(sqlite_file);
   int r = file->wrapped_file->pMethods->xClose(file->wrapped_file);
