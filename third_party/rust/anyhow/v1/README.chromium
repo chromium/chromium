@@ -1,7 +1,7 @@
 Name: anyhow
 URL: https://crates.io/crates/anyhow
-Version: 1.0.97
-Revision: bfb89ef244fa60af17fb844dc3bddf4b62e4ac9f
+Version: 1.0.98
+Revision: 709fe86f04878a62a29b9279f5bb96422f8bca28
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/anyhow-v1/LICENSE-APACHE
 Shipped: yes

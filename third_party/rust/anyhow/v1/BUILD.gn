@@ -24,6 +24,7 @@ cargo_crate("lib") {
     "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/kind.rs",
     "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/lib.rs",
     "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/nightly.rs",
     "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/ptr.rs",
     "//third_party/rust/chromium_crates_io/vendor/anyhow-v1/src/wrapper.rs",
   ]
@@ -31,7 +32,7 @@ cargo_crate("lib") {
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.97"
+  cargo_pkg_version = "1.0.98"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "anyhow"
   cargo_pkg_description =

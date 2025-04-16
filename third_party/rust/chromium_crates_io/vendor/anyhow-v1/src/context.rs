@@ -4,7 +4,7 @@ use core::convert::Infallible;
 use core::fmt::{self, Debug, Display, Write};
 
 #[cfg(error_generic_member_access)]
-use core::error::Request;
+use crate::nightly::{self, Request};
 
 mod ext {
     use super::*;
@@ -145,7 +145,7 @@ where
 
     #[cfg(error_generic_member_access)]
     fn provide<'a>(&'a self, request: &mut Request<'a>) {
-        StdError::provide(&self.error, request);
+        nightly::provide(&self.error, request);
     }
 }
 
