@@ -84,10 +84,7 @@ void OmniboxHeaderView::SetHeader(const std::u16string& header_text,
                                   bool is_suggestion_group_hidden) {
   header_text_ = header_text;
 
-  // TODO(tommycli): Our current design calls for uppercase text here, but
-  // it seems like an open question what should happen for non-Latin locales.
-  // Moreover, it seems unusual to do case conversion in Views in general.
-  header_label_->SetText(base::i18n::ToUpper(header_text_));
+  header_label_->SetText(header_text_);
   header_toggle_button_->SetToggled(is_suggestion_group_hidden);
 }
 
