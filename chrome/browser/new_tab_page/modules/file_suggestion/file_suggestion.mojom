@@ -6,6 +6,15 @@ module file_suggestion.mojom;
 
 import "url/mojom/url.mojom";
 
+// Used to record file types shown and clicks.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum RecommendationType {
+  kUsed = 0,
+  kShared = 1,
+  kTrending = 2,
+};
+
 // A Google Drive or Microsoft Sharepoint File.
 struct File {
   // The ID of the File Item.
@@ -18,4 +27,6 @@ struct File {
   string title;
   // The URL to navigate to the File Item.
   url.mojom.Url item_url;
+  // The type of recommendation the file is, if known.
+  RecommendationType? recommendation_type;
 };

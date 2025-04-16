@@ -795,6 +795,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.MicrosoftFiles.RecommendationTypeClick"
+    enum="MicrosoftFilesRecommendationType" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logs the type of recommendation for Microsoft Sharepoint/OneDrive files that
+    was clicked. Only logged on the 1P NTP. Note that even if the user has
+    Google as their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.MicrosoftFiles.RequestResult"
     enum="MicrosoftFilesRequestResult" expires_after="2026-01-20">
   <owner>jennserrano@google.com</owner>
@@ -821,6 +834,41 @@ chromium-metrics-reviews@google.com.
     logged on the 1P NTP. Note that even if the user has Google as their default
     search engine, Incognito and Guest mode NTPs are not considered 1P and don't
     log this histogram.
+  </summary>
+</histogram>
+
+<histogram name="NewTabPage.MicrosoftFiles.ShownFiles.{RecommendationType}"
+    units="count" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Count of {RecommendationType} file recommendations shown in the
+    SharePoint/OneDrive card. Recorded after all file suggestions have been
+    created. Note that even if the user has Google as their default search
+    engine, Incognito and Guest mode NTPs are not considered 1P and don't log
+    this histogram.
+  </summary>
+  <token key="RecommendationType">
+    <variant name="Shared"/>
+    <variant name="Trending"/>
+    <variant name="Used"/>
+  </token>
+</histogram>
+
+<histogram name="NewTabPage.MicrosoftFiles.SubstitutionType"
+    enum="MicrosoftFilesSubstitutionType" expires_after="2026-01-20">
+  <owner>jennserrano@google.com</owner>
+  <owner>rtatum@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the type of substitution that occurred (whether non-insight files
+    are subsituted by trending files and vice versa). Recorded after all file
+    suggestions have been combined. Should only be recorded for the
+    &quot;Combined&quot; variation that shows both non-insight and trending
+    files. Only logged on the 1P NTP. Note that even if the user has Google as
+    their default search engine, Incognito and Guest mode NTPs are not
+    considered 1P and don't log this histogram.
   </summary>
 </histogram>
 

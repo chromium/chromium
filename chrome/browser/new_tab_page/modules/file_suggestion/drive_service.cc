@@ -499,6 +499,7 @@ void DriveService::OnJsonParsed(
     mojo_drive_doc->justification_text = justification_text;
     mojo_drive_doc->id = *id;
     mojo_drive_doc->item_url = GURL(*item_url);
+    mojo_drive_doc->recommendation_type = std::nullopt;
     document_list.push_back(std::move(mojo_drive_doc));
   }
   base::UmaHistogramEnumeration("NewTabPage.Drive.ItemSuggestRequestResult",
