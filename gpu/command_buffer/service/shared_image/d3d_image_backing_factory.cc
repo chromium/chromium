@@ -566,11 +566,6 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     // created above.
     if (!DCompTextureIsSupported(desc)) {
       LOG(ERROR) << "Composition texture not supported for scanout usage";
-      SCOPED_CRASH_KEY_BOOL("d3d image backing", "dcomp tex support",
-                            gl::DirectCompositionTextureSupported());
-      SCOPED_CRASH_KEY_STRING256("d3d image backing", "dcomp tex desc",
-                                 D3D11TextureDescToString(desc));
-      base::debug::DumpWithoutCrashing();
       return nullptr;
     }
 
