@@ -1265,6 +1265,7 @@ component("base") {
       ":features_jni",
       ":file_utils_jni",
       ":jank_tracker_jni",
+      ":jni_android_jni",
       ":memory_jni",
       ":metrics_jni",
       ":path_utils_jni",
@@ -4413,7 +4414,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/IntStringCallback.java",
       "android/java/src/org/chromium/base/JNIUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
-      "android/java/src/org/chromium/base/JniAndroid.java",
       "android/java/src/org/chromium/base/JniCallbackUtils.java",
       "android/java/src/org/chromium/base/JniOnceCallback.java",
       "android/java/src/org/chromium/base/JniRepeatingCallback.java",
@@ -4575,6 +4575,8 @@ if (is_android) {
       "//third_party/jni_zero:jni_zero_java",
     ]
 
+    # New additions should have their own independent android_library. Please
+    # do no append to this list.
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",
       "android/java/src/org/chromium/base/BaseFeatureMap.java",
@@ -4592,7 +4594,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/IntentUtils.java",
       "android/java/src/org/chromium/base/JavaExceptionReporter.java",
       "android/java/src/org/chromium/base/JavaHandlerThread.java",
-      "android/java/src/org/chromium/base/JniAndroid.java",
       "android/java/src/org/chromium/base/JniCallbackUtils.java",
       "android/java/src/org/chromium/base/JniOnceCallback.java",
       "android/java/src/org/chromium/base/JniRepeatingCallback.java",
@@ -4600,7 +4601,6 @@ if (is_android) {
       "android/java/src/org/chromium/base/MathUtils.java",
       "android/java/src/org/chromium/base/PackageManagerUtils.java",
       "android/java/src/org/chromium/base/PathService.java",
-      "android/java/src/org/chromium/base/PiiElider.java",
       "android/java/src/org/chromium/base/PostNativeFlag.java",
       "android/java/src/org/chromium/base/PowerMonitor.java",
       "android/java/src/org/chromium/base/PowerMonitorForQ.java",
@@ -4642,6 +4642,7 @@ if (is_android) {
       ":file_provider_utils_java",
       ":file_utils_java",
       ":jank_tracker_java",
+      ":jni_android_java",
       ":jni_utils_java",
       ":library_loader_java",
       ":lifetime_java",
@@ -4649,6 +4650,7 @@ if (is_android) {
       ":memory_java",
       ":metrics_java",
       ":path_utils_java",
+      ":pii_elider_java",
       ":promise_java",
       ":resetters_java",
       ":stream_util_java",
@@ -4677,6 +4679,26 @@ if (is_android) {
 
   java_cpp_enum("metrics_enum_srcjar") {
     sources = [ "metrics/histogram_base.h" ]
+  }
+
+  generate_jni("jni_android_jni") {
+    sources = [ "android/java/src/org/chromium/base/JniAndroid.java" ]
+  }
+
+  android_library("pii_elider_java") {
+    sources = [ "android/java/src/org/chromium/base/PiiElider.java" ]
+    deps = [ ":tasks_java" ]
+  }
+
+  android_library("jni_android_java") {
+    srcjar_deps = [ ":jni_android_jni" ]
+    sources = [ "android/java/src/org/chromium/base/JniAndroid.java" ]
+    deps = [
+      ":log_java",
+      ":pii_elider_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
   }
 
   android_library("metrics_ScopedSysTraceEvent_java") {
