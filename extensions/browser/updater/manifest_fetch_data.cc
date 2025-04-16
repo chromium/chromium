@@ -53,7 +53,7 @@ void AddEnabledStateToPing(std::string* ping_value,
 
 }  // namespace
 
-ManifestFetchData::ExtensionData::ExtensionData() : version(base::Version()) {}
+ManifestFetchData::ExtensionData::ExtensionData() = default;
 
 ManifestFetchData::ExtensionData::ExtensionData(const ExtensionData& other) =
     default;
