@@ -134,7 +134,7 @@ class TestUrlData : public UrlData {
  public:
   TestUrlData(const KURL& url,
               CorsMode cors_mode,
-              UrlIndex* url_index,
+              base::WeakPtr<UrlIndex> url_index,
               UrlData::CacheMode cache_mode,
               scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : UrlData(url, cors_mode, url_index, cache_mode, task_runner),
@@ -177,7 +177,7 @@ class TestUrlIndex : public UrlIndex {
                                     UrlData::CacheMode cache_mode) override {
     NotifyNewUrlData(url, cors_mode, cache_mode);
     last_url_data_ = base::MakeRefCounted<TestUrlData>(
-        url, cors_mode, this, cache_mode, task_runner_);
+        url, cors_mode, weak_factory_.GetWeakPtr(), cache_mode, task_runner_);
     return last_url_data_;
   }
 

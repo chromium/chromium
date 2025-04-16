@@ -55,7 +55,6 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
   scoped_refptr<media::DataBuffer> Read() override;
   void SetDeferred(bool defer) override;
   bool IsStale() const override;
-  void Invalidate() override;
 
   // WebAssociatedURLLoaderClient implementation.
   bool WillFollowRedirect(const WebURL& new_url,
@@ -132,8 +131,6 @@ class PLATFORM_EXPORT ResourceMultiBufferDataProvider
 
   // Is the client an audio element?
   bool is_client_audio_element_ = false;
-
-  bool invalidated_ = false;
 
   size_t total_bytes_received_ = 0;
 

@@ -73,7 +73,11 @@ static bool CorrectAcceptEncoding(const WebURLRequest& request) {
 class ResourceMultiBufferDataProviderTest : public testing::Test {
  public:
   ResourceMultiBufferDataProviderTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        url_index_(std::make_unique<UrlIndex>(
+            &fetch_context_,
+            0,
+            task_environment_.GetMainThreadTaskRunner())) {
     for (int i = 0; i < kDataSize; ++i) {
       data_[i] = i;
     }
@@ -90,7 +94,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   void Initialize(const char* url, int first_position) {
     url_ = KURL(url);
     url_data_ =
-        url_index_.GetByUrl(url_, UrlData::CORS_UNSPECIFIED, UrlData::kNormal);
+        url_index_->GetByUrl(url_, UrlData::CORS_UNSPECIFIED, UrlData::kNormal);
     url_data_->set_etag(kEtag);
     DCHECK(url_data_);
     url_data_->OnRedirect(
@@ -162,10 +166,11 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     response.SetHttpStatusCode(kHttpPartialContent);
     loader_->DidReceiveResponse(response);
 
-    EXPECT_EQ(instance_size, url_data_->length());
-
     // A valid partial response should always result in this being true.
-    EXPECT_TRUE(url_data_->range_supported());
+    if (url_index_) {
+      EXPECT_EQ(instance_size, url_data_->length());
+      EXPECT_TRUE(url_data_->range_supported());
+    }
   }
 
   void Redirect(const char* url) {
@@ -207,8 +212,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   int32_t first_position_;
 
   NiceMock<MockResourceFetchContext> fetch_context_;
-  UrlIndex url_index_{&fetch_context_, 0,
-                      task_environment_.GetMainThreadTaskRunner()};
+  std::unique_ptr<UrlIndex> url_index_;
   scoped_refptr<UrlData> url_data_;
   scoped_refptr<UrlData> redirected_to_;
   // The loader is owned by the UrlData above.
@@ -234,6 +238,39 @@ TEST_F(ResourceMultiBufferDataProviderTest, BadHttpResponse) {
   response.SetHttpStatusCode(404);
   response.SetHttpStatusText("Not Found\n");
   loader_->DidReceiveResponse(response);
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexFullResponse) {
+  Initialize(kHttpUrl, 100);
+  Start();
+  url_index_.reset();
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  FullResponse(1024, false);
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexPartialResponse) {
+  Initialize(kHttpUrl, 100);
+  Start();
+  url_index_.reset();
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  PartialResponse(100, 200, 1024);
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexDidFail) {
+  Initialize(kHttpUrl, 100);
+  Start();
+  url_index_.reset();
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  loader_->DidFail(WebURLError(net::ERR_ABORTED, url_));
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, DestructedUrlIndexDidFinish) {
+  Initialize(kHttpUrl, 100);
+  Start();
+  FullResponse(1024, true);
+  url_index_.reset();
+  EXPECT_CALL(*this, RedirectCallback(testing::IsNull()));
+  loader_->DidFinishLoading();
 }
 
 // Tests that partial content is requested but not fulfilled.

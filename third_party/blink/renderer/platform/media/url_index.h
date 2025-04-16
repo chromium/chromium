@@ -74,10 +74,14 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   enum CacheMode { kNormal, kCacheDisabled };
   using KeyType = std::pair<KURL, CorsMode>;
 
+  // `url_index` is a WeakPtr since while UrlData objects are created by the
+  // UrlIndex they are not owned by the UrlIndex until after the network load
+  // starts successfully. If the UrlIndex dies before that happens the UrlData
+  // is left with a dangling pointer to the index.
   UrlData(base::PassKey<UrlIndex>,
           const KURL& url,
           CorsMode cors_mode,
-          UrlIndex* url_index,
+          base::WeakPtr<UrlIndex> url_index,
           CacheMode cache_lookup_mode,
           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   UrlData(const UrlData&) = delete;
@@ -132,12 +136,10 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   bool FullyCached();
 
   // Returns our url_index.
-  UrlIndex* url_index() const { return url_index_; }
+  base::WeakPtr<UrlIndex> url_index() const { return url_index_; }
 
   // This must be called after the response arrives.
   bool is_cors_cross_origin() const { return is_cors_cross_origin_; }
-
-  void StopWriters() { multibuffer_.StopWriters(); }
 
   // Notifies the url index that this is currently used.
   // The url <-> URLData mapping will be eventually be invalidated if
@@ -191,7 +193,7 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
  protected:
   UrlData(const KURL& url,
           CorsMode cors_mode,
-          UrlIndex* url_index,
+          base::WeakPtr<UrlIndex> url_index,
           CacheMode cache_lookup_mode,
           scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   virtual ~UrlData();
@@ -223,7 +225,7 @@ class PLATFORM_EXPORT UrlData : public RefCounted<UrlData> {
   // Mime type category (stashed for UMA / metrics).
   std::string mime_type_;
 
-  const raw_ptr<UrlIndex> url_index_;
+  const base::WeakPtr<UrlIndex> url_index_;
 
   // Length of resource this url points to. (in bytes)
   int64_t length_;
@@ -341,6 +343,8 @@ class PLATFORM_EXPORT UrlIndex {
 
   base::MemoryPressureListener memory_pressure_listener_;
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<UrlIndex> weak_factory_{this};
 };
 
 }  // namespace blink
