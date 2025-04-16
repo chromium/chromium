@@ -760,7 +760,9 @@ class CrossbenchTest(object):
       return self._create_fileserver_network(_arg)
     if _get_arg(args, '--wpr'):
       return self._create_wpr_network(args)
-    if self.options.benchmarks in self.BENCHMARK_FILESERVERS:
+    if ((self.options.benchmarks in self.BENCHMARK_FILESERVERS)
+        and not (self.options.benchmarks.startswith('speedometer')
+                 and sys.platform == 'darwin')):
       # Use file server when it is available.
       arg = '--fileserver'
       args.append(arg)
