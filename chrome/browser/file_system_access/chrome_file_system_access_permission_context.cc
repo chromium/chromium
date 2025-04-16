@@ -3209,12 +3209,6 @@ void ChromeFileSystemAccessPermissionContext::DoUsageIconUpdate() {
     if (IsPageActionMigrated(PageActionIconType::kFileSystemAccess)) {
       tabs::TabInterface* const tab_interface =
           browser->GetActiveTabInterface();
-      // TODO(crbug.com/411109399): DoUsageIconUpdate() can be run during
-      // browser destruction, and therefore we need to check for null here. This
-      // should be updated to never run during browser destruction.
-      if (!tab_interface) {
-        continue;
-      }
       auto* const tab_features = tab_interface->GetTabFeatures();
       CHECK(tab_features);
       UpdatePageAction(
