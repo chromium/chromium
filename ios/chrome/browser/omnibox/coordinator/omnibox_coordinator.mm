@@ -266,7 +266,7 @@
 }
 
 - (BOOL)isOmniboxFirstResponder {
-  return [self.textField isFirstResponder];
+  return [_omniboxTextController isOmniboxFirstResponder];
 }
 
 - (void)focusOmnibox {
@@ -300,24 +300,11 @@
 }
 
 - (void)endEditing {
-  // This check is a tentative fix for a crash that happens when calling
-  // `resignFirstResponder`. TODO(crbug.com/375429786): Verify the crash rate
-  // and remove the comment or check if needed.
-  if (self.textField.window) {
-    [self.textField resignFirstResponder];
-  }
-  _editView->EndEditing();
+  [_omniboxTextController endEditing];
 }
 
 - (void)insertTextToOmnibox:(NSString*)text {
-  [self.textField insertTextWhileEditing:text];
-  // The call to `setText` shouldn't be needed, but without it the "Go" button
-  // of the keyboard is disabled.
-  [self.textField setText:text];
-  // Notify the accessibility system to start reading the new contents of the
-  // Omnibox.
-  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  self.textField);
+  [_omniboxTextController insertTextToOmnibox:text];
 }
 
 - (OmniboxPopupCoordinator*)createPopupCoordinator:

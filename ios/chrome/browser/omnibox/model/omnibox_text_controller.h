@@ -41,6 +41,15 @@ class OmniboxViewIOS;
 /// Updates the omnibox text based on its current client state.
 - (void)updateAppearance;
 
+/// Returns whether the omnibox is first responder.
+- (BOOL)isOmniboxFirstResponder;
+
+/// Ends omnibox editing / defocus the omnibox.
+- (void)endEditing;
+
+/// Inserts text into the omnibox without triggering autocomplete.
+- (void)insertTextToOmnibox:(NSString*)text;
+
 #pragma mark - Autocomplete event
 
 /// Sets the additional text.
