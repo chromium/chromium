@@ -74,6 +74,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   // `Revoke()`.
   bool BlobUrlIsValid(const GURL& url, const char* method) const;
 
+  bool ShouldPartitionBlobUrlAccess(
+      bool has_storage_access_handle,
+      BlobUrlRegistry::MappingStatus mapping_status);
+
   void FinishResolveAsURLLoaderFactory(
       const GURL& url,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,

@@ -38,15 +38,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobUrlRegistry {
 
   enum class MappingStatus {
     kIsMapped,
-    // TODO(crbug.com/387655548): Remove this case once there's sufficient data
-    // from the CrossPartitionSameOriginBlobURLFetch UseCounter. Currently, this
-    // case is treated separately because cross-origin Blob URL access is
-    // already blocked and shouldn't be measured w.r.t. deciding whether it's
-    // safe to restrict further based on storage partition. Once
-    // CrossPartitionSameOriginBlobURLFetch is removed, it'd be
-    // beneficial to show the DevTools Issue even in the cross-origin access
-    // case and simplify IsUrlMapped to return a bool.
-    kNotMappedCrossPartitionSameOrigin,
+    // This refers to a third-party context attempting to access a Blob URL
+    // created in a first-party context.
+    kNotMappedCrossPartitionSameOriginAccessFirstPartyBlobURL,
+    // This refers to either a first-party or different third-party context
+    // attempting to access a Blob URL created in a third-party context.
+    kNotMappedCrossPartitionSameOriginAccessThirdPartyBlobURL,
     kNotMappedOther
   };
 
