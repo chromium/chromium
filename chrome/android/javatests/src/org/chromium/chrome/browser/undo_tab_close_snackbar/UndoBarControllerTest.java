@@ -254,6 +254,52 @@ public class UndoBarControllerTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
+    public void testCloseTabGroup_EmptyTitle_Undo() throws Exception {
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.mergeListOfTabsToGroup(
+                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)),
+                            mTabModel.getTabAt(0),
+                            /* notify= */ false);
+                    mTabGroupModelFilter.setTabGroupTitle(
+                            mTabModel.getTabAt(0).getRootId(), "");
+                });
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(2, mTabModel.getCount());
+        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    closeTabs(
+                            TabClosureParams.closeTabs(
+                                            List.of(mTabModel.getTabAt(0), mTabModel.getTabAt(1)))
+                                    .hideTabGroups(true)
+                                    .build());
+                });
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        assertEquals("2 tabs tab group closed and saved", getSnackbarText());
+        assertTrue(currentSnackbar.getController() instanceof UndoBarController);
+        assertEquals(0, mTabModel.getCount());
+
+        clickSnackbar();
+
+        assertNull(getCurrentSnackbar());
+        assertEquals(2, mTabModel.getCount());
+        assertEquals(1, mTabGroupModelFilter.getTabGroupCount());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabGroupModelFilter.setTabGroupTitle(mTabModel.getTabAt(0).getRootId(), null);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
     public void testDeleteTabGroup_Undo() throws Exception {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), sActivityTestRule.getActivity());

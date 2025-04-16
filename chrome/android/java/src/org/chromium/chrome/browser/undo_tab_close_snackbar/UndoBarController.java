@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.undo_tab_close_snackbar;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.Pair;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -280,7 +281,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                                 .getTabGroupModelFilterProvider()
                                 .getTabGroupModelFilter(false);
                 @Nullable String tabGroupTitle = filter.getTabGroupTitle(rootId);
-                if (tabGroupTitle == null) {
+                if (TextUtils.isEmpty(tabGroupTitle)) {
                     tabGroupTitle =
                             mContext.getResources()
                                     .getQuantityString(
