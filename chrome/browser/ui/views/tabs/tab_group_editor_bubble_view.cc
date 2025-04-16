@@ -322,7 +322,6 @@ void TabGroupEditorBubbleView::RebuildMenuContents() {
   }
   manage_shared_group_button_ = nullptr;
   color_selector_ = nullptr;
-  save_group_toggle_ = nullptr;
   save_group_icon_ = nullptr;
   save_group_label_ = nullptr;
   footer_ = nullptr;
@@ -675,13 +674,6 @@ const std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() const {
   // The UI updates now just name this "Close group" instead of "Delete Group"
   // Since delete group is separate if the group is saved.
   return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
-}
-
-const std::u16string TabGroupEditorBubbleView::GetSaveToggleAccessibleName()
-    const {
-  return l10n_util::GetStringUTF16(
-      save_group_toggle_->GetIsOn() ? IDS_TAB_GROUP_HEADER_CXMENU_UNSAVE_GROUP
-                                    : IDS_TAB_GROUP_HEADER_CXMENU_SAVE_GROUP);
 }
 
 bool TabGroupEditorBubbleView::CanSaveGroups() const {

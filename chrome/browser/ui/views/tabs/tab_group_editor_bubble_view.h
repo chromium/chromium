@@ -17,7 +17,6 @@
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/label_button.h"
-#include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -29,7 +28,6 @@ class TabGroupId;
 }  // namespace tab_groups
 
 namespace views {
-class ToggleButton;
 class Separator;
 }  // namespace views
 
@@ -88,7 +86,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
 
   void UpdateGroup();
   const std::u16string GetTextForCloseButton() const;
-  const std::u16string GetSaveToggleAccessibleName() const;
 
   // Returns whether the user has the appropriate profile and the
   // enabled features to save/share groups.
@@ -216,7 +213,6 @@ class TabGroupEditorBubbleView : public views::BubbleDialogDelegateView,
   raw_ptr<ColorPickerView> color_selector_ = nullptr;
   raw_ptr<Footer> footer_ = nullptr;
   raw_ptr<ManageSharingRow> manage_shared_group_button_ = nullptr;
-  raw_ptr<views::ToggleButton> save_group_toggle_ = nullptr;
   raw_ptr<views::ImageView> save_group_icon_ = nullptr;
   raw_ptr<views::Label> save_group_label_ = nullptr;
 
