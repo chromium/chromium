@@ -87,7 +87,6 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
     private boolean mShouldMergeOnConfigurationChange;
     private boolean mIsRecreating;
     private int mDisplayId;
-    private static List<Integer> sTestDisplayIds;
     private boolean mDestroyed;
 
     /* package */ MultiInstanceManagerImpl(
