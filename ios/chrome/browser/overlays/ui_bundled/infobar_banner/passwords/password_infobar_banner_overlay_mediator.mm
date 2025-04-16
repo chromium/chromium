@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "build/build_config.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
@@ -15,6 +16,8 @@
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -86,6 +89,12 @@
   }
 
   [super finishDismissal];
+
+  // Check if the feature is enabled before showing the promo
+  if (IsNonModalSignInPromoEnabled()) {
+    [self.nonModalSignInPromoHandler
+        showNonModalSignInPromoWithType:SignInPromoType::kPassword];
+  }
 }
 
 #pragma mark - Private
