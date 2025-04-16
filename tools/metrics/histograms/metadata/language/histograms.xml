@@ -331,6 +331,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageUsage.AcceptLanguage.FirstAcceptLanguage"
+    units="LanguageName" expires_after="2025-11-24">
+  <owner>victortan@chromium.org</owner>
+  <owner>katabolism-finch@google.com</owner>
+  <summary>
+    The first accept language with country codes removed. Recorded once per
+    profile initialization. Incognito profiles are ignored.
+  </summary>
+</histogram>
+
 <histogram name="LanguageUsage.AcceptLanguageAndContentLanguageUsage"
     enum="AcceptLanguageAndContentLanguageUsage" expires_after="2025-08-24">
   <owner>victortan@chromium.org</owner>
