@@ -48,6 +48,16 @@ class AddressDataCleanerTest : public testing::Test {
   AddressDataCleaner data_cleaner_;
 };
 
+// Two profiles are considered equal for deduplication purposes if they compare
+// equal and have the same record type.
+MATCHER(IsEqualForDeduplicationPurposes, "") {
+  const AutofillProfile* a = std::get<0>(arg);
+  const AutofillProfile& b = std::get<1>(arg);
+
+  return a->record_type() == b.record_type() &&
+         a->Compare(b) == 0;
+}
+
 // Tests that for users not syncing addresses, `MaybeCleanupAddressData()`
 // immediately performs clean-ups.
 TEST_F(AddressDataCleanerTest, MaybeCleanupAddressData_NotSyncingAddresses) {
@@ -200,6 +210,31 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountPairs) {
                                    Pointee(account_profile2)));
 }
 
+// Tests that `kAccount` profiles are deduplicated when mergeable with either a
+// different `kAccount` profile or a `kLocalOrSyncable` profile.
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountExactDuplicates) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
+
+  AutofillProfile account_profile1 = test::StandardProfile();
+  test_api(account_profile1)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  test_adm_.AddProfile(account_profile1);
+  AutofillProfile account_profile2 = test::StandardProfile();
+  test_api(account_profile2)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  test_adm_.AddProfile(account_profile2);
+  AutofillProfile local_profile1 = test::StandardProfile();
+  test_api(local_profile1)
+      .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
+  test_adm_.AddProfile(local_profile1);
+
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
+  EXPECT_THAT(test_adm_.GetProfiles(),
+              testing::UnorderedPointwise(IsEqualForDeduplicationPurposes(),
+                                          {account_profile1}));
+}
+
 // Tests that `kLocalOrSyncable` profiles which are a subset of a `kAccount`
 // profile are deduplicated. The result is a Chrome account profile.
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
@@ -226,6 +261,29 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSuperset) {
             AutofillProfile::kInitialCreatorOrModifierChrome);
 }
 
+// Tests that `kLocalOrSyncable` profiles which are a subset of a `kAccount`
+// profile are deduplicated.
+TEST_F(AddressDataCleanerTest,
+       Deduplicate_kAccountSupersetWithAccountDeduplicationEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
+
+  AutofillProfile account_profile = test::StandardProfile();
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  test_adm_.AddProfile(account_profile);
+  AutofillProfile local_profile = test::SubsetOfStandardProfile();
+  test_api(local_profile)
+      .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
+  test_adm_.AddProfile(local_profile);
+
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
+  EXPECT_THAT(test_adm_.GetProfiles(),
+              testing::UnorderedPointwise(
+                  IsEqualForDeduplicationPurposes(),
+                  {account_profile}));
+}
+
 // Tests that `kAccount` profiles which are a subset of a `kLocalOrSyncable`
 // profile are not deduplicated.
 TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
@@ -240,6 +298,69 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountSubset) {
   EXPECT_THAT(
       test_adm_.GetProfiles(),
       UnorderedElementsAre(Pointee(account_profile), Pointee(local_profile)));
+}
+
+// Tests that `kAccount` profiles which are a subset of a `kLocalOrSyncable`
+// profile are deduplicated.
+TEST_F(AddressDataCleanerTest,
+       Deduplicate_kAccountSubsetWithAccountDeduplicationEnabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
+  AutofillProfile local_profile = test::StandardProfile();
+  test_api(local_profile)
+      .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
+  test_adm_.AddProfile(local_profile);
+  AutofillProfile account_profile = test::SubsetOfStandardProfile();
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  test_adm_.AddProfile(account_profile);
+
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
+  EXPECT_THAT(test_adm_.GetProfiles(),
+              testing::UnorderedPointwise(
+                  IsEqualForDeduplicationPurposes(),
+                  {local_profile}));
+}
+
+// Tests that `kAccount` profiles which are a mergeable with a
+// `kLocalOrSyncable` profile are deduplicated into the local profile.
+TEST_F(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillDeduplicateAccountAddresses};
+
+  AutofillProfile local_profile(AddressCountryCode{"CA"});
+  test::SetProfileInfo(&local_profile, "", "", "", "", "", "6543 CH BACON",
+                       "APP 3", "MONTRÉAL", "QUÉBEC", "HHH999", "CA", "");
+  test_api(local_profile)
+      .set_record_type(AutofillProfile::RecordType::kLocalOrSyncable);
+  test_adm_.AddProfile(local_profile);
+
+  AutofillProfile account_profile(AddressCountryCode{"CA"});
+  test::SetProfileInfo(&account_profile, "", "", "", "", "", "6543, Bacon Rd",
+                       "", "Montreal", "QC", "hhh 999", "CA", "");
+  test_api(account_profile)
+      .set_record_type(AutofillProfile::RecordType::kAccount);
+  test_adm_.AddProfile(account_profile);
+
+  test_api(data_cleaner_).ApplyDeduplicationRoutine();
+  AutofillProfile expected(AddressCountryCode("CA"));
+  expected.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_LINE1, u"6543 CH BACON", VerificationStatus::kObserved);
+  expected.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LINE2, u"APP 3",
+                                            VerificationStatus::kObserved);
+  expected.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Montreal",
+                                            VerificationStatus::kObserved);
+  expected.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"QC",
+                                            VerificationStatus::kObserved);
+  expected.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"hhh 999",
+                                            VerificationStatus::kObserved);
+  // The resulting profile should be local.
+  test_api(expected).set_record_type(
+      AutofillProfile::RecordType::kLocalOrSyncable);
+
+  EXPECT_THAT(test_adm_.GetProfiles(),
+              testing::UnorderedPointwise(IsEqualForDeduplicationPurposes(),
+                                          {expected}));
 }
 
 TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {
