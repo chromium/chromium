@@ -1275,7 +1275,7 @@ std::u16string ReadAnythingAppController::GetTextContent(
     return std::u16string();
   }
 
-  return a11y::GetTextContent(ax_node, IsGoogleDocs());
+  return a11y::GetTextContent(ax_node, IsGoogleDocs(), model_.is_pdf());
 }
 
 std::string ReadAnythingAppController::GetTextDirection(

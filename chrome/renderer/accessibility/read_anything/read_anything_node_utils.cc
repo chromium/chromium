@@ -151,7 +151,7 @@ std::string GetImageDataUrl(ui::AXNode* ax_node) {
   return url;
 }
 
-std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs) {
+std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs, bool is_pdf) {
   // For Google Docs, because the content is rendered in canvas, we distill
   // text from the "Annotated Canvas"
   // (https://sites.google.com/corp/google.com/docs-canvas-migration/home)
@@ -178,6 +178,32 @@ std::u16string GetTextContent(ui::AXNode* ax_node, bool is_docs) {
       }
     }
   }
+
+  // TODO(crbug.com//40927698): Investigate how we can remove this. Possibly by
+  // improving distillation for pdfs.
+  if (is_pdf) {
+    std::u16string filtered_string(ax_node->GetTextContentUTF16());
+    // When we receive text from a pdf node, there are return characters at each
+    // visual line break in the page. If these aren't filtered, one of two
+    // things could happen:
+    // 1) part of the same sentence will be read as separate segments, causing
+    //    choppy speech (e.g. without filtering, 'This is a long sentence with
+    //    \n\r a line break.' will read and highlight "This is a long sentence
+    //    with" and "a line break" separately.
+    // 2) parts of the sentence are not highlighted at all because GetNextWord
+    //    using accessible text boundaries continues returning the line break
+    //    infinitely (and we thus break out of the infinite loop and instead
+    //    highlight nothing).
+    if (is_pdf && filtered_string.size() > 0) {
+      size_t pos = filtered_string.find_first_of(u"\n\r");
+      while (pos != std::string::npos && pos < filtered_string.size() - 2) {
+        filtered_string.replace(pos, 1, u" ");
+        pos = filtered_string.find_first_of(u"\n\r");
+      }
+    }
+    return filtered_string;
+  }
+
   return ax_node->GetTextContentUTF16();
 }
 

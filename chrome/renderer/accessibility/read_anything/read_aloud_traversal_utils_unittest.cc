@@ -22,7 +22,7 @@ TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
   const std::u16string second_sentence = u"This is a second sentence.";
 
   const std::u16string sentence = first_sentence + second_sentence;
-  size_t index = GetNextSentence(sentence, false);
+  size_t index = GetNextSentence(sentence);
   EXPECT_EQ(index, first_sentence.length());
   EXPECT_EQ(sentence.substr(0, index), first_sentence);
 }
@@ -31,47 +31,7 @@ TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
        GetNextSentence_OnlyOneSentence_ReturnsCorrectIndex) {
   const std::u16string sentence = u"Hello, this is a normal sentence.";
 
-  size_t index = GetNextSentence(sentence, false);
-  EXPECT_EQ(index, sentence.length());
-  EXPECT_EQ(sentence.substr(0, index), sentence);
-}
-
-TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
-       GetNextSentence_NotPDF_DoesNotFilterReturnCharacters) {
-  const std::u16string sentence =
-      u"Hello, this is\n a sentence \r with line breaks.";
-
-  size_t index = GetNextSentence(sentence, false);
-  EXPECT_EQ(index, sentence.find('\n') + 2);
-  EXPECT_EQ(sentence.substr(0, index), u"Hello, this is\n ");
-
-  std::u16string next_sentence = sentence.substr(index);
-  index = GetNextSentence(next_sentence, false);
-  EXPECT_EQ(index, next_sentence.find('\r') + 2);
-  EXPECT_EQ(next_sentence.substr(0, index), u"a sentence \r ");
-
-  next_sentence = next_sentence.substr(index);
-  index = GetNextSentence(next_sentence, false);
-  EXPECT_EQ(index, next_sentence.length());
-  EXPECT_EQ(next_sentence.substr(0, index), u"with line breaks.");
-}
-
-TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
-       GetNextSentence_PDF_FiltersReturnCharacters) {
-  const std::u16string sentence =
-      u"Hello, this is\n a sentence \r with line breaks.";
-
-  size_t index = GetNextSentence(sentence, true);
-  EXPECT_EQ(index, sentence.length());
-  EXPECT_EQ(sentence.substr(0, index), sentence);
-}
-
-TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
-       GetNextSentence_PDF_DoesNotFilterReturnCharactersAtEndOfSentence) {
-  const std::u16string sentence =
-      u"Hello, this is a sentence with line breaks.\r\n";
-
-  size_t index = GetNextSentence(sentence, true);
+  size_t index = GetNextSentence(sentence);
   EXPECT_EQ(index, sentence.length());
   EXPECT_EQ(sentence.substr(0, index), sentence);
 }

@@ -110,7 +110,7 @@ struct ReadAloudCurrentGranularity {
 
 // Returns the index of the next sentence of the given text, such that the
 // next sentence is equivalent to text.substr(0, <returned_index>).
-int GetNextSentence(const std::u16string& text, bool is_pdf);
+int GetNextSentence(const std::u16string& text);
 
 // Returns the index of the next word of the given text, such that the
 // next word is equivalent to text.substr(0, <returned_index>).
