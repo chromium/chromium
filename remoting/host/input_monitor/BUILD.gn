@@ -65,10 +65,10 @@ source_set("input_monitor") {
   if (is_win) {
     sources += [
       "local_hotkey_input_monitor_win.cc",
-      "local_input_monitor_win.cc",
-      "local_input_monitor_win.h",
       "local_keyboard_input_monitor_win.cc",
       "local_mouse_input_monitor_win.cc",
+      "raw_input_handler.cc",
+      "raw_input_handler.h",
     ]
   }
 
