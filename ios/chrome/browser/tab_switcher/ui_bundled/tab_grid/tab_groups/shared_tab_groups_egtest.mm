@@ -442,7 +442,13 @@ AppLaunchConfiguration SharedTabGroupAppLaunchConfiguration(
 
 // Checks that the IPH is presented when the user foreground the app with a
 // shared tab group active.
-- (void)testForegroundIPH {
+// TODO(crbug.com/411064928): This fails on iphone simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testForegroundIPH DISABLED_testForegroundIPH
+#else
+#define MAYBE_testForegroundIPH testForegroundIPH
+#endif
+- (void)MAYBE_testForegroundIPH {
   if (@available(iOS 17, *)) {
   } else if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
