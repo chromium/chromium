@@ -1436,7 +1436,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
   // The UI should be stopped before the models they observe are stopped.
   // SigninCoordinator teardown is performed by the `signinCompletion` on
   // termination of async events, do not add additional teardown here.
-  [self.signinCoordinator interruptAnimated:NO];
+  [self interruptSigninCoordinatorAnimated:NO fromExternalTrigger:NO];
   // `self.signinCoordinator.signinCompletion()` was called in the interrupt
   // method. Therefore now `self.signinCoordinator` is now stopped, and
   // `self.signinCoordinator` is now nil.
@@ -3985,11 +3985,9 @@ using UserFeedbackDataCallback =
     // `self.signinCoordinator` can be presented on top of the settings, to
     // present the Trusted Vault reauthentication `self.signinCoordinator` has
     // to be closed first.
-    if (self.signinCoordinator) {
-      // If signinCoordinator is already dismissing, completion execution will
-      // happen when it is done animating.
-      [self interruptSigninCoordinatorAnimated:animated];
-    }
+    // If signinCoordinator is already dismissing, completion execution will
+    // happen when it is done animating.
+    [self interruptSigninCoordinatorAnimated:animated fromExternalTrigger:YES];
     UIViewController* presentingViewController =
         self.settingsNavigationController.presentingViewController;
     if (presentingViewController) {
@@ -4001,21 +3999,23 @@ using UserFeedbackDataCallback =
     }
     self.dismissingSettings = NO;
   } else {
-    if (self.signinCoordinator) {
-      // `self.signinCoordinator` can be presented without settings, from the
-      // bookmarks or the recent tabs view.
-      [self interruptSigninCoordinatorAnimated:animated];
-    }
+    // `self.signinCoordinator` can be presented without settings, from the
+    // bookmarks or the recent tabs view.
+    [self interruptSigninCoordinatorAnimated:animated fromExternalTrigger:YES];
     resetAndDismiss();
   }
 }
 
 // Interrupts the sign-in coordinator actions and dismisses its views either
 // with or without animation.
-- (void)interruptSigninCoordinatorAnimated:(BOOL)animated {
-  DCHECK(self.signinCoordinator);
-
-  self.dismissingSigninPromptFromExternalTrigger = YES;
+- (void)interruptSigninCoordinatorAnimated:(BOOL)animated
+                       fromExternalTrigger:(BOOL)external {
+  if (!self.signinCoordinator) {
+    return;
+  }
+  if (external) {
+    self.dismissingSigninPromptFromExternalTrigger = YES;
+  }
   [self.signinCoordinator interruptAnimated:animated];
 }
 
@@ -4577,7 +4577,7 @@ using UserFeedbackDataCallback =
     (PolicyWatcherBrowserAgent*)policyWatcher {
 
   if (self.signinCoordinator) {
-    [self interruptSigninCoordinatorAnimated:YES];
+    [self interruptSigninCoordinatorAnimated:YES fromExternalTrigger:YES];
     UMA_HISTOGRAM_BOOLEAN(
         "Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy", true);
     policyWatcher->SignInUIDismissed();
