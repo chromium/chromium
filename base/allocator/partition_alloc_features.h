@@ -34,6 +34,15 @@ enum class PAFeatureEnabledProcesses {
   kAllProcesses,
 };
 
+enum class SchedulerLoopQuarantineBranchType {
+  // The global quarantine branch, shared across threads.
+  kGlobal,
+  // Default configuration for thread-local branches on new threads.
+  kThreadLocalDefault,
+  // Specialized configuration for the main thread of a process.
+  kMain,
+};
+
 }  // namespace internal
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocUnretainedDanglingPtr);

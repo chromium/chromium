@@ -615,9 +615,10 @@ void ConfigurePartitions(
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
     BucketDistribution distribution,
-    SchedulerLoopQuarantine scheduler_loop_quarantine,
-    size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
-    ZappingByFreeFlags zapping_by_free_flags,
+    partition_alloc::internal::SchedulerLoopQuarantineConfig
+        scheduler_loop_quarantine_global_config,
+    partition_alloc::internal::SchedulerLoopQuarantineConfig
+        scheduler_loop_quarantine_thread_local_config,
     EventuallyZeroFreedMemory eventually_zero_freed_memory,
     FewerMemoryRegions fewer_memory_regions,
     UseSmallSingleSlotSpans use_small_single_slot_spans) {
@@ -644,10 +645,6 @@ void ConfigurePartitions(
             enable_brp ? partition_alloc::PartitionOptions::kEnabled
                        : partition_alloc::PartitionOptions::kDisabled;
         opts.backup_ref_ptr_extra_extras_size = brp_extra_extras_size;
-        opts.zapping_by_free_flags =
-            zapping_by_free_flags
-                ? partition_alloc::PartitionOptions::kEnabled
-                : partition_alloc::PartitionOptions::kDisabled;
         opts.eventually_zero_freed_memory =
             eventually_zero_freed_memory
                 ? partition_alloc::PartitionOptions::kEnabled
@@ -655,12 +652,10 @@ void ConfigurePartitions(
         opts.fewer_memory_regions =
             fewer_memory_regions ? partition_alloc::PartitionOptions::kEnabled
                                  : partition_alloc::PartitionOptions::kDisabled;
-        opts.scheduler_loop_quarantine =
-            scheduler_loop_quarantine
-                ? partition_alloc::PartitionOptions::kEnabled
-                : partition_alloc::PartitionOptions::kDisabled;
-        opts.scheduler_loop_quarantine_branch_capacity_in_bytes =
-            scheduler_loop_quarantine_branch_capacity_in_bytes;
+        opts.scheduler_loop_quarantine_global_config =
+            scheduler_loop_quarantine_global_config;
+        opts.scheduler_loop_quarantine_thread_local_config =
+            scheduler_loop_quarantine_thread_local_config;
         opts.memory_tagging = {
             .enabled = enable_memory_tagging
                            ? partition_alloc::PartitionOptions::kEnabled

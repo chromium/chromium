@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
@@ -111,6 +112,11 @@ class BASE_EXPORT PartitionAllocSupport {
   // given process type. May be called multiple times per process.
   static bool ShouldEnablePartitionAllocWithAdvancedChecks(
       const std::string& process_type);
+
+  // Returns quarantine configuration for `process_name` and `branch_type`.
+  static ::partition_alloc::internal::SchedulerLoopQuarantineConfig
+  GetSchedulerLoopQuarantineConfiguration(
+      features::internal::SchedulerLoopQuarantineBranchType branch_type);
 
  private:
   PartitionAllocSupport();

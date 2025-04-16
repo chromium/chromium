@@ -11,7 +11,6 @@ PartitionRoot& InternalAllocatorRoot() {
     // Disable features using the internal root to avoid reentrancy issue.
     PartitionOptions opts;
     opts.thread_cache = PartitionOptions::kDisabled;
-    opts.scheduler_loop_quarantine = PartitionOptions::kDisabled;
     return opts;
   }());
 

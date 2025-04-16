@@ -38,6 +38,7 @@
 #include <cstdint>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <type_traits>
 #include <vector>
 
@@ -61,6 +62,8 @@ struct LightweightQuarantineBranchConfig {
   bool lock_required = true;
   // Capacity for a branch in bytes.
   size_t branch_capacity_in_bytes = 0;
+  // Leak quarantined allocations at exit.
+  bool leak_on_destruction = false;
 };
 
 class LightweightQuarantineBranch;
@@ -72,6 +75,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineRoot {
 
   LightweightQuarantineBranch CreateBranch(
       const LightweightQuarantineBranchConfig& config);
+
+  PartitionRoot& GetAllocatorRoot() { return allocator_root_; }
 
   void AccumulateStats(LightweightQuarantineStats& stats) const {
     stats.count += count_.load(std::memory_order_relaxed);
@@ -100,6 +105,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
  public:
   using Root = LightweightQuarantineRoot;
 
+  LightweightQuarantineBranch(Root& root,
+                              const LightweightQuarantineBranchConfig& config);
   LightweightQuarantineBranch(const LightweightQuarantineBranch&) = delete;
   LightweightQuarantineBranch(LightweightQuarantineBranch&& b);
   ~LightweightQuarantineBranch();
@@ -113,30 +120,28 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
       SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
       uintptr_t slot_start,
       size_t usable_size) {
-    return lock_required_ ? QuarantineWithAcquiringLock(object, slot_span,
-                                                        slot_start, usable_size)
-                          : QuarantineWithoutAcquiringLock(
-                                object, slot_span, slot_start, usable_size);
+    if (lock_required_) {
+      PA_MUSTTAIL return QuarantineWithAcquiringLock(object, slot_span,
+                                                     slot_start, usable_size);
+    } else {
+      PA_MUSTTAIL return QuarantineWithoutAcquiringLock(
+          object, slot_span, slot_start, usable_size);
+    }
   }
+
   // Despite that LightweightQuarantineBranchConfig::lock_required_ is already
   // specified, we provide two versions `With/WithoutAcquiringLock` so that we
   // can avoid the overhead of runtime conditional branches.
-  PA_ALWAYS_INLINE bool QuarantineWithAcquiringLock(
+  bool QuarantineWithAcquiringLock(
       void* object,
       SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
       uintptr_t slot_start,
-      size_t usable_size) {
-    PA_MUSTTAIL return QuarantineInternal<LockRequired::kRequired>(
-        object, slot_span, slot_start, usable_size);
-  }
-  PA_ALWAYS_INLINE bool QuarantineWithoutAcquiringLock(
+      size_t usable_size);
+  bool QuarantineWithoutAcquiringLock(
       void* object,
       SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
       uintptr_t slot_start,
-      size_t usable_size) {
-    PA_MUSTTAIL return QuarantineInternal<LockRequired::kNotRequired>(
-        object, slot_span, slot_start, usable_size);
-  }
+      size_t usable_size);
 
   // Dequarantine all entries **held by this branch**.
   // It is possible that another branch with entries and it remains untouched.
@@ -155,10 +160,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   void SetCapacityInBytes(size_t capacity_in_bytes);
 
  private:
-  enum class LockRequired { kNotRequired, kRequired };
-  template <LockRequired lock_required>
-  class PA_SCOPED_LOCKABLE CompileTimeConditionalScopedGuard;
+  class PA_SCOPED_LOCKABLE FakeScopedGuard;
   class PA_SCOPED_LOCKABLE RuntimeConditionalScopedGuard;
+
   // `ToBeFreedArray` is used in `PurgeInternalInTwoPhases1of2` and
   // `PurgeInternalInTwoPhases2of2`. See the function comment about the purpose.
   // In order to avoid reentrancy issues, we must not deallocate any object in
@@ -166,15 +170,6 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   // deallocate, plus, std::array has perf advantages.
   static constexpr size_t kMaxFreeTimesPerPurge = 1024;
   using ToBeFreedArray = std::array<uintptr_t, kMaxFreeTimesPerPurge>;
-
-  LightweightQuarantineBranch(Root& root,
-                              const LightweightQuarantineBranchConfig& config);
-
-  template <LockRequired lock_required>
-  bool QuarantineInternal(void* object,
-                          SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-                          uintptr_t slot_start,
-                          size_t usable_size);
 
   // Try to dequarantine entries to satisfy below:
   //   root_.size_in_bytes_ <=  target_size_in_bytes
@@ -228,23 +223,68 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LightweightQuarantineBranch {
   // [1] https://issues.chromium.org/issues/387508217
   std::atomic<ToBeFreedArray*> to_be_freed_working_memory_ = nullptr;
 
-  friend class LightweightQuarantineRoot;
+  bool leak_on_destruction_ = false;
 };
 
-extern template PA_COMPONENT_EXPORT(
-    PARTITION_ALLOC) bool LightweightQuarantineBranch::
-    QuarantineInternal<LightweightQuarantineBranch::LockRequired::kNotRequired>(
-        void* object,
-        SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-        uintptr_t slot_start,
-        size_t usable_size);
-extern template PA_COMPONENT_EXPORT(
-    PARTITION_ALLOC) bool LightweightQuarantineBranch::
-    QuarantineInternal<LightweightQuarantineBranch::LockRequired::kRequired>(
-        void* object,
-        SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
-        uintptr_t slot_start,
-        size_t usable_size);
+// Scheduler-loop Quarantine is a quarantine pool behind PartitionAlloc with
+// Advanced Checks and `ADVANCED_MEMORY_SAFETY_CHECKS()`.
+// Both requests to prevent `free()`d allocation getting released to free-list,
+// by passing `FreeFlags::kSchedulerLoopQuarantine` at time of `free()`.
+// This will keep these allocations in Lightweight Qurantine for while.
+// TODO(crbug.com/329027914): In addition to the threshold-based purging in
+// Lightweight Quarantine, implement smarter purging strategy to detect "empty
+// stack".
+
+struct SchedulerLoopQuarantineConfig {
+  LightweightQuarantineBranchConfig quarantine_config;
+  bool enable_quarantine = false;
+  bool enable_zapping = false;
+};
+
+// This is a wrapper of `LightweightQuarantineBranch` for Scheduler-loop
+// Quarantine. All operations on the branch should be performed through this
+// class.
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SchedulerLoopQuarantineBranch {
+ public:
+  explicit SchedulerLoopQuarantineBranch(PartitionRoot* allocator_root);
+  SchedulerLoopQuarantineBranch(const SchedulerLoopQuarantineBranch&) = delete;
+  SchedulerLoopQuarantineBranch(SchedulerLoopQuarantineBranch&& b) = delete;
+  ~SchedulerLoopQuarantineBranch();
+
+  void Configure(LightweightQuarantineRoot& root,
+                 const SchedulerLoopQuarantineConfig& config);
+  PA_ALWAYS_INLINE LightweightQuarantineRoot& GetRoot();
+
+  void QuarantineWithAcquiringLock(
+      void* object,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+      uintptr_t slot_start,
+      size_t usable_size);
+  void QuarantineWithoutAcquiringLock(
+      void* object,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+      uintptr_t slot_start,
+      size_t usable_size);
+
+  const SchedulerLoopQuarantineConfig& GetConfigurationForTesting();
+  LightweightQuarantineBranch& GetInternalBranchForTesting();
+
+ private:
+  PA_ALWAYS_INLINE void QuarantineEpilogue(
+      void* object,
+      SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
+      uintptr_t slot_start,
+      size_t usable_size);
+
+  PartitionRoot* const allocator_root_;
+  std::optional<LightweightQuarantineBranch> branch_;
+
+  bool enable_quarantine_ = false;
+  bool enable_zapping_ = false;
+
+  // Kept for testing purposes only.
+  SchedulerLoopQuarantineConfig config_for_testing_;
+};
 
 }  // namespace internal
 

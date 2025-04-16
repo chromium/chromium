@@ -387,9 +387,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
     ClearBucket(bucket, limit);
   }
 
-  internal::LightweightQuarantineBranch& GetSchedulerLoopQuarantineBranch() {
-    PA_DCHECK(scheduler_loop_quarantine_branch_.has_value());
-    return *scheduler_loop_quarantine_branch_;
+  internal::SchedulerLoopQuarantineBranch& GetSchedulerLoopQuarantineBranch() {
+    return scheduler_loop_quarantine_branch_;
   }
 
   // Returns true if the given address is in the thread cache's freelist.
@@ -468,8 +467,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   ThreadCache* next_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
   ThreadCache* prev_ PA_GUARDED_BY(ThreadCacheRegistry::GetLock());
 
-  std::optional<internal::LightweightQuarantineBranch>
-      scheduler_loop_quarantine_branch_;
+  // Thread-Local version of `PartitionRoot::scheduler_loop_quarantine_branch_`.
+  internal::SchedulerLoopQuarantineBranch scheduler_loop_quarantine_branch_;
 
   friend class ThreadCacheRegistry;
   friend class PartitionAllocThreadCacheTest;

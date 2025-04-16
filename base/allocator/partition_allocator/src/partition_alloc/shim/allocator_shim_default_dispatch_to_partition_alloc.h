@@ -176,19 +176,22 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
           ? partition_alloc::TagViolationReportingMode::kSynchronous
           : partition_alloc::TagViolationReportingMode::kDisabled;
   auto distribution = BucketDistribution::kNeutral;
-  auto scheduler_loop_quarantine = SchedulerLoopQuarantine(false);
-  size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
-  auto zapping_by_free_flags = ZappingByFreeFlags(false);
+
+  auto scheduler_loop_quarantine_global_config =
+      partition_alloc::internal::SchedulerLoopQuarantineConfig();
+  auto scheduler_loop_quarantine_thread_local_config =
+      partition_alloc::internal::SchedulerLoopQuarantineConfig();
+
   auto eventually_zero_freed_memory = EventuallyZeroFreedMemory(false);
   auto fewer_memory_regions = FewerMemoryRegions(false);
   auto use_small_single_slot_spans = UseSmallSingleSlotSpans(true);
 
   ConfigurePartitions(enable_brp, brp_extra_extras_size, enable_memory_tagging,
                       memory_tagging_reporting_mode, distribution,
-                      scheduler_loop_quarantine,
-                      scheduler_loop_quarantine_capacity_in_bytes,
-                      zapping_by_free_flags, eventually_zero_freed_memory,
-                      fewer_memory_regions, use_small_single_slot_spans);
+                      scheduler_loop_quarantine_global_config,
+                      scheduler_loop_quarantine_thread_local_config,
+                      eventually_zero_freed_memory, fewer_memory_regions,
+                      use_small_single_slot_spans);
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
