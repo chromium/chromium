@@ -838,6 +838,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.CachingCertVerifier.CacheHit" enum="Boolean"
+    expires_after="2025-07-14">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-network-stack@google.com</owner>
+  <summary>
+    Records if a certificate verification result was provided from the cache or
+    not. Recorded after checking the certificate verification cache when
+    CachingCertVerifier::Verify() is called.
+  </summary>
+</histogram>
+
+<histogram
+    name="Net.CachingCertVerifier.{VerificationCompletionType}.UncachedVerifyTime"
+    units="ms" expires_after="2025-07-14">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-network-stack@google.com</owner>
+  <summary>
+    Records the time taken to {VerificationCompletionType} verify a certificate
+    if not found in the certificate verification cache. Recorded after a
+    certificate is verified in the CachingCertVerifier.
+
+    Note: This is similar to Net.CertVerifier_Job_Latency which is recorded in
+    CoalescingCertVerifier. CachingCertVerifier wraps the
+    CoalescingCertVerifier, so the main difference is if there are multiple
+    verifications for the same params in a short time span,
+    CoalescingCertVerifier records a single histogram event from the start of
+    the first verification request, whereas this histogram includes the effect
+    of averaging out the times if multiple requests are coalesced together.
+  </summary>
+  <token key="VerificationCompletionType">
+    <variant name="Async" summary="asynchronously"/>
+    <variant name="Sync" summary="synchronously"/>
+  </token>
+</histogram>
+
 <histogram name="Net.Certificate.ChangeNotification"
     enum="CertificateChangeNotificationType" expires_after="never">
 <!-- expires-never: core cert verifier metric; monitored by Chirps -->

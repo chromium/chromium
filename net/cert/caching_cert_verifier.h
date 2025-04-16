@@ -110,6 +110,7 @@ class NET_EXPORT CachingCertVerifier : public CertVerifier,
   void OnRequestFinished(uint32_t config_id,
                          const RequestParams& params,
                          base::Time start_time,
+                         base::TimeTicks start_time_ticks,
                          CompletionOnceCallback callback,
                          CertVerifyResult* verify_result,
                          int error);
