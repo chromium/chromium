@@ -1555,6 +1555,42 @@ void TabStripModel::UpdateSplitRatio(split_tabs::SplitTabId split_id,
   }
 }
 
+void TabStripModel::ReplaceActiveTabInSplit(split_tabs::SplitTabId split_id,
+                                            int replace_index) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  std::vector<tabs::TabModel*> tabs_to_split =
+      GetSplitData(split_id)->ListTabs();
+  split_tabs::SplitTabVisualData split_visual_data =
+      *GetSplitData(split_id)->visual_data();
+
+  std::erase_if(tabs_to_split, [this](tabs::TabInterface* tab) {
+    return tab == GetActiveTab();
+  });
+
+  // This operation is a bulk operation and is done in multiple steps.
+  // 1. Unsplit the collection so we can perform close and move to correct
+  // index.
+  // 2. Move the tab to replace to the correct index and make it active.
+  // 3. Close the previous active tab.
+  // 4. Re-split the other tabs that were a part of the split collection with
+  // the new active tab (the initial tab at `replace_index`)
+  RemoveSplitImpl(split_id);
+  int destination_index =
+      replace_index < active_index() ? active_index() - 1 : active_index();
+  MoveTabToIndexImpl(replace_index, destination_index,
+                     GetActiveTab()->GetGroup(), GetActiveTab()->IsPinned(),
+                     true);
+  CloseWebContentsAt(active_index() + 1, TabCloseTypes::CLOSE_USER_GESTURE);
+
+  std::vector<int> split_indices;
+  for (tabs::TabInterface* tab : tabs_to_split) {
+    split_indices.emplace_back(GetIndexOfTab(tab));
+  }
+
+  AddToSplitImpl(split_id, split_indices, split_visual_data);
+}
+
 void TabStripModel::SwapTabsInSplit(split_tabs::SplitTabId split_id) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 

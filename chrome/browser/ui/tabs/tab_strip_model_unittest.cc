@@ -2173,6 +2173,34 @@ TEST_F(TabStripModelTest, SplitRatioTest) {
   EXPECT_TRUE(tabstrip.empty());
 }
 
+TEST_F(TabStripModelTest, ReplaceSplitTab) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create five tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
+
+  // Add tab at index 4 to a group.
+  tabstrip.AddToNewGroup({4});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
+
+  tabstrip.ReplaceActiveTabInSplit(split_tab_id, 3);
+  EXPECT_EQ("2ps 3ps 1p 4", GetTabStripStateString(tabstrip));
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
 TEST_F(TabStripModelTest, SwapTabsInSplit) {
   scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
   TestTabStripModelDelegate delegate;

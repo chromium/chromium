@@ -569,6 +569,10 @@ class TabStripModel : public TabGroupController {
   // Reverses the order of tabs with `split_id`.
   void SwapTabsInSplit(split_tabs::SplitTabId split_id);
 
+  // Replaces the active tab with `split_id` with the tab at `replace_index`.
+  void ReplaceActiveTabInSplit(split_tabs::SplitTabId split_id,
+                               int replace_index);
+
   // Create a new split view with the active tab and add the set of tabs pointed
   // to by |indices| to it. Reorders the tabs so they are contiguous. |indices|
   // must be sorted in ascending order.
