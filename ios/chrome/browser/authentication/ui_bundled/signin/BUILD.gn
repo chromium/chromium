@@ -57,6 +57,7 @@ source_set("signin_impl") {
     ":signin_headers",
     ":signin_protected",
     ":signin_screen_provider",
+    ":stop_animated_chrome_coordinator",
     "//components/feature_engagement/public",
     "//components/feature_engagement/public:feature_constants",
     "//components/policy:generated",

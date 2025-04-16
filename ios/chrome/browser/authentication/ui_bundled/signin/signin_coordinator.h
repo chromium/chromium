@@ -47,16 +47,15 @@ class PrefRegistrySyncable;
 // This property returns the time ticks when the instance was created.
 @property(nonatomic, readonly, assign) base::TimeTicks creationTimeTicks;
 
-- (SigninCoordinator<InterruptibleChromeCoordinator>*)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                  contextStyle:(SigninContextStyle)contextStyle
-                   accessPoint:(signin_metrics::AccessPoint)accessPoint
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint
     NS_DESIGNATED_INITIALIZER;
 
-- (SigninCoordinator<InterruptibleChromeCoordinator>*)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser NS_UNAVAILABLE;
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Registers preferences related to sign-in coordinator.
 + (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry;

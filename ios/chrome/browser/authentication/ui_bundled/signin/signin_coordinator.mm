@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 
+#import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_history_sync/signin_and_history_sync_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/stop_animated_chrome_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/two_screens_signin/two_screens_signin_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -33,11 +35,11 @@ using signin_metrics::PromoAction;
 
 @implementation SigninCoordinator
 
-- (SigninCoordinator<InterruptibleChromeCoordinator>*)
-    initWithBaseViewController:(UIViewController*)viewController
-                       browser:(Browser*)browser
-                  contextStyle:(SigninContextStyle)contextStyle
-                   accessPoint:(signin_metrics::AccessPoint)accessPoint {
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                              contextStyle:(SigninContextStyle)contextStyle
+                               accessPoint:
+                                   (signin_metrics::AccessPoint)accessPoint {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _contextStyle = contextStyle;
@@ -305,15 +307,12 @@ using signin_metrics::PromoAction;
 }
 
 - (void)dealloc {
-  // -[SigninCoordinator
-  // runCompletionWithSigninResult:completionIdentity:] has to be called
-  // by the subclass before the coordinator is deallocated.
-  DCHECK(!self.signinCompletion) << base::SysNSStringToUTF8([self description]);
-}
-
-#pragma mark - InterruptibleChromeCoordinator
-
-- (void)interruptAnimated:(BOOL)animated {
+  // Subclasses implementing `InterruptibleChromeCoordinator` must call
+  // -[SigninCoordinator runCompletionWithSigninResult:completionIdentity:]
+  // before the coordinator is deallocated.
+  DCHECK(![self conformsToProtocol:@protocol(InterruptibleChromeCoordinator)] ||
+         !self.signinCompletion)
+      << base::SysNSStringToUTF8([self description]);
 }
 
 #pragma mark - SigninCoordinator
@@ -325,19 +324,39 @@ using signin_metrics::PromoAction;
 }
 
 - (void)stop {
-  // If you are an user of a SigninCoordinator subclass:
-  // The sign-in view is still presented. You should not call `stop`, if you
-  // need to close the view. You need to call -[SigninCoordinator
+  // All classes inheriting SigninCoordinator are currently being migrated from
+  // InterruptibleChromeCoordinator. See crbug.com/c/381444097 for details. If
+  // you are an user of a SigninCoordinator<StopAnimatedChromeCoordinator>
+  // subclass, you can stop it by calling -stop or -stopAnimated. If you are an
+  // user of a SigninCoordinator<InterruptibleChromeCoordinator> subclass: The
+  // sign-in view is still presented. You should not call `stop`, if you need to
+  // close the view. You need to call -[SigninCoordinator
   // interruptWithAction:completion:].
-  // If you work on a SigninCoordinator subclass:
+  // If you work on a SigninCoordinator<InterruptibleChromeCoordinator>
+  // subclass:
   // -[SigninCoordinator
   // runCompletionWithSigninResult:completionIdentity:] has to be called
   // by the subclass before
   // -[SigninCoordinator stop] is called.
-  DCHECK(!self.signinCompletion);
+  if ([self conformsToProtocol:@protocol(StopAnimatedChromeCoordinator)]) {
+    SigninCoordinator<StopAnimatedChromeCoordinator>* stopAnimatedSelf =
+        base::apple::ObjCCast<SigninCoordinator<StopAnimatedChromeCoordinator>>(
+            self);
+    [stopAnimatedSelf stopAnimated:NO];
+  } else {
+    CHECK([self conformsToProtocol:@protocol(InterruptibleChromeCoordinator)]);
+    DCHECK(!self.signinCompletion);
+    [super stop];
+  }
 }
 
 #pragma mark - Protected
+
+// TODO(crbug.com/381444097): implements this protocol in the header file once
+// each class inheriting SigninCoordinator implements this protocol.
+- (void)stopAnimated:(BOOL)animated {
+  [super stop];
+}
 
 - (void)runCompletionWithSigninResult:(SigninCoordinatorResult)signinResult
                    completionIdentity:(id<SystemIdentity>)completionIdentity {
