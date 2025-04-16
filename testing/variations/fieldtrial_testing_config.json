@@ -25136,7 +25136,7 @@
             ]
         }
     ],
-    "UseLowQualityImageInterpolation": [
+    "UseLowQualityInterpolation": [
         {
             "platforms": [
                 "android"
@@ -25145,7 +25145,7 @@
                 {
                     "name": "Disabled",
                     "disable_features": [
-                        "UseLowQualityImageInterpolation"
+                        "UseLowQualityInterpolation"
                     ]
                 }
             ]
