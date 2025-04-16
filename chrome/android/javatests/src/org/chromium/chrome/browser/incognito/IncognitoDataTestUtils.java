@@ -30,8 +30,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.BrowserStartupController;
 
 import java.util.ArrayList;
@@ -58,7 +57,7 @@ public class IncognitoDataTestUtils {
         }
 
         public Tab launchUrl(
-                ChromeTabbedActivityTestRule chromeTabbedActivityRule,
+                FreshCtaTransitTestRule chromeTabbedActivityRule,
                 CustomTabActivityTestRule customTabActivityTestRule,
                 String url) {
             if (cct) {
@@ -172,11 +171,11 @@ public class IncognitoDataTestUtils {
     }
 
     private static Tab launchUrlInTab(
-            ChromeTabbedActivityTestRule testRule, String url, boolean incognito) {
+            FreshCtaTransitTestRule testRule, String url, boolean incognito) {
         // This helps to bring back the "existing" chrome tabbed activity to foreground
         // in case the custom tab activity was launched before.
         if (!isChromeTabbedActivityRunningOnTop()) {
-            testRule.startMainActivityOnBlankPage();
+            testRule.startOnBlankPage();
         }
 
         Tab tab = testRule.loadUrlInNewTab(url, incognito);
@@ -208,7 +207,7 @@ public class IncognitoDataTestUtils {
         return tab;
     }
 
-    public static void closeTabs(ChromeActivityTestRule testRule) {
+    public static void closeTabs(FreshCtaTransitTestRule testRule) {
         ChromeActivity activity = testRule.getActivity();
         if (activity == null) return;
         activity.getTabModelSelector()

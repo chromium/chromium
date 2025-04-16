@@ -41,7 +41,8 @@ import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.TabStateInfo;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.io.File;
@@ -52,7 +53,8 @@ import java.util.concurrent.Callable;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNotificationServiceTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule
     public IncognitoCustomTabActivityTestRule mCustomTabActivityTestRule =
@@ -80,7 +82,7 @@ public class IncognitoNotificationServiceTest {
     }
 
     private void launchIncognitoTabAndEnsureNotificationDisplayed() {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         createTabOnUiThread();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -111,7 +113,7 @@ public class IncognitoNotificationServiceTest {
     @MediumTest
     public void testSingleRunningChromeTabbedActivity()
             throws InterruptedException, CanceledException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         createTabOnUiThread();
         createTabOnUiThread();
