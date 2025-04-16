@@ -26,8 +26,6 @@ source_set("change_profile") {
     "change_profile_send_tab.mm",
     "change_profile_settings_continuation.h",
     "change_profile_settings_continuation.mm",
-    "change_profile_share_tab_group_continuation.h",
-    "change_profile_share_tab_group_continuation.mm",
     "change_profile_signout_continuation.h",
     "change_profile_signout_continuation.mm",
     "change_profile_voice_search_continuation.h",
