@@ -58,6 +58,8 @@ class ExclusiveAccessPermissionPrompt
 
   std::unique_ptr<views::Widget> content_scrim_widget_;
   views::ViewTracker prompt_view_tracker_;
+  std::optional<content::WebContents::ScopedIgnoreInputEvents>
+      scoped_ignore_input_events_;
 
   const raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 

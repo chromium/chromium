@@ -55,6 +55,7 @@ bool ExclusiveAccessPermissionPrompt::ShowPrompt() {
       new ExclusiveAccessPermissionPromptView(browser(),
                                               GetPermissionPromptDelegate());
   prompt_view_tracker_.SetView(prompt_view);
+  scoped_ignore_input_events_ = web_contents()->IgnoreInputEvents(std::nullopt);
   content_scrim_widget_ =
       EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
           weak_factory_.GetWeakPtr(),
@@ -84,5 +85,6 @@ void ExclusiveAccessPermissionPrompt::ClosePrompt() {
 
   if (content_scrim_widget_) {
     content_scrim_widget_->Close();
+    scoped_ignore_input_events_.reset();
   }
 }
