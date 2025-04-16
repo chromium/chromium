@@ -309,11 +309,6 @@ class AutofillProfile : public FormGroup {
   // Returns true if all calls yielded true.
   bool FinalizeAfterImport();
 
-  // Returns true if the profile contains any structured data. This can be any
-  // name type but the full name, or for addresses, the street name or house
-  // number.
-  bool HasStructuredData() const;
-
   // Returns a constant reference to the |name_| field.
   const NameInfo& GetNameInfo() const { return name_; }
 

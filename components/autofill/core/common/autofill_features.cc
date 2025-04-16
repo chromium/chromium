@@ -608,12 +608,6 @@ BASE_FEATURE(kAutofillStructuredFieldsDisableAddressLines,
              "AutofillStructuredFieldsDisableAddressLines",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows silent profile updates even when the profile import requirements are
-// not met.
-BASE_FEATURE(kAutofillSilentProfileUpdateForInsufficientImport,
-             "AutofillSilentProfileUpdateForInsufficientImport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls an ablation study in which autofill for addresses and payment data
 // can be suppressed.
 BASE_FEATURE(kAutofillEnableAblationStudy,

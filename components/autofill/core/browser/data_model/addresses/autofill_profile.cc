@@ -75,15 +75,6 @@ namespace {
 
 constexpr char kAddressComponentsDefaultLocality[] = "en-US";
 
-// Stores the data types that are relevant for the structured address/name.
-constexpr DenseSet kStructuredDataTypes = {NAME_FIRST,
-                                           NAME_MIDDLE,
-                                           NAME_LAST,
-                                           NAME_LAST_FIRST,
-                                           NAME_LAST_SECOND,
-                                           ADDRESS_HOME_STREET_NAME,
-                                           ADDRESS_HOME_HOUSE_NUMBER};
-
 // Like |AutofillType::GetStorableType()|, but also returns |NAME_FULL| for
 // first, middle, and last name field types, and groups phone number types
 // similarly.
@@ -1248,12 +1239,6 @@ bool AutofillProfile::FinalizeAfterImport() {
   success &= name_.FinalizeAfterImport();
   success &= address_.FinalizeAfterImport();
   return success;
-}
-
-bool AutofillProfile::HasStructuredData() const {
-  return std::ranges::any_of(kStructuredDataTypes, [this](FieldType type) {
-    return !this->GetRawInfo(type).empty();
-  });
 }
 
 AutofillProfile AutofillProfile::ConvertToAccountProfile() const {

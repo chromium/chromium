@@ -762,15 +762,7 @@ bool FormDataImporter::ExtractAddressProfileFromSection(
       all_fulfilled ? AddressImportRequirement::kOverallRequirementFulfilled
                     : AddressImportRequirement::kOverallRequirementViolated);
 
-  bool candidate_has_structured_data =
-      base::FeatureList::IsEnabled(
-          features::kAutofillSilentProfileUpdateForInsufficientImport) &&
-      candidate_profile.HasStructuredData();
-
-  // If the profile does not fulfill import requirements but contains the
-  // structured address or name information, it is eligible for silently
-  // updating the existing profiles.
-  if (!finalized_import || (!all_fulfilled && !candidate_has_structured_data)) {
+  if (!finalized_import || !all_fulfilled) {
     return false;
   }
 
