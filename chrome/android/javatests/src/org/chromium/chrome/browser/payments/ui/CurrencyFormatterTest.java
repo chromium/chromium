@@ -34,7 +34,7 @@ public class CurrencyFormatterTest {
     /** Unicode non-breaking space. */
     private static final String NBSP = "\u00A0";
 
-    private static final String NarrowNBSP = "\u202F";
+    private static final String NARROW_NBSP = "\u202F";
 
     private static String longStringOfLength(int len) {
         StringBuilder currency = new StringBuilder();
@@ -131,7 +131,7 @@ public class CurrencyFormatterTest {
                             + expectedAmountFormatting
                             + "\"",
                     expectedAmountFormatting,
-                    formattedAmount.replace(NarrowNBSP, " "));
+                    formattedAmount.replace(NARROW_NBSP, " "));
             Assert.assertEquals(
                     "\""
                             + currency

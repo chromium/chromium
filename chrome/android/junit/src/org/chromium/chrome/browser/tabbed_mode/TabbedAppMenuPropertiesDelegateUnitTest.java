@@ -121,7 +121,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private static final boolean NEW_NO = false;
     private static final boolean MOVE_YES = true; // show 'move to other window'
     private static final boolean MOVE_NO = false;
-    private static final Boolean X____ = null; // do not care
+    private static final Boolean ANY = null; // do not care
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
@@ -290,25 +290,25 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         // Single window
         //
         // No API support (i.e. cannot enter multi-window through menu), do not show 'New Window'
-        testWindowMenu(WIN_S, X____, X____, API_NO, X____, NEW_NO, X____);
+        testWindowMenu(WIN_S, ANY, ANY, API_NO, ANY, NEW_NO, ANY);
 
         // No 'New Window' on phone.
-        testWindowMenu(WIN_S, INST_S, PHONE, X____, MOVE_OTHER_NO, NEW_NO, MOVE_NO);
+        testWindowMenu(WIN_S, INST_S, PHONE, ANY, MOVE_OTHER_NO, NEW_NO, MOVE_NO);
 
         // Show 'New Window' only on tablet and API is supported.
-        testWindowMenu(WIN_S, INST_S, TABLET, API_YES, X____, NEW_YES, MOVE_NO);
+        testWindowMenu(WIN_S, INST_S, TABLET, API_YES, ANY, NEW_YES, MOVE_NO);
 
         //
         // Multi-window
         //
         // Move to other window supported, show 'Move to other window'
-        testWindowMenu(WIN_M, INST_M, X____, X____, MOVE_OTHER_YES, X____, MOVE_YES);
+        testWindowMenu(WIN_M, INST_M, ANY, ANY, MOVE_OTHER_YES, ANY, MOVE_YES);
 
         // Move to other window not supported, hide 'Move to other window'
-        testWindowMenu(WIN_M, INST_M, X____, X____, MOVE_OTHER_NO, X____, MOVE_NO);
+        testWindowMenu(WIN_M, INST_M, ANY, ANY, MOVE_OTHER_NO, ANY, MOVE_NO);
 
         // Single instance -> Show 'New window'
-        testWindowMenu(WIN_M, INST_S, X____, X____, X____, NEW_YES, MOVE_NO);
+        testWindowMenu(WIN_M, INST_S, ANY, ANY, ANY, NEW_YES, MOVE_NO);
 
         assertTestedAllCombinations();
     }

@@ -39,7 +39,7 @@ import java.util.Set;
  * the {@link TileGroup} should not know about.
  */
 public class TileGroupDelegateImpl implements TileGroup.Delegate {
-    private static final Set<Integer> MVTilesClickForUserAction =
+    private static final Set<Integer> sMvtClickForUserAction =
             new HashSet<>(
                     Arrays.asList(
                             WindowOpenDisposition.CURRENT_TAB,
@@ -229,7 +229,7 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         if (windowDisposition != WindowOpenDisposition.NEW_WINDOW) {
             BrowserUiUtils.recordModuleClickHistogram(ModuleTypeOnStartAndNtp.MOST_VISITED_TILES);
         }
-        if (MVTilesClickForUserAction.contains(windowDisposition)) {
+        if (sMvtClickForUserAction.contains(windowDisposition)) {
             RecordUserAction.record("Suggestions.Tile.Tapped.NewTabPage");
         }
     }

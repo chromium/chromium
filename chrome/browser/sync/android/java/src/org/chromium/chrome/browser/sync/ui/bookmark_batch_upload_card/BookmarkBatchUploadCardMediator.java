@@ -232,7 +232,7 @@ class BookmarkBatchUploadCardMediator
 
         assumeNonNull(mLocalDataDescriptionsMap);
         mModel.set(
-                BookmarkBatchUploadCardProperties.On_CLICK_LISTENER,
+                BookmarkBatchUploadCardProperties.ON_CLICK_LISTENER,
                 v -> {
                     BatchUploadDialogCoordinator.show(
                             mContext, mLocalDataDescriptionsMap, mDialogManager, this);

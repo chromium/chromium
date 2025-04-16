@@ -31,7 +31,7 @@ class BookmarkBatchUploadCardBinder {
             Button button = (Button) view.findViewById(R.id.signin_settings_card_button);
             button.setText(model.get(BookmarkBatchUploadCardProperties.BUTTON_TEXT));
             button.setOnClickListener(
-                    model.get(BookmarkBatchUploadCardProperties.On_CLICK_LISTENER));
+                    model.get(BookmarkBatchUploadCardProperties.ON_CLICK_LISTENER));
         } else if (BookmarkBatchUploadCardProperties.ICON == propertyKey) {
             ImageView image = (ImageView) view.findViewById(R.id.signin_settings_card_icon);
             image.setImageDrawable(model.get(BookmarkBatchUploadCardProperties.ICON));
