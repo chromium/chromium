@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <array>
 
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
@@ -13,6 +12,8 @@
 
 #include <stddef.h>
 #include <string.h>
+
+#include <array>
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
