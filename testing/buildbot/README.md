@@ -138,8 +138,9 @@ test suites to the CQ builders is to:
    the test on the affected post-submit builders to determine the amount of
    regressions they're catching. Note: unless the new test is providing unique
    info/artifacts (e.g. stack traces, log files) that pre-existing tests lack,
-   exclude any regressions that _other_ tests also caught. We're only interested
-   in the regressions that these new tests catch alone.
+   exclude any regressions that _other_ tests on the CQ also caught. We're only
+   interested in the regressions that these new tests would catch alone in the
+   CQ.
 1. If the new tests aren't excessively flaky (use
    [this dashboard](http://shortn/_gP9pAC2IS3) to verify) and if they catch a
    sufficient number of regressions over that trial period, then they can be
