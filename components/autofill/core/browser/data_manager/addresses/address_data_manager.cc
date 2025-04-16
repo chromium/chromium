@@ -789,8 +789,13 @@ void AddressDataManager::LogStoredDataMetrics() const {
   autofill_metrics::LogStoredProfileMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileCountWithAlternativeName(profile_pointers);
-  autofill_metrics::LogLocalProfileSupersetMetrics(std::move(profile_pointers),
-                                                   app_locale_);
+  // TODO(crbug.com/357074792): Once the feature is launched, remove the
+  // code inside the if-statement, it won't be needed anymore.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDeduplicateAccountAddresses)) {
+    autofill_metrics::LogLocalProfileSupersetMetrics(
+        std::move(profile_pointers), app_locale_);
+  }
 }
 
 void AddressDataManager::RemoveProfileImpl(const std::string& guid,
