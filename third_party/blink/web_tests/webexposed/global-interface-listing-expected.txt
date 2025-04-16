@@ -12485,7 +12485,6 @@ interface XRRigidTransform
 interface XRSession : EventTarget
     attribute @@toStringTag
     getter depthDataFormat
-    getter depthType
     getter depthUsage
     getter domOverlayState
     getter enabledFeatures

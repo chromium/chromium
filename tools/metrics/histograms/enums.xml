@@ -8953,7 +8953,6 @@ from previous Chrome versions.
   <int value="-2047071651" label="NearbySharing:enabled"/>
   <int value="-2046434739" label="enable-unsafe-webgpu-service"/>
   <int value="-2044939529" label="CrostiniResetLxdDb:disabled"/>
-  <int value="-2044917076" label="WebXRDepthPerformance:enabled"/>
   <int value="-2044252895"
       label="QuickActionSearchWidgetAndroidDinoVariant:disabled"/>
   <int value="-2043440755"
@@ -14947,7 +14946,6 @@ from previous Chrome versions.
   <int value="266322815" label="ChromeModernDesign:disabled"/>
   <int value="266702296" label="disable-plugin-power-saver"/>
   <int value="266787297" label="CreateShortcutIgnoresManifest:disabled"/>
-  <int value="267252476" label="WebXRDepthPerformance:disabled"/>
   <int value="267313220" label="ScreenSaverPreview:disabled"/>
   <int value="267332914" label="AvoidUnnecessaryBeforeUnloadCheck:disabled"/>
   <int value="267706621" label="WallpaperPerDesk:disabled"/>

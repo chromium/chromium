@@ -50,11 +50,9 @@ ArCore::InitializeResult::~InitializeResult() = default;
 
 ArCore::DepthSensingConfiguration::DepthSensingConfiguration(
     std::vector<device::mojom::XRDepthUsage> depth_usage_preference,
-    std::vector<device::mojom::XRDepthDataFormat> depth_data_format_preference,
-    std::vector<device::mojom::XRDepthType> depth_type_request)
+    std::vector<device::mojom::XRDepthDataFormat> depth_data_format_preference)
     : depth_usage_preference(depth_usage_preference),
-      depth_data_format_preference(depth_data_format_preference),
-      depth_type_request(depth_type_request) {}
+      depth_data_format_preference(depth_data_format_preference) {}
 
 ArCore::DepthSensingConfiguration::DepthSensingConfiguration(
     DepthSensingConfiguration&& other) = default;

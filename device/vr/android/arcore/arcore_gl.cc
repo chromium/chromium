@@ -214,8 +214,7 @@ void ArCoreGl::Initialize(
   if (depth_options) {
     depth_sensing_config = ArCore::DepthSensingConfiguration(
         depth_options->usage_preferences,
-        depth_options->data_format_preferences,
-        depth_options->depth_type_request);
+        depth_options->data_format_preferences);
   }
 
   device::DomOverlaySetup dom_setup = device::DomOverlaySetup::kNone;

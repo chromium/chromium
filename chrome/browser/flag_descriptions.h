@@ -2472,9 +2472,6 @@ extern const char kWebXrProjectionLayersDescription[];
 extern const char kWebXrWebGpuBindingName[];
 extern const char kWebXrWebGpuBindingDescription[];
 
-extern const char kWebXRDepthPerformanceName[];
-extern const char kWebXRDepthPerformanceDescription[];
-
 extern const char kWebXrIncubationsName[];
 extern const char kWebXrIncubationsDescription[];
 

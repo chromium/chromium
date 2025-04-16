@@ -18,7 +18,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_data_format.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_usage.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_environment_blend_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_score.h"
@@ -194,7 +193,6 @@ class XRSession final : public EventTarget,
   std::optional<V8XRDepthUsage> depthUsage(ExceptionState& exception_state);
   std::optional<V8XRDepthDataFormat> depthDataFormat(
       ExceptionState& exception_state);
-  std::optional<V8XRDepthType> depthType(ExceptionState& exception_state);
 
   ScriptPromise<IDLUndefined> updateTargetFrameRate(float rate,
                                                     ExceptionState&);
@@ -522,7 +520,6 @@ class XRSession final : public EventTarget,
   device::mojom::blink::XRSessionDeviceConfigPtr device_config_;
   V8XRDepthUsage::Enum depth_usage_;
   V8XRDepthDataFormat::Enum depth_data_format_;
-  std::optional<V8XRDepthType::Enum> depth_type_;
 
   Member<XRLightProbe> world_light_probe_;
   HeapVector<Member<XRRenderStateInit>> pending_render_state_;

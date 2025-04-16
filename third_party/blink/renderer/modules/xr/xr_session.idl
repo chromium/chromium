@@ -91,6 +91,4 @@ enum XRReflectionFormat {
   readonly attribute XRDepthUsage? depthUsage;
   [RaisesException]
   readonly attribute XRDepthDataFormat? depthDataFormat;
-  [RuntimeEnabled=WebXRDepthPerformance, RaisesException]
-  readonly attribute XRDepthType? depthType;
 };
