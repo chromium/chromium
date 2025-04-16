@@ -279,9 +279,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                              const gfx::Rect& src_rect,
                              SourceDrawingBuffer);
 
-  std::optional<gpu::SyncToken> CopyToPlatformMailbox(
+  std::optional<gpu::SyncToken> CopyToPlatformSharedImage(
       gpu::raster::RasterInterface*,
-      gpu::Mailbox dst_mailbox,
+      const scoped_refptr<gpu::ClientSharedImage>& dst_shared_image,
+      const gpu::SyncToken& dst_sync_token,
       const gfx::Point& dst_texture_offset,
       const gfx::Rect& src_sub_rectangle,
       SourceDrawingBuffer src_buffer);

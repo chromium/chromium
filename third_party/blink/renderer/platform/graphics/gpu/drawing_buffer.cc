@@ -1141,9 +1141,10 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
       .has_value();
 }
 
-std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformMailbox(
+std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformSharedImage(
     gpu::raster::RasterInterface* dst_raster_interface,
-    gpu::Mailbox dst_mailbox,
+    const scoped_refptr<gpu::ClientSharedImage>& dst_shared_image,
+    const gpu::SyncToken& dst_sync_token,
     const gfx::Point& dst_texture_offset,
     const gfx::Rect& src_sub_rectangle,
     SourceDrawingBuffer src_buffer) {
@@ -1151,18 +1152,24 @@ std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformMailbox(
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
           const gpu::SyncToken& produce_sync_token,
           SkAlphaType src_alpha_type) -> std::optional<gpu::SyncToken> {
-    std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+    std::unique_ptr<gpu::RasterScopedAccess> dst_access =
+        dst_shared_image->BeginRasterAccess(dst_raster_interface,
+                                            dst_sync_token,
+                                            /*readonly=*/false);
+    std::unique_ptr<gpu::RasterScopedAccess> src_access =
         src_shared_image->BeginRasterAccess(dst_raster_interface,
                                             produce_sync_token,
                                             /*readonly=*/true);
 
     dst_raster_interface->CopySharedImage(
-        src_shared_image->mailbox(), dst_mailbox, dst_texture_offset.x(),
-        dst_texture_offset.y(), src_sub_rectangle.x(), src_sub_rectangle.y(),
-        src_sub_rectangle.width(), src_sub_rectangle.height());
+        src_shared_image->mailbox(), dst_shared_image->mailbox(),
+        dst_texture_offset.x(), dst_texture_offset.y(), src_sub_rectangle.x(),
+        src_sub_rectangle.y(), src_sub_rectangle.width(),
+        src_sub_rectangle.height());
 
     gpu::SyncToken sync_token =
-        gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
+        gpu::RasterScopedAccess::EndAccess(std::move(src_access));
+    sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_access));
     return sync_token;
   };
 

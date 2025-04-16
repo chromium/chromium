@@ -1962,8 +1962,10 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     }
     gpu::raster::RasterInterface* raster_interface =
         shared_context_wrapper->ContextProvider().RasterInterface();
+    gpu::SyncToken sync_token;
     auto client_si =
-        resource_provider->GetBackingClientSharedImageForOverwrite();
+        resource_provider->GetBackingClientSharedImageForExternalWrite(
+            &sync_token, gpu::SharedImageUsageSet());
     if (!client_si) {
       return false;
     }
@@ -1972,11 +1974,15 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     // CopyToPlatformTexture is done correctly. See crbug.com/794706.
     raster_interface->Flush();
 
-    return GetDrawingBuffer()
-        ->CopyToPlatformMailbox(
-            raster_interface, client_si->mailbox(), gfx::Point(0, 0),
-            gfx::Rect(drawing_buffer_->Size()), source_buffer)
-        .has_value();
+    std::optional<gpu::SyncToken> external_sync_token =
+        GetDrawingBuffer()->CopyToPlatformSharedImage(
+            raster_interface, client_si, sync_token, gfx::Point(0, 0),
+            gfx::Rect(drawing_buffer_->Size()), source_buffer);
+
+    if (external_sync_token) {
+      resource_provider->EndExternalWrite(external_sync_token.value());
+    }
+    return external_sync_token.has_value();
   }
 
   // As the resource provider is not accelerated, we don't need an accelerated
