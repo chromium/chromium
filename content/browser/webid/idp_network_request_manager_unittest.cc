@@ -681,6 +681,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountLabelsOldSyntax) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
   // New syntax should be ignored with the flag disabled.
   const auto* test_accounts_json = R"({
   "accounts" : [
@@ -1293,7 +1296,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingIconReltivePath) {
 TEST_F(IdpNetworkRequestManagerTest,
        ParseConfigSupportsOtherAccountActiveMode) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
+  list.InitAndDisableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
 
   const char test_json[] = R"({
   "modes": {
@@ -1317,7 +1320,7 @@ TEST_F(IdpNetworkRequestManagerTest,
 TEST_F(IdpNetworkRequestManagerTest,
        ParseConfigSupportsOtherAccountPassiveMode) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmUseOtherAccount);
+  list.InitAndDisableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
 
   // The toplevel field should be ignored with the flag disabled.
   const char test_json[] = R"({
@@ -1502,6 +1505,9 @@ TEST_F(IdpNetworkRequestManagerTest,
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigRequestedLabelOldSyntax) {
+  base::test::ScopedFeatureList list;
+  list.InitAndDisableFeature(features::kFedCmUseOtherAccountAndLabelsNewSyntax);
+
   // New syntax should be ignored with flag disabled.
   const char test_json[] = R"({
     "account_label": "l1",
