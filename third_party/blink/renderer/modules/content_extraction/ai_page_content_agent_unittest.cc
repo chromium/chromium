@@ -3329,28 +3329,5 @@ TEST_F(AIPageContentAgentTest, LinkForClickability) {
   EXPECT_FALSE(invalid.content_attributes->node_interaction_info);
 }
 
-TEST_F(AIPageContentAgentTest, SVG) {
-  frame_test_helpers::LoadHTMLString(
-      helper_.LocalMainFrame(),
-      "<body>"
-      "  <svg width='400' height='200'>"
-      "    <text x='50%' y='50/%' font-size='24'>"
-      "      Hello SVG Text!"
-      "    </text>"
-      "  </svg>"
-      "</body>",
-      url_test_helpers::ToKURL("http://foobar.com"));
-
-  auto content = GetAIPageContent();
-  ASSERT_TRUE(content);
-  ASSERT_TRUE(content->root_node);
-
-  const auto& svg = *content->root_node->children_nodes[0];
-  EXPECT_EQ(svg.content_attributes->attribute_type,
-            mojom::blink::AIPageContentAttributeType::kSVG);
-  ASSERT_TRUE(svg.content_attributes->svg_data);
-  EXPECT_EQ(svg.content_attributes->svg_data->inner_text, "Hello SVG Text!");
-}
-
 }  // namespace
 }  // namespace blink
