@@ -178,7 +178,7 @@ using chrome_test_util::SecondarySignInButton;
   // Sign-out.
   [SigninEarlGrey signOut];
 
-  // Verify that the acocunt model is not shown.
+  // Verify that the account model is not shown.
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityLabel(@"Mobile bookmarks")]
       assertWithMatcher:grey_notVisible()];
