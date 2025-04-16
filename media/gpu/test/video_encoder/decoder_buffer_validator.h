@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
@@ -65,7 +66,9 @@ class DecoderBufferValidator : public BitstreamProcessor {
   // The number of temporal layers.
   const size_t num_temporal_layers_;
 
-  std::vector<int> qp_values_[kMaxSpatialLayers][kMaxTemporalLayers];
+  std::array<std::array<std::vector<int>, kMaxTemporalLayers>,
+             kMaxSpatialLayers>
+      qp_values_;
 
  private:
   // The number of detected errors by Validate().

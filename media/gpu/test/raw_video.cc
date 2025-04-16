@@ -9,6 +9,8 @@
 
 #include "media/gpu/test/raw_video.h"
 
+#include <array>
+
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
@@ -286,7 +288,7 @@ class RawVideo::VP9Decoder {
   // frame_index -> file index
   static constexpr size_t kNumCachedFrames = 30;
   size_t cached_frame_indices_[kNumCachedFrames];
-  std::vector<uint8_t> cached_frames_[kNumCachedFrames];
+  std::array<std::vector<uint8_t>, kNumCachedFrames> cached_frames_;
 
   SEQUENCE_CHECKER(decoder_sequence_);
 };

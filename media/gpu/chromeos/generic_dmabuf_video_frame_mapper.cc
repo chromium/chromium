@@ -11,10 +11,12 @@
 
 #include <sys/mman.h>
 
+#include <array>
 #include <utility>
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "media/gpu/macros.h"
@@ -47,7 +49,7 @@ void MunmapBuffers(const std::vector<std::pair<uint8_t*, size_t>>& chunks,
 // |src_video_frame| is the video frame that owns dmabufs to the mapped planes.
 scoped_refptr<VideoFrame> CreateMappedVideoFrame(
     scoped_refptr<const FrameResource> src_video_frame,
-    uint8_t* plane_addrs[VideoFrame::kMaxPlanes],
+    base::span<uint8_t*, VideoFrame::kMaxPlanes> plane_addrs,
     const std::vector<std::pair<uint8_t*, size_t>>& chunks) {
   scoped_refptr<VideoFrame> video_frame;
 
@@ -140,7 +142,7 @@ scoped_refptr<VideoFrame> GenericDmaBufVideoFrameMapper::MapFrame(
   // Always prepare VideoFrame::kMaxPlanes addresses for planes initialized by
   // nullptr. This enables to specify nullptr to redundant plane, for pixel
   // format whose number of planes are less than VideoFrame::kMaxPlanes.
-  uint8_t* plane_addrs[VideoFrame::kMaxPlanes] = {};
+  std::array<uint8_t*, VideoFrame::kMaxPlanes> plane_addrs = {};
   const size_t num_planes = planes.size();
   std::vector<std::pair<uint8_t*, size_t>> chunks;
   DCHECK_EQ(video_frame->NumDmabufFds(), num_planes);

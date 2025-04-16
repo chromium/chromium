@@ -7,6 +7,7 @@
 
 #include <limits.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -128,8 +129,8 @@ class DecoderListener {
   // NotifyEvent() will store events here for WaitForEvent() to process.
   base::queue<Event> video_player_events_ GUARDED_BY(event_lock_);
 
-  size_t video_player_event_counts_[static_cast<size_t>(
-      Event::kNumEvents)] GUARDED_BY(event_lock_){};
+  std::array<size_t, static_cast<size_t>(Event::kNumEvents)>
+      video_player_event_counts_ = {};
 
   // Set by PlayUntil() to automatically pause decoding once this event occurs.
   std::optional<Event> play_until_;

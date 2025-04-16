@@ -73,7 +73,8 @@ struct FrameConfig {
 
  private:
   const size_t layer_index_;
-  const FrameFlags buffer_flags_[kMaxNumUsedRefFramesEachSpatialLayer];
+  const std::array<FrameFlags, kMaxNumUsedRefFramesEachSpatialLayer>
+      buffer_flags_;
   const bool temporal_up_switch_;
 };
 
