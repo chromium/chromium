@@ -204,12 +204,8 @@ shell_integration::DefaultWebClientState GetIsDefaultWebClient(
 // desktop file is google-chrome.desktop.
 std::string GetDesktopBaseName(const std::string& desktop_file_name) {
   static const char kDesktopExtension[] = ".desktop";
-  if (base::EndsWith(desktop_file_name, kDesktopExtension,
-                     base::CompareCase::SENSITIVE)) {
-    return desktop_file_name.substr(
-        0, desktop_file_name.length() - strlen(kDesktopExtension));
-  }
-  return desktop_file_name;
+  auto remainder = base::RemoveSuffix(desktop_file_name, kDesktopExtension);
+  return remainder ? std::string(*remainder) : desktop_file_name;
 }
 
 namespace {
@@ -398,8 +394,10 @@ std::string GetWMClassFromAppName(std::string app_name) {
 
 std::string GetXdgAppIdForWebApp(std::string app_name,
                                  const base::FilePath& profile_path) {
-  if (base::StartsWith(app_name, web_app::kCrxAppPrefix))
-    app_name = app_name.substr(strlen(web_app::kCrxAppPrefix));
+  auto remainder = base::RemovePrefix(app_name, web_app::kCrxAppPrefix);
+  if (remainder) {
+    app_name = std::string(*remainder);
+  }
   return GetDesktopBaseName(
       web_app::GetAppDesktopShortcutFilename(profile_path, app_name)
           .AsUTF8Unsafe());
