@@ -36,6 +36,11 @@ import java.util.Optional;
 public class AutofillImageFetcher {
     private static final long REFETCH_DELAY_MS = 5000;
     private static final int MAX_FETCH_ATTEMPTS = 2;
+    // Logs the overall success rate of fetching credit card art images. For a given credit card art
+    // URL, logs "true" if image was fetched, "false" if the image was not fetched after {@link
+    // #MAX_FETCH_ATTEMPTS} attempts.
+    private static final String CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM =
+            "Autofill.ImageFetcher.CreditCardArt.Result";
 
     private final Map<String, Integer> mFetchAttemptCounter = new HashMap<>();
     private final Map<String, Bitmap> mImagesCache = new HashMap<>();
@@ -173,6 +178,9 @@ public class AutofillImageFetcher {
                         url, cardIconSpecs.getWidth(), cardIconSpecs.getHeight());
 
         if (bitmap != null) {
+            RecordHistogram.recordBooleanHistogram(
+                    CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM, /* sample= */ true);
+
             // When adding new sizes for card icons, check if the corner radius needs to be added as
             // a suffix for caching (crbug.com/1431283).
             mImagesCache.put(
@@ -184,6 +192,8 @@ public class AutofillImageFetcher {
 
         // Image fetching failed, and max retry attempts reached.
         if (mFetchAttemptCounter.getOrDefault(urlToCache.getSpec(), 0) >= MAX_FETCH_ATTEMPTS) {
+            RecordHistogram.recordBooleanHistogram(
+                    CREDIT_CARD_ART_OVERALL_SUCCESS_HISTOGRAM, /* sample= */ false);
             return;
         }
 

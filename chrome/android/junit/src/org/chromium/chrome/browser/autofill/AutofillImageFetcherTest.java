@@ -114,11 +114,16 @@ public class AutofillImageFetcherTest {
         Bitmap treatedImageLarge =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_IMAGE, cardIconSpecsLarge, true);
-        // Success histograms should be logged twice (once for each size).
+        // Both generic and credit card art image fetcher histograms should log success twice (once
+        // for each size).
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 2)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.CreditCardArt.Result",
+                                /* value= */ true,
+                                /* times= */ 2)
                         .build();
 
         mAutofillImageFetcher.prefetchCardArtImages(
@@ -177,11 +182,16 @@ public class AutofillImageFetcherTest {
                         })
                 .when(mMockImageFetcher)
                 .fetchImage(any(Params.class), any(Callback.class));
-        // Failure histogram should be logged twice since fetching is attempted again.
+        // Both generic and credit card art image fetcher histograms should log failure. Since
+        // fetching is attempted again, the generic histogram should log failure twice.
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 2)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.CreditCardArt.Result",
+                                /* value= */ false,
+                                /* times= */ 1)
                         .build();
 
         mAutofillImageFetcher.prefetchCardArtImages(
@@ -227,14 +237,19 @@ public class AutofillImageFetcherTest {
         Bitmap treatedImage =
                 AutofillUiUtils.resizeAndAddRoundedCornersAndGreyBorder(
                         TEST_IMAGE, cardIconSpecs, true);
-        // Failure and success histogram should be logged once each since fetching is successful on
-        // retry.
+        // The credit card art image fetcher histogram should log success. Since image fetching
+        // succeeded after initially failing, the generic histogram should log both failure and
+        // success.
         HistogramWatcher expectedHistogram =
                 HistogramWatcher.newBuilder()
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ false, /* times= */ 1)
                         .expectBooleanRecordTimes(
                                 "Autofill.ImageFetcher.Result", /* value= */ true, /* times= */ 1)
+                        .expectBooleanRecordTimes(
+                                "Autofill.ImageFetcher.CreditCardArt.Result",
+                                /* value= */ true,
+                                /* times= */ 1)
                         .build();
 
         mAutofillImageFetcher.prefetchCardArtImages(

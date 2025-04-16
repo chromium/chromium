@@ -3548,6 +3548,20 @@ Called by update_autofill_enums.py. This is a manual comment.-->
       variants="Autofill.PaymentsSigninState"/>
 </histogram>
 
+<histogram name="Autofill.ImageFetcher.CreditCardArt.Result"
+    enum="BooleanSuccess" expires_after="2025-07-01">
+  <owner>siyua@chromium.org</owner>
+  <owner>vishwasuppoor@google.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the image fetching result for a credit card with card art. Logged
+    once for each credit card with card art either when the fetching was
+    successful or when a preset maximum number of fetching attempts were made.
+    Logs true if the image was fetched successfully, and false if the image
+    fetching was unsuccessful after a preset maximum number of attempts.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.ImageFetcher.RequestLatency" units="ms"
     expires_after="2025-07-01">
   <owner>vishwasuppoor@chromium.org</owner>
