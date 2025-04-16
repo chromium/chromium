@@ -446,9 +446,11 @@ class VideoResourceUpdater::FrameResource {
   }
 
   // Only called for a software resource.
-  base::span<uint8_t> pixels() {
+  SkPixmap pixmap() {
     CHECK(is_software());
-    return mapping_->GetMemoryForPlane(0);
+    return mapping_->GetSkPixmapForPlane(
+        /*plane_index=*/0,
+        SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(size())));
   }
 
   // Accessors for resource identifiers provided at construction time.
@@ -953,13 +955,8 @@ void VideoResourceUpdater::TransferRGBPixelsToPaintCanvas(
 
   CHECK(software_resource->is_software());
   DCHECK_EQ(software_resource->format(), viz::SinglePlaneFormat::kBGRA_8888);
-  // We know the format is RGBA_8888 or BGRA_8888 from check above.
-  auto info =
-      SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(software_resource->size()));
-
   SkBitmap sk_bitmap;
-  sk_bitmap.installPixels(info, software_resource->pixels().data(),
-                          info.minRowBytes());
+  sk_bitmap.installPixels(software_resource->pixmap());
   // This is software path, so |canvas| and |video_frame| are always
   // backed by software.
   cc::SkiaPaintCanvas canvas(sk_bitmap);
