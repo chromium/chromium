@@ -603,19 +603,19 @@ public class VideoCaptureCamera2 extends VideoCapture {
                         if (minExposureTime != 0 && maxExposureTime != 0) {
                             builder.setDouble(
                                             PhotoCapabilityDouble.MAX_EXPOSURE_TIME,
-                                            maxExposureTime / kNanosecondsPer100Microsecond)
+                                            maxExposureTime / NANOSECONDS_PER_100_MICROSECONDS)
                                     .setDouble(
                                             PhotoCapabilityDouble.MIN_EXPOSURE_TIME,
-                                            minExposureTime / kNanosecondsPer100Microsecond);
+                                            minExposureTime / NANOSECONDS_PER_100_MICROSECONDS);
                         }
                         // Smallest step by which exposure time can be changed. This value is not
                         // exposed by Android.
                         builder.setDouble(
                                         PhotoCapabilityDouble.STEP_EXPOSURE_TIME,
-                                        10000.0 / kNanosecondsPer100Microsecond)
+                                        10000.0 / NANOSECONDS_PER_100_MICROSECONDS)
                                 .setDouble(
                                         PhotoCapabilityDouble.CURRENT_EXPOSURE_TIME,
-                                        mLastExposureTimeNs / kNanosecondsPer100Microsecond);
+                                        mLastExposureTimeNs / NANOSECONDS_PER_100_MICROSECONDS);
                     }
                 }
             }
@@ -848,7 +848,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 // The web API (https://w3c.github.io/mediacapture-image/#exposure-time) provides
                 // exposureTime in 100 microsecond units.
                 mLastExposureTimeNs =
-                        (long) (mOptions.exposureTime * kNanosecondsPer100Microsecond);
+                        (long) (mOptions.exposureTime * NANOSECONDS_PER_100_MICROSECONDS);
             }
             if (mOptions.whiteBalanceMode != AndroidMeteringMode.NOT_SET) {
                 mWhiteBalanceMode = mOptions.whiteBalanceMode;
@@ -1061,8 +1061,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    private static final double kNanosecondsPerSecond = 1000000000;
-    private static final double kNanosecondsPer100Microsecond = 100000;
+    private static final double NANOSECONDS_PER_SECOND = 1000000000;
+    private static final double NANOSECONDS_PER_100_MICROSECONDS = 100000;
     private static final String TAG = "VideoCapture";
 
     private static final String[] AE_TARGET_FPS_RANGE_BUGGY_DEVICE_LIST = {
@@ -1676,7 +1676,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                         minFrameRate =
                                 (minFrameDurationInNanoseconds == 0)
                                         ? 0.0f
-                                        : (kNanosecondsPerSecond / minFrameDurationInNanoseconds);
+                                        : (NANOSECONDS_PER_SECOND / minFrameDurationInNanoseconds);
                     } else {
                         // TODO(mcasas): find out where to get the info from in this case.
                         // Hint: perhaps using SCALER_AVAILABLE_PROCESSED_MIN_DURATIONS.
