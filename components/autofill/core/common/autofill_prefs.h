@@ -69,6 +69,12 @@ inline constexpr char kAutofillPaymentCardBenefits[] =
 // Boolean that is true if Autofill is enabled and allowed to save profile data.
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 inline constexpr char kAutofillProfileEnabled[] = "autofill.profile_enabled";
+// To simplify the rollout of `kAutofillDeduplicateAccountAddresses`,
+// deduplication can be run a second time per milestone for users enrolled in
+// the experiment. This pref tracks whether deduplication was run a second time.
+// TODO(crbug.com/357074792): Remove after the rollout finished.
+inline constexpr char kAutofillRanExtraDeduplication[] =
+    "autofill.ran_extra_deduplication";
 // The opt-ins for Sync Transport features for each client.
 inline constexpr char kAutofillSyncTransportOptIn[] =
     "autofill.sync_transport_opt_ins";

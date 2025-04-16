@@ -38,7 +38,9 @@ class AddressDataCleanerTest : public testing::Test {
         data_cleaner_(test_adm_,
                       &sync_service_,
                       *prefs_,
-                      /*alternative_state_name_map_updater=*/nullptr) {}
+                      /*alternative_state_name_map_updater=*/nullptr) {
+    prefs_->SetBoolean(prefs::kAutofillRanExtraDeduplication, false);
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -46,6 +48,12 @@ class AddressDataCleanerTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   TestAddressDataManager test_adm_;
   AddressDataCleaner data_cleaner_;
+};
+
+class MockAddressDataCleaner : public AddressDataCleaner {
+ public:
+  using AddressDataCleaner::AddressDataCleaner;
+  MOCK_METHOD(void, ApplyDeduplicationRoutine, (), (override));
 };
 
 // Two profiles are considered equal for deduplication purposes if they compare
@@ -361,6 +369,46 @@ TEST_F(AddressDataCleanerTest, Deduplicate_kAccountMerge) {
   EXPECT_THAT(test_adm_.GetProfiles(),
               testing::UnorderedPointwise(IsEqualForDeduplicationPurposes(),
                                           {expected}));
+}
+
+TEST_F(AddressDataCleanerTest, DeduplicateOncePerMilestone) {
+  MockAddressDataCleaner data_cleaner(
+      test_adm_, /*sync_service=*/nullptr, *prefs_,
+      /*alternative_state_name_map_updater=*/nullptr);
+
+  // Deduplication should run once per milestone by default without the feature.
+  EXPECT_CALL(data_cleaner, ApplyDeduplicationRoutine);
+  data_cleaner.MaybeCleanupAddressData();
+
+  // Deduplication is not called again.
+  test_api(data_cleaner).ResetAreCleanupsPending();
+  EXPECT_CALL(data_cleaner, ApplyDeduplicationRoutine).Times(0);
+  data_cleaner.MaybeCleanupAddressData();
+}
+
+// Tests that when `kAutofillDeduplicateAccountAddresses` is enabled, the
+// deduplication routine is run a second time per milestone for enrolled users.
+TEST_F(AddressDataCleanerTest,
+       Deduplicate_SecondTimeAccountDeduplicationEnabled) {
+  // Enroll the user in the feature. This enables a second deduplication run,
+  // but not a third one.
+  base::test::ScopedFeatureList feature(
+      features::kAutofillDeduplicateAccountAddresses);
+  MockAddressDataCleaner data_cleaner(
+      test_adm_, /*sync_service=*/nullptr, *prefs_,
+      /*alternative_state_name_map_updater=*/nullptr);
+
+  // The first two calls to MaybeCleanupAddressData() should run deduplication.
+  EXPECT_CALL(data_cleaner, ApplyDeduplicationRoutine);
+  data_cleaner.MaybeCleanupAddressData();
+  test_api(data_cleaner).ResetAreCleanupsPending();
+  EXPECT_CALL(data_cleaner, ApplyDeduplicationRoutine);
+  data_cleaner.MaybeCleanupAddressData();
+  test_api(data_cleaner).ResetAreCleanupsPending();
+
+  // #3rd time, deduplication is not called again.
+  EXPECT_CALL(data_cleaner, ApplyDeduplicationRoutine).Times(0);
+  data_cleaner.MaybeCleanupAddressData();
 }
 
 TEST_F(AddressDataCleanerTest, DeleteDisusedAddresses) {

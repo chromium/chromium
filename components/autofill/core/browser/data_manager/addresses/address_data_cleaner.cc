@@ -276,6 +276,16 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
       CHROME_VERSION_MAJOR) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,
                               CHROME_VERSION_MAJOR);
+    // Since the milesone changed the extra deduplication can be run again.
+    pref_service_->ClearPref(
+        prefs::kAutofillRanExtraDeduplication);
+    ApplyDeduplicationRoutine();
+  } else if (base::FeatureList::IsEnabled(
+                 features::kAutofillDeduplicateAccountAddresses) &&
+             !pref_service_->GetBoolean(
+                 prefs::kAutofillRanExtraDeduplication)) {
+    pref_service_->SetBoolean(
+        prefs::kAutofillRanExtraDeduplication, true);
     ApplyDeduplicationRoutine();
   }
 
