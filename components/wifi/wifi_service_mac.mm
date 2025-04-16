@@ -354,22 +354,15 @@ void WiFiServiceMac::GetKeyFromSystem(const std::string& network_guid,
                                       std::string* error) {
   static const char kAirPortServiceName[] = "AirPort";
 
-  UInt32 password_length = 0;
-  void* password_data = nullptr;
   crypto::AppleKeychain keychain;
-  OSStatus status = keychain.FindGenericPassword(
-      strlen(kAirPortServiceName), kAirPortServiceName, network_guid.length(),
-      network_guid.c_str(), &password_length, &password_data, /*item=*/nullptr);
-  if (status != errSecSuccess) {
+  auto password =
+      keychain.FindGenericPassword(kAirPortServiceName, network_guid);
+  if (!password.has_value()) {
     *error = kErrorNotFound;
     return;
   }
 
-  if (password_data) {
-    *key_data = std::string(reinterpret_cast<char*>(password_data),
-                            password_length);
-    keychain.ItemFreeContent(password_data);
-  }
+  key_data->assign(base::as_string_view(*password));
 }
 
 void WiFiServiceMac::SetEventObservers(
