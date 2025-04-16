@@ -19,10 +19,6 @@ CrashKeyImplementation* g_crash_key_impl = nullptr;
 
 CrashKeyString* AllocateCrashKeyString(const char name[],
                                        CrashKeySize value_length) {
-  if (!g_crash_key_impl) {
-    return nullptr;
-  }
-
   // TODO(crbug.com/40850825): It would be great if the DCHECKs below
   // could also be enabled on Android, but debugging tryjob failures was a bit
   // difficult... :-/
@@ -40,6 +36,10 @@ CrashKeyString* AllocateCrashKeyString(const char name[],
   // `CrashKeyStringImpl`s.
   DCHECK_LT(name_piece.size(), 40u);
 #endif
+
+  if (!g_crash_key_impl) {
+    return nullptr;
+  }
 
   return g_crash_key_impl->Allocate(name, value_length);
 }
