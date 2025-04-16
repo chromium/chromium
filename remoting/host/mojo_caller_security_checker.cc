@@ -19,6 +19,7 @@
 #include "remoting/host/base/process_util.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "remoting/host/mac/constants_mac.h"
 #include "remoting/host/mac/trust_util.h"
 #endif
 
@@ -49,7 +50,7 @@ constexpr auto kAllowedCallerProgramNames =
 bool IsTrustedMojoEndpoint(
     const named_mojo_ipc_server::ConnectionInfo& caller) {
 #if BUILDFLAG(IS_MAC)
-  return IsProcessTrusted(caller.audit_token);
+  return IsProcessTrusted(caller.audit_token, {kBundleId});
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
   // TODO: yuweih - see if it's possible to move away from PID-based security

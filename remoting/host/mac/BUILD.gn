@@ -68,7 +68,6 @@ source_set("trust_util") {
   deps = [
     "//base",
     "//remoting/host:remoting_version",
-    "//remoting/host/mac:constants",
   ]
   frameworks = [
     "Security.framework",

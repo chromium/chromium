@@ -36,6 +36,8 @@
 #include <mach/kern_return.h>
 #include <unistd.h>
 
+#include <array>
+
 #include "remoting/host/mac/trust_util.h"
 #endif
 
@@ -82,6 +84,12 @@ constexpr auto kAllowedCallerPrograms =
         L"Google\\Chrome SxS\\Application\\chrome.exe",
         L"Google\\Chrome Dev\\Application\\chrome.exe",
     });
+
+#elif BUILDFLAG(IS_MAC)
+
+constexpr std::array<const std::string_view, 4> kAllowedIdentifiers{
+    "com.google.Chrome", "com.google.Chrome.beta", "com.google.Chrome.dev",
+    "com.google.Chrome.canary"};
 
 #endif
 
@@ -187,7 +195,7 @@ bool IsLaunchedByTrustedProcess() {
     return false;
   }
 
-  return IsProcessTrusted(audit_token);
+  return IsProcessTrusted(audit_token, kAllowedIdentifiers);
 #else  // Unsupported platform
   NOTIMPLEMENTED();
   return true;

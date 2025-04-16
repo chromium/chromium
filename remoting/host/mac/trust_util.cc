@@ -9,15 +9,22 @@
 #include "base/apple/osstatus_logging.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/mac/code_signature.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "remoting/host/mac/constants_mac.h"
 #include "remoting/host/version.h"
 
 namespace remoting {
 
-bool IsProcessTrusted(audit_token_t audit_token) {
+bool IsProcessTrusted(audit_token_t audit_token,
+                      base::span<const std::string_view> identifiers) {
 #if defined(OFFICIAL_BUILD)
+  // See:
+  // https://developer.apple.com/library/archive/documentation/Security/Conceptual/CodeSigningGuide/RequirementLang/RequirementLang.html
+  DCHECK_GT(identifiers.size(), 0u);
+  std::string identifier_requirements =
+      "identifier \"" + base::JoinString(identifiers, "\" or identifier \"") +
+      '"';
   std::string requirement_string = base::StringPrintf(
       // Certificate was issued by Apple
       "anchor apple generic and "
@@ -28,8 +35,8 @@ bool IsProcessTrusted(audit_token_t audit_token) {
       "certificate 1[field.1.2.840.113635.100.6.2.6] and "
       "certificate leaf[field.1.2.840.113635.100.6.1.13] and "
       // For Chrome Remote Desktop
-      "identifier \"%s\"",
-      MAC_TEAM_ID, kBundleId);
+      "(%s)",
+      MAC_TEAM_ID, identifier_requirements.data());
   base::apple::ScopedCFTypeRef<SecRequirementRef> requirement;
   OSStatus status = SecRequirementCreateWithString(
       base::SysUTF8ToCFStringRef(requirement_string).get(), kSecCSDefaultFlags,
