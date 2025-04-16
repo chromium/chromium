@@ -297,6 +297,12 @@ void FrameSinkManagerImpl::CreateCompositorFrameSink(
         frame_sink_id,
         /*is_root=*/false, std::move(render_input_router_config),
         /*create_input_receiver=*/false, gpu::SurfaceHandle());
+    // Set BeginFrameSource here since RenderInputRouter associated with
+    // |frame_sink_id| would've been created by now.
+    auto it = frame_sink_source_map_.find(frame_sink_id);
+    if (it != frame_sink_source_map_.end() && it->second.source) {
+      GetInputManager()->SetBeginFrameSource(frame_sink_id, it->second.source);
+    }
   }
 }
 
@@ -667,8 +673,12 @@ void FrameSinkManagerImpl::RecursivelyAttachBeginFrameSource(
   if (!mapping.source) {
     mapping.source = source;
     auto iter = support_map_.find(frame_sink_id);
-    if (iter != support_map_.end())
+    if (iter != support_map_.end()) {
       iter->second->SetBeginFrameSource(source);
+      if (GetInputManager()) {
+        GetInputManager()->SetBeginFrameSource(frame_sink_id, source);
+      }
+    }
   }
 
   // Copy the list of children because RecursivelyAttachBeginFrameSource() can
@@ -689,8 +699,12 @@ void FrameSinkManagerImpl::RecursivelyDetachBeginFrameSource(
   if (mapping.source == source) {
     mapping.source = nullptr;
     auto client_iter = support_map_.find(frame_sink_id);
-    if (client_iter != support_map_.end())
+    if (client_iter != support_map_.end()) {
       client_iter->second->SetBeginFrameSource(nullptr);
+      if (GetInputManager()) {
+        GetInputManager()->SetBeginFrameSource(frame_sink_id, nullptr);
+      }
+    }
   }
 
   // Delete the FrameSinkSourceMapping for `frame_sink_id` if both parent and

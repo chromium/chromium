@@ -25,7 +25,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "components/input/android/input_receiver_data.h"
 #include "components/viz/service/input/android_state_transfer_handler.h"
-#include "components/viz/service/input/fling_scheduler_android.h"
 #include "components/viz/service/input/render_input_router_support_android.h"
 #endif
 
@@ -58,7 +57,6 @@ class VIZ_SERVICE_EXPORT InputManager
     : public FrameSinkObserver,
       public input::RenderWidgetHostInputEventRouter::Delegate,
 #if BUILDFLAG(IS_ANDROID)
-      public FlingSchedulerAndroid::Delegate,
       public AndroidStateTransferHandlerClient,
 #endif
       public RenderInputRouterSupportBase::Delegate,
@@ -101,10 +99,6 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& frame_sink_id) override;
 
 #if BUILDFLAG(IS_ANDROID)
-  // FlingSchedulerAndroid::Delegate implementation.
-  BeginFrameSource* GetBeginFrameSourceForFrameSink(
-      const FrameSinkId& id) override;
-
   // AndroidStateTransferHandlerClient implementation.
   bool TransferInputBackToBrowser() override;
 #endif
@@ -156,6 +150,9 @@ class VIZ_SERVICE_EXPORT InputManager
       const FrameSinkId& id);
 
   bool ReturnInputBackToBrowser();
+
+  void SetBeginFrameSource(const FrameSinkId& frame_sink_id,
+                           BeginFrameSource* begin_frame_source);
 
  private:
   // Recreates RenderInputRouterSupport in cases where Viz receives a

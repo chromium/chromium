@@ -673,6 +673,11 @@ void RenderInputRouter::SetView(RenderWidgetHostViewInput* view) {
   view_input_ = view->GetInputWeakPtr();
 }
 
+void RenderInputRouter::SetBeginFrameSourceForFlingScheduler(
+    viz::BeginFrameSource* begin_frame_source) {
+  fling_scheduler_->SetBeginFrameSource(begin_frame_source);
+}
+
 void RenderInputRouter::ResetFrameWidgetInputInterfaces() {
   frame_widget_input_handler_.reset();
   input_target_client_.reset();

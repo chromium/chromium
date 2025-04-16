@@ -135,7 +135,7 @@ std::unique_ptr<input::FlingSchedulerBase> InputManager::MakeFlingScheduler(
     input::RenderInputRouter* rir,
     const FrameSinkId& frame_sink_id) {
 #if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<FlingSchedulerAndroid>(rir, this, frame_sink_id);
+  return std::make_unique<FlingSchedulerAndroid>(rir, frame_sink_id);
 #else
   NOTREACHED();
 #endif
@@ -553,6 +553,17 @@ bool InputManager::ReturnInputBackToBrowser() {
   NOTREACHED();
 }
 
+void InputManager::SetBeginFrameSource(const FrameSinkId& frame_sink_id,
+                                       BeginFrameSource* begin_frame_source) {
+  // Return early if |frame_sink_id| is associated with non layer tree frame
+  // sink.
+  auto itr = rir_map_.find(frame_sink_id);
+  if (itr == rir_map_.end()) {
+    return;
+  }
+  itr->second->SetBeginFrameSourceForFlingScheduler(begin_frame_source);
+}
+
 void InputManager::MaybeRecreateRootRenderInputRouterSupports(
     const FrameSinkId& root_frame_sink_id) {
   TRACE_EVENT_INSTANT(
@@ -733,11 +744,6 @@ void InputManager::CreateOrReuseAndroidInputReceiver(
       parent_input_surface, input_surface, std::move(browser_input_token),
       std::move(android_input_callback), std::move(callbacks),
       std::move(receiver), std::move(viz_input_token));
-}
-
-BeginFrameSource* InputManager::GetBeginFrameSourceForFrameSink(
-    const FrameSinkId& id) {
-  return frame_sink_manager_->GetFrameSinkForId(id)->begin_frame_source();
 }
 
 bool InputManager::TransferInputBackToBrowser() {

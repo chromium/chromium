@@ -10,41 +10,42 @@
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/input/input_manager.h"
+#include "components/viz/service/input/mock_input_manager.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
+#include "components/viz/test/mock_display_client.h"
 #include "components/viz/test/test_output_surface_provider.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace viz {
 namespace {
-constexpr FrameSinkId kFrameSinkIdA(1, 1);
-}
+constexpr FrameSinkId kFrameSinkIdRoot(1, 1);
+constexpr FrameSinkId kFrameSinkIdA(2, 1);
 
-class FakeInputManager : public InputManager {
- public:
-  explicit FakeInputManager(FrameSinkManagerImpl* frame_sink_manager)
-      : InputManager(frame_sink_manager),
-        begin_frame_source_(BeginFrameSource::kNotRestartableId,
-                            60.f,
-                            /*requires_align_with_java=*/false) {
-    // Send BeginFrame without any observer.
-    auto args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1);
-    begin_frame_source_.OnBeginFrame(args);
+// Holds the four interface objects needed to create a RootCompositorFrameSink.
+struct RootCompositorFrameSinkData {
+  mojom::RootCompositorFrameSinkParamsPtr BuildParams(
+      const FrameSinkId& frame_sink_id) {
+    auto params = mojom::RootCompositorFrameSinkParams::New();
+    params->frame_sink_id = frame_sink_id;
+    params->widget = gpu::kNullSurfaceHandle;
+    params->compositor_frame_sink =
+        compositor_frame_sink.BindNewEndpointAndPassReceiver();
+    params->compositor_frame_sink_client =
+        compositor_frame_sink_client.BindInterfaceRemote();
+    params->display_private = display_private.BindNewEndpointAndPassReceiver();
+    params->display_client = display_client.BindRemote();
+    return params;
   }
 
-  FakeInputManager(const FakeInputManager&) = delete;
-  FakeInputManager& operator=(const FakeInputManager&) = delete;
-
-  ~FakeInputManager() override = default;
-
-  BeginFrameSource* GetBeginFrameSourceForFrameSink(
-      const FrameSinkId& id) override {
-    return &begin_frame_source_;
-  }
-
- private:
-  ExternalBeginFrameSourceAndroid begin_frame_source_;
+  mojo::AssociatedRemote<mojom::CompositorFrameSink> compositor_frame_sink;
+  MockCompositorFrameSinkClient compositor_frame_sink_client;
+  mojo::AssociatedRemote<mojom::DisplayPrivate> display_private;
+  MockDisplayClient display_client;
 };
+
+}  // namespace
 
 class FlingSchedulerTest : public testing::Test,
                            public input::FlingControllerEventSenderClient {
@@ -62,7 +63,12 @@ class FlingSchedulerTest : public testing::Test,
 
   void SetUp() override {
     frame_sink_manager_.SetInputManagerForTesting(
-        std::make_unique<FakeInputManager>(&frame_sink_manager_));
+        std::make_unique<MockInputManager>(&frame_sink_manager_));
+
+    RootCompositorFrameSinkData root_data1;
+    frame_sink_manager_.CreateRootCompositorFrameSink(
+        root_data1.BuildParams(kFrameSinkIdRoot));
+    EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdRoot));
 
     // Create a grouping id.
     base::UnguessableToken grouping_id = base::UnguessableToken::Create();
@@ -70,16 +76,34 @@ class FlingSchedulerTest : public testing::Test,
     frame_sink_manager_.RegisterFrameSinkId(kFrameSinkIdA,
                                             true /* report_activation */);
     CreateCompositorFrameSink(kFrameSinkIdA, CreateRIRConfig(grouping_id));
+
+    // Set up initial hierarchy: root -> A.
+    frame_sink_manager_.RegisterFrameSinkHierarchy(kFrameSinkIdRoot,
+                                                   kFrameSinkIdA);
+    ASSERT_EQ(frame_sink_manager_.GetOldestParentByChildFrameId(kFrameSinkIdA),
+              kFrameSinkIdRoot);
   }
 
   void TearDown() override {
+    // Cleanup hierarchy.
+    frame_sink_manager_.UnregisterFrameSinkHierarchy(kFrameSinkIdRoot,
+                                                     kFrameSinkIdA);
+    frame_sink_manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+    // Invalidating should destroy the CompositorFrameSinkImpl's.
     frame_sink_manager_.InvalidateFrameSinkId(kFrameSinkIdA);
+
     fling_controller_.reset();
+    // Make sure that all FrameSinkSourceMappings have been deleted.
+    EXPECT_TRUE(frame_sink_manager_.frame_sink_source_map_.empty());
+    // Make sure test cleans up all [Root]CompositorFrameSinkImpls.
+    EXPECT_TRUE(frame_sink_manager_.support_map_.empty());
+    // Make sure test has invalidated all registered FrameSinkIds.
+    EXPECT_TRUE(frame_sink_manager_.frame_sink_data_.empty());
   }
 
   void SetupFlingController() {
-    auto* rir = GetFakeInputManager()->GetRenderInputRouterFromFrameSinkId(
-        kFrameSinkIdA);
+    auto* rir =
+        GetInputManager()->GetRenderInputRouterFromFrameSinkId(kFrameSinkIdA);
     fling_controller_ = std::make_unique<input::FlingController>(
         this, rir->GetFlingSchedulerForTesting(),
         input::FlingController::Config());
@@ -117,20 +141,28 @@ class FlingSchedulerTest : public testing::Test,
 
   input::FlingController* fling_controller() { return fling_controller_.get(); }
   FlingSchedulerAndroid* fling_scheduler() {
-    auto* rir = GetFakeInputManager()->GetRenderInputRouterFromFrameSinkId(
-        kFrameSinkIdA);
+    auto* rir =
+        GetInputManager()->GetRenderInputRouterFromFrameSinkId(kFrameSinkIdA);
     return static_cast<FlingSchedulerAndroid*>(
         rir->GetFlingSchedulerForTesting());
   }
 
-  bool InputManagerExists() { return GetFakeInputManager(); }
+  bool InputManagerExists() { return GetInputManager(); }
   bool ExpectedInputManagerCreation() {
     return input::IsTransferInputToVizSupported();
   }
 
-  FakeInputManager* GetFakeInputManager() {
-    return static_cast<FakeInputManager*>(
-        frame_sink_manager_.GetInputManager());
+  InputManager* GetInputManager() {
+    return frame_sink_manager_.GetInputManager();
+  }
+
+  const BeginFrameSource* GetRootBeginFrameSource() {
+    auto* support = frame_sink_manager_.GetFrameSinkForId(kFrameSinkIdRoot);
+    return support->begin_frame_source();
+  }
+
+  void InvalidateRootFrameSinkId() {
+    frame_sink_manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
   }
 
  private:
@@ -179,14 +211,12 @@ TEST_F(FlingSchedulerTest, ScheduleNextFlingProgress) {
   }
 
   SetupFlingController();
-  ASSERT_EQ(
-      fling_scheduler()->GetBeginFrameSource(),
-      GetFakeInputManager()->GetBeginFrameSourceForFrameSink(kFrameSinkIdA));
+  ASSERT_EQ(fling_scheduler()->GetBeginFrameSource(),
+            GetRootBeginFrameSource());
 
   SimulateFlingStart(gfx::Vector2dF(1000, 0));
   EXPECT_EQ(fling_controller(), fling_scheduler()->fling_controller_.get());
-  EXPECT_EQ(fling_scheduler()->GetBeginFrameSource(),
-            fling_scheduler()->observed_begin_frame_source_);
+  EXPECT_TRUE(fling_scheduler()->observing_begin_frame_source_);
 }
 
 TEST_F(FlingSchedulerTest, FlingCancelled) {
@@ -198,18 +228,50 @@ TEST_F(FlingSchedulerTest, FlingCancelled) {
   }
 
   SetupFlingController();
-  ASSERT_EQ(
-      fling_scheduler()->GetBeginFrameSource(),
-      GetFakeInputManager()->GetBeginFrameSourceForFrameSink(kFrameSinkIdA));
+  ASSERT_EQ(fling_scheduler()->GetBeginFrameSource(),
+            GetRootBeginFrameSource());
 
   SimulateFlingStart(gfx::Vector2dF(1000, 0));
   EXPECT_EQ(fling_controller(), fling_scheduler()->fling_controller_.get());
-  EXPECT_EQ(fling_scheduler()->GetBeginFrameSource(),
-            fling_scheduler()->observed_begin_frame_source_);
+  EXPECT_TRUE(fling_scheduler()->observing_begin_frame_source_);
 
   SimulateFlingCancel();
   EXPECT_EQ(nullptr, fling_scheduler()->fling_controller_.get());
-  EXPECT_EQ(nullptr, fling_scheduler()->observed_begin_frame_source_);
+  EXPECT_FALSE(fling_scheduler()->observing_begin_frame_source_);
+  EXPECT_EQ(fling_scheduler()->GetBeginFrameSource(),
+            GetRootBeginFrameSource());
+}
+
+// This tests that FlingSchedulerAndroid stops observing BeginFrameSource
+// when the RootCompositorFrameSinkImpl gets destroyed, addressing the UAF bug
+// described in crbug.com/401501206.
+TEST_F(FlingSchedulerTest, ResetStateOnBeginFrameSourceChange) {
+  EXPECT_EQ(InputManagerExists(), ExpectedInputManagerCreation());
+  if (!InputManagerExists()) {
+    // FlingSchedulerAndroid's implementation depends on InputManager creation.
+    // Exit if InputManager is not present.
+    return;
+  }
+
+  SetupFlingController();
+  ASSERT_EQ(fling_scheduler()->GetBeginFrameSource(),
+            GetRootBeginFrameSource());
+
+  base::TimeTicks progress_time = base::TimeTicks::Now();
+
+  SimulateFlingStart(gfx::Vector2dF(1000, 0));
+  EXPECT_EQ(fling_controller(), fling_scheduler()->fling_controller_.get());
+  EXPECT_TRUE(fling_scheduler()->observing_begin_frame_source_);
+
+  progress_time += base::Milliseconds(17);
+  fling_controller()->ProgressFling(progress_time);
+  EXPECT_TRUE(fling_controller()->fling_in_progress());
+
+  // RootCompositorFrameSink gets invalidated.
+  InvalidateRootFrameSinkId();
+
+  EXPECT_FALSE(fling_scheduler()->observing_begin_frame_source_);
+  EXPECT_EQ(nullptr, fling_scheduler()->GetBeginFrameSource());
 }
 
 }  // namespace viz

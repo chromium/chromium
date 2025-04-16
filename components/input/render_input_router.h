@@ -81,6 +81,9 @@ class COMPONENT_EXPORT(INPUT) RenderInputRouter
 
   void SetView(RenderWidgetHostViewInput* view);
 
+  void SetBeginFrameSourceForFlingScheduler(
+      viz::BeginFrameSource* begin_frame_source);
+
   // InputRouterClient overrides.
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
   void OnImeCompositionRangeChanged(

@@ -23,14 +23,7 @@ class VIZ_SERVICE_EXPORT FlingSchedulerAndroid
     : public input::FlingSchedulerBase,
       public BeginFrameObserverBase {
  public:
-  class Delegate {
-   public:
-    virtual BeginFrameSource* GetBeginFrameSourceForFrameSink(
-        const FrameSinkId& id) = 0;
-  };
-
   FlingSchedulerAndroid(input::RenderInputRouter* rir,
-                        Delegate* delegate,
                         const FrameSinkId& frame_sink_id);
 
   FlingSchedulerAndroid(const FlingSchedulerAndroid&) = delete;
@@ -50,17 +43,21 @@ class VIZ_SERVICE_EXPORT FlingSchedulerAndroid
 
   // FlingSchedulerBase
   void ProgressFlingOnBeginFrameIfneeded(base::TimeTicks current_time) override;
+  void SetBeginFrameSource(BeginFrameSource* begin_frame_source) override;
 
  protected:
   BeginFrameSource* GetBeginFrameSource();
 
   raw_ref<input::RenderInputRouter> rir_;
   base::WeakPtr<input::FlingController> fling_controller_;
-  raw_ptr<BeginFrameSource> observed_begin_frame_source_ = nullptr;
+  bool observing_begin_frame_source_ = false;
+  raw_ptr<BeginFrameSource> begin_frame_source_ = nullptr;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FlingSchedulerTest, ScheduleNextFlingProgress);
   FRIEND_TEST_ALL_PREFIXES(FlingSchedulerTest, FlingCancelled);
+  FRIEND_TEST_ALL_PREFIXES(FlingSchedulerTest,
+                           ResetStateOnBeginFrameSourceChange);
 
   void StartObservingBeginFrames();
   void StopObservingBeginFrames();
@@ -70,7 +67,6 @@ class VIZ_SERVICE_EXPORT FlingSchedulerAndroid
   void OnBeginFrameSourcePausedChanged(bool paused) override {}
   bool IsRoot() const override;
 
-  raw_ref<Delegate> delegate_;
   const FrameSinkId frame_sink_id_;
 };
 
