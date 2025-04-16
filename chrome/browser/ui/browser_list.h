@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -73,6 +74,13 @@ class BrowserList {
   size_t size() const { return browsers_.size(); }
 
   Browser* get(size_t index) const { return browsers_[index]; }
+
+  // Enumerate the current browser and the new browser in-order.
+  void ForEachCurrentAndNewBrowser(
+      base::FunctionRef<void(Browser*)> on_browser);
+
+  // Enumerate the current browser in-order.
+  void ForEachCurrentBrowser(base::FunctionRef<void(Browser*)> on_browser);
 
   // Returns iterated access to list of open browsers ordered by activation. The
   // underlying data structure is a vector and we push_back on recent access so

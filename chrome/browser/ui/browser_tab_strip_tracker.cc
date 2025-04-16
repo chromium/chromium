@@ -20,22 +20,17 @@ BrowserTabStripTracker::BrowserTabStripTracker(
 }
 
 BrowserTabStripTracker::~BrowserTabStripTracker() {
-  // Per ObserverList::RemoveObserver() documentation, this does nothing if the
-  // observer is not in the ObserverList (i.e. if |browser| is not tracked).
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    browser->tab_strip_model()->RemoveObserver(tab_strip_model_observer_);
-  }
-
   BrowserList::RemoveObserver(this);
+  BrowserList::GetInstance()->ForEachCurrentBrowser([this](Browser* browser) {
+    browser->tab_strip_model()->RemoveObserver(tab_strip_model_observer_);
+  });
 }
 
 void BrowserTabStripTracker::Init() {
-  BrowserList::AddObserver(this);
-
   base::AutoReset<bool> resetter(&is_processing_initial_browsers_, true);
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    MaybeTrackBrowser(browser);
-  }
+  BrowserList::GetInstance()->ForEachCurrentAndNewBrowser(
+      [this](Browser* browser) { MaybeTrackBrowser(browser); });
+  BrowserList::AddObserver(this);
 }
 
 bool BrowserTabStripTracker::ShouldTrackBrowser(Browser* browser) {
@@ -64,18 +59,10 @@ void BrowserTabStripTracker::MaybeTrackBrowser(Browser* browser) {
 }
 
 void BrowserTabStripTracker::OnBrowserAdded(Browser* browser) {
-  // No Browser should be added when iterating on Browsers in Init(), as that
-  // may invalidate the iterator.
-  DCHECK(!is_processing_initial_browsers_);
-
   MaybeTrackBrowser(browser);
 }
 
 void BrowserTabStripTracker::OnBrowserRemoved(Browser* browser) {
-  // No Browser should be removed when iterating on Browsers in Init(), as that
-  // invalidates any iterator that is past the removed Browser.
-  DCHECK(!is_processing_initial_browsers_);
-
   // Per ObserverList::RemoveObserver() documentation, this does nothing if the
   // observer is not in the ObserverList (i.e. if |browser| is not tracked).
   browser->tab_strip_model()->RemoveObserver(tab_strip_model_observer_);
