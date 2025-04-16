@@ -329,7 +329,7 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
   registrar()->AddExtension(policy.get());
   registrar()->AddExtension(policy2.get());
   registrar()->AddExtension(internal.get());
-  service()->DisableExtensionWithSource(
+  registrar()->DisableExtensionWithSource(
       component.get(), policy->id(), disable_reason::DISABLE_BLOCKED_BY_POLICY);
 
   auto extension_can_enable_extension =
@@ -345,7 +345,7 @@ TEST_F(ManagementApiUnitTest, ComponentPolicyEnabling) {
         // If the extension was enabled, disable it.
         if (did_enable) {
           EXPECT_TRUE(registry()->enabled_extensions().Contains(id));
-          service()->DisableExtensionWithSource(
+          registrar()->DisableExtensionWithSource(
               component.get(), id, disable_reason::DISABLE_BLOCKED_BY_POLICY);
         } else {
           EXPECT_TRUE(registry()->disabled_extensions().Contains(id));

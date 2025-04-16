@@ -19,7 +19,6 @@
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -569,10 +568,8 @@ void ChromeManagementAPIDelegate::DisableExtension(
   SupervisedUserExtensionsDelegate* extensions_delegate =
       GetSupervisedUserExtensionsDelegateFromContext(context);
   extensions_delegate->RecordExtensionEnablementUmaMetrics(/*enabled=*/false);
-  ExtensionSystem::Get(context)
-      ->extension_service()
-      ->DisableExtensionWithSource(source_extension, extension_id,
-                                   disable_reason);
+  ExtensionRegistrar::Get(context)->DisableExtensionWithSource(
+      source_extension, extension_id, disable_reason);
 }
 
 bool ChromeManagementAPIDelegate::UninstallExtension(

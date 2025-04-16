@@ -506,14 +506,6 @@ void ExtensionService::DisableExtensionWithRawReasons(
                                                       disable_reasons);
 }
 
-void ExtensionService::DisableExtensionWithSource(
-    const Extension* source_extension,
-    const ExtensionId& extension_id,
-    disable_reason::DisableReason disable_reason) {
-  extension_registrar_->DisableExtensionWithSource(
-      source_extension, extension_id, disable_reason);
-}
-
 void ExtensionService::DisableUserExtensionsExcept(
     const std::vector<std::string>& except_ids) {
   ManagementPolicy* management_policy = system_->management_policy();

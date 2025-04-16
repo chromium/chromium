@@ -260,14 +260,6 @@ class ExtensionService : public ExtensionServiceInterface,
       const ExtensionId& extension_id,
       const base::flat_set<int>& disable_reasons);
 
-  // Same as |DisableExtension|, but assumes that the request to disable
-  // |extension_id| originates from |source_extension| when evaluating whether
-  // the extension can be disabled. Please see |ExtensionMayModifySettings|
-  // for details.
-  void DisableExtensionWithSource(const Extension* source_extension,
-                                  const ExtensionId& extension_id,
-                                  disable_reason::DisableReason disable_reason);
-
   // Disable non-default and non-managed extensions with ids not in
   // |except_ids|. Default extensions are those from the Web Store with
   // |was_installed_by_default| flag.
