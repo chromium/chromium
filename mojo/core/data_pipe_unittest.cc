@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/check_op.h"
@@ -226,7 +227,7 @@ TEST_F(DataPipeTest, Basic) {
 
 // Tests creation of data pipes with various (valid) options.
 TEST_F(DataPipeTest, CreateAndMaybeTransfer) {
-  MojoCreateDataPipeOptions test_options[] = {
+  auto test_options = std::to_array<MojoCreateDataPipeOptions>({
       // Default options.
       {},
       // Trivial element size, non-default capacity.
@@ -244,7 +245,8 @@ TEST_F(DataPipeTest, CreateAndMaybeTransfer) {
        MOJO_CREATE_DATA_PIPE_FLAG_NONE,  // |flags|.
        100,                              // |element_num_bytes|.
        0}                                // |capacity_num_bytes|.
-  };
+      ,
+  });
   for (size_t i = 0; i < std::size(test_options); i++) {
     MojoHandle producer_handle, consumer_handle;
     MojoCreateDataPipeOptions* options = i ? &test_options[i] : nullptr;
@@ -1053,7 +1055,7 @@ TEST_F(DataPipeTest, WrapAround) {
                  << "is backed by a circular ring buffer.";
   }
 
-  unsigned char test_data[1000];
+  std::array<unsigned char, 1000> test_data;
   for (size_t i = 0; i < std::size(test_data); i++)
     test_data[i] = static_cast<unsigned char>(i);
 
@@ -1950,13 +1952,13 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(MultiprocessClient, DataPipeTest, client_mp) {
 
   // Receive the main data and check it is correct.
   int seq = 0;
-  uint8_t expected_buffer[100];
+  std::array<uint8_t, 100> expected_buffer;
   for (int i = 0; i < kMultiprocessMaxIter; ++i) {
     for (uint32_t size = 1; size <= kMultiprocessCapacity; ++size) {
       for (unsigned int j = 0; j < size; ++j)
         expected_buffer[j] = seq + j;
       EXPECT_TRUE(ReadAllData(consumer, buffer, size, false));
-      EXPECT_EQ(0, memcmp(buffer, expected_buffer, size));
+      EXPECT_EQ(0, memcmp(buffer, expected_buffer.data(), size));
 
       seq += size;
     }
@@ -2162,8 +2164,8 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(DataPipeStatusChangeInTransitClient,
 }
 
 TEST_F(DataPipeTest, StatusChangeInTransit) {
-  MojoHandle producers[6];
-  MojoHandle consumers[6];
+  std::array<MojoHandle, 6> producers;
+  std::array<MojoHandle, 6> consumers;
   for (size_t i = 0; i < 6; ++i)
     CreateDataPipe(&producers[i], &consumers[i], 1);
 

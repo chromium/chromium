@@ -7,8 +7,11 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "mojo/public/c/system/trap.h"
+
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <set>
@@ -25,7 +28,6 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/data_pipe.h"
-#include "mojo/public/c/system/trap.h"
 #include "mojo/public/c/system/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -1615,7 +1617,7 @@ TEST_F(TrapTest, ArmFailureCirculation) {
 
   constexpr size_t kNumTestPipes = 100;
   constexpr size_t kNumTestHandles = kNumTestPipes * 2;
-  MojoHandle handles[kNumTestHandles];
+  std::array<MojoHandle, kNumTestHandles> handles;
 
   // Create a bunch of pipes and make sure they're all readable.
   for (size_t i = 0; i < kNumTestPipes; ++i) {
@@ -1957,7 +1959,7 @@ TEST_F(TrapTest, ConcurrencyStressTest) {
   for (size_t i = 0; i < kNumWatchedHandles; i += 2)
     CreateMessagePipe(&watched_handles[i], &watched_handles[i + 1]);
 
-  std::unique_ptr<ThreadedRunner> threads[kNumThreads];
+  std::array<std::unique_ptr<ThreadedRunner>, kNumThreads> threads;
   for (size_t i = 0; i < kNumThreads; ++i) {
     threads[i] = std::make_unique<ThreadedRunner>(base::BindOnce([] {
       for (size_t i = 0; i < kNumOperationsPerThread; ++i)
