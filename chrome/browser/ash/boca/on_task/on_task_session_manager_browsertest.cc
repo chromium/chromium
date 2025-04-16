@@ -142,6 +142,14 @@ class OnTaskSessionManagerBrowserTest : public InProcessBrowserTest {
         notification_shown);
   }
 
+  void WaitForPartialLockedModeCountdown() {
+    // Simulate the partial countdown duration to test locked mode is not
+    // triggered yet.
+    boca::MockClock::Get().Advance(
+        ash::features::kBocaLockedModeCountdownDurationInSeconds.Get());
+    content::RunAllTasksUntilIdle();
+  }
+
   void WaitForLockedModeCountdown() {
     // Simulate the full countdown duration to ensure generating the
     // notification.
@@ -373,6 +381,42 @@ IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
   EXPECT_FALSE(chromeos::wm::CanFloatWindow(
       boca_app_browser->window()->GetNativeWindow()));
   EXPECT_TRUE(browser_view->immersive_mode_controller()->IsEnabled());
+
+  // Unlock the Boca app to unblock test teardown that involves browser window
+  // close.
+  bundle.set_locked(false);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  EXPECT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskSessionManagerBrowserTest,
+                       ShouldNotLockBocaSWAInAppReloadIfLockInProgress) {
+  content::TestNavigationObserver navigation_observer((GURL(kTestUrl1)));
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Start OnTask session and spawn one tab outside the homepage tab.
+  GetOnTaskSessionManager()->OnSessionStarted(kSessionId,
+                                              ::boca::UserIdentity());
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  navigation_observer.Wait();
+
+  Browser* const boca_app_browser = FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca_app_browser->IsLockedForOnTask());
+
+  // Lock the boca app. Boca should not be locked before the full countdown.
+  bundle.set_locked(true);
+  GetOnTaskSessionManager()->OnBundleUpdated(bundle);
+  GetOnTaskSessionManager()->OnAppReloaded();
+  WaitForPartialLockedModeCountdown();
+  ASSERT_FALSE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  WaitForPartialLockedModeCountdown();
+  ASSERT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_FALSE(chromeos::wm::CanFloatWindow(
+      boca_app_browser->window()->GetNativeWindow()));
+  EXPECT_TRUE(boca_app_browser->window()->IsToolbarVisible());
 
   // Unlock the Boca app to unblock test teardown that involves browser window
   // close.

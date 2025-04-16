@@ -284,7 +284,9 @@ void OnTaskSessionManager::OnAppReloaded() {
   }
 
   // Also lock window if necessary.
-  LockOrUnlockWindow(should_lock_window_);
+  if (!lock_in_progress_) {
+    LockOrUnlockWindow(should_lock_window_);
+  }
 }
 
 void OnTaskSessionManager::LockOrUnlockWindow(bool lock_window) {
