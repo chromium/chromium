@@ -827,6 +827,21 @@
             ]
         }
     ],
+    "ApiPrintingMarginsAndScale": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ApiPrintingMarginsAndScale"
+                    ]
+                }
+            ]
+        }
+    ],
     "ApnRevamp": [
         {
             "platforms": [
