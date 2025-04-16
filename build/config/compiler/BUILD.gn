@@ -540,11 +540,12 @@ config("compiler") {
     # (https://crbug.com/829795).
     cflags += [ "-fmerge-all-constants" ]
 
-    # TODO(crbug.com/345541122): investigate the fuchsia binary size increase.
-    if (is_win) {
-      cflags += [ "/Zc:sizedDealloc-" ]
-    } else {
-      cflags += [ "-fno-sized-deallocation" ]
+    if (!use_sized_deallocation) {
+      if (is_win) {
+        cflags += [ "/Zc:sizedDealloc-" ]
+      } else {
+        cflags += [ "-fno-sized-deallocation" ]
+      }
     }
   }
 
