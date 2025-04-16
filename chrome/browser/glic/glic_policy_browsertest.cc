@@ -116,7 +116,8 @@ class GlicPolicyTest : public PolicyTest {
  public:
   GlicPolicyTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicRollout},
         /*disabled_features=*/{features::kGlicWarming,
                                features::kGlicFreWarming});
   }

@@ -79,6 +79,7 @@ class InteractiveGlicTestT : public T {
     features_.InitWithFeaturesAndParameters(
         {{features::kGlic, glic_params},
          {features::kTabstripComboButton, {}},
+         {features::kGlicRollout, {}},
          {features::kGlicKeyboardShortcutNewBadge, {}}},
         {});
   }

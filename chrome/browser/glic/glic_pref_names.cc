@@ -16,6 +16,9 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kGlicGeolocationEnabled, false);
   registry->RegisterBooleanPref(kGlicTabContextEnabled, false);
   registry->RegisterIntegerPref(
+      kGlicRolloutEligibility,
+      static_cast<int>(prefs::RolloutEligibility::kNotEligible));
+  registry->RegisterIntegerPref(
       kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kNotStarted));
   registry->RegisterTimePref(kGlicWindowLastDismissedTime, base::Time());
 }

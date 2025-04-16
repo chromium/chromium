@@ -138,6 +138,9 @@ class GlicEnabling : public signin::IdentityManager::Observer {
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
 
+  // Detects potential changes to tiered rollout status.
+  void OnTieredRolloutStatusMaybeChanged();
+
   // Detects paused state.
   void OnErrorStateOfRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info,

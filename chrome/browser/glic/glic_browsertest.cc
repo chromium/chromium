@@ -25,7 +25,8 @@ class GlicBrowserTest : public InProcessBrowserTest {
  public:
   GlicBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicRollout},
         /*disabled_features=*/{});
   }
   GlicBrowserTest(const GlicBrowserTest&) = delete;
@@ -60,7 +61,7 @@ IN_PROC_BROWSER_TEST_F(GlicBrowserTest, PausedProfileIsNotReady) {
   SetModelExecutionCapability(profile, true);
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile));
 
-  // False until FRE is completed
+  // False until FRE is completed.
   ASSERT_FALSE(GlicEnabling::IsReadyForProfile(profile));
   SetFRECompletion(profile, prefs::FreStatus::kCompleted);
   ASSERT_TRUE(GlicEnabling::IsReadyForProfile(profile));

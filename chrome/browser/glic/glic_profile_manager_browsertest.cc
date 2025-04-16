@@ -64,7 +64,8 @@ class GlicProfileManagerBrowserTest : public InProcessBrowserTest {
  public:
   GlicProfileManagerBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton},
+        /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                              features::kGlicRollout},
         /*disabled_features=*/{features::kDestroyProfileOnBrowserClose});
 
     create_services_subscription_ =
@@ -202,12 +203,12 @@ class GlicProfileManagerPreloadingTest
     if (IsPreloadingEnabled()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
-                                features::kGlicWarming},
+                                features::kGlicRollout, features::kGlicWarming},
           /*disabled_features=*/{});
     } else {
       scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlic,
-                                features::kTabstripComboButton},
+          /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
+                                features::kGlicRollout},
           /*disabled_features=*/{features::kGlicWarming});
     }
     GlicProfileManager::ForceMemoryPressureForTesting(&memory_pressure_);

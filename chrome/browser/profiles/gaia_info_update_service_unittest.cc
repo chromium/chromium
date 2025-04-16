@@ -519,7 +519,9 @@ class GAIAInfoUpdateServiceWithGlicEnablingTest
   GAIAInfoUpdateServiceWithGlicEnablingTest() {
     // Enable kGlic and kTabstripComboButton by default for testing.
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kTabstripComboButton}, {});
+        {features::kGlic, features::kTabstripComboButton,
+         features::kGlicRollout},
+        {});
 
     RegisterGeminiSettingsPrefs(pref_service_.registry());
   }

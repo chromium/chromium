@@ -20,6 +20,7 @@
 namespace glic {
 
 namespace {
+
 bool IsNonEnterpriseEnabled(Profile* profile) {
   if (!GlicEnabling::IsProfileEligible(profile)) {
     return false;
@@ -28,6 +29,13 @@ bool IsNonEnterpriseEnabled(Profile* profile) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(::switches::kGlicDev)) {
     return true;
+  }
+
+  // Check whether profile is eligible for tiered ollout.
+  if (!base::FeatureList::IsEnabled(features::kGlicRollout) &&
+      profile->GetPrefs()->GetInteger(prefs::kGlicRolloutEligibility) !=
+          static_cast<int>(prefs::RolloutEligibility::kEligibleTieredRollout)) {
+    return false;
   }
 
   signin::IdentityManager* identity_manager =
@@ -144,6 +152,13 @@ GlicEnabling::GlicEnabling(Profile* profile,
   pref_registrar_.Add(prefs::kGlicCompletedFre,
                       base::BindRepeating(&GlicEnabling::UpdateConsentStatus,
                                           base::Unretained(this)));
+  if (!base::FeatureList::IsEnabled(features::kGlicRollout) &&
+      base::FeatureList::IsEnabled(features::kGlicTieredRollout)) {
+    pref_registrar_.Add(
+        prefs::kGlicRolloutEligibility,
+        base::BindRepeating(&GlicEnabling::OnTieredRolloutStatusMaybeChanged,
+                            base::Unretained(this)));
+  }
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   CHECK(identity_manager);
@@ -196,6 +211,10 @@ void GlicEnabling::OnRefreshTokensLoaded() {
 }
 void GlicEnabling::OnRefreshTokenRemovedForAccount(
     const CoreAccountId& account_id) {
+  UpdateEnabledStatus();
+}
+
+void GlicEnabling::OnTieredRolloutStatusMaybeChanged() {
   UpdateEnabledStatus();
 }
 

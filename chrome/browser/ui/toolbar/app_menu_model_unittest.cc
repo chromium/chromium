@@ -351,7 +351,8 @@ TEST_F(AppMenuModelTest, DeclutterTabsItem) {
 TEST_F(AppMenuModelTest, GlicItem) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures(
-      {features::kGlic, features::kTabstripComboButton}, {});
+      {features::kGlic, features::kTabstripComboButton, features::kGlicRollout},
+      {});
 
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();

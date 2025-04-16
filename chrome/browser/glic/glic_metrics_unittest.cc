@@ -389,6 +389,7 @@ class GlicMetricsFeaturesEnabledTest : public GlicMetricsTest {
         {
             features::kGlic,
             features::kTabstripComboButton,
+            features::kGlicRollout,
         },
         {});
     SetUpProfile();
