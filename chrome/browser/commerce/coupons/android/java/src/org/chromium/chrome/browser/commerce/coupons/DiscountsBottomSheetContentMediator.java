@@ -85,6 +85,8 @@ public class DiscountsBottomSheetContentMediator {
                                     mContext.getString(R.string.discount_code_copy_button_text));
             if (info.expiryTimeSec.isPresent()) {
                 propertyModelBuilder.with(EXPIRY_TIME, formatExpiryTime(info.expiryTimeSec.get()));
+            } else {
+                propertyModelBuilder.with(EXPIRY_TIME, null);
             }
             PropertyModel propertyModel = propertyModelBuilder.build();
             propertyModel.set(
