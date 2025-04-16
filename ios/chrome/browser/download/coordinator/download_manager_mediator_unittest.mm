@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/fakes/fake_download_manager_consumer.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -48,26 +49,35 @@ class DownloadManagerMediatorTest : public PlatformTest {
  protected:
   DownloadManagerMediatorTest()
       : consumer_([[FakeDownloadManagerConsumer alloc] init]),
-        application_(OCMClassMock([UIApplication class])),
-        task_(GURL(kTestUrl), kTestMimeType) {
+        application_(OCMClassMock([UIApplication class])) {
     OCMStub([application_ sharedApplication]).andReturn(application_);
+    profile_ = TestProfileIOS::Builder().Build();
+
     web_state_ = std::make_unique<web::FakeWebState>();
+    web_state_->SetBrowserState(profile_.get());
     DocumentDownloadTabHelper::CreateForWebState(web_state_.get());
     DownloadManagerTabHelper::CreateForWebState(web_state_.get());
-    task_.SetWebState(web_state_.get());
+
+    std::unique_ptr<web::FakeDownloadTask> task =
+        std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
+    task->SetWebState(web_state_.get());
+    task->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
+    task_ = task.get();
+    DownloadManagerTabHelper::FromWebState(web_state_.get())
+        ->SetCurrentDownload(std::move(task));
   }
   ~DownloadManagerMediatorTest() override { [application_ stopMocking]; }
 
-  web::FakeDownloadTask* task() { return &task_; }
+  web::FakeDownloadTask* task() { return task_; }
 
+ protected:
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
   DownloadManagerMediator mediator_;
   FakeDownloadManagerConsumer* consumer_;
   id application_;
-
- private:
-  web::WebTaskEnvironment task_environment_;
-  web::FakeDownloadTask task_;
+  raw_ptr<web::FakeDownloadTask> task_;
 };
 
 // Tests starting the download and immediately destroying the task.
@@ -85,7 +95,6 @@ TEST_F(DownloadManagerMediatorTest, DestoryTaskAfterStart) {
 // file writer is configured to write into Chrome's temporary download
 // directory.
 TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
-  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDownloading();
@@ -108,6 +117,10 @@ TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
   base::FilePath download_dir;
   GetDownloadsDirectory(&download_dir);
   EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForDownloadTimeout, true, ^{
+        return !mediator_.GetDownloadPath().empty();
+      }));
   EXPECT_TRUE(download_dir.IsParent(mediator_.GetDownloadPath()));
 }
 
@@ -115,7 +128,6 @@ TEST_F(DownloadManagerMediatorTest, StartTempDownload) {
 // file writer is configured to write into Chrome's Documents download
 // directory.
 TEST_F(DownloadManagerMediatorTest, StartDownload) {
-  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDownloading();
@@ -147,7 +159,6 @@ TEST_F(DownloadManagerMediatorTest, StartDownload) {
 TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
   OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(YES);
 
-  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDownloading();
@@ -183,8 +194,8 @@ TEST_F(DownloadManagerMediatorTest, ConsumerFailedStateUpdate) {
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
 
-  task()->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
   task()->SetState(web::DownloadTask::State::kFailed);
+  task()->SetErrorCode(net::ERR_INTERNET_DISCONNECTED);
   EXPECT_EQ(kDownloadManagerStateFailed, consumer_.state);
 }
 
@@ -193,7 +204,6 @@ TEST_F(DownloadManagerMediatorTest, ConsumerFailedStateUpdate) {
 TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
   OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(YES);
 
-  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDownloading();
@@ -217,7 +227,6 @@ TEST_F(DownloadManagerMediatorTest,
        ConsumerSuceededStateUpdateWithoutDriveAppInstalled) {
   OCMStub([application_ canOpenURL:GetGoogleDriveAppUrl()]).andReturn(NO);
 
-  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDownloading();
@@ -249,7 +258,6 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInProgressStateUpdate) {
 // Tests that setting the consumer twice when the download is complete will only
 // move it once.
 TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
-  task()->SetGeneratedFileName(base::FilePath(kTestSuggestedFileName));
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
   mediator_.StartDownloading();
@@ -270,9 +278,13 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
   // Once downloaded, the file should be located in download directory.
   task()->SetDone(true);
   base::FilePath download_dir;
-  base::FilePath file_path = mediator_.GetDownloadPath();
   GetDownloadsDirectory(&download_dir);
   EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForDownloadTimeout, true, ^{
+        return !mediator_.GetDownloadPath().empty();
+      }));
+  base::FilePath file_path = mediator_.GetDownloadPath();
   EXPECT_TRUE(download_dir.IsParent(file_path));
 
   // Set the consumer a second time.
@@ -285,11 +297,6 @@ TEST_F(DownloadManagerMediatorTest, SetConsumerAfterDownloadComplete) {
 // Tests that calling `mediator_.SetGoogleDriveAppInstalled()` does inform the
 // consumer accordingly.
 TEST_F(DownloadManagerMediatorTest, SetGoogleDriveAppInstalled) {
-  // Add WebState to the task with the required tab helpers.
-  web::FakeWebState web_state;
-  DocumentDownloadTabHelper::CreateForWebState(&web_state);
-  DownloadManagerTabHelper::CreateForWebState(&web_state);
-  task()->SetWebState(&web_state);
   mediator_.SetDownloadTask(task());
   mediator_.SetConsumer(consumer_);
 

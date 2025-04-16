@@ -316,6 +316,7 @@ TEST_F(DocumentDownloadTabHelperTest, ConflictLoggingComplete) {
       DownloadManagerTabHelper::FromWebState(&web_state_);
   auto task = std::make_unique<web::FakeDownloadTask>(GURL("https://foo.bar"),
                                                       "text/html");
+  task->SetWebState(&web_state_);
   web::FakeDownloadTask* task_ptr = task.get();
   download_manager->SetCurrentDownload(std::move(task));
 
