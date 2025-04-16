@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <bit>
 #include <cstdint>
 #include <set>
@@ -132,7 +133,7 @@ struct TextureSignature {
 class FormatTypeValidator {
  public:
   FormatTypeValidator() {
-    static const FormatType kSupportedFormatTypes[] = {
+    static const auto kSupportedFormatTypes = std::to_array<FormatType>({
         // ES2.
         {GL_RGB, GL_RGB, GL_UNSIGNED_BYTE},
         {GL_RGB, GL_RGB, GL_UNSIGNED_SHORT_5_6_5},
@@ -231,9 +232,9 @@ class FormatTypeValidator {
         {GL_RG16_SNORM_EXT, GL_RG, GL_SHORT},
         {GL_RGB16_SNORM_EXT, GL_RGB, GL_SHORT},
         {GL_RGBA16_SNORM_EXT, GL_RGBA, GL_SHORT},
-    };
+    });
 
-    static const FormatType kSupportedFormatTypesES2Only[] = {
+    static const auto kSupportedFormatTypesES2Only = std::to_array<FormatType>({
         // Exposed by GL_OES_texture_float and GL_OES_texture_half_float
         {GL_RGB, GL_RGB, GL_FLOAT},
         {GL_RGBA, GL_RGBA, GL_FLOAT},
@@ -262,7 +263,7 @@ class FormatTypeValidator {
         {GL_RG, GL_RG, GL_FLOAT},
         {GL_RED, GL_RED, GL_HALF_FLOAT_OES},
         {GL_RG, GL_RG, GL_HALF_FLOAT_OES},
-    };
+    });
 
     for (size_t ii = 0; ii < std::size(kSupportedFormatTypes); ++ii) {
       supported_combinations_.insert(kSupportedFormatTypes[ii]);
@@ -311,11 +312,12 @@ class FormatTypeValidator {
   std::set<FormatType, FormatTypeCompare> supported_combinations_es2_only_;
 };
 
-static const Texture::CompatibilitySwizzle kSwizzledFormats[] = {
-    {GL_ALPHA, GL_RED, GL_ZERO, GL_ZERO, GL_ZERO, GL_RED},
-    {GL_LUMINANCE, GL_RED, GL_RED, GL_RED, GL_RED, GL_ONE},
-    {GL_LUMINANCE_ALPHA, GL_RG, GL_RED, GL_RED, GL_RED, GL_GREEN},
-};
+static const auto kSwizzledFormats =
+    std::to_array<Texture::CompatibilitySwizzle>({
+        {GL_ALPHA, GL_RED, GL_ZERO, GL_ZERO, GL_ZERO, GL_RED},
+        {GL_LUMINANCE, GL_RED, GL_RED, GL_RED, GL_RED, GL_ONE},
+        {GL_LUMINANCE_ALPHA, GL_RG, GL_RED, GL_RED, GL_RED, GL_GREEN},
+    });
 
 const Texture::CompatibilitySwizzle* GetCompatibilitySwizzleInternal(
     GLenum format) {
@@ -1663,10 +1665,18 @@ bool Texture::ClearLevel(DecoderContext* decoder, GLenum target, GLint level) {
         return false;
     } else {
       // Clear all remaining sub regions.
-      const int x[] = {
-        0, info.cleared_rect.x(), info.cleared_rect.right(), info.width};
-      const int y[] = {
-        0, info.cleared_rect.y(), info.cleared_rect.bottom(), info.height};
+      const auto x = std::to_array<int>({
+          0,
+          info.cleared_rect.x(),
+          info.cleared_rect.right(),
+          info.width,
+      });
+      const auto y = std::to_array<int>({
+          0,
+          info.cleared_rect.y(),
+          info.cleared_rect.bottom(),
+          info.height,
+      });
 
       for (size_t j = 0; j < 3; ++j) {
         for (size_t i = 0; i < 3; ++i) {

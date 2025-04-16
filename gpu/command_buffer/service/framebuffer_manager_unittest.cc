@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -652,13 +653,10 @@ TEST_F(FramebufferInfoTest, AttachTextureCube) {
   const GLenum kTarget = GL_TEXTURE_CUBE_MAP;
   const GLsizei kSamples = 0;
 
-  const GLenum kTexTargets[] = {
-      GL_TEXTURE_CUBE_MAP_POSITIVE_X,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Y,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
-      GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
-      GL_TEXTURE_CUBE_MAP_NEGATIVE_Z};
+  const auto kTexTargets = std::to_array<GLenum>(
+      {GL_TEXTURE_CUBE_MAP_POSITIVE_X, GL_TEXTURE_CUBE_MAP_NEGATIVE_X,
+       GL_TEXTURE_CUBE_MAP_POSITIVE_Y, GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
+       GL_TEXTURE_CUBE_MAP_POSITIVE_Z, GL_TEXTURE_CUBE_MAP_NEGATIVE_Z});
 
   EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT),
             framebuffer_->IsPossiblyComplete(feature_info_.get()));
@@ -1082,8 +1080,8 @@ TEST_F(FramebufferInfoTest, ClearIntegerOutsideRenderableRange) {
 }
 
 TEST_F(FramebufferInfoES3Test, DrawBuffers) {
-  const GLuint kTextureClientId[] = { 33, 34 };
-  const GLuint kTextureServiceId[] = { 333, 334 };
+  const auto kTextureClientId = std::to_array<GLuint>({33, 34});
+  const auto kTextureServiceId = std::to_array<GLuint>({333, 334});
   for (GLenum i = GL_COLOR_ATTACHMENT0;
        i < GL_COLOR_ATTACHMENT0 + kMaxColorAttachments; ++i) {
     EXPECT_FALSE(framebuffer_->HasUnclearedAttachment(i));
@@ -1174,32 +1172,18 @@ TEST_F(FramebufferInfoES3Test, DrawBuffers) {
 }
 
 TEST_F(FramebufferInfoTest, DrawBufferMasks) {
-  const GLuint kTextureClientId[] = { 33, 34, 35, 36, 37 };
-  const GLuint kTextureServiceId[] = { 333, 334, 335, 336, 337 };
-  const GLenum kAttachment[] = {
-      GL_COLOR_ATTACHMENT0,
-      GL_COLOR_ATTACHMENT1,
-      GL_COLOR_ATTACHMENT2,
-      GL_COLOR_ATTACHMENT4,
-      GL_DEPTH_ATTACHMENT};
-  const GLenum kInternalFormat[] = {
-      GL_RGBA8,
-      GL_RG32UI,
-      GL_R16I,
-      GL_R16F,
-      GL_DEPTH_COMPONENT24};
-  const GLenum kFormat[] = {
-      GL_RGBA,
-      GL_RG_INTEGER,
-      GL_RED_INTEGER,
-      GL_RED,
-      GL_DEPTH_COMPONENT};
-  const GLenum kType[] = {
-      GL_UNSIGNED_BYTE,
-      GL_UNSIGNED_INT,
-      GL_SHORT,
-      GL_FLOAT,
-      GL_UNSIGNED_INT};
+  const auto kTextureClientId = std::to_array<GLuint>({33, 34, 35, 36, 37});
+  const auto kTextureServiceId =
+      std::to_array<GLuint>({333, 334, 335, 336, 337});
+  const auto kAttachment = std::to_array<GLenum>(
+      {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
+       GL_COLOR_ATTACHMENT4, GL_DEPTH_ATTACHMENT});
+  const auto kInternalFormat = std::to_array<GLenum>(
+      {GL_RGBA8, GL_RG32UI, GL_R16I, GL_R16F, GL_DEPTH_COMPONENT24});
+  const auto kFormat = std::to_array<GLenum>(
+      {GL_RGBA, GL_RG_INTEGER, GL_RED_INTEGER, GL_RED, GL_DEPTH_COMPONENT});
+  const auto kType = std::to_array<GLenum>(
+      {GL_UNSIGNED_BYTE, GL_UNSIGNED_INT, GL_SHORT, GL_FLOAT, GL_UNSIGNED_INT});
 
   for (size_t ii = 0; ii < std::size(kTextureClientId); ++ii) {
     texture_manager_->CreateTexture(

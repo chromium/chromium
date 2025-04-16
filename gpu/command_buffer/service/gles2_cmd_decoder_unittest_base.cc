@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <string>
 #include <vector>
@@ -291,15 +292,17 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
         .RetiresOnSaturation();
   }
 
-  static GLuint attrib_0_id[] = {
-    kServiceAttrib0BufferId,
-  };
-  static GLuint fixed_attrib_buffer_id[] = {
-    kServiceFixedAttribBufferId,
-  };
+  static auto attrib_0_id = std::to_array<GLuint>({
+      kServiceAttrib0BufferId,
+  });
+  static auto fixed_attrib_buffer_id = std::to_array<GLuint>({
+      kServiceFixedAttribBufferId,
+  });
   EXPECT_CALL(*gl_, GenBuffersARB(std::size(attrib_0_id), _))
-      .WillOnce(SetArrayArgument<1>(attrib_0_id,
-                                    attrib_0_id + std::size(attrib_0_id)))
+      .WillOnce(SetArrayArgument<1>(attrib_0_id.data(),
+                                    base::span<GLuint>(attrib_0_id)
+                                        .subspan(std::size(attrib_0_id))
+                                        .data()))
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, BindBuffer(GL_ARRAY_BUFFER, kServiceAttrib0BufferId))
       .Times(1)
@@ -311,9 +314,11 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*gl_, GenBuffersARB(std::size(fixed_attrib_buffer_id), _))
-      .WillOnce(SetArrayArgument<1>(
-          fixed_attrib_buffer_id,
-          fixed_attrib_buffer_id + std::size(fixed_attrib_buffer_id)))
+      .WillOnce(
+          SetArrayArgument<1>(fixed_attrib_buffer_id.data(),
+                              base::span<GLuint>(fixed_attrib_buffer_id)
+                                  .subspan(std::size(fixed_attrib_buffer_id))
+                                  .data()))
       .RetiresOnSaturation();
 
   for (GLint tt = 0; tt < TestHelper::kNumTextureUnits; ++tt) {
@@ -379,19 +384,21 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
               GetShaderPrecisionFormat(GL_FRAGMENT_SHADER, GL_HIGH_FLOAT, _, _))
       .RetiresOnSaturation();
 
-  static GLint max_viewport_dims[] = {
-    kMaxViewportWidth,
-    kMaxViewportHeight
-  };
+  static auto max_viewport_dims =
+      std::to_array<GLint>({kMaxViewportWidth, kMaxViewportHeight});
   EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_VIEWPORT_DIMS, _))
-      .WillOnce(SetArrayArgument<1>(
-          max_viewport_dims, max_viewport_dims + std::size(max_viewport_dims)))
+      .WillOnce(SetArrayArgument<1>(max_viewport_dims.data(),
+                                    base::span<GLint>(max_viewport_dims)
+                                        .subspan(std::size(max_viewport_dims))
+                                        .data()))
       .RetiresOnSaturation();
 
-  static GLfloat line_width_range[] = { 1.0f, 2.0f };
+  static auto line_width_range = std::to_array<GLfloat>({1.0f, 2.0f});
   EXPECT_CALL(*gl_, GetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, _))
-      .WillOnce(SetArrayArgument<1>(
-          line_width_range, line_width_range + std::size(line_width_range)))
+      .WillOnce(SetArrayArgument<1>(line_width_range.data(),
+                                    base::span<GLfloat>(line_width_range)
+                                        .subspan(std::size(line_width_range))
+                                        .data()))
       .RetiresOnSaturation();
 
   if (group_->feature_info()->feature_flags().ext_window_rectangles) {
@@ -2062,8 +2069,8 @@ void GLES2DecoderTestBase::SetupShader(
                                       : kProgramOutputsESSL3;
   const size_t kNumProgramOutputs = 1;
   const int kNumUniformBlocks = 2;
-  const int kUniformBlockBinding[] = { 0, 1 };
-  const int kUniformBlockDataSize[] = { 32, 16 };
+  const auto kUniformBlockBinding = std::to_array<int>({0, 1});
+  const auto kUniformBlockDataSize = std::to_array<int>({32, 16});
 
   {
     InSequence s;

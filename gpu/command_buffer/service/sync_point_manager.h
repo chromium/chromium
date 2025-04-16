@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <functional>
 #include <memory>
 #include <queue>
@@ -386,8 +387,8 @@ class GPU_EXPORT SyncPointManager {
 
   // The following are protected by |lock_|.
   // Map of command buffer id to client state for each namespace.
-  ClientStateMap client_state_maps_[NUM_COMMAND_BUFFER_NAMESPACES] GUARDED_BY(
-      lock_);
+  std::array<ClientStateMap, NUM_COMMAND_BUFFER_NAMESPACES> client_state_maps_
+      GUARDED_BY(lock_);
 
   // Map of sequence id to order data.
   OrderDataMap order_data_map_ GUARDED_BY(lock_);

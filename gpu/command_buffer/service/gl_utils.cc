@@ -10,6 +10,7 @@
 #include "gpu/command_buffer/service/gl_utils.h"
 
 #include <algorithm>
+#include <array>
 #include <unordered_set>
 
 #include "build/build_config.h"
@@ -47,11 +48,22 @@ typedef struct {
   int blockHeight;
 } ASTCBlockArray;
 
-const ASTCBlockArray kASTCBlockArray[] = {
+const auto kASTCBlockArray = std::to_array<ASTCBlockArray>({
     {4, 4}, /* GL_COMPRESSED_RGBA_ASTC_4x4_KHR */
     {5, 4}, /* and GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR */
-    {5, 5},  {6, 5},  {6, 6},  {8, 5},   {8, 6},   {8, 8},
-    {10, 5}, {10, 6}, {10, 8}, {10, 10}, {12, 10}, {12, 12}};
+    {5, 5},
+    {6, 5},
+    {6, 6},
+    {8, 5},
+    {8, 6},
+    {8, 8},
+    {10, 5},
+    {10, 6},
+    {10, 8},
+    {10, 10},
+    {12, 10},
+    {12, 12},
+});
 
 bool IsValidPVRTCSize(GLint level, GLsizei size) {
   return GLES2Util::IsPOT(size);

@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <memory>
 
 #include "base/command_line.h"
@@ -1234,7 +1235,7 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformBlocksValid) {
   ASSERT_TRUE(program != nullptr);
   struct Data {
     UniformBlocksHeader header;
-    UniformBlockInfo entry[2];
+    std::array<UniformBlockInfo, 2> entry;
     char name0[4];
     uint32_t indices0[2];
     char name1[8];
@@ -1243,10 +1244,10 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformBlocksValid) {
   Data data;
   // The names needs to be of size 4*k-1 to avoid padding in the struct Data.
   // This is a testing only problem.
-  const char* kName[] = { "cow", "chicken" };
+  auto kName = std::to_array<const char*>({"cow", "chicken"});
   const uint32_t kIndices0[] = { 1, 2 };
   const uint32_t kIndices1[] = { 3 };
-  const uint32_t* kIndices[] = { kIndices0, kIndices1 };
+  auto kIndices = std::to_array<const uint32_t*>({kIndices0, kIndices1});
   data.header.num_uniform_blocks = 2;
   data.entry[0].binding = 0;
   data.entry[0].data_size = 8;
@@ -1401,14 +1402,14 @@ TEST_F(ProgramManagerWithShaderTest,
   ASSERT_TRUE(program != nullptr);
   struct Data {
     TransformFeedbackVaryingsHeader header;
-    TransformFeedbackVaryingInfo entry[2];
+    std::array<TransformFeedbackVaryingInfo, 2> entry;
     char name0[4];
     char name1[8];
   };
   Data data;
   // The names needs to be of size 4*k-1 to avoid padding in the struct Data.
   // This is a testing only problem.
-  const char* kName[] = { "cow", "chicken" };
+  auto kName = std::to_array<const char*>({"cow", "chicken"});
   data.header.transform_feedback_buffer_mode = GL_INTERLEAVED_ATTRIBS;
   data.header.num_transform_feedback_varyings = 2;
   data.entry[0].size = 1;
@@ -1501,7 +1502,7 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformsES3Valid) {
   ASSERT_TRUE(program != nullptr);
   struct Data {
     UniformsES3Header header;
-    UniformES3Info entry[2];
+    std::array<UniformES3Info, 2> entry;
   };
   Data data;
   const GLint kBlockIndex[] = { -1, 2 };
@@ -1527,20 +1528,20 @@ TEST_F(ProgramManagerWithShaderTest, ProgramInfoGetUniformsES3Valid) {
       .WillOnce(SetArgPointee<2>(data.header.num_uniforms))
       .RetiresOnSaturation();
 
-  const GLenum kPname[] = {
-    GL_UNIFORM_BLOCK_INDEX,
-    GL_UNIFORM_OFFSET,
-    GL_UNIFORM_ARRAY_STRIDE,
-    GL_UNIFORM_MATRIX_STRIDE,
-    GL_UNIFORM_IS_ROW_MAJOR,
-  };
-  const GLint* kParams[] = {
-    kBlockIndex,
-    kOffset,
-    kArrayStride,
-    kMatrixStride,
-    kIsRowMajor,
-  };
+  const auto kPname = std::to_array<GLenum>({
+      GL_UNIFORM_BLOCK_INDEX,
+      GL_UNIFORM_OFFSET,
+      GL_UNIFORM_ARRAY_STRIDE,
+      GL_UNIFORM_MATRIX_STRIDE,
+      GL_UNIFORM_IS_ROW_MAJOR,
+  });
+  auto kParams = std::to_array<const GLint*>({
+      kBlockIndex,
+      kOffset,
+      kArrayStride,
+      kMatrixStride,
+      kIsRowMajor,
+  });
   const size_t kNumIterations = std::size(kPname);
   for (size_t ii = 0; ii < kNumIterations; ++ii) {
     EXPECT_CALL(*(gl_.get()),
