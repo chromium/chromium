@@ -239,8 +239,8 @@ base::Value::Dict FilterData::ToJson() const {
 }
 
 bool FilterData::Matches(mojom::SourceType source_type,
-                         const base::Time& source_time,
-                         const base::Time& trigger_time,
+                         base::Time source_time,
+                         base::Time trigger_time,
                          const FiltersDisjunction& filters,
                          bool negated) const {
   if (filters.empty()) {
@@ -313,16 +313,16 @@ bool FilterData::Matches(mojom::SourceType source_type,
 }
 
 bool FilterData::MatchesForTesting(mojom::SourceType source_type,
-                                   const base::Time& source_time,
-                                   const base::Time& trigger_time,
+                                   base::Time source_time,
+                                   base::Time trigger_time,
                                    const FiltersDisjunction& filters,
                                    bool negated) const {
   return Matches(source_type, source_time, trigger_time, filters, negated);
 }
 
 bool FilterData::Matches(mojom::SourceType source_type,
-                         const base::Time& source_time,
-                         const base::Time& trigger_time,
+                         base::Time source_time,
+                         base::Time trigger_time,
                          const FilterPair& filters) const {
   return Matches(source_type, source_time, trigger_time, filters.positive,
                  /*negated=*/false) &&
