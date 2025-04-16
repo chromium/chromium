@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/shop_card/shop_card_data.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/cells/price_notifications_track_button.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -74,7 +75,7 @@ const CGFloat kContentStackSpacing = 2.0f;
   _titleLabel.font =
       PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightSemibold);
   _titleLabel.adjustsFontForContentSizeCategory = YES;
-  _titleLabel.text = _item.shopCardData.productTitle;  //@"placeholder title";
+  _titleLabel.text = _item.tabTitle;
 }
 
 - (void)populateUrlLabel {
@@ -89,7 +90,7 @@ const CGFloat kContentStackSpacing = 2.0f;
 
 // Initiates price tracking.
 - (void)trackItem {
-  // TODO(crbug.com/392973604): add price tracking action.
+  [self.commandHandler trackShopCardItem:_item];
 }
 
 // Returns the tab hostname from the given `URL`.

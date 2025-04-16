@@ -8,3 +8,11 @@ NSString* const kTabResumptionViewIdentifier = @"TabResumptionViewIdentifier";
 
 const char kTabResumptionShowItemImmediately[] =
     "tab-resumption-show-item-immediately";
+
+NSString* const kPriceTrackingOnTabSuccessAccessibilityID =
+    @"OpenPriceTrackingMenu";
+
+NSString* const kPriceTrackingOnTabFailureAccessibilityID = @"TryAgain";
+
+NSString* const kPriceTrackingOnTabSnackbarCategory =
+    @"PriceTrackingOnTabSnackbarCategory";
