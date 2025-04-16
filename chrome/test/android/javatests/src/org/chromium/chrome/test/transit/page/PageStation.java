@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.test.transit.page;
 
-import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.Condition.whether;
@@ -61,6 +60,7 @@ import java.util.function.Function;
  * the expected title, etc.
  */
 public class PageStation extends Station<ChromeTabbedActivity> {
+
     /**
      * Builder for all PageStation subclasses.
      *
@@ -163,15 +163,13 @@ public class PageStation extends Station<ChromeTabbedActivity> {
     protected final String mExpectedUrlSubstring;
     protected final String mExpectedTitle;
 
-    public static final ViewSpec TOOLBAR = viewSpec(withId(R.id.control_container));
-    public static final ViewSpec HOME_BUTTON = viewSpec(withId(R.id.home_button));
-    public static final ViewSpec URL_BAR = viewSpec(withId(R.id.url_bar));
-    public static final ViewSpec TAB_SWITCHER_BUTTON = viewSpec(withId(R.id.tab_switcher_button));
-    public static final ViewSpec MENU_BUTTON = viewSpec(withId(R.id.menu_button));
+    protected static final ViewSpec URL_BAR = viewSpec(withId(R.id.url_bar));
     protected Supplier<Tab> mActivityTabSupplier;
     protected Supplier<Tab> mSelectedTabSupplier;
     protected Element<Tab> mPageLoadedSupplier;
-    private ViewElement mToolbar;
+    protected ViewElement mToolbar;
+    protected ViewElement mTabSwitcherButton;
+    protected ViewElement mMenuButton;
 
     /** Prefer the PageStation's subclass |newBuilder()|. */
     public static Builder<PageStation> newGenericBuilder() {
@@ -229,10 +227,16 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         // since they unintentionally still exist in the non-Hub tab switcher. They are mostly
         // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still
         // visible.
-        mToolbar = elements.declareView(TOOLBAR, ViewElement.unscopedOption());
-        elements.declareView(HOME_BUTTON, ViewElement.unscopedOption());
-        elements.declareView(TAB_SWITCHER_BUTTON, ViewElement.unscopedOption());
-        elements.declareView(MENU_BUTTON, ViewElement.unscopedOption());
+        mToolbar =
+                elements.declareView(
+                        viewSpec(withId(R.id.control_container)), ViewElement.unscopedOption());
+        elements.declareView(viewSpec(withId(R.id.home_button)), ViewElement.unscopedOption());
+        mTabSwitcherButton =
+                elements.declareView(
+                        viewSpec(withId(R.id.tab_switcher_button)), ViewElement.unscopedOption());
+        mMenuButton =
+                elements.declareView(
+                        viewSpec(withId(R.id.menu_button)), ViewElement.unscopedOption());
 
         if (mNumTabsBeingOpened > 0) {
             elements.declareEnterCondition(
@@ -333,15 +337,15 @@ public class PageStation extends Station<ChromeTabbedActivity> {
     public TabSwitcherActionMenuFacility openTabSwitcherActionMenu() {
         recheckActiveConditions();
         return enterFacilitySync(
-                new TabSwitcherActionMenuFacility(),
-                () -> TAB_SWITCHER_BUTTON.perform(longClick()));
+                new TabSwitcherActionMenuFacility(), mTabSwitcherButton.longClickTrigger());
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */
     public PageAppMenuFacility<PageStation> openGenericAppMenu() {
         recheckActiveConditions();
 
-        return enterFacilitySync(new PageAppMenuFacility<PageStation>(), MENU_BUTTON::click);
+        return enterFacilitySync(
+                new PageAppMenuFacility<PageStation>(), mMenuButton.clickTrigger());
     }
 
     /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */
@@ -398,7 +402,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         assert !mIncognito;
         return travelToSync(
                 RegularTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                TAB_SWITCHER_BUTTON::click);
+                mTabSwitcherButton.clickTrigger());
     }
 
     /** Opens the incognito tab switcher by pressing the toolbar tab switcher button. */
@@ -406,7 +410,7 @@ public class PageStation extends Station<ChromeTabbedActivity> {
         assert mIncognito;
         return travelToSync(
                 IncognitoTabSwitcherStation.from(getActivity().getTabModelSelector()),
-                TAB_SWITCHER_BUTTON::click);
+                mTabSwitcherButton.clickTrigger());
     }
 
     /** Loads a |url| in the same tab and waits to transition. */
