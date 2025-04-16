@@ -9,6 +9,7 @@
 
 #include "third_party/blink/public/common/notifications/notification_mojom_traits.h"
 
+#include <array>
 #include <optional>
 
 #include "base/strings/stringprintf.h"
@@ -46,9 +47,11 @@ TEST(NotificationStructTraitsTest, NotificationDataRoundtrip) {
   notification_data.icon = GURL("https://example.com/icon.png");
   notification_data.badge = GURL("https://example.com/badge.png");
 
-  const int vibration_pattern[] = {500, 100, 30};
+  const auto vibration_pattern = std::to_array<int>({500, 100, 30});
   notification_data.vibration_pattern.assign(
-      vibration_pattern, vibration_pattern + std::size(vibration_pattern));
+      vibration_pattern.data(), base::span<const int>(vibration_pattern)
+                                    .subspan(std::size(vibration_pattern))
+                                    .data());
 
   notification_data.timestamp =
       base::Time::FromMillisecondsSinceUnixEpoch(1513966159000.);
