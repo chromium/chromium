@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -36,8 +37,9 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -52,7 +54,9 @@ import java.util.concurrent.TimeoutException;
 /** Tests for history feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class HistoryTest {
+
     private static class FaviconWaiter extends CallbackHelper
             implements FaviconHelper.FaviconImageCallback {
         private Bitmap mFavicon;
@@ -70,7 +74,8 @@ public class HistoryTest {
     }
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public SigninTestRule mSigninTestRule = new SigninTestRule();
 
@@ -89,7 +94,7 @@ public class HistoryTest {
     @Test
     @SmallTest
     public void testFavicon() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         FaviconHelper helper = ThreadUtils.runOnUiThreadBlocking(FaviconHelper::new);
         // If the returned favicons are non-null Bitmap#sameAs() should be used.
@@ -121,7 +126,7 @@ public class HistoryTest {
                     syncService.setSelectedType(UserSelectableType.HISTORY, false);
                     syncService.setSelectedType(UserSelectableType.TABS, false);
                 });
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         // Load a page so the history page will not in empty state.
         String testUrl = "/chrome/test/data/android/google.html";
         mActivityTestRule.loadUrl(mActivityTestRule.getTestServer().getURL(testUrl));
@@ -161,7 +166,7 @@ public class HistoryTest {
                     syncService.setSelectedType(UserSelectableType.HISTORY, false);
                     syncService.setSelectedType(UserSelectableType.TABS, false);
                 });
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.HISTORY_URL);
 
