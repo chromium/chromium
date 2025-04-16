@@ -1484,7 +1484,8 @@ interface NetworkContext {
       network.mojom.CredentialsMode credentials_mode,
       NetworkAnonymizationKey network_anonymization_key,
       MutableNetworkTrafficAnnotationTag traffic_annotation,
-      ConnectionKeepAliveConfig? keepalive_config);
+      ConnectionKeepAliveConfig? keepalive_config,
+      pending_remote<ReconnectEventObserver>? reconnect_event_observer);
 
   // Creates a P2PSocketManager instance, used for WebRTC.
   // `network_anonymization_key` is the network cache shard to associate with

@@ -4,6 +4,13 @@
 
 module network.mojom;
 
+// An observer to monitor whether a reconnect-emitting event has happened in a
+// connection. It primary use is to notify the browser process of the events
+// from the //net layer.
+// TODO(crbug.com/406022435): Add the events.
+interface ReconnectEventObserver {
+};
+
 // Keeps track of the configs to run the connection keep alive.
 // This represents `net::ConnectionKeepAliveConfig`.
 // Passed on `NetworkContext::PreconnectSockets()`.

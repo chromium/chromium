@@ -946,7 +946,7 @@ IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
                                 .network_anonymization_key(),
                             net::MutableNetworkTrafficAnnotationTag(
                                 TRAFFIC_ANNOTATION_FOR_TESTS),
-                            std::nullopt);
+                            std::nullopt, mojo::NullRemote());
 
     connection_tracker_->WaitForAcceptedConnections(1);
     EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());

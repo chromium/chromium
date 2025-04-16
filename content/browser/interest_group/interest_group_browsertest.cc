@@ -22033,8 +22033,9 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBiddingAndAuctionServerBrowserTest,
         network::mojom::CredentialsMode credentials_mode,
         const net::NetworkAnonymizationKey& network_anonymization_key,
         const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-        const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config)
-        override {
+        const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
+        mojo::PendingRemote<network::mojom::ReconnectEventObserver>
+            reconnect_event_observer) override {
       EXPECT_EQ(1u, num_streams);
       EXPECT_EQ(expected_url_, url);
       EXPECT_EQ(credentials_mode, network::mojom::CredentialsMode::kInclude);

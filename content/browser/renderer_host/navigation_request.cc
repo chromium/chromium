@@ -2072,7 +2072,7 @@ NavigationRequest::NavigationRequest(
           1, common_params_->url, network::mojom::CredentialsMode::kInclude,
           GetIsolationInfo().network_anonymization_key(),
           net::MutableNetworkTrafficAnnotationTag(),
-          /*keepalive_config=*/std::nullopt);
+          /*keepalive_config=*/std::nullopt, mojo::NullRemote());
     }
   }
 

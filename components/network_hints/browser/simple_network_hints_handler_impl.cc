@@ -172,7 +172,7 @@ void SimpleNetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
           allow_credentials ? network::mojom::CredentialsMode::kInclude
                             : network::mojom::CredentialsMode::kOmit,
           network_anonymization_key, net::MutableNetworkTrafficAnnotationTag(),
-          /*keepalive_config=*/std::nullopt);
+          /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 }  // namespace network_hints

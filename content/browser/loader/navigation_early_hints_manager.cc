@@ -485,7 +485,7 @@ void NavigationEarlyHintsManager::MaybePreconnect(
       isolation_info_.network_anonymization_key(),
       net::MutableNetworkTrafficAnnotationTag(
           kEarlyHintsPreloadTrafficAnnotation),
-      /*keepalive_config=*/std::nullopt);
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
   preconnect_entries_.insert(std::move(entry));
 }
 

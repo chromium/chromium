@@ -48,5 +48,5 @@ void AccountCapabilitiesFetcherFactoryGaia::
       net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(
           GaiaUrls::GetInstance()->account_capabilities_url())),
       net::MutableNetworkTrafficAnnotationTag(),
-      /*keepalive_config=*/std::nullopt);
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }

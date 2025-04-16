@@ -62,8 +62,9 @@ class FakeNetworkContext : public network::TestNetworkContext {
       network::mojom::CredentialsMode credentials_mode,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config)
-      override {
+      const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
+      mojo::PendingRemote<network::mojom::ReconnectEventObserver>
+          reconnect_event_observer) override {
     preconnect_requests_.emplace_back(
         url,
         credentials_mode == network::mojom::CredentialsMode::kInclude ? true

@@ -2236,7 +2236,9 @@ void NetworkContext::PreconnectSockets(
     mojom::CredentialsMode credentials_mode,
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config) {
+    const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
+    mojo::PendingRemote<mojom::ReconnectEventObserver>
+        reconnect_event_observer) {
   DCHECK(!require_network_anonymization_key_ ||
          !network_anonymization_key.IsEmpty());
 

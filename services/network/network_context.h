@@ -456,8 +456,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
       mojom::CredentialsMode credentials_mode,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config)
-      override;
+      const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config,
+      mojo::PendingRemote<mojom::ReconnectEventObserver>
+          reconnect_event_observer) override;
 #if BUILDFLAG(IS_P2P_ENABLED)
   void CreateP2PSocketManager(
       const net::NetworkAnonymizationKey& network_anonymization_key,
