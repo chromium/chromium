@@ -12,6 +12,7 @@ extensions_api_schema_files_ = [
   "alarms.idl",
   "declarative_net_request.idl",
   "extension_types.json",
+  "file_handlers.idl",
   "i18n.json",
   "idle.json",
   "management.json",
@@ -62,7 +63,6 @@ if (enable_extensions) {
     "events.json",
     "extension_options_internal.idl",
     "feedback_private.idl",
-    "file_handlers.idl",
     "file_system.idl",
     "guest_view_internal.json",
     "hid.idl",
@@ -106,7 +106,6 @@ if (enable_desktop_android_extensions) {
   extensions_types_only_schema_files_ += [
     "clipboard.idl",
     "events.json",
-    "file_handlers.idl",
     "icon_variants.idl",
     "scripts_internal.idl",
     "system_display.idl",
