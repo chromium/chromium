@@ -237,7 +237,9 @@ ConfigBase::~ConfigBase() {
   // `policy_maker_` holds a raw_ptr on `policy_`, so we need to make sure it
   // gets destroyed first.
   policy_maker_.reset();
-  policy_.ClearAndDelete();  // Allocated by MakeBrokerPolicyMemory.
+  sandbox::PolicyGlobal* policy = policy_.get();
+  policy_ = nullptr;
+  ::operator delete(policy);
 }
 
 sandbox::LowLevelPolicy* ConfigBase::PolicyMaker() {

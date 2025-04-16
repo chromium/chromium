@@ -25,6 +25,15 @@ namespace sandbox {
 
 class PolicyBase;
 
+// Deleter for `std::unique_ptr<T>`.
+struct PolicyDeleter final {
+  void operator()(PolicyGlobal* ptr) const {
+    // It is UB to `delete ptr` here because of operator new-delete mismatch.
+    // Routing to the global operator.
+    ::operator delete(static_cast<void*>(ptr));
+  }
+};
+
 // Intended to rhyme with TargetPolicy, may eventually share a common base
 // with a configuration holding class (i.e. this class will extend with dynamic
 // members such as the |process_ids_| list.)
@@ -53,7 +62,7 @@ class PolicyDiagnostic final : public PolicyInfo {
   // Only populated if |app_container_sid_| is present.
   std::vector<base::win::Sid> initial_capabilities_;
   AppContainerType app_container_type_ = AppContainerType::kNone;
-  std::unique_ptr<PolicyGlobal> policy_rules_;
+  std::unique_ptr<PolicyGlobal, PolicyDeleter> policy_rules_;
   // From policy's TopLevelDispatcher.
   std::vector<IpcTag> ipcs_;
   bool is_csrss_connected_ = false;
