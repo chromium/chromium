@@ -2980,6 +2980,7 @@ static_library("browser") {
       "enterprise/reporting/reporting_delegate_factory_android.h",
       "enterprise/util/android_enterprise_info.cc",
       "enterprise/util/android_enterprise_info.h",
+      "enterprise/util/data_protection_bridge.cc",
       "feed/android/background_refresh_task.cc",
       "feed/android/background_refresh_task.h",
       "feed/android/feed_image_fetch_client.cc",
