@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
@@ -312,8 +313,9 @@ TEST_F(CommerceUiTabHelperTest,
 TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  commerce::SetUpPriceInsightsEligibility(&features_, account_checker_.get(),
-                                          true);
+  features_.InitWithFeatures(
+      {commerce::kPriceInsights, commerce::kEnableDiscountInfoApi}, {});
+  commerce::SetUpDiscountEligibilityForAccount(account_checker_.get(), true);
 
   std::optional<ProductInfo> product_info = CreateProductInfo(
       kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
@@ -323,6 +325,15 @@ TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
       CreateValidPriceInsightsInfo(true, true, PriceBucket::kLowPrice);
   shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
       price_insights_info);
+  shopping_service_->SetResponseForGetDiscountInfoForUrl(
+      {commerce::CreateValidDiscountInfo(
+          /*detail=*/"Get 10% off",
+          /*terms_and_conditions=*/"",
+          /*value_in_text=*/"$10 off", /*discount_code=*/"discount_code",
+          /*id=*/123,
+          /*is_merchant_wide=*/true,
+          (base::DefaultClock::GetInstance()->Now() + base::Days(2))
+              .InSecondsFSinceUnixEpoch())});
 
   SimulateNavigationCommitted(GURL(kProductUrl));
 
@@ -338,7 +349,7 @@ TEST_F(CommerceUiTabHelperTest, TestRecordShoppingInformationUKM) {
   ukm_recorder.ExpectEntryMetric(
       entries[0], Shopping_ShoppingInformation::kIsShoppingContentName, 1);
   ukm_recorder.ExpectEntryMetric(
-      entries[0], Shopping_ShoppingInformation::kHasDiscountName, 0);
+      entries[0], Shopping_ShoppingInformation::kHasDiscountName, 1);
 }
 
 }  // namespace commerce

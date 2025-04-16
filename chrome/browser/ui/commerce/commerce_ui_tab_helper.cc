@@ -581,28 +581,6 @@ void CommerceUiTabHelper::UpdateDiscountsIconView() {
   UpdatePageActionIconView(web_contents(), PageActionIconType::kDiscounts);
 }
 
-bool CommerceUiTabHelper::IsShowingDiscountsIcon() {
-  auto* browser = chrome::FindBrowserWithTab(web_contents());
-  if (!browser) {
-    return false;
-  }
-  auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view) {
-    return false;
-  }
-
-  auto* toolbar_button_provider = browser_view->toolbar_button_provider();
-  if (!toolbar_button_provider) {
-    return false;
-  }
-
-  auto* icon = toolbar_button_provider->GetPageActionIconView(
-      PageActionIconType::kPaymentsOfferNotification);
-
-  return page_has_discounts_ || (icon ? icon->GetVisible() : false);
-  ;
-}
-
 void CommerceUiTabHelper::ComputePageActionToExpand() {
   if (!page_action_icon_compute_start_time_.is_null()) {
     base::UmaHistogramTimes(
@@ -799,7 +777,9 @@ void CommerceUiTabHelper::MaybeRecordShoppingInformationUKM(
   }
 
   ukm_builder.SetHasPriceInsights(price_insights_info_.has_value())
-      .SetHasDiscount(IsShowingDiscountsIcon())
+      .SetHasDiscount(
+          discounts_page_action_controller_->ShouldShowForNavigation().value_or(
+              false))
       .SetIsPriceTrackable(true)
       .SetIsShoppingContent(true)
       .Record(ukm::UkmRecorder::Get());

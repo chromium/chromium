@@ -204,8 +204,6 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
 
   void ComputePageActionToExpand();
 
-  bool IsShowingDiscountsIcon();
-
   void RecordIconMetrics(PageActionIconType page_action, bool from_icon_use);
 
   void RecordPriceInsightsIconMetrics(bool from_icon_use);
