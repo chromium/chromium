@@ -1163,12 +1163,14 @@ HostResolverManager::ServeFromHosts(std::string_view hostname,
     }
   }
 
-  // If got only loopback addresses and the family was restricted, resolve
-  // again, without restrictions. See SystemHostResolverCall for rationale.
+  // If got only loopback addresses (or no addresses) and the family was
+  // restricted, resolve again, without restrictions. See SystemHostResolverCall
+  // for rationale.
   if (default_family_due_to_no_ipv6 && ipv4_result &&
-      ipv4_result->type() == HostResolverInternalResult::Type::kData &&
-      std::ranges::all_of(ipv4_result->AsData().endpoints(),
-                          &IPAddress::IsLoopback, &IPEndPoint::address)) {
+      (ipv4_result->type() == HostResolverInternalResult::Type::kError ||
+       (ipv4_result->type() == HostResolverInternalResult::Type::kData &&
+        std::ranges::all_of(ipv4_result->AsData().endpoints(),
+                            &IPAddress::IsLoopback, &IPEndPoint::address)))) {
     CHECK(!ipv6_result) << "Requesting AAAA is incompatible with "
                            "`default_family_due_to_no_ipv6`.";
     query_types.Put(DnsQueryType::AAAA);

@@ -5312,6 +5312,95 @@ TEST_F(HostResolverManagerDnsTest, ServeFromHosts) {
               testing::Pointee(ElementsAre("nx_ipv6")));
 }
 
+// Test the case where a Hosts file contains both IPv4 and IPv6 results for a
+// name but IPv6 is unreachable.
+TEST_F(HostResolverManagerDnsTest, ServeOnlyIpv4FromHostsWhenIpv6Unreachable) {
+  constexpr IPAddress kIpv4Address(192, 0, 2, 33);
+  constexpr IPAddress kIpv6Address(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0,
+                                   0, 0, 0, 0, 33);
+
+  DnsHosts hosts;
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV4)] = kIpv4Address;
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV6)] = kIpv6Address;
+
+  CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
+                                    /*ipv6_reachable=*/false,
+                                    /*check_ipv6_on_wifi=*/true,
+                                    /*is_async=*/false);
+  DnsConfig config = CreateValidDnsConfig();
+  config.hosts = hosts;
+  ChangeDnsConfig(config);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("host.test", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), std::nullopt, resolve_context_.get()));
+
+  // Expect to resolve only the IPv4 address. The IPv6 in the Hosts file should
+  // be ignored and not included in resolution while IPv6 is unreachable.
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+              ElementsAre(IPEndPoint(kIpv4Address, 80)));
+}
+
+// Test for the case where IPv6 is unreachable but the Hosts file only contains
+// IPv6 addresses for a name.
+TEST_F(HostResolverManagerDnsTest, ServeIpv6FromHostsWhenNoIpv4) {
+  constexpr IPAddress kIpv6Address(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0,
+                                   0, 0, 0, 0, 100);
+
+  DnsHosts hosts;
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV6)] = kIpv6Address;
+
+  CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
+                                    /*ipv6_reachable=*/false,
+                                    /*check_ipv6_on_wifi=*/true,
+                                    /*is_async=*/false);
+  DnsConfig config = CreateValidDnsConfig();
+  config.hosts = hosts;
+  ChangeDnsConfig(config);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("host.test", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), std::nullopt, resolve_context_.get()));
+
+  // Expect to IPv6 address to resolve despite IPv6 being unreachable because
+  // there are no IPv4 addresses for the query name in the Hosts file.
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+              ElementsAre(IPEndPoint(kIpv6Address, 80)));
+}
+
+// Test for the case where IPv6 is unreachable but the Hosts file only contains
+// IPv6 addresses and Localhost IPv4 addresses for a name.
+TEST_F(HostResolverManagerDnsTest, ServeIpv6FromHostsWhenIpv4OnlyLocalhost) {
+  constexpr IPAddress kIpv6Address(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0,
+                                   0, 0, 0, 0, 12);
+
+  DnsHosts hosts;
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV4)] =
+      IPAddress::IPv4Localhost();
+  hosts[DnsHostsKey("host.test", ADDRESS_FAMILY_IPV6)] = kIpv6Address;
+
+  CreateResolverWithLimitsAndParams(kMaxJobs, DefaultParams(proc_),
+                                    /*ipv6_reachable=*/false,
+                                    /*check_ipv6_on_wifi=*/true,
+                                    /*is_async=*/false);
+  DnsConfig config = CreateValidDnsConfig();
+  config.hosts = hosts;
+  ChangeDnsConfig(config);
+
+  ResolveHostResponseHelper response(resolver_->CreateRequest(
+      HostPortPair("host.test", 80), NetworkAnonymizationKey(),
+      NetLogWithSource(), std::nullopt, resolve_context_.get()));
+
+  // Expect to IPv6 address to resolve despite IPv6 being unreachable because
+  // the only IPv4 addresses for the query name in the Hosts file are Localhost.
+  EXPECT_THAT(response.result_error(), IsOk());
+  EXPECT_THAT(response.request()->GetAddressResults()->endpoints(),
+              UnorderedElementsAre(IPEndPoint(IPAddress::IPv4Localhost(), 80),
+                                   IPEndPoint(kIpv6Address, 80)));
+}
+
 TEST_F(HostResolverManagerDnsTest,
        SkipHostsWithUpcomingHostResolverSystemTask) {
   // Disable the DnsClient.
