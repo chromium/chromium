@@ -270,7 +270,12 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
 
   SelectionInDOMTree::Builder builder;
   const VisibleSelection& selection = EndingVisibleSelection();
-  builder.SetAffinity(selection.Affinity());
+  if (RuntimeEnabledFeatures::CaretWithTextAffinityUpstreamEnabled() &&
+      text_ == " " && !IsRichlyEditablePosition(start_position)) {
+    builder.SetAffinity(TextAffinity::kUpstreamIfPossible);
+  } else {
+    builder.SetAffinity(selection.Affinity());
+  }
   if (selection.End().IsNotNull())
     builder.Collapse(selection.End());
   SetEndingSelection(SelectionForUndoStep::From(builder.Build()));

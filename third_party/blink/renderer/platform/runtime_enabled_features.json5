@@ -783,6 +783,13 @@
       status: "stable",
     },
     {
+      // Changes the caret's affinity to upstream, preventing spaces
+      // from appearing in the previous line when typing at the start
+      // of a wrapped line. See https://crbug.com/40677155
+      name: "CaretWithTextAffinityUpstream",
+      status: "stable",
+    },
+    {
       name: "CascadedAfterChangeStyle",
       status: "stable",
     },

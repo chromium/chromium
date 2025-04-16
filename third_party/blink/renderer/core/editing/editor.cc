@@ -205,7 +205,8 @@ bool Editor::HandleTextEvent(TextEvent* event) {
   // TODO(kojii): rich editing has the same issue, but has more options and
   // needs coordination with JS. Enable for plaintext only for now and collect
   // feedback.
-  if (data == " " && !CanEditRichly() &&
+  if (!RuntimeEnabledFeatures::CaretWithTextAffinityUpstreamEnabled() &&
+      data == " " && !CanEditRichly() &&
       IsCaretAtStartOfWrappedLine(GetFrameSelection())) {
     InsertLineBreak();
   }
