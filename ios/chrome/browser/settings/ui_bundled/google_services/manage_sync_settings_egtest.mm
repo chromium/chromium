@@ -253,6 +253,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests sign out from the manage accounts on device page.
 - (void)testSignOutFromManageAccountsSettings {
+  // Signing out from the manage accounts settings is not possible unless opened
+  // from the web.
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
+    return;
+  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 

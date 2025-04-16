@@ -248,4 +248,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
       [SigninEarlGreyAppInterface areSeparateProfilesForManagedAccountsEnabled];
 }
 
+- (BOOL)isIdentityDiscAccountMenuEnabled {
+  return [SigninEarlGreyAppInterface isIdentityDiscAccountMenuEnabled];
+}
+
 @end

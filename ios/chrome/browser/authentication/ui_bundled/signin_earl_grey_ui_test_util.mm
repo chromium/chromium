@@ -38,13 +38,17 @@ using chrome_test_util::SignOutAccountsButton;
 
 namespace {
 
+BOOL IsIdentityManaged(id<SystemIdentity> identity) {
+  return ![identity.userEmail hasSuffix:@"@gmail.com"];
+}
+
 // Closes the managed account sign-in confirmation dialog when necessary, if
 // `fakeIdentity` is a managed account. That dialog may be shown when User
 // Policy is enabled.
 void CloseManagedAccountSignInDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   // Don't expect a managed account dialog when the account isn't considered
   // managed.
-  if ([fakeIdentity.userEmail hasSuffix:@"@gmail.com"]) {
+  if (!IsIdentityManaged(fakeIdentity)) {
     return;
   }
 
@@ -58,11 +62,27 @@ void CloseManagedAccountSignInDialogIfAny(FakeSystemIdentity* fakeIdentity) {
   id<GREYMatcher> acceptButton = [ChromeMatchersAppInterface
       buttonWithAccessibilityLabelID:
           IDS_IOS_MANAGED_SIGNIN_WITH_USER_POLICY_CONTINUE_BUTTON_LABEL];
+  [ChromeEarlGreyUI waitForAppToIdle];
   BOOL hasDialog =
-      [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton
-                                                 timeout:base::Seconds(1)];
+      [ChromeEarlGrey testUIElementAppearanceWithMatcher:acceptButton];
   if (hasDialog) {
     [[EarlGrey selectElementWithMatcher:acceptButton] performAction:grey_tap()];
+  }
+}
+
+void CloseHistorySyncSheet(BOOL enableHistorySync) {
+  id<GREYMatcher> history_sync_matcher =
+      grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier);
+
+  [ChromeEarlGrey waitForMatcher:history_sync_matcher];
+  if (enableHistorySync) {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            PromoScreenPrimaryButtonMatcher()]
+        performAction:grey_tap()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                            PromoScreenSecondaryButtonMatcher()]
+        performAction:grey_tap()];
   }
 }
 
@@ -121,6 +141,16 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
   if (![SigninEarlGrey isIdentityAdded:fakeIdentity]) {
     // For convenience, add the identity, if it was not added yet.
     [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  }
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled] &&
+      IsIdentityManaged(fakeIdentity)) {
+    [SigninEarlGrey signInWithoutHistorySyncWithFakeIdentity:fakeIdentity];
+    CloseManagedAccountSignInDialogIfAny(fakeIdentity);
+    [ChromeEarlGreyUI waitForAppToIdle];
+    CloseHistorySyncSheet(enableHistorySync);
+    [ChromeEarlGrey
+        waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+    return;
   }
   // TODO(crbug.com/335592853): There's no good reason why the with-history vs
   // without-history flows should be completely different, unify them.

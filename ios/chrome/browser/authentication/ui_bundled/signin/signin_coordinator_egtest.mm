@@ -685,6 +685,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that a signed-in user can open "Settings" screen from the NTP.
 - (void)testOpenManageSyncSettingsFromNTP {
+  if ([SigninEarlGrey isIdentityDiscAccountMenuEnabled]) {
+    // The identity disk will open the account menu sheet and not the settings
+    // menu.
+    return;
+  }
   // Sign in to Chrome.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];

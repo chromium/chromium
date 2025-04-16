@@ -426,6 +426,10 @@ void CompleteSigninFlow() {
 
 // Tests signing out account from accounts on this device with sync disabled.
 - (void)testSignOutFromAccountsOnThisDeviceSyncDisabled {
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
+    return;
+  }
+
   // Add account.
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];

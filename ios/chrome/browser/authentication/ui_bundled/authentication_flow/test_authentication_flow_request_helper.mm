@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/test_authentication_flow_request_helper.h"
 
 #import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "base/notreached.h"
 #import "ios/chrome/app/change_profile_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
@@ -42,7 +43,7 @@
     (signin_ui::SigninCompletionCallback)signinCompletion {
   return
       [self initWithSigninCompletionCallback:signinCompletion
-           changeProfileContinuationProvider:NotReachedContinuationProvider()];
+           changeProfileContinuationProvider:DoNothingContinuationProvider()];
 }
 
 #pragma mark - AuthenticationFlowRequestHelper

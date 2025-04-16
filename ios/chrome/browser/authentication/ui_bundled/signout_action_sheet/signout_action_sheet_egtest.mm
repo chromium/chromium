@@ -103,6 +103,11 @@ void ClickSignOutInAccountSettings() {
 // also makes sure the settings are not blocked after the sign-out.
 // Related to crbug.com/1471942.
 - (void)testSignoutFromAccountsTableView {
+  // Signing out from the accounts table view is not possible with separate
+  // profiles.
+  if ([SigninEarlGrey areSeparateProfilesForManagedAccountsEnabled]) {
+    return;
+  }
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 

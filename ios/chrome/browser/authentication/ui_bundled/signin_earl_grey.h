@@ -154,6 +154,12 @@ class GURL;
 // in the test app.
 - (BOOL)areSeparateProfilesForManagedAccountsEnabled;
 
+// Returns whether the account particle disc on the NTP should open the account
+// menu. This depends on the `kSeparateProfilesForManagedAccounts` and
+// `kIdentityDiscAccountMenu` feature flags, plus some additional conditions
+// which can't be directly checked in the test app.
+- (BOOL)isIdentityDiscAccountMenuEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_SIGNIN_EARL_GREY_H_
