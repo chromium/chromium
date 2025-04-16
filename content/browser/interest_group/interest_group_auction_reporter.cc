@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
