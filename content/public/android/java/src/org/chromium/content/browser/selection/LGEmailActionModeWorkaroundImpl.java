@@ -39,12 +39,12 @@ public final class LGEmailActionModeWorkaroundImpl {
     private static final String TAG = "Ime";
 
     // This is the last broken version shipped on LG V20/NRD90M.
-    public static final int LGEmailWorkaroundMaxVersion = 67502100;
+    public static final int LG_EMAIL_WORKAROUND_MAX_VERSION = 67502100;
 
     private LGEmailActionModeWorkaroundImpl() {}
 
     public static boolean isSafeVersion(int versionCode) {
-        return versionCode > LGEmailWorkaroundMaxVersion;
+        return versionCode > LG_EMAIL_WORKAROUND_MAX_VERSION;
     }
 
     /**
@@ -71,7 +71,7 @@ public final class LGEmailActionModeWorkaroundImpl {
 
         final String lgeMailPackageId = "com.lge.email";
         if (!lgeMailPackageId.equals(appName)) return false;
-        if (versionCode > LGEmailWorkaroundMaxVersion) return false;
+        if (versionCode > LG_EMAIL_WORKAROUND_MAX_VERSION) return false;
 
         Log.w(
                 TAG,

@@ -94,7 +94,7 @@ public class DialogOverlayImplPixelTest {
 
     // Maximum status bar height that we'll work with.  This just lets us restrict the area of the
     // screenshot that we inspect, since it's slow.  This should also include the URL bar.
-    private static final int mStatusBarMaxHeightPx = 300;
+    private static final int STATUS_BAR_MAX_HEIGHT_PX = 300;
 
     // Area of interest that contains the div, since the whole image is big.
     Rect mAreaOfInterestPx;
@@ -160,7 +160,7 @@ public class DialogOverlayImplPixelTest {
             mAreaOfInterestPx.left = mDivXPx - FUZZY_PIXELS;
             mAreaOfInterestPx.top = mDivYPx - FUZZY_PIXELS;
             mAreaOfInterestPx.right = mDivXPx + mDivWidthPx - 1 + FUZZY_PIXELS;
-            mAreaOfInterestPx.bottom = mDivYPx + mDivHeightPx + mStatusBarMaxHeightPx;
+            mAreaOfInterestPx.bottom = mDivYPx + mDivHeightPx + STATUS_BAR_MAX_HEIGHT_PX;
 
             mInitialScreenshot = takeScreenshot();
 
