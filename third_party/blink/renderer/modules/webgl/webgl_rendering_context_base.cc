@@ -8619,7 +8619,10 @@ String WebGLRenderingContextBase::EnsureNotNull(const String& text) const {
 
 WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
     LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type)
-    : type_(type), resource_providers_(capacity) {}
+    : capacity_(capacity),
+      type_(type),
+      resource_providers_(capacity),
+      requested_formats_(capacity) {}
 
 CanvasResourceProvider* WebGLRenderingContextBase::
     LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
@@ -8628,13 +8631,13 @@ CanvasResourceProvider* WebGLRenderingContextBase::
         SkAlphaType alpha_type,
         const gfx::ColorSpace& color_space) {
   wtf_size_t i;
-  for (i = 0; i < resource_providers_.size(); ++i) {
+  for (i = 0; i < capacity_; ++i) {
     CanvasResourceProvider* resource_provider = resource_providers_[i].get();
     if (!resource_provider)
       break;
-
     if (resource_provider->Size() != size ||
-        resource_provider->GetSharedImageFormat() != format ||
+        (resource_provider->GetSharedImageFormat() != format &&
+         requested_formats_[i] != format) ||
         resource_provider->GetAlphaType() != alpha_type ||
         resource_provider->GetColorSpace() != color_space) {
       continue;
@@ -8662,8 +8665,9 @@ CanvasResourceProvider* WebGLRenderingContextBase::
 
   if (!temp)
     return nullptr;
-  i = std::min(resource_providers_.size() - 1, i);
+  i = std::min(capacity_ - 1, i);
   resource_providers_[i] = std::move(temp);
+  requested_formats_[i] = format;
 
   CanvasResourceProvider* resource_provider = resource_providers_[i].get();
   BubbleToFront(i);
@@ -8672,8 +8676,10 @@ CanvasResourceProvider* WebGLRenderingContextBase::
 
 void WebGLRenderingContextBase::LRUCanvasResourceProviderCache::BubbleToFront(
     wtf_size_t idx) {
-  for (wtf_size_t i = idx; i > 0; --i)
+  for (wtf_size_t i = idx; i > 0; --i) {
     resource_providers_[i].swap(resource_providers_[i - 1]);
+    std::swap(requested_formats_[i], requested_formats_[i - 1]);
+  }
 }
 
 namespace {
