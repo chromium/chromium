@@ -959,7 +959,9 @@ BASE_FEATURE(kIOSSessionRestoreLoadTriggerKillSwitch,
                                        webview:self.webView
                                       delegate:delegate];
   [download startDownload];
-  handler(download);
+  if (handler) {
+    handler(download);
+  }
 }
 
 - (BOOL)findInteractionSupported {

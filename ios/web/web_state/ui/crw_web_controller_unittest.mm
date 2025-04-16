@@ -27,6 +27,7 @@
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_action_policy_util.h"
+#import "ios/web/public/download/crw_web_view_download.h"
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -307,6 +308,62 @@ TEST_F(CRWWebControllerTest, RemoveWebViewFromViewHierarchy) {
 
   [web_controller() addWebViewToViewHierarchy];
   EXPECT_EQ(web_controller().view, web_view.superview.superview);
+}
+
+// Tests that `downloadCurrentPageToDestinationPath` method starts downloading
+// the current page.
+TEST_F(CRWWebControllerTest, DownloadCurrentPageToDestinationPath) {
+  NSString* destination = @"/path/to/destination";
+  id delegate = OCMStrictProtocolMock(@protocol(CRWWebViewDownloadDelegate));
+
+  __block bool download_started = false;
+  id wk_download = OCMStrictClassMock([WKDownload class]);
+  [[wk_download expect] setDelegate:[OCMArg any]];
+  [[mock_web_view_ stub]
+      startDownloadUsingRequest:OCMOCK_ANY
+              completionHandler:[OCMArg checkWithBlock:^(void (^completion)(
+                                    WKDownload* download)) {
+                completion(wk_download);
+                download_started = true;
+                return YES;
+              }]];
+
+  __block id<CRWWebViewDownload> output = nil;
+  [web_controller()
+      downloadCurrentPageToDestinationPath:destination
+                                  delegate:delegate
+                                   handler:^(id<CRWWebViewDownload> download) {
+                                     output = download;
+                                   }];
+
+  EXPECT_NE(nil, output);
+  EXPECT_TRUE(download_started);
+}
+
+// Tests that `downloadCurrentPageToDestinationPath` method starts downloading
+// the current page without a handler.
+TEST_F(CRWWebControllerTest,
+       DownloadCurrentPageToDestinationPathWithoutHandler) {
+  NSString* destination = @"/path/to/destination";
+  id delegate = OCMStrictProtocolMock(@protocol(CRWWebViewDownloadDelegate));
+
+  __block bool download_started = false;
+  id wk_download = OCMStrictClassMock([WKDownload class]);
+  [[wk_download expect] setDelegate:[OCMArg any]];
+  [[mock_web_view_ stub]
+      startDownloadUsingRequest:OCMOCK_ANY
+              completionHandler:[OCMArg checkWithBlock:^(void (^completion)(
+                                    WKDownload* download)) {
+                completion(wk_download);
+                download_started = true;
+                return YES;
+              }]];
+
+  [web_controller() downloadCurrentPageToDestinationPath:destination
+                                                delegate:delegate
+                                                 handler:nil];
+
+  EXPECT_TRUE(download_started);
 }
 
 // Test fixture to test JavaScriptDialogPresenter.
