@@ -37,13 +37,6 @@ enum class TestCase {
   kResigninWithoutUsername,
 };
 
-UIViewController* CreateTestViewController() {
-  UIViewController* view_controller = [[UIViewController alloc] init];
-  view_controller.view.backgroundColor = UIColor.blueColor;
-  GetAnyKeyWindow().rootViewController = view_controller;
-  return view_controller;
-}
-
 class AddAccountSigninManagerTest
     : public testing::WithParamInterface<TestCase>,
       public PlatformTest {
@@ -118,7 +111,7 @@ class AddAccountSigninManagerTest
       OCMStrictProtocolMock(@protocol(AddAccountSigninManagerDelegate));
   AddAccountSigninManager* add_account_signin_manager_ =
       [[AddAccountSigninManager alloc]
-          initWithBaseViewController:CreateTestViewController()
+          initWithBaseViewController:GetAnyKeyWindow().rootViewController
                          prefService:&test_pref_service_
                      identityManager:identity_test_environment_
                                          .identity_manager()
