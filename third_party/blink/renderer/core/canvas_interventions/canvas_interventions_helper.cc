@@ -19,11 +19,13 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_feature_state/runtime_feature_state_override_context.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -62,6 +64,12 @@ bool ShouldApplyNoise(CanvasRenderingContext* rendering_context,
   }
   if (!execution_context) {
     noise_reason |= CanvasNoiseReason::kNoExecutionContext;
+  }
+  // Check if all heuristics have matched so far (excluding whether the feature
+  // is enabled).
+  if (noise_reason == CanvasNoiseReason::kAllConditionsMet) {
+    UseCounter::Count(execution_context,
+                      WebFeature::kCanvasReadbackNoiseMatchesHeuristics);
   }
   if (execution_context &&
       !execution_context->GetRuntimeFeatureStateOverrideContext()
@@ -175,6 +183,7 @@ bool CanvasInterventionsHelper::MaybeNoiseSnapshot(
   UMA_HISTOGRAM_COUNTS_1M(
       "FingerprintingProtection.CanvasNoise.NoisedCanvasSize",
       pixmap_to_noise.width() * pixmap_to_noise.height());
+  UseCounter::Count(execution_context, WebFeature::kCanvasReadbackNoise);
 
   return true;
 }

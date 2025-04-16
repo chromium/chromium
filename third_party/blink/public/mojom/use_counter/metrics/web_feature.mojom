@@ -4873,6 +4873,8 @@ enum WebFeature {
   kLanguageModel_Prompt_Input_Image = 5487,
   kLanguageModel_Prompt_Input_Audio = 5488,
   kHttp3 = 5489,
+  kCanvasReadbackNoise = 5490,
+  kCanvasReadbackNoiseMatchesHeuristics = 5491,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

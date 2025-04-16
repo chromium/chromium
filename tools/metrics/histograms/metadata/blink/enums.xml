@@ -6114,6 +6114,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5487" label="LanguageModel_Prompt_Input_Image"/>
   <int value="5488" label="LanguageModel_Prompt_Input_Audio"/>
   <int value="5489" label="Http3"/>
+  <int value="5490" label="CanvasReadbackNoise"/>
+  <int value="5491" label="CanvasReadbackNoiseMatchesHeuristics"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
