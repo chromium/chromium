@@ -199,10 +199,23 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         // Skip opening a new Tab if it doesn't make sense.
         if (mTab.isClosing()) return false;
 
+        boolean openingPopup =
+                PopupCreator.arePopupsEnabled(mActivity)
+                        && (disposition == WindowOpenDisposition.NEW_POPUP);
+
         Tab tab =
                 tabCreator.createTabWithWebContents(
-                        mTab, webContents, TabLaunchType.FROM_LONGPRESS_FOREGROUND, url);
+                        mTab,
+                        webContents,
+                        TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                        url,
+                        !openingPopup);
         if (tab == null) return false;
+
+        if (openingPopup) {
+            PopupCreator.moveTabToNewPopup(
+                    tab, windowFeatures, mTab.getWindowAndroid().getDisplay());
+        }
 
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
             RecordUserAction.record("LinkNavigationOpenedInForegroundTab");
