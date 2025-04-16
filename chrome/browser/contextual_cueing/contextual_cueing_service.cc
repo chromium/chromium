@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
 #include "chrome/common/buildflags.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/network_anonymization_key.h"
@@ -75,6 +76,12 @@ ContextualCueingService::ContextualCueingService(
   CHECK(base::FeatureList::IsEnabled(contextual_cueing::kContextualCueing) ||
         base::FeatureList::IsEnabled(
             contextual_cueing::kGlicZeroStateSuggestions));
+  if (optimization_guide_keyed_service_ &&
+      base::FeatureList::IsEnabled(
+          contextual_cueing::kGlicZeroStateSuggestions)) {
+    optimization_guide_keyed_service_->RegisterOptimizationTypes(
+        {optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS});
+  }
 
   if (kEnablePageContentExtraction.Get() && page_content_extraction_service_) {
     page_content_extraction_service_->AddObserver(this);
@@ -230,8 +237,6 @@ void ContextualCueingService::GetContextualGlicZeroStateSuggestions(
     std::move(callback).Run(std::nullopt);
     return;
   }
-
-  // TODO(crbug.com/405988283): Add branch for hints suggestions.
 
   // Remote suggestions generation.
   ZeroStateSuggestionsPageData* page_data =
