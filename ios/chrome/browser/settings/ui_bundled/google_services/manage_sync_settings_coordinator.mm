@@ -490,7 +490,6 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)openAccountMenu {
-  // TODO(crbug.com/336719357): Update to use ApplicationCommands.
   _accountMenuCoordinator = [SigninCoordinator
       accountMenuCoordinatorWithBaseViewController:self.viewController
                                            browser:self.browser
