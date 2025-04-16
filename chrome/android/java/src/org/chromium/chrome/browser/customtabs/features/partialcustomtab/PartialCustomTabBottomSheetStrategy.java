@@ -223,7 +223,9 @@ public class PartialCustomTabBottomSheetStrategy extends PartialCustomTabBaseStr
 
         // If the user is scrolling and the event is a cancel or up action, update scroll state and
         // return. Fling should have already cleared the gesture state. The following is for
-        // the non-fling release.
+        // the non-fling release. But user gesture intended as a fling action is often recognized
+        // as non-fling release. We compute the velocity in the GestureHandler to determine which
+        // action to take.
         if (mGestureHandler.getState() != GestureState.NONE
                 && (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL)) {
             mGestureHandler.doNonFlingRelease();
