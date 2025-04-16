@@ -770,7 +770,7 @@
     },
     {
       name: "CapturedSurfaceResolution",
-      status: { "Win": "stable", "Mac": "stable", "default": ""},
+      status: { "Win": "stable", "Mac": "stable", "ChromeOS": "experimental", "default": ""},
     },
     {
       name: "CaptureHandle",
