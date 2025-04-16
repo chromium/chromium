@@ -270,6 +270,12 @@ bool WaylandWindowDragController::IsDragInProgress() const {
   return state_ != State::kIdle;
 }
 
+bool WaylandWindowDragController::IsDraggingWindow(
+    WaylandToplevelWindow* window) const {
+  CHECK(window);
+  return IsDragInProgress() && dragged_window_ == window;
+}
+
 void WaylandWindowDragController::CancelDragSession() {
   if (!IsActiveDragAndDropSession()) {
     return;

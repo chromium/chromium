@@ -49,11 +49,16 @@ TEST_F(XdgActivationTest, RequestNewToken) {
   auto window2 = CreateWaylandWindowWithParams(
       PlatformWindowType::kWindow, kDefaultBounds, &window_delegate2);
 
+  ActivateSurface(window_delegate1);
+  MapSurface(window_delegate1);
+  ActivateSurface(window_delegate2);
+  MapSurface(window_delegate2);
+
+  ASSERT_TRUE(window1->IsSurfaceConfigured());
+  ASSERT_TRUE(window2->IsSurfaceConfigured());
+
   // When window is shown, it automatically gets keyboard focus. Reset it
   connection_->window_manager()->SetKeyboardFocusedWindow(nullptr);
-
-  ActivateSurface(window_delegate1);
-  ActivateSurface(window_delegate2);
 
   PostToServerAndWait([surface_id2 = window2->root_surface()->get_surface_id()](
                           wl::TestWaylandServerThread* server) {

@@ -281,15 +281,18 @@ void WaylandToplevelWindow::ShowWindowControlsMenu(const gfx::Point& point) {
 
 void WaylandToplevelWindow::ActivateWithToken(std::string token) {
   DCHECK(connection()->xdg_activation());
-  // xdg-activation implementation doesn't seem to interact well with dnd in
-  // some compositors. Eg: Mutter crashes were observed in tab drag sessions.
-  // See https://gitlab.gnome.org/GNOME/mutter/-/issues/3822.
-  //
-  // TODO(crbug.com/40866970): Remove once the compositor bug gets fixed.
-  if (connection()->IsDragInProgress()) {
-    return;
+  bool can_activate = IsSurfaceConfigured();
+
+  // Stacking the dragged xdg toplevel as the topmost one (and tied to the
+  // pointer cursor) is reponsibility of the Wayland compositor, so bail out
+  // if `this` is currently being dragged.
+  if (auto* drag_controller = connection()->window_drag_controller()) {
+    can_activate &= !drag_controller->IsDraggingWindow(this);
   }
-  connection()->xdg_activation()->Activate(root_surface()->surface(), token);
+
+  if (can_activate) {
+    connection()->xdg_activation()->Activate(root_surface()->surface(), token);
+  }
 }
 
 void WaylandToplevelWindow::Activate() {
