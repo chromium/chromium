@@ -580,12 +580,7 @@ def RaiseErrorIfGitIsDirty():
 
 
 def RaiseErrorIfCantUploadToGerrit():
-    creds_check = Git("cl", "creds_check")
-    if "SSO" in creds_check:
-        if not shutil.which('gcertstatus'):
-            raise RuntimeError("No `gcertstatus` in `PATH` despite "\
-                               "`git cl creds-check` saying that SSO "\
-                               "authentication will be used.")
+    if shutil.which('gcertstatus'):
         RunCommandAndCheckForErrors(["gcertstatus", "--check_remaining=45m"],
                                     check_stdout=False,
                                     check_exitcode=True)
