@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.collaboration.CollaborationService;
@@ -37,6 +38,7 @@ import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * A coordinator for the context menu in the tab switcher accessed by long-pressing on a tab. It is
@@ -171,6 +173,11 @@ public class TabSwitcherContextMenuCoordinator extends TabOverflowMenuCoordinato
                 recordUserActionWithPrefix("AddBookmark");
             } else if (menuId == R.id.select_tabs) {
                 tabListEditorManager.showTabListEditor();
+                TabListEditorController tabListEditorController =
+                        tabListEditorManager.getControllerSupplier().get();
+                if (tabListEditorController != null) {
+                    tabListEditorController.selectTabs(Set.of(tab.getId()));
+                }
                 recordUserActionWithPrefix("SelectTabs");
             } else if (menuId == R.id.close_tab) {
                 tabModel.getTabRemover()

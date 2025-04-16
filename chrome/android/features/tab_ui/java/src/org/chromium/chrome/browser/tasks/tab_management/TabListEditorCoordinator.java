@@ -24,6 +24,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
@@ -56,6 +57,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This class is a coordinator for TabListEditor component. It manages the communication with {@link
@@ -141,6 +143,13 @@ class TabListEditorCoordinator {
 
         /** Sets the {@link LifecycleObserver} for this TabListEditor. */
         void setLifecycleObserver(LifecycleObserver lifecycleObserver);
+
+        /**
+         * Selects tabs through this TabListEditor.
+         *
+         * @param tabIds The tab ids representing the tabs to be selected.
+         */
+        void selectTabs(Set<@TabId Integer> tabIds);
     }
 
     /** An interface for embedders to provide navigation. */
@@ -246,6 +255,11 @@ class TabListEditorCoordinator {
                 @Override
                 public void setLifecycleObserver(LifecycleObserver lifecycleObserver) {
                     mTabListEditorMediator.setLifecycleObserver(lifecycleObserver);
+                }
+
+                @Override
+                public void selectTabs(Set<@TabId Integer> tabIds) {
+                    mTabListEditorMediator.selectTabs(tabIds);
                 }
             };
 

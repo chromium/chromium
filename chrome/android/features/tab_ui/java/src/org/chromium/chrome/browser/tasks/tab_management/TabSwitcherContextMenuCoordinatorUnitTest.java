@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Token;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -45,6 +46,7 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
+import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
@@ -55,6 +57,7 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.Set;
 
 /** Unit tests for {@link TabSwitcherContextMenuCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -80,6 +83,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private CollaborationService mCollaborationService;
     @Mock private TabListEditorManager mTabListEditorManager;
+    @Mock private TabListEditorController mTabListEditorController;
     @Mock private TabModel mTabModel;
     @Mock private TabRemover mTabRemover;
     @Mock private Tab mTab;
@@ -129,6 +133,8 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
         when(mTabModel.getTabById(anyInt())).thenReturn(mTab);
         when(mTab.getId()).thenReturn(TAB_ID);
         when(mBookmarkModel.hasBookmarkIdForTab(any())).thenReturn(false);
+        when(mTabListEditorManager.getControllerSupplier())
+                .thenReturn(new ObservableSupplierImpl<>(mTabListEditorController));
     }
 
     @Test
@@ -247,6 +253,7 @@ public class TabSwitcherContextMenuCoordinatorUnitTest {
 
         callback.onClick(R.id.select_tabs, TAB_ID, null);
         verify(mTabListEditorManager).showTabListEditor();
+        verify(mTabListEditorController).selectTabs(Set.of(TAB_ID));
     }
 
     @Test

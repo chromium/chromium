@@ -21,6 +21,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -43,6 +44,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.TokenHolder;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -371,13 +373,11 @@ class TabListEditorMediator
 
     @Override
     public void selectAll() {
-        Set<Integer> selectedTabIds = mSelectionDelegate.getSelectedItems();
+        Set<@TabId Integer> selectedTabIds = mSelectionDelegate.getSelectedItems();
         for (Tab tab : mVisibleTabs) {
             selectedTabIds.add(tab.getId());
         }
-        mSelectionDelegate.setSelectedItems(selectedTabIds);
-        mResetHandler.resetWithListOfTabs(
-                mVisibleTabs, /* recyclerViewPosition= */ null, /* quickMode= */ true);
+        selectTabs(selectedTabIds);
     }
 
     @Override
@@ -409,6 +409,15 @@ class TabListEditorMediator
     @Override
     public void onAppHeaderStateChanged(AppHeaderState newState) {
         mModel.set(TabListEditorProperties.TOP_MARGIN, newState.getAppHeaderHeight());
+    }
+
+    @Override
+    public void selectTabs(Set<@TabId Integer> tabIds) {
+        // Protects selection delegate from immutable sets.
+        Set<@TabId Integer> tabIdsModifiable = new HashSet<>(tabIds);
+        mSelectionDelegate.setSelectedItems(tabIdsModifiable);
+        mResetHandler.resetWithListOfTabs(
+                mVisibleTabs, /* recyclerViewPosition= */ null, /* quickMode= */ true);
     }
 
     /** Destroy any members that needs clean up. */
