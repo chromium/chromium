@@ -39,7 +39,6 @@ class DeskButtonWidgetDelegateView : public views::WidgetDelegateView {
   void Init(DeskButtonWidget* desk_button_widget);
 
   // views::WidgetDelegateView:
-  bool CanActivate() const override;
   void Layout(PassKey) override;
 
   // views::View:

@@ -16,7 +16,6 @@
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
-class FocusCycler;
 class Shelf;
 
 // The View for the status area widget.
@@ -42,9 +41,6 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   // Performs the actual changes in bounds for this view to match its target
   // bounds.
   void UpdateLayout(bool animate);
-
-  // Sets the focus cycler.
-  void SetFocusCyclerForTesting(const FocusCycler* focus_cycler);
 
   // If |reverse|, indicates backward focusing, otherwise forward focusing.
   // Returns true if status area widget delegate should focus out on the
@@ -87,7 +83,6 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   void SetBorderOnChild(views::View* child, bool extend_border_to_edge);
 
   const raw_ptr<Shelf> shelf_;
-  raw_ptr<const FocusCycler> focus_cycler_for_testing_;
   gfx::Rect target_bounds_;
 
   // When true, the default focus of the status area widget is the last

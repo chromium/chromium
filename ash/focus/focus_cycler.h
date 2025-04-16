@@ -52,6 +52,8 @@ class ASH_EXPORT FocusCycler {
   views::Widget* FindWidget(
       base::RepeatingCallback<bool(views::Widget*)> callback);
 
+  void ResetForTesting();
+
  private:
   std::vector<raw_ptr<views::Widget, VectorExperimental>> widgets_;
 

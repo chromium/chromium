@@ -22,7 +22,6 @@ class ScopedWindowTargeter;
 }
 
 namespace ash {
-class FocusCycler;
 class ScrollableShelfView;
 class Shelf;
 class ShelfView;
@@ -137,9 +136,6 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   }
 
   gfx::Size GetTranslucentBackgroundSize() const;
-
-  // Sets the focus cycler and adds the hotseat to the cycle.
-  void SetFocusCycler(FocusCycler* focus_cycler);
 
   bool IsShowingShelfMenu() const;
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accessibility/ui/accessibility_focusable_widget_delegate.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus/focus_cycler.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -460,16 +461,9 @@ class HotseatWidgetDelegateView : public HotseatTransitionAnimator::Observer,
   // views::View:
   void OnThemeChanged() override;
 
-  // views::WidgetDelegateView:
-  bool CanActivate() const override;
-
   // OverviewObserver:
   void OnOverviewModeWillStart() override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
-
-  void set_focus_cycler(FocusCycler* focus_cycler) {
-    focus_cycler_ = focus_cycler;
-  }
 
   int background_blur() const {
     return translucent_background_->layer()->background_blur();
@@ -480,7 +474,6 @@ class HotseatWidgetDelegateView : public HotseatTransitionAnimator::Observer,
   }
 
  private:
-  raw_ptr<FocusCycler, DanglingUntriaged> focus_cycler_ = nullptr;
   // A background layer that may be visible depending on HotseatState.
   raw_ptr<views::View> translucent_background_ = nullptr;
   raw_ptr<ScrollableShelfView, DanglingUntriaged> scrollable_shelf_view_ =
@@ -691,12 +684,6 @@ void HotseatWidgetDelegateView::OnThemeChanged() {
     UpdateTranslucentBackground();
 }
 
-bool HotseatWidgetDelegateView::CanActivate() const {
-  // We don't want mouse clicks to activate us, but we need to allow
-  // activation when the user is using the keyboard (FocusCycler).
-  return focus_cycler_ && focus_cycler_->widget_activating() == GetWidget();
-}
-
 void HotseatWidgetDelegateView::OnOverviewModeWillStart() {}
 
 void HotseatWidgetDelegateView::OnOverviewModeEndingAnimationComplete(
@@ -722,7 +709,7 @@ HotseatWidget::ScopedInStateTransition::~ScopedInStateTransition() {
 // HotseatWidget
 
 HotseatWidget::HotseatWidget()
-    : delegate_view_(new HotseatWidgetDelegateView()) {
+    : delegate_view_(new AccessibilityFocusable<HotseatWidgetDelegateView>()) {
   ShelfConfig::Get()->AddObserver(this);
 }
 
@@ -1116,12 +1103,6 @@ void HotseatWidget::UpdateTargetBoundsForGesture(int shelf_position) {
 gfx::Size HotseatWidget::GetTranslucentBackgroundSize() const {
   DCHECK(scrollable_shelf_view_);
   return scrollable_shelf_view_->GetHotseatBackgroundBounds().size();
-}
-
-void HotseatWidget::SetFocusCycler(FocusCycler* focus_cycler) {
-  delegate_view_->set_focus_cycler(focus_cycler);
-  if (focus_cycler)
-    focus_cycler->AddWidget(this);
 }
 
 ShelfView* HotseatWidget::GetShelfView() {

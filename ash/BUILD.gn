@@ -170,6 +170,8 @@ component("ash") {
     "accessibility/ui/accessibility_focus_ring_group.h",
     "accessibility/ui/accessibility_focus_ring_layer.cc",
     "accessibility/ui/accessibility_focus_ring_layer.h",
+    "accessibility/ui/accessibility_focusable_widget_delegate.cc",
+    "accessibility/ui/accessibility_focusable_widget_delegate.h",
     "accessibility/ui/accessibility_highlight_controller.cc",
     "accessibility/ui/accessibility_highlight_controller.h",
     "accessibility/ui/accessibility_highlight_layer.cc",
