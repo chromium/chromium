@@ -74,7 +74,11 @@ off_t MemoryReadStream::Seek(off_t offset, int whence) {
     default:
       NOTREACHED();
   }
-  offset_ = std::min(base::checked_cast<size_t>(offset_), byte_buf_.size());
+  if (!base::IsValueInRangeForNumericType<size_t>(offset_)) {
+    offset_ = -1;
+  } else {
+    offset_ = std::min(base::checked_cast<size_t>(offset_), byte_buf_.size());
+  }
   return offset_;
 }
 
