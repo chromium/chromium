@@ -213,8 +213,13 @@ TEST(PaintPreviewSerialUtils, TestImageContextLimitBudget) {
   PictureSerializationContext picture_ctx;
   TypefaceUsageMap usage_map;
   TypefaceSerializationContext typeface_ctx(&usage_map);
+
+  // Set the `remaining_image_size` budget to a value that will allow
+  // 2 images (rather than all 3 images).  This value depends on the
+  // implementation details of a PNG encoder (and therefore may need
+  // to be tweaked after changing the encoder or encoding settings).
   ImageSerializationContext ictx;
-  ictx.remaining_image_size = 200;
+  ictx.remaining_image_size = 220;
 
   SkSerialProcs serial_procs =
       MakeSerialProcs(&picture_ctx, &typeface_ctx, &ictx);
