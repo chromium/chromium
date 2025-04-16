@@ -55,7 +55,11 @@ ChromeProfileRequestGenerator::ChromeProfileRequestGenerator(
 
 ChromeProfileRequestGenerator::~ChromeProfileRequestGenerator() = default;
 
-void ChromeProfileRequestGenerator::Generate(ReportCallback callback) {
+void ChromeProfileRequestGenerator::Generate(
+    ReportGenerationConfig generation_request,
+    ReportCallback callback) {
+  // TODO(crbug.com/402486793): Update logic below to make use of the new
+  // `generation_request` parameter.
   auto request = std::make_unique<ReportRequest>(ReportType::kProfileReport);
   request->GetChromeProfileReportRequest().set_allocated_os_report(
       GetOSReport().release());

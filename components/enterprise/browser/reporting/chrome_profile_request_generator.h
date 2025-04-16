@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
 #include "components/enterprise/browser/reporting/profile_report_generator.h"
+#include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/report_request.h"
 
 namespace enterprise_reporting {
@@ -32,7 +33,8 @@ class ChromeProfileRequestGenerator {
 
   virtual ~ChromeProfileRequestGenerator();
 
-  virtual void Generate(ReportCallback callback);
+  virtual void Generate(ReportGenerationConfig generation_request,
+                        ReportCallback callback);
 
   void ToggleExtensionReport(
       ProfileReportGenerator::ExtensionsEnabledCallback callback);

@@ -29,6 +29,7 @@
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -136,7 +137,10 @@ class MockChromeProfileRequestGenerator : public ChromeProfileRequestGenerator {
       : ChromeProfileRequestGenerator(/*profile_path=*/base::FilePath(),
                                       delegate_factory) {
   }
-  void Generate(ReportCallback callback) override { OnGenerate(callback); }
+  void Generate(ReportGenerationConfig generation_request,
+                ReportCallback callback) override {
+    OnGenerate(callback);
+  }
   MOCK_METHOD(void, OnGenerate, (ReportCallback&), ());
 };
 
@@ -959,41 +963,17 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   task_environment_.FastForwardBy(base::TimeDelta());
 }
 
-// Tests that no cookies will be used as part of the upload when the security
-// signals policy is enabled but kUserSecurityAuthenticatedReporting is not.
-TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
-       ProfileReportingEnabled_UserSecuritySignalsPolicyEnabled_NoCookies) {
-  EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
-      .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
-  EXPECT_CALL(*uploader_,
-              SetRequestAndUpload(
-                  ReportGenerationConfig(ReportType::kProfileReport,
-                                         SecuritySignalsMode::kSignalsAttached,
-                                         /*use_cookies=*/false),
-                  _, _))
-      .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
-
-  TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
-  SetUserSecuritySignalsPolicy(profile, /*enabled=*/true);
-  profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
-  CreateSchedulerForProfileReporting(profile);
-  ASSERT_TRUE(scheduler_->IsNextReportScheduledForTesting());
-
-  // Run pending task.
-  task_environment_.FastForwardBy(base::TimeDelta());
-}
-
 // Tests that cookies will be used as part of the upload when both the security
-// signals policy and kUserSecurityAuthenticatedReporting are enabled.
+// signals policy is disabled but kUserSecurityAuthenticatedReporting is
+// enabled.
 TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
-       ProfileReportingEnabled_UserSecuritySignalsPolicyEnabled_WithCookies) {
+       ProfileReportingDisabled_UserSecuritySignalsPolicyEnabled_WithCookies) {
   EXPECT_CALL(*profile_request_generator_, OnGenerate(_))
       .WillOnce(WithArgs<0>(ScheduleProfileRequestGeneratorCallback()));
   EXPECT_CALL(*uploader_,
               SetRequestAndUpload(
                   ReportGenerationConfig(ReportType::kProfileReport,
-                                         SecuritySignalsMode::kSignalsAttached,
+                                         SecuritySignalsMode::kSignalsOnly,
                                          /*use_cookies=*/true),
                   _, _))
       .WillOnce(RunOnceCallback<2>(ReportUploader::kSuccess));
@@ -1001,9 +981,8 @@ TEST_F(EnabledProfileSecuritySignalsReportSchedulerTest,
   TestingProfile* profile = profile_manager_.CreateTestingProfile("profile");
   SetUserSecuritySignalsPolicy(profile, /*enabled=*/true, /*use_cookies=*/true);
   profile->GetTestingPrefService()->SetManagedPref(
-      kCloudProfileReportingEnabled, std::make_unique<base::Value>(true));
+      kCloudProfileReportingEnabled, std::make_unique<base::Value>(false));
   CreateSchedulerForProfileReporting(profile);
-  ASSERT_TRUE(scheduler_->IsNextReportScheduledForTesting());
 
   // Run pending task.
   task_environment_.FastForwardBy(base::TimeDelta());

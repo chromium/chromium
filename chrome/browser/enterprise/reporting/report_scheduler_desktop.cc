@@ -151,8 +151,10 @@ void ReportSchedulerDesktop::OnSecuritySignalsUploaded() {
 
 void ReportSchedulerDesktop::OnReportEventTriggered(
     SecurityReportTrigger trigger) {
-  // TODO(crbug.com/402486791): Forward the trigger via
-  // `trigger_report_callback_`.
+  if (!trigger_report_callback_.is_null()) {
+    trigger_report_callback_.Run(
+        ReportScheduler::ReportTrigger::kTriggerSecurity);
+  }
 }
 
 void ReportSchedulerDesktop::OnUpdate(const BuildState* build_state) {

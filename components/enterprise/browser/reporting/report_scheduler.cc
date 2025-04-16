@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -263,8 +264,10 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
 
   if (report_type == ReportType::kProfileReport) {
     DCHECK(profile_request_generator_);
-    profile_request_generator_->Generate(base::BindOnce(
-        &ReportScheduler::OnReportGenerated, base::Unretained(this)));
+    profile_request_generator_->Generate(
+        active_report_generation_config_,
+        base::BindOnce(&ReportScheduler::OnReportGenerated,
+                       base::Unretained(this)));
   } else {
     DCHECK(report_generator_);
     report_generator_->Generate(
@@ -341,12 +344,15 @@ void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {
       pending_triggers_ -= kTriggerManual;
   }
 
-  // TODO(crbug.com/402486791): Add Security signals report trigger to this
-  // check. Full report from timer and manual trigger contain security signals
-  // as well (if required and allowed), in form delegate to refresh the signals
-  // report timer as well.
-  if ((active_trigger_ == kTriggerManual || active_trigger_ == kTriggerTimer)) {
+  if (active_trigger_ == kTriggerManual || active_trigger_ == kTriggerTimer ||
+      active_trigger_ == kTriggerSecurity) {
     delegate_->OnSecuritySignalsUploaded();
+
+    // A full report includes security signals already, we don't need another
+    // security signals only report until the timer runs out again.
+    if (pending_triggers_ & kTriggerSecurity) {
+      pending_triggers_ -= kTriggerSecurity;
+    }
   }
 
   active_trigger_ = kTriggerNone;
@@ -370,10 +376,21 @@ void ReportScheduler::RunPendingTriggers() {
     // Manual-triggered reports also contains all data.
     trigger = kTriggerManual;
     pending_triggers_ = 0;
+  } else if ((pending_triggers_ & kTriggerSecurity) != 0) {
+    trigger = kTriggerSecurity;
+    pending_triggers_ -= kTriggerSecurity;
   } else {
-    trigger = (pending_triggers_ & kTriggerUpdate) != 0 ? kTriggerUpdate
-                                                        : kTriggerNewVersion;
-    pending_triggers_ = 0;
+    // Update and NewVersion triggers lead to the same report content being
+    // uploaded.
+    if ((pending_triggers_ & kTriggerUpdate) != 0) {
+      trigger = kTriggerUpdate;
+      pending_triggers_ -= kTriggerUpdate;
+    }
+
+    if ((pending_triggers_ & kTriggerNewVersion) != 0) {
+      trigger = kTriggerNewVersion;
+      pending_triggers_ -= kTriggerNewVersion;
+    }
   }
 
   GenerateAndUploadReport(trigger);
