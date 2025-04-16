@@ -19,6 +19,7 @@
 
 namespace tabs {
 class TabInterface;
+class ScopedAcceptMouseEventsWhileWindowInactive;
 }  // namespace tabs
 
 namespace webid {

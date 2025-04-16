@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/inactive_window_mouse_event_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_url_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -420,10 +422,17 @@
 
   // If this web contents is in a tab, and the tab wants to accept mouse events
   // while the window is inactive.
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(self.webContents);
-  if (tab && tab->ShouldAcceptMouseEventsWhileWindowInactive()) {
-    return kAcceptMouseEventsInActiveApp;
+  if (tabs::TabInterface* tab =
+          tabs::TabInterface::MaybeGetFromContents(webContents)) {
+    if (tabs::TabFeatures* features = tab->GetTabFeatures()) {
+      if (tabs::InactiveWindowMouseEventController* inactive_event_controller =
+              features->inactive_window_mouse_event_controller()) {
+        if (inactive_event_controller
+                ->ShouldAcceptMouseEventsWhileWindowInactive()) {
+          return kAcceptMouseEventsInActiveApp;
+        }
+      }
+    }
   }
 
   // For Top Chrome WebUIs, allows inactive windows to accept

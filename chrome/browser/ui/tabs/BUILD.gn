@@ -268,6 +268,10 @@ if (!is_android) {
       "unpinned_tab_collection.h",
     ]
 
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [ "inactive_window_mouse_event_controller.h" ]
+    }
+
     public_deps = [
       ":tab_enums",
       ":tab_group",
@@ -315,6 +319,10 @@ if (!is_android) {
       "tab_utils.cc",
       "unpinned_tab_collection.cc",
     ]
+
+    if (is_win || is_mac || is_linux || is_chromeos) {
+      sources += [ "inactive_window_mouse_event_controller.cc" ]
+    }
 
     deps = [
       ":tab_group",
@@ -506,6 +514,7 @@ if (!is_android) {
       "existing_base_sub_menu_model_unittest.cc",
       "existing_comparison_table_sub_menu_model_unittest.cc",
       "existing_tab_group_sub_menu_model_unittest.cc",
+      "inactive_window_mouse_event_controller_unittest.cc",
       "tab_collection_storage_unittest.cc",
       "tab_collection_unittest.cc",
       "tab_group_deletion_dialog_controller_unittest.cc",

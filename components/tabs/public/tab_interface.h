@@ -40,15 +40,6 @@ class ScopedTabModalUI {
   virtual ~ScopedTabModalUI() = default;
 };
 
-#if !BUILDFLAG(IS_ANDROID)
-// See documentation for ShouldAcceptMouseEventsWhileWindowInactive.
-class ScopedAcceptMouseEventsWhileWindowInactive {
- public:
-  ScopedAcceptMouseEventsWhileWindowInactive() = default;
-  virtual ~ScopedAcceptMouseEventsWhileWindowInactive() = default;
-};
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // TODO(crbug.com/404889112): This interface will be reused for Android as part
 // of the effort to share tab collections between desktop and Android. Some
 // features of TabInterface are unsupported on Android. A buildflag is used to
@@ -223,16 +214,6 @@ class TabInterface : public SupportsHandles<TabInterface> {
   // Returns the id of the split tab this tab belongs to, or nullopt if the tab
   // is not part of a split tab.
   virtual std::optional<split_tabs::SplitTabId> GetSplit() const = 0;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // On macOS, tabs do not accept mouse events if the window is not active, even
-  // if it's a child window that is active. Calling this method overrides that
-  // behavior until the unique_ptr is destroyed. This is only relevant if the
-  // tab is in the foreground.
-  virtual bool ShouldAcceptMouseEventsWhileWindowInactive() const = 0;
-  virtual std::unique_ptr<ScopedAcceptMouseEventsWhileWindowInactive>
-  AcceptMouseEventsWhileWindowInactive() = 0;
-#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 using TabHandle = TabInterface::Handle;
