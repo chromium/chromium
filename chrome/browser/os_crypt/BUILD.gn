@@ -62,6 +62,20 @@ source_set("browser_tests") {
   }
 }
 
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_bound_encryption_win_unittest.cc" ]
+
+  deps = [
+    ":os_crypt",
+    ":test_support",
+    "//base",
+    "//chrome/elevation_service:public_headers",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
   sources = [

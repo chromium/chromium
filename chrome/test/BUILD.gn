@@ -7165,6 +7165,7 @@ test("unit_tests") {
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:win_unit_tests",
       "//chrome/browser:chrome_process_finder",
+      "//chrome/browser/os_crypt:unit_tests",
       "//chrome/browser/shortcuts",
       "//chrome/browser/win/conflicts:unit_tests",
       "//chrome/chrome_elf:constants",

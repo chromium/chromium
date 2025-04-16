@@ -46,6 +46,32 @@ enum class SupportLevel {
   kMaxValue = kDisabledByRoamingChromeProfile,
 };
 
+// For tests, this can be overriden and a concrete instance passed to
+// `SetOverridesForTesting` to override the behavior of App-Bound encryption
+// APIs.
+class AppBoundEncryptionOverridesForTesting {
+ public:
+  virtual ~AppBoundEncryptionOverridesForTesting() = default;
+
+  virtual HRESULT EncryptAppBoundString(
+      ProtectionLevel level,
+      const std::string& plaintext,
+      std::string& ciphertext,
+      DWORD& last_error,
+      elevation_service::EncryptFlags* flags) = 0;
+
+  virtual HRESULT DecryptAppBoundString(
+      const std::string& ciphertext,
+      std::string& plaintext,
+      ProtectionLevel protection_level,
+      std::optional<std::string>& new_ciphertext,
+      DWORD& last_error,
+      elevation_service::EncryptFlags* flags) = 0;
+
+  virtual SupportLevel GetAppBoundEncryptionSupportLevel(
+      PrefService* local_state) = 0;
+};
+
 // Returns whether or not app-bound encryption is supported on the current
 // platform configuration. If this does not return kSupported then Encrypt and
 // Decrypt operations will fail. This can be called on any thread.
@@ -89,6 +115,9 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
                               std::optional<std::string>& new_ciphertext,
                               DWORD& last_error,
                               elevation_service::EncryptFlags* flags = nullptr);
+
+// Set to nullptr to reset.
+void SetOverridesForTesting(AppBoundEncryptionOverridesForTesting* overrides);
 
 }  // namespace os_crypt
 
