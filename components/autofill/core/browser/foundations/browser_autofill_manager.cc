@@ -1193,8 +1193,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     if (context.suppress_reason == SuppressReason::kAblation) {
       CHECK(suggestions.empty());
       client().GetSingleFieldFillRouter().CancelPendingQueries();
-      std::move(callback).Run(/*show_suggestions=*/true, std::move(suggestions),
-                              std::nullopt);
+      std::move(callback).Run(/*show_suggestions=*/true, {}, std::nullopt);
     }
     return;
   }
@@ -2976,34 +2975,31 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
   }
 
   std::vector<Suggestion> suggestions;
-  if (form_structure && autofill_field) {
-    switch (context.filling_product) {
-      case FillingProduct::kAddress:
-        suggestions = GetProfileSuggestions(
-            form, *form_structure, field, *autofill_field, trigger_source,
-            std::move(plus_address_email_override));
-        break;
-      case FillingProduct::kCreditCard:
-        suggestions = GetCreditCardSuggestions(form, *form_structure, field,
-                                               *autofill_field, trigger_source,
-                                               ranking_context);
-        break;
-      case FillingProduct::kLoyaltyCard:
-        if (base::FeatureList::IsEnabled(
-                features::kAutofillEnableLoyaltyCardsFilling) &&
-            base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-          // Only loyalty card numbers filling is supported.
-          if (autofill_field->Type().GetStorableType() ==
-              LOYALTY_MEMBERSHIP_ID) {
-            suggestions = GetLoyaltyCardSuggestions(
-                client().GetValuablesDataManager().GetLoyaltyCards());
-          }
+  switch (context.filling_product) {
+    case FillingProduct::kAddress:
+      suggestions = GetProfileSuggestions(
+          form, *form_structure, field, *autofill_field, trigger_source,
+          std::move(plus_address_email_override));
+      break;
+    case FillingProduct::kCreditCard:
+      suggestions = GetCreditCardSuggestions(form, *form_structure, field,
+                                             *autofill_field, trigger_source,
+                                             ranking_context);
+      break;
+    case FillingProduct::kLoyaltyCard:
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableLoyaltyCardsFilling) &&
+          base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
+        // Only loyalty card numbers filling is supported.
+        if (autofill_field->Type().GetStorableType() == LOYALTY_MEMBERSHIP_ID) {
+          suggestions = GetLoyaltyCardSuggestions(
+              client().GetValuablesDataManager().GetLoyaltyCards());
         }
-        break;
-      default:
-        // Skip other filling products.
-        break;
-    }
+      }
+      break;
+    default:
+      // Skip other filling products.
+      break;
   }
 
   if (EvaluateAblationStudy(suggestions, CHECK_DEREF(autofill_field),
