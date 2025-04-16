@@ -266,6 +266,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-in)</translation>
 <translation id="4329315893554541805">Om du vill få tillgång till anpassning och andra funktioner kan du ta med Chrome i webb- och appaktiviteten och de länkade Google-tjänsterna</translation>
 <translation id="4334294535648607276">Nedladdningen har slutförts.</translation>
+<translation id="4337324600316876133">Du behöver macOS 12 eller senare för att få framtida uppdateringar av Google Chrome. På den här datorn används macOS 11.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> har lagts till i Chrome</translation>
 <translation id="4348548358339558429">Om du vill få tillgång till anpassning kan du ta med Chrome i webb- och appaktiviteten</translation>
 <translation id="436060642166082913">Den här nedladdningen blockerades av Chrome eftersom filen kan skada dina personliga konton och sociala nätverkskonton</translation>
@@ -301,7 +302,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4842397268809523050">Det gick inte att synkronisera data med ChromeOS Flex eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> är redan inloggad.  Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">För att dela skärmen tillåter du skärminspelning för Chrome i systeminställningarna</translation>
-<translation id="4873692836499071887">Du behöver macOS 11 eller senare för att få kommande uppdateringar av Google Chrome. På den här datorn används macOS 10.15.</translation>
 <translation id="4873783916118289636">Granska viktiga integritets- och säkerhetskontroller i Chrome</translation>
 <translation id="4885446229353981848">Visa alltid genväg till Google Lens</translation>
 <translation id="4891791193823137474">Låt Google Chrome köras i bakgrunden</translation>

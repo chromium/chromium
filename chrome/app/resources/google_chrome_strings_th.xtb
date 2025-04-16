@@ -261,6 +261,7 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">รวม Chrome ไว้ในกิจกรรมบนเว็บและแอป ตลอดจนบริการของ Google ที่ลิงก์ไว้เพื่อรับการปรับเปลี่ยนในแบบของคุณและฟีเจอร์อื่นๆ</translation>
 <translation id="4334294535648607276">ดาวน์โหลดเสร็จสมบูรณ์</translation>
+<translation id="4337324600316876133">คุณจะต้องใช้ macOS 12 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 11</translation>
 <translation id="4343195214584226067">เพิ่ม <ph name="EXTENSION_NAME" /> ลงใน Chrome แล้ว</translation>
 <translation id="4348548358339558429">รวม Chrome ไว้ในกิจกรรมบนเว็บและแอปเพื่อรับการปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="436060642166082913">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์อาจเป็นอันตรายต่อบัญชีส่วนตัวและบัญชีโซเชียลเน็ตเวิร์กของคุณ</translation>
@@ -296,7 +297,6 @@
 <translation id="4842397268809523050">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากการซิงค์ใช้ไม่ได้กับโดเมนของคุณ</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว  หากต้องการแยกการท่องเว็บไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chrome ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4855026984605187434">หากต้องการแชร์หน้าจอ ให้อนุญาตการบันทึกหน้าจอสำหรับ Chrome ใน "การตั้งค่าระบบ"</translation>
-<translation id="4873692836499071887">คุณจะต้องใช้ macOS 11 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ macOS 10.15</translation>
 <translation id="4873783916118289636">ตรวจสอบการควบคุมที่สำคัญด้านความเป็นส่วนตัวและความปลอดภัยใน Chrome</translation>
 <translation id="4885446229353981848">แสดงทางลัด Google Lens เสมอ</translation>
 <translation id="4891791193823137474">ให้ Google Chrome ทำงานในเบื้องหลัง</translation>
