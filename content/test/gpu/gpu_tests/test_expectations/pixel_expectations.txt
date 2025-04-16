@@ -345,7 +345,8 @@ crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas
 [ android android-pixel-4 ] Pixel_SVGHuge [ Slow ]
 [ android android-shield-android-tv ] Pixel_SVGHuge [ Slow ]
 [ android android-sm-a137f ] Pixel_SVGHuge [ Slow ]
-[ android android-sm-a236b ] Pixel_SVGHuge [ Slow ]
+# TODO(crbug.com/411169284): Re-add this expectation when the failures are fixed.
+# [ android android-sm-a236b ] Pixel_SVGHuge [ Slow ]
 # Also applies to Windows arm64.
 [ win qualcomm-0x41333430 ] Pixel_SVGHuge [ Slow ]
 # Doesn't hit heartbeat timeouts, but can time out when trying to execute
@@ -419,6 +420,8 @@ crbug.com/1290953 [ android android-pixel-4 android-webview-instrumentation ] Pi
 crbug.com/40241616 [ android android-sm-a137f ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 crbug.com/1372141 [ android android-sm-a236b ] Pixel_CanvasLowLatencyWebGLAlphaFalse [ Failure ]
 
+crbug.com/411169284 [ android android-sm-a236b ] Pixel_OffscreenCanvasTransferBeforeStyleResize [ Failure ]
+crbug.com/411169284 [ android android-sm-a236b ] Pixel_SVGHuge [ Failure ]
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
