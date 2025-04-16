@@ -25,6 +25,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.UrlBar.ScrollType;
+import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarViewBinderUnitTest.ShadowOmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer.UrlEmphasisColorSpan;
@@ -333,6 +335,42 @@ public class UrlBarMediatorUnitTest {
         Assert.assertFalse(mModel.get(UrlBarProperties.IS_IN_CCT));
         mMediator.setIsInCct(true);
         Assert.assertTrue(mModel.get(UrlBarProperties.IS_IN_CCT));
+    }
+
+    @Test
+    public void setShowOriginOnly() {
+        UrlBarData baseData =
+                UrlBarData.create(
+                        new GURL("http://www.example.com/a_path_to_ignore"),
+                        spannable("http://www.example.com/a_path_to_ignore"),
+                        0,
+                        22,
+                        "Blah");
+        mMediator.setUrlBarData(
+                baseData, UrlBar.ScrollType.SCROLL_TO_TLD, SelectionState.SELECT_END);
+
+        Assert.assertEquals(
+                "http://www.example.com/a_path_to_ignore",
+                mModel.get(UrlBarProperties.TEXT_STATE).text.toString());
+
+        mMediator.setShowOriginOnly(true);
+        Assert.assertEquals(
+                "http://www.example.com", mModel.get(UrlBarProperties.TEXT_STATE).text.toString());
+
+        mMediator.setShowOriginOnly(false);
+        Assert.assertEquals(
+                "http://www.example.com/a_path_to_ignore",
+                mModel.get(UrlBarProperties.TEXT_STATE).text.toString());
+    }
+
+    @Test
+    public void setShowOriginOnly_nonUrlText() {
+        UrlBarData baseData = UrlBarData.forNonUrlText("non url");
+        mMediator.setUrlBarData(baseData, ScrollType.NO_SCROLL, SelectionState.SELECT_END);
+        Assert.assertEquals("non url", mModel.get(UrlBarProperties.TEXT_STATE).text.toString());
+
+        mMediator.setShowOriginOnly(true);
+        Assert.assertEquals("non url", mModel.get(UrlBarProperties.TEXT_STATE).text.toString());
     }
 
     private static SpannableStringBuilder spannable(String text) {

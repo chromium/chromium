@@ -45,6 +45,7 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     // For NTP, when in un-focus state, the search text hint color is fixed for the real search box
     // and we couldn't change it by the branded color scheme.
     private boolean mIsHintTextFixedForNtp;
+    private boolean mShowOriginOnly;
 
     /**
      * Creates a URLBarMediator.
@@ -144,8 +145,14 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     }
 
     private void pushTextToModel() {
-        CharSequence text =
-                !mHasFocus ? mUrlBarData.displayText : mUrlBarData.getEditingOrDisplayText();
+        CharSequence text;
+        if (mShowOriginOnly && mUrlBarData.originStartIndex != mUrlBarData.originEndIndex) {
+            text =
+                    mUrlBarData.displayText.subSequence(
+                            mUrlBarData.originStartIndex, mUrlBarData.originEndIndex);
+        } else {
+            text = !mHasFocus ? mUrlBarData.displayText : mUrlBarData.getEditingOrDisplayText();
+        }
         CharSequence textForAutofillServices = text;
 
         if (!(mHasFocus || TextUtils.isEmpty(text) || mUrlBarData.url == null)) {
@@ -417,5 +424,12 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     /** Sets the search box hint text. */
     void setUrlBarHintText(@StringRes int hintTextRes) {
         mModel.set(UrlBarProperties.HINT_TEXT, hintTextRes);
+    }
+
+    void setShowOriginOnly(boolean showOriginOnly) {
+        // TODO(https://crbm/411135455): Reconsider the disparate mechanisms we have for UrlBar
+        // truncation.
+        mShowOriginOnly = showOriginOnly;
+        pushTextToModel();
     }
 }

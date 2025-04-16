@@ -531,6 +531,11 @@ public class LocationBarCoordinator
         mAutocompleteCoordinator.removeOmniboxSuggestionsDropdownScrollListener(listener);
     }
 
+    @Override
+    public void setShowOriginOnly(boolean showOriginOnly) {
+        mUrlCoordinator.setShowOriginOnly(showOriginOnly);
+    }
+
     // AutocompleteDelegate implementation.
     @Override
     public void onUrlTextChanged() {
