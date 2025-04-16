@@ -72,6 +72,9 @@ enum XRInteractionMode {
 struct XRDepthConfig {
   XRDepthUsage depth_usage;
   XRDepthDataFormat depth_data_format;
+  // The XRDepthType that the session is using, if the page's request was
+  // honored.
+  XRDepthType? depth_type;
 };
 
 // This structure contains a description of the device's active configuration

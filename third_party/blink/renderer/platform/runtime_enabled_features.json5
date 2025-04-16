@@ -5271,6 +5271,12 @@
       base_feature: "none",
     },
     {
+      name: "WebXRDepthPerformance",
+      depends_on: ["WebXR"],
+      public: true,
+      status: "experimental",
+    },
+    {
       name: "WebXREnabledFeatures",
       depends_on: ["WebXR"],
       status: "stable",

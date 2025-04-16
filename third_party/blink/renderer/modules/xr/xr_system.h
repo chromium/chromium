@@ -253,9 +253,11 @@ class XRSystem final : public EventTarget,
 
     void SetDepthSensingConfiguration(
         const Vector<device::mojom::XRDepthUsage>& preferred_usage,
-        const Vector<device::mojom::XRDepthDataFormat>& preferred_format) {
+        const Vector<device::mojom::XRDepthDataFormat>& preferred_format,
+        const Vector<device::mojom::XRDepthType>& type_request) {
       preferred_usage_ = preferred_usage;
       preferred_format_ = preferred_format;
+      depth_type_request_ = type_request;
     }
 
     const Vector<device::mojom::XRDepthUsage>& PreferredUsage() const {
@@ -264,6 +266,10 @@ class XRSystem final : public EventTarget,
 
     const Vector<device::mojom::XRDepthDataFormat>& PreferredFormat() const {
       return preferred_format_;
+    }
+
+    const Vector<device::mojom::XRDepthType>& DepthTypeRequest() const {
+      return depth_type_request_;
     }
 
     uint64_t TraceId() const { return trace_id_; }
@@ -298,6 +304,7 @@ class XRSystem final : public EventTarget,
 
     Vector<device::mojom::XRDepthUsage> preferred_usage_;
     Vector<device::mojom::XRDepthDataFormat> preferred_format_;
+    Vector<device::mojom::XRDepthType> depth_type_request_;
   };
 
   static device::mojom::blink::XRSessionOptionsPtr XRSessionOptionsFromQuery(

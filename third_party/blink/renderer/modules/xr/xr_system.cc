@@ -17,6 +17,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_state_init.h"
@@ -134,15 +135,6 @@ device::mojom::XRDepthUsage ParseDepthUsage(const V8XRDepthUsage& usage) {
   }
 }
 
-Vector<device::mojom::XRDepthUsage> ParseDepthUsages(
-    const Vector<V8XRDepthUsage>& usages) {
-  Vector<device::mojom::XRDepthUsage> result;
-
-  std::ranges::transform(usages, std::back_inserter(result), ParseDepthUsage);
-
-  return result;
-}
-
 device::mojom::XRDepthDataFormat ParseDepthFormat(
     const V8XRDepthDataFormat& format) {
   switch (format.AsEnum()) {
@@ -155,13 +147,13 @@ device::mojom::XRDepthDataFormat ParseDepthFormat(
   }
 }
 
-Vector<device::mojom::XRDepthDataFormat> ParseDepthFormats(
-    const Vector<V8XRDepthDataFormat>& formats) {
-  Vector<device::mojom::XRDepthDataFormat> result;
-
-  std::ranges::transform(formats, std::back_inserter(result), ParseDepthFormat);
-
-  return result;
+device::mojom::XRDepthType ParseDepthType(const V8XRDepthType& type) {
+  switch (type.AsEnum()) {
+    case V8XRDepthType::Enum::kRaw:
+      return device::mojom::XRDepthType::kRaw;
+    case V8XRDepthType::Enum::kSmooth:
+      return device::mojom::XRDepthType::kSmooth;
+  }
 }
 
 bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,
@@ -735,6 +727,8 @@ device::mojom::blink::XRSessionOptionsPtr XRSystem::XRSessionOptionsFromQuery(
     session_options->depth_options->usage_preferences = query.PreferredUsage();
     session_options->depth_options->data_format_preferences =
         query.PreferredFormat();
+    session_options->depth_options->depth_type_request =
+        query.DepthTypeRequest();
   }
 
   session_options->trace_id = query.TraceId();
@@ -1337,12 +1331,25 @@ ScriptPromise<XRSession> XRSystem::requestSession(
     DCHECK(session_init->depthSensing()->hasDataFormatPreference())
         << "required in IDL";
 
-    Vector<device::mojom::XRDepthUsage> preferred_usage =
-        ParseDepthUsages(session_init->depthSensing()->usagePreference());
-    Vector<device::mojom::XRDepthDataFormat> preferred_format =
-        ParseDepthFormats(session_init->depthSensing()->dataFormatPreference());
+    Vector<device::mojom::XRDepthUsage> preferred_usage;
+    std::ranges::transform(session_init->depthSensing()->usagePreference(),
+                           std::back_inserter(preferred_usage),
+                           ParseDepthUsage);
 
-    query->SetDepthSensingConfiguration(preferred_usage, preferred_format);
+    Vector<device::mojom::XRDepthDataFormat> preferred_format;
+    std::ranges::transform(session_init->depthSensing()->dataFormatPreference(),
+                           std::back_inserter(preferred_format),
+                           ParseDepthFormat);
+
+    Vector<device::mojom::XRDepthType> type_request;
+    if (session_init->depthSensing()->hasDepthTypeRequest() &&
+        RuntimeEnabledFeatures::WebXRDepthPerformanceEnabled()) {
+      std::ranges::transform(session_init->depthSensing()->depthTypeRequest(),
+                             std::back_inserter(type_request), ParseDepthType);
+    }
+
+    query->SetDepthSensingConfiguration(preferred_usage, preferred_format,
+                                        type_request);
   }
 
   // Defer to request the session until the prerendering page is activated.
