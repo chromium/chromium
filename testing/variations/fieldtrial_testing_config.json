@@ -25120,6 +25120,21 @@
             ]
         }
     ],
+    "UseLowQualityImageInterpolation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "UseLowQualityImageInterpolation"
+                    ]
+                }
+            ]
+        }
+    ],
     "UseSCContentSharingPicker": [
         {
             "platforms": [
