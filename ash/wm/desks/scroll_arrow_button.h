@@ -6,6 +6,7 @@
 #define ASH_WM_DESKS_SCROLL_ARROW_BUTTON_H_
 
 #include "ash/ash_export.h"
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

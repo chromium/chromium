@@ -16,6 +16,7 @@
 #include "ash/wm/overview/overview_session_metrics_recorder.h"
 #include "ash/wm/overview/overview_types.h"
 #include "ash/wm/overview/overview_window_occlusion_calculator.h"
+#include "base/auto_reset.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"

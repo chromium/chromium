@@ -16,6 +16,7 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/root_window_desk_switch_animator.h"
 #include "ash/wm/desks/templates/restore_data_collector.h"
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_RUN_ON_OS_LOGIN_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_RUN_ON_OS_LOGIN_MANAGER_H_
 
+#include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
