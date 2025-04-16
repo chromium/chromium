@@ -257,6 +257,7 @@ void WallpaperSearchHandler::GetDescriptors(GetDescriptorsCallback callback) {
       GURL(base::StrCat({kGstaticBaseURL, "descriptors_en-US.json"}));
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   descriptors_simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   descriptors_simple_url_loader_->SetRetryOptions(
