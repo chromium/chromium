@@ -344,23 +344,35 @@ TEST_F(LaserPointerControllerTest, MouseCursorState) {
 // Verify that touch events can take over and create new laser pointer
 // to replace the laser pointer created by mouse event.
 TEST_F(LaserPointerControllerTest, TouchTakeOverMouse) {
-  ash::stylus_utils::SetNoStylusInputForTesting();
-
   ui::test::EventGenerator* event_generator = GetEventGenerator();
-
-  // Create laser pointer by mouse event.
   controller_test_api_->SetEnabled(true);
-  event_generator->MoveMouseTo(gfx::Point(1, 1));
-  auto* view_created_by_mouse = controller_test_api_->GetLaserPointerView();
 
-  // Touch events will create a new laser pointer because
-  // touch events have higher priority.
-  event_generator->PressTouch();
-  EXPECT_NE(view_created_by_mouse, controller_test_api_->GetLaserPointerView());
-  event_generator->MoveTouch(gfx::Point(2, 2));
-  event_generator->MoveTouch(gfx::Point(1, 1));
-  EXPECT_EQ(3, controller_test_api_->laser_points().GetNumberOfPoints());
-  event_generator->ReleaseTouch();
+  for (const auto touch_pointer_type :
+       {ui::EventPointerType::kTouch, ui::EventPointerType::kPen}) {
+    // Create laser pointer by mouse event.
+    event_generator->MoveMouseTo(gfx::Point(1, 1));
+    auto* view_created_by_mouse = controller_test_api_->GetLaserPointerView();
+
+    // Touch events will take over and create a new laser pointer because
+    // touch events have higher priority.
+    if (touch_pointer_type == ui::EventPointerType::kPen) {
+      event_generator->EnterPenPointerMode();
+    }
+    event_generator->PressTouch();
+    // A new laser pointer view is created by touch event.
+    EXPECT_NE(view_created_by_mouse,
+              controller_test_api_->GetLaserPointerView());
+    EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+    event_generator->MoveTouch(gfx::Point(2, 2));
+    event_generator->MoveTouch(gfx::Point(1, 1));
+    EXPECT_EQ(3, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    event_generator->ReleaseTouch();
+    if (touch_pointer_type == ui::EventPointerType::kPen) {
+      event_generator->ExitPenPointerMode();
+    }
+  }
+
   controller_test_api_->SetEnabled(false);
 }
 
@@ -368,18 +380,33 @@ TEST_F(LaserPointerControllerTest, TouchTakeOverMouse) {
 // created by touch event.
 TEST_F(LaserPointerControllerTest, NoMouseInterference) {
   ui::test::EventGenerator* event_generator = GetEventGenerator();
-
-  // Create laser pointer by touch event.
   controller_test_api_->SetEnabled(true);
-  event_generator->EnterPenPointerMode();
-  event_generator->PressTouch();
-  EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
 
-  // Mouse events should get dropped.
-  event_generator->MoveMouseTo(gfx::Point(2, 2));
-  event_generator->MoveMouseTo(gfx::Point(1, 1));
-  EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
-  event_generator->ReleaseTouch();
+  for (const auto touch_pointer_type :
+       {ui::EventPointerType::kTouch, ui::EventPointerType::kPen}) {
+    // Create laser pointer by touch event.
+    if (touch_pointer_type == ui::EventPointerType::kPen) {
+      event_generator->EnterPenPointerMode();
+    }
+    event_generator->PressTouch();
+    EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    // Mouse events should get dropped.
+    event_generator->MoveMouseTo(gfx::Point(2, 2));
+    event_generator->MoveMouseTo(gfx::Point(1, 1));
+    EXPECT_EQ(1, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    // Touch events should still get processed.
+    event_generator->MoveTouch(gfx::Point(2, 2));
+    event_generator->MoveTouch(gfx::Point(1, 1));
+    EXPECT_EQ(3, controller_test_api_->laser_points().GetNumberOfPoints());
+
+    event_generator->ReleaseTouch();
+    if (touch_pointer_type == ui::EventPointerType::kPen) {
+      event_generator->ExitPenPointerMode();
+    }
+  }
+
   controller_test_api_->SetEnabled(false);
 }
 
