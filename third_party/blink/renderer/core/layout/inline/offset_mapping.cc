@@ -382,8 +382,8 @@ OffsetMapping::GetMappingUnitsForLayoutObject(
                      return unit.GetLayoutObject() != layout_object;
                    });
   DCHECK_LT(begin, end);
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  return UNSAFE_TODO(base::span(begin, end));
+  // SAFETY: Both of `begin` and `end` are valid iterators for `units_`.
+  return UNSAFE_BUFFERS(base::span(begin, end));
 }
 
 base::span<const OffsetMappingUnit>
@@ -404,8 +404,9 @@ OffsetMapping::GetMappingUnitsForTextContentOffsetRange(unsigned start,
   // Find the next of the last unit where unit.text_content_start < end
   auto result_end = std::ranges::upper_bound(
       units_, end, std::less_equal<>{}, &OffsetMappingUnit::TextContentStart);
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  return UNSAFE_TODO(base::span(result_begin, result_end));
+  // SAFETY: Both of `result_begin` and `result_end` are valid iterators for
+  // `units_`.
+  return UNSAFE_BUFFERS(base::span(result_begin, result_end));
 }
 
 std::optional<unsigned> OffsetMapping::GetTextContentOffset(
@@ -427,16 +428,16 @@ Position OffsetMapping::StartOfNextNonCollapsedContent(
   const auto node_and_offset = ToNodeOffsetPair(position);
   const Node& node = node_and_offset.first;
   const unsigned offset = node_and_offset.second;
-  // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-  while (unit != UNSAFE_TODO(units_.data() + units_.size()) &&
-         unit->AssociatedNode() == node) {
-    if (unit->DOMEnd() > offset &&
-        unit->GetType() != OffsetMappingUnitType::kCollapsed) {
-      const unsigned result = std::max(offset, unit->DOMStart());
+  for (const auto& u : base::span(units_).subspan(
+           base::checked_cast<size_t>(std::distance(units_.data(), unit)))) {
+    if (u.AssociatedNode() != node) {
+      break;
+    }
+    if (u.DOMEnd() > offset &&
+        u.GetType() != OffsetMappingUnitType::kCollapsed) {
+      const unsigned result = std::max(offset, u.DOMStart());
       return CreatePositionForOffsetMapping(node, result);
     }
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    UNSAFE_TODO(++unit);
   }
   return Position();
 }
@@ -451,17 +452,17 @@ Position OffsetMapping::EndOfLastNonCollapsedContent(
   const auto node_and_offset = ToNodeOffsetPair(position);
   const Node& node = node_and_offset.first;
   const unsigned offset = node_and_offset.second;
-  while (unit->AssociatedNode() == node) {
-    if (unit->DOMStart() < offset &&
-        unit->GetType() != OffsetMappingUnitType::kCollapsed) {
-      const unsigned result = std::min(offset, unit->DOMEnd());
-      return CreatePositionForOffsetMapping(node, result);
-    }
-    if (unit == units_.data()) {
+  auto unit_span = base::span(units_).subspan(
+      0u, base::checked_cast<size_t>(std::distance(units_.data(), unit) + 1));
+  for (const auto& u : base::Reversed(unit_span)) {
+    if (u.AssociatedNode() != node) {
       break;
     }
-    // TODO(crbug.com/351564777): Resolve a buffer safety issue.
-    UNSAFE_TODO(--unit);
+    if (u.DOMStart() < offset &&
+        u.GetType() != OffsetMappingUnitType::kCollapsed) {
+      const unsigned result = std::min(offset, u.DOMEnd());
+      return CreatePositionForOffsetMapping(node, result);
+    }
   }
   return Position();
 }
