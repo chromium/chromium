@@ -281,9 +281,9 @@ void BucketContext::ForceClose(bool doom) {
       database->ForceCloseAndRunTasks();
     }
     databases_.clear();
-    if (has_blobs_outstanding_) {
-      leveldb_backing_store()->active_blob_registry()->ForceShutdown();
-      has_blobs_outstanding_ = false;
+    has_blobs_outstanding_ = false;
+    if (backing_store()) {
+      backing_store()->InvalidateBlobReferences();
     }
 
     // Don't run the preclosing tasks after a ForceClose, whether or not we've
@@ -351,7 +351,7 @@ BucketContext::StopMetadataRecording() {
 }
 
 int64_t BucketContext::GetInMemorySize() {
-  return backing_store_ ? leveldb_backing_store()->GetInMemorySize() : 0;
+  return backing_store_ ? backing_store_->GetInMemorySize() : 0;
 }
 
 void BucketContext::ReportOutstandingBlobs(bool blobs_outstanding) {

@@ -1245,6 +1245,10 @@ void BackingStore::TearDown(base::WaitableEvent* signal_on_destruction) {
   db()->leveldb_state()->RequestDestruction(signal_on_destruction);
 }
 
+void BackingStore::InvalidateBlobReferences() {
+  active_blob_registry()->ForceShutdown();
+}
+
 Status BackingStore::AnyDatabaseContainsBlobs(bool* blobs_exist) {
   std::vector<std::u16string> names;
   Status status = GetDatabaseNames(&names);

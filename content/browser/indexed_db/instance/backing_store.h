@@ -151,6 +151,11 @@ class BackingStore {
       std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
   GetPreCloseTasks() = 0;
   virtual void TearDown(base::WaitableEvent* signal_on_destruction) = 0;
+  // Called during shutdown, but before `TearDown()`.
+  virtual void InvalidateBlobReferences() = 0;
+  // Gets the total size of blobs and the database for in-memory backing
+  // stores.
+  virtual int64_t GetInMemorySize() const = 0;
   // Fill in the provided list with existing database names.
   [[nodiscard]] virtual Status GetDatabaseNames(
       std::vector<std::u16string>* names) = 0;

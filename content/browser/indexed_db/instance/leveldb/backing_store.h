@@ -380,6 +380,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   // BackingStore:
   void TearDown(base::WaitableEvent* signal_on_destruction) override;
+  void InvalidateBlobReferences() override;
   std::list<std::unique_ptr<BackingStorePreCloseTaskQueue::PreCloseTask>>
   GetPreCloseTasks() override;
   // Creates a new database in the backing store. `metadata` is an in-out param.
@@ -526,9 +527,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   const std::string& origin_identifier() { return origin_identifier_; }
 
-  // Gets the total size of blobs and the database for in-memory backing
-  // stores.
-  int64_t GetInMemorySize() const;
+  int64_t GetInMemorySize() const override;
 
 #if DCHECK_IS_ON()
   int NumBlobFilesDeletedForTesting() { return num_blob_files_deleted_; }
