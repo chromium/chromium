@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+
 // Converts an Input protobuf Message to a string that can be successfully read
 // by SkImageFilter::Deserialize and used as an image filter. The string
 // is essentially a valid flattened skia image filter. Note: We will sometimes
@@ -777,8 +779,8 @@ void Converter::WriteNum(const T num) {
 }
 
 void Converter::InsertSize(const size_t size, const uint32_t position) {
-  char size_arr[sizeof(uint32_t)];
-  memcpy(size_arr, &size, sizeof(uint32_t));
+  std::array<char, sizeof(uint32_t)> size_arr;
+  memcpy(size_arr.data(), &size, sizeof(uint32_t));
 
   for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
     const size_t output__idx = position + idx - sizeof(uint32_t);
@@ -1784,8 +1786,8 @@ void Converter::WriteUInt8(T num) {
 }
 
 void Converter::WriteUInt16(uint16_t num) {
-  char num_arr[2];
-  memcpy(num_arr, &num, 2);
+  std::array<char, 2> num_arr;
+  memcpy(num_arr.data(), &num, 2);
   for (size_t idx = 0; idx < 2; idx++)
     output_.push_back(num_arr[idx]);
 }
