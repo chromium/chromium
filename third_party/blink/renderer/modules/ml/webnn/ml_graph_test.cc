@@ -886,7 +886,7 @@ TEST_F(MLGraphTest, BuildTest) {
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, named_outputs);
     EXPECT_EQ(error_name, "TypeError");
-    EXPECT_EQ(error_message, "At least one output needs to be provided.");
+    EXPECT_EQ(error_message, "At least one output must be provided.");
   }
   {
     // Test throwing exception if the named output is an input operand.
