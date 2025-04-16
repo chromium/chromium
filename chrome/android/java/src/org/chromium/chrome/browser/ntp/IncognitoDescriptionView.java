@@ -36,6 +36,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ChromeBulletSpan;
+import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** The view to describle incognito mode. */
 public class IncognitoDescriptionView extends LinearLayout {
@@ -46,7 +47,7 @@ public class IncognitoDescriptionView extends LinearLayout {
     private TextView mHeader;
     private TextView mSubtitle;
     private LinearLayout mBulletpointsContainer;
-    private TextView mLearnMore;
+    private TextViewWithClickableSpans mLearnMore;
     private TextView[] mParagraphs;
     private ViewGroup mCookieControlsCard;
     private SwitchCompat mCookieControlsToggle;
@@ -127,7 +128,8 @@ public class IncognitoDescriptionView extends LinearLayout {
     }
 
     public void formatTrackingProtectionText(Context context, View layout) {
-        TextView view = layout.findViewById(R.id.tracking_protection_description_two);
+        TextViewWithClickableSpans view =
+                layout.findViewById(R.id.tracking_protection_description_two);
         if (view == null) {
             adjustCookieControlsCard();
             return;
@@ -147,7 +149,7 @@ public class IncognitoDescriptionView extends LinearLayout {
 
         ChromeClickableSpan span =
                 new ChromeClickableSpan(
-                        getContext().getColor(R.color.default_text_color_link_light),
+                        view.getSpanColor(),
                         (unused) -> {
                             new ChromeAsyncTabLauncher(/* incognito= */ true)
                                     .launchUrl(
@@ -360,8 +362,7 @@ public class IncognitoDescriptionView extends LinearLayout {
 
         final ChromeClickableSpan learnMoreSpan =
                 new ChromeClickableSpan(
-                        getContext().getColor(R.color.default_text_color_link_light),
-                        (view) -> mLearnMore.callOnClick());
+                        mLearnMore.getSpanColor(), (view) -> mLearnMore.callOnClick());
 
         boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
         mLearnMore.setVisibility(learnMoreInSubtitle ? View.GONE : View.VISIBLE);

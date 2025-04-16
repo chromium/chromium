@@ -8,6 +8,9 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.text.Layout;
 import android.text.Spanned;
@@ -20,11 +23,15 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.PopupMenu;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.R;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.util.AttrUtils;
 
 /**
  * ClickableSpan isn't accessible by default, so we create a subclass of TextView that tries to
@@ -36,6 +43,7 @@ import org.chromium.ui.accessibility.AccessibilityState;
 public class TextViewWithClickableSpans extends TextViewWithLeading
         implements View.OnLongClickListener {
     private @Nullable PopupMenu mDisambiguationMenu;
+    private final @ColorInt int mSpanColor;
 
     public TextViewWithClickableSpans(Context context) {
         this(context, /* attrs= */ null);
@@ -43,6 +51,32 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
 
     public TextViewWithClickableSpans(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+
+        TypedArray typedArray =
+                context.obtainStyledAttributes(attrs, R.styleable.TextViewWithClickableSpans);
+        Drawable drawable = AppCompatResources.getDrawable(context, R.drawable.span_background);
+
+        int defaultStrokeColor = context.getColor(R.color.default_text_color_link_baseline);
+        int globalStrokeColor =
+                AttrUtils.resolveColor(
+                        context.getTheme(), R.attr.globalClickableSpanColor, defaultStrokeColor);
+
+        // Apply a custom app:spanBackgroundStrokeColor if it is specified. Otherwise, apply
+        // R.attr.globalClickableSpanColor if it exists in the theme.
+        int strokeColor =
+                typedArray.getColor(
+                        R.styleable.TextViewWithClickableSpans_spanBackgroundStrokeColor,
+                        globalStrokeColor);
+
+        if (strokeColor != defaultStrokeColor) {
+            // Update the drawable stroke color if it is different from the default.
+            final int strokeWidth =
+                    getResources().getDimensionPixelSize(R.dimen.span_background_border_width);
+            ((GradientDrawable) drawable.mutate()).setStroke(strokeWidth, strokeColor);
+        }
+        mSpanColor = strokeColor;
+
+        typedArray.recycle();
         init();
     }
 
@@ -112,7 +146,6 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         // ClickableSpan doesn't stop propagation of the event in its click handler,
         // so we should only try to simplify clicking on a clickable span if the touch event
         // isn't already over a clickable span.
-
         if (!(getText() instanceof Spanned text)) return false;
 
         int x = (int) event.getX();
@@ -138,6 +171,11 @@ public class TextViewWithClickableSpans extends TextViewWithLeading
         if (!(getText() instanceof Spanned text)) return null;
 
         return text.getSpans(0, text.length(), ClickableSpan.class);
+    }
+
+    /** Returns the {@link ColorInt} used by the span text. */
+    public @ColorInt int getSpanColor() {
+        return mSpanColor;
     }
 
     private void handleAccessibilityClick() {

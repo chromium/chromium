@@ -35,8 +35,7 @@ found in the LICENSE file.
         android:id="@+id/new_tab_incognito_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
-        android:lineSpacingExtra="@dimen/md_incognito_ntp_line_spacing" />
+        style="@style/IncognitoNewTabTextView" />
 
     <LinearLayout
         android:id="@+id/new_tab_incognito_bulletpoints_container"
@@ -50,27 +49,24 @@ found in the LICENSE file.
             android:id="@+id/new_tab_incognito_features"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
-            app:leading="@dimen/text_size_medium_leading" />
+            style="@style/IncognitoNewTabTextView" />
 
         <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/new_tab_incognito_warning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
-            app:leading="@dimen/text_size_medium_leading" />
+            style="@style/IncognitoNewTabTextView" />
 
     </LinearLayout>
 
-    <org.chromium.ui.widget.TextViewWithLeading
+    <org.chromium.ui.widget.TextViewWithClickableSpans
         android:id="@+id/learn_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minHeight="@dimen/min_touch_target_size"
         android:gravity="center_vertical"
         android:text="@string/learn_more"
-        android:textAppearance="@style/TextAppearance.IncognitoNewTabLearnMoreLinkModern"
-        app:leading="@dimen/text_size_medium_leading" />
+        style="@style/IncognitoNewTabLearnMoreLinkModernTextView" />
 
     <!-- Placeholder for a Cookie Controls or a Tracking Protection card. -->
     <ViewStub
