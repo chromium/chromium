@@ -41,6 +41,8 @@ class MockWaylandPlatformWindowDelegate : public MockPlatformWindowDelegate {
     on_state_update_callback_ = cb;
   }
 
+  WaylandWindow* window() { return wayland_window_; }
+
  private:
   raw_ptr<WaylandWindow, AcrossTasksDanglingUntriaged> wayland_window_ =
       nullptr;

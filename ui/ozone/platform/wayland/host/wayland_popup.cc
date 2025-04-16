@@ -198,6 +198,10 @@ void WaylandPopup::HandlePopupConfigure(const gfx::Rect& bounds_dip) {
     return;
   }
 
+  // Popup state is set to "normal" as soon as the first configure
+  // sequence is processed.
+  pending_configure_state_.window_state = PlatformWindowState::kNormal;
+
   // Use UI scale to scale the bounds received from the Wayland compositor (ie:
   // non-empty `bounds_dip`) as it is an internal scaling factor, which the
   // compositor is not aware of.
@@ -262,9 +266,9 @@ void WaylandPopup::OnCloseRequest() {
 bool WaylandPopup::OnInitialize(PlatformWindowInitProperties properties,
                                 PlatformWindowDelegate::State* state) {
   DCHECK(parent_window());
-
-  // `window_state` is always `kNormal` on WaylandPopup.
-  state->window_state = PlatformWindowState::kNormal;
+  // Just like toplevel windows, popups start with unknown state, until the
+  // first configure sequence arrives, when it transitions to kNormal.
+  CHECK_EQ(state->window_state, PlatformWindowState::kUnknown);
 
   state->window_scale = parent_window()->applied_state().window_scale;
   shadow_type_ = properties.shadow_type;
