@@ -69,6 +69,16 @@ ImpressionLimitService::ImpressionLimitService(
 
 ImpressionLimitService::~ImpressionLimitService() = default;
 
+void ImpressionLimitService::AddObserver(
+    ImpressionLimitService::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ImpressionLimitService::RemoveObserver(
+    ImpressionLimitService::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void ImpressionLimitService::Shutdown() {
   if (history_service_) {
     history_service_observation_.Reset();
@@ -103,6 +113,7 @@ void ImpressionLimitService::BookmarkNodeRemoved(
   std::set<std::string> urls_to_remove;
   for (const GURL& url : no_longer_bookmarked) {
     urls_to_remove.insert(GetUrlKey(url));
+    OnUntracked(url);
   }
   RemoveEntriesForURls(urls_to_remove);
 }
@@ -131,6 +142,7 @@ void ImpressionLimitService::OnUnsubscribe(
   for (auto* node :
        commerce::GetBookmarksWithClusterId(bookmark_model_, cluster_id)) {
     urls_to_remove.insert(GetUrlKey(node->url()));
+    OnUntracked(node->url());
   }
   RemoveEntriesForURls(urls_to_remove);
 }
@@ -300,6 +312,12 @@ void ImpressionLimitService::RemoveOldestEntryIfSizeExceedsMaximum(
   if (smallest.has_value()) {
     impressions.Remove(smallest->first);
     pref_service_->SetDict(pref_name, std::move(impressions));
+  }
+}
+
+void ImpressionLimitService::OnUntracked(const GURL& url) {
+  for (auto& observer : observers_) {
+    observer.OnUntracked(url);
   }
 }
 
