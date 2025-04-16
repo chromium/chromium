@@ -41,7 +41,9 @@ public final class UiRestriction {
     }
 
     public static void registerChecks(RestrictionSkipCheck check) {
-        check.addHandler(DeviceFormFactor.DESKTOP, () -> isDesktop());
+        check.addHandler(DeviceFormFactor.DESKTOP, () -> !isDesktop());
+        // isTablet() returns True if the display is large enough to be considered a tablet, so
+        // it is always True on desktop devices as well.
         check.addHandler(DeviceFormFactor.PHONE, () -> isTablet());
         check.addHandler(DeviceFormFactor.TABLET, () -> !isTablet());
     }
