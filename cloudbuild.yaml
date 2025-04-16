@@ -145,7 +145,7 @@ steps:
         - |
             set -e
             cd /workspace/hopium/src
-            autoninja -C out/Debug chrome -j 32
+            /workspace/depot_tools/autoninja -C out/Debug chrome -j 32
 
   # 5. Post-Build Verification
   - name: 'gcr.io/protected-app-builds/totalbrowser-builder:1.0.3'
@@ -163,4 +163,4 @@ steps:
   - name: 'gcr.io/cloud-builders/gsutil'
     id: 'upload-artifact'
     waitFor: [ 'verify-binary' ]
-    args: ['cp', '-r', '/workspace/hopium/src/out/Debug/TotalBrowser', 'gs://tmp_tbr_build_output_bucket/$TAG_NAME']
+    args: ['cp', '-r', '/workspace/hopium/src/out/Debug/*', 'gs://tmp_tbr_build_output_bucket/$TAG_NAME']
