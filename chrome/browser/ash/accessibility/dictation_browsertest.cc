@@ -859,12 +859,30 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
                                  EditableType::kContentEditable)));
 
-IN_PROC_BROWSER_TEST_P(DictationJaTest, NoSmartSpacingOrCapitalization) {
+IN_PROC_BROWSER_TEST_P(DictationJaTest, NoSmartCapitalization) {
   ToggleDictationWithKeystroke();
   WaitForRecognitionStarted();
   SendFinalResultAndWaitForEditableValue("this", "this");
-  SendFinalResultAndWaitForEditableValue(" Is", "this Is");
-  SendFinalResultAndWaitForEditableValue("a test.", "this Isa test.");
+  // Note that spaces get removed when the Dictation language is Japanese
+  // (see the RemoveSpacesWithinUtterance) test case below.
+  SendFinalResultAndWaitForEditableValue(" Is", "thisIs");
+  SendFinalResultAndWaitForEditableValue("a test.", "thisIsatest.");
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStopped();
+}
+
+IN_PROC_BROWSER_TEST_P(DictationJaTest, RemoveSpacesWithinUtterance) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  // Dictate "I like tennis". Include spaces within this utterance, since we can
+  // receive results like this from the speech recognizer. Ensure that the
+  // spaces within the utterance are stripped out.
+  SendFinalResultAndWaitForEditableValue("私は テニス が好き です。",
+                                         "私はテニスが好きです。");
+  // Dictate "congratulations". Ensure that no spaces are added in between
+  // utterances.
+  SendFinalResultAndWaitForEditableValue("おめでとう",
+                                         "私はテニスが好きです。おめでとう");
   ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }

@@ -192,6 +192,23 @@ export class InputControllerImpl extends InputController {
       text = EditingUtil.smartSpacing(value, selStart, text);
     }
 
+    if (!LocaleInfo.considerSpaces()) {
+      // Remove spaces from within `text`, if there are any. In practice, it's
+      // possible for the speech recognition service to return text with spaces
+      // within the utterance, even if that language doesn't separate words
+      // with spaces (e.g. Japanese).
+      let textNoSpaces = '';
+      for (const char of text) {
+        if (char === ' ') {
+          continue;
+        }
+
+        textNoSpaces += char;
+      }
+
+      text = textNoSpaces;
+    }
+
     chrome.input.ime.commitText({contextID: this.activeImeContextId_, text});
   }
 
