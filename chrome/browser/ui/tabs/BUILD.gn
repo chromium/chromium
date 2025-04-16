@@ -454,6 +454,7 @@ if (!is_android) {
     testonly = true
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
     sources = [
+      "existing_base_sub_menu_model_browsertest.cc",
       "existing_window_sub_menu_model_browsertest.cc",
       "pinned_tab_codec_browsertest.cc",
       "pinned_tab_service_browsertest.cc",
@@ -511,7 +512,6 @@ if (!is_android) {
   source_set("unit_tests") {
     testonly = true
     sources = [
-      "existing_base_sub_menu_model_unittest.cc",
       "existing_comparison_table_sub_menu_model_unittest.cc",
       "existing_tab_group_sub_menu_model_unittest.cc",
       "inactive_window_mouse_event_controller_unittest.cc",

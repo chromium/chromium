@@ -7,9 +7,11 @@
 #include <memory>
 #include <vector>
 
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
@@ -82,14 +84,13 @@ class TestModel : public ExistingBaseSubMenuModel {
 
 }  // namespace
 
-class ExistingBaseSubMenuModelTest : public BrowserWithTestWindowTest {
+class ExistingBaseSubMenuModelTest : public InProcessBrowserTest {
  public:
   ExistingBaseSubMenuModelTest() = default;
   ~ExistingBaseSubMenuModelTest() override = default;
 
-  void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    AddTab(browser(), GURL("chrome://newtab"));
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     test_delegate_ = std::make_unique<TestDelegate>();
     test_model_ = std::make_unique<TestModel>(test_delegate_.get(),
                                               browser()->tab_strip_model());
@@ -107,7 +108,7 @@ class ExistingBaseSubMenuModelTest : public BrowserWithTestWindowTest {
 // Note that we can't test this because UI style info isn't loaded for unit
 // tests so it still returns null.
 
-TEST_F(ExistingBaseSubMenuModelTest, IsCommandIdAlerted) {
+IN_PROC_BROWSER_TEST_F(ExistingBaseSubMenuModelTest, IsCommandIdAlerted) {
   EXPECT_FALSE(test_model()->IsCommandIdAlerted(kMinCommandId));
   EXPECT_FALSE(test_model()->IsCommandIdAlerted(kMinCommandId + 1));
   EXPECT_FALSE(test_model()->IsCommandIdAlerted(kMinCommandId + 2));
@@ -118,13 +119,13 @@ TEST_F(ExistingBaseSubMenuModelTest, IsCommandIdAlerted) {
   EXPECT_FALSE(test_model()->IsCommandIdAlerted(kMinCommandId + 2));
 }
 
-TEST_F(ExistingBaseSubMenuModelTest, ExecuteCommand_New) {
+IN_PROC_BROWSER_TEST_F(ExistingBaseSubMenuModelTest, ExecuteCommand_New) {
   EXPECT_EQ(0, test_delegate()->execute_count());
   test_model()->ExecuteCommand(kMinCommandId, kExpectedFlags);
   EXPECT_EQ(1, test_delegate()->execute_count());
 }
 
-TEST_F(ExistingBaseSubMenuModelTest, ExecuteCommand_Existing) {
+IN_PROC_BROWSER_TEST_F(ExistingBaseSubMenuModelTest, ExecuteCommand_Existing) {
   test_model()->ExecuteCommand(kMinCommandId + 1, kExpectedFlags);
   test_model()->ExecuteCommand(kMinCommandId + 2, kExpectedFlags);
   EXPECT_THAT(test_model()->existing_commands(), testing::ElementsAre(1u, 2u));
