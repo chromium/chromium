@@ -18,6 +18,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.core.view.ViewCompat;
+
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -248,7 +250,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
 
         @Override
         void onAnimationEnd() {
-            announceForAccessibility(mFrontItem.getAccessibilityText());
+            announceAccessibilityText(mFrontItem.getAccessibilityText());
         }
 
         @Override
@@ -347,7 +349,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
                 mInfoBarWrappers.get(i).setTranslationY(0);
             }
             updateLayoutParams();
-            announceForAccessibility(mFrontItem.getAccessibilityText());
+            announceAccessibilityText(mFrontItem.getAccessibilityText());
         }
 
         @Override
@@ -451,7 +453,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
             for (int i = 0; i < mInfoBarWrappers.size(); i++) {
                 mInfoBarWrappers.get(i).setTranslationY(0);
             }
-            announceForAccessibility(mNewFrontWrapper.getItem().getAccessibilityText());
+            announceAccessibilityText(mNewFrontWrapper.getItem().getAccessibilityText());
         }
 
         @Override
@@ -534,7 +536,7 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
             mFrontWrapper.removeViewAt(0);
             InfoBarContainerLayout.this.setTranslationY(0f);
             mFrontWrapper.getItem().setControlsEnabled(true);
-            announceForAccessibility(mFrontWrapper.getItem().getAccessibilityText());
+            announceAccessibilityText(mFrontWrapper.getItem().getAccessibilityText());
         }
 
         @Override
@@ -815,17 +817,16 @@ public class InfoBarContainerLayout extends OptimizedFrameLayout {
         }
     }
 
+    private void announceAccessibilityText(CharSequence text) {
+        if (TextUtils.isEmpty(text)) return;
+        ViewCompat.setAccessibilityPaneTitle(this, text);
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         widthMeasureSpec = mFloatingBehavior.beforeOnMeasure(widthMeasureSpec);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mFloatingBehavior.afterOnMeasure(getMeasuredHeight());
-    }
-
-    @Override
-    public void announceForAccessibility(CharSequence text) {
-        if (TextUtils.isEmpty(text)) return;
-        super.announceForAccessibility(text);
     }
 
     @Override
