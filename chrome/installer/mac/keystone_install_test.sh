@@ -30,9 +30,16 @@ KSADMIN_VERSION_LIE="137.0.7106.0"
 
 # Temp directory to be used as the disk image (source)
 TEMPDIR=$(mktemp -d -t $(basename ${0}))
-PATH=$PATH:"${TEMPDIR}"
 OUTDIR="${TEMPDIR}/out"
 OUTFILE="${OUTDIR}/register_flags.txt"
+
+
+# The PATH created here must be kept in sync with PATH override behavior
+# in chrome/updater/mac/install_from_archive.mm::RunInstaller, so the
+# test will behave realistically.
+# LINT.IfChange(InstallerEnvPath)
+INSTALLER_ENV_PATH="/bin:/usr/bin:${TEMPDIR}"
+# LINT.ThenChange(/chrome/updater/mac/install_from_archive.mm:InstallerEnvPath)
 
 LIBRARY_BRAND_DEFAULTS_TARGET="${HOME}/Library/Google/Google Chrome Brand"
 LIBRARY_BRAND_FILE="${LIBRARY_BRAND_DEFAULTS_TARGET}.plist"
@@ -49,7 +56,8 @@ function cleanup_tempdir() {
 }
 
 function invoke_installer() {
-  GOOGLE_CHROME_UPDATER_DEBUG=y "${INSTALLER}" "${TEMPDIR}" \
+  GOOGLE_CHROME_UPDATER_DEBUG=y PATH="${INSTALLER_ENV_PATH}" \
+      "${INSTALLER}" "${TEMPDIR}" \
       > "${OUTDIR}/keystone_install.out" \
       2> "${OUTDIR}/keystone_install.err"
   RETURN=$?

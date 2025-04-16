@@ -176,12 +176,17 @@ int RunExecutable(const base::FilePath& existence_checker_path,
     command.AppendArgPath(existence_checker_path);
     command.AppendArg(pv.GetString());
 
+    // Provide a small PATH to provide a predictable execution environment,
+    // including ksadmin on the PATH. If updating this logic, please keep the
+    // install script test in sync with the behavior here.
+    // LINT.IfChange(InstallerEnvPath)
     std::string env_path = "/bin:/usr/bin";
     std::optional<base::FilePath> ksadmin_path =
         GetKSAdminPath(GetUpdaterScope());
     if (ksadmin_path) {
       env_path = base::StrCat({env_path, ":", ksadmin_path->DirName().value()});
     }
+    // LINT.ThenChange(/chrome/installer/mac/keystone_install_test.sh:InstallerEnvPath)
 
     base::ScopedFD read_fd, write_fd;
     {
