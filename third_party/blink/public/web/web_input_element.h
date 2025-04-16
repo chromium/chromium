@@ -57,9 +57,10 @@ class BLINK_EXPORT WebInputElement final : public WebFormControlElement {
   // Returns true for all of textfield-looking types such as text, password,
   // search, email, url, and number.
   bool IsTextField() const;
-  // Makes `FormControlType()` return `mojom::FormControlType::kInputPassword`
-  // for the rest of the element's life.
-  void SetHasBeenPasswordField();
+  // Makes `FormControlTypeForAutofill()` return
+  // `mojom::FormControlType::kInputPassword` as long as the element's type is a
+  // text type.
+  void MaybeSetHasBeenPasswordField();
   void SetActivatedSubmit(bool);
   int size() const;
   void SetChecked(bool,
