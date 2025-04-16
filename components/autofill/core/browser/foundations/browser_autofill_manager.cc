@@ -31,6 +31,7 @@
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -2960,10 +2961,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
   }
 
   if (context.should_show_mixed_content_warning) {
-    Suggestion warning_suggestion(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM));
-    warning_suggestion.type = SuggestionType::kMixedFormMessage;
-    return {warning_suggestion};
+    return {
+        Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_MIXED_FORM),
+                   SuggestionType::kMixedFormMessage)};
   }
 
   if (!context.is_autofill_available ||
@@ -3012,31 +3012,26 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
   // (e.g. email addresses) rank compared to other sources.
   if (const IdentityCredentialDelegate* identity_credential_delegate =
           client().GetIdentityCredentialDelegate()) {
-    std::vector<Suggestion> verified_profiles =
-        identity_credential_delegate->GetVerifiedAutofillSuggestions(
-            *autofill_field);
-    suggestions.insert(suggestions.end(), verified_profiles.begin(),
-                       verified_profiles.end());
+    base::Extend(suggestions,
+                 identity_credential_delegate->GetVerifiedAutofillSuggestions(
+                     *autofill_field));
   }
 
+  // Don't provide credit card suggestions for non-secure pages, but do provide
+  // them for secure pages with passive mixed content (see implementation of
+  // IsContextSecure).
   if (suggestions.empty() ||
-      context.filling_product != FillingProduct::kCreditCard) {
+      context.filling_product != FillingProduct::kCreditCard ||
+      context.is_context_secure) {
     return suggestions;
   }
-  // Don't provide credit card suggestions for non-secure pages, but do
-  // provide them for secure pages with passive mixed content (see
-  // implementation of IsContextSecure).
-  if (!context.is_context_secure) {
-    // Replace the suggestion content with a warning message explaining why
-    // Autofill is disabled for a website. The string is different if the
-    // credit card autofill HTTP warning experiment is enabled.
-    Suggestion warning_suggestion(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION));
-    warning_suggestion.type =
-        SuggestionType::kInsecureContextPaymentDisabledMessage;
-    suggestions.assign(1, warning_suggestion);
-  }
-  return suggestions;
+
+  // Replace the suggestion content with a warning message explaining why
+  // Autofill is disabled for a website. The string is different if the credit
+  // card autofill HTTP warning experiment is enabled.
+  return {Suggestion(
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_WARNING_INSECURE_CONNECTION),
+      SuggestionType::kInsecureContextPaymentDisabledMessage)};
 }
 
 autofill_metrics::FormEventLoggerBase*
