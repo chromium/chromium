@@ -126,7 +126,7 @@ class TabGroupSyncNavigationIntegrationTest : public InProcessBrowserTest {
   void SetupSyncBridgeModelObserver() {
     TabGroupSyncServiceImpl* service_impl =
         static_cast<TabGroupSyncServiceImpl*>(service());
-    SavedTabGroupModel* model = service_impl->GetModelForTesting();
+    SavedTabGroupModel* model = service_impl->GetModel();
     model->AddObserver(&sync_bridge_model_observer_);
   }
 
@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
 
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
@@ -248,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
 
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
   // Create a local tab group with one tab.
@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
   // Create a local tab group with one tab.
@@ -392,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
   // Create a local tab group with one tab.
@@ -423,7 +423,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
   // Create a local tab group with one tab.
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
   // Create a local tab group with one tab.
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
   // Create a local tab group with one tab.
@@ -548,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncNavigationIntegrationTest,
   SetupSyncBridgeModelObserver();
   TabGroupSyncServiceImpl* service_impl =
       static_cast<TabGroupSyncServiceImpl*>(service());
-  SavedTabGroupModel* model = service_impl->GetModelForTesting();
+  SavedTabGroupModel* model = service_impl->GetModel();
   TabStripModel* const tabstrip = browser()->tab_strip_model();
 
   // Create a local tab group with one tab.
