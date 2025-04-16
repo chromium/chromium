@@ -141,7 +141,7 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService,
   void SetIsInitializedForTesting(bool initialized) override;
   std::u16string GetTabTitle(const LocalTabID& local_tab_id) override;
 
-  SavedTabGroupModel* GetModelForTesting();
+  SavedTabGroupModel* GetModel();
 
  private:
   // SavedTabGroupModelObserver:

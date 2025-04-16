@@ -19,12 +19,16 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/saved_tab_groups/internal/stats.h"
+#include "components/saved_tab_groups/internal/tab_group_sync_service_impl.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 #include "ui/gfx/range/range.h"
 
 namespace tab_groups {
 namespace {
+
+constexpr base::TimeDelta kDelayBeforeMetricsLogged = base::Hours(1);
 
 class ScopedLocalObservationPauserImpl : public ScopedLocalObservationPauser {
  public:
@@ -134,7 +138,9 @@ TabGroupSyncDelegateDesktop::TabGroupSyncDelegateDesktop(
     : profile_(profile),
       service_(service),
       listener_(
-          std::make_unique<SavedTabGroupModelListener>(service_, profile)) {}
+          std::make_unique<SavedTabGroupModelListener>(service_, profile)) {
+  service_observation_.Observe(service_);
+}
 
 TabGroupSyncDelegateDesktop::~TabGroupSyncDelegateDesktop() = default;
 
@@ -385,4 +391,26 @@ TabGroupId TabGroupSyncDelegateDesktop::AddOpenedTabsToGroup(
   listener_->ConnectToLocalTabGroup(*saved_group2, tab_guid_mapping);
   return tab_group_id;
 }
+
+void TabGroupSyncDelegateDesktop::OnInitialized() {
+  StartRecordingHourlyMetrics();
+}
+
+void TabGroupSyncDelegateDesktop::OnWillBeDestroyed() {
+  service_observation_.Reset();
+}
+
+void TabGroupSyncDelegateDesktop::StartRecordingHourlyMetrics() {
+  hourly_metrics_timer_.Start(
+      FROM_HERE, kDelayBeforeMetricsLogged,
+      base::BindRepeating(&TabGroupSyncDelegateDesktop::RecordHourlyMetrics,
+                          base::Unretained(this)));
+}
+
+void TabGroupSyncDelegateDesktop::RecordHourlyMetrics() {
+  auto* model = static_cast<TabGroupSyncServiceImpl*>(service_)->GetModel();
+  stats::RecordSavedTabGroupMetrics(model);
+  hourly_metrics_timer_.Reset();
+}
+
 }  // namespace tab_groups
