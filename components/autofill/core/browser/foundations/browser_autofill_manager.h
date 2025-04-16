@@ -500,13 +500,11 @@ class BrowserAutofillManager : public AutofillManager {
   void GenerateSuggestionsAndMaybeShowUIPhase1(
       const FormData& form,
       const FormFieldData& field,
-      AutofillSuggestionTriggerSource trigger_source,
-      std::vector<Suggestion> autofill_ai_suggestions);
+      AutofillSuggestionTriggerSource trigger_source);
   void GenerateSuggestionsAndMaybeShowUIPhase2(
       const FormData& form,
       const FormFieldData& field,
       AutofillSuggestionTriggerSource trigger_source,
-      std::vector<Suggestion> autofill_ai_suggestions,
       SuggestionsContext context,
       std::vector<std::string> plus_addresses);
 

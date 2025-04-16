@@ -1114,22 +1114,13 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
                               /*update_datalist=*/true);
-
-  std::vector<Suggestion> autofill_ai_suggestions;
-  if (AutofillAiDelegate* delegate = client().GetAutofillAiDelegate()) {
-    autofill_ai_suggestions =
-        delegate->GetSuggestions(form.global_id(), field.global_id());
-  }
-
-  GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source,
-                                          std::move(autofill_ai_suggestions));
+  GenerateSuggestionsAndMaybeShowUIPhase1(form, field, trigger_source);
 }
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
     const FormData& form,
     const FormFieldData& field,
-    AutofillSuggestionTriggerSource trigger_source,
-    std::vector<Suggestion> autofill_ai_suggestions) {
+    AutofillSuggestionTriggerSource trigger_source) {
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
   const AutofillPlusAddressDelegate* plus_address_delegate =
@@ -1160,8 +1151,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
 
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
-      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
-      std::move(autofill_ai_suggestions), context);
+      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source, context);
 
   if (context.field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
@@ -1179,7 +1169,6 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormData& form,
     const FormFieldData& field,
     AutofillSuggestionTriggerSource trigger_source,
-    std::vector<Suggestion> autofill_ai_suggestions,
     SuggestionsContext context,
     std::vector<std::string> plus_addresses) {
   OnGenerateSuggestionsCallback callback = base::BindOnce(
@@ -1211,12 +1200,12 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   }
   AutofillAiDelegate* delegate = client().GetAutofillAiDelegate();
   if (form_structure && autofill_field &&
-      MayPerformAutofillAiAction(client(), AutofillAiAction::kFilling) &&
       GetFieldsFillableByAutofillAi(*form_structure, client())
           .contains(autofill_field->global_id())) {
-    std::move(callback).Run(/*show_suggestions=*/true,
-                            std::move(autofill_ai_suggestions),
-                            /*ranking_context=*/std::nullopt);
+    std::move(callback).Run(
+        /*show_suggestions=*/true,
+        delegate->GetSuggestions(form.global_id(), field.global_id()),
+        /*ranking_context=*/std::nullopt);
     return;
   } else if (suggestions.empty() && delegate &&
              delegate->ShouldDisplayIph(form.global_id(), field.global_id()) &&
