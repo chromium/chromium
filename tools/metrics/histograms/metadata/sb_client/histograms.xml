@@ -74,37 +74,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.AndroidAppVerificationPromptResult2"
-    enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-05-24">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of prompting the user to enable app verification. This is
-    logged for each prompt shown, which is once per APK download on Android by a
-    user with app verification disabled.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.AndroidAppVerificationResult"
-    enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-05-24">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of checking whether app verification is enabled. This is
-    logged on every APK download on Android.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.AndroidTelemetry.AppVerificationResult"
-    enum="SafeBrowsingVerifyAppsEnabledResult" expires_after="2025-08-17">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the result of checking whether app verification is enabled. This is
-    logged for each APK download by a used opted in to Enhanced Safe Browsing.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.AutoOpen{State}FileType"
     enum="SBClientDownloadExtensions" expires_after="2025-11-03">
   <owner>drubery@chromium.org</owner>
