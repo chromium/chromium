@@ -38,6 +38,7 @@ suite('SignoutConfirmationViewTest', function() {
       acceptButtonLabel: 'accept',
       cancelButtonLabel: 'cancel',
       accountExtensions: [],
+      hasUnsyncedData: false,
     });
 
     return testProxy.handler.whenCalled('updateViewHeight');
@@ -76,6 +77,7 @@ suite('SignoutConfirmationViewTest', function() {
         name: 'name',
         iconUrl: 'icon.png',
       }],
+      hasUnsyncedData: false,
     });
 
     // Wait for the new data to actually be updated in the component by waiting
@@ -122,5 +124,54 @@ suite('SignoutConfirmationViewTest', function() {
     assertTrue(isVisible(signoutConfirmationApp));
     keyDown(signoutConfirmationApp, 'Escape');
     return testProxy.handler.whenCalled('close');
+  });
+
+  test('UnsyncedAccountExtensionsText', async function() {
+    assertTrue(isVisible(signoutConfirmationApp));
+
+    // Additional text for unsynced account extensions should not be shown by
+    // default (no unsynced data and no account extensions).
+    assertFalse(
+        isChildVisible(signoutConfirmationApp, '#unsyncedAccountExtensions'));
+
+    // Reset the handler.
+    testProxy.handler.reset();
+
+    // Send an update with unsynced data but no account extensions.
+    callbackRouterRemote.sendSignoutConfirmationData({
+      dialogTitle: 'title',
+      dialogSubtitle: 'subtitle',
+      acceptButtonLabel: 'accept',
+      cancelButtonLabel: 'cancel',
+      accountExtensions: [],
+      hasUnsyncedData: true,
+    });
+
+    // Wait for the new data to actually be updated in the component by waiting
+    // for a height update triggered by receipt of the new data.
+    await testProxy.handler.whenCalled('updateViewHeight');
+
+    // Text should still not be shown because there are no account extensions.
+    assertFalse(
+        isChildVisible(signoutConfirmationApp, '#unsyncedAccountExtensions'));
+
+    // Repeat the above except we now have an unsynced account extension.
+    testProxy.handler.reset();
+    callbackRouterRemote.sendSignoutConfirmationData({
+      dialogTitle: 'title',
+      dialogSubtitle: 'subtitle',
+      acceptButtonLabel: 'accept',
+      cancelButtonLabel: 'cancel',
+      accountExtensions: [{
+        name: 'name',
+        iconUrl: 'icon.png',
+      }],
+      hasUnsyncedData: true,
+    });
+    await testProxy.handler.whenCalled('updateViewHeight');
+
+    // Text should now be shown..
+    assertTrue(
+        isChildVisible(signoutConfirmationApp, '#extensionsAdditionalText'));
   });
 });

@@ -24,7 +24,6 @@
   color: var(--cr-primary-text-color);
   font-size: 18px;
   font-weight: 500;
-  margin-bottom: 16px;
   margin-top: 0;
 }
 
@@ -35,14 +34,13 @@
 }
 
 extensions-section {
-  margin-top: 16px;
+  margin-bottom: 1em;
 }
 
 #action-row {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
-  margin-top: 16px;
 }
 
 <if expr="is_macosx or is_linux">

@@ -1081,6 +1081,9 @@
       other {These extensions are saved in your Google Account, but any data they've saved only on this device may be deleted}
       }
     </message>
+    <message name="IDS_SIGNOUT_CONFIRMATION_UNSYNCED_DATA_WITH_ACCOUNT_EXTENSIONS" desc="An additional message shown in the Signout Confirmation dialog if the user initiates a signout with unsynced data and they have account extensions installed.">
+      You can also choose to remove account extensions from this device.
+    </message>
 
     <!-- History Sync Opt-in Desktop -->
     <!-- TODO(crbug.com/406751006): Finalize the strings and make them translateable. -->

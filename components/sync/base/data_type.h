@@ -413,7 +413,8 @@ constexpr DataTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
       "data. The warning offers the user to either proceed with sign-out "
       "deleting any pending account data or abort, depending on the platform");
   return {syncer::BOOKMARKS,    syncer::CONTACT_INFO,    syncer::PASSWORDS,
-          syncer::READING_LIST, syncer::SAVED_TAB_GROUP, syncer::THEMES};
+          syncer::READING_LIST, syncer::SAVED_TAB_GROUP, syncer::THEMES,
+          syncer::EXTENSIONS};
 }
 
 // User types that can be encrypted, which is a subset of UserTypes() and a
