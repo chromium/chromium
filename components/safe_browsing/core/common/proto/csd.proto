@@ -181,6 +181,9 @@ message IntelligentScanInfo {
     EMPTY_TEXT = 1;
     // Allowlisted by high confidence allowlist.
     ALLOWLISTED = 2;
+    // The on device model is unavailable, which can be from a few reasons such
+    // as device incapability or not enough space on disk.
+    ON_DEVICE_MODEL_UNAVAILABLE = 3;
   }
   optional NoInfoReason no_info_reason = 3;
 }

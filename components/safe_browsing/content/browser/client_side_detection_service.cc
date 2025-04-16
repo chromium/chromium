@@ -222,6 +222,13 @@ bool ClientSideDetectionService::IsOnDeviceModelAvailable() {
   return on_device_model_available_;
 }
 
+void ClientSideDetectionService::LogOnDeviceModelEligibilityReason() {
+  // Delegate can be null in unit tests.
+  if (delegate_) {
+    delegate_->LogOnDeviceModelEligibilityReason();
+  }
+}
+
 void ClientSideDetectionService::SendClientReportPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> verdict,
     ClientReportPhishingRequestCallback callback,
@@ -837,14 +844,9 @@ void ClientSideDetectionService::InquireOnDeviceModel(
     base::OnceCallback<
         void(std::optional<optimization_guide::proto::ScamDetectionResponse>)>
         callback) {
-  base::UmaHistogramBoolean(
-      "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
-      IsOnDeviceModelAvailable());
-
+  // We have checked the model availability prior to calling this function, but
+  // we want to check one last time before creating a session.
   if (!IsOnDeviceModelAvailable()) {
-    // When the model is not available at the time of inquiry, we want to log
-    // the current status of the model fetch.
-    delegate_->LogOnDeviceModelEligibilityReason();
     std::move(callback).Run(std::nullopt);
     return;
   }

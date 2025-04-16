@@ -174,6 +174,7 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
       (std::string,
        base::OnceCallback<void(
            std::optional<optimization_guide::proto::ScamDetectionResponse>)>));
+  MOCK_METHOD0(LogOnDeviceModelEligibilityReason, void());
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -2465,11 +2466,20 @@ class ClientSideDetectionHostScamDetectionTest
 
   void VerifyGeneralScamDetectionHistograms(
       ClientSideDetectionType expected_request_type,
+      std::optional<bool> is_on_device_model_available,
       std::optional<bool> model_has_successful_response,
       std::optional<IntelligentScanVerdict> intelligent_scan_verdict) {
     histogram_tester_.ExpectBucketCount(
         "SBClientPhishing.ClientSideDetectionTypeRequest",
         expected_request_type, 1);
+    if (is_on_device_model_available) {
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
+          is_on_device_model_available.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", 0);
+    }
     if (model_has_successful_response.has_value()) {
       histogram_tester_.ExpectUniqueSample(
           "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
@@ -2545,6 +2555,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::
           KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/false,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -2572,6 +2583,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::
           KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -2586,6 +2598,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   raw_delegate_->ForceEmptyInnerText();
   // Because the inner text is empty, we will NOT inquire the on-device model.
+  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(0);
   EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -2602,6 +2615,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::
           KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/std::nullopt,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -2616,6 +2630,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
   // Because the URL is on the HC allowlist, we will NOT inquire the
   // on-device model.
+  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(0);
   EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -2629,9 +2644,46 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
                         /*did_match_high_confidence_allowlist=*/true);
 
   VerifyExpectedCalls();
+  // Allowlisted page does not check whether the on-device model is available,
+  // because it exists through the allowlist check beforehand.
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::
           KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/std::nullopt,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       NoOnDeviceModelDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  csd_service_->SetOnDeviceAvailabilityForTesting(false);
+  // Because the on-device model is unavailable, we will NOT inquire the
+  // on-device model.
+  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(1);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/
+      IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/false,
       /*model_has_successful_response=*/std::nullopt,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -2647,6 +2699,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   // Because the client side detection type is POINTER_LOCK_REQUESTED, we will
   // NOT inquire the on-device model.
+  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(0);
   EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
   SetSendClientReportPhishingRequestCallback(
       /*has_expected_brand_and_intent=*/false,
@@ -2660,8 +2713,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
                         /*did_match_high_confidence_allowlist=*/false);
 
   VerifyExpectedCalls();
+  // Because the request is non-keyboard lock request, we don't check for
+  // on-device model availability.
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::POINTER_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/std::nullopt,
       /*model_has_successful_response=*/std::nullopt,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -2695,6 +2751,7 @@ TEST_F(
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::
           KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
@@ -2735,6 +2792,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::
           KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
@@ -2770,6 +2828,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   VerifyExpectedCalls();
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -2808,8 +2867,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
                         /*did_match_high_confidence_allowlist=*/false);
 
   VerifyExpectedCalls();
+  // We do not check for on-device model availability if LLAMA force request
+  // does not request it initially.
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/std::nullopt,
       /*model_has_successful_response=*/std::nullopt,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -2851,6 +2913,7 @@ TEST_F(
   VerifyExpectedCalls();
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/std::nullopt,
       /*model_has_successful_response=*/std::nullopt,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
@@ -3000,6 +3063,7 @@ TEST_F(
   VerifyExpectedCalls();
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
@@ -3043,6 +3107,7 @@ TEST_F(
   VerifyExpectedCalls();
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
@@ -3082,9 +3147,11 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
 
   VerifyExpectedCalls();
   // Although the warning has not been displayed, we should still check that the
-  // histogram has been logged.
+  // histogram has been logged. In addition, because the client side detection
+  // type is TRIGGER_MODELS, we do not check for on device model availability.
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::TRIGGER_MODELS,
+      /*is_on_device_model_available=*/std::nullopt,
       /*model_has_successful_response=*/std::nullopt,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY);
@@ -3122,6 +3189,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::
           KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
@@ -3164,6 +3232,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
   VerifyGeneralScamDetectionHistograms(
       /*expected_request_type=*/ClientSideDetectionType::
           KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
       /*model_has_successful_response=*/true,
       /*intelligent_scan_verdict=*/
       IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
