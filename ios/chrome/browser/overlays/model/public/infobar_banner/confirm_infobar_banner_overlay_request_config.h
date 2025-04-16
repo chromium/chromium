@@ -24,7 +24,7 @@ class ConfirmBannerRequestConfig
   ~ConfirmBannerRequestConfig() override;
 
  private:
-  OVERLAY_USER_DATA_SETUP(ConfirmBannerRequestConfig);
+  friend class OverlayUserData<ConfirmBannerRequestConfig>;
   explicit ConfirmBannerRequestConfig(infobars::InfoBar* infobar);
 
   // OverlayUserData:

@@ -69,7 +69,7 @@ class SaveAddressProfileModalRequestConfig
   }
 
  private:
-  OVERLAY_USER_DATA_SETUP(SaveAddressProfileModalRequestConfig);
+  friend class OverlayUserData<SaveAddressProfileModalRequestConfig>;
   explicit SaveAddressProfileModalRequestConfig(InfoBarIOS* infobar);
 
   // OverlayUserData:

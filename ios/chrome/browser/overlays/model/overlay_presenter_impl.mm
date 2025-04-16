@@ -26,8 +26,6 @@ OverlayPresenter* OverlayPresenter::FromBrowser(Browser* browser,
 
 #pragma mark - OverlayPresenterImpl::Container
 
-OVERLAY_USER_DATA_SETUP_IMPL(OverlayPresenterImpl::Container);
-
 OverlayPresenterImpl::Container::Container(Browser* browser)
     : browser_(browser) {
   DCHECK(browser_);

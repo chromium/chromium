@@ -23,7 +23,7 @@ class EditedProfileSaveAction
   autofill::AutofillProfile* profile_data() const { return profile_data_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(EditedProfileSaveAction);
+  friend class OverlayUserData<EditedProfileSaveAction>;
   EditedProfileSaveAction(autofill::AutofillProfile* profileData);
 
   raw_ptr<autofill::AutofillProfile> profile_data_;
@@ -38,7 +38,7 @@ class CancelViewAction : public OverlayResponseInfo<CancelViewAction> {
   BOOL edit_view_is_dismissed() const { return edit_view_is_dismissed_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(CancelViewAction);
+  friend class OverlayUserData<CancelViewAction>;
   CancelViewAction(BOOL edit_view_is_dismissed);
 
   BOOL edit_view_is_dismissed_;

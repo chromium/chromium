@@ -23,7 +23,7 @@ class JavaScriptAlertDialogRequest
   NSString* message() const { return message_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(JavaScriptAlertDialogRequest);
+  friend class OverlayUserData<JavaScriptAlertDialogRequest>;
   JavaScriptAlertDialogRequest(web::WebState* web_state,
                                const GURL& url,
                                bool is_main_frame,
@@ -54,7 +54,7 @@ class JavaScriptAlertDialogResponse
   Action action() const { return action_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(JavaScriptAlertDialogResponse);
+  friend class OverlayUserData<JavaScriptAlertDialogResponse>;
   JavaScriptAlertDialogResponse(Action action);
 
   Action action_;

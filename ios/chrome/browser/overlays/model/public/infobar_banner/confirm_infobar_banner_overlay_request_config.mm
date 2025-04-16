@@ -13,8 +13,6 @@
 
 namespace confirm_infobar_overlays {
 
-OVERLAY_USER_DATA_SETUP_IMPL(ConfirmBannerRequestConfig);
-
 ConfirmBannerRequestConfig::ConfirmBannerRequestConfig(
     infobars::InfoBar* infobar)
     : ConfirmBannerRequestConfigStorage(infobar) {}

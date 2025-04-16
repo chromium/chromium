@@ -19,7 +19,7 @@ class ConfirmDownloadClosingRequest
     : public OverlayRequestConfig<ConfirmDownloadClosingRequest> {
  private:
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
-  OVERLAY_USER_DATA_SETUP(ConfirmDownloadClosingRequest);
+  friend class OverlayUserData<ConfirmDownloadClosingRequest>;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_CONFIRM_DOWNLOAD_CLOSING_OVERLAY_H_

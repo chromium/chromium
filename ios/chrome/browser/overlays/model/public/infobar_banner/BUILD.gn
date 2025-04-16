@@ -8,7 +8,6 @@ source_set("infobar_banner") {
     "confirm_infobar_banner_overlay_request_config.mm",
     "confirm_infobar_banner_overlay_request_config_storage.h",
     "confirm_infobar_banner_overlay_request_config_storage.mm",
-    "infobar_banner_overlay_responses.cc",
     "infobar_banner_overlay_responses.h",
     "infobar_banner_placeholder_request_config.h",
     "infobar_banner_placeholder_request_config.mm",

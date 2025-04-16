@@ -23,7 +23,7 @@ class JavaScriptConfirmDialogRequest
   NSString* message() const { return message_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(JavaScriptConfirmDialogRequest);
+  friend class OverlayUserData<JavaScriptConfirmDialogRequest>;
   JavaScriptConfirmDialogRequest(web::WebState* web_state,
                                  const GURL& url,
                                  bool is_main_frame,
@@ -55,7 +55,7 @@ class JavaScriptConfirmDialogResponse
   Action action() const { return action_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(JavaScriptConfirmDialogResponse);
+  friend class OverlayUserData<JavaScriptConfirmDialogResponse>;
   JavaScriptConfirmDialogResponse(Action action);
 
   Action action_;

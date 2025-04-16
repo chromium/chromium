@@ -20,7 +20,7 @@ class InfobarBannerPlaceholderRequestConfig
   ~InfobarBannerPlaceholderRequestConfig() override;
 
  private:
-  OVERLAY_USER_DATA_SETUP(InfobarBannerPlaceholderRequestConfig);
+  friend class OverlayUserData<InfobarBannerPlaceholderRequestConfig>;
   explicit InfobarBannerPlaceholderRequestConfig(infobars::InfoBar* infobar);
 
   // OverlayUserData:

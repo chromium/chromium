@@ -15,8 +15,6 @@
 
 namespace autofill_address_profile_infobar_overlays {
 
-OVERLAY_USER_DATA_SETUP_IMPL(SaveAddressProfileModalRequestConfig);
-
 SaveAddressProfileModalRequestConfig::SaveAddressProfileModalRequestConfig(
     InfoBarIOS* infobar)
     : infobar_(infobar) {

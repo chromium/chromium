@@ -9,8 +9,6 @@
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_type.h"
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
 
-OVERLAY_USER_DATA_SETUP_IMPL(InfobarBannerPlaceholderRequestConfig);
-
 InfobarBannerPlaceholderRequestConfig::InfobarBannerPlaceholderRequestConfig(
     infobars::InfoBar* infobar)
     : infobar_(infobar) {}

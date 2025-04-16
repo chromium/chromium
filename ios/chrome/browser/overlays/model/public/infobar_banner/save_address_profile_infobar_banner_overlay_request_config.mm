@@ -14,8 +14,6 @@
 
 namespace autofill_address_profile_infobar_overlays {
 
-OVERLAY_USER_DATA_SETUP_IMPL(SaveAddressProfileBannerRequestConfig);
-
 SaveAddressProfileBannerRequestConfig::SaveAddressProfileBannerRequestConfig(
     infobars::InfoBar* infobar)
     : infobar_(infobar) {

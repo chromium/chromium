@@ -28,7 +28,7 @@ class JavaScriptPromptDialogRequest
   }
 
  private:
-  OVERLAY_USER_DATA_SETUP(JavaScriptPromptDialogRequest);
+  friend class OverlayUserData<JavaScriptPromptDialogRequest>;
   JavaScriptPromptDialogRequest(web::WebState* web_state,
                                 const GURL& url,
                                 bool is_main_frame,
@@ -64,7 +64,7 @@ class JavaScriptPromptDialogResponse
   NSString* user_input() const { return user_input_; }
 
  private:
-  OVERLAY_USER_DATA_SETUP(JavaScriptPromptDialogResponse);
+  friend class OverlayUserData<JavaScriptPromptDialogResponse>;
   JavaScriptPromptDialogResponse(Action action, NSString* user_input);
 
   Action action_;

@@ -84,7 +84,7 @@ necessary to set up the overlay UI being requested.
       const std::string& message() const;
       const std::vector<std::string>& button_titles() const;
      private:
-      OVERLAY_USER_DATA_SETUP(AlertConfig);
+      friend class OverlayUserData<AlertConfig>;
       AlertConfig(const std::string& title, const std::string& message);
     };
 
@@ -95,7 +95,7 @@ execute the callback for the overlay.
      public:
       const size_t tapped_button_index() const;
      private:
-      OVERLAY_USER_DATA_SETUP(AlertInfo);
+      friend class OverlayUserData<AlertInfo>;
       AlertInfo(size_t tapped_button_index);
     };
 
@@ -155,7 +155,7 @@ a browser view.
      public:
       const std::string& username() const;
      private:
-      OVERLAY_USER_DATA_SETUP(AccountChooserUserInfo);
+      friend class OverlayUserData<AccountChooserUserInfo>;
       AccountChooserUserInfo(const std::string& username);
     };
 
