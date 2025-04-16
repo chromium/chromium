@@ -11333,6 +11333,12 @@ experimental domain Storage
       # party URL, only the first-party URL is returned in the array.
       array of string matchedUrls
 
+  command setProtectedAudienceKAnonymity
+    parameters
+      string owner
+      string name
+      array of binary hashes
+
 # The SystemInfo domain defines methods and events for querying low-level system information.
 experimental domain SystemInfo
 

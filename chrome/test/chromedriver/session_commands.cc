@@ -1789,6 +1789,42 @@ Status ExecuteRemoveVirtualPressureSource(Session* session,
                                body);
 }
 
+Status ExecuteSetProtectedAudienceKAnonymity(
+    Session* session,
+    const base::Value::Dict& params,
+    std::unique_ptr<base::Value>* value) {
+  WebView* web_view = nullptr;
+  Status status = session->GetTargetWindow(&web_view);
+  if (status.IsError()) {
+    return status;
+  }
+
+  const std::string* owner = params.FindString("owner");
+  if (!owner) {
+    return Status(kInvalidArgument, "missing parameter 'owner'");
+  }
+  const std::string* name = params.FindString("name");
+  if (!name) {
+    return Status(kInvalidArgument, "missing parameter 'name'");
+  }
+  const base::Value::List* hashes = params.FindList("hashes");
+  if (!hashes) {
+    return Status(kInvalidArgument, "missing parameter 'hashes'");
+  }
+  for (const auto& hash : *hashes) {
+    if (!hash.is_string()) {
+      return Status(kInvalidArgument, "hashes should be base64 strings");
+    }
+  }
+
+  base::Value::Dict body;
+  body.Set("owner", *owner);
+  body.Set("name", *name);
+  body.Set("hashes", base::Value(hashes->Clone()));
+
+  return web_view->SendCommand("Storage.setProtectedAudienceKAnonymity", body);
+}
+
 // Run a BiDi command
 Status ForwardBidiCommand(Session* session,
                           const base::Value::Dict& params,

@@ -499,7 +499,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void UpdateKAnonymity(const blink::InterestGroupKey& interest_group_key,
                         const std::vector<std::string>& positive_hashed_keys,
                         const base::Time update_time,
-                        bool initial_update);
+                        bool replace_existing_values);
 
   // Gets lockout and cooldowns of `origins` for sending forDebuggingOnly
   // reports.

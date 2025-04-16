@@ -173,6 +173,11 @@ class StorageHandler
       const std::string& request_id,
       const std::vector<std::string>& devtools_auction_ids);
 
+  Response SetProtectedAudienceKAnonymity(
+      const std::string& in_owner_origin,
+      const std::string& in_group_name,
+      std::unique_ptr<std::vector<Binary>> in_hashes) override;
+
  private:
   // See definition for lifetime information.
   class CacheStorageObserver;

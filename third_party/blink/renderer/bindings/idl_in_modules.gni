@@ -1385,6 +1385,7 @@ if (enable_compute_pressure) {
 # These IDL definitions are used only for testing.
 static_idl_files_in_modules_for_testing = [
   "//third_party/blink/renderer/modules/accessibility/testing/internals_accessibility.idl",
+  "//third_party/blink/renderer/modules/ad_auction/testing/internals_protected_audience.idl",
   "//third_party/blink/renderer/modules/credentialmanagement/testing/internals_fed_cm.idl",
   "//third_party/blink/renderer/modules/device_posture/testing/internals_device_posture.idl",
   "//third_party/blink/renderer/modules/fuzzing/internals_fuzzing.idl",

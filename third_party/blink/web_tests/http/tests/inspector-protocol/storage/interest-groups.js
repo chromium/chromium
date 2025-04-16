@@ -82,7 +82,7 @@ function rand32() {
     return a.type.localeCompare(b.type, 'en');
   }
 
-  async function joinInterestGroups(id) {
+  async function joinInterestGroups(dp, id) {
     const joinJs = `
     navigator.joinAdInterestGroup({
         name: ${id},
@@ -95,7 +95,21 @@ function rand32() {
           metadata: {ad: 'metadata', here: [1, 2, 3]}
         }]
       }, 3000)`;
-    return session.evaluateAsync(joinJs);
+    let result = await session.evaluateAsync(joinJs);
+    function b64(array) {
+      return btoa(String.fromCharCode.apply(null, array));
+    }
+    let hashes = [];
+    const encoder = new TextEncoder();
+    const kBidAnonKey = encoder.encode(
+        `AdBid\n${baseOrigin}\n${base}fledge_bidding_logic.js.php\nhttps://example.com/render${id}`);
+    hashes.push(b64(new Uint8Array(await window.crypto.subtle.digest('SHA-256', kBidAnonKey))));
+    const kReportAnonKey = encoder.encode(
+        `NameReport\n${baseOrigin}\n${base}fledge_bidding_logic.js.php\nhttps://example.com/render${id}\n${id}`);
+    hashes.push(b64(new Uint8Array(await window.crypto.subtle.digest('SHA-256', kReportAnonKey))));
+    await dp.Storage.setProtectedAudienceKAnonymity(
+      {owner: baseOrigin, name: String(id).toWellFormed(), hashes: hashes});
+    return result;
   }
 
   async function runAdAuctionAndNavigateFencedFrame() {
@@ -204,8 +218,8 @@ function rand32() {
   await dp.Storage.setInterestGroupTracking({enable: true});
   await dp.Storage.setInterestGroupAuctionTracking({enable: true});
   testRunner.log("Start Tracking");
-  await joinInterestGroups(0);
-  await joinInterestGroups(1);
+  await joinInterestGroups(dp, 0);
+  await joinInterestGroups(dp, 1);
   // Need to navigate a fenced frame to the winning ad for the bids to be
   // recorded.
   await runAdAuctionAndNavigateFencedFrame();
@@ -226,8 +240,8 @@ function rand32() {
   testRunner.log('Stop Tracking IG Events');
   // These calls should only trigger auction events, since IG tracking is
   // disabled.
-  await joinInterestGroups(0);
-  await joinInterestGroups(1);
+  await joinInterestGroups(dp, 0);
+  await joinInterestGroups(dp, 1);
   await runAdAuctionAndNavigateFencedFrame();
   await waitForReportingPromise;
   logAndClearEvents();
@@ -235,8 +249,8 @@ function rand32() {
   testRunner.log('Stop Tracking Auction Events');
   await dp.Storage.setInterestGroupAuctionTracking({enable: false});
   // Now nothing should show up.
-  await joinInterestGroups(0);
-  await joinInterestGroups(1);
+  await joinInterestGroups(dp, 0);
+  await joinInterestGroups(dp, 1);
   await runAdAuctionAndNavigateFencedFrame();
   logAndClearEvents();
   testRunner.log('Test Done')

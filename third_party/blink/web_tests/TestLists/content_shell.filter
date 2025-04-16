@@ -931,6 +931,7 @@ virtual/fenced-frame-mparch/external/wpt/fenced-frame/key-scrolling.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/notification.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/permission-api-denied.https.html
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/resize-lock*
+virtual/fledge-kanon-enforcement/external/wpt/fledge/tentative/component-ads.https.window.html?11-15
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-inline.html
 virtual/fractional-scroll-offsets/external/wpt/css/css-position/sticky/position-sticky-large-top*
 virtual/generic-sensor-extra-classes/external/wpt/ambient-light/AmbientLightSensor-iframe-access.https.html

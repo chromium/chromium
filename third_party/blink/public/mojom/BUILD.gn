@@ -195,6 +195,7 @@ mojom("mojom_platform") {
     "preloading/anchor_element_interaction_host.mojom",
     "prerender/prerender.mojom",
     "presentation/presentation.mojom",
+    "privacy_sandbox/web_privacy_sandbox_automation.mojom",
     "private_aggregation/private_aggregation_host.mojom",
     "push_messaging/push_messaging.mojom",
     "push_messaging/push_messaging_status.mojom",

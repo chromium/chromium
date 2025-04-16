@@ -24,6 +24,7 @@
 #include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_automation.mojom-forward.h"
+#include "third_party/blink/public/mojom/privacy_sandbox/web_privacy_sandbox_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/sensor/web_sensor_provider_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_automation.mojom-forward.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request_automation.mojom-forward.h"
@@ -185,6 +186,11 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
   void BindWebPressureManagerAutomation(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::test::mojom::WebPressureManagerAutomation>
+          receiver);
+
+  void BindWebPrivacySandboxAutomation(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::test::mojom::WebPrivacySandboxAutomation>
           receiver);
 
   void BindWebTestControlHost(

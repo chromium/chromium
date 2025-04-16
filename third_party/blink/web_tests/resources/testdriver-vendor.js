@@ -435,6 +435,10 @@
     return internals.removeVirtualPressureSource(source_type);
   }
 
+  window.test_driver_internal.set_protected_audience_k_anonymity = function(owner, name, hashes) {
+    return internals.setProtectedAudienceKAnonymity(owner, name, hashes);
+  }
+
   // Enable automation so we don't wait for user input on unimplemented APIs
   window.test_driver_internal.in_automation = true;
 

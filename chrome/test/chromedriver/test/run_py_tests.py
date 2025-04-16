@@ -14,6 +14,7 @@
 import argparse
 import base64
 import codecs
+import hashlib
 import http.client
 import imghdr
 import json
@@ -9442,6 +9443,139 @@ class IncognitoTest(ChromeDriverBaseTestWithWebServer):
     self._driver.NewWindow(window_type='tab')
     new_window = self.WaitForNewWindow(self._driver, old_handles)
     self.assertIsNotNone(new_window)
+
+class ProtectedAudienceSpecificTest(ChromeDriverBaseTestWithWebServer):
+  def setUp(self):
+    super().setUp()
+
+    port = self._https_server._server.server_port
+
+    self._kanon_status = None
+    def handleReport(request):
+      self._kanon_status = request.GetPath().split('/')[-1]
+      return {}, bytes()
+
+    self._https_server.SetCallbackForPath('/reportWin/passedNotEnforced',
+                                          handleReport)
+    self._https_server.SetCallbackForPath('/reportWin/belowThreshold',
+                                          handleReport)
+    self._https_server.SetCallbackForPath('/reportWin/notCalculated',
+                                          handleReport)
+    self._https_server.SetCallbackForPath('/reportWin/passedAndEnforced',
+                                          handleReport)
+
+    def respondWithBiddingScript(request):
+      bidding_script = bytes("""
+        function generateBid(interestGroup, auctionSignals, perBuyerSignals,
+                            trustedBiddingSignals, browserSignals,
+                            directFromSellerSignals,
+                            crossOriginTrustedSignals) {
+          return {
+            'ad': {},
+            'bid': 1,
+            'bidCurrency': 'USD',
+            'render': interestGroup.ads[0].renderURL,
+          };
+        }
+
+        function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
+                          browserSignals, directFromSellerSignals) {
+          console.log('reportWin');
+          sendReportTo('https://owner.test/reportWin/' +
+                       browserSignals.kAnonStatus);
+        }
+      """, 'utf-8')
+      return {'Ad-Auction-Allowed': 'true',
+              'Content-Type': 'application/javascript'}, bidding_script
+    self._https_server.SetCallbackForPath('/generateBid.js',
+                                          respondWithBiddingScript)
+
+    def respondWithScoringScript(request):
+      scoring_script = bytes("""
+        function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
+                        browserSignals, directFromSellerSignals,
+                        crossOriginTrustedSignals) {
+          return {
+            desirability: bid,
+          };
+        }
+
+        function reportResult() {}
+      """, 'utf-8')
+      return {'Ad-Auction-Allowed': 'true',
+              'Content-Type': 'application/javascript'}, scoring_script
+    self._https_server.SetCallbackForPath('/scoreAd.js',
+                                          respondWithScoringScript)
+
+    self._https_server.SetDataForPath('/ad.html', bytes())
+    self._https_server.SetDataForPath('/join.html', bytes("""
+      <html>
+      <body>
+      <script>
+        async function doJoin() {
+          navigator.joinAdInterestGroup({
+            'owner': 'https://owner.test/',
+            'name': 'testing',
+            'biddingLogicURL': 'https://owner.test/generateBid.js',
+            'ads': [{renderURL: 'https://ad.example.com/ad.html'}],
+            }, 3600000)
+        }
+      </script>
+      </body>
+      </html>
+    """, 'utf-8'))
+    self._https_server.SetDataForPath('/auction.html', bytes("""
+      <html>
+      <body>
+      <script>
+        async function runAuction() {
+          const config = await navigator.runAdAuction({
+            'decisionLogicURL': 'https://owner.test/scoreAd.js',
+            'seller': 'https://owner.test/',
+            'interestGroupBuyers': ['https://owner.test/'],
+            'resolveToConfig': false,
+          });
+          const fencedFrame = document.createElement("iframe");
+          fencedFrame.src = config;
+          document.body.appendChild(fencedFrame);
+        }
+      </script>
+      </body>
+      </html>
+    """, 'utf-8'))
+
+    self.chrome_switches = ['host-resolver-rules=MAP *:443 127.0.0.1:%s' % port,
+            'privacy-sandbox-enrollment-overrides=https://owner.test/',
+            'force-reporting-destination-attested',  # needed for headless shell
+            'enable-features=OverridePrivacySandboxSettingsLocalTesting']
+    self._driver = self.CreateDriver(
+        accept_insecure_certs=True,
+        chrome_switches=self.chrome_switches)
+
+  def testSetProtectedAudienceKAnonymity(self):
+    self._driver.Load('https://owner.test/join.html')
+    self._driver.ExecuteScript('doJoin()')
+
+    bid_key = ('AdBid\nhttps://owner.test/\nhttps://owner.test/generateBid.js'
+               '\nhttps://ad.example.com/ad.html')
+    bid_hash = hashlib.sha256(bytes(bid_key, 'utf-8')).digest()
+
+    self.assertTrue(self._kanon_status is None)
+
+    self._driver.Load('https://owner.test/auction.html')
+    self._driver.ExecuteScript('runAuction()')
+
+    time.sleep(0.5)
+    self.assertEqual(self._kanon_status, 'belowThreshold')
+
+    self._driver.SetProtectedAudienceKAnonymity(
+      'https://owner.test/', 'testing', [base64.b64encode(bid_hash).decode()])
+
+    self._kanon_status = None
+    self._driver.ExecuteScript('runAuction()')
+
+    time.sleep(0.5)
+    self.assertEqual(self._kanon_status, 'passedNotEnforced')
 
 # 'Z' in the beginning is to make test executed in the end of suite.
 class ZChromeStartRetryCountTest(unittest.TestCase):
