@@ -35,6 +35,11 @@
 
 using ::testing::Return;
 
+MATCHER_P(PermissionTypeMatcher, id, "") {
+  return ::testing::Matches(::testing::Eq(id))(
+      blink::PermissionDescriptorToPermissionType(arg));
+}
+
 namespace content {
 
 // Fake Service Worker registration id to use in tests requiring one.
@@ -231,7 +236,7 @@ class PlatformNotificationContextTest : public ::testing::Test {
                            blink::mojom::PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
             GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::NOTIFICATIONS,
+                PermissionTypeMatcher(blink::PermissionType::NOTIFICATIONS),
                 url::Origin::Create(origin), url::Origin::Create(origin)))
         .WillByDefault(Return(content::PermissionResult(
             permission_status, PermissionStatusSource::UNSPECIFIED)));

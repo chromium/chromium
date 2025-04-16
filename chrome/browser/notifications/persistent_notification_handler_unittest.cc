@@ -43,6 +43,10 @@ using ::testing::_;
 using ::testing::Return;
 using PermissionStatus = blink::mojom::PermissionStatus;
 
+MATCHER_P(PermissionTypeMatcher, id, "") {
+  return ::testing::Matches(::testing::Eq(id))(
+      blink::PermissionDescriptorToPermissionType(arg));
+}
 namespace {
 
 const char kExampleNotificationId[] = "example_notification_id";
@@ -63,9 +67,10 @@ class TestingProfileWithPermissionManager : public TestingProfile {
 
   // Sets the notification permission status to |permission_status|.
   void SetNotificationPermissionStatus(PermissionStatus permission_status) {
-    ON_CALL(*permission_manager_,
-            GetPermissionResultForOriginWithoutContext(
-                blink::PermissionType::NOTIFICATIONS, _, _))
+    ON_CALL(
+        *permission_manager_,
+        GetPermissionResultForOriginWithoutContext(
+            PermissionTypeMatcher(blink::PermissionType::NOTIFICATIONS), _, _))
         .WillByDefault(Return(content::PermissionResult(
             permission_status, content::PermissionStatusSource::UNSPECIFIED)));
   }
