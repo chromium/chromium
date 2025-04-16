@@ -371,9 +371,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   void OnTransactionComplete(bool tombstone_threshold_exceeded);
 
-  // Virtual for testing.
-  virtual void Compact();
-
   static bool RecordCorruptionInfo(const base::FilePath& path_base,
                                    const storage::BucketLocator& bucket_locator,
                                    const std::string& message);
@@ -507,6 +504,7 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
       bool* exists) override;
 
   uintptr_t GetIdentifierForMemoryDump() override;
+  void FlushForTesting() override;
 
   // Fill in the provided list with existing database names.
   Status GetDatabaseNames(std::vector<std::u16string>* names) override;

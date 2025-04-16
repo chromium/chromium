@@ -55,8 +55,9 @@ interface IndexedDBControlTest {
                            int64 database_id, int64 blob_number) =>
       (mojo_base.mojom.FilePath path);
 
-  // Compacts the backing store for a given `bucket_locator`.
-  CompactBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) =>
+  // Writes backing store files to disk in their long-term format, e.g. converts
+  // a log to actual DB files.
+  FlushBackingStoreForTesting(storage.mojom.BucketLocator bucket_locator) =>
       ();
 
   // Computes the scheduling priority for the first bucket in the map. Returns

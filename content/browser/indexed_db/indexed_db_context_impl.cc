@@ -596,11 +596,11 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
       GetBlobStorePath(bucket_locator), database_id, blob_number));
 }
 
-void IndexedDBContextImpl::CompactBackingStoreForTesting(
+void IndexedDBContextImpl::FlushBackingStoreForTesting(
     const BucketLocator& bucket_locator,
     base::OnceClosure callback) {
   bucket_contexts_.find(bucket_locator.id)
-      ->second.AsyncCall(&BucketContext::CompactBackingStoreForTesting)
+      ->second.AsyncCall(&BucketContext::FlushBackingStoreForTesting)
       .Then(std::move(callback));
 }
 

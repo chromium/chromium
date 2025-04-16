@@ -1041,7 +1041,7 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
     // The less ideal temporary solution is to only run these tests on
     // non-Windows.
     base::RunLoop loop;
-    control_test->CompactBackingStoreForTesting(
+    control_test->FlushBackingStoreForTesting(
         bucket_locator, base::BindLambdaForTesting([&]() {
           control_test->GetFilePathForTesting(
               bucket_locator,

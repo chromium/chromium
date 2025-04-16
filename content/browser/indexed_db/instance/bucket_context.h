@@ -287,7 +287,7 @@ class CONTENT_EXPORT BucketContext
   // `SequenceBound`, it's not possible to directly grab pointer to `this`.
   BucketContext* GetReferenceForTesting();
 
-  void CompactBackingStoreForTesting();
+  void FlushBackingStoreForTesting();
   void WriteToIndexedDBForTesting(const std::string& key,
                                   const std::string& value);
   void BindMockFailureSingletonForTesting(

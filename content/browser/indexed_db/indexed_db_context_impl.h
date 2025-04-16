@@ -121,9 +121,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
       int64_t database_id,
       int64_t blob_number,
       GetPathForBlobForTestingCallback callback) override;
-  void CompactBackingStoreForTesting(
-      const storage::BucketLocator& bucket_locator,
-      base::OnceClosure callback) override;
+  void FlushBackingStoreForTesting(const storage::BucketLocator& bucket_locator,
+                                   base::OnceClosure callback) override;
   void GetUsageForTesting(GetUsageForTestingCallback) override;
   void GetSchedulingPriorityForTesting(
       GetSchedulingPriorityForTestingCallback callback) override;

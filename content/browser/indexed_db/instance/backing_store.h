@@ -301,6 +301,10 @@ class BackingStore {
       bool* exists) = 0;
 
   virtual uintptr_t GetIdentifierForMemoryDump() = 0;
+
+  // Writes backing store files to disk in their long-term format, e.g. converts
+  // a log to actual DB files.
+  virtual void FlushForTesting() = 0;
 };
 
 }  // namespace content::indexed_db

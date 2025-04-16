@@ -782,8 +782,8 @@ BucketContext* BucketContext::GetReferenceForTesting() {
   return this;
 }
 
-void BucketContext::CompactBackingStoreForTesting() {
-  leveldb_backing_store()->Compact();
+void BucketContext::FlushBackingStoreForTesting() {
+  backing_store()->FlushForTesting();
 }
 
 void BucketContext::WriteToIndexedDBForTesting(const std::string& key,

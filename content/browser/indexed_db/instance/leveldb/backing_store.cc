@@ -2138,7 +2138,7 @@ Status BackingStore::RenameIndex(
   return Status::OK();
 }
 
-void BackingStore::Compact() {
+void BackingStore::FlushForTesting() {
 #if DCHECK_IS_ON()
   DCHECK(initialized_);
 #endif
