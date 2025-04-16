@@ -44,7 +44,7 @@ using base::UserMetricsAction;
 
 @property(nonatomic, assign) AuthenticationService* authenticationService;
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
-@property(nonatomic, assign) BOOL isIncognito;
+@property(nonatomic, assign) BOOL incognito;
 @property(nonatomic, assign) PrefService* prefService;
 
 // Consumer for this mediator.
@@ -60,7 +60,7 @@ using base::UserMetricsAction;
 - (instancetype)initWithConsumer:(id<FeedTopSectionConsumer>)consumer
                  identityManager:(signin::IdentityManager*)identityManager
                      authService:(AuthenticationService*)authenticationService
-                     isIncognito:(BOOL)isIncognito
+                       incognito:(BOOL)incognito
                      prefService:(PrefService*)prefService {
   self = [super init];
   if (self) {
@@ -68,7 +68,7 @@ using base::UserMetricsAction;
     _identityManager = identityManager;
     _identityObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(_identityManager, self));
-    _isIncognito = isIncognito;
+    _incognito = incognito;
     _prefService = prefService;
     _consumer = consumer;
   }
@@ -296,7 +296,7 @@ using base::UserMetricsAction;
                                           prefService:self.prefService]) {
     isAccountEligibleForSignInPromo = ![self isUserSignedIn];
   }
-  return !self.isIncognito && ![self.NTPDelegate isStartSurface] &&
+  return !self.incognito && ![self.NTPDelegate isStartSurface] &&
          self.isSignInPromoEnabled && isAccountEligibleForSignInPromo;
 }
 

@@ -424,11 +424,11 @@ using base::UserMetricsAction;
   }
 
   self.mediator = [[PopupMenuMediator alloc]
-         initWithIsIncognito:self.profile->IsOffTheRecord()
-            readingListModel:ReadingListModelFactory::GetForProfile(
-                                 self.profile)
-      browserPolicyConnector:GetApplicationContext()
-                                 ->GetBrowserPolicyConnector()];
+      initWithReadingListModel:ReadingListModelFactory::GetForProfile(
+                                   self.profile)
+               policyConnector:GetApplicationContext()
+                                   ->GetBrowserPolicyConnector()
+                     incognito:self.profile->IsOffTheRecord()];
   self.mediator.engagementTracker = tracker;
   self.mediator.webStateList = self.browser->GetWebStateList();
   self.mediator.readingListBrowserAgent =

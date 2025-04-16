@@ -44,7 +44,7 @@ enum class ContentNotificationPromoProvisionalEntrypoint {
 - (instancetype)initWithConsumer:(id<FeedTopSectionConsumer>)consumer
                  identityManager:(signin::IdentityManager*)identityManager
                      authService:(AuthenticationService*)authService
-                     isIncognito:(BOOL)isIncognito
+                       incognito:(BOOL)incognito
                      prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 

@@ -134,7 +134,6 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
             accountManagerService:ChromeAccountManagerServiceFactory::
                                       GetForProfile(profile)
          identityDiscImageUpdater:imageUpdater
-                      isIncognito:profile->IsOffTheRecord()
               discoverFeedService:discoverFeedService
                       prefService:prefService
                       syncService:syncService

@@ -170,7 +170,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 @property(nonatomic, assign) web::WebState* webState;
 
 // Whether the popup menu is presented in incognito or not.
-@property(nonatomic, assign) BOOL isIncognito;
+@property(nonatomic, assign) BOOL incognito;
 
 // Items notifying this items of changes happening to the ReadingList model.
 @property(nonatomic, strong) ReadingListMenuNotifier* readingListMenuNotifier;
@@ -218,13 +218,13 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 #pragma mark - Public
 
-- (instancetype)initWithIsIncognito:(BOOL)isIncognito
-                   readingListModel:(ReadingListModel*)readingListModel
-             browserPolicyConnector:
-                 (BrowserPolicyConnectorIOS*)browserPolicyConnector {
+- (instancetype)initWithReadingListModel:(ReadingListModel*)readingListModel
+                         policyConnector:
+                             (BrowserPolicyConnectorIOS*)browserPolicyConnector
+                               incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
-    _isIncognito = isIncognito;
+    _incognito = incognito;
     _readingListMenuNotifier =
         [[ReadingListMenuNotifier alloc] initWithReadingList:readingListModel];
     _readingListModelLoaded = readingListModel->loaded();
@@ -589,16 +589,16 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 - (void)recordSettingsMetricsPerProfile {
   profile_metrics::BrowserProfileType type =
-      _isIncognito ? profile_metrics::BrowserProfileType::kIncognito
-                   : profile_metrics::BrowserProfileType::kRegular;
+      _incognito ? profile_metrics::BrowserProfileType::kIncognito
+                 : profile_metrics::BrowserProfileType::kRegular;
   base::UmaHistogramEnumeration("Settings.OpenSettingsFromMenu.PerProfileType",
                                 type);
 }
 
 - (void)recordDownloadsMetricsPerProfile {
   profile_metrics::BrowserProfileType type =
-      _isIncognito ? profile_metrics::BrowserProfileType::kIncognito
-                   : profile_metrics::BrowserProfileType::kRegular;
+      _incognito ? profile_metrics::BrowserProfileType::kIncognito
+                 : profile_metrics::BrowserProfileType::kRegular;
   base::UmaHistogramEnumeration("Download.OpenDownloadsFromMenu.PerProfileType",
                                 type);
 }
@@ -1095,13 +1095,13 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   PopupMenuToolsItem* recentTabs = CreateTableViewItem(
       IDS_IOS_TOOLS_MENU_RECENT_TABS, PopupMenuActionRecentTabs,
       @"popup_menu_recent_tabs", kToolsMenuOtherDevicesId);
-  recentTabs.enabled = !self.isIncognito;
+  recentTabs.enabled = !self.incognito;
 
   // History.
   PopupMenuToolsItem* history =
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_HISTORY, PopupMenuActionHistory,
                           @"popup_menu_history", kToolsMenuHistoryId);
-  history.enabled = !self.isIncognito;
+  history.enabled = !self.incognito;
 
   // Open Downloads folder.
   TableViewItem* downloadsFolder = CreateTableViewItem(
@@ -1118,7 +1118,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   if (self.readingListItem) {
     [items addObject:self.readingListItem];
   }
-  if (!self.isIncognito) {
+  if (!self.incognito) {
     [items addObject:recentTabs];
     [items addObject:history];
   }
@@ -1160,8 +1160,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 // Returns YES if incognito NTP title and image should be used for back/forward
 // item associated with `URL`.
 - (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
-  return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
-         self.isIncognito;
+  return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL && self.incognito;
 }
 
 // Searches the copied image. If `usingLens` is set, then the search will be

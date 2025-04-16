@@ -90,7 +90,7 @@ using base::UserMetricsAction;
       initWithConsumer:self.feedTopSectionViewController
        identityManager:identityManager
            authService:authenticationService
-           isIncognito:profile->IsOffTheRecord()
+             incognito:profile->IsOffTheRecord()
            prefService:profile->GetPrefs()];
   self.isSignInPromoEnabled =
       ShouldShowTopOfFeedSyncPromo() && authenticationService &&

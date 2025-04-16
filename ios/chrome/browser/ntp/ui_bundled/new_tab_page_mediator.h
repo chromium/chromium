@@ -48,7 +48,6 @@ class UrlLoadingBrowserAgent;
           accountManagerService:
               (ChromeAccountManagerService*)accountManagerService
        identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
-                    isIncognito:(BOOL)isIncognito
             discoverFeedService:(DiscoverFeedService*)discoverFeedService
                     prefService:(PrefService*)prefService
                     syncService:(syncer::SyncService*)syncService

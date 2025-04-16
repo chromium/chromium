@@ -92,7 +92,6 @@ class NewTabPageMediatorTest : public PlatformTest {
     ChromeAccountManagerService* account_manager_service =
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     image_updater_ = OCMProtocolMock(@protocol(UserAccountImageUpdateDelegate));
-    bool is_incognito = profile_.get()->IsOffTheRecord();
     DiscoverFeedService* discover_feed_service =
         DiscoverFeedServiceFactory::GetForProfile(profile_.get());
     PrefService* prefs = profile_->GetPrefs();
@@ -104,7 +103,6 @@ class NewTabPageMediatorTest : public PlatformTest {
                     identityManager:identity_manager_
               accountManagerService:account_manager_service
            identityDiscImageUpdater:image_updater_
-                        isIncognito:is_incognito
                 discoverFeedService:discover_feed_service
                         prefService:prefs
                         syncService:&test_sync_service_

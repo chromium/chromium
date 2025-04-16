@@ -68,8 +68,6 @@
 @property(nonatomic, assign) AuthenticationService* authService;
 // This is the object that knows how to update the Identity Disc UI.
 @property(nonatomic, weak) id<UserAccountImageUpdateDelegate> imageUpdater;
-// Yes if the browser is currently in incognito mode.
-@property(nonatomic, assign) BOOL isIncognito;
 // DiscoverFeed Service to display the Feed.
 @property(nonatomic, assign) DiscoverFeedService* discoverFeedService;
 
@@ -113,7 +111,6 @@
           accountManagerService:
               (ChromeAccountManagerService*)accountManagerService
        identityDiscImageUpdater:(id<UserAccountImageUpdateDelegate>)imageUpdater
-                    isIncognito:(BOOL)isIncognito
             discoverFeedService:(DiscoverFeedService*)discoverFeedService
                     prefService:(PrefService*)prefService
                     syncService:(syncer::SyncService*)syncService
@@ -140,7 +137,6 @@
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _imageUpdater = imageUpdater;
-    _isIncognito = isIncognito;
     _discoverFeedService = discoverFeedService;
     _prefService = prefService;
     _regionalCapabilitiesService = regionalCapabilitiesService;
