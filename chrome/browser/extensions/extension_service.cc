@@ -814,10 +814,6 @@ const Extension* ExtensionService::GetPendingExtensionUpdate(
   return delayed_install_manager_->GetPendingExtensionUpdate(id);
 }
 
-void ExtensionService::TerminateExtension(const std::string& extension_id) {
-  extension_registrar_->TerminateExtension(extension_id);
-}
-
 void ExtensionService::DidCreateMainFrameForBackgroundPage(
     ExtensionHost* host) {
   extension_registrar_->DidCreateMainFrameForBackgroundPage(host);
@@ -835,8 +831,8 @@ void ExtensionService::OnExtensionHostRenderProcessGone(
   // that other handlers of this notification will still have
   // access to the Extension and ExtensionHost.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&ExtensionService::TerminateExtension,
-                                AsExtensionServiceWeakPtr(),
+      FROM_HERE, base::BindOnce(&ExtensionRegistrar::TerminateExtension,
+                                extension_registrar_->GetWeakPtr(),
                                 extension_host->extension_id()));
 }
 

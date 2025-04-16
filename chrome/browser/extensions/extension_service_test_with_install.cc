@@ -384,7 +384,7 @@ void ExtensionServiceTestWithInstall::TerminateExtension(
     ADD_FAILURE();
     return;
   }
-  service()->TerminateExtension(id);
+  registrar()->TerminateExtension(id);
 }
 
 void ExtensionServiceTestWithInstall::BlockAllExtensions() {

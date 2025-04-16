@@ -134,7 +134,7 @@ TEST_F(ExtensionInfoTest, ExtensionDisabled) {
 
 TEST_F(ExtensionInfoTest, ExtensionTerminated) {
   auto extension = BuildExtension();
-  service()->TerminateExtension(kId);
+  registrar()->TerminateExtension(kId);
 
   em::ChromeUserProfileInfo info;
   AppendExtensionInfoIntoProfileReport(profile(), &info);

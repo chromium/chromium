@@ -453,7 +453,7 @@ TEST_F(ExtensionAppTest, UninstallTerminatedApp) {
   ASSERT_NE(nullptr, registry()->GetInstalledExtension(kPackagedApp2Id));
 
   // Simulate an app termination.
-  service_->TerminateExtension(kPackagedApp2Id);
+  registrar()->TerminateExtension(kPackagedApp2Id);
 
   registrar()->UninstallExtension(
       kPackagedApp2Id, extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);

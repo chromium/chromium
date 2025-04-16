@@ -269,11 +269,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // main frame has been created.
   void DidCreateMainFrameForBackgroundPage(ExtensionHost* host);
 
-  // Unloads the given extension and marks the extension as terminated. This
-  // doesn't notify the user that the extension was terminated, if such a
-  // notification is desired the calling code is responsible for doing that.
-  void TerminateExtension(const std::string& extension_id);
-
   // Returns whether a user is able to disable a given extension or if that is
   // not possible (for instance, extension was enabled by policy).
   bool UserCanDisableInstalledExtension(

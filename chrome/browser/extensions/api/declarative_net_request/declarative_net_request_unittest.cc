@@ -3055,7 +3055,7 @@ TEST_P(MultipleRulesetsTest, ReclaimAllocationOnUnload) {
   ExtensionId second_extension_id = extension()->id();
 
   // The extension should have its allocation kept when it is terminated.
-  service()->TerminateExtension(second_extension_id);
+  registrar()->TerminateExtension(second_extension_id);
   ruleset_waiter.WaitForExtensionsWithRulesetsCount(0);
   EXPECT_EQ(ext_2_allocation,
             global_rules_tracker.GetAllocatedGlobalRuleCountForTesting());

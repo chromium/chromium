@@ -136,6 +136,8 @@ class ExtensionsToolbarContainerUITest : public ExtensionsToolbarUITest {
     extensions::ExtensionService* const extension_service =
         extensions::ExtensionSystem::Get(browser()->profile())
             ->extension_service();
+    extensions::ExtensionRegistrar* const registrar =
+        extensions::ExtensionRegistrar::Get(browser()->profile());
     switch (method) {
       case ExtensionRemovalMethod::kDisable:
         extension_service->DisableExtension(
@@ -151,7 +153,7 @@ class ExtensionsToolbarContainerUITest : public ExtensionsToolbarUITest {
         extension_service->BlocklistExtensionForTest(extension_id);
         break;
       case ExtensionRemovalMethod::kTerminate:
-        extension_service->TerminateExtension(extension_id);
+        registrar->TerminateExtension(extension_id);
         break;
     }
 
