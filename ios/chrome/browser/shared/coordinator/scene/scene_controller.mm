@@ -400,7 +400,7 @@ SystemIdentityManager::IteratorResult IdentitiesOnDevice(
 
   // Fetches the Family Link member role asynchronously from KidsManagement API.
   std::unique_ptr<supervised_user::ListFamilyMembersFetcher>
-      _family_members_fetcher;
+      _familyMembersFetcher;
 }
 
 // Navigation View controller for the settings.
@@ -1920,7 +1920,7 @@ using UserFeedbackDataCallback =
   // populates the corresponding `UserFeedbackData` property.
   if (!primary_account.IsEmpty()) {
     __weak SceneController* weakSelf = self;
-    _family_members_fetcher = supervised_user::FetchListFamilyMembers(
+    _familyMembersFetcher = supervised_user::FetchListFamilyMembers(
         *identity_manager,
         self.mainInterface.profile->GetSharedURLLoaderFactory(),
         base::BindOnce(&OnListFamilyMembersResponse, primary_account.gaia, data)
@@ -1955,7 +1955,7 @@ using UserFeedbackDataCallback =
                                completion:(UserFeedbackDataCallback)completion {
   // Cancel any list family member requests in progress.
   if (cancelFamilyMembersFetch) {
-    _family_members_fetcher.reset();
+    _familyMembersFetcher.reset();
   }
 
   Browser* browser = self.mainInterface.browser;
