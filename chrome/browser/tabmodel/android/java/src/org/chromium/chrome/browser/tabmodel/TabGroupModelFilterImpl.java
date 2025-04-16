@@ -190,7 +190,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         int offset = 0;
         for (Tab tab : tabs) {
             if (tabModel.indexOf(tab) == -1) {
-                assert false : "Tried to close a tab from another model!";
+                assert false : "Tried to move a tab from another model!";
                 continue;
             }
             tabModel.moveTab(tab.getId(), newIndex >= curIndex ? newIndex : newIndex + offset++);

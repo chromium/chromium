@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.TabKeyEventHandler.onPageKeyEvent;
+
 import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Build;
@@ -163,6 +165,12 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                         mActionConfirmationSupplier.get(),
                         mModalDialogManager,
                         /* desktopWindowStateManager= */ null);
+        mTabGridDialogCoordinator.setPageKeyEvent(
+                event ->
+                        onPageKeyEvent(
+                                event,
+                                currentTabGroupModelFilterSupplier.get(),
+                                /* moveSingleTab= */ true));
         return mTabGridDialogCoordinator;
     }
 

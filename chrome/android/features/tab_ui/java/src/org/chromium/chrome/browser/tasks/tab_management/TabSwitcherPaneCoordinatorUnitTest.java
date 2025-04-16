@@ -28,7 +28,6 @@ import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -525,49 +524,5 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                         .getTabGridDialogCoordinatorForTesting()
                         .getModelForTesting()
                         .get(TabGridDialogProperties.PAGE_KEY_LISTENER));
-    }
-
-    @Test
-    public void testOnPageKeyEvent_PageUp() {
-        @TabId int tabId = 1;
-        createTabs(2);
-        TabKeyEventData eventData = new TabKeyEventData(tabId, KeyEvent.KEYCODE_PAGE_UP);
-
-        mCoordinator.onPageKeyEvent(eventData);
-        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(eq(tabId), anyInt());
-    }
-
-    @Test
-    public void testOnPageKeyEvent_PageDown() {
-        @TabId int tabId = 1;
-        createTabs(2);
-        TabKeyEventData eventData = new TabKeyEventData(tabId, KeyEvent.KEYCODE_PAGE_DOWN);
-
-        mCoordinator.onPageKeyEvent(eventData);
-        verify(mTabGroupModelFilter, times(1)).moveRelatedTabs(eq(tabId), anyInt());
-    }
-
-    @Test
-    public void testOnPageKeyEvent_InvalidTabId() {
-        @TabId int tabId = -1;
-        createTabs(2);
-        TabKeyEventData eventData = new TabKeyEventData(tabId, KeyEvent.KEYCODE_PAGE_UP);
-
-        mCoordinator.onPageKeyEvent(eventData);
-        verify(mTabGroupModelFilter, never()).moveRelatedTabs(anyInt(), anyInt());
-    }
-
-    private void createTabs(int tabCount) {
-        for (int i = 1; i <= tabCount; i++) {
-            MockTab tab = MockTab.createAndInitialize(/* id= */ i, mProfile);
-            when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-            addTabToIndex(tab, /* index= */ i - 1);
-        }
-    }
-
-    private void addTabToIndex(MockTab tab, int index) {
-        mTabModel.addTab(
-                tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        when(mTabGroupModelFilter.representativeIndexOf(tab)).thenReturn(index);
     }
 }
