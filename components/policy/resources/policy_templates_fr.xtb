@@ -950,6 +950,7 @@ Les origines non spécifiées par la règle ni par les paramètres utilisateur n
       Si vous définissez la règle sur "0", la taille de cache par défaut est utilisée et les utilisateurs ne peuvent pas la modifier.
 
       Si cette règle n'est pas définie, la taille de cache par défaut est utilisée. Toutefois, les utilisateurs peuvent la modifier avec le flag "--media-cache-size".</translation>
+<translation id="1647775511451132916">Désactiver la commande par le visage sur l'écran de connexion</translation>
 <translation id="1648816843164517573">Liste des noms qui seront exemptés de la vérification de la règle HSTS</translation>
 <translation id="1651197070942919276">Ne pas autoriser l'appareil à exécuter des machines virtuelles</translation>
 <translation id="1651216316133158002">Cette règle permet aux administrateurs de spécifier des applis qui agissent en tant que gestionnaires par défaut pour les extensions de fichier correspondantes dans <ph name="PRODUCT_OS_NAME" /> que les utilisateurs ne peuvent pas modifier.
@@ -2719,6 +2720,15 @@ Si la valeur est définie sur <ph name="ENABLED_ENUM_VALUE" />, les entités son
 Si la valeur est définie sur <ph name="DISABLED_ENUM_VALUE" />, les entités ne sont ni détectées ni exploitables.
 Si la valeur est définie sur <ph name="LONGPRESSONLY_ENUM_VALUE" />, les entités sont détectées et exploitables uniquement par un appui prolongé.</translation>
 <translation id="3010907817113180883">Fréquence de collecte de la pulsation d'activité de l'appareil en millisecondes.</translation>
+<translation id="3015732569734756809">Lorsque la commande par le visage est active, vous pouvez utiliser votre tête pour contrôler le curseur de la souris et utiliser des expressions faciales pour effectuer des actions système. Vous pouvez ainsi contrôler votre appareil en gardant les mains libres.
+
+Si cette règle est définie sur "True", la commande par le visage est toujours activée sur l'écran de connexion.
+
+Si cette règle est définie sur "False", la commande par le visage est toujours désactivée sur l'écran de connexion.
+
+Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier ni l'ignorer.
+
+Si elle n'est pas configurée, la commande par le visage est initialement désactivée sur l'écran de connexion, mais les utilisateurs peuvent l'activer à tout moment.</translation>
 <translation id="3016585641676676461">Bloquer le plein écran automatique sur ces sites</translation>
 <translation id="3017578958356048910">La visionneuse de PDF peut annoter les PDF</translation>
 <translation id="3020623128585817424">Désactiver le contrôle du navigateur par défaut au démarrage</translation>
@@ -8775,6 +8785,7 @@ Ces règles sont ignorées, sauf si l'hôte Bureau à distance Chrome est instal
 
       Si cette règle n'est pas définie, la règle <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> s'applique. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="7238335422094660594">Activer le fournisseur <ph name="UIA_NAME" />.</translation>
+<translation id="7241016798422122577">Activer la commande par le visage sur l'écran de connexion</translation>
 <translation id="7242191282517459095">YouTube (compatible depuis la version 135)</translation>
 <translation id="7244600351241637530">Si ce paramètre est activé, les utilisateurs qui ont déjà activé Phone Hub pourront afficher et télécharger les photos et vidéos récentes prises sur leur téléphone sur Chrome OS.
 
