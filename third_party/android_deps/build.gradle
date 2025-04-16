@@ -54,7 +54,7 @@ dependencies {
     compile "com.google.android.gms:play-services-cast:22.0.0"
     compile "com.google.android.gms:play-services-fido:21.1.0"
     compile "com.google.android.gms:play-services-gcm:17.0.0"
-    compile "com.google.android.gms:play-services-identity-credentials:16.0.0-alpha05"
+    compile "com.google.android.gms:play-services-identity-credentials:16.0.0-alpha06"
     compile "com.google.android.gms:play-services-iid:17.0.0"
     compile "com.google.android.gms:play-services-instantapps:18.1.0"
     compile "com.google.android.gms:play-services-location:21.3.0"
