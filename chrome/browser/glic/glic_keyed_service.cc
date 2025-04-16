@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
@@ -54,35 +53,6 @@
 
 namespace glic {
 
-namespace {
-
-std::optional<int> GetOptionalIntPreference(PrefService* prefs,
-                                            std::string_view path) {
-  const PrefService::Preference& pref =
-      CHECK_DEREF(prefs->FindPreference(path));
-  if (pref.IsDefaultValue()) {
-    return std::nullopt;
-  }
-  return pref.GetValue()->GetInt();
-}
-
-// Get the previous position or none if the window has not been dragged before.
-std::optional<gfx::Point> GetPreviousPositionFromPrefs(PrefService* prefs) {
-  if (!prefs) {
-    return std::nullopt;
-  }
-
-  auto x_pos = GetOptionalIntPreference(prefs, prefs::kGlicPreviousPositionX);
-  auto y_pos = GetOptionalIntPreference(prefs, prefs::kGlicPreviousPositionY);
-
-  if (!x_pos.has_value() || !y_pos.has_value()) {
-    return std::nullopt;
-  }
-  return gfx::Point(x_pos.value(), y_pos.value());
-}
-
-}  // namespace
-
 GlicKeyedService::GlicKeyedService(
     Profile* profile,
     signin::IdentityManager* identity_manager,
@@ -112,8 +82,6 @@ GlicKeyedService::GlicKeyedService(
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&GlicKeyedService::OnMemoryPressure,
                                      weak_ptr_factory_.GetWeakPtr()));
-
-  previous_position_ = GetPreviousPositionFromPrefs(profile_->GetPrefs());
 
   // If `--glic-always-open-fre` is present, unset this pref to ensure the FRE
   // is shown for testing convenience.
@@ -167,12 +135,6 @@ void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
 void GlicKeyedService::CloseUI() {
   window_controller_->Shutdown();
   SetContextAccessIndicator(false);
-  if (previous_position_.has_value()) {
-    profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionX,
-                                     previous_position_.value().x());
-    profile_->GetPrefs()->SetInteger(prefs::kGlicPreviousPositionY,
-                                     previous_position_.value().y());
-  }
 }
 
 void GlicKeyedService::FocusUI() {

@@ -261,7 +261,7 @@ class GlicKeyedService : public KeyedService {
   std::unique_ptr<GlicScreenshotCapturer> screenshot_capturer_;
   std::unique_ptr<AuthController> auth_controller_;
   std::unique_ptr<GlicActorController> actor_controller_;
-  std::optional<gfx::Point> previous_position_;
+  std::optional<gfx::Point> previous_position_ = std::nullopt;
   base::OnceCallbackList<void()> web_client_created_callbacks_;
   // The set of live `GlicPageHandler`s.
   base::flat_set<raw_ptr<GlicPageHandler>> page_handlers_;

@@ -18,11 +18,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kNotStarted));
   registry->RegisterTimePref(kGlicWindowLastDismissedTime, base::Time());
-
-  // The default value is not used. If not set the default position is
-  // calculated based on the entrypoint and current active browser.
-  registry->RegisterIntegerPref(kGlicPreviousPositionX, 0);
-  registry->RegisterIntegerPref(kGlicPreviousPositionY, 0);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
