@@ -186,9 +186,7 @@ IN_PROC_BROWSER_TEST_F(NoBestEffortTasksTest, LoadExtensionAndSendMessages) {
                       .AppendASCII("no_best_effort_tasks_test_extension");
   extensions::TestExtensionRegistryObserver observer(
       extensions::ExtensionRegistry::Get(browser()->profile()));
-  extensions::UnpackedInstaller::Create(
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service())
+  extensions::UnpackedInstaller::Create(browser()->profile())
       ->Load(extension_dir);
   scoped_refptr<const extensions::Extension> extension =
       observer.WaitForExtensionReady();

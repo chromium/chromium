@@ -145,7 +145,7 @@ class UserScriptListenerTest : public testing::Test {
                                         .AppendASCII("1.0.0.0");
     TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile_),
                                            kTestExtensionId);
-    UnpackedInstaller::Create(service_)->Load(extension_path);
+    UnpackedInstaller::Create(profile_)->Load(extension_path);
     observer.WaitForExtensionLoaded();
   }
 

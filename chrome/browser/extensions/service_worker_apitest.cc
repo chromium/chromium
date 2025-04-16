@@ -1480,7 +1480,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   ExtensionService* const extension_service =
       ExtensionSystem::Get(profile())->extension_service();
   scoped_refptr<UnpackedInstaller> installer =
-      UnpackedInstaller::Create(extension_service);
+      UnpackedInstaller::Create(profile());
 
   // Set a completion callback so we can get the ID of the extension.
   installer->set_completion_callback(base::BindLambdaForTesting(

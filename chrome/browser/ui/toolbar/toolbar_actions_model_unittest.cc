@@ -587,7 +587,7 @@ TEST_F(ToolbarActionsModelUnitTest, ActionsToolbarIncognitoEnableExtension) {
         base::MakeAbsoluteFilePath(dirs[i]->UnpackedPath());
     std::string id = crx_file::id_util::GenerateIdForPath(path_for_id);
     extensions::TestExtensionRegistryObserver observer(registry(), id);
-    extensions::UnpackedInstaller::Create(service())->Load(
+    extensions::UnpackedInstaller::Create(profile())->Load(
         dirs[i]->UnpackedPath());
     observer.WaitForExtensionLoaded();
     extensions[i] = registry()->enabled_extensions().GetByID(id);

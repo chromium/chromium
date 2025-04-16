@@ -59,12 +59,10 @@ void AppLoadService::RestartApplicationIfRunning(
 bool AppLoadService::LoadAndLaunch(const base::FilePath& extension_path,
                                    const base::CommandLine& command_line,
                                    const base::FilePath& current_dir) {
-  extensions::ExtensionService* extension_service =
-      ExtensionSystem::Get(context_)->extension_service();
   std::string extension_id;
-  if (!extensions::UnpackedInstaller::Create(extension_service)
-           ->LoadFromCommandLine(base::FilePath(extension_path), &extension_id,
-                                 true /* only_allow_apps */)) {
+  if (!extensions::UnpackedInstaller::Create(context_)->LoadFromCommandLine(
+          base::FilePath(extension_path), &extension_id,
+          true /* only_allow_apps */)) {
     return false;
   }
 
@@ -77,12 +75,10 @@ bool AppLoadService::LoadAndLaunch(const base::FilePath& extension_path,
 }
 
 bool AppLoadService::Load(const base::FilePath& extension_path) {
-  extensions::ExtensionService* extension_service =
-      ExtensionSystem::Get(context_)->extension_service();
   std::string extension_id;
-  return extensions::UnpackedInstaller::Create(extension_service)
-      ->LoadFromCommandLine(base::FilePath(extension_path), &extension_id,
-                            true /* only_allow_apps */);
+  return extensions::UnpackedInstaller::Create(context_)->LoadFromCommandLine(
+      base::FilePath(extension_path), &extension_id,
+      true /* only_allow_apps */);
 }
 
 // static

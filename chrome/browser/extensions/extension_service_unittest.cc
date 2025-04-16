@@ -2533,7 +2533,7 @@ TEST_F(ExtensionServiceTest, LoadLocalizedTheme) {
   // modify the source tree.
   ThemeService::DisableThemePackForTesting();
 
-  UnpackedInstaller::Create(service())->Load(extension_path);
+  UnpackedInstaller::Create(profile())->Load(extension_path);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_extensions().size());
@@ -2565,7 +2565,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionMayContainSymlinkedFiles) {
 
   // Load extension.
   InitializeEmptyExtensionService();
-  UnpackedInstaller::Create(service())->Load(extension_path);
+  UnpackedInstaller::Create(profile())->Load(extension_path);
   task_environment()->RunUntilIdle();
 
   EXPECT_TRUE(GetErrors().empty());
@@ -2585,7 +2585,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionWithEmptyMetadataFolder) {
   PersistExtensionWithPaths(extension_dir, {metadata_dir}, {});
   EXPECT_TRUE(base::DirectoryExists(metadata_dir));
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0u, GetErrors().size());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
@@ -2608,7 +2608,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionWithReservedMetadataFiles) {
       file_util::GetReservedMetadataFilePaths(extension_dir));
   EXPECT_TRUE(base::DirectoryExists(metadata_dir));
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0u, GetErrors().size());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
@@ -2633,7 +2633,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionWithUserMetadataFiles) {
       {file_util::GetVerifiedContentsPath(extension_dir), non_reserved_file});
   EXPECT_TRUE(base::PathExists(non_reserved_file));
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   ASSERT_EQ(1u, GetErrors().size());
 
@@ -2666,7 +2666,7 @@ TEST_F(ExtensionServiceTest,
       {metadata_dir, extension_dir.Append(FILE_PATH_LITERAL("_badfolder"))},
       {});
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1u, GetErrors().size());
 
@@ -2699,7 +2699,7 @@ TEST_F(ExtensionServiceTest, UnpackedExtensionMayNotHaveUnderscore) {
       {underscore_folder.Append(FILE_PATH_LITERAL("a.js"))});
   EXPECT_TRUE(base::DirectoryExists(underscore_folder));
 
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1u, GetErrors().size());
 
@@ -2734,7 +2734,7 @@ TEST_F(ExtensionServiceTest,
   ASSERT_TRUE(serializer.Serialize(manifest));
 
   // Load the extension successfully.
-  UnpackedInstaller::Create(service())->Load(extension_dir);
+  UnpackedInstaller::Create(profile())->Load(extension_dir);
   task_environment()->RunUntilIdle();
   // Verify that Load was successful
   EXPECT_EQ(0u, GetErrors().size());
@@ -3364,7 +3364,7 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
   JSONFileValueSerializer serializer(manifest_path);
   ASSERT_TRUE(serializer.Serialize(manifest));
 
-  UnpackedInstaller::Create(service())->Load(extension_path);
+  UnpackedInstaller::Create(profile())->Load(extension_path);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(0u, GetErrors().size());
@@ -3378,7 +3378,7 @@ TEST_F(ExtensionServiceTest, LoadExtensionsCanDowngrade) {
   manifest.Set("version", "1.0");
   ASSERT_TRUE(serializer.Serialize(manifest));
 
-  UnpackedInstaller::Create(service())->Load(extension_path);
+  UnpackedInstaller::Create(profile())->Load(extension_path);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(0u, GetErrors().size());
@@ -5313,7 +5313,7 @@ TEST_F(ExtensionServiceTest, ReloadExtension) {
                            .AppendASCII("Extensions")
                            .AppendASCII(extension_id)
                            .AppendASCII("1.0.0.0");
-  UnpackedInstaller::Create(service())->Load(ext);
+  UnpackedInstaller::Create(profile())->Load(ext);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
@@ -5420,7 +5420,7 @@ TEST_F(ExtensionServiceZipUninstallProfileFeatureTest,
   ASSERT_TRUE(base::PathExists(original_path)) << original_path.value();
   scoped_refptr<ZipFileInstaller> zipfile_installer = ZipFileInstaller::Create(
       GetExtensionFileTaskRunner(),
-      MakeRegisterInExtensionServiceCallback(service()));
+      MakeRegisterInExtensionServiceCallback(profile()));
 
   registry()->AddObserver(&observer);
 
@@ -5573,7 +5573,7 @@ TEST_F(ExtensionServiceTest, UnpackedRequirements) {
 
   base::FilePath path =
       data_dir().AppendASCII("requirements").AppendASCII("v2_bad_requirements");
-  UnpackedInstaller::Create(service())->Load(path);
+  UnpackedInstaller::Create(profile())->Load(path);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1u, GetErrors().size());
   EXPECT_EQ(0u, registry()->enabled_extensions().size());
@@ -6034,7 +6034,7 @@ TEST_F(ExtensionServiceTest, GenerateID) {
   InitializeEmptyExtensionService();
 
   base::FilePath no_id_ext = data_dir().AppendASCII("no_id");
-  UnpackedInstaller::Create(service())->Load(no_id_ext);
+  UnpackedInstaller::Create(profile())->Load(no_id_ext);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0u, GetErrors().size());
   ASSERT_EQ(1u, loaded_extensions().size());
@@ -6046,7 +6046,7 @@ TEST_F(ExtensionServiceTest, GenerateID) {
   std::string previous_id = loaded_extensions()[0]->id();
 
   // If we reload the same path, we should get the same extension ID.
-  UnpackedInstaller::Create(service())->Load(no_id_ext);
+  UnpackedInstaller::Create(profile())->Load(no_id_ext);
   task_environment()->RunUntilIdle();
   ASSERT_EQ(1u, loaded_extensions().size());
   ASSERT_EQ(previous_id, loaded_extensions()[0]->id());
@@ -6057,7 +6057,7 @@ TEST_F(ExtensionServiceTest, UnpackedValidatesLocales) {
 
   base::FilePath bad_locale =
       data_dir().AppendASCII("unpacked").AppendASCII("bad_messages_file");
-  UnpackedInstaller::Create(service())->Load(bad_locale);
+  UnpackedInstaller::Create(profile())->Load(bad_locale);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1u, GetErrors().size());
   base::FilePath ms_messages_file = bad_locale.AppendASCII("_locales")
@@ -6918,9 +6918,9 @@ TEST_F(ExtensionServiceTest, StorageQuota) {
   base::FilePath unlimited_quota_ext2 =
       extensions_path.AppendASCII("unlimited_quota")
       .AppendASCII("2.0");
-  UnpackedInstaller::Create(service())->Load(limited_quota_ext);
-  UnpackedInstaller::Create(service())->Load(unlimited_quota_ext);
-  UnpackedInstaller::Create(service())->Load(unlimited_quota_ext2);
+  UnpackedInstaller::Create(profile())->Load(limited_quota_ext);
+  UnpackedInstaller::Create(profile())->Load(unlimited_quota_ext);
+  UnpackedInstaller::Create(profile())->Load(unlimited_quota_ext2);
   task_environment()->RunUntilIdle();
 
   ASSERT_EQ(3u, loaded_extensions().size());

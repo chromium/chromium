@@ -406,7 +406,7 @@ void ExtensionService::LoadExtensionsFromCommandLineFlag(
         t(path_list, FILE_PATH_LITERAL(","));
     while (t.GetNext()) {
       std::string extension_id;
-      UnpackedInstaller::Create(this)->LoadFromCommandLine(
+      UnpackedInstaller::Create(profile_)->LoadFromCommandLine(
           base::FilePath(t.token_piece()), &extension_id,
           false /*only-allow-apps*/);
       if (switch_name == switches::kDisableExtensionsExcept) {
@@ -420,8 +420,9 @@ void ExtensionService::LoadExtensionsFromCommandLineFlag(
 void ExtensionService::LoadSigninProfileTestExtension(const std::string& path) {
   base::SysInfo::CrashIfChromeOSNonTestImage();
   std::string extension_id;
-  const bool installing = UnpackedInstaller::Create(this)->LoadFromCommandLine(
-      base::FilePath(path), &extension_id, false /*only-allow-apps*/);
+  const bool installing =
+      UnpackedInstaller::Create(profile_)->LoadFromCommandLine(
+          base::FilePath(path), &extension_id, false /*only-allow-apps*/);
   CHECK(installing);
   CHECK_EQ(extension_id, extension_misc::kSigninProfileTestExtensionId)
       << extension_id

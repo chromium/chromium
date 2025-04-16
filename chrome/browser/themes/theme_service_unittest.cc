@@ -161,7 +161,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
     EXPECT_TRUE(base::CopyFile(src_manifest_path, dst_manifest_path));
 
     scoped_refptr<extensions::UnpackedInstaller> installer(
-        extensions::UnpackedInstaller::Create(service_));
+        extensions::UnpackedInstaller::Create(profile()));
     extensions::TestExtensionRegistryObserver observer(registry_);
     installer->Load(temp_dir);
     std::string extenson_id = observer.WaitForExtensionLoaded()->id();
@@ -184,7 +184,7 @@ class ThemeServiceTest : public extensions::ExtensionServiceTestBase {
         registry_->GetInstalledExtension(extension_id)->path();
 
     scoped_refptr<extensions::UnpackedInstaller> installer(
-        extensions::UnpackedInstaller::Create(service_));
+        extensions::UnpackedInstaller::Create(profile()));
 
     extensions::TestExtensionRegistryObserver observer(registry_);
     installer->Load(path);

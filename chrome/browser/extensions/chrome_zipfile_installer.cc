@@ -8,34 +8,34 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
 
 namespace extensions {
 
 ZipFileInstaller::DoneCallback MakeRegisterInExtensionServiceCallback(
-    ExtensionService* service) {
+    content::BrowserContext* context) {
   return base::BindOnce(
-      [](base::WeakPtr<ExtensionService> extension_service_weak,
+      [](base::WeakPtr<content::BrowserContext> context_weak,
          const base::FilePath& zip_file, const base::FilePath& unzip_dir,
          const std::string& error) {
-        if (!extension_service_weak)
+        if (!context_weak) {
           return;
+        }
 
         if (!unzip_dir.empty()) {
           DCHECK(error.empty());
-          UnpackedInstaller::Create(extension_service_weak.get())
-              ->Load(unzip_dir);
+          UnpackedInstaller::Create(context_weak.get())->Load(unzip_dir);
           return;
         }
         DCHECK(!error.empty());
         LoadErrorReporter::GetInstance()->ReportLoadError(
-            zip_file, error, extension_service_weak->profile(),
+            zip_file, error, context_weak.get(),
             /*noisy_on_failure=*/true);
       },
-      service->AsExtensionServiceWeakPtr());
+      context->GetWeakPtr());
 }
 
 }  // namespace extensions

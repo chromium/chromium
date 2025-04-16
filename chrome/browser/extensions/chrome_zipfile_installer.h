@@ -7,14 +7,17 @@
 
 #include "extensions/browser/zipfile_installer.h"
 
+namespace content {
+class BrowserContext;
+}
+
 namespace extensions {
-class ExtensionService;
 
 // Creates a ZipFileInstaller::DoneCallback that when passed to
 // ZipFileInstaller::Create() causes the unzipped extension to be loaded with
 // extensions::UnpackedInstaller on success.
 ZipFileInstaller::DoneCallback MakeRegisterInExtensionServiceCallback(
-    ExtensionService* service);
+    content::BrowserContext* context);
 
 }  // namespace extensions
 

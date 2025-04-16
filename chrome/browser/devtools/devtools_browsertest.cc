@@ -557,13 +557,11 @@ class DevToolsExtensionTest : public DevToolsTest {
 
   const Extension* LoadExtensionFromPath(const base::FilePath& path,
                                          bool allow_file_access = false) {
-    extensions::ExtensionService* service =
-        extensions::ExtensionSystem::Get(browser()->profile())
-            ->extension_service();
     extensions::ExtensionRegistry* registry =
         extensions::ExtensionRegistry::Get(browser()->profile());
     extensions::TestExtensionRegistryObserver observer(registry);
-    auto installer = extensions::UnpackedInstaller::Create(service);
+    auto installer =
+        extensions::UnpackedInstaller::Create(browser()->profile());
     installer->set_allow_file_access(allow_file_access);
     installer->Load(path);
     observer.WaitForExtensionLoaded();
@@ -751,7 +749,7 @@ class DevToolsServiceWorkerExtensionTest : public InProcessBrowserTest {
   const extensions::Extension* LoadExtension(base::FilePath extension_path) {
     extensions::TestExtensionRegistryObserver observer(extension_registry_);
     ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
-    extensions::UnpackedInstaller::Create(extension_service_)
+    extensions::UnpackedInstaller::Create(browser()->profile())
         ->Load(extension_path);
     observer.WaitForExtensionLoaded();
     const extensions::Extension* extension = nullptr;

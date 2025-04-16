@@ -42,7 +42,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/chrome_zipfile_installer.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
@@ -594,11 +593,10 @@ DeveloperPrivateInstallDroppedFileFunction::Run() {
 #if BUILDFLAG(IS_ANDROID)
     return RespondNow(Error("zip file is not yet supported on android"));
 #else
-    ExtensionService* service =
-        ExtensionSystem::Get(browser_context())->extension_service();
     ExtensionRegistrar* registrar = ExtensionRegistrar::Get(browser_context());
-    ZipFileInstaller::Create(GetExtensionFileTaskRunner(),
-                             MakeRegisterInExtensionServiceCallback(service))
+    ZipFileInstaller::Create(
+        GetExtensionFileTaskRunner(),
+        MakeRegisterInExtensionServiceCallback(browser_context()))
         ->InstallZipFileToUnpackedExtensionsDir(
             file.path, registrar->unpacked_install_directory());
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -1097,7 +1097,7 @@ class ExtensionProtocolTest : public DevToolsProtocolTest {
   const extensions::Extension* LoadExtensionOrApp(
       const base::FilePath& extension_path) {
     extensions::TestExtensionRegistryObserver observer(extension_registry_);
-    extensions::UnpackedInstaller::Create(extension_service_)
+    extensions::UnpackedInstaller::Create(chrome_test_utils::GetProfile(this))
         ->Load(extension_path);
     observer.WaitForExtensionLoaded();
     const extensions::Extension* extension = nullptr;

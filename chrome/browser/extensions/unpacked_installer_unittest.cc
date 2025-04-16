@@ -56,7 +56,7 @@ TEST_P(UnpackedInstallerUnitTest, WithheldHostPermissionsWithFlag) {
   TestExtensionRegistryObserver observer(registry());
   base::FilePath extension_path =
       data_dir().AppendASCII("api_test/simple_all_urls");
-  extensions::UnpackedInstaller::Create(service())->Load(extension_path);
+  extensions::UnpackedInstaller::Create(profile())->Load(extension_path);
   scoped_refptr<const Extension> loaded_extension =
       observer.WaitForExtensionLoaded();
 

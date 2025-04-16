@@ -426,7 +426,7 @@ void DeveloperPrivateLoadUnpackedFunction::FileSelectionCanceled() {
 void DeveloperPrivateLoadUnpackedFunction::StartFileLoad(
     const base::FilePath file_path) {
   scoped_refptr<UnpackedInstaller> installer(
-      UnpackedInstaller::Create(GetExtensionService(browser_context())));
+      UnpackedInstaller::Create(browser_context()));
   installer->set_be_noisy_on_failure(!fail_quietly_);
   installer->set_completion_callback(base::BindOnce(
       &DeveloperPrivateLoadUnpackedFunction::OnLoadComplete, this));
@@ -648,8 +648,7 @@ DeveloperPrivateLoadDirectoryFunction::LoadByFileSystemAPI(
 }
 
 void DeveloperPrivateLoadDirectoryFunction::Load() {
-  ExtensionService* service = GetExtensionService(browser_context());
-  UnpackedInstaller::Create(service)->Load(project_base_path_);
+  UnpackedInstaller::Create(browser_context())->Load(project_base_path_);
 
   // TODO(grv) : The unpacked installer should fire an event when complete
   // and return the extension_id.

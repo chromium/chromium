@@ -228,15 +228,12 @@ class AppMenuModelExtensionsInteractiveTest
       dir.WriteManifest(kExtensionManifest);
       const auto id = crx_file::id_util::GenerateIdForPath(
           base::MakeAbsoluteFilePath(dir.UnpackedPath()));
-      auto* const service =
-          extensions::ExtensionSystem::Get(browser()->profile())
-              ->extension_service();
-      CHECK(service);
       auto* const registry =
           extensions::ExtensionRegistry::Get(browser()->profile());
       CHECK(registry);
       extensions::TestExtensionRegistryObserver observer(registry, id);
-      extensions::UnpackedInstaller::Create(service)->Load(dir.UnpackedPath());
+      extensions::UnpackedInstaller::Create(browser()->profile())
+          ->Load(dir.UnpackedPath());
       observer.WaitForExtensionLoaded();
     }
     AppMenuModelInteractiveTest::SetUpOnMainThread();

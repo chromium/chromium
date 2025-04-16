@@ -1032,7 +1032,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest, ExtensionInstallForcelist) {
   UninstallExtension(kGoodCrxId, false);
 
   scoped_refptr<extensions::UnpackedInstaller> installer =
-      extensions::UnpackedInstaller::Create(extension_service());
+      extensions::UnpackedInstaller::Create(browser()->profile());
 
   // The user is not allowed to load an unpacked extension with the
   // same ID as a force-installed extension.

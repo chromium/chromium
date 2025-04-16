@@ -225,7 +225,7 @@ void ZipFileInstallerLocationTest::RunInstaller(const std::string& zip_name,
   ASSERT_TRUE(base::PathExists(original_zip_path)) << original_zip_path.value();
   zipfile_installer_ = ZipFileInstaller::Create(
       GetExtensionFileTaskRunner(),
-      MakeRegisterInExtensionServiceCallback(service()));
+      MakeRegisterInExtensionServiceCallback(profile()));
 
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,

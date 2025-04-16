@@ -8,7 +8,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/crx_installer.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_waiter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,11 +18,6 @@
 namespace extensions {
 
 namespace {
-
-ExtensionService* GetExtensionService(
-    content::BrowserContext* browser_context) {
-  return ExtensionSystem::Get(browser_context)->extension_service();
-}
 
 class ExtensionLoadedObserver : public ExtensionRegistryObserver {
  public:
@@ -82,8 +76,7 @@ void ChromeTestExtensionLoader::LoadUnpackedExtensionAsync(
     base::OnceCallback<void(const Extension*)> callback) {
   auto observer =
       std::make_unique<ExtensionLoadedObserver>(extension_registry_, file_path);
-  UnpackedInstaller::Create(GetExtensionService(browser_context_))
-      ->Load(file_path);
+  UnpackedInstaller::Create(browser_context_)->Load(file_path);
   ExtensionLoadedObserver::ObserveOnce(std::move(observer),
                                        std::move(callback));
 }
@@ -93,7 +86,7 @@ scoped_refptr<const Extension> ChromeTestExtensionLoader::LoadUnpacked(
   scoped_refptr<const Extension> extension;
   TestExtensionRegistryObserver registry_observer(extension_registry_);
   scoped_refptr<UnpackedInstaller> installer =
-      UnpackedInstaller::Create(GetExtensionService(browser_context_));
+      UnpackedInstaller::Create(browser_context_);
   installer->set_require_modern_manifest_version(
       require_modern_manifest_version_);
   if (allow_file_access_.has_value()) {

@@ -65,7 +65,7 @@ void KeywordExtensionsDelegateImplTest::RunTest(bool incognito) {
 
     TestExtensionRegistryObserver load_observer(registry());
     scoped_refptr<UnpackedInstaller> installer(
-        UnpackedInstaller::Create(service()));
+        UnpackedInstaller::Create(profile()));
     installer->Load(path);
     EXPECT_TRUE(load_observer.WaitForExtensionInstalled());
   }
