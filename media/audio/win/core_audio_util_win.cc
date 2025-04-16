@@ -5,8 +5,10 @@
 #include "media/audio/win/core_audio_util_win.h"
 
 #include <objbase.h>
-#include <comdef.h>
+
 #include <initguid.h>  // It should be before `devpkey.h`
+
+#include <comdef.h>
 #include <devpkey.h>
 #include <functiondiscoverykeys_devpkey.h>
 #include <stddef.h>
@@ -20,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -295,18 +298,35 @@ HRESULT GetDeviceFriendlyNameInternal(IMMDevice* device,
 
 ComPtr<IMMDeviceEnumerator> CreateDeviceEnumeratorInternal(
     bool allow_reinitialize) {
-  ComPtr<IMMDeviceEnumerator> device_enumerator;
-  HRESULT hr = ::CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
+  // Windows AudioSrv and AudioEndpointBuilder create single global
+  // IMMDeviceEnumerator instance and uses that everywhere for the
+  // life of the process, there's no caching concerns.
+  static base::NoDestructor<ComPtr<IMMDeviceEnumerator>> device_enumerator(
+      [allow_reinitialize] {
+        ComPtr<IMMDeviceEnumerator> local_device_enumerator;
+        HRESULT hr = ::CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
+                                        CLSCTX_INPROC_SERVER,
+                                        IID_PPV_ARGS(&local_device_enumerator));
+        if (hr == CO_E_NOTINITIALIZED && allow_reinitialize) {
+          LOG(ERROR) << "CoCreateInstance fails with CO_E_NOTINITIALIZED";
+          // Buggy third-party DLLs can uninitialize COM out from under us.
+          // Attempt to re-initialize it.  See http://crbug.com/378465 for more
+          // details.
+          ::CoInitializeEx(nullptr,
+                           COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
+          hr = ::CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
                                   CLSCTX_INPROC_SERVER,
-                                  IID_PPV_ARGS(&device_enumerator));
-  if (hr == CO_E_NOTINITIALIZED && allow_reinitialize) {
-    LOG(ERROR) << "CoCreateInstance fails with CO_E_NOTINITIALIZED";
-    // Buggy third-party DLLs can uninitialize COM out from under us.  Attempt
-    // to re-initialize it.  See http://crbug.com/378465 for more details.
-    CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
-    return CreateDeviceEnumeratorInternal(false);
-  }
-  return device_enumerator;
+                                  IID_PPV_ARGS(&local_device_enumerator));
+        }
+        if (FAILED(hr)) {
+          LOG(ERROR) << "CoCreateInstance(MMDeviceEnumerator) failed: "
+                     << std::hex << hr;
+        }
+
+        return local_device_enumerator;
+      }());
+
+  return *device_enumerator;
 }
 
 ChannelLayout GetChannelLayout(
