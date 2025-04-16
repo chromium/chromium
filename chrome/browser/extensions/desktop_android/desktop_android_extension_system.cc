@@ -302,10 +302,4 @@ void DesktopAndroidExtensionSystem::PerformActionBasedOnOmahaAttributes(
   NOTREACHED();
 }
 
-bool DesktopAndroidExtensionSystem::FinishDelayedInstallationIfReady(
-    const std::string& extension_id,
-    bool install_immediately) {
-  NOTREACHED();
-}
-
 }  // namespace extensions

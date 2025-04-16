@@ -94,8 +94,6 @@ class TestExtensionSystem : public ExtensionSystem {
   void PerformActionBasedOnOmahaAttributes(
       const std::string& extension_id,
       const base::Value::Dict& attributes) override;
-  bool FinishDelayedInstallationIfReady(const std::string& extension_id,
-                                        bool install_immediately) override;
 
   // Note that you probably want to use base::RunLoop().RunUntilIdle() right
   // after this to run all the accumulated tasks.

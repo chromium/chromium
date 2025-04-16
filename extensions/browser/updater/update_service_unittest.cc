@@ -329,11 +329,6 @@ class FakeExtensionSystem : public MockExtensionSystem {
     }
   }
 
-  bool FinishDelayedInstallationIfReady(const ExtensionId& extension_id,
-                                        bool install_immediately) override {
-    return false;
-  }
-
   AllowlistState GetExtensionAllowlistState(const ExtensionId& extension_id) {
     if (!base::Contains(extension_allowlist_states_, extension_id))
       return ALLOWLIST_UNDEFINED;

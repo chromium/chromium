@@ -152,10 +152,4 @@ void ShellExtensionSystem::PerformActionBasedOnOmahaAttributes(
   NOTREACHED();
 }
 
-bool ShellExtensionSystem::FinishDelayedInstallationIfReady(
-    const ExtensionId& extension_id,
-    bool install_immediately) {
-  NOTREACHED();
-}
-
 }  // namespace extensions

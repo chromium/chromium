@@ -123,8 +123,6 @@ class DesktopAndroidExtensionSystem : public ExtensionSystem {
   void PerformActionBasedOnOmahaAttributes(
       const std::string& extension_id,
       const base::Value::Dict& attributes) override;
-  bool FinishDelayedInstallationIfReady(const std::string& extension_id,
-                                        bool install_immediately) override;
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;  // Not owned.

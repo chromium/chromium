@@ -456,14 +456,4 @@ void ChromeExtensionSystem::PerformActionBasedOnOmahaAttributes(
                                                            attributes);
 }
 
-bool ChromeExtensionSystem::FinishDelayedInstallationIfReady(
-    const std::string& extension_id,
-    bool install_immediately) {
-  ExtensionService* service = extension_service();
-  DCHECK(service);
-  return service->GetPendingExtensionUpdate(extension_id) &&
-         service->FinishDelayedInstallationIfReady(extension_id,
-                                                   install_immediately);
-}
-
 }  // namespace extensions
