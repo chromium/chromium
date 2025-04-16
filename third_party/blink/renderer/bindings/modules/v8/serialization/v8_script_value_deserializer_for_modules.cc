@@ -104,7 +104,7 @@ ScriptWrappable* V8ScriptValueDeserializerForModules::ReadDOMObject(
           std::make_unique<RTCCertificateGenerator>();
       if (!certificate_generator)
         return nullptr;
-      rtc::scoped_refptr<rtc::RTCCertificate> certificate =
+      webrtc::scoped_refptr<webrtc::RTCCertificate> certificate =
           certificate_generator->FromPEM(pem_private_key, pem_certificate);
       if (!certificate)
         return nullptr;
@@ -475,7 +475,7 @@ RTCDataChannel* V8ScriptValueDeserializerForModules::ReadRTCDataChannel() {
   }
 
   using NativeDataChannelVector =
-      Vector<rtc::scoped_refptr<webrtc::DataChannelInterface>>;
+      Vector<webrtc::scoped_refptr<webrtc::DataChannelInterface>>;
 
   const NativeDataChannelVector& channels = attachment->DataChannels();
   if (index >= attachment->size() || !channels[index]) {
