@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -218,9 +219,10 @@ class MEDIA_EXPORT VideoResourceUpdater
   uint32_t next_plane_resource_id_ = 1;
 
   // Temporary pixel buffers when converting between formats.
-  std::unique_ptr<uint8_t[], base::UncheckedFreeDeleter>
-      upload_pixels_[SkYUVAInfo::kMaxPlanes] = {};
-  size_t upload_pixels_size_[SkYUVAInfo::kMaxPlanes] = {};
+  std::array<std::unique_ptr<uint8_t[], base::UncheckedFreeDeleter>,
+             SkYUVAInfo::kMaxPlanes>
+      upload_pixels_ = {};
+  std::array<size_t, SkYUVAInfo::kMaxPlanes> upload_pixels_size_ = {};
 
   VideoFrameResourceType frame_resource_type_;
 

@@ -9,6 +9,7 @@
 
 #include "media/parsers/h264_parser.h"
 
+#include <array>
 #include <cstring>
 #include <limits>
 #include <memory>
@@ -249,10 +250,44 @@ H264SEI::~H264SEI() = default;
 
 // ISO 14496 part 10
 // VUI parameters: Table E-1 "Meaning of sample aspect ratio indicator"
-static const int kTableSarWidth[] = {0,  1,  12, 10, 16,  40, 24, 20, 32,
-                                     80, 18, 15, 64, 160, 4,  3,  2};
-static const int kTableSarHeight[] = {0,  1,  11, 11, 11, 33, 11, 11, 11,
-                                      33, 11, 11, 33, 99, 3,  2,  1};
+const auto kTableSarWidth = std::to_array<int>({
+    0,
+    1,
+    12,
+    10,
+    16,
+    40,
+    24,
+    20,
+    32,
+    80,
+    18,
+    15,
+    64,
+    160,
+    4,
+    3,
+    2,
+});
+const auto kTableSarHeight = std::to_array<int>({
+    0,
+    1,
+    11,
+    11,
+    11,
+    33,
+    11,
+    11,
+    11,
+    33,
+    11,
+    11,
+    33,
+    99,
+    3,
+    2,
+    1,
+});
 static_assert(std::size(kTableSarWidth) == std::size(kTableSarHeight),
               "sar tables must have the same size");
 

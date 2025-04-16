@@ -9,6 +9,8 @@
 
 #include "media/renderers/video_frame_yuv_converter.h"
 
+#include <array>
+
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -142,7 +144,7 @@ void ConvertYuvVideoFrameToRgbSharedImage(
   ri->WaitSyncTokenCHROMIUM(si_sync_token.GetConstData());
   const viz::SharedImageFormat si_format = src_shared_image->format();
   constexpr SkAlphaType kPlaneAlphaType = kUnpremul_SkAlphaType;
-  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
+  std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {};
 
   for (int plane = 0; plane < si_format.NumberOfPlanes(); ++plane) {
     SkColorType color_type = viz::ToClosestSkColorType(si_format, plane);
@@ -167,7 +169,7 @@ void ConvertYuvVideoFrameToRgbSharedImage(
       SkYUVAInfo(video_size, plane_config, subsampling, color_space);
 
   SkYUVAPixmaps yuv_pixmap =
-      SkYUVAPixmaps::FromExternalPixmaps(yuva_info, pixmaps);
+      SkYUVAPixmaps::FromExternalPixmaps(yuva_info, pixmaps.data());
   ri->WritePixelsYUV(src_shared_image->mailbox(), yuv_pixmap);
 
   ri->CopySharedImage(src_shared_image->mailbox(), dest_mailbox, 0, 0,

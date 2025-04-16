@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 #include <vector>
 
@@ -1044,7 +1045,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
 
   CHECK(!resource->is_software());
   auto yuv_si_format = resource->format();
-  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
+  std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps = {};
   for (int plane_index = 0; plane_index < yuv_si_format.NumberOfPlanes();
        ++plane_index) {
     std::vector<VideoFrame::Plane> frame_planes =
@@ -1174,7 +1175,7 @@ bool VideoResourceUpdater::WriteYUVPixelsForAllPlanesToTexture(
   SkYUVAInfo::PlaneConfig plane_config = ToSkYUVAPlaneConfig(yuv_si_format);
   SkYUVAInfo::Subsampling subsampling = ToSkYUVASubsampling(yuv_si_format);
   SkYUVAInfo info(resource_size, plane_config, subsampling, color_space);
-  auto yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps);
+  auto yuv_pixmap = SkYUVAPixmaps::FromExternalPixmaps(info, pixmaps.data());
 
   auto* ri = RasterInterface();
   ri->WaitSyncTokenCHROMIUM(resource->sync_token().GetConstData());

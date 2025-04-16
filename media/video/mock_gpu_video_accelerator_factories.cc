@@ -9,6 +9,7 @@
 
 #include "media/video/mock_gpu_video_accelerator_factories.h"
 
+#include <array>
 #include <memory>
 
 #include "base/atomic_sequence_num.h"
@@ -94,7 +95,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   gfx::BufferFormat format_;
   const gfx::Size size_;
   size_t num_planes_;
-  std::vector<uint8_t> bytes_[kMaxPlanes];
+  std::array<std::vector<uint8_t>, kMaxPlanes> bytes_;
   gfx::GpuMemoryBufferId id_;
   bool fail_to_map_gpu_memory_buffer_ = false;
 };

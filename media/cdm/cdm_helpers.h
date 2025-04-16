@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <array>
+
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -98,11 +100,11 @@ class MEDIA_EXPORT VideoFrameImpl : public cdm::VideoFrame,
   raw_ptr<cdm::Buffer> frame_buffer_;
 
   // Array of data pointers to each plane in the video frame buffer.
-  uint32_t plane_offsets_[cdm::kMaxPlanes];
+  std::array<uint32_t, cdm::kMaxPlanes> plane_offsets_;
 
   // Array of strides for each plane, typically greater or equal to the width
   // of the surface divided by the horizontal sampling period.
-  uint32_t strides_[cdm::kMaxPlanes];
+  std::array<uint32_t, cdm::kMaxPlanes> strides_;
 
   // Presentation timestamp in microseconds.
   int64_t timestamp_;

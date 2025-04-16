@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAPTURE_CONTENT_VIDEO_CAPTURE_ORACLE_H_
 #define MEDIA_CAPTURE_CONTENT_VIDEO_CAPTURE_ORACLE_H_
 
+#include <array>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -237,7 +238,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
 
   // Stores the last |event_time| from the last observation/decision.  Used to
   // sanity-check that event times are monotonically non-decreasing.
-  base::TimeTicks last_event_time_[kNumEvents];
+  std::array<base::TimeTicks, kNumEvents> last_event_time_;
 
   // Updated by the last call to ObserveEventAndDecideCapture() with the
   // estimated duration of the next frame to sample.  This is zero if the method
@@ -278,7 +279,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   // a ring-buffer, and should only be accessed by the Get/SetFrameTimestamp()
   // methods.
   enum { kMaxFrameTimestamps = 16 };
-  base::TimeTicks frame_timestamps_[kMaxFrameTimestamps];
+  std::array<base::TimeTicks, kMaxFrameTimestamps> frame_timestamps_;
 
   // Recent average buffer pool utilization for capture.
   FeedbackSignalAccumulator<base::TimeTicks> buffer_pool_utilization_;
