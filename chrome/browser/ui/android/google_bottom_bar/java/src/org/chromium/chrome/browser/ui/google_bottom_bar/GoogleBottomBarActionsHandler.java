@@ -27,6 +27,8 @@ import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
@@ -43,6 +45,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /** A handler class for actions triggered by buttons in a GoogleBottomBar. */
+@NullMarked
 class GoogleBottomBarActionsHandler {
     private static final String TAG = "GBBActionHandler";
 
@@ -63,7 +66,7 @@ class GoogleBottomBarActionsHandler {
         mShareDelegateSupplier = shareDelegateSupplier;
     }
 
-    View.OnClickListener getClickListener(ButtonConfig buttonConfig) {
+    View.@Nullable OnClickListener getClickListener(ButtonConfig buttonConfig) {
         switch (buttonConfig.getId()) {
             case ButtonId.SAVE -> {
                 return v -> onSaveButtonClick(buttonConfig, v);
