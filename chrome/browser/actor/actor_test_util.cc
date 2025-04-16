@@ -15,6 +15,7 @@ namespace actor {
 using ::content::TestDevToolsProtocolClient;
 using ::optimization_guide::proto::BrowserAction;
 using ::optimization_guide::proto::ClickAction;
+using ::optimization_guide::proto::DragAndReleaseAction;
 using ::optimization_guide::proto::MoveMouseAction;
 using ::optimization_guide::proto::NavigateAction;
 using ::optimization_guide::proto::ScrollAction;
@@ -113,6 +114,22 @@ BrowserAction MakeSelect(int content_node_id, std::string_view value) {
       action.add_action_information()->mutable_select();
   select_action->mutable_target()->set_content_node_id(content_node_id);
   select_action->set_value(value);
+  return action;
+}
+
+BrowserAction MakeDragAndRelease(const gfx::Point& from_point,
+                                 const gfx::Point& to_point) {
+  BrowserAction action;
+  DragAndReleaseAction* drag_and_release =
+      action.add_action_information()->mutable_drag_and_release();
+  drag_and_release->mutable_from_target()->mutable_coordinate()->set_x(
+      from_point.x());
+  drag_and_release->mutable_from_target()->mutable_coordinate()->set_y(
+      from_point.y());
+  drag_and_release->mutable_to_target()->mutable_coordinate()->set_x(
+      to_point.x());
+  drag_and_release->mutable_to_target()->mutable_coordinate()->set_y(
+      to_point.y());
   return action;
 }
 

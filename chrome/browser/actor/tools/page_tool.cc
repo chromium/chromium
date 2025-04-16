@@ -129,6 +129,15 @@ void SetSelectToolArgs(actor::mojom::SelectActionPtr& select,
   select->value = action_info.select().value();
 }
 
+void SetDragAndReleaseToolArgs(
+    actor::mojom::DragAndReleaseActionPtr& drag_and_release,
+    ActionInformation action_info) {
+  SetMojoTarget(action_info.drag_and_release().from_target(),
+                drag_and_release->from_target);
+  SetMojoTarget(action_info.drag_and_release().to_target(),
+                drag_and_release->to_target);
+}
+
 }  // namespace
 
 namespace actor {
@@ -184,17 +193,18 @@ void PageTool::Invoke(InvokeCallback callback) {
       request->action = mojom::ToolAction::NewMouseMove(std::move(mouse_move));
       break;
     }
+    case ActionInformation::ActionInfoCase::kDragAndRelease: {
+      auto drag_and_release = mojom::DragAndReleaseAction::New();
+      SetDragAndReleaseToolArgs(drag_and_release, action_info);
+      request->action =
+          mojom::ToolAction::NewDragAndRelease(std::move(drag_and_release));
+      break;
+    }
     case ActionInformation::ActionInfoCase::kSelect: {
       auto select = mojom::SelectAction::New();
       SetSelectToolArgs(select, action_info);
       request->action = mojom::ToolAction::NewSelect(std::move(select));
       break;
-    }
-    case ActionInformation::ActionInfoCase::kDragAndRelease: {
-      // Not implemented yet.
-      NOTIMPLEMENTED();
-      std::move(callback).Run(false);
-      return;
     }
     default:
       NOTREACHED();

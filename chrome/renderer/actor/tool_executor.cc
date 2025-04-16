@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/renderer/actor/click_tool.h"
+#include "chrome/renderer/actor/drag_and_release_tool.h"
 #include "chrome/renderer/actor/mouse_move_tool.h"
 #include "chrome/renderer/actor/scroll_tool.h"
 #include "chrome/renderer/actor/select_tool.h"
@@ -65,6 +66,12 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr request,
       CHECK(request->action->get_select());
       tool_ = std::make_unique<SelectTool>(
           std::move(request->action->get_select()), frame_.get());
+      break;
+    }
+    case actor::mojom::ToolAction::Tag::kDragAndRelease: {
+      CHECK(request->action->get_drag_and_release());
+      tool_ = std::make_unique<DragAndReleaseTool>(
+          std::move(request->action->get_drag_and_release()), frame_.get());
       break;
     }
   }

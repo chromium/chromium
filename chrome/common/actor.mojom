@@ -103,13 +103,21 @@ struct SelectAction {
   string value;
 };
 
+// Performs a left mouse button down on the from_target, then moves to and
+// releases on the to_target.
+struct DragAndReleaseAction {
+  ToolTarget from_target;
+  ToolTarget to_target;
+};
+
 // Union of tool-specific actions.
 union ToolAction {
   ClickAction click;
+  DragAndReleaseAction drag_and_release;
   MouseMoveAction mouse_move;
-  TypeAction type;
   ScrollAction scroll;
   SelectAction select;
+  TypeAction type;
 };
 
 // All information required to invoke a tool in the renderer.
