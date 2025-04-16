@@ -4033,17 +4033,20 @@ public class ChromeTabbedActivity extends ChromeActivity {
     protected void applyThemeOverlays() {
         // Apply the theme overlay before applying dynamic colors in the super's call. The order
         // ensures the color attributes for dynamic colors are not overridden by the overlay.
+        boolean useThemeModule = false;
         if (ThemeModuleUtils.isEnabled()) {
             int themeModuleOverlay = ThemeModuleUtils.getProviderInstance().getThemeOverlay();
             if (themeModuleOverlay != 0) {
+                useThemeModule = true;
                 applySingleThemeOverlay(themeModuleOverlay);
             }
         }
 
-        super.applyThemeOverlays();
+        if (!useThemeModule) {
+            applySingleThemeOverlay(R.style.HubToolbarActionButtonStyleOverlay_Baseline);
+        }
 
-        // Theme overlay for the Hub buttons
-        applySingleThemeOverlay(R.style.HubToolbarActionButtonStyleOverlay_Baseline);
+        super.applyThemeOverlays();
     }
 
     /**
