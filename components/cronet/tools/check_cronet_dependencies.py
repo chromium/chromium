@@ -157,7 +157,9 @@ def main():
   # Generate a new GN output directory in order
   # not to mess with the current one.
   with tempfile.TemporaryDirectory() as tmp_dir_name:
-    cronet_utils.gn(tmp_dir_name, " ".join(gn_args))
+    if cronet_utils.gn(tmp_dir_name, " ".join(gn_args)) != 0:
+      print("Failed to execute `gn gen` in a temporary directory")
+      return -1
 
     final_deps = normalize_and_dedup_deps(
         _get_transitive_deps_from_root_targets(tmp_dir_name, args.root_deps))
