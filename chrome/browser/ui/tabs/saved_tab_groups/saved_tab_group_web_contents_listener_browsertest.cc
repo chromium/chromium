@@ -164,7 +164,7 @@ class ListenerDeferredTest : public InProcessBrowserTest {
 
     auto* service_impl =
         static_cast<tab_groups::TabGroupSyncServiceImpl*>(service);
-    return service_impl->GetModel();
+    return service_impl->GetModelForTesting();
   }
 
   raw_ptr<tabs::TabInterface> other_tab_;

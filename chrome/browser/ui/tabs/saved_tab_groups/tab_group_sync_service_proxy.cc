@@ -405,7 +405,7 @@ std::u16string TabGroupSyncServiceProxy::GetTabTitle(
   return std::u16string();
 }
 
-SavedTabGroupModel* TabGroupSyncServiceProxy::GetModel() {
+SavedTabGroupModel* TabGroupSyncServiceProxy::GetModelForTesting() {
   return service_->model();
 }
 

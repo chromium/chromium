@@ -350,11 +350,11 @@ class SavedTabGroupInteractiveTest
       if (IsMigrationEnabled()) {
         TabGroupSyncServiceImpl* service_impl =
             static_cast<TabGroupSyncServiceImpl*>(service);
-        service_impl->GetModel()->AddedFromSync(std::move(group));
+        service_impl->GetModelForTesting()->AddedFromSync(std::move(group));
       } else {
-        TabGroupSyncServiceProxy* service_proxy =
+        TabGroupSyncServiceProxy* service_impl =
             static_cast<TabGroupSyncServiceProxy*>(service);
-        service_proxy->GetModel()->AddedFromSync(std::move(group));
+        service_impl->GetModelForTesting()->AddedFromSync(std::move(group));
       }
     });
   }

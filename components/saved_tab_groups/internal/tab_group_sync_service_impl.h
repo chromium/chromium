@@ -201,7 +201,7 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   // model UI layer.
   void SetCoordinator(std::unique_ptr<TabGroupSyncCoordinator> coordinator);
 
-  SavedTabGroupModel* GetModel() { return model_.get(); }
+  SavedTabGroupModel* GetModelForTesting() { return model_.get(); }
 
  private:
   struct TabGroupSharingTimeoutInfo {

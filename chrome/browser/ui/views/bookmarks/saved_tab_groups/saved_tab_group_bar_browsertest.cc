@@ -227,7 +227,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
     TabGroupSyncService* service =
         SavedTabGroupUtils::GetServiceForProfile(browser()->profile());
     auto* service_impl = static_cast<TabGroupSyncServiceImpl*>(service);
-    SavedTabGroupModel* model = service_impl->GetModel();
+    SavedTabGroupModel* model = service_impl->GetModelForTesting();
     for (int i = 0; i < kLargeGroupCount; i++) {
       base::Uuid group_guid = base::Uuid::GenerateRandomV4();
       SavedTabGroup group(u"Group Title", TabGroupColorId::kGrey, {}, 0,
