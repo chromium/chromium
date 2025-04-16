@@ -43180,6 +43180,23 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabContextMenu.OpenInNewTab">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    The user selected the 'open in new tab' option for the tab context menu.
+  </description>
+</action>
+
+<action name="TabContextMenu.OpenInNewTabInGroup">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    The user selected the 'open in new tab in group' option for the tab context
+    menu.
+  </description>
+</action>
+
 <action name="TabContextMenu_AddToExistingGroup">
   <owner>bsep@google.com</owner>
   <owner>tbergquist@google.com</owner>

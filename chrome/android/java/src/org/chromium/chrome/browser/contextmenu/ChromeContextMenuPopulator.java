@@ -26,6 +26,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -584,6 +585,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             mItemDelegate.onReloadCurrentTab();
         } else if (itemId == R.id.contextmenu_open_in_new_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB);
+            RecordUserAction.record("TabContextMenu.OpenInNewTab");
             mItemDelegate.onOpenInNewTab(
                     mParams.getUrl(),
                     mParams.getReferrer(),
@@ -591,6 +593,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     mParams.getAdditionalNavigationParams());
         } else if (itemId == R.id.contextmenu_open_in_new_tab_in_group) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_NEW_TAB_IN_GROUP);
+            RecordUserAction.record("TabContextMenu.OpenInNewTabInGroup");
             mItemDelegate.onOpenInNewTabInGroup(mParams.getUrl(), mParams.getReferrer());
         } else if (itemId == R.id.contextmenu_open_in_incognito_tab) {
             recordContextMenuSelection(ContextMenuUma.Action.OPEN_IN_INCOGNITO_TAB);
