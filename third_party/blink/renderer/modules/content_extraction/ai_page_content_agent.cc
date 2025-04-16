@@ -324,7 +324,11 @@ void ProcessFormControlNode(const HTMLFormControlElement& form_control_element,
   form_control_data->is_required = form_control_element.IsRequired();
   if (const auto* text_control_element =
           DynamicTo<TextControlElement>(form_control_element)) {
-    form_control_data->field_value = text_control_element->Value();
+    // Don't include password values as they are sensitive.
+    if (form_control_data->form_control_type !=
+        mojom::blink::FormControlType::kInputPassword) {
+      form_control_data->field_value = text_control_element->Value();
+    }
     form_control_data->placeholder =
         text_control_element->GetPlaceholderValue();
   }

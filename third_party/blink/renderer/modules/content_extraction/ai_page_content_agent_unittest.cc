@@ -1949,6 +1949,44 @@ TEST_F(AIPageContentAgentTest, FormWithRadio) {
   CheckTextNode(*form.children_nodes[3], "I have a car");
 }
 
+TEST_F(AIPageContentAgentTest, FormWithPassword) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <form>"
+      "    <input type='password' name='Enter password' value='mypassword'>"
+      "  </form>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  auto* agent = AIPageContentAgent::GetOrCreateForTesting(
+      *helper_.LocalMainFrame()->GetFrame()->GetDocument());
+  ASSERT_TRUE(agent);
+
+  auto content = GetAIPageContent();
+  ASSERT_TRUE(content);
+  ASSERT_TRUE(content->root_node);
+
+  const auto& root = *content->root_node;
+  EXPECT_EQ(root.children_nodes.size(), 1u);
+
+  const auto& form = *root.children_nodes[0];
+  EXPECT_EQ(form.content_attributes->attribute_type,
+            mojom::blink::AIPageContentAttributeType::kForm);
+  EXPECT_EQ(form.children_nodes.size(), 1u);
+
+  const auto& password = *form.children_nodes[0];
+  CheckFormControlNode(password, mojom::blink::FormControlType::kInputPassword);
+  EXPECT_EQ(password.content_attributes->form_control_data->field_name,
+            "Enter password");
+  EXPECT_EQ(password.content_attributes->form_control_data->field_value,
+            nullptr);
+  EXPECT_EQ(password.children_nodes.size(), 1u);
+  CheckContainerNode(*password.children_nodes[0]);
+  EXPECT_EQ(password.children_nodes[0]->children_nodes.size(), 1u);
+  CheckTextNode(*password.children_nodes[0]->children_nodes[0], u"••••••••••");
+}
+
 TEST_F(AIPageContentAgentTest, InteractiveElementsTextArea) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
@@ -2873,10 +2911,12 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframeMicrodata) {
   const auto& root = *content->root_node;
   auto& nodes = root.children_nodes;
 
-  EXPECT_FALSE(ContainsRole(nodes[0]->content_attributes->annotated_roles,
-                 mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
-  EXPECT_FALSE(ContainsRole(nodes[1]->content_attributes->annotated_roles,
-                 mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_FALSE(
+      ContainsRole(nodes[0]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+  EXPECT_FALSE(
+      ContainsRole(nodes[1]->content_attributes->annotated_roles,
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
 
   const auto& iframe1 = nodes[2];
   EXPECT_EQ(iframe1->content_attributes->attribute_type,
@@ -2901,24 +2941,24 @@ TEST_F(AIPageContentAgentTest, PaidContentSubframeMicrodata) {
   const auto& children2 = iframe2->children_nodes[0]->children_nodes;
   EXPECT_FALSE(
       ContainsRole(children2[0]->content_attributes->annotated_roles,
-                  mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
   EXPECT_FALSE(
       ContainsRole(children2[1]->content_attributes->annotated_roles,
-                  mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
 
   const auto& iframe3 = nodes[4];
   EXPECT_EQ(iframe3->content_attributes->attribute_type,
             mojom::blink::AIPageContentAttributeType::kIframe);
   EXPECT_TRUE(iframe3->content_attributes->iframe_data->local_frame_data
-                    ->contains_paid_content);
+                  ->contains_paid_content);
 
   const auto& children3 = iframe3->children_nodes[0]->children_nodes;
   EXPECT_FALSE(
       ContainsRole(children3[0]->content_attributes->annotated_roles,
-                  mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
   EXPECT_TRUE(
       ContainsRole(children3[1]->content_attributes->annotated_roles,
-                  mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
+                   mojom::blink::AIPageContentAnnotatedRole::kPaidContent));
 }
 
 void CheckMatchesNode(
