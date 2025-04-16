@@ -582,13 +582,13 @@ TEST_F(AudioDeviceSelectionGeneratedTest, BandDocScenario7Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] usb3 headphone4
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+  // Devices: [internal1* hdmi2] usb3 headphone4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(usb3);
   // Devices: [internal1 hdmi2 usb3*] headphone4
-  // List: internal1 < hdmi2 < usb3
+  // List: internal1 < usb3
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 
   Select(hdmi2);
@@ -628,38 +628,33 @@ TEST_F(AudioDeviceSelectionGeneratedTest, DdDd11Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi3);
-  // Devices: [internal1 hdmi3*] headphone2
-  // List: internal1 < hdmi3 < headphone2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
-
-  Select(internal1);
   // Devices: [internal1* hdmi3] headphone2
-  // List: hdmi3 < internal1 < headphone2
+  // List: internal1 < headphone2
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Unplug(hdmi3);
   // Devices: [internal1*] headphone2 hdmi3
-  // List: hdmi3 < internal1 < headphone2
+  // List: internal1 < headphone2
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(headphone2);
   // Devices: [internal1 headphone2*] hdmi3
-  // List: hdmi3 < internal1 < headphone2
+  // List: internal1 < headphone2
   EXPECT_EQ(ActiveOutputNodeId(), headphone2.id);
 
   Unplug(headphone2);
   // Devices: [internal1*] headphone2 hdmi3
-  // List: hdmi3 < internal1 < headphone2
+  // List: internal1 < headphone2
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi3);
   // Devices: [internal1* hdmi3] headphone2
-  // List: hdmi3 < internal1 < headphone2
+  // List: internal1 < headphone2
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Unplug(hdmi3);
   // Devices: [internal1*] headphone2 hdmi3
-  // List: hdmi3 < internal1 < headphone2
+  // List: internal1 < headphone2
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
@@ -675,88 +670,88 @@ TEST_F(AudioDeviceSelectionGeneratedTest, DdDd12Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
 
   Plug(hdmi1);
-  // Devices: [hdmi1* internal4] hdmi2 headphone3
+  // Devices: [hdmi1 internal4*] hdmi2 headphone3
+  // List: internal4
+  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
+
+  Plug(hdmi2);
+  // Devices: [hdmi1 hdmi2 internal4*] headphone3
+  // List: internal4
+  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
+
+  Select(hdmi1);
+  // Devices: [hdmi1* hdmi2 internal4] headphone3
   // List: internal4 < hdmi1
+  EXPECT_EQ(ActiveOutputNodeId(), hdmi1.id);
+
+  Unplug(hdmi1);
+  // Devices: [hdmi2 internal4*] hdmi1 headphone3
+  // List: internal4 < hdmi1
+  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
+
+  Unplug(hdmi2);
+  // Devices: [internal4*] hdmi1 hdmi2 headphone3
+  // List: internal4 < hdmi1
+  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
+
+  Plug(headphone3);
+  // Devices: [headphone3* internal4] hdmi1 hdmi2
+  // List: internal4 < headphone3 < hdmi1
+  EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
+
+  Unplug(headphone3);
+  // Devices: [internal4*] hdmi1 hdmi2 headphone3
+  // List: internal4 < headphone3 < hdmi1
+  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
+
+  Plug(hdmi2);
+  // Devices: [hdmi2 internal4*] hdmi1 headphone3
+  // List: internal4 < headphone3 < hdmi1
+  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
+
+  Plug(hdmi1);
+  // Devices: [hdmi1* hdmi2 internal4] headphone3
+  // List: internal4 < headphone3 < hdmi1
+  EXPECT_EQ(ActiveOutputNodeId(), hdmi1.id);
+
+  Unplug(hdmi1);
+  // Devices: [hdmi2 internal4*] hdmi1 headphone3
+  // List: internal4 < headphone3 < hdmi1
+  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
+
+  Unplug(hdmi2);
+  // Devices: [internal4*] hdmi1 hdmi2 headphone3
+  // List: internal4 < headphone3 < hdmi1
+  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
+
+  Plug(hdmi1);
+  // Devices: [hdmi1* internal4] hdmi2 headphone3
+  // List: internal4 < headphone3 < hdmi1
   EXPECT_EQ(ActiveOutputNodeId(), hdmi1.id);
 
   Plug(hdmi2);
   // Devices: [hdmi1 hdmi2* internal4] headphone3
-  // List: internal4 < hdmi1 < hdmi2
+  // List: internal4 < headphone3 < hdmi1 < hdmi2
   EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Select(hdmi1);
-  // Devices: [hdmi1* hdmi2 internal4] headphone3
-  // List: internal4 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi1.id);
 
   Unplug(hdmi1);
   // Devices: [hdmi2* internal4] hdmi1 headphone3
-  // List: internal4 < hdmi2 < hdmi1
+  // List: internal4 < headphone3 < hdmi1 < hdmi2
   EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
 
   Unplug(hdmi2);
   // Devices: [internal4*] hdmi1 hdmi2 headphone3
-  // List: internal4 < hdmi2 < hdmi1
+  // List: internal4 < headphone3 < hdmi1 < hdmi2
   EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
 
   Plug(headphone3);
   // Devices: [headphone3* internal4] hdmi1 hdmi2
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
+  // List: internal4 < headphone3 < hdmi1 < hdmi2
   EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
 
   Unplug(headphone3);
   // Devices: [internal4*] hdmi1 hdmi2 headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
-
-  Plug(hdmi2);
-  // Devices: [hdmi2* internal4] hdmi1 headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Plug(hdmi1);
-  // Devices: [hdmi1* hdmi2 internal4] headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi1.id);
-
-  Unplug(hdmi1);
-  // Devices: [hdmi2* internal4] hdmi1 headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Unplug(hdmi2);
-  // Devices: [internal4*] hdmi1 hdmi2 headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
-
-  Plug(hdmi1);
-  // Devices: [hdmi1* internal4] hdmi2 headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi1.id);
-
-  Plug(hdmi2);
-  // Devices: [hdmi1* hdmi2 internal4] headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi1.id);
-
-  Unplug(hdmi1);
-  // Devices: [hdmi2* internal4] hdmi1 headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Unplug(hdmi2);
-  // Devices: [internal4*] hdmi1 hdmi2 headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
-
-  Plug(headphone3);
-  // Devices: [headphone3* internal4] hdmi1 hdmi2
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
-  EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
-
-  Unplug(headphone3);
-  // Devices: [internal4*] hdmi1 hdmi2 headphone3
-  // List: internal4 < headphone3 < hdmi2 < hdmi1
+  // List: internal4 < headphone3 < hdmi1 < hdmi2
   EXPECT_EQ(ActiveOutputNodeId(), internal4.id);
 }
 
@@ -771,23 +766,18 @@ TEST_F(AudioDeviceSelectionGeneratedTest, DdDd21Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] headphone3
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Select(internal1);
   // Devices: [internal1* hdmi2] headphone3
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(headphone3);
   // Devices: [internal1 hdmi2 headphone3*]
-  // List: hdmi2 < internal1 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
 
   Unplug(headphone3);
   // Devices: [internal1* hdmi2] headphone3
-  // List: hdmi2 < internal1 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
@@ -803,13 +793,13 @@ TEST_F(AudioDeviceSelectionGeneratedTest, DdDd22Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] headphone3 hdmi4
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+  // Devices: [internal1* hdmi2] headphone3 hdmi4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(headphone3);
   // Devices: [internal1 hdmi2 headphone3*] hdmi4
-  // List: internal1 < hdmi2 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
 
   Select(hdmi2);
@@ -841,13 +831,13 @@ TEST_F(AudioDeviceSelectionGeneratedTest, DdDd23Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] headphone3 hdmi4 hdmi5
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+  // Devices: [internal1* hdmi2] headphone3 hdmi4 hdmi5
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(headphone3);
   // Devices: [internal1 hdmi2 headphone3*] hdmi4 hdmi5
-  // List: internal1 < hdmi2 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
 
   Select(hdmi2);
@@ -898,38 +888,33 @@ TEST_F(AudioDeviceSelectionGeneratedTest, DdDd24Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] hdmi3 hdmi4
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+  // Devices: [internal1* hdmi2] hdmi3 hdmi4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi4);
-  // Devices: [internal1 hdmi2 hdmi4*] hdmi3
-  // List: internal1 < hdmi2 < hdmi4
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi4.id);
+  // Devices: [internal1* hdmi2 hdmi4] hdmi3
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi3);
-  // Devices: [internal1 hdmi2 hdmi3* hdmi4]
-  // List: internal1 < hdmi2 < hdmi4 < hdmi3
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
+  // Devices: [internal1* hdmi2 hdmi3 hdmi4]
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Select(hdmi4);
   // Devices: [internal1 hdmi2 hdmi3 hdmi4*]
-  // List: internal1 < hdmi2 < hdmi3 < hdmi4
+  // List: internal1 < hdmi4
   EXPECT_EQ(ActiveOutputNodeId(), hdmi4.id);
 
   Unplug(hdmi4);
-  // Devices: [internal1 hdmi2 hdmi3*] hdmi4
-  // List: internal1 < hdmi2 < hdmi3 < hdmi4
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
-
-  Select(internal1);
   // Devices: [internal1* hdmi2 hdmi3] hdmi4
-  // List: hdmi2 < hdmi3 < internal1 < hdmi4
+  // List: internal1 < hdmi4
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi4);
   // Devices: [internal1 hdmi2 hdmi3 hdmi4*]
-  // List: hdmi2 < hdmi3 < internal1 < hdmi4
+  // List: internal1 < hdmi4
   EXPECT_EQ(ActiveOutputNodeId(), hdmi4.id);
 }
 
@@ -1000,28 +985,23 @@ TEST_F(AudioDeviceSelectionGeneratedTest, DiscussionIssue2Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] usb3
-  // List: internal1 < hdmi2 < usb3
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Select(internal1);
   // Devices: [internal1* hdmi2] usb3
-  // List: hdmi2 < internal1 < usb3
+  // List: internal1 < usb3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Unplug(hdmi2);
   // Devices: [internal1*] hdmi2 usb3
-  // List: hdmi2 < internal1 < usb3
+  // List: internal1 < usb3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(usb3);
   // Devices: [internal1 usb3*] hdmi2
-  // List: hdmi2 < internal1 < usb3
+  // List: internal1 < usb3
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 
   Plug(hdmi2);
   // Devices: [internal1 hdmi2 usb3*]
-  // List: hdmi2 < internal1 < usb3
+  // List: internal1 < usb3
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 }
 
@@ -1037,23 +1017,28 @@ TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment10Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] hdmi3 usb4
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+  // Devices: [internal1* hdmi2] hdmi3 usb4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi3);
+  // Devices: [internal1* hdmi2 hdmi3] usb4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Select(hdmi3);
   // Devices: [internal1 hdmi2 hdmi3*] usb4
-  // List: internal1 < hdmi2 < hdmi3
+  // List: internal1 < hdmi3
   EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
 
   Plug(usb4);
   // Devices: [internal1 hdmi2 hdmi3 usb4*]
-  // List: internal1 < hdmi2 < hdmi3 < usb4
+  // List: internal1 < hdmi3 < usb4
   EXPECT_EQ(ActiveOutputNodeId(), usb4.id);
 
   Unplug(usb4);
   // Devices: [internal1 hdmi2 hdmi3*] usb4
-  // List: internal1 < hdmi2 < hdmi3 < usb4
+  // List: internal1 < hdmi3 < usb4
   EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
 }
 
@@ -1069,48 +1054,48 @@ TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment3Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] hdmi3 usb4
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+  // Devices: [internal1* hdmi2] hdmi3 usb4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi3);
-  // Devices: [internal1 hdmi2 hdmi3*] usb4
-  // List: internal1 < hdmi2 < hdmi3
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
+  // Devices: [internal1* hdmi2 hdmi3] usb4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(usb4);
   // Devices: [internal1 hdmi2 hdmi3 usb4*]
-  // List: internal1 < hdmi2 < hdmi3 < usb4
+  // List: internal1 < usb4
   EXPECT_EQ(ActiveOutputNodeId(), usb4.id);
 
   Unplug(hdmi2);
   // Devices: [internal1 hdmi3 usb4*] hdmi2
-  // List: internal1 < hdmi2 < hdmi3 < usb4
+  // List: internal1 < usb4
   EXPECT_EQ(ActiveOutputNodeId(), usb4.id);
 
   Unplug(hdmi3);
   // Devices: [internal1 usb4*] hdmi2 hdmi3
-  // List: internal1 < hdmi2 < hdmi3 < usb4
+  // List: internal1 < usb4
   EXPECT_EQ(ActiveOutputNodeId(), usb4.id);
 
   Unplug(usb4);
   // Devices: [internal1*] hdmi2 hdmi3 usb4
-  // List: internal1 < hdmi2 < hdmi3 < usb4
+  // List: internal1 < usb4
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] hdmi3 usb4
-  // List: internal1 < hdmi2 < hdmi3 < usb4
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+  // Devices: [internal1* hdmi2] hdmi3 usb4
+  // List: internal1 < usb4
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi3);
-  // Devices: [internal1 hdmi2 hdmi3*] usb4
-  // List: internal1 < hdmi2 < hdmi3 < usb4
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
+  // Devices: [internal1* hdmi2 hdmi3] usb4
+  // List: internal1 < usb4
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(usb4);
   // Devices: [internal1 hdmi2 hdmi3 usb4*]
-  // List: internal1 < hdmi2 < hdmi3 < usb4
+  // List: internal1 < usb4
   EXPECT_EQ(ActiveOutputNodeId(), usb4.id);
 }
 
@@ -1125,6 +1110,31 @@ TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment5Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
+  // Devices: [internal1* hdmi2] hdmi3
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Plug(hdmi3);
+  // Devices: [internal1* hdmi2 hdmi3]
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Select(hdmi2);
+  // Devices: [internal1 hdmi2* hdmi3]
+  // List: internal1 < hdmi2
+  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+
+  Unplug(hdmi2);
+  // Devices: [internal1* hdmi3] hdmi2
+  // List: internal1 < hdmi2
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Unplug(hdmi3);
+  // Devices: [internal1*] hdmi2 hdmi3
+  // List: internal1 < hdmi2
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Plug(hdmi2);
   // Devices: [internal1 hdmi2*] hdmi3
   // List: internal1 < hdmi2
   EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
@@ -1133,31 +1143,6 @@ TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment5Output) {
   // Devices: [internal1 hdmi2 hdmi3*]
   // List: internal1 < hdmi2 < hdmi3
   EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
-
-  Select(hdmi2);
-  // Devices: [internal1 hdmi2* hdmi3]
-  // List: internal1 < hdmi3 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Unplug(hdmi2);
-  // Devices: [internal1 hdmi3*] hdmi2
-  // List: internal1 < hdmi3 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
-
-  Unplug(hdmi3);
-  // Devices: [internal1*] hdmi2 hdmi3
-  // List: internal1 < hdmi3 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
-
-  Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] hdmi3
-  // List: internal1 < hdmi3 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Plug(hdmi3);
-  // Devices: [internal1 hdmi2* hdmi3]
-  // List: internal1 < hdmi3 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
 }
 
 TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment8Output) {
@@ -1171,23 +1156,18 @@ TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment8Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] headphone3
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Select(internal1);
   // Devices: [internal1* hdmi2] headphone3
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(headphone3);
   // Devices: [internal1 hdmi2 headphone3*]
-  // List: hdmi2 < internal1 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
 
   Unplug(headphone3);
   // Devices: [internal1* hdmi2] headphone3
-  // List: hdmi2 < internal1 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
@@ -1201,23 +1181,18 @@ TEST_F(AudioDeviceSelectionGeneratedTest, GreendocH4Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*]
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Select(internal1);
   // Devices: [internal1* hdmi2]
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Unplug(hdmi2);
   // Devices: [internal1*] hdmi2
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
   // Devices: [internal1* hdmi2]
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
@@ -1232,23 +1207,18 @@ TEST_F(AudioDeviceSelectionGeneratedTest, GreendocH7Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] headphone3
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Select(internal1);
   // Devices: [internal1* hdmi2] headphone3
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(headphone3);
   // Devices: [internal1 hdmi2 headphone3*]
-  // List: hdmi2 < internal1 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
 
   Unplug(headphone3);
   // Devices: [internal1* hdmi2] headphone3
-  // List: hdmi2 < internal1 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
@@ -1263,14 +1233,14 @@ TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM1Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] hdmi3
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+  // Devices: [internal1* hdmi2] hdmi3
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi3);
-  // Devices: [internal1 hdmi2 hdmi3*]
-  // List: internal1 < hdmi2 < hdmi3
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
+  // Devices: [internal1* hdmi2 hdmi3]
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
 TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM3Output) {
@@ -1285,28 +1255,28 @@ TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM3Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] hdmi3 headphone4
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+  // Devices: [internal1* hdmi2] hdmi3 headphone4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi3);
-  // Devices: [internal1 hdmi2 hdmi3*] headphone4
-  // List: internal1 < hdmi2 < hdmi3
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
+  // Devices: [internal1* hdmi2 hdmi3] headphone4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Select(hdmi2);
   // Devices: [internal1 hdmi2* hdmi3] headphone4
-  // List: internal1 < hdmi3 < hdmi2
+  // List: internal1 < hdmi2
   EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
 
   Plug(headphone4);
   // Devices: [internal1 hdmi2 hdmi3 headphone4*]
-  // List: internal1 < hdmi3 < hdmi2 < headphone4
+  // List: internal1 < hdmi2 < headphone4
   EXPECT_EQ(ActiveOutputNodeId(), headphone4.id);
 
   Unplug(headphone4);
   // Devices: [internal1 hdmi2* hdmi3] headphone4
-  // List: internal1 < hdmi3 < hdmi2 < headphone4
+  // List: internal1 < hdmi2 < headphone4
   EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
 }
 
@@ -1321,33 +1291,33 @@ TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM4Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] hdmi3
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Select(internal1);
   // Devices: [internal1* hdmi2] hdmi3
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Unplug(hdmi2);
   // Devices: [internal1*] hdmi2 hdmi3
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi3);
+  // Devices: [internal1* hdmi3] hdmi2
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Select(hdmi3);
   // Devices: [internal1 hdmi3*] hdmi2
-  // List: hdmi2 < internal1 < hdmi3
+  // List: internal1 < hdmi3
   EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
 
   Unplug(hdmi3);
   // Devices: [internal1*] hdmi2 hdmi3
-  // List: hdmi2 < internal1 < hdmi3
+  // List: internal1 < hdmi3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
   // Devices: [internal1* hdmi2] hdmi3
-  // List: hdmi2 < internal1 < hdmi3
+  // List: internal1 < hdmi3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
@@ -1362,33 +1332,28 @@ TEST_F(AudioDeviceSelectionGeneratedTest, GreendocM5Output) {
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] headphone3
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Select(internal1);
   // Devices: [internal1* hdmi2] headphone3
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Unplug(hdmi2);
   // Devices: [internal1*] hdmi2 headphone3
-  // List: hdmi2 < internal1
+  // List: internal1
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(headphone3);
   // Devices: [internal1 headphone3*] hdmi2
-  // List: hdmi2 < internal1 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
 
   Unplug(headphone3);
   // Devices: [internal1*] hdmi2 headphone3
-  // List: hdmi2 < internal1 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 
   Plug(hdmi2);
   // Devices: [internal1* hdmi2] headphone3
-  // List: hdmi2 < internal1 < headphone3
+  // List: internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
 }
 
