@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -51,7 +52,7 @@ void SplitTabsToolbarButton::OnSplitTabCreated(
     std::vector<std::pair<tabs::TabInterface*, int>> tabs,
     split_tabs::SplitTabId split_id,
     TabStripModelObserver::SplitTabAddReason reason,
-    tabs::SplitTabLayout tab_layout) {
+    split_tabs::SplitTabVisualData visual_data) {
   UpdateButtonVisibility();
 }
 

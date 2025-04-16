@@ -6,6 +6,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+
 #include <stddef.h>
 
 #include <algorithm>
@@ -31,17 +33,16 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -50,8 +51,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -1900,7 +1901,7 @@ TEST_F(TabStripModelTest, AddToSplitInGroup) {
                          TabStripUserGestureDetails(
                              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip.AddToNewSplit({2}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0p 1p 3 2s 4s", GetTabStripStateString(tabstrip));
   EXPECT_EQ(tabstrip.group_model()->GetTabGroup(group_id)->ListTabs().length(),
@@ -1926,7 +1927,7 @@ TEST_F(TabStripModelTest, AddToSplitInPinned) {
                          TabStripUserGestureDetails(
                              TabStripUserGestureDetails::GestureType::kOther));
 
-  tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
 
@@ -1945,7 +1946,7 @@ TEST_F(TabStripModelTest, AddToSplitInSelected) {
       PrepareTabstripForSelectionTest(&tabstrip, 5, 0, "2"));
 
   tabstrip.ActivateTabAt(0);
-  tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0s 1s 2 3 4", GetTabStripStateString(tabstrip));
   EXPECT_EQ(tabstrip.active_index(), 0);
@@ -1973,7 +1974,7 @@ TEST_F(TabStripModelTest, UnsplitOperation) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
 
@@ -1998,7 +1999,7 @@ TEST_F(TabStripModelTest, MoveInsideSplitRemovesSplit) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
   tabstrip.MoveWebContentsAt(3, 1, false);
@@ -2022,7 +2023,7 @@ TEST_F(TabStripModelTest, MoveFromSplitRemovesSplit) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
   tabstrip.MoveWebContentsAt(1, 3, false);
@@ -2046,7 +2047,7 @@ TEST_F(TabStripModelTest, AddTabInsideSplitRemovesSplit) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
 
@@ -2073,7 +2074,7 @@ TEST_F(TabStripModelTest, RemoveSplitTabRemovesEntireSplit) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
 
@@ -2098,7 +2099,7 @@ TEST_F(TabStripModelTest, MoveGroupWithinSplitRemovesSplit) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({4}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({4}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->ListTabs().size(), 2u);
   tab_groups::TabGroupId group_id = tabstrip.AddToNewGroup({0, 1});
@@ -2126,15 +2127,47 @@ TEST_F(TabStripModelTest, SplitLayoutTest) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
-  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->split_layout(),
-            tabs::SplitTabLayout::kHorizontal);
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->visual_data()->split_layout(),
+            split_tabs::SplitTabLayout::kHorizontal);
 
-  tabstrip.UpdateSplitLayout(split_tab_id, tabs::SplitTabLayout::kVertical);
-  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->split_layout(),
-            tabs::SplitTabLayout::kVertical);
+  tabstrip.UpdateSplitLayout(split_tab_id,
+                             split_tabs::SplitTabLayout::kVertical);
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->visual_data()->split_layout(),
+            split_tabs::SplitTabLayout::kVertical);
+
+  tabstrip.CloseAllTabs();
+  EXPECT_TRUE(tabstrip.empty());
+}
+
+TEST_F(TabStripModelTest, SplitRatioTest) {
+  scoped_feature_list()->InitAndEnableFeature(features::kSideBySide);
+  TestTabStripModelDelegate delegate;
+  TabStripModel tabstrip(&delegate, profile());
+  EXPECT_TRUE(tabstrip.empty());
+
+  // Create five tabs with two pinned, select the last.
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(&tabstrip, 5, 2, "2"));
+
+  // Add tab at index 4 to a group.
+  tabstrip.AddToNewGroup({4});
+  tabstrip.ActivateTabAt(0,
+                         TabStripUserGestureDetails(
+                             TabStripUserGestureDetails::GestureType::kOther));
+
+  split_tabs::SplitTabId split_tab_id =
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
+
+  EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->visual_data()->split_layout(),
+            split_tabs::SplitTabLayout::kHorizontal);
+
+  tabstrip.UpdateSplitRatio(split_tab_id, 0.7);
+  EXPECT_EQ(tabstrip.GetSplitData(split_tab_id)->visual_data()->split_ratio(),
+            0.7);
 
   tabstrip.CloseAllTabs();
   EXPECT_TRUE(tabstrip.empty());
@@ -2157,7 +2190,7 @@ TEST_F(TabStripModelTest, SwapTabsInSplit) {
                              TabStripUserGestureDetails::GestureType::kOther));
 
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({3}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({3}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0ps 3ps 1p 2 4", GetTabStripStateString(tabstrip));
 
@@ -5586,9 +5619,9 @@ TEST_F(TabStripModelTest, ExtendSelectionTo_SplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 6, 0, "0"));
   tabstrip.ActivateTabAt(0);
-  tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
   tabstrip.ActivateTabAt(4);
-  tabstrip.AddToNewSplit({5}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({5}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0s 1s 2 3 4s 5s", GetTabStripStateString(tabstrip));
 
@@ -5629,7 +5662,7 @@ TEST_F(TabStripModelTest, SelectTabAt_SplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 4, 0, "0"));
   tabstrip.ActivateTabAt(3);
-  tabstrip.AddToNewSplit({2}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip));
 
@@ -5650,7 +5683,7 @@ TEST_F(TabStripModelTest, DeselectTabAt_SplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 4, 0, "0"));
   tabstrip.ActivateTabAt(3);
-  tabstrip.AddToNewSplit({2}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip));
 
@@ -5674,7 +5707,7 @@ TEST_F(TabStripModelTest, DeselectTabAt_CantDeselectOnlySelectedSplitTabs) {
   ASSERT_NO_FATAL_FAILURE(
       PrepareTabstripForSelectionTest(&tabstrip, 4, 0, "0"));
   tabstrip.ActivateTabAt(3);
-  tabstrip.AddToNewSplit({2}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
 
   EXPECT_EQ("0 1 2s 3s", GetTabStripStateString(tabstrip));
 
@@ -5698,7 +5731,7 @@ TEST_F(TabStripModelTest, RemoveSplitInSelectionActivatesRemainingTab) {
   PrepareTabs(&tabstrip, 6);
   ASSERT_EQ(6, tabstrip.count());
   tabstrip.ActivateTabAt(1);
-  tabstrip.AddToNewSplit({2}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
   tabstrip.ActivateTabAt(3);
   tabstrip.SelectTabAt(0);
   tabstrip.SelectTabAt(2);
@@ -5735,7 +5768,7 @@ TEST_F(TabStripModelTest, RemoveSplitUnselectsNonActiveTab) {
   ASSERT_EQ(4, tabstrip.count());
   tabstrip.ActivateTabAt(1);
   split_tabs::SplitTabId split_tab_id =
-      tabstrip.AddToNewSplit({2}, tabs::SplitTabLayout::kHorizontal);
+      tabstrip.AddToNewSplit({2}, split_tabs::SplitTabLayout::kHorizontal);
 
   // Verify the selection model before closing the tab.
   EXPECT_EQ(tabstrip.active_index(), 1);
@@ -5763,7 +5796,7 @@ TEST_F(TabStripModelTest, RemoveLeftTabInSplitActivatesRemainingTab) {
   PrepareTabs(&tabstrip, 4);
   ASSERT_EQ(4, tabstrip.count());
   tabstrip.ActivateTabAt(0);
-  tabstrip.AddToNewSplit({1}, tabs::SplitTabLayout::kHorizontal);
+  tabstrip.AddToNewSplit({1}, split_tabs::SplitTabLayout::kHorizontal);
 
   // Verify the selection model before closing the tab.
   EXPECT_EQ("0s 1s 2 3", GetTabStripStateString(tabstrip));

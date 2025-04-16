@@ -8,17 +8,20 @@
 #include <optional>
 
 #include "chrome/browser/ui/tabs/split_tab_data.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 
 namespace tabs {
 
-SplitTabCollection::SplitTabCollection(split_tabs::SplitTabId split_id,
-                                       tabs::SplitTabLayout tab_layout)
+SplitTabCollection::SplitTabCollection(
+    split_tabs::SplitTabId split_id,
+    split_tabs::SplitTabVisualData visual_data)
     : TabCollection(TabCollection::Type::SPLIT, {}, true),
       split_tab_data_(std::make_unique<split_tabs::SplitTabData>(this,
                                                                  split_id,
-                                                                 tab_layout)) {}
+                                                                 visual_data)) {
+}
 
 SplitTabCollection::~SplitTabCollection() = default;
 

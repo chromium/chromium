@@ -63,6 +63,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -1517,13 +1518,40 @@ void TabStripModel::MaybeRemoveSplitsForMove(
 }
 
 void TabStripModel::UpdateSplitLayout(split_tabs::SplitTabId split_id,
-                                      tabs::SplitTabLayout tab_layout) {
+                                      split_tabs::SplitTabLayout tab_layout) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  GetSplitData(split_id)->set_split_layout(tab_layout);
+  split_tabs::SplitTabData* split_data = GetSplitData(split_id);
+
+  if (split_data->visual_data()->split_layout() == tab_layout) {
+    return;
+  }
+
+  split_tabs::SplitTabVisualData old_visual_data =
+      *GetSplitData(split_id)->visual_data();
+
+  split_data->visual_data()->set_split_layout(tab_layout);
 
   for (TabStripModelObserver& observer : observers_) {
-    observer.OnSplitTabOrientationChanged(split_id, tab_layout);
+    observer.OnSplitTabVisualsChanged(split_id, old_visual_data,
+                                      *split_data->visual_data());
+  }
+}
+
+void TabStripModel::UpdateSplitRatio(split_tabs::SplitTabId split_id,
+                                     double split_ratio) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+  split_tabs::SplitTabData* split_data = GetSplitData(split_id);
+  if (split_data->visual_data()->split_ratio() == split_ratio) {
+    return;
+  }
+
+  split_tabs::SplitTabVisualData old_visual_data = *split_data->visual_data();
+  split_data->visual_data()->set_split_ratio(split_ratio);
+
+  for (TabStripModelObserver& observer : observers_) {
+    observer.OnSplitTabVisualsChanged(split_id, old_visual_data,
+                                      *split_data->visual_data());
   }
 }
 
@@ -1557,7 +1585,7 @@ void TabStripModel::SwapTabsInSplit(split_tabs::SplitTabId split_id) {
 
 split_tabs::SplitTabId TabStripModel::AddToNewSplit(
     std::vector<int> indices,
-    tabs::SplitTabLayout tab_layout) {
+    split_tabs::SplitTabLayout tab_layout) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   // Ensure that there is only one index. This will be split with the active
@@ -1567,7 +1595,10 @@ split_tabs::SplitTabId TabStripModel::AddToNewSplit(
   CHECK(active_index() != kNoTab);
   CHECK(active_index() != indices[0]);
 
-  return AddToSplitImpl(indices, tab_layout);
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+
+  return AddToSplitImpl(split_id, indices,
+                        split_tabs::SplitTabVisualData(tab_layout, 0.5));
 }
 
 void TabStripModel::AddTabGroup(const tab_groups::TabGroupId group_id,
@@ -2134,7 +2165,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
         context_index += 1;
         split_view_ntp_created = true;
       }
-      AddToNewSplit({context_index}, tabs::SplitTabLayout::kHorizontal);
+      AddToNewSplit({context_index}, split_tabs::SplitTabLayout::kHorizontal);
       // Activate the split view NTP if available.
       if (split_view_ntp_created) {
         ActivateTabAt(context_index);
@@ -3163,8 +3194,9 @@ std::vector<int> TabStripModel::GetSelectedUnpinnedTabs() {
 }
 
 split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
+    split_tabs::SplitTabId split_id,
     std::vector<int> indices,
-    tabs::SplitTabLayout tab_layout) {
+    split_tabs::SplitTabVisualData visual_data) {
   // Insert the active index into the sorted `indices`.
   auto position = lower_bound(indices.begin(), indices.end(), active_index());
   indices.insert(position, active_index());
@@ -3181,8 +3213,7 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
                                GetTabGroupForTab(active_index()),
                                IsTabPinned(active_index()));
 
-  split_tabs::SplitTabId split_id =
-      contents_data_->CreateSplit(tabs, tab_layout);
+  contents_data_->CreateSplit(split_id, tabs, visual_data);
 
   std::vector<std::pair<tabs::TabInterface*, int>> tabs_with_indices;
   for (tabs::TabModel* tab : tabs) {
@@ -3206,7 +3237,7 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
     observer.OnSplitTabCreated(
         tabs_with_indices, split_id,
         TabStripModelObserver::SplitTabAddReason::kNewSplitTabCreated,
-        tab_layout);
+        visual_data);
   }
 
   return split_id;

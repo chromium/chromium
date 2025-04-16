@@ -36,9 +36,11 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(MultiContentsView,
 
 MultiContentsView::MultiContentsView(
     BrowserView* browser_view,
-    WebContentsFocusedCallback inactive_view_focused_callback)
+    WebContentsFocusedCallback inactive_view_focused_callback,
+    WebContentsResizeCallback split_tab_resize_callback)
     : browser_view_(browser_view),
-      inactive_view_focused_callback_(inactive_view_focused_callback) {
+      inactive_view_focused_callback_(inactive_view_focused_callback),
+      split_tab_resize_callback_(split_tab_resize_callback) {
   contents_container_views_.push_back(
       AddChildView(std::make_unique<ContentsContainerView>(
           std::make_unique<ContentsWebView>(browser_view_->GetProfile()))));
@@ -147,13 +149,25 @@ void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
     initial_start_width_on_resize_ =
         std::make_optional(contents_container_views_[0]->size().width());
   }
+
   double total_width = contents_container_views_[0]->size().width() +
                        contents_container_views_[1]->size().width();
-  start_ratio_ =
+  double start_ratio =
       (initial_start_width_on_resize_.value() + resize_amount) / total_width;
+
+  split_tab_resize_callback_.Run(start_ratio);
+
   if (done_resizing) {
     initial_start_width_on_resize_ = std::nullopt;
   }
+}
+
+void MultiContentsView::UpdateSplitRatio(double ratio) {
+  if (start_ratio_ == ratio) {
+    return;
+  }
+
+  start_ratio_ = ratio;
   InvalidateLayout();
 }
 

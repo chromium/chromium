@@ -24,8 +24,11 @@ class TabStripModel;
 namespace tabs {
 class TabModel;
 class TabGroupTabCollection;
-enum class SplitTabLayout;
 }  // namespace tabs
+
+namespace split_tabs {
+class SplitTabVisualData;
+}
 
 namespace content {
 class WebContents;
@@ -432,7 +435,7 @@ class TabStripModelObserver {
       std::vector<std::pair<tabs::TabInterface*, int>> tabs,
       split_tabs::SplitTabId split_id,
       SplitTabAddReason reason,
-      tabs::SplitTabLayout tab_layout);
+      split_tabs::SplitTabVisualData visual_data);
 
   // Notification that a split view has been removed from the TabStripModel.
   virtual void OnSplitTabRemoved(
@@ -440,9 +443,11 @@ class TabStripModelObserver {
       split_tabs::SplitTabId split_id,
       SplitTabRemoveReason reason);
 
-  // Notification that the orientation of a split view is updated.
-  virtual void OnSplitTabOrientationChanged(split_tabs::SplitTabId split_id,
-                                            tabs::SplitTabLayout tab_layout);
+  // Notification that the visuals of a split view is updated.
+  virtual void OnSplitTabVisualsChanged(
+      split_tabs::SplitTabId split_id,
+      split_tabs::SplitTabVisualData old_visual_data,
+      split_tabs::SplitTabVisualData new_visual_data);
 
   // Notification that the contents of a split view is updated.
   virtual void OnSplitTabContentsUpdated(

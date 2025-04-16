@@ -10,17 +10,16 @@
 
 namespace split_tabs {
 class SplitTabData;
+class SplitTabVisualData;
 }
 
 namespace tabs {
-
-enum class SplitTabLayout { kHorizontal, kVertical };
 
 // A collection for split tabs.
 class SplitTabCollection : public TabCollection {
  public:
   explicit SplitTabCollection(split_tabs::SplitTabId split_id,
-                              tabs::SplitTabLayout tab_layout);
+                              split_tabs::SplitTabVisualData visual_data);
   ~SplitTabCollection() override;
   SplitTabCollection(const SplitTabCollection&) = delete;
   SplitTabCollection& operator=(const SplitTabCollection&) = delete;

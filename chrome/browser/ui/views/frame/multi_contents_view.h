@@ -46,6 +46,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   using WebContentsFocusedCallback =
       base::RepeatingCallback<void(content::WebContents*)>;
 
+  using WebContentsResizeCallback = base::RepeatingCallback<void(double)>;
+
   struct ViewWidths {
     double start_width = 0;
     double resize_width = 0;
@@ -53,7 +55,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   };
 
   MultiContentsView(BrowserView* browser_view,
-                    WebContentsFocusedCallback inactive_view_focused_callback);
+                    WebContentsFocusedCallback inactive_view_focused_callback,
+                    WebContentsResizeCallback split_tab_resize_callback);
   MultiContentsView(const MultiContentsView&) = delete;
   MultiContentsView& operator=(const MultiContentsView&) = delete;
   ~MultiContentsView() override;
@@ -87,6 +90,8 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
   // view. Will execute the callback on the active contents view first.
   void ExecuteOnEachVisibleContentsView(
       base::RepeatingCallback<void(ContentsWebView*)> callback);
+
+  void UpdateSplitRatio(double ratio);
 
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
@@ -153,6 +158,9 @@ class MultiContentsView : public views::View, public views::ResizeAreaDelegate {
 
   // Callback to be executed when the user focuses the inactive contents view.
   WebContentsFocusedCallback inactive_view_focused_callback_;
+
+  // Callback to be executed when the user resizes the contents.
+  WebContentsResizeCallback split_tab_resize_callback_;
 
   // Current ratio of |contents_views_|'s first ContentsContainerView's width /
   // overall contents view width.

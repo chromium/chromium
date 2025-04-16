@@ -53,12 +53,13 @@ class WebContents;
 
 namespace split_tabs {
 class SplitTabData;
+class SplitTabVisualData;
+enum class SplitTabLayout;
 }
 
 namespace tabs {
 class TabStripCollection;
 class TabGroupTabCollection;
-enum class SplitTabLayout;
 }
 
 class TabGroupModelFactory {
@@ -559,7 +560,11 @@ class TabStripModel : public TabGroupController {
 
   // Updates the layout for the tabs with `split_id` and notifies observers.
   void UpdateSplitLayout(split_tabs::SplitTabId split_id,
-                         tabs::SplitTabLayout tab_layout);
+                         split_tabs::SplitTabLayout tab_layout);
+
+  // Updates the ratio for the tabs with `split_id` and notifies observers.
+  void UpdateSplitRatio(split_tabs::SplitTabId split_id,
+                        double start_content_ratio);
 
   // Reverses the order of tabs with `split_id`.
   void SwapTabsInSplit(split_tabs::SplitTabId split_id);
@@ -568,7 +573,7 @@ class TabStripModel : public TabGroupController {
   // to by |indices| to it. Reorders the tabs so they are contiguous. |indices|
   // must be sorted in ascending order.
   split_tabs::SplitTabId AddToNewSplit(const std::vector<int> indices,
-                                       tabs::SplitTabLayout tab_layout);
+                                       split_tabs::SplitTabLayout tab_layout);
 
   // Create a new tab group and add the set of tabs pointed to be |indices| to
   // it. Pins all of the tabs if any of them were pinned, and reorders the tabs
@@ -953,8 +958,10 @@ class TabStripModel : public TabGroupController {
   std::vector<int> GetSelectedPinnedTabs();
   std::vector<int> GetSelectedUnpinnedTabs();
 
-  split_tabs::SplitTabId AddToSplitImpl(std::vector<int> indices,
-                                        tabs::SplitTabLayout tab_layout);
+  split_tabs::SplitTabId AddToSplitImpl(
+      split_tabs::SplitTabId split_id,
+      std::vector<int> indices,
+      split_tabs::SplitTabVisualData visual_data);
 
   void RemoveSplitImpl(split_tabs::SplitTabId split_id);
 

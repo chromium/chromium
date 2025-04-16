@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
@@ -223,7 +224,8 @@ TEST_F(PinnedTabCollectionTest, CollectionOperations) {
   std::unique_ptr<tabs::TabCollection> collection =
       std::make_unique<tabs::SplitTabCollection>(
           split_tabs::SplitTabId::GenerateNew(),
-          tabs::SplitTabLayout::kHorizontal);
+          split_tabs::SplitTabVisualData(
+              split_tabs::SplitTabLayout::kHorizontal, 0.5));
   tabs::TabCollection* collection_ptr = collection.get();
   EXPECT_EQ(pinned_collection_instance->GetIndexOfCollection(collection_ptr),
             std::nullopt);
@@ -327,7 +329,8 @@ class SplitTabCollectionTest : public TabCollectionBaseTest {
   SplitTabCollectionTest() {
     split_collection_ = std::make_unique<tabs::SplitTabCollection>(
         split_tabs::SplitTabId::GenerateNew(),
-        tabs::SplitTabLayout::kHorizontal);
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kHorizontal,
+                                       0.5));
   }
   SplitTabCollectionTest(const SplitTabCollectionTest&) = delete;
   SplitTabCollectionTest& operator=(const SplitTabCollectionTest&) = delete;
@@ -699,8 +702,11 @@ TEST_F(TabStripCollectionTest, SplitOperations) {
     for (int i : indices) {
       tabs.push_back(tab_strip_collection->GetTabAtIndexRecursive(i));
     }
-    split_tabs::SplitTabId split_id = tab_strip_collection->CreateSplit(
-        tabs, tabs::SplitTabLayout::kHorizontal);
+    split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+    tab_strip_collection->CreateSplit(
+        split_id, tabs,
+        split_tabs::SplitTabVisualData(split_tabs::SplitTabLayout::kHorizontal,
+                                       0.5));
     return std::tuple{
         tabs, tab_strip_collection->GetSplitTabCollection(split_id), split_id};
   };
@@ -1036,7 +1042,8 @@ TEST_F(TabStripCollectionTest, UpdateProperties) {
       unpinned_collection->AddCollection(
           std::make_unique<tabs::SplitTabCollection>(
               split_tabs::SplitTabId::GenerateNew(),
-              tabs::SplitTabLayout::kHorizontal),
+              split_tabs::SplitTabVisualData(
+                  split_tabs::SplitTabLayout::kHorizontal, 0.5)),
           unpinned_collection->ChildCount());
   AppendTab(split_collection, std::make_unique<tabs::TabModel>(
                                   MakeWebContents(), GetTabStripModel()));

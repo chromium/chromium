@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_data.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
@@ -960,7 +961,7 @@ void BrowserTabStripController::OnSplitTabCreated(
     std::vector<std::pair<tabs::TabInterface*, int>> tabs,
     split_tabs::SplitTabId split_id,
     TabStripModelObserver::SplitTabAddReason reason,
-    tabs::SplitTabLayout tab_layout) {
+    split_tabs::SplitTabVisualData visual_data) {
   for (const auto& tab_pair : tabs) {
     int index = tab_pair.second;
     tabstrip_->SetSplit(index, split_id);

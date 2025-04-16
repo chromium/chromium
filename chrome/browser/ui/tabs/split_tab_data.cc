@@ -4,14 +4,18 @@
 
 #include "chrome/browser/ui/tabs/split_tab_data.h"
 
+#include <memory>
+
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
+#include "components/tabs/public/tab_interface.h"
 
 namespace split_tabs {
 
 SplitTabData::SplitTabData(tabs::SplitTabCollection* controller,
                            const split_tabs::SplitTabId& id,
-                           tabs::SplitTabLayout split_layout)
-    : controller_(controller), split_layout_(split_layout), id_(id) {}
+                           const SplitTabVisualData& visual_data)
+    : controller_(controller), visual_data_(visual_data), id_(id) {}
 
 SplitTabData::~SplitTabData() = default;
 

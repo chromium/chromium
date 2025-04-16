@@ -102,8 +102,9 @@ class TabStripCollection : public TabCollection {
 
   // Split tab operations.
   SplitTabCollection* GetSplitTabCollection(split_tabs::SplitTabId split_id);
-  split_tabs::SplitTabId CreateSplit(std::vector<TabModel*> tabs,
-                                     tabs::SplitTabLayout tab_layout);
+  void CreateSplit(split_tabs::SplitTabId split_id,
+                   const std::vector<TabModel*>& tabs,
+                   split_tabs::SplitTabVisualData visual_data);
   void Unsplit(split_tabs::SplitTabId split_id);
 
   void ValidateData() const;

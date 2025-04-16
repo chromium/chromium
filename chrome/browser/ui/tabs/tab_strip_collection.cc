@@ -11,6 +11,7 @@
 #include "base/containers/adapters.h"
 #include "chrome/browser/ui/tabs/pinned_tab_collection.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_collection_storage.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
@@ -245,9 +246,10 @@ SplitTabCollection* TabStripCollection::GetSplitTabCollection(
   return split_mapping_.at(split_id);
 }
 
-split_tabs::SplitTabId TabStripCollection::CreateSplit(
-    std::vector<TabModel*> tabs,
-    tabs::SplitTabLayout tab_layout) {
+void TabStripCollection::CreateSplit(
+    split_tabs::SplitTabId split_id,
+    const std::vector<TabModel*>& tabs,
+    split_tabs::SplitTabVisualData visual_data) {
   CHECK(tabs.size() >= 2);
   TabCollection* parent_collection = tabs[0]->GetParentCollection(GetPassKey());
   CHECK(std::all_of(
@@ -258,9 +260,8 @@ split_tabs::SplitTabId TabStripCollection::CreateSplit(
   size_t dst_index = parent_collection->GetIndexOfTab(tabs[0]).value();
 
   // Move tabs from parent to new split.
-  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
   std::unique_ptr<SplitTabCollection> split =
-      std::make_unique<SplitTabCollection>(split_id, tab_layout);
+      std::make_unique<SplitTabCollection>(split_id, visual_data);
   for (TabModel* tab : tabs) {
     split->AddTab(parent_collection->MaybeRemoveTab(tab), split->ChildCount());
   }
@@ -268,8 +269,6 @@ split_tabs::SplitTabId TabStripCollection::CreateSplit(
   // Insert split back into the parent.
   split_mapping_.insert({split_id, split.get()});
   parent_collection->AddCollection(std::move(split), dst_index);
-
-  return split_id;
 }
 
 void TabStripCollection::Unsplit(split_tabs::SplitTabId split_id) {

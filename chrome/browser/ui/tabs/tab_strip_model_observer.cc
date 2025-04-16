@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/tabs/tab_group_tab_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/tabs/public/tab_interface.h"
@@ -266,16 +267,17 @@ void TabStripModelObserver::OnSplitTabCreated(
     std::vector<std::pair<tabs::TabInterface*, int>> tabs,
     split_tabs::SplitTabId split_id,
     TabStripModelObserver::SplitTabAddReason reason,
-    tabs::SplitTabLayout tab_layout) {}
+    split_tabs::SplitTabVisualData visual_data) {}
 
 void TabStripModelObserver::OnSplitTabRemoved(
     std::vector<std::pair<tabs::TabInterface*, int>> tabs,
     split_tabs::SplitTabId split_id,
     TabStripModelObserver::SplitTabRemoveReason reason) {}
 
-void TabStripModelObserver::OnSplitTabOrientationChanged(
+void TabStripModelObserver::OnSplitTabVisualsChanged(
     split_tabs::SplitTabId split_id,
-    tabs::SplitTabLayout tab_layout) {}
+    split_tabs::SplitTabVisualData old_visual_data,
+    split_tabs::SplitTabVisualData new_visual_data) {}
 
 void TabStripModelObserver::OnSplitTabContentsUpdated(
     split_tabs::SplitTabId split_id,

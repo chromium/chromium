@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/split_tab_collection.h"
+#include "chrome/browser/ui/tabs/split_tab_visual_data.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_resize_area.h"
@@ -54,8 +55,8 @@ class MultiContentsViewUiTest : public InteractiveBrowserTest {
         AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUISettingsURL), 0),
         Check([=, this]() { return tab_strip_model()->count() == 2u; }),
         Do([&]() {
-          tab_strip_model()->AddToNewSplit({1},
-                                           tabs::SplitTabLayout::kHorizontal);
+          tab_strip_model()->AddToNewSplit(
+              {1}, split_tabs::SplitTabLayout::kHorizontal);
         }),
         PollView(kResizeLoadObserver,
                  MultiContentsResizeArea::kMultiContentsResizeAreaElementId,
