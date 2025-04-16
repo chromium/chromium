@@ -29,7 +29,7 @@ enum class UpdaterScope;
 
 namespace updater::test {
 
-extern const char kChromeAppId[];
+inline constexpr char kChromeAppId[] = "{8A69D345-D564-463C-AFF1-A69D9E530F96}";
 
 // Returns true if a process based on the named executable and optional filter
 // is running.

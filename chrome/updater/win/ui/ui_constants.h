@@ -33,9 +33,10 @@ inline constexpr int kMsPerSec = 1000;
 inline constexpr int kSecPerMin = 60;
 inline constexpr int kSecondsPerHour = 60 * 60;
 
-extern const wchar_t kLegacyUiDisplayedEventEnvironmentVariableName[];
+inline constexpr wchar_t kLegacyUiDisplayedEventEnvironmentVariableName[] =
+    L"GOOGLE_UPDATE_UI_DISPLAYED_EVENT_NAME";
 
-extern const wchar_t kDialogFont[];
+inline constexpr wchar_t kDialogFont[] = L"Segoe UI";
 
 }  // namespace updater::ui
 

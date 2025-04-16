@@ -19,9 +19,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace updater {
-
-constexpr char kGoogleUpdatePolicyType[] = "google/machine-level-omaha";
-
 namespace {
 
 enterprise_management::PolicyValidationReportRequest::ValidationResultType

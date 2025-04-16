@@ -15,7 +15,11 @@ class CommandLine;
 namespace updater {
 
 // The name of the executable used for tests.
-extern const wchar_t kTestProcessExecutableName[];
+//
+// If you add another test executable here, also add it to the data_deps in
+// the "test_executables" target of updater/win/test/BUILD.gn.
+inline constexpr wchar_t kTestProcessExecutableName[] =
+    L"updater_test_process.exe";
 
 // Creates a process that will run for a minute, which is long enough to be
 // killed by a reasonably fast unit or integration test.

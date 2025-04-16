@@ -55,7 +55,6 @@ source_set("lib") {
     "exit_code.h",
     "installer.cc",
     "installer.h",
-    "installer_constants.cc",
     "installer_constants.h",
     "installer_resource.h",
     "pe_resource.cc",

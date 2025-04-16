@@ -21,10 +21,6 @@
 
 namespace updater {
 
-// If you add another test executable here, also add it to the data_deps in
-// the "test_executables" target of updater/win/test/BUILD.gn.
-const wchar_t kTestProcessExecutableName[] = L"updater_test_process.exe";
-
 base::Process LongRunningProcess(UpdaterScope scope,
                                  const std::string& test_name,
                                  base::CommandLine* cmd) {
