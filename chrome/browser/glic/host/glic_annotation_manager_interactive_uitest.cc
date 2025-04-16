@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
@@ -531,6 +532,92 @@ IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
       WaitUntilGlicFocusedTabIs(kActiveTabId),
       Check([&]() { return fake_service()->HighlightIsActive(); },
             "Agent connection should still be alive."));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       HighlightKeptAfterFocusSwitchesToNewTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(kActiveTabId,
+                          embedded_test_server()->GetURL("/title1.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),  //
+      InsertFakeAnnotationService(),              //
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
+      Do([&]() {
+        fake_service()->NotifyAttachment(
+            gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
+      }),
+      WaitForEvent(kBrowserViewElementId, kScrollStarted),
+      AddInstrumentedTab(kNewTabId, embedded_test_server()->GetURL(
+                                        "/scrollable_page_with_content.html")),
+      WaitUntilGlicFocusedTabIs(kNewTabId),
+      Check([&]() { return fake_service()->HighlightIsActive(); }),
+      SelectTab(kTabStripElementId, 0),  //
+      WaitUntilGlicFocusedTabIs(kActiveTabId),
+      Check([&]() { return fake_service()->HighlightIsActive(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       HighlightDroppedAfterScrollToInNewTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabId);
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(kActiveTabId,
+                          embedded_test_server()->GetURL("/title1.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),  //
+      InsertFakeAnnotationService(),              //
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
+      Do([&]() {
+        fake_service()->NotifyAttachment(
+            gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
+      }),
+      WaitForEvent(kBrowserViewElementId, kScrollStarted),
+      AddInstrumentedTab(kNewTabId, embedded_test_server()->GetURL(
+                                        "/scrollable_page_with_content.html")),
+      WaitUntilGlicFocusedTabIs(kNewTabId),
+      Check([&]() { return fake_service()->HighlightIsActive(); }),
+      ScrollTo(ExactTextSelector("Some text")),
+      Check([&]() { return !fake_service()->HighlightIsActive(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       TwoSuccessfulScrollToCalls) {
+  RunTestSequence(InstrumentTab(kActiveTabId),  //
+                  NavigateWebContents(
+                      kActiveTabId, embedded_test_server()->GetURL(
+                                        "/scrollable_page_with_content.html")),
+                  OpenGlicWindow(GlicWindowMode::kDetached),
+                  ScrollTo(ExactTextSelector("Some text")),
+                  WaitForJsResult(kActiveTabId, "() => did_scroll"),
+                  ExecuteJs(kActiveTabId, "() => { did_scroll = false; }"),
+                  ScrollTo(ExactTextSelector("Go Down")),
+                  WaitForJsResult(kActiveTabId, "() => did_scroll"));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest,
+                       HighlightDroppedAfterPageIsNavigatedFrom) {
+  RunTestSequence(
+      InstrumentTab(kActiveTabId),  //
+      NavigateWebContents(
+          kActiveTabId,
+          embedded_test_server()->GetURL("/scrollable_page_with_content.html")),
+      OpenGlicWindow(GlicWindowMode::kDetached),
+      InsertFakeAnnotationService(),  //
+      ScrollToAsync(ExactTextSelector("does not matter")),
+      WaitForEvent(kBrowserViewElementId, kScrollToRequestReceived),  //
+      Do([&]() {
+        fake_service()->NotifyAttachment(
+            gfx::Rect(20, 20), blink::mojom::AttachmentResult::kSuccess);
+      }),
+      WaitForEvent(kBrowserViewElementId, kScrollStarted),
+      Check([&]() { return fake_service()->HighlightIsActive(); },
+            "Agent connection should still be alive."),
+      NavigateWebContents(kActiveTabId,
+                          embedded_test_server()->GetURL("/title2.html")),
+      Check([&]() { return !fake_service()->HighlightIsActive(); }));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicAnnotationManagerUiTest, WithDocumentId) {
