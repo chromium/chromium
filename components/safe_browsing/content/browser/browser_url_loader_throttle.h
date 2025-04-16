@@ -193,9 +193,6 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
   // Whether real time URL lookup is enabled for the user.
   bool url_real_time_lookup_enabled_;
 
-  // Tracks how many times |WillProcessResponse| is called.
-  int will_process_response_count_ = 0;
-
   // In progress async SB checker will be transferred to this object.
   base::WeakPtr<AsyncCheckTracker> async_check_tracker_;
 
