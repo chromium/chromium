@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
+#include "chrome/browser/android/webapps/twa_launch_queue_tab_helper.h"
+#include "components/webapps/browser/launch_queue/launch_params.h"
+#include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/web_contents.h"
-
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/WebAppLaunchHandler_jni.h"
 
@@ -14,6 +16,15 @@ static void JNI_WebAppLaunchHandler_NotifyLaunchQueue(
     content::WebContents* web_contents,
     bool start_new_navigation,
     std::string& start_url,
-    std::string& package_name) {}
+    std::string& package_name) {
+  webapps::LaunchParams launch_params;
+  launch_params.started_new_navigation = start_new_navigation;
+  launch_params.app_id = package_name;
+  launch_params.target_url = GURL(start_url);
+
+  auto* helper =
+      TwaLaunchQueueTabHelper::GetOrCreateForWebContents(web_contents);
+  helper->EnsureLaunchQueue().Enqueue(launch_params);
+}
 
 }  // namespace webapps
