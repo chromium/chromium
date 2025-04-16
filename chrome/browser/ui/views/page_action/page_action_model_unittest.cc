@@ -83,6 +83,16 @@ TEST_F(PageActionModelTest, ChipVisibility) {
   EXPECT_EQ(model_.GetShowSuggestionChip(), false);
 }
 
+TEST_F(PageActionModelTest, ShouldAnnounceChip) {
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetSuggestionChipConfig(PassKey(), {.should_announce_chip = true});
+  EXPECT_EQ(model_.GetShouldAnnounceChip(), true);
+
+  EXPECT_CALL(observer_, OnPageActionModelChanged).Times(1);
+  model_.SetSuggestionChipConfig(PassKey(), {.should_announce_chip = false});
+  EXPECT_EQ(model_.GetShouldAnnounceChip(), false);
+}
+
 TEST_F(PageActionModelTest, OverrideText) {
   EXPECT_CALL(observer_, OnPageActionModelChanged).Times(2);
 

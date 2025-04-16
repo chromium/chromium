@@ -24,6 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/views_test_utils.h"
 #include "url/gurl.h"
 
@@ -551,6 +552,38 @@ IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
   browser()->tab_strip_model()->ActivateTabAt(0);
   ShowPageAction(kActionShowTranslate);
   histogram_tester.ExpectTotalCount("PageActionController.ActionTypeShown2", 4);
+}
+
+// TODO(crbug.com/411078148): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SuggestionChipWithAnnouncement \
+  DISABLED_SuggestionChipWithAnnouncement
+#else
+#define MAYBE_SuggestionChipWithAnnouncement SuggestionChipWithAnnouncement
+#endif
+// Tests that showing a suggestion chip with announcements enabled will
+// announce the chip on a screen reader.
+IN_PROC_BROWSER_TEST_F(PageActionInteractiveUiTest,
+                       MAYBE_SuggestionChipWithAnnouncement) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  ASSERT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  ShowTranslatePageActionIcon();
+  page_action_controller()->ShowSuggestionChip(
+      kActionShowTranslate, {
+                                .should_animate = false,
+                                .should_announce_chip = false,
+                            });
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  // Reshow the chip with announcements enabled.
+  HideSuggestionChip(kActionShowTranslate);
+  page_action_controller()->ShowSuggestionChip(kActionShowTranslate,
+                                               {
+                                                   .should_animate = false,
+                                                   .should_announce_chip = true,
+                                               });
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
 class PageActionPixelTestBase : public UiBrowserTest,

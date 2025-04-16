@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model_observer.h"
 #include "ui/actions/actions.h"
 
@@ -39,12 +40,15 @@ void PageActionModel::SetShowSuggestionChip(base::PassKey<PageActionController>,
   NotifyChange();
 }
 
-void PageActionModel::SetShouldAnimateChip(base::PassKey<PageActionController>,
-                                           bool animate) {
-  if (should_animate_ == animate) {
+void PageActionModel::SetSuggestionChipConfig(
+    base::PassKey<PageActionController>,
+    const SuggestionChipConfig& config) {
+  if (should_animate_ == config.should_animate &&
+      should_announce_chip_ == config.should_announce_chip) {
     return;
   }
-  should_animate_ = animate;
+  should_animate_ = config.should_animate;
+  should_announce_chip_ = config.should_announce_chip;
   NotifyChange();
 }
 
@@ -116,6 +120,10 @@ bool PageActionModel::GetShowSuggestionChip() const {
 
 bool PageActionModel::GetShouldAnimateChip() const {
   return should_animate_;
+}
+
+bool PageActionModel::GetShouldAnnounceChip() const {
+  return should_announce_chip_;
 }
 
 const ui::ImageModel& PageActionModel::GetImage() const {

@@ -43,7 +43,17 @@ class PageActionMetricsRecorderInterface;
 struct SuggestionChipConfig {
   // Whether the chip should have expand/collapse animations.
   bool should_animate = true;
+
+  // Whether the chip should be announced by a screen reader.
+  // TODO(crbug.com/410844651): Consider making this standard behaviour for all
+  // page actions.
+  bool should_announce_chip = false;
+
+  // Used in tests.
+  auto operator<=>(const SuggestionChipConfig& other) const = default;
 };
+
+std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config);
 
 // `PageActionController` controls the state of all page actions, scoped to a
 // single tab. Each page action has a corresponding `PageActionModel` that will

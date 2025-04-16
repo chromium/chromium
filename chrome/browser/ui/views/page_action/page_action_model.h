@@ -20,6 +20,7 @@ class ActionItem;
 
 namespace page_actions {
 
+struct SuggestionChipConfig;
 class PageActionController;
 class PageActionModelObserver;
 
@@ -40,9 +41,8 @@ class PageActionModelInterface {
                                 bool requested) = 0;
   virtual void SetShowSuggestionChip(base::PassKey<PageActionController>,
                                      bool show) = 0;
-  // Indicates whether suggestion chips should animate in/out.
-  virtual void SetShouldAnimateChip(base::PassKey<PageActionController>,
-                                    bool animate) = 0;
+  virtual void SetSuggestionChipConfig(base::PassKey<PageActionController>,
+                                       const SuggestionChipConfig& config) = 0;
   virtual void SetTabActive(base::PassKey<PageActionController>,
                             bool is_active) = 0;
   virtual void SetHasPinnedIcon(base::PassKey<PageActionController>,
@@ -65,6 +65,7 @@ class PageActionModelInterface {
   virtual bool GetVisible() const = 0;
   virtual bool GetShowSuggestionChip() const = 0;
   virtual bool GetShouldAnimateChip() const = 0;
+  virtual bool GetShouldAnnounceChip() const = 0;
   virtual const ui::ImageModel& GetImage() const = 0;
   virtual const std::u16string& GetText() const = 0;
   virtual const std::u16string& GetTooltipText() const = 0;
@@ -91,8 +92,8 @@ class PageActionModel : public PageActionModelInterface {
                         bool requested) override;
   void SetShowSuggestionChip(base::PassKey<PageActionController>,
                              bool show) override;
-  void SetShouldAnimateChip(base::PassKey<PageActionController>,
-                            bool animate) override;
+  void SetSuggestionChipConfig(base::PassKey<PageActionController>,
+                               const SuggestionChipConfig& config) override;
   void SetTabActive(base::PassKey<PageActionController>,
                     bool is_active) override;
   void SetHasPinnedIcon(base::PassKey<PageActionController>,
@@ -121,6 +122,7 @@ class PageActionModel : public PageActionModelInterface {
   bool GetVisible() const override;
   bool GetShowSuggestionChip() const override;
   bool GetShouldAnimateChip() const override;
+  bool GetShouldAnnounceChip() const override;
 
   const ui::ImageModel& GetImage() const override;
   const std::u16string& GetText() const override;
@@ -148,6 +150,10 @@ class PageActionModel : public PageActionModelInterface {
 
   // Represents whether suggestion chips should animate in/out.
   bool should_animate_ = true;
+
+  // Represents whether suggestion chips should be announced by a screen
+  // reader.
+  bool should_announce_chip_ = false;
 
   // Properties taken from ActionItem.
   bool action_item_enabled_ = false;

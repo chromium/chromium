@@ -42,6 +42,7 @@
 #include "ui/views/background.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view_class_properties.h"
 
 namespace page_actions {
@@ -409,6 +410,41 @@ TEST_F(PageActionViewTest, UpdateIconImageHandlesDifferentImageTypes) {
   EXPECT_FALSE(page_action_view()
                    ->GetImageModel(views::Button::STATE_NORMAL)
                    ->IsVectorIcon());
+}
+
+// TODO(crbug.com/411078148): Re-enable on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ChipAnnouncements DISABLED_ChipAnnouncements
+#else
+#define MAYBE_ChipAnnouncements ChipAnnouncements
+#endif
+TEST_F(PageActionViewTest, MAYBE_ChipAnnouncements) {
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+  ASSERT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  // Initialize the page action so that the chip is showing, but announcements
+  // are disabled.
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetShouldAnnounceChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  // Enabling the announcements now shouldn't trigger anything, since the chip
+  // is already showing.
+  EXPECT_CALL(*model(), GetShouldAnnounceChip()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  // Hide the suggestion chip, then re-show it. This should trigger an
+  // announcement.
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
+
+  EXPECT_CALL(*model(), GetShowSuggestionChip()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
 class PageActionViewTriggerTest : public PageActionViewTest {

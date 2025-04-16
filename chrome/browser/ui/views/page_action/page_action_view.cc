@@ -19,6 +19,7 @@
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/view_class_properties.h"
 
@@ -89,6 +90,7 @@ void PageActionView::OnPageActionModelChanged(
   SetTooltipText(model.GetTooltipText());
   UpdateIconImage();
 
+  const bool was_chip_visible = IsChipVisible();
   if (!model.GetVisible()) {
     ResetSlideAnimation(/*show=*/false);
   } else if (!model.GetShouldAnimateChip()) {
@@ -97,6 +99,12 @@ void PageActionView::OnPageActionModelChanged(
     AnimateIn(/*string_id=*/std::nullopt);
   } else {
     AnimateOut();
+  }
+
+  // Announce the chip only if announcements are enabled and the chip was
+  // newly shown.
+  if (model.GetShouldAnnounceChip() && !was_chip_visible && IsChipVisible()) {
+    GetViewAccessibility().AnnounceAlert(label()->GetText());
   }
 }
 

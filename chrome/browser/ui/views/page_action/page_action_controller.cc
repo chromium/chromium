@@ -75,7 +75,7 @@ void PageActionController::Hide(actions::ActionId action_id) {
 void PageActionController::ShowSuggestionChip(actions::ActionId action_id,
                                               SuggestionChipConfig config) {
   PageActionModelInterface& model = FindPageActionModel(action_id);
-  model.SetShouldAnimateChip(PassKey(), config.should_animate);
+  model.SetSuggestionChipConfig(PassKey(), config);
   model.SetShowSuggestionChip(PassKey(), /*show=*/true);
 }
 
@@ -217,6 +217,12 @@ PageActionController::CreateMetricsRecorder(
     return std::make_unique<PageActionMetricsRecorder>(tab_interface,
                                                        properties, model);
   }
+}
+
+std::ostream& operator<<(std::ostream& os, const SuggestionChipConfig& config) {
+  os << "{ should_animate: " << config.should_animate
+     << ", should_announce_chip: " << config.should_announce_chip << " }";
+  return os;
 }
 
 }  // namespace page_actions

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/views/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/action_id.h"
@@ -21,6 +22,7 @@ class MockPageActionModel : public PageActionModelInterface {
   MOCK_METHOD(bool, GetVisible, (), (const, override));
   MOCK_METHOD(bool, GetShowSuggestionChip, (), (const, override));
   MOCK_METHOD(bool, GetShouldAnimateChip, (), (const, override));
+  MOCK_METHOD(bool, GetShouldAnnounceChip, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetText, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetAccessibleName, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetTooltipText, (), (const, override));
@@ -48,8 +50,9 @@ class MockPageActionModel : public PageActionModelInterface {
               (base::PassKey<PageActionController>, bool show),
               (override));
   MOCK_METHOD(void,
-              SetShouldAnimateChip,
-              (base::PassKey<PageActionController>, bool animate),
+              SetSuggestionChipConfig,
+              (base::PassKey<PageActionController>,
+               const SuggestionChipConfig& config),
               (override));
   MOCK_METHOD(void,
               SetHasPinnedIcon,
