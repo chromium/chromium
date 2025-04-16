@@ -12623,6 +12623,7 @@ from previous Chrome versions.
   <int value="-643702496"
       label="AccessibilityUnserializeOptimizations:enabled"/>
   <int value="-643217597" label="EduCoexistenceConsentLog:enabled"/>
+  <int value="-643187834" label="OmniboxContextualSearchActionsAtTop:disabled"/>
   <int value="-643105409" label="PickerGifs:enabled"/>
   <int value="-642346675" label="DesktopPWAsAttentionBadgingCrOS:enabled"/>
   <int value="-641846393" label="WebViewLegacyTlsSupport:enabled"/>
@@ -13487,6 +13488,7 @@ from previous Chrome versions.
   <int value="-304777110" label="PreconnectToSearch:disabled"/>
   <int value="-304594674" label="FedCmSelectiveDisclosure:enabled"/>
   <int value="-304502255" label="DiscardRingImprovements:enabled"/>
+  <int value="-304329578" label="OmniboxContextualSearchActionsAtTop:enabled"/>
   <int value="-303992327" label="SwipeToMoveCursor:disabled"/>
   <int value="-303540818" label="FeedFollowUiUpdate:enabled"/>
   <int value="-303467388" label="ShimlessRMAEnableStandalone:enabled"/>
@@ -13503,6 +13505,8 @@ from previous Chrome versions.
   <int value="-300018686" label="disable-cloud-import"/>
   <int value="-299841473" label="top-document-isolation:enabled"/>
   <int value="-299116652" label="CCTResizable90MaximumHeight:enabled"/>
+  <int value="-298647219"
+      label="OmniboxContextualSearchOnFocusSuggestions:enabled"/>
   <int value="-298629214"
       label="AutofillParseMerchantPromoCodeFields:disabled"/>
   <int value="-298458993" label="SystemNotifications:enabled"/>
@@ -19381,6 +19385,8 @@ from previous Chrome versions.
   <int value="1933612277" label="EnablePortBoundCookies:disabled"/>
   <int value="1934470615" label="AppIconInIntentChip:disabled"/>
   <int value="1935405622" label="AppServiceInstanceRegistry:disabled"/>
+  <int value="1935448090"
+      label="OmniboxContextualSearchOnFocusSuggestions:disabled"/>
   <int value="1935968341" label="(Obsolete) LacrosExtensionPrinting:enabled"/>
   <int value="1936099143" label="RemotePlaybackBackend:enabled"/>
   <int value="1936308950" label="ExoConsumedByImeByFlag:disabled"/>

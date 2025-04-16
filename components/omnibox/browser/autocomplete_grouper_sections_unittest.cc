@@ -1802,7 +1802,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsSectionWithUrls) {
         std::make_unique<DesktopWebURLZpsSection>(group_configs, 4u));
     // Max 4 search suggestions.
     sections.push_back(
-        std::make_unique<DesktopWebSearchZpsSection>(group_configs, 4u));
+        std::make_unique<DesktopWebSearchZpsSection>(group_configs, 4u, 4u));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
     VerifyMatches(out_matches, expected_relevances);
   };
@@ -1860,7 +1860,7 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsWithActionsSection) {
         std::make_unique<DesktopWebURLZpsSection>(group_configs, 3u));
     // Max 3 suggestions, with an upper limit of 3 search suggestions.
     sections.push_back(
-        std::make_unique<DesktopWebSearchZpsSection>(group_configs, 3u));
+        std::make_unique<DesktopWebSearchZpsSection>(group_configs, 3u, 3u));
     sections.push_back(
         std::make_unique<DesktopWebZpsActionsSection>(group_configs));
     auto out_matches = Section::GroupMatches(std::move(sections), matches);
@@ -1889,6 +1889,37 @@ TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsWithActionsSection) {
         },
         // 3 URLs, 1 other search, 2 contextual searches, and 2 actions.
         {100, 99, 98, 94, 200, 199, 300, 299});
+  }
+}
+
+TEST(AutocompleteGrouperSectionsTest, DesktopWebZpsNoContextualSuggestions) {
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    sections.push_back(
+        std::make_unique<DesktopWebURLZpsSection>(group_configs, 3u));
+    sections.push_back(std::make_unique<DesktopWebSearchZpsSection>(
+        group_configs, /*limit=*/3u, /*contextual_search_limit=*/0u));
+    sections.push_back(
+        std::make_unique<DesktopWebZpsActionsSection>(group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+  {
+    SCOPED_TRACE("ZPS contextual search matches limit 0");
+    test(
+        {
+            CreateMatch(99, omnibox::GROUP_MOST_VISITED),
+            CreateMatch(98, omnibox::GROUP_VISITED_DOC_RELATED),
+            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+            CreateMatch(96, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
+            CreateMatch(95, omnibox::GROUP_CONTEXTUAL_SEARCH),
+            CreateMatch(94, omnibox::GROUP_ZERO_SUGGEST_IN_PRODUCT_HELP),
+            CreateMatch(93, omnibox::GROUP_CONTEXTUAL_SEARCH),
+        },
+        // URLs, then searches, then actions, stable sorted.
+        // No contextual search matches due to above configuration.
+        {99, 98, 97, 96, 94});
   }
 }
 #endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))

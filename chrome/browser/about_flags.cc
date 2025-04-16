@@ -1451,6 +1451,40 @@ const FeatureEntry::FeatureVariation kOmniboxUrlSuggestionsOnFocusVariations[] =
          std::size(kOmniboxUrlSuggestionsOnFocusMax4), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kOmniboxContextualSearchOnFocusSuggestionsLimit0[] = {
+        {"Limit", "0"},
+};
+const FeatureEntry::FeatureParam
+    kOmniboxContextualSearchOnFocusSuggestionsLimit1[] = {
+        {"Limit", "1"},
+};
+const FeatureEntry::FeatureParam
+    kOmniboxContextualSearchOnFocusSuggestionsLimit2[] = {
+        {"Limit", "2"},
+};
+const FeatureEntry::FeatureParam
+    kOmniboxContextualSearchOnFocusSuggestionsLimit3[] = {
+        {"Limit", "3"},
+};
+const FeatureEntry::FeatureParam
+    kOmniboxContextualSearchOnFocusSuggestionsLimit4[] = {
+        {"Limit", "4"},
+};
+const FeatureEntry::FeatureVariation
+    kOmniboxContextualSearchOnFocusSuggestionsVariations[] = {
+        {"- Limit 0", kOmniboxContextualSearchOnFocusSuggestionsLimit0,
+         std::size(kOmniboxContextualSearchOnFocusSuggestionsLimit0), nullptr},
+        {"- Limit 1", kOmniboxContextualSearchOnFocusSuggestionsLimit1,
+         std::size(kOmniboxContextualSearchOnFocusSuggestionsLimit1), nullptr},
+        {"- Limit 2", kOmniboxContextualSearchOnFocusSuggestionsLimit2,
+         std::size(kOmniboxContextualSearchOnFocusSuggestionsLimit2), nullptr},
+        {"- Limit 3", kOmniboxContextualSearchOnFocusSuggestionsLimit3,
+         std::size(kOmniboxContextualSearchOnFocusSuggestionsLimit3), nullptr},
+        {"- Limit 4", kOmniboxContextualSearchOnFocusSuggestionsLimit4,
+         std::size(kOmniboxContextualSearchOnFocusSuggestionsLimit4), nullptr},
+};
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
@@ -6494,6 +6528,23 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
+    {"omnibox-contextual-search-actions-at-top",
+     flag_descriptions::kOmniboxContextualSearchActionsAtTopName,
+     flag_descriptions::kOmniboxContextualSearchActionsAtTopDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox_feature_configs::ContextualSearch::
+                            kOmniboxContextualSearchActionsAtTop)},
+
+    {"omnibox-contextual-search-on-focus-suggestions",
+     flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsName,
+     flag_descriptions::kOmniboxContextualSearchOnFocusSuggestionsDescription,
+     kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox_feature_configs::ContextualSearch::
+             kOmniboxContextualSearchOnFocusSuggestions,
+         kOmniboxContextualSearchOnFocusSuggestionsVariations,
+         "OmniboxContextualSearchOnFocusSuggestions")},
+
     {"omnibox-contextual-suggestions",
      flag_descriptions::kOmniboxContextualSuggestionsName,
      flag_descriptions::kOmniboxContextualSuggestionsDescription, kOsDesktop,

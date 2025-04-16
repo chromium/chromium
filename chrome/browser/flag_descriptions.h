@@ -1658,6 +1658,12 @@ extern const char kOmniboxStarterPackIPHDescription[];
 extern const char kOmniboxSearchAggregatorName[];
 extern const char kOmniboxSearchAggregatorDescription[];
 
+extern const char kOmniboxContextualSearchActionsAtTopName[];
+extern const char kOmniboxContextualSearchActionsAtTopDescription[];
+
+extern const char kOmniboxContextualSearchOnFocusSuggestionsName[];
+extern const char kOmniboxContextualSearchOnFocusSuggestionsDescription[];
+
 extern const char kOmniboxContextualSuggestionsName[];
 extern const char kOmniboxContextualSuggestionsDescription[];
 

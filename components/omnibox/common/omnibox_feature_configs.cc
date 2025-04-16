@@ -68,36 +68,40 @@ BASE_FEATURE(ContextualSearch::kSendContextualUrlSuggestParam,
              "SendContextualUrlSuggestParam",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchOnFocusSuggestions,
+             "OmniboxContextualSearchOnFocusSuggestions",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(ContextualSearch::kOmniboxContextualSearchActionsAtTop,
+             "OmniboxContextualSearchActionsAtTop",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ContextualSearch::ContextualSearch() {
   // Meta-feature turns on/off other features, but only if it's overridden by
   // the user. If not then each feature is controlled separately.
   const std::optional<bool> meta_state =
       base::FeatureList::GetStateIfOverridden(kOmniboxContextualSuggestions);
-  const bool meta_enabled = meta_state.value_or(false);
+  const auto feature_enabled = [&](const base::Feature& feature) {
+    return meta_state.value_or(base::FeatureList::IsEnabled(feature));
+  };
 
-  starter_pack_page =
-      meta_enabled || base::FeatureList::IsEnabled(kStarterPackPage);
+  starter_pack_page = feature_enabled(kStarterPackPage);
   contextual_zero_suggest_lens_fulfillment =
-      meta_enabled ||
-      base::FeatureList::IsEnabled(kContextualZeroSuggestLensFulfillment);
+      feature_enabled(kContextualZeroSuggestLensFulfillment);
   csp_async_suggest_inputs =
-      meta_enabled ||
-      base::FeatureList::IsEnabled(kContextualSearchProviderAsyncSuggestInputs);
+      feature_enabled(kContextualSearchProviderAsyncSuggestInputs);
   // This could be taken from a feature param if needed, but currently it's
   // simply one or none.
   contextual_url_suggest_param =
-      (meta_enabled ||
-       base::FeatureList::IsEnabled(kSendContextualUrlSuggestParam))
-          ? "1"
-          : "";
-
-  if (meta_state.has_value() && !meta_state.value()) {
-    // Turn things off that might have been turned on by group membership, etc.
-    starter_pack_page = false;
-    contextual_zero_suggest_lens_fulfillment = false;
-    csp_async_suggest_inputs = false;
-    contextual_url_suggest_param.clear();
-  }
+      feature_enabled(kSendContextualUrlSuggestParam) ? "1" : "";
+  contextual_zps_limit =
+      feature_enabled(kOmniboxContextualSearchOnFocusSuggestions)
+          ? base::FeatureParam<int>(&kOmniboxContextualSearchOnFocusSuggestions,
+                                    "Limit", 3)
+                .Get()
+          : 0;
+  actions_at_top =
+      base::FeatureList::IsEnabled(kOmniboxContextualSearchActionsAtTop);
 }
 
 DocumentProvider::DocumentProvider() {

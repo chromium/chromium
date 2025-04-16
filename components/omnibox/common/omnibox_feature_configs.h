@@ -127,6 +127,8 @@ struct ContextualSearch : Config<ContextualSearch> {
   DECLARE_FEATURE(kContextualZeroSuggestLensFulfillment);
   DECLARE_FEATURE(kContextualSearchProviderAsyncSuggestInputs);
   DECLARE_FEATURE(kSendContextualUrlSuggestParam);
+  DECLARE_FEATURE(kOmniboxContextualSearchOnFocusSuggestions);
+  DECLARE_FEATURE(kOmniboxContextualSearchActionsAtTop);
 
   // Whether the starter pack page scope is enabled.
   bool starter_pack_page;
@@ -141,6 +143,12 @@ struct ContextualSearch : Config<ContextualSearch> {
   // This specifies the value for "ctxus" param on zero suggest requests,
   // and is left empty when that parameter is not to be included.
   std::string contextual_url_suggest_param;
+
+  // Maximum number of contextual search suggestions for zero prefix suggest.
+  size_t contextual_zps_limit;
+
+  // Whether to show actions at top of zero suggest list: default false, bottom.
+  bool actions_at_top;
 };
 
 // If enabled, allow document provider requests when all other conditions are
