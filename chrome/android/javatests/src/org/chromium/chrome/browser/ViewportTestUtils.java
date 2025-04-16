@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.fullscreen.FullscreenManagerTestUtils;
 import org.chromium.chrome.browser.tab.TabStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.test.transit.BaseCtaTransitTestRule;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -28,11 +28,11 @@ public final class ViewportTestUtils {
 
     private boolean mSetupCalled;
 
-    private final BaseCtaTransitTestRule mActivityTestRule;
+    private final ChromeTabbedActivityTestRule mActivityTestRule;
 
     private static final int TEST_TIMEOUT = 10000;
 
-    public ViewportTestUtils(BaseCtaTransitTestRule rule) {
+    public ViewportTestUtils(ChromeTabbedActivityTestRule rule) {
         mActivityTestRule = rule;
     }
 
@@ -56,7 +56,7 @@ public final class ViewportTestUtils {
         int expectedOffset = shown ? 0 : -topControlsHeight;
 
         FullscreenManagerTestUtils.waitForBrowserControlsPosition(
-                mActivityTestRule.getActivityTestRule(), expectedOffset);
+                mActivityTestRule, expectedOffset);
     }
 
     public void hideBrowserControls() throws Throwable {
@@ -73,7 +73,7 @@ public final class ViewportTestUtils {
         int initialPageHeight = getPageInnerHeightPx();
         int initialBottomInset = getBottomInsetHeightDp();
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(
-                mActivityTestRule.getActivityTestRule(),
+                mActivityTestRule,
                 mActivityTestRule.getActivity().getActivityTab(),
                 /* showControls= */ false);
 

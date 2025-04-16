@@ -31,8 +31,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
@@ -55,8 +54,7 @@ import org.chromium.ui.base.LocalizationUtils;
 @Batch(Batch.PER_CLASS)
 public class RtlGestureNavIphTest {
     @Rule
-    public FreshCtaTransitTestRule mActivityTestRule =
-            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private EmbeddedTestServer mTestServer;
     private static final String TEST_PAGE = "/chrome/test/data/android/test.html";
@@ -137,9 +135,11 @@ public class RtlGestureNavIphTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mTestServer = mActivityTestRule.getTestServer();
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        InstrumentationRegistry.getInstrumentation().getContext());
         LocalizationUtils.setRtlForTesting(true);
-        mActivityTestRule.startOnTestServerUrl(TEST_PAGE);
+        mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(TEST_PAGE));
 
         CompositorAnimationHandler.setTestingMode(true);
         TrackerFactory.setTrackerForTests(new TestTracker());
