@@ -1343,8 +1343,10 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
         ->set_network_result(response_code.value());
   }
 
-  if (base::FeatureList::IsEnabled(
-          kClientSideDetectionBrandAndIntentForScamDetection) &&
+  if ((base::FeatureList::IsEnabled(
+           kClientSideDetectionBrandAndIntentForScamDetection) ||
+       base::FeatureList::IsEnabled(
+           kClientSideDetectionLlamaForcedTriggerInfoForScamDetection)) &&
       IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) &&
       intelligent_scan_verdict.has_value()) {
     base::UmaHistogramExactLinear("SBClientPhishing.IntelligentScanVerdict",

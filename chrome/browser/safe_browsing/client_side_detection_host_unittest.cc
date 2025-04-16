@@ -3028,8 +3028,7 @@ TEST_F(
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
-               kClientSideDetectionSendLlamaForcedTriggerInfo,
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
                kClientSideDetectionShowLlamaScamVerdictWarning},
               {});
@@ -3078,8 +3077,7 @@ TEST_F(
     GTEST_SKIP();
   }
 
-  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
-               kClientSideDetectionSendLlamaForcedTriggerInfo,
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
                kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
               {kClientSideDetectionShowLlamaScamVerdictWarning});
 
