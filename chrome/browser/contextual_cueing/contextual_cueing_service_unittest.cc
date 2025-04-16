@@ -8,8 +8,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_features.h"
-#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/common/buildflags.h"
@@ -27,11 +25,6 @@
 #endif
 
 namespace contextual_cueing {
-
-using ::testing::_;
-using ::testing::An;
-using ::testing::ElementsAre;
-using ::testing::WithArgs;
 
 namespace {
 
@@ -52,33 +45,19 @@ class ContextualCueingServiceTest : public testing::Test {
            {"NudgeCapTime", "24h"},
            {"NudgeCapCount", "3"},
            {"MinPageCountBetweenNudges", "0"}}}},
-        {contextual_cueing::kGlicZeroStateSuggestions});
+        /*disabled_features=*/{});
   }
 
   void SetUp() override {
     InitializeFeatureList();
-    mock_optimization_guide_keyed_service_ =
-        std::make_unique<MockOptimizationGuideKeyedService>();
     service_ = std::make_unique<ContextualCueingService>(
         &page_content_extraction_service_,
-        mock_optimization_guide_keyed_service_.get(),
-        /*loading_predictor=*/nullptr,
-        /*pref_service=*/nullptr);
-  }
-
-  void InitializeContextualCueingService() {
-    service_ = std::make_unique<ContextualCueingService>(
-        &page_content_extraction_service_,
-        mock_optimization_guide_keyed_service_.get(),
+        /*optimization_guide_keyed_service=*/nullptr,
         /*loading_predictor=*/nullptr,
         /*pref_service=*/nullptr);
   }
 
   ContextualCueingService* service() { return service_.get(); }
-
-  MockOptimizationGuideKeyedService* mock_optimization_guide_keyed_service() {
-    return mock_optimization_guide_keyed_service_.get();
-  }
 
   void FastForwardBy(base::TimeDelta time_delta) {
     task_environment_.FastForwardBy(time_delta);
@@ -92,8 +71,6 @@ class ContextualCueingServiceTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   page_content_annotations::PageContentExtractionService
       page_content_extraction_service_;
-  std::unique_ptr<MockOptimizationGuideKeyedService>
-      mock_optimization_guide_keyed_service_;
   std::unique_ptr<ContextualCueingService> service_;
 };
 
@@ -111,7 +88,6 @@ class ContextualCueingServiceTestCapCountAndMinPageCount
 // to show the next nudge. Does not test the backoff logic.
 TEST_F(ContextualCueingServiceTestCapCountAndMinPageCount,
        AllowsNudgeCapCountAndMinPageCountBetweenNudges) {
-  InitializeContextualCueingService();
   service()->ReportPageLoad();
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
   service()->CueingNudgeShown(GURL(kFooURL));
@@ -162,20 +138,10 @@ TEST_F(ContextualCueingServiceTestCapCountAndMinPageCount,
 }
 
 TEST_F(ContextualCueingServiceTest, AllowsNudge) {
-  InitializeContextualCueingService();
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
 }
 
-TEST_F(ContextualCueingServiceTest, DoesNotRegisterOptimizationType) {
-  EXPECT_CALL(*mock_optimization_guide_keyed_service(),
-              RegisterOptimizationTypes(ElementsAre(
-                  optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS)))
-      .Times(0);
-  InitializeContextualCueingService();
-}
-
 TEST_F(ContextualCueingServiceTest, NudgesCappedByBackoffRule) {
-  InitializeContextualCueingService();
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
 
   service()->CueingNudgeShown(GURL(kFooURL));
@@ -205,7 +171,6 @@ TEST_F(ContextualCueingServiceTest, NudgesCappedByBackoffRule) {
 }
 
 TEST_F(ContextualCueingServiceTest, BackoffCountResetAfterClick) {
-  InitializeContextualCueingService();
   service()->CueingNudgeShown(GURL(kFooURL));
   service()->CueingNudgeDismissed();  // Backoff time is 24 hours.
   FastForwardBy(base::Hours(25));
@@ -229,7 +194,6 @@ TEST_F(ContextualCueingServiceTest, BackoffCountResetAfterClick) {
 }
 
 TEST_F(ContextualCueingServiceTest, NudgesCappedByFrequency) {
-  InitializeContextualCueingService();
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
   service()->CueingNudgeShown(GURL(kFooURL));
   FastForwardBy(base::Hours(1));
@@ -265,7 +229,6 @@ class ContextualCueingServiceTestMinPageCountBetweenNudges
 
 TEST_F(ContextualCueingServiceTestMinPageCountBetweenNudges,
        MinPageCountBetweenNudges) {
-  InitializeContextualCueingService();
   service()->ReportPageLoad();
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
   service()->CueingNudgeShown(GURL(kFooURL));
@@ -303,7 +266,6 @@ class ContextualCueingServiceTestPerDomainLimits
 };
 
 TEST_F(ContextualCueingServiceTestPerDomainLimits, PerDomainLimits) {
-  InitializeContextualCueingService();
   service()->ReportPageLoad();
   EXPECT_EQ(service()->CanShowNudge(GURL(kFooURL)), NudgeDecision::kSuccess);
   service()->CueingNudgeShown(GURL(kFooURL));
@@ -359,21 +321,16 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
         "https://mes.com/");
 
     web_contents_factory_ = std::make_unique<content::TestWebContentsFactory>();
-    mock_optimization_guide_keyed_service_ = static_cast<
-        testing::NiceMock<MockOptimizationGuideKeyedService>*>(
-        OptimizationGuideKeyedServiceFactory::GetInstance()
-            ->SetTestingFactoryAndUse(
-                &profile_,
-                base::BindRepeating([](content::BrowserContext* context)
-                                        -> std::unique_ptr<KeyedService> {
-                  return std::make_unique<MockOptimizationGuideKeyedService>();
-                })));
 
     loading_predictor_ =
         std::make_unique<testing::NiceMock<MockLoadingPredictor>>(&profile_);
 
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     glic::prefs::RegisterProfilePrefs(pref_service_->registry());
+    service_ = std::make_unique<ContextualCueingService>(
+        /*page_content_extraction_service=*/nullptr,
+        /*optimization_guide_keyed_service=*/nullptr, loading_predictor_.get(),
+        pref_service_.get());
   }
 
   void TearDown() override {
@@ -384,21 +341,9 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
     pref_service_->SetBoolean(glic::prefs::kGlicTabContextEnabled, enabled);
   }
 
-  void InitializeContextualCueingService() {
-    service_ = std::make_unique<ContextualCueingService>(
-        /*page_content_extraction_service=*/nullptr,
-        mock_optimization_guide_keyed_service_, loading_predictor_.get(),
-        pref_service_.get());
-  }
-
   ContextualCueingService* service() { return service_.get(); }
 
   MockLoadingPredictor* loading_predictor() { return loading_predictor_.get(); }
-
-  testing::NiceMock<MockOptimizationGuideKeyedService>*
-  mock_optimization_guide_keyed_service() {
-    return mock_optimization_guide_keyed_service_;
-  }
 
   content::WebContents* CreateWebContents() {
     return web_contents_factory_->CreateWebContents(&profile_);
@@ -408,8 +353,6 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile profile_;
-  raw_ptr<testing::NiceMock<MockOptimizationGuideKeyedService>>
-      mock_optimization_guide_keyed_service_;
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
   std::unique_ptr<testing::NiceMock<MockLoadingPredictor>> loading_predictor_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
@@ -420,9 +363,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        PreconnectsWithContextEnabled) {
   EXPECT_CALL(*loading_predictor(),
               PreconnectURLIfAllowed(GURL("https://mes.com/"), _, _, _, _));
-  SetGlicTabContextEnabled(true);
-  InitializeContextualCueingService();
 
+  SetGlicTabContextEnabled(true);
   service()->PrepareToFetchContextualGlicZeroStateSuggestions(
       CreateWebContents());
 }
@@ -430,9 +372,8 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        NoPreconnectWhenContextDisabled) {
   EXPECT_CALL(*loading_predictor(), PreconnectURLIfAllowed).Times(0);
-  SetGlicTabContextEnabled(false);
-  InitializeContextualCueingService();
 
+  SetGlicTabContextEnabled(false);
   service()->PrepareToFetchContextualGlicZeroStateSuggestions(
       CreateWebContents());
 }
@@ -441,11 +382,6 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        InitializesPageDataWithContextEnabled) {
   base::HistogramTester histogram_tester;
   SetGlicTabContextEnabled(true);
-  EXPECT_CALL(*mock_optimization_guide_keyed_service(),
-              RegisterOptimizationTypes(ElementsAre(
-                  optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS)))
-      .Times(1);
-  InitializeContextualCueingService();
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
   content::WebContents* web_contents = CreateWebContents();
@@ -463,7 +399,6 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        DoesNotInitializePageDataWithContextDisabled) {
   base::HistogramTester histogram_tester;
   SetGlicTabContextEnabled(false);
-  InitializeContextualCueingService();
 
   base::test::TestFuture<std::optional<std::vector<std::string>>> future;
   content::WebContents* web_contents = CreateWebContents();
