@@ -77,7 +77,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Vulkan.CompileShaderToSPIRV"/>
   <variant name="Vulkan.CreateComputePipelines"/>
   <variant name="Vulkan.CreateGraphicsPipelines"/>
-  <variant name="Vulkan.CreateShaderModule"/>
 </variants>
 
 <variants name="WebGPUModule">
@@ -91,6 +90,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ProgramToIR"/>
   <variant name="SingleEntryPoint"/>
   <variant name="SubstituteOverrides"/>
+  <variant name="Vulkan.CreateShaderModule"/>
 </variants>
 
 <histogram name="ConfigureDisplays.External.Modeset.AttemptSucceeded"
