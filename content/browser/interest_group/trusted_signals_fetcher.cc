@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <bit>
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -70,13 +71,18 @@ constexpr size_t kCompressionFormatSize = 1;  // bytes
 constexpr size_t kCborStringLengthSize = 4;   // bytes
 constexpr size_t kOhttpHeaderSize = 55;       // bytes
 
+struct IsolationIndex {
+  int compression_group_id;
+  int partition_id;
+};
+
 // Creates a single entry for the "arguments" array of a partition, with a
 // single tag and an array of values.
 cbor::Value MakeArgument(std::string_view tag, cbor::Value::ArrayValue data) {
   cbor::Value::MapValue argument;
 
   cbor::Value::ArrayValue tags;
-  tags.emplace_back(cbor::Value(tag));
+  tags.emplace_back(tag);
   argument.try_emplace(cbor::Value("tags"), cbor::Value(std::move(tags)));
   argument.try_emplace(cbor::Value("data"), std::move(data));
 
@@ -98,7 +104,7 @@ cbor::Value MakeArgument(std::string_view tag,
                          const std::set<std::string>& data) {
   cbor::Value::ArrayValue cbor_data;
   for (const auto& element : data) {
-    cbor_data.emplace_back(cbor::Value(element));
+    cbor_data.emplace_back(element);
   }
   return MakeArgument(tag, std::move(cbor_data));
 }
@@ -176,7 +182,7 @@ cbor::Value::MapValue BuildMapForPartition(
     cbor::Value::ArrayValue component_urls;
     for (const GURL& component_render_urls :
          *scoring_partition.component_render_urls) {
-      component_urls.emplace_back(cbor::Value(component_render_urls.spec()));
+      component_urls.emplace_back(component_render_urls.spec());
     }
     arguments.emplace_back(
         MakeArgument("adComponentRenderURLs", std::move(component_urls)));
@@ -186,6 +192,79 @@ cbor::Value::MapValue BuildMapForPartition(
                                  cbor::Value(std::move(arguments)));
 
   return partition_cbor_map;
+}
+
+// BiddingPartition overload of CollectContextualData().
+void CollectContextualData(
+    int compression_group_id,
+    const TrustedSignalsFetcher::BiddingPartition& bidding_partition,
+    std::map<std::string, std::vector<IsolationIndex>>&
+        contextual_data_ids_map) {
+  if (bidding_partition.buyer_tkv_signals != nullptr) {
+    contextual_data_ids_map[*bidding_partition.buyer_tkv_signals].emplace_back(
+        compression_group_id, bidding_partition.partition_id);
+  }
+}
+
+// ScoringPartition overload of CollectContextualData().
+void CollectContextualData(
+    int compression_group_id,
+    const TrustedSignalsFetcher::ScoringPartition& scoring_partition,
+    std::map<std::string, std::vector<IsolationIndex>>&
+        contextual_data_ids_map) {
+  if (scoring_partition.seller_tkv_signals != nullptr) {
+    contextual_data_ids_map[*scoring_partition.seller_tkv_signals].emplace_back(
+        compression_group_id, scoring_partition.partition_id);
+  }
+}
+
+void AddPerPartitionMetadata(
+    cbor::Value::MapValue& request_map_value,
+    size_t partition_count,
+    const std::map<std::string, std::vector<IsolationIndex>>&
+        contextual_data_ids_map) {
+  if (contextual_data_ids_map.empty()) {
+    return;
+  }
+
+  cbor::Value::MapValue partitioned_metadata_map;
+  cbor::Value::ArrayValue contextual_data_array;
+
+  for (const auto& signal_index_pair : contextual_data_ids_map) {
+    cbor::Value::MapValue contextual_data_map;
+
+    // Add signal string to `contextualData`.
+    contextual_data_map.try_emplace(cbor::Value("value"),
+                                    cbor::Value(signal_index_pair.first));
+
+    // The `ids` list is omitted if all partitions share the same contextual
+    // signal value. In other words, if a signal corresponds to a number of
+    // partitions less than the total, its entry in `contextualData` must
+    // include the `ids` list.
+    if (signal_index_pair.second.size() != partition_count) {
+      cbor::Value::ArrayValue ids_array;
+
+      for (const auto& index : signal_index_pair.second) {
+        cbor::Value::ArrayValue id_pair;
+        // Emplace compression group id and partition id in order.
+        id_pair.emplace_back(index.compression_group_id);
+        id_pair.emplace_back(index.partition_id);
+        ids_array.emplace_back(std::move(id_pair));
+      }
+
+      contextual_data_map.try_emplace(cbor::Value("ids"),
+                                      cbor::Value(std::move(ids_array)));
+    }
+
+    contextual_data_array.emplace_back(std::move(contextual_data_map));
+  }
+
+  partitioned_metadata_map.try_emplace(
+      cbor::Value("contextualData"),
+      cbor::Value(std::move(contextual_data_array)));
+  request_map_value.try_emplace(
+      cbor::Value("perPartitionMetadata"),
+      cbor::Value(std::move(partitioned_metadata_map)));
 }
 
 std::string CreateRequestBodyFromCbor(cbor::Value cbor_value) {
@@ -237,14 +316,27 @@ std::string BuildSignalsRequestBody(
                                 cbor::Value(std::move(metadata)));
 
   cbor::Value::ArrayValue partition_array;
+  size_t partition_count = 0;
+  // A map of `contextual_data` to indices for each partition, where
+  // the keys are signal strings and the values are lists of compression group
+  // id and partition id pair.
+  std::map<std::string, std::vector<IsolationIndex>> contextual_data_ids_map;
+
   for (const auto& group_pair : compression_groups) {
     int compression_group_id = group_pair.first;
     for (const auto& partition : group_pair.second) {
       cbor::Value::MapValue partition_cbor_map =
           BuildMapForPartition(compression_group_id, partition);
       partition_array.emplace_back(partition_cbor_map);
+      ++partition_count;
+
+      CollectContextualData(compression_group_id, partition,
+                            contextual_data_ids_map);
     }
   }
+
+  AddPerPartitionMetadata(request_map_value, partition_count,
+                          contextual_data_ids_map);
   request_map_value.emplace(cbor::Value("partitions"),
                             cbor::Value(std::move(partition_array)));
 
@@ -257,11 +349,13 @@ TrustedSignalsFetcher::BiddingPartition::BiddingPartition(
     int partition_id,
     const std::set<std::string>* interest_group_names,
     const std::set<std::string>* keys,
-    const base::Value::Dict* additional_params)
+    const base::Value::Dict* additional_params,
+    const std::string* buyer_tkv_signals)
     : partition_id(partition_id),
       interest_group_names(*interest_group_names),
       keys(*keys),
-      additional_params(*additional_params) {}
+      additional_params(*additional_params),
+      buyer_tkv_signals(buyer_tkv_signals) {}
 
 TrustedSignalsFetcher::BiddingPartition::BiddingPartition(BiddingPartition&&) =
     default;
@@ -276,11 +370,13 @@ TrustedSignalsFetcher::ScoringPartition::ScoringPartition(
     int partition_id,
     const GURL* render_url,
     const std::set<GURL>* component_render_urls,
-    const base::Value::Dict* additional_params)
+    const base::Value::Dict* additional_params,
+    const std::string* seller_tkv_signals)
     : partition_id(partition_id),
       render_url(*render_url),
       component_render_urls(*component_render_urls),
-      additional_params(*additional_params) {}
+      additional_params(*additional_params),
+      seller_tkv_signals(seller_tkv_signals) {}
 
 TrustedSignalsFetcher::ScoringPartition::ScoringPartition(ScoringPartition&&) =
     default;

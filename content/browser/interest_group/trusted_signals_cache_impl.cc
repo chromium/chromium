@@ -1260,7 +1260,8 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
       // will not retain pointers to them.
       bidding_partitions.emplace_back(
           cache_entry->partition_id, &cache_entry->interest_group_names,
-          &cache_entry->keys, &cache_key->additional_params);
+          &cache_entry->keys, &cache_key->additional_params,
+          /*buyer_tkv_signals=*/nullptr);
     }
   }
   fetch->fetcher->FetchBiddingSignals(
@@ -1306,8 +1307,8 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
       // will not retain pointers to them.
       scoring_partitions.emplace_back(
           cache_entry->partition_id, &cache_key->render_url,
-          &cache_key->component_render_urls,
-          &cache_key->additional_params);
+          &cache_key->component_render_urls, &cache_key->additional_params,
+          /*seller_tkv_signals=*/nullptr);
     }
   }
   fetch->fetcher->FetchScoringSignals(
