@@ -1022,6 +1022,18 @@ public class FeedSurfaceCoordinator
                                 ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_CONTAINMENT)
                                         ? R.drawable.home_surface_background_rounded
                                         : R.drawable.home_surface_ui_background);
+
+                if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_HEADER_REMOVAL)) {
+                    int topPadding =
+                            mActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(R.dimen.feed_header_top_margin);
+                    mSigninPromoView.setPadding(
+                            mSigninPromoView.getPaddingLeft(),
+                            topPadding,
+                            mSigninPromoView.getPaddingRight(),
+                            mSigninPromoView.getPaddingBottom());
+                }
             }
 
             FeedListContentManager.NativeViewContent content =
