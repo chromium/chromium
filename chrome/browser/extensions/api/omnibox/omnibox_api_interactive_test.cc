@@ -1612,7 +1612,14 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, MultipleUnscopedExtensions) {
 }
 
 // Test if unscoped suggestions send in zero suggest.
-IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedExtensionZeroSuggest) {
+// TODO(crbug.com/409601761): Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_UnscopedExtensionZeroSuggest DISABLED_UnscopedExtensionZeroSuggest
+#else
+#define MAYBE_UnscopedExtensionZeroSuggest UnscopedExtensionZeroSuggest
+#endif
+IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
+                       MAYBE_UnscopedExtensionZeroSuggest) {
   constexpr char kManifest[] =
       R"({
            "name": "Basic Send Suggestions",
@@ -1694,8 +1701,16 @@ IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest, UnscopedExtensionZeroSuggest) {
 }
 
 // Test if unscoped extension are grouped together in zps.
+// TODO(crbug.com/409601761): Test is flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MultipleUnscopedExtensionsZeroSuggest \
+  DISABLED_MultipleUnscopedExtensionsZeroSuggest
+#else
+#define MAYBE_MultipleUnscopedExtensionsZeroSuggest \
+  MultipleUnscopedExtensionsZeroSuggest
+#endif
 IN_PROC_BROWSER_TEST_F(UnscopedOmniboxApiTest,
-                       MultipleUnscopedExtensionsZeroSuggest) {
+                       MAYBE_MultipleUnscopedExtensionsZeroSuggest) {
   constexpr char kManifest[] =
       R"({
       "name": "Basic Send Suggestions",
