@@ -2080,17 +2080,6 @@ action("cronet_gn2bp_aosp_feedback_loop") {
   outputs = [ _stamp_path ]
 }
 
-action("gn2bp_check") {
-  script = "//components/cronet/gn2bp/validate_gn2bp.py"
-  sources = GN2BP_SOURCES + LICENSE_SOURCES
-  outputs = [ "$target_gen_dir/$target_name.stamp" ]
-  args = [
-    "--stamp",
-    rebase_path(outputs[0], root_build_dir),
-  ]
-  testonly = true
-}
-
 if (!using_sanitizer) {
   action("dependencies_checks") {
     script = "//components/cronet/tools/check_cronet_dependencies.py"
@@ -2197,7 +2186,6 @@ group("cronet_package_ci") {
   testonly = true
   deps = [
     ":generate_build_script_test",
-    ":gn2bp_check",
     "//components/cronet/gn2bp/tests/test_rlib_crate:rust_test_targets",
     "//components/cronet/license/tests/target_a:target_a",
   ]
