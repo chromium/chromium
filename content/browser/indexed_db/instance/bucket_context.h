@@ -299,7 +299,7 @@ class CONTENT_EXPORT BucketContext
   void OnDatabaseError(Status status, const std::string& message);
 
   // Called when the backing store has been corrupted.
-  void HandleBackingStoreCorruption(const DatabaseError& error);
+  void HandleBackingStoreCorruption(const std::string& error_message);
 
   // base::trace_event::MemoryDumpProvider:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -386,6 +386,8 @@ class CONTENT_EXPORT BucketContext
 
   // Records one tick of Metadata during a metadata recording session.
   void RecordInternalsSnapshot();
+
+  std::string SanitizeErrorMessage(const std::string& message);
 
   // This only exists to ease the transition to a swappable backing store. It
   // should be removed.

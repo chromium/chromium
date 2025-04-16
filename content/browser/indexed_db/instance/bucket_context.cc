@@ -593,7 +593,7 @@ void BucketContext::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
       blink::mojom::IDBError::New(error.code(), error.message()));
 
   if (s.IsCorruption()) {
-    HandleBackingStoreCorruption(error);
+    HandleBackingStoreCorruption(base::UTF16ToUTF8(error.message()));
   }
 }
 
@@ -622,7 +622,7 @@ void BucketContext::Open(
   if (!backing_store_) {
     FactoryClient(std::move(factory_client)).OnError(error);
     if (s.IsCorruption()) {
-      HandleBackingStoreCorruption(error);
+      HandleBackingStoreCorruption(base::UTF16ToUTF8(error.message()));
     }
     return;
   }
@@ -690,7 +690,7 @@ void BucketContext::DeleteDatabase(
 
       FactoryClient(std::move(factory_client)).OnError(error);
       if (s.IsCorruption()) {
-        HandleBackingStoreCorruption(error);
+        HandleBackingStoreCorruption(base::UTF16ToUTF8(error.message()));
       }
       return;
     }
@@ -721,12 +721,13 @@ void BucketContext::DeleteDatabase(
   std::vector<std::u16string> names;
   Status s = backing_store()->GetDatabaseNames(&names);
   if (!s.ok()) {
+    std::string error_message =
+        "Internal error opening backing store for indexedDB.deleteDatabase.";
     DatabaseError error(blink::mojom::IDBException::kUnknownError,
-                        "Internal error opening backing store for "
-                        "indexedDB.deleteDatabase.");
+                        error_message);
     FactoryClient(std::move(factory_client)).OnError(error);
     if (s.IsCorruption()) {
-      HandleBackingStoreCorruption(error);
+      HandleBackingStoreCorruption(error_message);
     }
     return;
   }
@@ -931,16 +932,22 @@ void BucketContext::RemoveBoundReaders(const base::FilePath& path) {
   file_reader_map_.erase(path);
 }
 
-void BucketContext::HandleBackingStoreCorruption(const DatabaseError& error) {
+std::string BucketContext::SanitizeErrorMessage(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // The message may contain the database path, which may be considered
   // sensitive data, and those strings are passed to the extension, so strip it.
-  std::string sanitized_message = base::UTF16ToUTF8(error.message());
+  std::string sanitized_message = message;
   base::ReplaceSubstringsAfterOffset(&sanitized_message, 0u,
                                      data_path_.AsUTF8Unsafe(), "...");
-  level_db::BackingStore::RecordCorruptionInfo(data_path_, bucket_locator(),
-                                               sanitized_message);
+  return sanitized_message;
+}
+
+void BucketContext::HandleBackingStoreCorruption(
+    const std::string& error_message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  level_db::BackingStore::RecordCorruptionInfo(
+      data_path_, bucket_locator(), SanitizeErrorMessage(error_message));
 
   const base::FilePath file_path =
       data_path_.Append(GetLevelDBFileName(bucket_locator()));
@@ -960,11 +967,10 @@ void BucketContext::HandleBackingStoreCorruption(const DatabaseError& error) {
 void BucketContext::OnDatabaseError(Status status, const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!status.ok());
+  const std::string error_message =
+      message.empty() ? status.ToString() : message;
   if (status.IsCorruption()) {
-    DatabaseError error(
-        blink::mojom::IDBException::kUnknownError,
-        base::ASCIIToUTF16(message.empty() ? status.ToString() : message));
-    HandleBackingStoreCorruption(error);
+    HandleBackingStoreCorruption(error_message);
     return;
   }
   if (status.IsIOError()) {
