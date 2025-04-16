@@ -194,6 +194,216 @@ auto ExpectErrorThenQuit(auto quit, Error expected_error) {
   return ExpectError(expected_error).Then(std::move(quit));
 }
 
+struct UpdateCheckerOneCrxUpdateOptions {
+  int64_t available_space = 3000;
+  size_t expected_components_check_count = 1u;
+  const char* json = R"()]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  },
+                  "size": 1015
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})";
+};
+
+struct UpdateCheckerTwoCrxUpdateOptions {
+  int64_t available_space = 150000;
+  size_t expected_components_check_count = 2u;
+  const char* json = R"()]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  },
+                  "size": 1015
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  },
+                  "size": 54014
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})";
+};
+
+struct UpdateCheckerOneCrxInstallOptions : UpdateCheckerOneCrxUpdateOptions {
+  const char* json = R"()]}'
+{
+ "response": {
+   "protocol": "4.0",
+   "apps": [
+     {
+       "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+       "status": "ok",
+       "updatecheck": {
+         "status": "ok",
+         "nextversion": "1.0",
+         "pipelines": [
+           {
+             "pipeline_id": "pipe1",
+             "operations": [
+               {
+                 "type": "download",
+                 "urls": [
+                   {
+                     "url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"
+                   }
+                 ],
+                 "out": {
+                   "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                 },
+                 "size": 1015
+               },
+               {
+                 "type": "crx3",
+                 "arguments": "--arg1 --arg2",
+                 "path": "UpdaterSetup.exe",
+                 "in": {
+                   "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                 }
+               }
+             ]
+           }
+         ]
+       }
+     }
+   ]
+ }
+})";
+};
+
+template <typename UpdateCheckerOptions>
+class MockUpdateCheckerImpl : public UpdateChecker {
+ public:
+  MockUpdateCheckerImpl() = default;
+
+  void CheckForUpdates(
+      scoped_refptr<UpdateContext> context,
+      const base::flat_map<std::string, std::string>& additional_attributes,
+      UpdateCheckCallback update_check_callback) override {
+    context->get_available_space = base::BindRepeating(
+        [](int64_t available_space, const base::FilePath&) -> int64_t {
+          return available_space;
+        },
+        options_.available_space);
+
+    base::expected<ProtocolParser::Results, std::string> results =
+        ProtocolParserJSON::ParseJSON(options_.json);
+    EXPECT_TRUE(results.has_value()) << results.error();
+    EXPECT_FALSE(context->session_id.empty());
+    EXPECT_EQ(context->components_to_check_for_updates.size(),
+              options_.expected_components_check_count);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(update_check_callback),
+                                  results.value(), ErrorCategory::kNone, 0, 0));
+  }
+
+ private:
+  UpdateCheckerOptions options_;
+};
+
+class MockUpdateCheckerAlwaysFails : public UpdateChecker {
+ public:
+  MockUpdateCheckerAlwaysFails() = default;
+
+  void CheckForUpdates(
+      scoped_refptr<UpdateContext> context,
+      const base::flat_map<std::string, std::string>& additional_attributes,
+      UpdateCheckCallback update_check_callback) override {
+    ADD_FAILURE() << "Check for update failed successfully.";
+  }
+};
+
 }  // namespace
 
 using ::testing::_;
@@ -480,49 +690,60 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoUpdate) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}}]}]}},
-              { "appid": "abagagagagagagagagagagagagagagag",
-                "status": "ok",
-                "updatecheck": { "status": "noupdate"}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 2u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
+  struct MockUpdateCheckerMockTwoCrxUpdateNoUpdateOptions {
+    int64_t available_space = 3000;
+    size_t expected_components_check_count = 2u;
+    std::string json = R"()]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  },
+                  "size": 1015
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "appid": "abagagagagagagagagagagagagagagag",
+        "status": "ok",
+        "updatecheck": {
+          "status": "noupdate"
+        }
+      }
+    ]
+  }
+})";
   };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<MockUpdateCheckerMockTwoCrxUpdateNoUpdateOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -703,48 +924,18 @@ TEST_F(UpdateClientTest, TwoCrxUpdateFirstServerIgnoresSecond) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}}]}]}}
-              ]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 2u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
+  // Json will be equivalent to the UpdateCheckerOneCrxInstallOptions, but
+  // we expect 2 checks instead.
+  struct TwoCrxUpdateFirstServerIgnoresSecondOptions
+      : UpdateCheckerOneCrxInstallOptions {
+    size_t expected_components_check_count = 2u;
   };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+
+  // Note: even though 2 appid's are requested, we are intentionally only
+  // sending the first.
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<TwoCrxUpdateFirstServerIgnoresSecondOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -907,48 +1098,11 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentData) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  // Note: even though 2 appid's are requested, since "ihfo..." has no component
+  // data, the response only contains the first appid's update response.
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -1093,18 +1247,8 @@ TEST_F(UpdateClientTest, TwoCrxUpdateNoCrxComponentDataAtAll) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      ADD_FAILURE();
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<MockUpdateCheckerAlwaysFails>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -1200,64 +1344,9 @@ TEST_F(UpdateClientTest, TwoCrxUpdateDownloadTimeout) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 150000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}},
-              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
-                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"},
-                          "size": 54014
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 2u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerTwoCrxUpdateOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -1488,50 +1577,94 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdate) {
         context->get_available_space = base::BindRepeating(
             [](const base::FilePath&) -> int64_t { return 150000; });
         results = ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
-                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"},
-                          "size": 54014
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
-                        }]}]}}]}})");
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  },
+                  "size": 54014
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})");
       } else if (num_calls_ == 2) {
         context->get_available_space = base::BindRepeating(
             [](const base::FilePath&) -> int64_t { return 4000; });
         results = ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "2.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"}],
-                          "out": {"sha256": "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2"},
-                          "size": 1680
-                        },
-                        { "type": "puff",
-                          "previous": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
-                        { "type": "crx3",
-                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
-                        }]}]}}]}})");
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "2.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2"
+                  },
+                  "size": 1680
+                },
+                {
+                  "type": "puff",
+                  "previous": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  }
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})");
       } else {
         ADD_FAILURE();
       }
@@ -1855,48 +1988,9 @@ TEST_F(UpdateClientTest, OneCrxInstallError) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "pipeline_id": "pipe1",
-                      "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -2076,59 +2170,114 @@ TEST_F(UpdateClientTest, OneCrxDiffUpdateFailsFullUpdateSucceeds) {
 
       if (num_calls_ == 1) {
         results = ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
-                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"},
-                          "size": 54014
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
-                        }]}]}}]}})");
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  },
+                  "size": 54014
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})");
       } else if (num_calls_ == 2) {
         results = ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "2.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"}],
-                          "out": {"sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"},
-                          "size": 1680
-                        },
-                        { "type": "puff",
-                          "previous": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
-                        { "type": "crx3",
-                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
-                        }]},
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"}],
-                          "out": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"},
-                          "size": 54409
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
-                        }]}
-                    ]}}]}})");
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "2.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+                  },
+                  "size": 1680
+                },
+                {
+                  "type": "puff",
+                  "previous": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  }
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
+                  }
+                }
+              ]
+            },
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
+                  },
+                  "size": 54409
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})");
       } else {
         ADD_FAILURE();
       }
@@ -2516,50 +2665,9 @@ TEST_F(UpdateClientTest, OneCrxInstall) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "arguments": "--arg1 --arg2",
-                          "path": "UpdaterSetup.exe",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -2713,18 +2821,8 @@ TEST_F(UpdateClientTest, OneCrxInstallNoCrxComponentData) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      ADD_FAILURE();
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<MockUpdateCheckerAlwaysFails>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -2932,17 +3030,6 @@ TEST_F(UpdateClientTest, EmptyIdList) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      ADD_FAILURE();
-    }
-  };
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -2956,7 +3043,8 @@ TEST_F(UpdateClientTest, EmptyIdList) {
       return base::DoNothing();
     }
   };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<MockUpdateCheckerAlwaysFails>
+      mock_update_checker_factory;
 
   class MockPingManager : public MockPingManagerImpl {
    public:
@@ -2999,50 +3087,13 @@ TEST_F(UpdateClientTest, DiskFull) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 0; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "arguments": "--arg1 --arg2",
-                          "path": "UpdaterSetup.exe",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
+  struct MockUpdateCheckerOneCrxInstallDiskFullOptions
+      : UpdateCheckerOneCrxInstallOptions {
+    int64_t available_space = 0;
   };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<MockUpdateCheckerOneCrxInstallDiskFullOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -3177,61 +3228,117 @@ TEST_F(UpdateClientTest, DiskFullDiff) {
       base::expected<ProtocolParser::Results, std::string> results;
       if (num_calls_ == 1) {
         results = ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
-                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"},
-                          "size": 54014
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
-                        }]}]}}]}})");
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  },
+                  "size": 54014
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})");
       } else if (num_calls_ == 2) {
         context->get_available_space = base::BindRepeating(
             [](const base::FilePath&) -> int64_t { return 0; });
 
         results = ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "2.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"}],
-                          "out": {"sha256": "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2"},
-                          "size": 1680
-                        },
-                        { "type": "puff",
-                          "previous": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}},
-                        { "type": "crx3",
-                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
-                        }]},
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"}],
-                          "out": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"},
-                          "size": 54409
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"}
-                        }]}]}}]}})");
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "2.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1to2.puff"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "f2254da51fa2478a8ba90e58e1c28e24033ec7841015eebf1c82e31b957c44b2"
+                  },
+                  "size": 1680
+                },
+                {
+                  "type": "puff",
+                  "previous": {
+                    "sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"
+                  }
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
+                  }
+                }
+              ]
+            },
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_2.crx"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
+                  },
+                  "size": 54409
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "c87d8742c3ff3d7a0cb6f3c91aa2fcf3dea63618086a7db1c5be5300e1d4d6b6"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})");
       } else {
         ADD_FAILURE();
       }
@@ -3474,18 +3581,8 @@ INSTANTIATE_TEST_SUITE_P(SendPingTestCases,
                          }));
 
 TEST_P(SendPingTest, SendPingTestCases) {
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      ADD_FAILURE();
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<MockUpdateCheckerAlwaysFails>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -3734,64 +3831,9 @@ TEST_F(UpdateClientTest, TwoCrxUpdateOneUpdateDisabled) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 150000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}},
-              { "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/ihfokbkgjpifnbbojhneepfflplebdkc_1.crx"}],
-                          "out": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"},
-                          "size": 54014
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "8f5aa190311237cae00675af87ff457f278cd1a05895470ac5d46647d4a3c2ea"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 2u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerTwoCrxUpdateOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -3961,48 +4003,9 @@ TEST_F(UpdateClientTest, OneCrxUpdateDownloadTimeout) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}}]}]}}
-              ]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -4306,20 +4309,30 @@ TEST_F(UpdateClientTest, OneCrxErrorUnknownApp) {
       EXPECT_FALSE(context->session_id.empty());
       EXPECT_EQ(4u, context->components_to_check_for_updates.size());
 
-      const std::string update_response =
-          ")]}'"
-          R"({"response": {)"
-          R"( "protocol": "4.0",)"
-          R"( "apps": [)"
-          R"({"appid": "jebgalgnebhfojomionfpkfelancnnkf",)"
-          R"( "status": "error-unknownApplication"},)"
-          R"({"appid": "abagagagagagagagagagagagagagagag",)"
-          R"( "status": "restricted"},)"
-          R"({"appid": "ihfokbkgjpifnbbojhneepfflplebdkc",)"
-          R"( "status": "error-invalidAppId"},)"
-          R"({"appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",)"
-          R"( "status": "error-foobarApp"})"
-          R"(]}})";
+      const std::string update_response = R"()]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+        "status": "error-unknownApplication"
+      },
+      {
+        "appid": "abagagagagagagagagagagagagagagag",
+        "status": "restricted"
+      },
+      {
+        "appid": "ihfokbkgjpifnbbojhneepfflplebdkc",
+        "status": "error-invalidAppId"
+      },
+      {
+        "appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
+        "status": "error-foobarApp"
+      }
+    ]
+  }
+})";
 
       const auto parser = ProtocolHandlerFactoryJSON().CreateParser();
       EXPECT_TRUE(parser->Parse(update_response));
@@ -4452,27 +4465,49 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
           [](const base::FilePath&) -> int64_t { return 200000; });
       base::expected<ProtocolParser::Results, std::string> results =
           ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/runaction_test_win.crx3"}],
-                          "out": {"sha256": "89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea"},
-                          "size": 48141
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea"}},
-                        { "type": "run",
-                          "path": "ChromeRecovery.crx3"
-                        }]}]}}]}})");
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "download",
+                  "urls": [
+                    {
+                      "url": "http://localhost/download/runaction_test_win.crx3"
+                    }
+                  ],
+                  "out": {
+                    "sha256": "89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea"
+                  },
+                  "size": 48141
+                },
+                {
+                  "type": "crx3",
+                  "in": {
+                    "sha256": "89290a0d2ff21ca5b45e109c6cc859ab5fe294e19c102d54acd321429c372cea"
+                  }
+                },
+                {
+                  "type": "run",
+                  "path": "ChromeRecovery.crx3"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})");
       EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
       EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
@@ -4611,39 +4646,39 @@ TEST_F(UpdateClientTest, ActionRun_Install) {
 // Tests that a run action is invoked in an update scenario when there was
 // no update.
 TEST_F(UpdateClientTest, ActionRun_NoUpdate) {
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        { "type": "run",
-                          "path": "ChromeRecovery.crx3"
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
+  struct MockUpdateCheckerActionRunNoUpdateOptions {
+    int64_t available_space = 0;
+    size_t expected_components_check_count = 1u;
+    const char* json = R"()]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "gjpmebpgbhcamgdgjcmnjfhggjpgcimm",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "run",
+                  "path": "ChromeRecovery.crx3"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})";
   };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<MockUpdateCheckerActionRunNoUpdateOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -4925,50 +4960,9 @@ TEST_F(UpdateClientTest, CancelInstallBeforeTaskStart) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "arguments": "--arg1 --arg2",
-                          "path": "UpdaterSetup.exe",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -5066,50 +5060,9 @@ TEST_F(UpdateClientTest, CancelInstallBeforeInstall) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "arguments": "--arg1 --arg2",
-                          "path": "UpdaterSetup.exe",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -5247,50 +5200,9 @@ TEST_F(UpdateClientTest, CancelInstallBeforeDownload) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "arguments": "--arg1 --arg2",
-                          "path": "UpdaterSetup.exe",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxInstallOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -5527,48 +5439,9 @@ TEST_F(UpdateClientTest, CheckForUpdate_UpdateAvailable) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}}]}]}}
-              ]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -6006,48 +5879,9 @@ TEST_F(UpdateClientTest, UpdateCheck_UpdateDisabled) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -6165,48 +5999,9 @@ TEST_F(UpdateClientTest, OneCrxCachedUpdate) {
   };
   auto data_callback_mock = MakeMockCallback<DataCallbackMock>();
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 3000; });
-
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "download",
-                          "urls": [{"url": "http://localhost/download/jebgalgnebhfojomionfpkfelancnnkf.crx"}],
-                          "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"},
-                          "size": 1015
-                        },
-                        { "type": "crx3",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
-  };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UpdateCheckerOneCrxUpdateOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -6424,48 +6219,45 @@ TEST_F(UpdateClientTest, UnsupportedOperationType) {
     }
   };
 
-  class MockUpdateChecker : public UpdateChecker {
-   public:
-    MockUpdateChecker() = default;
-
-    void CheckForUpdates(
-        scoped_refptr<UpdateContext> context,
-        const base::flat_map<std::string, std::string>& additional_attributes,
-        UpdateCheckCallback update_check_callback) override {
-      context->get_available_space = base::BindRepeating(
-          [](const base::FilePath&) -> int64_t { return 0; });
-      // The crx3 operation is expected to be ignored due to the preceding
-      // operation being impossible to process.
-      base::expected<ProtocolParser::Results, std::string> results =
-          ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    { "operations": [
-                        {
-                          "type": "badoperation"
-                        },
-                        { "type": "crx3",
-                          "arguments": "--arg1 --arg2",
-                          "path": "UpdaterSetup.exe",
-                          "in": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                        }]}]}}]}})");
-      EXPECT_TRUE(results.has_value()) << results.error();
-      EXPECT_FALSE(context->session_id.empty());
-      EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
-      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(update_check_callback), results.value(),
-                         ErrorCategory::kNone, 0, 0));
-    }
+  struct UnsupportedOperationTypeUpdateCheckOptions
+      : UpdateCheckerOneCrxUpdateOptions {
+    const char* json = R"()]}'
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "operations": [
+                {
+                  "type": "badoperation"
+                },
+                {
+                  "type": "crx3",
+                  "arguments": "--arg1 --arg2",
+                  "path": "UpdaterSetup.exe",
+                  "in": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})";
   };
-  MockUpdateCheckerFactory<MockUpdateChecker> mock_update_checker_factory;
+  MockUpdateCheckerFactory<
+      MockUpdateCheckerImpl<UnsupportedOperationTypeUpdateCheckOptions>>
+      mock_update_checker_factory;
 
   class MockCrxDownloader : public CrxDownloader {
    public:
@@ -6584,59 +6376,86 @@ TEST_F(UpdateClientTest,
       // The puff operation is missing previous hash, so it fails.
       base::expected<ProtocolParser::Results, std::string> results =
           ProtocolParserJSON::ParseJSON(R"()]}'
-          {"response": {
-            "protocol": "4.0",
-            "apps": [
-              { "appid": "jebgalgnebhfojomionfpkfelancnnkf",
-                "status": "ok",
-                "updatecheck": {
-                  "status": "ok",
-                  "nextversion": "1.0",
-                  "pipelines": [
-                    {
-                      "pipeline_id": "download_missing_urls",
-                      "operations": [{
-                        "type": "download",
-                        "size": 10,
-                        "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                      }]
-                    },
-                    {
-                      "pipeline_id": "download_missing_out",
-                      "operations": [{
-                        "type": "download",
-                        "size": 10,
-                        "urls": {"url": "http://does.not.matter.com/file.crx"}
-                      }]
-                    },
-                    {
-                      "pipeline_id": "download_invalid_size",
-                      "operations": [{
-                        "type": "download",
-                        "size": -10,
-                        "urls": {"url": "http://does.not.matter.com/file.crx"},
-                        "out": {"sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"}
-                      }]
-                    },
-                    {
-                      "pipeline_id": "puff_missing_prev",
-                      "operations": [{
-                        "type": "puff"
-                      }]
-                    },
-                    {
-                      "pipeline_id": "zucc_missing_prev",
-                      "operations": [{
-                        "type": "zucc"
-                      }]
-                    },
-                    {
-                      "pipeline_id": "crx3_missing_in",
-                      "operations": [{
-                        "type": "crx3"
-                      }]
-                    }
-                  ]}}]}})");
+{
+  "response": {
+    "protocol": "4.0",
+    "apps": [
+      {
+        "appid": "jebgalgnebhfojomionfpkfelancnnkf",
+        "status": "ok",
+        "updatecheck": {
+          "status": "ok",
+          "nextversion": "1.0",
+          "pipelines": [
+            {
+              "pipeline_id": "download_missing_urls",
+              "operations": [
+                {
+                  "type": "download",
+                  "size": 10,
+                  "out": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
+                }
+              ]
+            },
+            {
+              "pipeline_id": "download_missing_out",
+              "operations": [
+                {
+                  "type": "download",
+                  "size": 10,
+                  "urls": {
+                    "url": "http://does.not.matter.com/file.crx"
+                  }
+                }
+              ]
+            },
+            {
+              "pipeline_id": "download_invalid_size",
+              "operations": [
+                {
+                  "type": "download",
+                  "size": -10,
+                  "urls": {
+                    "url": "http://does.not.matter.com/file.crx"
+                  },
+                  "out": {
+                    "sha256": "7ab32f071cd9b5ef8e0d7913be161f532d98b3e9fa284a7cd8059c3409ce0498"
+                  }
+                }
+              ]
+            },
+            {
+              "pipeline_id": "puff_missing_prev",
+              "operations": [
+                {
+                  "type": "puff"
+                }
+              ]
+            },
+            {
+              "pipeline_id": "zucc_missing_prev",
+              "operations": [
+                {
+                  "type": "zucc"
+                }
+              ]
+            },
+            {
+              "pipeline_id": "crx3_missing_in",
+              "operations": [
+                {
+                  "type": "crx3"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ]
+  }
+})");
       EXPECT_TRUE(results.has_value()) << results.error();
       EXPECT_FALSE(context->session_id.empty());
       EXPECT_EQ(context->components_to_check_for_updates.size(), 1u);
