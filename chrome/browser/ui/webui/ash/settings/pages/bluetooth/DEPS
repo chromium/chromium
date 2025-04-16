@@ -19,3 +19,8 @@ include_rules = [
   "+chrome/common",
   "+chrome/grit",
 ]
+specific_include_rules = {
+  "fast_pair_saved_devices_handler_unittest.cc": [
+    "+skia/rusty_png_feature.h",
+  ]
+}
