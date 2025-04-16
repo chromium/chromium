@@ -6306,6 +6306,13 @@ class ColorTransformPixelTest
   }
 
   void Basic() {
+#if BUILDFLAG(IS_IOS)
+    if (this->src_color_space_.IsToneMappedByDefault() &&
+        !this->dst_color_space_.IsHDR()) {
+      GTEST_SKIP() << "Skipping tonemapped src for non-hdr dst";
+    }
+#endif
+
     gfx::Rect rect(this->device_viewport_size_);
     std::vector<uint8_t> input_colors(4 * rect.width() * rect.height(), 0);
     std::vector<SkColor> expected_output_colors(rect.width() * rect.height());
