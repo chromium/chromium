@@ -15,7 +15,7 @@ from grit import lazy_re
 from grit import pseudo
 from grit import pseudolocales
 from grit import tclib
-from grit import xtb_reader
+from grit import gender
 
 
 class UberClique:
@@ -221,7 +221,7 @@ class UberClique:
 
       translation = tclib.Translation(id=id)
       # TODO(crbug.com/409770185): Support gendered translations.
-      for is_ph, text in structure[xtb_reader.DEFAULT_GENDER]:
+      for is_ph, text in structure[gender.DEFAULT_GENDER]:
         if not is_ph:
           translation.AppendText(text)
         else:

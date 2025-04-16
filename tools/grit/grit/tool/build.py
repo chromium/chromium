@@ -74,7 +74,8 @@ Options:
                     separate lists of output files and to catch errors if the
                     build system's list and the grit list are out-of-sync.
 
-  --assert-file-list  Provide a file listing multiple asserted output files.
+  --assert-file-list
+                    Provide a file listing multiple asserted output files.
                     There is one file name per line. This acts like specifying
                     each file with "-a" on the command line, but without the
                     possibility of running into OS line-length limits for very
@@ -140,6 +141,11 @@ Options:
                     third_party/brotli/BUILD.gn, required if any entries use
                     compress="brotli".
 
+  --translate-genders
+                    Translate gendered strings into up to 4 separate files per
+                    language, for 'OTHER', 'FEMININE', 'MASCULINE', and 'NEUTER'
+                    genders.
+
 Conditional inclusion of resources only affects the output of files which
 control which resources get linked into a binary, e.g. it affects .rc files
 meant for compilation but it does not affect resource header files (that define
@@ -166,6 +172,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
     depend_on_stamp = False
     css_minifier = None
     replace_ellipsis = True
+    translate_genders = False
     (own_opts, args) = getopt.getopt(
         args, 'a:p:o:D:E:f:w:t:',
         ('depdir=', 'depfile=', 'assert-file-list=', 'help',
@@ -213,6 +220,8 @@ are exported to translation interchange files (e.g. XMB files), etc.
         allowlist_support = True
       elif key == '--brotli':
         brotli_util.SetBrotliCommand([os.path.abspath(val)])
+      elif key == '--translate-genders':
+        translate_genders = True
       elif key == '--help':
         self.ShowUsage()
         sys.exit(0)
@@ -242,7 +251,8 @@ are exported to translation interchange files (e.g. XMB files), etc.
                                 first_ids_file=first_ids_file,
                                 predetermined_ids_file=predetermined_ids_file,
                                 defines=self.defines,
-                                target_platform=target_platform)
+                                target_platform=target_platform,
+                                translate_genders=translate_genders)
 
     # Set an output context so that conditionals can use defines during the
     # gathering stage; we use a dummy language here since we are not outputting

@@ -19,10 +19,17 @@ class WrongNumberOfArguments(Exception):
   pass
 
 
-def Outputs(filename, defines, ids_file, target_platform=None):
-  grd = grd_reader.Parse(
-      filename, defines=defines, tags_to_ignore={'messages'},
-      first_ids_file=ids_file, target_platform=target_platform)
+def Outputs(filename,
+            defines,
+            ids_file,
+            target_platform=None,
+            translate_genders=False):
+  grd = grd_reader.Parse(filename,
+                         defines=defines,
+                         tags_to_ignore={'messages'},
+                         first_ids_file=ids_file,
+                         target_platform=target_platform,
+                         translate_genders=translate_genders)
 
   target = []
   lang_folders = {}
@@ -94,6 +101,7 @@ def PrintUsage():
   print('USAGE: ./grit_info.py --inputs [-D foo] [-f resource_ids] <grd-file>')
   print('       ./grit_info.py --outputs [-D foo] [-f resource_ids] ' +
         '<out-prefix> <grd-file>')
+  print('       ./grit_info.py --help')
 
 
 def DoMain(argv):
@@ -110,6 +118,9 @@ def DoMain(argv):
   parser.add_option("-w", action="append", dest="allowlist_files", default=[])
   parser.add_option("-f", dest="ids_file", default="")
   parser.add_option("-t", dest="target_platform", default=None)
+  parser.add_option("--translate-genders",
+                    action="store_true",
+                    dest="translate_genders")
 
   options, args = parser.parse_args(argv)
 
@@ -149,9 +160,11 @@ def DoMain(argv):
           "Expected exactly 2 arguments for --outputs.")
 
     prefix, filename = args
-    outputs = [posixpath.join(prefix, f)
-               for f in Outputs(filename, defines,
-                                options.ids_file, options.target_platform)]
+    outputs = [
+        posixpath.join(prefix, f)
+        for f in Outputs(filename, defines, options.ids_file,
+                         options.target_platform, options.translate_genders)
+    ]
     return '\n'.join(outputs)
   else:
     raise WrongNumberOfArguments("Expected --inputs or --outputs.")

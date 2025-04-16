@@ -12,9 +12,9 @@ import xml.sax
 import xml.sax.handler
 
 import grit.node.base
+from grit import gender
 
 
-DEFAULT_GENDER = 'OTHER'
 GRAMMATICAL_GENDER_RE = re.compile(
     (r'^\s*variants\s*{\s*grammatical_gender_variant\s*{\s*'
      r'grammatical_gender_case:\s*(\w+)\s*}\s*}\s*$'))
@@ -117,7 +117,7 @@ class XtbContentHandler(xml.sax.handler.ContentHandler):
 
   # Gets the current gender, or DEFAULT_GENDER if the current gender is None.
   def get_effective_gender(self):
-    return self.current_gender or DEFAULT_GENDER
+    return self.current_gender or gender.DEFAULT_GENDER
 
   # Gets the self.current_structure entry for the current gender, including
   # proper initialization.
