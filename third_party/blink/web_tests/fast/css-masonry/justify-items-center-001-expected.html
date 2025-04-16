@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-3">
+<link href="resources/masonry.css" rel="stylesheet">
+<style>
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    background: gray;
+    width: 300px;
+    justify-items: center;
+}
+.flex {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+}
+.two-span-item {
+    background-color: lightpink;
+    width: 100%;
+}
+</style>
+<body>
+  <p>Test that using justify-items centers each item to the grid-axis track it is on.</p>
+  <div class="grid">
+    <div class="flex">
+      <div class="fifty-width" style="grid-column: 1; height: 54px;">
+        This is some text
+      </div>
+      <div class="two-span-item">
+        This is some text
+      </div>
+      <div class="two-span-item">
+        This is some text
+      </div>
+    </div>
+    <div class="fifty-width" style="height: 100px;">
+      Some larger words in this sentence
+    </div>
+    <div class="fifty-width" style="grid-column: 3; height: 108px;">
+      The cat cannot be taken from milk
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-3">
+<link href="resources/masonry.css" rel="stylesheet">
+<style>
+.masonry {
+    masonry-template-tracks: repeat(3, 100px);
+    width: 300px;
+    justify-items: end;
+}
+</style>
+<body>
+  <p>Test that using justify-items moves each masonry item to the end of the grid-axis track it is on</p>
+  <p>and that justify-self overrides justify-items.</p>
+  <div class="masonry">
+    <div class="fifty-width" style="height: 54px;">
+      This is some text
+    </div>
+    <div class="fifty-width" style="justify-self: start; height: 100px;">
+      Some larger words in this sentence
+    </div>
+    <div class="fifty-width" style="height: 108px;">
+      The cat cannot be taken from milk
+    </div>
+    <div style="background-color: lightpink">
+      This is some text
+    </div>
+    <div style="background-color: lightpink">
+      This is some text
+    </div>
+  </div>
+</body>
+</html>

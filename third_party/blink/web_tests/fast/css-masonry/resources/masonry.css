@@ -41,6 +41,7 @@
     masonry-track: span 2;
 }
 
-.gap-item {
-  width: 80px;
+.fifty-width {
+  width: 50px;
+  background-color: lightblue;
 }

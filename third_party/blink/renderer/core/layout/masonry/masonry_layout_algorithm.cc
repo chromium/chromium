@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/masonry/masonry_layout_algorithm.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_collection.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_track_sizing_algorithm.h"
@@ -55,6 +56,27 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size_);
   return container_builder_.ToBoxFragment();
 }
+
+namespace {
+
+LayoutUnit CalculateAlignmentOffset(AxisEdge alignment, LayoutUnit free_space) {
+  if (!free_space) {
+    return LayoutUnit();
+  }
+
+  switch (alignment) {
+    case AxisEdge::kCenter:
+      return free_space / 2;
+    case AxisEdge::kEnd:
+      return free_space;
+    case AxisEdge::kStart:
+      return LayoutUnit();
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
 
 void MasonryLayoutAlgorithm::PlaceMasonryItems(
     const GridLayoutTrackCollection& track_collection,
@@ -111,6 +133,24 @@ void MasonryLayoutAlgorithm::PlaceMasonryItems(
         To<PhysicalBoxFragment>(result->GetPhysicalFragment());
     const LogicalBoxFragment fragment(container_writing_direction,
                                       physical_fragment);
+
+    // Adjust item's position in the track based on style.
+    auto FreeSpace = [&]() -> LayoutUnit {
+      const auto free_space =
+          is_for_columns
+              ? containing_rect.size.inline_size - fragment.InlineSize()
+              : containing_rect.size.block_size - fragment.BlockSize();
+
+      // If overflow is 'safe', make sure we don't overflow the 'start' edge
+      // (potentially causing some data loss as the overflow is unreachable).
+      return masonry_item.IsOverflowSafe(grid_axis_direction)
+                 ? free_space.ClampNegativeToZero()
+                 : free_space;
+    };
+    const auto offset = CalculateAlignmentOffset(
+        masonry_item.Alignment(grid_axis_direction), FreeSpace());
+    (is_for_columns ? containing_rect.offset.inline_offset
+                    : containing_rect.offset.block_offset) += offset;
 
     // Update `running_positions` of the tracks that the items spans to include
     // the size of the item + the size of the gap in the stacking axis.

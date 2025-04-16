@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<link rel="help" href="https://drafts.csswg.org/css-grid-3">
+<link href="resources/masonry.css" rel="stylesheet">
+<style>
+.masonry {
+    masonry-template-tracks: repeat(3, 100px);
+    width: 300px;
+    justify-items: center;
+}
+</style>
+<body>
+  <p>Test that using justify-items centers each item to the grid-axis track it is on.</p>
+  <div class="masonry">
+    <div class="fifty-width" style="height: 54px;">
+      This is some text
+    </div>
+    <div class="fifty-width" style="height: 100px;">
+      Some larger words in this sentence
+    </div>
+    <div class="fifty-width" style="height: 108px;">
+      The cat cannot be taken from milk
+    </div>
+    <div style="background-color: lightpink">
+      This is some text
+    </div>
+    <div style="background-color: lightpink">
+      This is some text
+    </div>
+  </div>
+</body>
+</html>
