@@ -18,7 +18,6 @@ import android.widget.ScrollView;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.content.WebContentsFactory;
@@ -57,6 +56,9 @@ import java.util.List;
  *   <li>{@code no_button}: The `no` action button component.
  *   <li>{@code settings_button}: The settings button component.
  *   <li>{@code more_button}: The button that scrolls the screen down when clicked.
+ *   <li>{@code action_buttons}: The layout that holds the action buttons listed above.
+ *   <li>{@code action_button_divider}: The divider seperating the scroll view and the action
+ *       buttons.
  *   <li>{@code dropdown_element}: The dropdown element component.
  *   <li>{@code privacy_policy_back_button}: The back button component specifically within the
  *       privacy policy view.
@@ -109,10 +111,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
     private ThinWebView mThinWebView;
     private WebContents mWebContents;
     private WebContentsObserver mWebContentsObserver;
-
     private @IdRes int mPrivacyPolicyTextIdRes = R.id.privacy_policy_text;
-    private @StringRes int mPrivacyPolicyString =
-            R.string.privacy_sandbox_m1_privacy_policy_text_v3;
 
     private ActivityWindowAndroid mActivityWindowAndroid;
     private Profile mProfile;
@@ -208,10 +207,20 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
     private void setActionButtonsVisibility(int visibility) {
         mActionButtons.setVisibility(visibility);
+        View divider = mContentView.findViewById(R.id.action_button_divider);
         if (mActionButtons.getVisibility() == View.VISIBLE) {
             mShouldShowActionButtons = true;
             // Zero out the padding for the scroll view content if any was applied.
             mScrollView.getChildAt(0).setPadding(0, 0, 0, 0);
+            if (divider != null) {
+                // The divider view should be a child of the root element such that it's width
+                // matches the screen's width.
+                divider.setVisibility(View.VISIBLE);
+                // Position the divider such that it divides the scroll view and the action buttons.
+                divider.setY(mScrollView.getBottom());
+            }
+        } else if (divider != null) {
+            divider.setVisibility(View.GONE);
         }
     }
 
@@ -232,6 +241,8 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
                 contentToInflate = R.layout.privacy_sandbox_notice_row_v3;
                 break;
             case PrivacySandboxDialogType.RESTRICTED_NOTICE:
+                contentToInflate = R.layout.privacy_sandbox_notice_restricted_v3;
+                break;
             default:
                 // TODO(crbug.com/392943234): Don't default to the eea consent
                 contentToInflate = R.layout.privacy_sandbox_consent_eea_v3;
@@ -322,7 +333,6 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
         }
         LayoutInflater.from(getContext()).inflate(resourceToInflate, mDropdownContentContainer);
         mScrollView.post(() -> mScrollView.scrollTo(0, mDropdownElement.getTop()));
-
         // Attempt to register the privacy policy if it exists in the dropdown content.
         registerPrivacyPolicy();
     }
@@ -389,20 +399,26 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
 
     private void createPrivacyPolicyLink(
             Profile profile, ActivityWindowAndroid activityWindowAndroid) {
-        // TODO(crbug.com/392943234): Remove dependency on the StringRes `mPrivacyPolicyString`.
-        TextViewWithLeading privacyPolicyText = mContentView.findViewById(mPrivacyPolicyTextIdRes);
-        if (privacyPolicyText == null) {
+        TextViewWithLeading privacyPolicyTextView =
+                mContentView.findViewById(mPrivacyPolicyTextIdRes);
+        if (privacyPolicyTextView == null) {
             return;
         }
-        privacyPolicyText.setText(
+        String privacyPolicyText = privacyPolicyTextView.getText().toString();
+        // The privacy policy should have link tags before attempting to create clickable
+        // spans.
+        if (!privacyPolicyText.contains("<link>") || !privacyPolicyText.contains("</link>")) {
+            return;
+        }
+        privacyPolicyTextView.setText(
                 SpanApplier.applySpans(
-                        getContext().getString(mPrivacyPolicyString),
+                        privacyPolicyText,
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
                                 new ChromeClickableSpan(
                                         getContext(), this::onPrivacyPolicyClicked))));
-        privacyPolicyText.setMovementMethod(LinkMovementMethod.getInstance());
+        privacyPolicyTextView.setMovementMethod(LinkMovementMethod.getInstance());
         if (mThinWebView == null || mWebContents == null || mWebContents.isDestroyed()) {
             mWebContents = WebContentsFactory.createWebContents(profile, true, false);
             mWebContentsObserver =
@@ -486,7 +502,7 @@ public class PrivacySandboxDialogV3 extends ChromeDialog implements DialogInterf
     }
 
     private void initButtonState() {
-        setMoreButtonVisibility(View.VISIBLE);
+        setMoreButtonVisibility(View.GONE);
         mActionButtons.setVisibility(View.GONE);
         // Don't need to check for padding if content is already scrollable.
         if (canScrollVerticallyDown()) {

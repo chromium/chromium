@@ -436,6 +436,18 @@
       <message name="IDS_PRIVACY_SANDBOX_M1_PRIVACY_POLICY_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
         Google requires companies to state publicly that they won’t use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also store shared data for longer than Chrome and combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_MORE_V3" desc="" translateable="false" formatter_data="android_java">
+        More
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_GOT_IT_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
+        Got it
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_SETTINGS_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
+        Settings
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_DIALOG_LAST_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
+        You can make changes in ad privacy settings
+      </message>
       <!--Ad Topics EEA Consent V3  -->
       <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_TITLE_V3" desc="" translateable="false" formatter_data="android_java">
         Allow sites to share limited information with one another when personalizing content and ads?
@@ -460,9 +472,6 @@
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_ADS_TOPIC_DROPDOWN_V3" desc="" translateable="false" formatter_data="android_java">
         More about ad topics
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LAST_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
-        You can make changes in ad privacy settings
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_SCROLL_TO_CHOOSE_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
         Scroll to choose
@@ -533,18 +542,6 @@
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_CARD_4_V3" desc="" translateable="false" formatter_data="android_java">
         Chrome uses privacy measures to limit the information sites can share with one another
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LAST_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
-        You can make changes in ad privacy settings
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_MORE_V3" desc="" translateable="false" formatter_data="android_java">
-        More
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_GOT_IT_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
-        Got it
-      </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_SETTINGS_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
-        Settings
       </message>
       <!--Ad Topics EEA Notice - Ads API UX Enhancements -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_1_V2" desc="This string explains the function of “ad privacy features”. “Ad” is short for “advertisement”." formatter_data="android_java">
@@ -639,9 +636,6 @@
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_GOT_IT_BUTTON_V3" desc="" translateable="false" formatter_data="android_java">
         Got it
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
-        You can make changes in ad privacy settings
-      </message>
       <!--Ad Topics ROW Notice v3 Dropdown Content - Ads API UX Enhancements -->
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_TITLE_1_V3" desc="" translateable="false" formatter_data="android_java">
         Ad topics
@@ -681,6 +675,31 @@
       </message>
       <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_DROPDOWN_CARD_DESCRIPTION_6_V3" desc="" translateable="false" formatter_data="android_java">
         Chrome uses privacy measures to limit the information sites can share with one another
+      </message>
+      <!--Ad Topics ROW Restricted v3 - Ads API UX Enhancements -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_TITLE_V3" desc="" translateable="false" formatter_data="android_java">
+        Chrome is helping websites to measure the performance of their ads
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_SUBTITLE_1_V3" desc="" translateable="false" formatter_data="android_java">
+        When ad measurement is on
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_1_V3" desc="" translateable="false" formatter_data="android_java">
+        Websites can only share limited information, like when you see an ad on Chrome, with other websites
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_SUBTITLE_2_V3" desc="" translateable="false" formatter_data="android_java">
+        Things to consider
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_2_V3" desc="" translateable="false" formatter_data="android_java">
+        Your Android phone or tablet may also have this setting
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_3_V3" desc="" translateable="false" formatter_data="android_java">
+        This means that ad measurement could be turned on in both Chrome and Android
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_DESCRIPTION_4_V3" desc="" translateable="false" formatter_data="android_java">
+        If turned on in both places, then the performance of an ad could be measured across both the websites you visit and the apps you use
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_RESTRICTED_PRIVACY_POLICY_TEXT_V3" desc="" translateable="false" formatter_data="android_java">
+       <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more in our Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <!--Site suggested ads settings page - Ads API UX Enhancement-->
       <if expr="_google_chrome">
