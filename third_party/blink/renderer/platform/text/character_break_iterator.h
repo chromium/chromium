@@ -106,9 +106,9 @@ PLATFORM_EXPORT unsigned NumGraphemeClusters(const String&);
 PLATFORM_EXPORT unsigned LengthOfGraphemeCluster(const String&, unsigned = 0);
 
 // Returns a list of graphemes cluster at each character using character break
-// rules.
+// rules. The `graphemes` and `text` must have the same size.
 PLATFORM_EXPORT void GraphemesClusterList(const StringView& text,
-                                          Vector<unsigned>* graphemes);
+                                          base::span<unsigned> graphemes);
 
 }  // namespace blink
 

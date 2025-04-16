@@ -187,10 +187,11 @@ void ShapeResult::EnsureGraphemes(const StringView& text) const {
     if (!run)
       continue;
     DCHECK_GE(run->start_index_, result_start_index);
+    run->graphemes_.resize(run->num_characters_);
     GraphemesClusterList(
         StringView(text, run->start_index_ - result_start_index,
                    run->num_characters_),
-        &run->graphemes_);
+        run->graphemes_);
   }
 }
 

@@ -49,9 +49,10 @@ unsigned NumGraphemeClusters(const String& string) {
   return num;
 }
 
-void GraphemesClusterList(const StringView& text, Vector<unsigned>* graphemes) {
+void GraphemesClusterList(const StringView& text,
+                          base::span<unsigned> graphemes) {
   const unsigned length = text.length();
-  graphemes->resize(length);
+  DCHECK_EQ(length, graphemes.size());
   if (!length) {
     return;
   }
@@ -62,7 +63,7 @@ void GraphemesClusterList(const StringView& text, Vector<unsigned>* graphemes) {
   unsigned pos = 0;
   while (cursor_pos >= 0) {
     for (; pos < static_cast<unsigned>(cursor_pos) && pos < length; ++pos) {
-      (*graphemes)[pos] = count;
+      graphemes[pos] = count;
     }
     cursor_pos = it.Next();
     count++;
