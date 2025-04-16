@@ -1972,9 +1972,11 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
     // CopyToPlatformTexture is done correctly. See crbug.com/794706.
     raster_interface->Flush();
 
-    return GetDrawingBuffer()->CopyToPlatformMailbox(
-        raster_interface, client_si->mailbox(), gfx::Point(0, 0),
-        gfx::Rect(drawing_buffer_->Size()), source_buffer);
+    return GetDrawingBuffer()
+        ->CopyToPlatformMailbox(
+            raster_interface, client_si->mailbox(), gfx::Point(0, 0),
+            gfx::Rect(drawing_buffer_->Size()), source_buffer)
+        .has_value();
   }
 
   // As the resource provider is not accelerated, we don't need an accelerated

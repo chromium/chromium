@@ -1015,10 +1015,11 @@ void DrawingBuffer::CopyStagingTextureToBackColorBufferIfNeeded() {
       size_.height(), do_flip_y, do_premultiply_alpha, do_unpremultiply_alpha);
 }
 
-bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
-                                           bool dst_is_unpremul_gl,
-                                           SourceDrawingBuffer src_buffer,
-                                           CopyFunctionRef copy_function) {
+std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformInternal(
+    gpu::InterfaceBase* dst_interface,
+    bool dst_is_unpremul_gl,
+    SourceDrawingBuffer src_buffer,
+    CopyFunctionRef copy_function) {
   ScopedStateRestorer scoped_state_restorer(this);
 
   gpu::gles2::GLES2Interface* src_gl = gl_;
@@ -1071,7 +1072,7 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
 
   if (!produce_sync_token.HasData()) {
     // This should only happen if the context has been lost.
-    return false;
+    return std::nullopt;
   }
 
   std::optional<gpu::SyncToken> sync_token = copy_function(
@@ -1081,7 +1082,7 @@ bool DrawingBuffer::CopyToPlatformInternal(gpu::InterfaceBase* dst_interface,
     src_color_buffer->BeginAccess(sync_token.value_or(gpu::SyncToken()),
                                   /*readonly=*/false);
   }
-  return sync_token.has_value();
+  return sync_token;
 }
 
 bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
@@ -1136,10 +1137,11 @@ bool DrawingBuffer::CopyToPlatformTexture(gpu::gles2::GLES2Interface* dst_gl,
     return sync_token;
   };
   return CopyToPlatformInternal(dst_gl, dst_alpha_type == kUnpremul_SkAlphaType,
-                                src_buffer, copy_function);
+                                src_buffer, copy_function)
+      .has_value();
 }
 
-bool DrawingBuffer::CopyToPlatformMailbox(
+std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformMailbox(
     gpu::raster::RasterInterface* dst_raster_interface,
     gpu::Mailbox dst_mailbox,
     const gfx::Point& dst_texture_offset,
@@ -1188,7 +1190,8 @@ bool DrawingBuffer::CopyToVideoFrame(
         dst_color_space, std::move(callback));
   };
   return CopyToPlatformInternal(raster_interface, /*dst_is_unpremul_gl=*/false,
-                                src_buffer, copy_function);
+                                src_buffer, copy_function)
+      .has_value();
 }
 
 cc::Layer* DrawingBuffer::CcLayer() {
