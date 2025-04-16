@@ -201,6 +201,8 @@ TEST_F(PinnedTabCollectionTest, RemoveOperation) {
   EXPECT_EQ(pinned_collection_instance->ChildCount(), 5ul);
   EXPECT_TRUE(tab_model_one_ptr->IsPinned());
 
+  tab_model_one_ptr->set_will_be_detaching_for_testing(true);
+
   // Remove `tab_model_one` from the collection.
   auto removed_tab_model =
       pinned_collection_instance->MaybeRemoveTab(tab_model_one_ptr);
@@ -309,6 +311,8 @@ TEST_F(TabGroupTabCollectionTest, RemoveOperation) {
   EXPECT_EQ(grouped_collection->ChildCount(), 5ul);
   EXPECT_EQ(tab_model_one_ptr->group(), grouped_collection->GetTabGroupId());
 
+  tab_model_one_ptr->set_will_be_detaching_for_testing(true);
+
   // Remove `tab_model_one` from the collection.
   auto removed_tab_model =
       grouped_collection->MaybeRemoveTab(tab_model_one_ptr);
@@ -396,6 +400,8 @@ TEST_F(SplitTabCollectionTest, RemoveOperation) {
   EXPECT_EQ(split_collection->GetIndexOfTabRecursive(tab_model_one_ptr), 2ul);
   EXPECT_EQ(split_collection->ChildCount(), 4ul);
   EXPECT_EQ(tab_model_one_ptr->GetSplit(), split_collection->GetSplitTabId());
+
+  tab_model_one_ptr->set_will_be_detaching_for_testing(true);
 
   // Remove `tab_model_one` from the collection.
   auto removed_tab_model = split_collection->MaybeRemoveTab(tab_model_one_ptr);
@@ -516,6 +522,7 @@ TEST_F(UnpinnedTabCollectionTest, RemoveOperation) {
   unpinned_collection->AddCollection(std::move(tab_group_one), 4ul);
 
   // Remove the tab
+  tab_model_one_ptr->set_will_be_detaching_for_testing(true);
   std::unique_ptr<tabs::TabModel> removed_tab =
       unpinned_collection->MaybeRemoveTab(tab_model_one_ptr);
   EXPECT_EQ(removed_tab.get(), tab_model_one_ptr);

@@ -65,6 +65,10 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
     split_ = split;
   }
 
+  void set_will_be_detaching_for_testing(bool will_be_detaching) {
+    will_be_detaching_ = will_be_detaching;
+  }
+
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
   // https://crbug.com/331022416: Do not use this method. This is only used by
@@ -210,6 +214,7 @@ class TabModel final : public TabInterface, public TabStripModelObserver {
   // model or is in the process of being closed.
   raw_ptr<TabStripModel> owning_model_ = nullptr;
   raw_ptr<TabStripModel> soon_to_be_owning_model_ = nullptr;
+  bool will_be_detaching_ = false;
   raw_ptr<tabs::TabInterface> opener_ = nullptr;
   bool reset_opener_on_active_tab_change_ = false;
   bool pinned_ = false;
