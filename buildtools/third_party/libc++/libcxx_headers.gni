@@ -4,7 +4,7 @@
 
 # Generate the list via
 # $ find third_party/libc++/src/include/ -type f | fgrep -v "cxx03" | \
-#   sed -E 's:(.*):"//\1",:g' | sort
+#   sed -E 's:(.*):"//\1",:g' | LANG=C sort
 #
 libcxx_headers = [
   # keep-sorted start
@@ -556,6 +556,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__math/traits.h",
   "//third_party/libc++/src/include/__math/trigonometric_functions.h",
   "//third_party/libc++/src/include/__mbstate_t.h",
+  "//third_party/libc++/src/include/__mdspan/aligned_accessor.h",
   "//third_party/libc++/src/include/__mdspan/default_accessor.h",
   "//third_party/libc++/src/include/__mdspan/extents.h",
   "//third_party/libc++/src/include/__mdspan/layout_left.h",
@@ -580,6 +581,7 @@ libcxx_headers = [
   "//third_party/libc++/src/include/__memory/destroy.h",
   "//third_party/libc++/src/include/__memory/destruct_n.h",
   "//third_party/libc++/src/include/__memory/inout_ptr.h",
+  "//third_party/libc++/src/include/__memory/is_sufficiently_aligned.h",
   "//third_party/libc++/src/include/__memory/noexcept_move_assign_container.h",
   "//third_party/libc++/src/include/__memory/out_ptr.h",
   "//third_party/libc++/src/include/__memory/pointer_traits.h",
