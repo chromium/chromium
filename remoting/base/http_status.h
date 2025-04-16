@@ -28,7 +28,6 @@ class HttpStatus {
     NOT_FOUND = 5,
     ALREADY_EXISTS = 6,
     PERMISSION_DENIED = 7,
-    UNAUTHENTICATED = 16,
     RESOURCE_EXHAUSTED = 8,
     FAILED_PRECONDITION = 9,
     ABORTED = 10,
@@ -37,7 +36,8 @@ class HttpStatus {
     INTERNAL = 13,
     UNAVAILABLE = 14,
     DATA_LOSS = 15,
-    NETWORK_ERROR = 16,
+    UNAUTHENTICATED = 16,
+    NETWORK_ERROR = 17,
   };
 
   // An OK pre-defined instance.

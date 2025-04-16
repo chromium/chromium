@@ -85,10 +85,8 @@ void ProtobufHttpClient::DoExecuteRequest(
       case OAuthTokenGetter::Status::AUTH_ERROR:
         code = HttpStatus::Code::UNAUTHENTICATED;
         break;
-      // TODO: yuweih - this should be mapped to `NETWORK_ERROR`. Fix this and
-      // downstream code that relies on this behavior.
       case OAuthTokenGetter::Status::NETWORK_ERROR:
-        code = HttpStatus::Code::UNAVAILABLE;
+        code = HttpStatus::Code::NETWORK_ERROR;
         break;
       default:
         NOTREACHED() << "Unknown OAuthTokenGetter Status: " << status;

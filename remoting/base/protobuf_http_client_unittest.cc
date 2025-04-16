@@ -245,8 +245,7 @@ TEST_F(ProtobufHttpClientTest,
   ASSERT_FALSE(client_.HasPendingRequests());
 }
 
-TEST_F(ProtobufHttpClientTest,
-       FailedToFetchAuthToken_RejectsWithUnavailableError) {
+TEST_F(ProtobufHttpClientTest, FailedToFetchAuthToken_RejectsWithNetworkError) {
   base::RunLoop run_loop;
 
   ExpectCallWithTokenNetworkError();
@@ -254,7 +253,7 @@ TEST_F(ProtobufHttpClientTest,
   MockEchoResponseCallback response_callback;
   EXPECT_CALL(
       response_callback,
-      Run(HasErrorCode(HttpStatus::Code::UNAVAILABLE), IsNullResponse()))
+      Run(HasErrorCode(HttpStatus::Code::NETWORK_ERROR), IsNullResponse()))
       .WillOnce([&]() { run_loop.Quit(); });
 
   auto request = CreateDefaultTestRequest();
@@ -484,7 +483,7 @@ TEST_F(ProtobufHttpClientTest,
 }
 
 TEST_F(ProtobufHttpClientTest,
-       StreamRequestFailedToFetchAuthToken_RejectsWithUnavailableError) {
+       StreamRequestFailedToFetchAuthToken_RejectsWithNetworkError) {
   base::MockOnceClosure stream_ready_callback;
   MockEchoMessageCallback message_callback;
   MockStreamClosedCallback stream_closed_callback;
@@ -495,7 +494,7 @@ TEST_F(ProtobufHttpClientTest,
 
   MockEchoResponseCallback response_callback;
   EXPECT_CALL(stream_closed_callback,
-              Run(HasErrorCode(HttpStatus::Code::UNAVAILABLE)))
+              Run(HasErrorCode(HttpStatus::Code::NETWORK_ERROR)))
       .WillOnce([&]() { run_loop.Quit(); });
 
   auto request = CreateDefaultTestStreamRequest();
