@@ -45,6 +45,7 @@
 #include "extensions/test/extension_test_notification_observer.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -294,6 +295,12 @@ void ExtensionPlatformBrowserTest::SetUpCommandLine(
     command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                     "testuser@gmail.com");
     command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
+  }
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (ShouldAllowMV2Extensions()) {
+    mv2_enabler_.emplace();
   }
 #endif
 }
@@ -1048,5 +1055,11 @@ Profile* ExtensionPlatformBrowserTest::profile() {
 content::WebContents* ExtensionPlatformBrowserTest::web_contents() {
   return web_contents_.get();
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+ExtensionService* ExtensionPlatformBrowserTest::extension_service() {
+  return ExtensionSystem::Get(profile())->extension_service();
+}
+#endif
 
 }  // namespace extensions

@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 
-#include <optional>
-#include <string>
-
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -15,8 +12,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_platform_browsertest.h"
-#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
-#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_creator.h"
 #include "extensions/browser/extension_host.h"
@@ -30,7 +25,6 @@
 
 namespace extensions {
 class ExtensionBrowserTestPlatformDelegate;
-class ExtensionService;
 
 // Base class for extension browser tests. Provides utilities for loading,
 // unloading, and installing extensions.
@@ -49,18 +43,6 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
 
   explicit ExtensionBrowserTest(ContextType context_type = ContextType::kNone);
   ~ExtensionBrowserTest() override;
-
-  // Useful accessors.
-  ExtensionService* extension_service();
-
-  // InProcessBrowserTest
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
- private:
-  ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_check_;
-
-  // Allows MV2 extensions to be loaded.
-  std::optional<ScopedTestMV2Enabler> mv2_enabler_;
 };
 
 }  // namespace extensions

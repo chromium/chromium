@@ -83,16 +83,4 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
 
 ExtensionBrowserTest::~ExtensionBrowserTest() = default;
 
-ExtensionService* ExtensionBrowserTest::extension_service() {
-  return ExtensionSystem::Get(profile())->extension_service();
-}
-
-void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
-  ExtensionPlatformBrowserTest::SetUpCommandLine(command_line);
-
-  if (ShouldAllowMV2Extensions()) {
-    mv2_enabler_.emplace();
-  }
-}
-
 }  // namespace extensions
