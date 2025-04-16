@@ -2735,11 +2735,16 @@ source_set("browser") {
 
   if (is_apple) {
     sources += [
-      "child_process_task_port_provider_mac.cc",
-      "child_process_task_port_provider_mac.h",
       "font_access/font_enumeration_data_source_mac.h",
       "font_access/font_enumeration_data_source_mac.mm",
     ]
+
+    if (!(is_ios && target_platform == "tvos")) {
+      sources += [
+        "child_process_task_port_provider_mac.cc",
+        "child_process_task_port_provider_mac.h",
+      ]
+    }
   }
 
   if (is_mac) {
