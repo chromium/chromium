@@ -87,12 +87,10 @@ PasswordFieldPrediction::PasswordFieldPrediction(
     autofill::FieldRendererId renderer_id,
     autofill::FieldSignature signature,
     autofill::FieldType type,
-    bool may_use_prefilled_placeholder,
     bool is_override)
     : renderer_id(renderer_id),
       signature(signature),
       type(ToSafeFieldType(type, FieldType::NO_SERVER_DATA)),
-      may_use_prefilled_placeholder(may_use_prefilled_placeholder),
       is_override(is_override) {}
 
 PasswordFieldPrediction::PasswordFieldPrediction(
@@ -162,8 +160,6 @@ FormPredictions ConvertToFormPredictions(
 
     field_predictions.emplace_back(
         field.renderer_id(), current_signature, server_type,
-        /*may_use_prefilled_placeholder=*/
-        autofill_prediction.may_use_prefilled_placeholder.value_or(false),
         /*is_override=*/autofill_prediction.is_override());
   }
 

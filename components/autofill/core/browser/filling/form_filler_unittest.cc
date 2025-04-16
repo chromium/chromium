@@ -335,12 +335,6 @@ TEST_F(FormFillerTest, SkipPreFilledFields) {
            {.role = ADDRESS_HOME_COUNTRY, .value = u" "}}});
   FormsSeen({form});
 
-  FormStructure* form_structure = GetFormStructure(form);
-  form_structure->fields()[0]->set_may_use_prefilled_placeholder(true);
-  form_structure->fields()[1]->set_may_use_prefilled_placeholder(true);
-  form_structure->fields()[3]->set_may_use_prefilled_placeholder(false);
-  form_structure->fields()[4]->set_may_use_prefilled_placeholder(std::nullopt);
-
   std::vector<FormFieldData> filled_fields =
       FillAutofillFormData(form, form.fields().front(), &profile).fields();
 

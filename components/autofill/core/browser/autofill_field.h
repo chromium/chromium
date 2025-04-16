@@ -102,9 +102,6 @@ class AutofillField : public FormFieldData {
   experimental_server_predictions() const {
     return experimental_server_predictions_;
   }
-  std::optional<bool> may_use_prefilled_placeholder() const {
-    return may_use_prefilled_placeholder_;
-  }
   HtmlFieldType html_type() const { return html_type_; }
   HtmlFieldMode html_mode() const { return html_mode_; }
   const FieldTypeSet& possible_types() const { return possible_types_; }
@@ -128,10 +125,6 @@ class AutofillField : public FormFieldData {
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
           prediction);
 
-  void set_may_use_prefilled_placeholder(
-      std::optional<bool> may_use_prefilled_placeholder) {
-    may_use_prefilled_placeholder_ = may_use_prefilled_placeholder;
-  }
   void set_possible_types(const FieldTypeSet& possible_types) {
     possible_types_ = possible_types;
   }
@@ -457,12 +450,6 @@ class AutofillField : public FormFieldData {
   std::vector<
       AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction>
       experimental_server_predictions_;
-
-  // Whether the server-side classification believes that the field
-  // may be pre-filled with a placeholder in the value attribute.
-  // For autofillable types, `nullopt` indicates that there is no server-side
-  // classification. For PWM, `nullopt` and `false` are currently identical.
-  std::optional<bool> may_use_prefilled_placeholder_ = std::nullopt;
 
   // Requirements the site imposes to passwords (for password generation).
   // Corresponds to the requirements determined by the Autofill server.

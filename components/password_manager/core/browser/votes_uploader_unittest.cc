@@ -84,8 +84,7 @@ FormPredictions MakeSimpleSingleUsernamePredictions() {
   form_predictions.form_signature = kSingleUsernameFormSignature;
   form_predictions.fields.emplace_back(
       kSingleUsernameRendererId, kSingleUsernameFieldSignature,
-      autofill::NO_SERVER_DATA, /*may_use_prefilled_placeholder=*/false,
-      /*is_override=*/false);
+      autofill::NO_SERVER_DATA, /*is_override=*/false);
   return form_predictions;
 }
 
@@ -641,15 +640,12 @@ TEST_F(VotesUploaderTest, UploadSingleUsernameMultipleFieldsInUsernameForm) {
   form_predictions.fields.emplace_back(
       FieldRendererId(kSingleUsernameRendererId.value() - 1),
       FieldSignature(kSingleUsernameFieldSignature.value() - 1),
-      autofill::NO_SERVER_DATA,
-      /*may_use_prefilled_placeholder=*/false,
-      /*is_override=*/false);
+      autofill::NO_SERVER_DATA, /*is_override=*/false);
 
   // Add the username field.
   form_predictions.fields.emplace_back(
       kSingleUsernameRendererId, kSingleUsernameFieldSignature,
-      autofill::NO_SERVER_DATA, /*may_use_prefilled_placeholder=*/false,
-      /*is_override=*/false);
+      autofill::NO_SERVER_DATA, /*is_override=*/false);
 
   std::u16string single_username_candidate_value = u"username_candidate_value";
   votes_uploader.add_single_username_vote_data(SingleUsernameVoteData(

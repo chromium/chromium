@@ -616,8 +616,6 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
         cached_field->autofill_source_profile_guid());
     field->set_autofilled_type(cached_field->autofilled_type());
     field->set_filling_product(cached_field->filling_product());
-    field->set_may_use_prefilled_placeholder(
-        cached_field->may_use_prefilled_placeholder());
     field->set_previously_autofilled(cached_field->previously_autofilled());
     field->set_did_trigger_suggestions(cached_field->did_trigger_suggestions());
     field->set_was_focused(cached_field->was_focused());
@@ -1147,13 +1145,6 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                   field->rank(), field->rank_in_signature_group(),
                   field->rank_in_host_form(),
                   field->rank_in_host_form_signature_group());
-    if (field->may_use_prefilled_placeholder().has_value()) {
-      buffer << Tr{} << "Pre-filled value:"
-             << base::StrCat(
-                    {"is classified as ",
-                     (*field->may_use_prefilled_placeholder() ? "a placeholder"
-                                                              : "meaningful")});
-    }
     buffer << CTag{"table"};
     buffer << CTag{"td"};
     buffer << CTag{"tr"};

@@ -46,7 +46,6 @@ FormPredictions CreateTestPredictions(int driver_id,
   predictions.form_signature = form_signature;
 
   predictions.fields.emplace_back(renderer_id, field_signature, type,
-                                  /*may_use_prefilled_placeholder=*/false,
                                   /*is_override=*/false);
 
   return predictions;
@@ -153,9 +152,7 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
 
   // Add another field.
   form_prediction.fields.emplace_back(kAnotherFieldId, kAnotherFieldSignature,
-                                      kAnotherFieldType,
-                                      /*may_use_prefilled_placeholder=*/false,
-                                      /*is_override=*/false);
+                                      kAnotherFieldType, /*is_override=*/false);
 
   predictions[kTestFormSignature] = form_prediction;
 

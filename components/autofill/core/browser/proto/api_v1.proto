@@ -116,9 +116,7 @@ message AutofillQueryResponse {
       // Detailed list of all possible predictions. Contains an autofill and/or
       // a password manager prediction.
       repeated FieldPrediction predictions = 3;
-      // Whether the server-side classification believes that the field
-      // may be pre-filled with a placeholder in the value attribute.
-      optional bool may_use_prefilled_placeholder = 4;
+      reserved 4;  // optional bool may_use_prefilled_placeholder
       // For fields of type NEW_PASSWORD and ACCOUNT_CREATION_PASSWORD, this may
       // specify requirements for the generation of passwords.
       optional .autofill.PasswordRequirementsSpec password_requirements = 5;
