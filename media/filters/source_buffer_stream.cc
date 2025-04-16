@@ -170,9 +170,8 @@ SourceBufferStream::SourceBufferStream(const VideoDecoderConfig& video_config,
       highest_output_buffer_timestamp_(kNoTimestamp),
       max_interbuffer_distance_(
           base::Milliseconds(kMinimumInterbufferDistanceInMs)),
-      memory_limit_(
-          GetDemuxerStreamVideoMemoryLimit(Demuxer::DemuxerTypes::kChunkDemuxer,
-                                           &video_config)) {
+      memory_limit_(GetDemuxerStreamVideoMemoryLimit(DemuxerType::kChunkDemuxer,
+                                                     &video_config)) {
   DCHECK(video_config.IsValidConfig());
   video_configs_.push_back(video_config);
   DVLOG(2) << __func__ << ": video_buffer_size= " << memory_limit_;
@@ -1864,8 +1863,8 @@ bool SourceBufferStream::UpdateVideoConfig(const VideoDecoderConfig& config,
         << ": Skipping updating memory limit as memory limit was overridden.";
   } else {
     // Dynamically increase |memory_limit_| on video config changes.
-    size_t new_memory_limit = GetDemuxerStreamVideoMemoryLimit(
-        Demuxer::DemuxerTypes::kChunkDemuxer, &config);
+    size_t new_memory_limit =
+        GetDemuxerStreamVideoMemoryLimit(DemuxerType::kChunkDemuxer, &config);
     if (new_memory_limit > memory_limit_) {
       DVLOG(2) << __func__ << ": Increase memory limit from " << memory_limit_
                << " to " << new_memory_limit << ".";

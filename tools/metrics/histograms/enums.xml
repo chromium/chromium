@@ -20114,7 +20114,7 @@ from previous Chrome versions.
   <int value="1" label="kMockDemuxer"/>
   <int value="2" label="kFFmpegDemuxer"/>
   <int value="3" label="kChunkDemuxer"/>
-  <int value="4" label="kMediaUrlDemuxer"/>
+  <int value="4" label="kMediaUrlDemuxer (Obsolete)"/>
   <int value="5" label="kFrameInjectingDemuxer"/>
   <int value="6" label="kStreamProviderDemuxer"/>
   <int value="7" label="kManifestDemuxer"/>

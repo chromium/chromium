@@ -3936,7 +3936,6 @@ void WebMediaPlayerImpl::WriteSplitHistogram(
         UmaFunction(base::StrCat({strkey, ".MSE"}), values...);
         break;
       case media::DemuxerType::kManifestDemuxer:
-      case media::DemuxerType::kMediaUrlDemuxer:
         UmaFunction(base::StrCat({strkey, ".HLS"}), values...);
         break;
       default:

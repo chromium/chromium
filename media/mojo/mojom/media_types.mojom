@@ -653,7 +653,7 @@ enum DemuxerType {
   kMockDemuxer = 1,
   kFFmpegDemuxer = 2,
   kChunkDemuxer = 3,
-  kMediaUrlDemuxer = 4,
+  // kMediaUrlDemuxer = 4,    // Deprecated
   kFrameInjectingDemuxer = 5,
   kStreamProviderDemuxer = 6,
   kManifestDemuxer = 7,

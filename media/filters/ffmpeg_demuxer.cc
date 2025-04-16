@@ -1976,8 +1976,7 @@ bool FFmpegDemuxer::StreamsHaveAvailableCapacity() {
 bool FFmpegDemuxer::IsMaxMemoryUsageReached() const {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  size_t memory_left =
-      GetDemuxerMemoryLimit(Demuxer::DemuxerTypes::kFFmpegDemuxer);
+  size_t memory_left = GetDemuxerMemoryLimit(DemuxerType::kFFmpegDemuxer);
   for (const auto& stream : streams_) {
     if (!stream)
       continue;

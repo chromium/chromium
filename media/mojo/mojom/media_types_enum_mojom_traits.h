@@ -446,8 +446,6 @@ struct EnumTraits<media::mojom::DemuxerType, ::media::DemuxerType> {
         return media::mojom::DemuxerType::kFFmpegDemuxer;
       case ::media::DemuxerType::kChunkDemuxer:
         return media::mojom::DemuxerType::kChunkDemuxer;
-      case ::media::DemuxerType::kMediaUrlDemuxer:
-        return media::mojom::DemuxerType::kMediaUrlDemuxer;
       case ::media::DemuxerType::kFrameInjectingDemuxer:
         return media::mojom::DemuxerType::kFrameInjectingDemuxer;
       case ::media::DemuxerType::kStreamProviderDemuxer:
@@ -475,9 +473,6 @@ struct EnumTraits<media::mojom::DemuxerType, ::media::DemuxerType> {
         return true;
       case media::mojom::DemuxerType::kChunkDemuxer:
         *output = ::media::DemuxerType::kChunkDemuxer;
-        return true;
-      case media::mojom::DemuxerType::kMediaUrlDemuxer:
-        *output = ::media::DemuxerType::kMediaUrlDemuxer;
         return true;
       case media::mojom::DemuxerType::kFrameInjectingDemuxer:
         *output = ::media::DemuxerType::kFrameInjectingDemuxer;

@@ -431,7 +431,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
 
       // Avoid allocating insane sample counts for invalid media.
       size_t max_sample_count =
-          GetDemuxerMemoryLimit(Demuxer::DemuxerTypes::kChunkDemuxer) /
+          GetDemuxerMemoryLimit(DemuxerType::kChunkDemuxer) /
           sizeof(decltype(tri.samples)::value_type);
 
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
