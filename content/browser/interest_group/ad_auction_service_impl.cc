@@ -68,6 +68,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -727,7 +728,8 @@ void AdAuctionServiceImpl::PreconnectSocket(
       ->GetNetworkContext()
       ->PreconnectSockets(
           /*num_streams=*/1, url, network::mojom::CredentialsMode::kOmit,
-          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag());
+          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag(),
+          /*keepalive_config=*/std::nullopt);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -1306,7 +1308,8 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(
           render_frame_host()
               .GetIsolationInfoForSubresources()
               .network_anonymization_key(),
-          net::MutableNetworkTrafficAnnotationTag());
+          net::MutableNetworkTrafficAnnotationTag(),
+          /*keepalive_config=*/std::nullopt);
 
   AdAuctionPageData* ad_auction_page_data = GetAdAuctionPageData();
   if (!ad_auction_page_data) {

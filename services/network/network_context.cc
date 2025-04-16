@@ -66,6 +66,7 @@
 #include "net/base/network_delegate.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/port_util.h"
+#include "net/base/reconnect_notifier.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verifier.h"
@@ -132,6 +133,7 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/cookie_encryption_provider.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom-forward.h"
 #include "services/network/public/mojom/reporting_service.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -2233,7 +2235,8 @@ void NetworkContext::PreconnectSockets(
     const GURL& original_url,
     mojom::CredentialsMode credentials_mode,
     const net::NetworkAnonymizationKey& network_anonymization_key,
-    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+    const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+    const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config) {
   DCHECK(!require_network_anonymization_key_ ||
          !network_anonymization_key.IsEmpty());
 
@@ -2263,6 +2266,15 @@ void NetworkContext::PreconnectSockets(
   request_info.extra_headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                        user_agent);
   request_info.traffic_annotation = traffic_annotation;
+
+  // TODO(crbug.com/406022435): Add initialization of reconnect related
+  // things.
+  if (keepalive_config.has_value()) {
+    request_info.connection_management_config =
+        net::ConnectionManagementConfig();
+    request_info.connection_management_config->keep_alive_config =
+        keepalive_config;
+  }
 
   switch (credentials_mode) {
     case mojom::CredentialsMode::kOmit:

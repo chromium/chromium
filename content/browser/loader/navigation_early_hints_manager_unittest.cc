@@ -61,7 +61,8 @@ class FakeNetworkContext : public network::TestNetworkContext {
       const GURL& url,
       network::mojom::CredentialsMode credentials_mode,
       const net::NetworkAnonymizationKey& network_anonymization_key,
-      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
+      const std::optional<net::ConnectionKeepAliveConfig>& keepalive_config)
       override {
     preconnect_requests_.emplace_back(
         url,

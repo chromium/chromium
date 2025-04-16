@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 
 namespace predictors {
 
@@ -225,12 +226,15 @@ void PreconnectManager::PreconnectUrl(
     num_sockets = 1;
   }
 
+  // TODO(crbug.com/406022435): pass the actual `keepalive_config` from the
+  // caller.
   network_context->PreconnectSockets(
       num_sockets, url,
       allow_credentials ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kOmit,
       network_anonymization_key,
-      net::MutableNetworkTrafficAnnotationTag(traffic_annotation));
+      net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
+      /*keepalive_config=*/std::nullopt);
 }
 
 std::unique_ptr<ResolveHostClientImpl> PreconnectManager::PreresolveUrl(

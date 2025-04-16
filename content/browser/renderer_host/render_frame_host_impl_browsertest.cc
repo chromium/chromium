@@ -106,6 +106,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -7594,7 +7595,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeNikBrowserTest,
                             main_rfh->GetIsolationInfoForSubresources()
                                 .network_anonymization_key(),
                             net::MutableNetworkTrafficAnnotationTag(
-                                TRAFFIC_ANNOTATION_FOR_TESTS));
+                                TRAFFIC_ANNOTATION_FOR_TESTS),
+                            std::nullopt);
 
     connection_tracker_->WaitForAcceptedConnections(1);
     EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());

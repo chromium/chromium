@@ -48,6 +48,7 @@ import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/proxy_config_with_annotation.mojom";
 import "services/network/public/mojom/proxy_lookup_client.mojom";
 import "services/network/public/mojom/proxy_resolving_socket.mojom";
+import "services/network/public/mojom/reconnect_event_observer.mojom";
 import "services/network/public/mojom/reporting_service.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/restricted_udp_socket.mojom";
@@ -1473,13 +1474,17 @@ interface NetworkContext {
   // `credentials_mode` and `network_anonymization_key`.
   // `traffic_annotation` will be used to distinguish where the preconnect was
   // initiated from.
+  // `keepalive_config` specifies keep-alive behavior such as periodic ping or
+  // reconnect notifier.
   // The preconnect is aborted if network access is disabled for
   // `network_anonymization_key->GetNonce()`.
-  PreconnectSockets(uint32 num_streams,
-                    url.mojom.Url url,
-                    network.mojom.CredentialsMode credentials_mode,
-                    NetworkAnonymizationKey network_anonymization_key,
-                    MutableNetworkTrafficAnnotationTag traffic_annotation);
+  PreconnectSockets(
+      uint32 num_streams,
+      url.mojom.Url url,
+      network.mojom.CredentialsMode credentials_mode,
+      NetworkAnonymizationKey network_anonymization_key,
+      MutableNetworkTrafficAnnotationTag traffic_annotation,
+      ConnectionKeepAliveConfig? keepalive_config);
 
   // Creates a P2PSocketManager instance, used for WebRTC.
   // `network_anonymization_key` is the network cache shard to associate with

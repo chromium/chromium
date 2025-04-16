@@ -173,6 +173,7 @@
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
+#include "services/network/public/mojom/reconnect_event_observer.mojom.h"
 #include "services/network/public/mojom/supports_loading_mode.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
@@ -2070,7 +2071,8 @@ NavigationRequest::NavigationRequest(
       storage_partition->GetNetworkContext()->PreconnectSockets(
           1, common_params_->url, network::mojom::CredentialsMode::kInclude,
           GetIsolationInfo().network_anonymization_key(),
-          net::MutableNetworkTrafficAnnotationTag());
+          net::MutableNetworkTrafficAnnotationTag(),
+          /*keepalive_config=*/std::nullopt);
     }
   }
 

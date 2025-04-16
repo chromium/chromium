@@ -1685,6 +1685,7 @@ mojom("mojom") {
     "oblivious_http_request.mojom",
     "proxy_lookup_client.mojom",
     "proxy_resolving_socket.mojom",
+    "reconnect_event_observer.mojom",
     "reporting_service.mojom",
     "restricted_udp_socket.mojom",
     "socket_broker.mojom",
@@ -1904,6 +1905,19 @@ mojom("mojom") {
           [ "//services/network/public/cpp/hash_value_mojom_traits.h" ]
       traits_sources =
           [ "//services/network/public/cpp/hash_value_mojom_traits.cc" ]
+      traits_public_deps = [ "//net" ]
+    },
+    {
+      types = [
+        {
+          mojom = "network.mojom.ConnectionKeepAliveConfig"
+          cpp = "::net::ConnectionKeepAliveConfig"
+        },
+      ]
+      traits_headers = [
+        "//services/network/public/cpp/reconnect_event_observer_mojom_traits.h",
+      ]
+      traits_sources = [ "//services/network/public/cpp/reconnect_event_observer_mojom_traits.cc" ]
       traits_public_deps = [ "//net" ]
     },
   ]
