@@ -190,7 +190,7 @@ JapaneseSettingsPtr MakeDefaultJapaneseSettings() {
   // The below setting is unused. It was originally in the legacy Japanese
   // config, but since all data is collected using UMA, this was ignored and the
   // UMA setting was the main toggle for sending statistics.
-  response->automatically_send_statistics_to_google = false;
+  response->unused2 = false;
   // LINT.ThenChange(/chrome/browser/resources/ash/settings/os_languages_page/input_method_util.ts:JpPrefDefaults)
   return response;
 }
