@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/password_manager/promo_cards/move_passwords_promo.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/grit/generated_resources.h"

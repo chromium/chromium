@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
 #include "base/check_deref.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"

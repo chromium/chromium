@@ -9,6 +9,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/containers/adapters.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"

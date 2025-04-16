@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/optimization_guide/optimization_guide_icon_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"

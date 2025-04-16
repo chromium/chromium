@@ -4,6 +4,7 @@
 
 #include "chrome/browser/picture_in_picture/auto_pip_setting_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"

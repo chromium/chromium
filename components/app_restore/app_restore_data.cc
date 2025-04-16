@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"

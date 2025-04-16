@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/feature_list_buildflags.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"

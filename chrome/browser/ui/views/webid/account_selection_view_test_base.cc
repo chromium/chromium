@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

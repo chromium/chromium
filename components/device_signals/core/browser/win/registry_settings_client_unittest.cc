@@ -6,6 +6,7 @@
 
 #include "base/strings/string_number_conversions_win.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_reg_util_win.h"

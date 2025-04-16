@@ -23,6 +23,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/global_media_controls/public/mojom/device_service.mojom-shared.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"

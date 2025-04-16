@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/select_audio_output/select_audio_output_dialog.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"

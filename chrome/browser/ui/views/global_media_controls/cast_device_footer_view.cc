@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/cast_device_footer_view.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"

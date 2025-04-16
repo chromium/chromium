@@ -41,6 +41,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"

@@ -18,6 +18,7 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "base/containers/flat_tree.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "components/prefs/pref_service.h"

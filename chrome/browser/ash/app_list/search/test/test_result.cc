@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/app_list/search/test/test_result.h"
 
+#include "base/strings/utf_string_conversions.h"
+
 namespace app_list {
 
 TestResult::TestResult(const std::string& id,

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/autofill/payments/bnpl_tos_dialog.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"

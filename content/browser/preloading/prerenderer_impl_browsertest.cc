@@ -4,6 +4,7 @@
 
 #include "content/browser/preloading/prerenderer_impl.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"

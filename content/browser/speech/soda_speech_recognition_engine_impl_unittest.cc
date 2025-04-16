@@ -10,6 +10,7 @@
 
 #include "base/containers/queue.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
 #include "content/browser/speech/speech_recognition_engine.h"
