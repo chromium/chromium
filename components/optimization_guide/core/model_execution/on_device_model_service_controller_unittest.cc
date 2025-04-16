@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_execution/model_capability_client.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
-#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "components/optimization_guide/core/model_execution/execute_remote_fn.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
 #pragma allow_unsafe_libc_calls
@@ -31,7 +28,9 @@
 #include "base/types/expected.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/model_execution/execute_remote_fn.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_capability_client.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
@@ -43,6 +42,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
+#include "components/optimization_guide/core/model_execution/test/fake_remote.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/core/model_execution/test/response_holder.h"
@@ -64,7 +64,10 @@
 #include "components/optimization_guide/proto/redaction.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom.h"
 #include "components/prefs/testing_pref_service.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -110,35 +113,6 @@ const std::string& GetCheckText(
   return log.request().text_safety_model_request().text();
 }
 
-// A remote fallback that is unsuccessful.
-void BadRequestRemote(ModelBasedCapabilityKey key,
-                      const google::protobuf::MessageLite& req,
-                      std::optional<base::TimeDelta> timeout,
-                      std::unique_ptr<proto::LogAiDataRequest> log,
-                      OptimizationGuideModelExecutionResultCallback callback) {
-  std::move(callback).Run(
-      OptimizationGuideModelExecutionResult(
-          base::unexpected(
-              OptimizationGuideModelExecutionError::FromHttpStatusCode(
-                  net::HTTP_BAD_REQUEST)),
-          nullptr),
-      nullptr);
-}
-
-// A remote callback that fails the test if it is used.
-void FailRemote(ModelBasedCapabilityKey key,
-                const google::protobuf::MessageLite& req,
-                std::optional<base::TimeDelta> timeout,
-                std::unique_ptr<proto::LogAiDataRequest> log,
-                OptimizationGuideModelExecutionResultCallback callback) {
-  EXPECT_TRUE(false) << "Unexpected use of remote fallback";
-  BadRequestRemote(key, req, timeout, std::move(log), std::move(callback));
-}
-
-ExecuteRemoteFn FailOnRemoteFallback() {
-  return base::BindRepeating(&FailRemote);
-}
-
 class FakeOnDeviceModelAvailabilityObserver
     : public OnDeviceModelAvailabilityObserver {
  public:
@@ -168,53 +142,6 @@ std::string ConcatResponses(const std::vector<std::string>& responses) {
 }
 
 constexpr auto kFeature = ModelBasedCapabilityKey::kCompose;
-
-class ExpectedRemoteFallback final {
- public:
-  struct FallbackArgs {
-    ModelBasedCapabilityKey feature;
-    std::unique_ptr<google::protobuf::MessageLite> request;
-    std::optional<base::TimeDelta> timeout;
-    std::unique_ptr<proto::LogAiDataRequest> log;
-    OptimizationGuideModelExecutionResultCallback callback;
-
-    const auto& logged_executions() {
-      return log->model_execution_info()
-          .on_device_model_execution_info()
-          .execution_infos();
-    }
-  };
-
-  ExecuteRemoteFn CreateExecuteRemoteFn() {
-    return base::BindLambdaForTesting(
-        [&](ModelBasedCapabilityKey feature,
-            const google::protobuf::MessageLite& m,
-            std::optional<base::TimeDelta> t,
-            std::unique_ptr<proto::LogAiDataRequest> l,
-            OptimizationGuideModelExecutionResultCallback c) {
-          auto request = base::WrapUnique(m.New());
-          request->CheckTypeAndMergeFrom(m);
-          future_.GetCallback().Run(FallbackArgs{
-              feature,
-              std::move(request),
-              t,
-              std::move(l),
-              std::move(c),
-          });
-        });
-  }
-
-  proto::Any ComposeResponse(const std::string& output) {
-    proto::ComposeResponse response;
-    response.set_output(output);
-    return AnyWrapProto(response);
-  }
-
-  FallbackArgs Take() { return future_.Take(); }
-
- private:
-  base::test::TestFuture<FallbackArgs> future_;
-};
 
 class OnDeviceModelServiceControllerTest : public testing::Test {
  public:
@@ -291,24 +218,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     });
   }
 
-  ExecuteRemoteFn CreateExecuteRemoteFn() {
-    return base::BindLambdaForTesting(
-        [=, this](ModelBasedCapabilityKey feature,
-                  const google::protobuf::MessageLite& m,
-                  std::optional<base::TimeDelta> t,
-                  std::unique_ptr<proto::LogAiDataRequest> l,
-                  OptimizationGuideModelExecutionResultCallback c) {
-          remote_execute_called_ = true;
-          last_remote_message_ = base::WrapUnique(m.New());
-          last_remote_message_->CheckTypeAndMergeFrom(m);
-          log_ai_data_request_passed_to_remote_ = std::move(l);
-
-          if (feature == ModelBasedCapabilityKey::kTextSafety) {
-            last_remote_ts_callback_ = std::move(c);
-          }
-        });
-  }
-
   void RecreateServiceController() {
     access_controller_ = nullptr;
     test_controller_ = nullptr;
@@ -365,11 +274,6 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
   raw_ptr<OnDeviceModelAccessController> access_controller_ = nullptr;
   ResponseHolder response_;
   base::test::ScopedFeatureList feature_list_;
-  bool remote_execute_called_ = false;
-  std::unique_ptr<google::protobuf::MessageLite> last_remote_message_;
-  std::unique_ptr<proto::LogAiDataRequest>
-      log_ai_data_request_passed_to_remote_;
-  OptimizationGuideModelExecutionResultCallback last_remote_ts_callback_;
   OptimizationGuideLogger logger_;
 };
 
@@ -746,7 +650,7 @@ TEST_F(OnDeviceModelServiceControllerTest, MidSessionModelUpdate) {
   Initialize(standard_assets_);
 
   auto session = test_controller_->CreateSession(
-      kFeature, base::BindRepeating(BadRequestRemote), logger_.GetWeakPtr(),
+      kFeature, CreateNoOpExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
 
   // Simulate a model update.
@@ -1307,7 +1211,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
   std::move(fallback_call.callback)
       .Run(OptimizationGuideModelExecutionResult(
-               base::ok(fallback.ComposeResponse("remote response")), nullptr),
+               base::ok(ComposeResponse("remote response")), nullptr),
            nullptr);
 
   ASSERT_TRUE(response_.GetFinalStatus());
@@ -1418,7 +1322,7 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackWithInvalidRawOutputChecks) {
   EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
   std::move(fallback_call.callback)
       .Run(OptimizationGuideModelExecutionResult(
-               base::ok(fallback.ComposeResponse("remote response")), nullptr),
+               base::ok(ComposeResponse("remote response")), nullptr),
            nullptr);
 
   ASSERT_TRUE(response_.GetFinalStatus());
@@ -1577,7 +1481,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
   std::move(fallback_call.callback)
       .Run(OptimizationGuideModelExecutionResult(
-               base::ok(fallback.ComposeResponse("remote response")), nullptr),
+               base::ok(ComposeResponse("remote response")), nullptr),
            nullptr);
 
   ASSERT_TRUE(response_.GetFinalStatus());
@@ -1897,7 +1801,7 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextDisconnectExecute) {
 TEST_F(OnDeviceModelServiceControllerTest, AddContextExecuteDisconnect) {
   Initialize(standard_assets_);
   auto session = test_controller_->CreateSession(
-      kFeature, base::BindRepeating(BadRequestRemote), logger_.GetWeakPtr(),
+      kFeature, CreateNoOpExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   session->AddContext(UserInputRequest("foo"));
@@ -1945,8 +1849,9 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
   Initialize(standard_assets_);
   fake_settings_.service_disconnect_reason =
       on_device_model::ServiceDisconnectReason::kGpuBlocked;
+  ExpectedRemoteFallback fallback;
   auto session = test_controller_->CreateSession(
-      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
 
@@ -1963,11 +1868,11 @@ TEST_F(OnDeviceModelServiceControllerTest, CallsRemoteExecute) {
         SessionImpl::AddContextResult::kUsingServer, 1);
   }
   session->ExecuteModel(PageUrlRequest("2"), response_.GetStreamingCallback());
-  EXPECT_TRUE(remote_execute_called_);
+  auto fallback_call = fallback.Take();
   EXPECT_FALSE(fake_launcher_.did_launch_service());
   // Did not start with on-device, so there should not have been a log entry
   // passed.
-  ASSERT_FALSE(log_ai_data_request_passed_to_remote_);
+  ASSERT_FALSE(fallback_call.log);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
@@ -1981,8 +1886,9 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
   test_controller_->MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
                                                bad_compose_asset.metadata());
 
+  ExpectedRemoteFallback fallback;
   auto session = test_controller_->CreateSession(
-      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   {
@@ -2001,10 +1907,10 @@ TEST_F(OnDeviceModelServiceControllerTest, AddContextInvalidConfig) {
         "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
         ExecuteModelResult::kOnDeviceNotUsed, 1);
   }
-  EXPECT_TRUE(remote_execute_called_);
+  auto fallback_call = fallback.Take();
   // The execute call never made it to on-device, so we shouldn't have created a
   // log entry.
-  EXPECT_FALSE(log_ai_data_request_passed_to_remote_);
+  EXPECT_FALSE(fallback_call.log);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
@@ -2018,8 +1924,9 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   test_controller_->MaybeUpdateModelAdaptation(bad_compose_asset.feature(),
                                                bad_compose_asset.metadata());
 
+  ExpectedRemoteFallback fallback;
   auto session = test_controller_->CreateSession(
-      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   base::HistogramTester histogram_tester;
@@ -2027,15 +1934,16 @@ TEST_F(OnDeviceModelServiceControllerTest, ExecuteInvalidConfig) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kFailedConstructingMessage, 1);
-  EXPECT_TRUE(remote_execute_called_);
-  EXPECT_FALSE(log_ai_data_request_passed_to_remote_->compose().has_response());
+  auto fallback_call = fallback.Take();
+  EXPECT_FALSE(fallback_call.log->compose().has_response());
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,
        FallbackToServerOnDisconnectWhileWaitingForExecute) {
   Initialize(standard_assets_);
+  ExpectedRemoteFallback fallback;
   auto session = test_controller_->CreateSession(
-      kFeature, CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(),
       /*config_params=*/std::nullopt);
   ASSERT_TRUE(session);
   task_environment_.RunUntilIdle();
@@ -2047,8 +1955,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Compose",
       ExecuteModelResult::kDisconnectAndMaybeFallback, 1);
-  EXPECT_TRUE(remote_execute_called_);
-  ASSERT_TRUE(log_ai_data_request_passed_to_remote_);
+  auto fallback_call = fallback.Take();
+  ASSERT_TRUE(fallback_call.log);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest,

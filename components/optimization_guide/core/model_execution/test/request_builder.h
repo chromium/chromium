@@ -18,6 +18,8 @@ proto::ComposeRequest UserInputRequest(const std::string& input);
 // A ComposeRequest with rewrite_params.previous_response filled.
 proto::ComposeRequest RewriteRequest(const std::string& previous_response);
 
+proto::Any ComposeResponse(const std::string& output);
+
 }  // namespace optimization_guide
 
 #endif  // COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_TEST_REQUEST_BUILDER_H_

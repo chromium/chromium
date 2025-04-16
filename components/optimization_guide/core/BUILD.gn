@@ -237,6 +237,8 @@ static_library("core") {
     sources += [
       "model_execution/aqa_response_parser.cc",
       "model_execution/aqa_response_parser.h",
+      "model_execution/execute_remote_fn.cc",
+      "model_execution/execute_remote_fn.h",
       "model_execution/json_response_parser.cc",
       "model_execution/json_response_parser.h",
       "model_execution/model_capability_client.cc",
@@ -461,6 +463,8 @@ static_library("test_support") {
       "mock_optimization_guide_model_executor.h",
       "model_execution/test/fake_model_assets.cc",
       "model_execution/test/fake_model_assets.h",
+      "model_execution/test/fake_remote.cc",
+      "model_execution/test/fake_remote.h",
       "model_execution/test/feature_config_builder.cc",
       "model_execution/test/feature_config_builder.h",
       "model_execution/test/request_builder.cc",

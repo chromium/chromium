@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
 
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 
 namespace optimization_guide {
@@ -26,6 +27,12 @@ proto::ComposeRequest RewriteRequest(const std::string& previous_response) {
   rewrite_params.set_previous_response(previous_response);
   rewrite_params.set_tone(proto::COMPOSE_FORMAL);
   return req;
+}
+
+proto::Any ComposeResponse(const std::string& output) {
+  proto::ComposeResponse response;
+  response.set_output(output);
+  return AnyWrapProto(response);
 }
 
 }  // namespace optimization_guide
