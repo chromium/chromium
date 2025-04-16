@@ -160,6 +160,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
     // The system share image has uneven vertical padding. Add a small bottom
     // padding to balance it.
+    // TODO(crbug.com/411039614): Replace UIGraphicsBeginImageContextWithOptions
+    // with UIGraphicsImageRenderer.
     UIGraphicsBeginImageContextWithOptions(
         CGSizeMake(image.size.width,
                    image.size.height + kShareIconBalancingHeightPadding),

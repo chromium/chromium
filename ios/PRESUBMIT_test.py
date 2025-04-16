@@ -190,6 +190,30 @@ class _CheckNotUsingNSUserDefaults(unittest.TestCase):
         self.assertTrue('ios/path/defaults_unittest.mm:3' in errors[0].message)
         self.assertTrue('ios/path/defaults_unittest.mm:4' in errors[0].message)
 
+class _CheckUIGraphicsBeginImageContextWithOptions(unittest.TestCase):
+    """Test the _CheckUIGraphicsBeginImageContextWithOptions presubmit."""
+
+    def testFindUsesOfDeprecatedAPIs(self):
+        good_lines = [
+          '// Update UIGraphicsBeginImageContextWithOptions',
+          ]
+        bad_lines = [
+          'UIGraphicsBeginImageContextWithOptions(',
+        ]
+
+        mock_input = PRESUBMIT_test_mocks.MockInputApi()
+        mock_input.files = [
+            PRESUBMIT_test_mocks.MockFile('ios/path/deprecated.mm',
+                                          good_lines + bad_lines),
+        ]
+        mock_output = PRESUBMIT_test_mocks.MockOutputApi()
+        errors = PRESUBMIT._CheckUIGraphicsBeginImageContextWithOptions(
+            mock_input, mock_output)
+        self.assertEqual(len(errors), 1)
+        self.assertEqual('error', errors[0].type)
+        self.assertFalse('ios/path/deprecated.mm:1' in errors[0].message)
+        self.assertTrue('ios/path/deprecated.mm:2' in errors[0].message)
+
 
 class CheckNewColorIntroductionTest(unittest.TestCase):
     """Test the _CheckNewColorIntroduction presubmit check."""

@@ -50,6 +50,8 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
   CGFloat imageWidth = self.frame.size.width;
   CGFloat imageHeight = self.frame.size.height;
 
+  // TODO(crbug.com/411039614): Replace UIGraphicsBeginImageContextWithOptions
+  // with UIGraphicsImageRenderer.
   UIGraphicsBeginImageContextWithOptions(CGSizeMake(imageWidth, imageHeight),
                                          YES, 0.0);
   [thumbnailImage drawInRect:CGRectMake(0, 0, imageWidth, imageHeight)];

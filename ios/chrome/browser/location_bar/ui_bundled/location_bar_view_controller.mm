@@ -635,6 +635,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
       // padding to balance it.
       UIImage* shareImage =
           DefaultSymbolWithPointSize(kShareSymbol, kSymbolImagePointSize);
+      // TODO(crbug.com/411039614): Replace
+      // UIGraphicsBeginImageContextWithOptions with UIGraphicsImageRenderer.
       UIGraphicsBeginImageContextWithOptions(
           CGSizeMake(shareImage.size.width,
                      shareImage.size.height + kShareIconBalancingHeightPadding),
