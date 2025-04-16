@@ -106,7 +106,8 @@ class LanguageDetectorCreateTask
     if (!maybe_model.has_value()) {
       switch (maybe_model.error()) {
         case DetectLanguageError::kUnavailable:
-          resolver_->Reject("Model not available");
+          resolver_->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kUnknownError, "Model not available"));
           break;
       }
       Cleanup();
@@ -149,6 +150,7 @@ void OnGotStatus(
 // static
 ScriptPromise<V8AIAvailability> LanguageDetector::availability(
     ScriptState* script_state,
+    LanguageDetectorCreateCoreOptions* options,
     ExceptionState& exception_state) {
   if (!ValidateScriptState(script_state, exception_state)) {
     return EmptyPromise();

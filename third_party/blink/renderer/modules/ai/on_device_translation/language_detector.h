@@ -24,6 +24,7 @@ class LanguageDetector final : public ScriptWrappable {
  public:
   static ScriptPromise<V8AIAvailability> availability(
       ScriptState* script_state,
+      LanguageDetectorCreateCoreOptions* options,
       ExceptionState& exception_state);
 
   static ScriptPromise<LanguageDetector> create(
