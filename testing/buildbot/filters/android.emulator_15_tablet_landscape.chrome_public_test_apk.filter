@@ -33,6 +33,9 @@
 
 # crbug.com/401292006
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImage
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImageLinkCopiesLinkURL
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyTelNumber
 
 # crbug.com/383144566
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testContextualDictionaryDefinitions
@@ -46,9 +49,16 @@
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testAllInternalStatesVisitedResolvingTap
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testResolveGestureSelects
 
+# crbug.com/401287512
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testNonResolveGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchInstrumentationTest.testResolveGesture
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchHistogramTest.testRelatedSearchesItemNotSelected
+-org.chromium.chrome.browser.contextualsearch.ContextualSearchHistogramTest.testRelatedSearchesItemSelected
+
 # crbug.com/401321001
 -org.chromium.chrome.browser.safety_hub.SafetyHubTest.testSafeBrowsingLearnMoreLink_OpensInCct
 -org.chromium.chrome.browser.safety_hub.SafetyHubTest.testHelpCenterArticle
+-org.chromium.chrome.browser.safety_hub.SafetyHubTest.testSafetyToolsLearnMoreLink_OpensInCct
 
 # crbug.com/408282366
 -org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping

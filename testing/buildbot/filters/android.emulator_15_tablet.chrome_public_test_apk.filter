@@ -12,6 +12,7 @@
 # crbug.com/401321001
 -org.chromium.chrome.browser.safety_hub.SafetyHubTest.testSafeBrowsingLearnMoreLink_OpensInCct
 -org.chromium.chrome.browser.safety_hub.SafetyHubTest.testHelpCenterArticle
+-org.chromium.chrome.browser.safety_hub.SafetyHubTest.testSafetyToolsLearnMoreLink_OpensInCct
 
 # crbug.com/383144566
 -org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerTest.testContextualDictionaryDefinitions
@@ -41,6 +42,9 @@
 
 # crbug.com/401292006
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImage
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyImageLinkCopiesLinkURL
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testCopyTelNumber
 
 # crbug.com/401272905
 -org.chromium.chrome.browser.keyboard_accessory.PasswordGenerationIntegrationTest.testManualGenerationCancel
