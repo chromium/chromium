@@ -9,6 +9,13 @@
 
 namespace optimization_guide {
 
+SkBitmap CreateBlackSkBitmap(int width, int height) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(width, height);
+  bitmap.eraseColor(SK_ColorBLACK);
+  return bitmap;
+}
+
 proto::ComposeRequest PageUrlRequest(const std::string& input) {
   proto::ComposeRequest req;
   req.mutable_page_metadata()->set_page_url(std::string(input));

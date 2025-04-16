@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/optimization_guide/core/model_execution/substitution.h"
 
 #include <cstdint>
@@ -18,6 +13,7 @@
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
+#include "components/optimization_guide/core/model_execution/test/request_builder.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
@@ -514,14 +510,6 @@ auto MediaSubstitutionConfig() {
        ->mutable_proto_field() = ProtoField(
       {RequestProto::kNested1FieldNumber, NestedProto::kMediaFieldNumber});
   return subs;
-}
-
-SkBitmap CreateBlackSkBitmap(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  // Setting the pixels to transparent-black.
-  memset(bitmap.getPixels(), 0, width * height * 4);
-  return bitmap;
 }
 
 ml::AudioBuffer CreateAudioBuffer() {

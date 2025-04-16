@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/optimization_guide/core/model_execution/execute_remote_fn.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
+#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 
 #include <memory>
 #include <optional>
@@ -39,7 +35,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_metadata.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/fake_remote.h"
@@ -3225,14 +3220,6 @@ TEST_F(OnDeviceModelServiceControllerTest, SendsPerformanceHint) {
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(),
             "Fastest inference\nContext: execute:foo off:0 max:1024\n");
-}
-
-SkBitmap CreateBlackSkBitmap(int width, int height) {
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(width, height);
-  // Setting the pixels to transparent-black.
-  memset(bitmap.getPixels(), 0, width * height * 4);
-  return bitmap;
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, ImageExecutionSuccess) {
