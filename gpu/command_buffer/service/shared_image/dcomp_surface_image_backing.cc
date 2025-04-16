@@ -472,7 +472,8 @@ wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
 
   DCHECK(!shared_texture_memory_);
   shared_texture_memory_ =
-      CreateDawnSharedTextureMemory(device, dcomp_surface_draw_texture_copy_);
+      CreateDawnSharedTextureMemory(device, dcomp_surface_draw_texture_copy_,
+                                    /*requires_dawn_signal_fence=*/false);
   if (!shared_texture_memory_) {
     LOG(ERROR) << "Failed to create shared texture memory.";
     return nullptr;
