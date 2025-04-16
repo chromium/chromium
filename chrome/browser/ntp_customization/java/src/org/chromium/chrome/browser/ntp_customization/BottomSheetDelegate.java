@@ -22,4 +22,11 @@ public interface BottomSheetDelegate {
 
     /** Handles back button clicks in the bottom sheet. */
     void backPressOnCurrentBottomSheet();
+
+    /**
+     * Called whenever the feed's visibility is toggled.
+     *
+     * @param isFeedVisible True when the feed is visible to the user.
+     */
+    void onFeedStatusChanged(boolean isFeedVisible);
 }

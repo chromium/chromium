@@ -75,6 +75,7 @@ android_resources("java_resources") {
     "java/res/values-night/colors.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
+    "java/res/values/ids.xml",
   ]
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",

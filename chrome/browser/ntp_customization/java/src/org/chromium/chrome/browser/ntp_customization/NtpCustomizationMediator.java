@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LAYOUT_TO_DISPLAY;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.LIST_CONTAINER_VIEW_DELEGATE;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties.MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -16,14 +17,18 @@ import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.ViewFlipper;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.feed.FeedFeatures;
+import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.prefs.PrefService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
@@ -47,10 +52,12 @@ public class NtpCustomizationMediator {
     private final NtpCustomizationBottomSheetContent mBottomSheetContent;
     private final BottomSheetObserver mBottomSheetObserver;
     private final PropertyModel mViewFlipperPropertyModel;
-    private final List<Integer> mListContent;
+    private List<Integer> mListContent;
     private final PropertyModel mContainerPropertyModel;
     private final Supplier<ProfileProvider> mProfileSupplier;
+    private Profile mProfile;
     private Integer mCurrentBottomSheet;
+    private static PrefService sPrefServiceForTest;
 
     public NtpCustomizationMediator(
             BottomSheetController bottomSheetController,
@@ -136,6 +143,18 @@ public class NtpCustomizationMediator {
             }
 
             @Override
+            public int getListItemId(int type) {
+                switch (type) {
+                    case NTP_CARDS:
+                        return R.id.ntp_cards;
+                    case FEED:
+                        return R.id.feed_settings;
+                    default:
+                        return View.NO_ID;
+                }
+            }
+
+            @Override
             public String getListItemTitle(int type, Context context) {
                 switch (type) {
                     case NTP_CARDS:
@@ -152,8 +171,7 @@ public class NtpCustomizationMediator {
             @Nullable
             public String getListItemSubtitle(int type, Context context) {
                 if (type == FEED) {
-                    // TODO(crbug.com/397439004): Add logics to display "off".
-                    return context.getString(R.string.ntp_customization_feed_section_on);
+                    return context.getString(getFeedSectionSubtitleId());
                 }
                 return null;
             }
@@ -196,10 +214,10 @@ public class NtpCustomizationMediator {
             return List.of(NTP_CARDS);
         }
 
-        Profile profile = mProfileSupplier.get().getOriginalProfile();
+        mProfile = mProfileSupplier.get().getOriginalProfile();
         List<Integer> content = new ArrayList<>();
         content.add(NTP_CARDS);
-        if (FeedFeatures.isFeedEnabled(profile)) {
+        if (FeedFeatures.isFeedEnabled(mProfile)) {
             content.add(FEED);
         }
         return content;
@@ -209,6 +227,41 @@ public class NtpCustomizationMediator {
     void destroy() {
         mViewFlipperMap.clear();
         mTypeToListenersMap.clear();
+    }
+
+    /**
+     * Updates the subtitle of the feed section in the main bottom sheet.
+     *
+     * <p>Called when users enable or disable showing Feeds.
+     *
+     * @param isFeedVisible True when the feed is visible to the user.
+     */
+    void updateFeedSectionSubtitle(boolean isFeedVisible) {
+        mContainerPropertyModel.set(
+                MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE,
+                isFeedVisible ? R.string.text_on : R.string.text_off);
+    }
+
+    /** Returns the source id of the feed section subtitle. */
+    private int getFeedSectionSubtitleId() {
+        return getPrefService().getBoolean(Pref.ARTICLES_LIST_VISIBLE)
+                ? R.string.text_on
+                : R.string.text_off;
+    }
+
+    private PrefService getPrefService() {
+        if (sPrefServiceForTest != null) return sPrefServiceForTest;
+
+        assert mProfile != null;
+        return UserPrefs.get(mProfile);
+    }
+
+    static void setPrefForTesting(PrefService prefService) {
+        sPrefServiceForTest = prefService;
+        ResettersForTesting.register(
+                () -> {
+                    sPrefServiceForTest = null;
+                });
     }
 
     Map<Integer, Integer> getViewFlipperMapForTesting() {
@@ -231,5 +284,9 @@ public class NtpCustomizationMediator {
 
     Map<Integer, View.OnClickListener> getTypeToListenersForTesting() {
         return mTypeToListenersMap;
+    }
+
+    void setListContetForTesting(List<Integer> listContent) {
+        mListContent = listContent;
     }
 }

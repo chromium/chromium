@@ -17,7 +17,6 @@ import android.view.View;
 import android.widget.ViewFlipper;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,14 +55,12 @@ public class NtpCustomizationCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testShowBottomSheet() {
         mNtpCustomizationCoordinator.showBottomSheet();
         verify(mMediator).showBottomSheet(eq(MAIN));
     }
 
     @Test
-    @SmallTest
     public void testBottomSheetDelegateImplementation() {
         BottomSheetDelegate delegate =
                 mNtpCustomizationCoordinator.getBottomSheetDelegateForTesting();
@@ -78,7 +75,6 @@ public class NtpCustomizationCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetOptionClickListener() {
         View.OnClickListener listener =
                 mNtpCustomizationCoordinator.getOptionClickListener(NTP_CARDS);
@@ -89,7 +85,6 @@ public class NtpCustomizationCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testDestroy() {
         NtpCardsCoordinator ntpCardsCoordinator = mock(NtpCardsCoordinator.class);
         mNtpCustomizationCoordinator.setNtpCardsCoordinatorForTesting(ntpCardsCoordinator);

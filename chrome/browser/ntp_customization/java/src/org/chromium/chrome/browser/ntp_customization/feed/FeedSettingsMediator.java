@@ -66,6 +66,7 @@ public class FeedSettingsMediator {
     private final PropertyModel mContainerPropertyModel;
     private final PropertyModel mBottomSheetPropertyModel;
     private final PropertyModel mFeedSettingsPropertyModel;
+    private final BottomSheetDelegate mBottomSheetDelegate;
     private final Profile mProfile;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private static PrefService sPrefServiceForTest;
@@ -81,12 +82,13 @@ public class FeedSettingsMediator {
         mContainerPropertyModel = containerPropertyModel;
         mBottomSheetPropertyModel = bottomSheetPropertyModel;
         mFeedSettingsPropertyModel = feedSettingsPropertyModel;
+        mBottomSheetDelegate = delegate;
         mProfile = profile;
 
         mListItemsContent = buildFeedListContent();
         mContainerPropertyModel.set(LIST_CONTAINER_VIEW_DELEGATE, createListDelegate());
         mBottomSheetPropertyModel.set(
-                BACK_PRESS_HANDLER, v -> delegate.backPressOnCurrentBottomSheet());
+                BACK_PRESS_HANDLER, v -> mBottomSheetDelegate.backPressOnCurrentBottomSheet());
         if (mListItemsContent.isEmpty()) {
             mFeedSettingsPropertyModel.set(IS_FEED_LIST_ITEMS_TITLE_VISIBLE, false);
         }
@@ -131,7 +133,9 @@ public class FeedSettingsMediator {
      */
     @VisibleForTesting
     void updateFeedSwitch() {
-        mFeedSettingsPropertyModel.set(IS_FEED_SWITCH_CHECKED, isFeedTurnedOn());
+        boolean isFeedTurnedOn = isFeedTurnedOn();
+        mFeedSettingsPropertyModel.set(IS_FEED_SWITCH_CHECKED, isFeedTurnedOn);
+        mBottomSheetDelegate.onFeedStatusChanged(isFeedTurnedOn);
     }
 
     /**
@@ -316,7 +320,11 @@ public class FeedSettingsMediator {
             PrefChangeRegistrar prefChangeRegistrar, PrefService prefService) {
         sPrefChangeRegistarForTest = prefChangeRegistrar;
         sPrefServiceForTest = prefService;
-        ResettersForTesting.register(() -> sPrefServiceForTest = null);
+        ResettersForTesting.register(
+                () -> {
+                    sPrefServiceForTest = null;
+                    sPrefChangeRegistarForTest = null;
+                });
     }
 
     void setListItemsContentForTesting(List<Integer> listItemsContent) {

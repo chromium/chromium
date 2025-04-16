@@ -22,6 +22,15 @@ public interface ListContainerViewDelegate {
     List<Integer> getListItems();
 
     /**
+     * Returns the view id to be assigned to the list item for the given type.
+     *
+     * @param type The type of the list item.
+     */
+    default int getListItemId(int type) {
+        return View.NO_ID;
+    }
+
+    /**
      * Returns the title to be displayed in the the list item for the given type.
      *
      * @param type The type of the list item.

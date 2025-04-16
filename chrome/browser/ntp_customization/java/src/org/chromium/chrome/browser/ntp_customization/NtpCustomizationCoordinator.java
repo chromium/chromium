@@ -166,6 +166,11 @@ public class NtpCustomizationCoordinator {
             public void backPressOnCurrentBottomSheet() {
                 mMediator.backPressOnCurrentBottomSheet();
             }
+
+            @Override
+            public void onFeedStatusChanged(boolean isVisible) {
+                mMediator.updateFeedSectionSubtitle(isVisible);
+            }
         };
     }
 

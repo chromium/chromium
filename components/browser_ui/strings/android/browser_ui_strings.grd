@@ -1294,9 +1294,6 @@
       <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTINGS_TITLE" desc="Open setting page for feed section customization when clicked">
         Discover feed
       </message>
-      <message name="IDS_NTP_CUSTOMIZATION_FEED_SECTION_ON" desc="This texts show the feed section is visible at the new tab page">
-        On
-      </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the new tab page customization main bottom sheet.">
         Customize your new tab page bottom sheet
       </message>

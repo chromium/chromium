@@ -71,7 +71,7 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/ntp_customization_edit_icon_margin"
             tools:baselinealigned="false"
-            android:text="@string/ntp_customization_feed_section_on" />
+            android:text="@string/text_on" />
     </LinearLayout>
 
     <TextView

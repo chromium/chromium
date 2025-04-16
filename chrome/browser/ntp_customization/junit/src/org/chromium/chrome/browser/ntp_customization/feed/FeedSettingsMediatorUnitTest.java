@@ -144,10 +144,12 @@ public class FeedSettingsMediatorUnitTest {
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
         mFeedSettingsMediator.updateFeedSwitch();
         verify(mFeedSettingsPropertyModel).set(eq(IS_FEED_SWITCH_CHECKED), eq(true));
+        verify(mDelegate).onFeedStatusChanged(/* isFeedVisible= */ true);
 
         when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
         mFeedSettingsMediator.updateFeedSwitch();
         verify(mFeedSettingsPropertyModel, times(2)).set(eq(IS_FEED_SWITCH_CHECKED), eq(false));
+        verify(mDelegate).onFeedStatusChanged(/* isFeedVisible= */ false);
     }
 
     @Test

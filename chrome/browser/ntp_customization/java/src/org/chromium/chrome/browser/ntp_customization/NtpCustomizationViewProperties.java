@@ -28,9 +28,15 @@ public class NtpCustomizationViewProperties {
     public static final PropertyModel.WritableObjectPropertyKey<ListContainerViewDelegate>
             LIST_CONTAINER_VIEW_DELEGATE = new PropertyModel.WritableObjectPropertyKey<>();
 
+    /** The feed section subtitle in the main bottom sheet. */
+    public static final PropertyModel.WritableIntPropertyKey
+            MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE = new PropertyModel.WritableIntPropertyKey();
+
     /** The keys to bind a {@link BottomSheetListContainerView}. */
     public static final PropertyKey[] LIST_CONTAINER_KEYS =
-            new PropertyKey[] {LIST_CONTAINER_VIEW_DELEGATE};
+            new PropertyKey[] {
+                LIST_CONTAINER_VIEW_DELEGATE, MAIN_BOTTOM_SHEET_FEED_SECTION_SUBTITLE
+            };
 
     /** The click listener to handle back button clicks in the bottom sheet. */
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
