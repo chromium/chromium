@@ -592,8 +592,8 @@ base::CallbackListSubscription TabAndroid::RegisterWillDiscardContents(
 }
 
 bool TabAndroid::IsActivated() const {
-  NOTIMPLEMENTED();
-  return false;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_TabImpl_isActivated(env, weak_java_tab_.get(env));
 }
 
 base::CallbackListSubscription TabAndroid::RegisterDidActivate(

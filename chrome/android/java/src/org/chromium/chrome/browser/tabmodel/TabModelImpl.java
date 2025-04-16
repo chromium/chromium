@@ -103,6 +103,7 @@ public class TabModelImpl extends TabModelJniBridge {
             if (mIndex >= insertIndex) mIndex++;
             assert !tab.isDestroyed() : "Attempting to undo tab that is destroyed.";
             mTabs.add(insertIndex, tab);
+            tab.onAddedToTabModel(mCurrentTabSupplier);
             mTabIdToTabs.put(tab.getId(), tab);
             mTabCountSupplier.set(mTabs.size());
 
@@ -309,6 +310,7 @@ public class TabModelImpl extends TabModelJniBridge {
                     mIndex++;
                 }
             }
+            tab.onAddedToTabModel(mCurrentTabSupplier);
             mTabIdToTabs.put(tab.getId(), tab);
             mTabCountSupplier.set(mTabs.size());
 
@@ -840,6 +842,7 @@ public class TabModelImpl extends TabModelJniBridge {
         }
 
         mTabs.remove(tab);
+        tab.onRemovedFromTabModel(mCurrentTabSupplier);
         mTabIdToTabs.remove(tab.getId());
         mTabCountSupplier.set(mTabs.size());
 
