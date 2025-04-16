@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "components/enterprise/browser/reporting/report_generation_config.h"
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "net/base/backoff_entry.h"
@@ -50,7 +51,7 @@ class ReportUploader {
 
   // Sets a list of requests and upload it. Request will be uploaded one after
   // another.
-  virtual void SetRequestAndUpload(ReportType report_type,
+  virtual void SetRequestAndUpload(const ReportGenerationConfig& config,
                                    ReportRequestQueue requests,
                                    ReportCallback callback);
 
@@ -75,7 +76,7 @@ class ReportUploader {
   raw_ptr<policy::CloudPolicyClient> client_;
   ReportCallback callback_;
   ReportRequestQueue requests_;
-  ReportType report_type_;
+  ReportGenerationConfig config_;
 
   net::BackoffEntry backoff_entry_;
   base::OneShotTimer backoff_request_timer_;

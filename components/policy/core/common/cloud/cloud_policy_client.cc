@@ -1033,6 +1033,7 @@ void CloudPolicyClient::UploadChromeOsUserReport(
 }
 
 void CloudPolicyClient::UploadChromeProfileReport(
+    bool use_cookies,
     std::unique_ptr<em::ChromeProfileReportRequest> chrome_profile_report,
     CloudPolicyClient::ResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1048,6 +1049,7 @@ void CloudPolicyClient::UploadChromeProfileReport(
           DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT,
           std::move(callback));
 
+  config->set_use_cookies(use_cookies);
   config->request()->set_allocated_chrome_profile_report_request(
       chrome_profile_report.release());
 

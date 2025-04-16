@@ -44,6 +44,7 @@ class ReportScheduler {
     kTriggerUpdate = 1U << 1,      // An update was detected.
     kTriggerNewVersion = 1U << 2,  // A new version is running.
     kTriggerManual = 1U << 3,      // Trigger manually.
+    kTriggerSecurity = 1U << 4,    // Triggered by a security trigger.
   };
 
   using ReportTriggerCallback = base::RepeatingCallback<void(ReportTrigger)>;
@@ -183,6 +184,8 @@ class ReportScheduler {
 
   // The trigger responsible for initiating active report generation.
   ReportTrigger active_trigger_ = kTriggerNone;
+  // The configuration for  active report generation.
+  ReportGenerationConfig active_report_generation_config_;
 
   // The set of triggers that have fired while processing a report (a bitfield
   // of ReportTrigger values). They will be handled following completion of the

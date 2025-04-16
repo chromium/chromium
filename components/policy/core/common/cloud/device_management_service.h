@@ -245,6 +245,9 @@ class POLICY_EXPORT DeviceManagementService {
     // The content type of the payload.
     virtual std::string GetContentType() = 0;
 
+    // Whether the request will forward user cookies or not.
+    virtual bool AreCookiesUsed() = 0;
+
     // Returns the network annotation to assign to requests.
     virtual net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() = 0;
 
@@ -375,6 +378,9 @@ class POLICY_EXPORT JobConfigurationBase
       const std::string& response_body) override;
   std::optional<base::TimeDelta> GetTimeoutDuration() override;
   std::string GetContentType() override;
+  bool AreCookiesUsed() override;
+
+  void set_use_cookies(bool use_cookies) { use_cookies_ = use_cookies; }
 
  protected:
   JobConfigurationBase(JobType type,

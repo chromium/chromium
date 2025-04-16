@@ -41,10 +41,10 @@ ReportUploader::ReportUploader(policy::CloudPolicyClient* client,
       maximum_number_of_retries_(maximum_number_of_retries) {}
 ReportUploader::~ReportUploader() = default;
 
-void ReportUploader::SetRequestAndUpload(ReportType report_type,
+void ReportUploader::SetRequestAndUpload(const ReportGenerationConfig& config,
                                          ReportRequestQueue requests,
                                          ReportCallback callback) {
-  report_type_ = report_type;
+  config_ = config;
   requests_ = std::move(requests);
   callback_ = std::move(callback);
   Upload();
@@ -54,7 +54,7 @@ void ReportUploader::Upload() {
   auto callback = base::BindRepeating(&ReportUploader::OnRequestFinished,
                                       weak_ptr_factory_.GetWeakPtr());
 
-  switch (report_type_) {
+  switch (config_.report_type) {
     case ReportType::kFull:
     case ReportType::kBrowserVersion: {
       auto request = std::make_unique<ReportRequest::DeviceReportRequestProto>(
@@ -77,8 +77,8 @@ void ReportUploader::Upload() {
       auto request = std::make_unique<em::ChromeProfileReportRequest>(
           requests_.front()->GetChromeProfileReportRequest());
       VLOG(2) << "Uploading report: " << request->SerializeAsString();
-      client_->UploadChromeProfileReport(std::move(request),
-                                         std::move(callback));
+      client_->UploadChromeProfileReport(
+          config_.use_cookies, std::move(request), std::move(callback));
       break;
     }
   }

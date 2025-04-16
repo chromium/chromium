@@ -35,6 +35,7 @@ bool IsBrowserVersionUploaded(ReportScheduler::ReportTrigger trigger) {
     case ReportScheduler::kTriggerManual:
     case ReportScheduler::kTriggerUpdate:
     case ReportScheduler::kTriggerNewVersion:
+    case ReportScheduler::kTriggerSecurity:
       return true;
     case ReportScheduler::kTriggerNone:
       return false;
@@ -247,7 +248,19 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   }
 
   active_trigger_ = trigger;
-  ReportType report_type = TriggerToReportType(trigger);
+  ReportType report_type = TriggerToReportType(active_trigger_);
+  SecuritySignalsMode signals_mode = SecuritySignalsMode::kNoSignals;
+  if (report_type == ReportType::kProfileReport) {
+    signals_mode = delegate_->AreSecurityReportsEnabled()
+                       ? (active_trigger_ == ReportScheduler::kTriggerSecurity
+                              ? SecuritySignalsMode::kSignalsOnly
+                              : SecuritySignalsMode::kSignalsAttached)
+                       : SecuritySignalsMode::kNoSignals;
+  }
+
+  active_report_generation_config_ = ReportGenerationConfig(
+      report_type, signals_mode, delegate_->UseCookiesInUploads());
+
   if (report_type == ReportType::kProfileReport) {
     DCHECK(profile_request_generator_);
     profile_request_generator_->Generate(base::BindOnce(
@@ -255,8 +268,9 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   } else {
     DCHECK(report_generator_);
     report_generator_->Generate(
-        report_type, base::BindOnce(&ReportScheduler::OnReportGenerated,
-                                    base::Unretained(this)));
+        active_report_generation_config_.report_type,
+        base::BindOnce(&ReportScheduler::OnReportGenerated,
+                       base::Unretained(this)));
   }
 }
 
@@ -277,9 +291,9 @@ void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
         std::make_unique<ReportUploader>(cloud_policy_client_, kMaximumRetry);
   }
   RecordUploadTrigger(active_trigger_);
-  // TODO(crbug.com/399164647): Add cookie to upload request for signals reports
+
   report_uploader_->SetRequestAndUpload(
-      TriggerToReportType(active_trigger_), std::move(requests),
+      active_report_generation_config_, std::move(requests),
       base::BindOnce(&ReportScheduler::OnReportUploaded,
                      base::Unretained(this)));
 }
@@ -377,7 +391,8 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
     kExtensionRequest = 4,          // Deprecated.
     kExtensionRequestRealTime = 5,  // Deprecated.
     kManual = 6,
-    kMaxValue = kManual
+    kSecurity = 7,
+    kMaxValue = kSecurity
   } sample = Sample::kNone;
   switch (trigger) {
     case kTriggerNone:
@@ -393,6 +408,9 @@ void ReportScheduler::RecordUploadTrigger(ReportTrigger trigger) {
       break;
     case kTriggerNewVersion:
       sample = Sample::kNewVersion;
+      break;
+    case kTriggerSecurity:
+      sample = Sample::kSecurity;
       break;
   }
   base::UmaHistogramEnumeration("Enterprise.CloudReportingUploadTrigger",
@@ -411,6 +429,9 @@ ReportType ReportScheduler::TriggerToReportType(
       return ReportType::kBrowserVersion;
     case ReportScheduler::kTriggerNewVersion:
       return ReportType::kBrowserVersion;
+    case ReportScheduler::kTriggerSecurity:
+      // Security triggers are not supported at the browser-level yet.
+      return ReportType::kProfileReport;
   }
 }
 
