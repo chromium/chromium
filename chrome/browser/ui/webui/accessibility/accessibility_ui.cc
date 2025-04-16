@@ -301,8 +301,7 @@ std::string RecursiveDumpAXPlatformNodeAsString(
     return "";
   }
   std::string str(2 * indent, '+');
-  ui::AXPlatformNodeDelegate* const node_delegate = node->GetDelegate();
-  std::string line = node_delegate->GetData().ToString();
+  std::string line = node->GetDelegate()->GetData().ToString();
   std::vector<std::string> attributes = base::SplitString(
       line, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (std::string attribute : attributes) {
@@ -312,9 +311,8 @@ std::string RecursiveDumpAXPlatformNodeAsString(
     }
   }
   str += "\n";
-  for (size_t i = 0, child_count = node_delegate->GetChildCount();
-       i < child_count; i++) {
-    gfx::NativeViewAccessible child = node_delegate->ChildAtIndex(i);
+  for (size_t i = 0; i < node->GetDelegate()->GetChildCount(); i++) {
+    gfx::NativeViewAccessible child = node->GetDelegate()->ChildAtIndex(i);
     ui::AXPlatformNode* child_node =
         ui::AXPlatformNode::FromNativeViewAccessible(child);
     str += RecursiveDumpAXPlatformNodeAsString(child_node, indent + 1,

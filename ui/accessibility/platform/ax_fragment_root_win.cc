@@ -241,7 +241,10 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
     UIA_VALIDATE_CALL();
     WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ADVISE_EVENT_ADDED);
 
-    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(GetDelegate());
+    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(delegate_);
+    if (!root) {
+      return S_OK;
+    }
 
     base::win::ScopedSafearray safe_array(property_ids);
     absl::Cleanup release_safe_array(
@@ -260,7 +263,10 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
     UIA_VALIDATE_CALL();
     WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ADVISE_EVENT_REMOVED);
 
-    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(GetDelegate());
+    AXFragmentRootWin* root = static_cast<AXFragmentRootWin*>(delegate_);
+    if (!root) {
+      return S_OK;
+    }
 
     base::win::ScopedSafearray safe_array(property_ids);
     absl::Cleanup release_safe_array(
