@@ -23,10 +23,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -80,7 +77,6 @@ public class TabArchiveSettingsFragmentUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS)
     public void testLaunchSettings() {
         mArchiveSettings.setArchiveEnabled(true);
         mArchiveSettings.setArchiveTimeDeltaDays(7);
@@ -179,19 +175,5 @@ public class TabArchiveSettingsFragmentUnitTest {
         assertEquals(
                 "After 21 days",
                 archiveTimeDeltaPreference.getRadioButtonForTesting(3).getPrimaryText());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER_ARCHIVE_DUPLICATE_TABS)
-    public void testArchiveDuplicateTabsSettingDisabled() {
-        mArchiveSettings.setArchiveEnabled(true);
-        TabArchiveSettingsFragment tabArchiveSettingsFragment = launchFragment();
-
-        ChromeSwitchPreference enableArchiveDuplicateTabs =
-                tabArchiveSettingsFragment.findPreference(
-                        TabArchiveSettingsFragment.PREF_TAB_ARCHIVE_INCLUDE_DUPLICATE_TABS);
-        assertFalse(enableArchiveDuplicateTabs.isEnabled());
-        assertFalse(enableArchiveDuplicateTabs.isChecked());
-        assertFalse(mArchiveSettings.isArchiveDuplicateTabsEnabled());
     }
 }

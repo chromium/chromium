@@ -729,21 +729,6 @@
             ]
         }
     ],
-    "AndroidTabDeclutterDuplicateUrls": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidTabDeclutterArchiveDuplicateTabs"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidUseFrameIntervalDeciderNewAndroidFeatures": [
         {
             "platforms": [
