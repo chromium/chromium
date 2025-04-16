@@ -10,10 +10,12 @@ html {
   --google-gray-500: rgb(154, 160, 166);
   --google-gray-700: rgb(95, 99, 104);
   --google-grey-900: rgb(32, 33, 36);
+  --cr-title-text-color: rgb(90, 90,90);
 
   --heading-color: var(--google-gray-900);
   --link-color: var(--google-blue-700);
   --text-color: var(--google-gray-700);
+  --subtitle-text-color: var(--cr-title-text-color);
 
   -webkit-text-size-adjust: 100%;
 
@@ -27,6 +29,8 @@ html {
     --heading-color: var(--google-grey-200);
     --text-color: var(--google-gray-500);
     --link-color: var(--google-blue-300);
+    --cr-title-text-color: var(--google-grey-200);
+
     background: var(--google-grey-900);
   }
 }
@@ -66,10 +70,36 @@ a {
   margin-bottom: 16px;
 }
 
-#secondary-message {
+.description-text {
   color: var(--text-color);
   font-size: 1.2em;
+  line-height: 1.6em;
   font-weight: normal;
+}
+
+#connectors-section-title {
+  color: var(--subtitle-text-color);
+  font-size: 1.4em;
+  font-weight: normal;
+  line-height: 1.25em;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+#connectors-section-description {
+  margin-bottom: 28px;
+}
+
+.event-section {
+  margin-bottom: 24px;
+  margin-top: 24px;
+}
+
+.event-title {
+  color: var(--subtitle-text-color);
+  font-size: 1.3em;
+  font-weight: 590;
+  margin-bottom: 8px;
 }
 
 @media (max-width: 700px) {
@@ -113,14 +143,21 @@ a {
 
   #main-message,
   #unmanaged-info {
-    font-size: 1.5em;
+    font-size: 1.54em;
     margin-bottom: 8px;
   }
 
-  #secondary-message {
+  .description-text {
     font-size: .95em;
-    line-height: 1.61em;
-    margin-top: 8px;
+    line-height: 1.57em;
+  }
+
+  #connectors-section-title {
+    font-size: 1.33em;
+  }
+
+  .event-title {
+    font-size: 1em;
   }
 }
 

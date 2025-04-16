@@ -6,7 +6,9 @@
 
 #import <optional>
 
+#import "base/strings/strcat.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/enterprise/connectors/core/features.h"
 #import "components/grit/management_resources.h"
 #import "components/grit/management_resources_map.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
@@ -15,6 +17,9 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
+#import "ios/chrome/browser/enterprise/connectors/connectors_util.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -28,6 +33,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+
+using enterprise_connectors::ConnectorsService;
 
 // Returns the management message depending on the levels of the policies that
 // are applied. Returns std::nullopt if there are no policies.
@@ -76,6 +83,76 @@ std::optional<std::u16string> GetManagementMessage(web::WebUIIOS* web_ui) {
   return std::nullopt;
 }
 
+// Whether the "Page is visited" event subsection under Chrome Enteprise
+// Connectors should be displayed. This subsection is visible if Enterprise Url
+// filtering is enabled.
+bool IsPageVisitEventEnabled(ConnectorsService* connectors_service) {
+  return enterprise_connectors::IsEnterpriseUrlFilteringEnabled(
+      connectors_service);
+}
+
+// Whether the "Security event occurs" event subsection under Chrome Enteprise
+// Connectors should be displayed. This subsection is visible if Enterprise
+// Event Reporting is enabled.
+bool IsSecurityEventEnabled(ConnectorsService* connectors_service) {
+  if (!base::FeatureList::IsEnabled(
+          enterprise_connectors::kEnterpriseRealtimeEventReportingOnIOS)) {
+    return false;
+  }
+  return !connectors_service->GetReportingServiceProviderNames().empty();
+}
+
+// Returns the message explaining that Chrome Enterprise Connectors are turned
+// on.
+std::u16string GetConnectorsSectionDescription(
+    ConnectorsService* connectors_service) {
+  const std::string enterprise_manager =
+      connectors_service->GetManagementDomain();
+
+  return enterprise_manager.empty()
+             ? l10n_util::GetStringUTF16(
+                   IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION)
+             : l10n_util::GetStringFUTF16(
+                   IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY,
+                   base::UTF8ToUTF16(enterprise_manager));
+}
+
+// Helper for building the title of a Chrome Enterprise Connectors event
+// subsection.
+std::u16string GetEventTitle(int event_title_id) {
+  return base::StrCat(
+      {l10n_util::GetStringUTF16(IDS_MANAGEMENT_CONNECTORS_EVENT), u": ",
+       l10n_util::GetStringUTF16(event_title_id)});
+}
+
+// Helper for building the description of a Chrome Enterprise Connectors event
+// subsection.
+std::u16string GetEventDescription(int event_description_id) {
+  return base::StrCat(
+      {l10n_util::GetStringUTF16(IDS_MANAGEMENT_CONNECTORS_VISIBLE_DATA), u": ",
+       l10n_util::GetStringUTF16(event_description_id)});
+}
+
+// Title for the Chrome Enterprise Connectors Page Visit event subsection.
+std::u16string GetPageVisitEventTitle() {
+  return GetEventTitle(IDS_MANAGEMENT_PAGE_VISITED_EVENT);
+}
+
+// Description for the Chrome Enterprise Connectors Page Visit event subsection.
+std::u16string GetPageVisitEventDescription() {
+  return GetEventDescription(IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA);
+}
+
+// Title for the Chrome Enterprise Connectors Security event subsection.
+std::u16string GetSecurityEventTitle() {
+  return GetEventTitle(IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT);
+}
+
+// Description for the Chrome Enterprise Connectors Security event subsection.
+std::u16string GetSecurityEventDescription() {
+  return GetEventDescription(IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA);
+}
+
 // Creates the HTML source for the chrome://management page.
 web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
   web::WebUIIOSDataSource* source =
@@ -84,7 +161,7 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
   std::optional<std::u16string> management_message =
       GetManagementMessage(web_ui);
 
-  source->AddString("isManaged", management_message ? "true" : "false");
+  source->AddBoolean("isManaged", management_message.has_value());
   source->AddString("learnMoreURL", kManagementLearnMoreURL);
 
   source->AddString("managementMessage",
@@ -94,6 +171,27 @@ web::WebUIIOSDataSource* CreateManagementUIHTMLSource(web::WebUIIOS* web_ui) {
                              IDS_IOS_MANAGEMENT_UI_UNMANAGED_DESC);
   source->AddLocalizedString("learnMore",
                              IDS_IOS_MANAGEMENT_UI_LEARN_MORE_LINK);
+
+  // Connectors Section
+  ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui)->GetOriginalProfile();
+  auto* connectors_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetForProfile(profile);
+  CHECK(connectors_service);
+
+  source->AddLocalizedString("connectorsSectionTitle",
+                             IDS_MANAGEMENT_THREAT_PROTECTION);
+  source->AddString("connectorsDescription",
+                    GetConnectorsSectionDescription(connectors_service));
+
+  source->AddBoolean("pageVisitEventEnabled",
+                     IsPageVisitEventEnabled(connectors_service));
+  source->AddString("pageVisitEventTitle", GetPageVisitEventTitle());
+  source->AddString("pageVisitEventData", GetPageVisitEventDescription());
+
+  source->AddBoolean("securityEventEnabled",
+                     IsSecurityEventEnabled(connectors_service));
+  source->AddString("securityEventTitle", GetSecurityEventTitle());
+  source->AddString("securityEventData", GetSecurityEventDescription());
 
   source->UseStringsJs();
   source->AddResourcePaths(kManagementResources);
