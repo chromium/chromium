@@ -177,10 +177,12 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
   command.extraHeaders = @{
     kExplainWithGeminiHeader :
-        [NSString stringWithFormat:@"%@ : %@",
-                                   l10n_util::GetNSString(
-                                       IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX),
-                                   text]
+        [[NSString stringWithFormat:@"%@ : %@",
+                                    l10n_util::GetNSString(
+                                        IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX),
+                                    text]
+            stringByAddingPercentEncodingWithAllowedCharacters:
+                [NSCharacterSet URLQueryAllowedCharacterSet]]
   };
   base::UmaHistogramCounts10000("IOS.ExplainWithGemini.CharSelected",
                                 [text length]);
