@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/supervised_user/browser_user.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/test_support/account_repository.h"
 #include "components/supervised_user/test_support/family_link_settings_state_management.h"
@@ -179,14 +178,20 @@ void FamilyLiveTest::TurnOnSyncFor(BrowserUser& browser_user) {
 }
 
 void FamilyLiveTest::SetUp() {
-  signin::test::LiveTest::SetUp();
+  MixinBasedInProcessBrowserTest::SetUp();
+
   // Always disable animation for stability.
   ui::ScopedAnimationDurationScaleMode disable_animation(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 }
 
 void FamilyLiveTest::SetUpOnMainThread() {
-  signin::test::LiveTest::SetUpOnMainThread();
+  MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+
+  if (!live_test_mixin_.Enabled()) {
+    // Only run live tests when specified.
+    GTEST_SKIP() << "Live tests not requested.";
+  }
 
   if (IsSwitchEnabled(kFamilyFeatureIdentifierSwitch) &&
       IsSwitchEnabled(kAccountRepositoryPath)) {
@@ -258,7 +263,7 @@ void FamilyLiveTest::TearDownOnMainThread() {
 
   head_of_household_.reset();
   child_.reset();
-  signin::test::LiveTest::TearDownOnMainThread();
+  MixinBasedInProcessBrowserTest::TearDownOnMainThread();
 }
 
 void FamilyLiveTest::SetHeadOfHousehold(
@@ -271,8 +276,7 @@ void FamilyLiveTest::SetChild(const test_accounts::FamilyMember& credentials) {
 }
 
 void FamilyLiveTest::SetUpInProcessBrowserTestFixture() {
-  signin::test::LiveTest::SetUpInProcessBrowserTestFixture();
-
+  MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   for (const auto& host : extra_enabled_hosts_) {
     host_resolver()->AllowDirectLookup(host);
   }

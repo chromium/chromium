@@ -4924,12 +4924,6 @@ if (!is_android) {
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
     }
 
-    if (is_chrome_branded) {
-      # Test data used by the end-to-end LiveSignInTest.
-      data +=
-          [ "//chrome/browser/internal/resources/signin/test_accounts.json" ]
-    }
-
     # NOTE: This is the main "browser_tests" section for |is_chromeos|.
     if (is_chromeos) {
       sources += [

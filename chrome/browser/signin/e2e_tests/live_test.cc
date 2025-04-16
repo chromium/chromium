@@ -6,6 +6,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 
 base::FilePath::StringViewType kTestAccountFilePath = FILE_PATH_LITERAL(
@@ -13,53 +14,84 @@ base::FilePath::StringViewType kTestAccountFilePath = FILE_PATH_LITERAL(
 
 const char* kRunLiveTestFlag = "run-live-tests";
 
-namespace signin {
-namespace test {
+namespace signin::test {
 
-void LiveTest::SetUpInProcessBrowserTestFixture() {
+DirectLookupMixin::DirectLookupMixin(InProcessBrowserTestMixinHost* host,
+                                     InProcessBrowserTest* test_base)
+    : InProcessBrowserTestMixin(host), test_base_(test_base) {}
+
+void DirectLookupMixin::SetUpInProcessBrowserTestFixture() {
   // Whitelists a bunch of hosts.
-  host_resolver()->AllowDirectLookup("*.google.com");
-  host_resolver()->AllowDirectLookup("*.geotrust.com");
-  host_resolver()->AllowDirectLookup("*.gstatic.com");
-  host_resolver()->AllowDirectLookup("*.googleapis.com");
+  test_base_->host_resolver()->AllowDirectLookup("*.google.com");
+  test_base_->host_resolver()->AllowDirectLookup("*.geotrust.com");
+  test_base_->host_resolver()->AllowDirectLookup("*.gstatic.com");
+  test_base_->host_resolver()->AllowDirectLookup("*.googleapis.com");
   // Allows country-specific TLDs.
-  host_resolver()->AllowDirectLookup("accounts.google.*");
-
-  InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  test_base_->host_resolver()->AllowDirectLookup("accounts.google.*");
 }
 
-void LiveTest::SetUp() {
-  // Only run live tests when specified.
-  auto* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (!cmd_line->HasSwitch(kRunLiveTestFlag)) {
-    LOG(INFO) << "This test should get skipped.";
-    skip_test_ = true;
-    GTEST_SKIP();
+LiveTestMixin::LiveTestMixin(InProcessBrowserTestMixinHost* host)
+    : InProcessBrowserTestMixin(host) {}
+void LiveTestMixin::SetUp() {
+  enabled_ =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(kRunLiveTestFlag);
+  if (!enabled_) {
+    LOG(INFO) << "This test should get skipped (live tests not requested); use "
+              << kRunLiveTestFlag << " to enable.";
   }
+}
+
+TestAccountsMixin::TestAccountsMixin(InProcessBrowserTestMixinHost* host)
+    : InProcessBrowserTestMixin(host) {}
+TestAccountsMixin::~TestAccountsMixin() = default;
+
+void TestAccountsMixin::SetUp() {
   base::FilePath root_path;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &root_path);
   base::FilePath config_path =
       base::MakeAbsoluteFilePath(root_path.Append(kTestAccountFilePath));
-  CHECK(!config_path.empty()) << kTestAccountFilePath
-                              << " does not exist. This file is only available "
-                                 "in Google-internal checkouts.";
-  CHECK(test_accounts_.Init(config_path));
-  InProcessBrowserTest::SetUp();
+
+  if (config_path.empty()) {
+    LOG(INFO) << kTestAccountFilePath
+              << " does not exist. This file is only available "
+                 "in Google-internal checkouts.";
+    return;
+  }
+
+  test_accounts_.emplace();
+  CHECK(test_accounts_->Init(config_path));
+}
+
+void LiveTest::SetUp() {
+  if (!live_test_mixin_.Enabled()) {
+    GTEST_SKIP() << "Live tests not explicitly requested (use `"
+                 << kRunLiveTestFlag << "` command line flag).";
+  }
+  if (!test_accounts_mixin_.AreAccountsLoaded()) {
+    // Only run live tests on Chrome-branded builds
+    GTEST_SKIP() << "Test accounts not available (are you running a "
+                    "chrome-branded build?).";
+  }
+
+  MixinBasedInProcessBrowserTest::SetUp();
 }
 
 void LiveTest::TearDown() {
   // This test was skipped, no need to tear down.
-  if (skip_test_)
+  if (!live_test_mixin_.Enabled() ||
+      !test_accounts_mixin_.AreAccountsLoaded()) {
     return;
-  InProcessBrowserTest::TearDown();
+  }
+  MixinBasedInProcessBrowserTest::TearDown();
 }
 
 void LiveTest::PostRunTestOnMainThread() {
   // This test was skipped. Running PostRunTestOnMainThread can cause
   // TIMED_OUT on Win7.
-  if (skip_test_)
+  if (!live_test_mixin_.Enabled() ||
+      !test_accounts_mixin_.AreAccountsLoaded()) {
     return;
-  InProcessBrowserTest::PostRunTestOnMainThread();
+  }
+  MixinBasedInProcessBrowserTest::PostRunTestOnMainThread();
 }
-}  // namespace test
-}  // namespace signin
+}  // namespace signin::test

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chrome_build.gni")
+
 if (!is_android && !is_fuchsia) {
   # webui dependency makes this not available for android or fuchsia.
   static_library("test_support") {
@@ -20,6 +22,11 @@ if (!is_android && !is_fuchsia) {
     ]
 
     deps = [ "//chrome/browser/ui/webui/signin:test_support_ui" ]
+
+    if (is_chrome_branded) {
+      # Required by TestAccountsMixin
+      data = [ "//chrome/browser/internal/resources/signin/test_accounts.json" ]
+    }
 
     public_deps = [
       "//base",
