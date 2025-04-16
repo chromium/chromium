@@ -510,10 +510,7 @@ bool CanIntentionallyDeferSpeculativeRFHForRequest(
          // to do an early RFH swap, which requires the speculative RFH to be
          // created before the network request is sent.
          frame_tree_node->current_frame_host()->IsRenderFrameLive() &&
-         !frame_tree_node->current_frame_host()->must_be_replaced_for_crash() &&
-         // TODO(crbug.com/348125591): Workaround for a mysterious race
-         // condition in V8 when navigating to a different site in devtools.
-         !DevToolsAgentHost::IsDebuggerAttached(request->GetWebContents());
+         !frame_tree_node->current_frame_host()->must_be_replaced_for_crash();
 }
 
 void RecordWastedSpeculativeRFHCase(bool from_ad_click,
