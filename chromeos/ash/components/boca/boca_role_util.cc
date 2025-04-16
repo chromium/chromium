@@ -21,7 +21,7 @@ inline constexpr std::string_view kRemoteAdmin = "remote_admin_was_present";
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(
-      ash::prefs::kClassManagementToolsAvailabilitySetting, std::string());
+      ash::prefs::kClassManagementToolsAvailabilitySetting, kDisabled);
   // Fixes a dangling pointer crash associated with this pref not being
   // registered. Need to revisit if this is the best place for this pref to be
   // set.

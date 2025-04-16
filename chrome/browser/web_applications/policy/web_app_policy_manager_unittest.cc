@@ -936,7 +936,8 @@ TEST_F(WebAppPolicyManagerTest, DisableSystemWebApps) {
       ash::SystemWebAppType::PRINT_MANAGEMENT,
       ash::SystemWebAppType::SHORTCUT_CUSTOMIZATION,
       ash::SystemWebAppType::RECORDER,
-      ash::SystemWebAppType::GRADUATION};
+      ash::SystemWebAppType::GRADUATION,
+      ash::SystemWebAppType::BOCA};
 
   disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_EQ(disabled_apps, expected_disabled_apps);
@@ -1133,19 +1134,24 @@ class WebAppPolicyManagerWithBocaTest : public WebAppPolicyManagerTestBase {
 };
 
 TEST_F(WebAppPolicyManagerWithBocaTest,
-       BocaAppStatusRefreshedWhenPolicyUpdate) {
-  MockAppRegistrarObserver mock_observer;
-  app_registrar().AddObserver(&mock_observer);
-  EXPECT_CALL(mock_observer, OnWebAppsDisabledModeChanged()).Times(1);
-  // Policy update only serve as a trigger, the real enablement checks user
-  // affiliation status, which is hard to emulate in unit test.
+       BocaNotDisabledWhenNotDisabledFromPolicy) {
+  auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_TRUE(disabled_apps.empty());
+
   profile()->GetPrefs()->SetString(
       ash::prefs::kClassManagementToolsAvailabilitySetting, "teacher");
 
-  EXPECT_CALL(mock_observer, OnWebAppsDisabledModeChanged()).Times(1);
+  disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_FALSE(disabled_apps.contains(ash::SystemWebAppType::BOCA));
+}
+
+TEST_F(WebAppPolicyManagerWithBocaTest, BocaDisabledWhenDisabledFromPolicy) {
+  auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_TRUE(disabled_apps.empty());
   profile()->GetPrefs()->SetString(
       ash::prefs::kClassManagementToolsAvailabilitySetting, "disabled");
-  app_registrar().RemoveObserver(&mock_observer);
+  disabled_apps = policy_manager().GetDisabledSystemWebApps();
+  EXPECT_TRUE(disabled_apps.contains(ash::SystemWebAppType::BOCA));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
