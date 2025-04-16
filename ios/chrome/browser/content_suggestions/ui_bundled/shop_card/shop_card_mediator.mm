@@ -357,7 +357,8 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 #pragma mark - ImpressionLimitServiceObserverBridgeDelegate
 - (void)onUrlUntracked:(GURL)url {
-  if (url == _shopCardItem.shopCardData.productURL) {
+  if (_shopCardItem && _shopCardItem.shopCardData &&
+      url == _shopCardItem.shopCardData.productURL) {
     [self.delegate removeShopCard];
   }
 }
@@ -456,6 +457,9 @@ std::u16string GetHostnameFromGURL(const GURL& url) {
 
 - (ShopCardItem*)shopCardItemForTesting {
   return self->_shopCardItem;
+}
+- (void)onUrlUntrackedForTesting:(GURL)url {
+  [self onUrlUntracked:url];
 }
 
 @end

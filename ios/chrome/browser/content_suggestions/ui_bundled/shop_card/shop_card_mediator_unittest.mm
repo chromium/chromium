@@ -188,3 +188,9 @@ TEST_F(ShopCardMediatorTest, TestUrlNotOpened) {
   EXPECT_FALSE(
       [mediator() hasBeenOpenedForTesting:GURL("https://example.com/")]);
 }
+
+TEST_F(ShopCardMediatorTest, TestUntrackedNoShopCardData) {
+  [mediator() setShopCardItemForTesting:nil];
+  // Shouldn't crash
+  [mediator() onUrlUntrackedForTesting:GURL("https://example.com/")];
+}
