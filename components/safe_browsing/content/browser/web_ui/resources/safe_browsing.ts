@@ -9,15 +9,15 @@ import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';
 
 // Type definitions for custom types used through the file.
-declare type TailoredVerdictOverrideFormElements =
+type TailoredVerdictOverrideFormElements =
     HTMLFormControlsCollection & {tailored_verdict_type: HTMLInputElement};
-declare type TailoredVerdictOverrideForm =
+type TailoredVerdictOverrideForm =
     HTMLFormElement & {elements: TailoredVerdictOverrideFormElements};
-declare interface ReportingResult {
+interface ReportingResult {
   message: string;
   time: string;
 }
-declare interface DeepScanResult {
+interface DeepScanResult {
   request: string;
   request_time: string;
   token: string;
