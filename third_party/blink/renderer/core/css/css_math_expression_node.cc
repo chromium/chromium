@@ -428,7 +428,8 @@ CSSMathOperator MaybeChangeOperatorSignIfNesting(bool is_in_nesting,
 CSSMathExpressionNodeWithOperator MaybeReplaceNodeWithCombined(
     const CSSMathExpressionNode* node,
     CSSMathOperator op,
-    const UnitsHashMap& units_map) {
+    const UnitsHashMap& units_map,
+    bool is_multiply) {
   if (!node->IsNumericLiteral()) {
     return {op, node};
   }
@@ -436,10 +437,14 @@ CSSMathExpressionNodeWithOperator MaybeReplaceNodeWithCombined(
   auto it = units_map.find(unit_type);
   if (it != units_map.end()) {
     double value = it->value;
-    CSSMathOperator new_op =
-        value < 0.0f ? CSSMathOperator::kSubtract : CSSMathOperator::kAdd;
+    CSSMathOperator new_op = op;
+    if (!is_multiply) {
+      new_op =
+          value < 0.0f ? CSSMathOperator::kSubtract : CSSMathOperator::kAdd;
+      value = std::abs(value);
+    }
     CSSMathExpressionNode* new_node =
-        CSSMathExpressionNumericLiteral::Create(std::abs(value), unit_type);
+        CSSMathExpressionNumericLiteral::Create(value, unit_type);
     return {new_op, new_node};
   }
   return {op, node};
@@ -447,7 +452,8 @@ CSSMathExpressionNodeWithOperator MaybeReplaceNodeWithCombined(
 
 // This function combines numeric values that have double value and are of the
 // same unit type together in numeric_children and saves all the non add/sub
-// operation children and their correct simplified operator in all_children.
+// (or mul, if op is kMultiply) operation children and their correct simplified
+// operator in all_children.
 void CombineNumericChildrenFromNode(const CSSMathExpressionNode* root,
                                     CSSMathOperator op,
                                     UnitsHashMap& numeric_children,
@@ -456,7 +462,9 @@ void CombineNumericChildrenFromNode(const CSSMathExpressionNode* root,
   const CSSPrimitiveValue::UnitType unit_type = root->ResolvedUnitType();
   // Go deeper inside the operation node if possible.
   if (auto* operation = DynamicTo<CSSMathExpressionOperation>(root);
-      operation && operation->IsAddOrSubtract()) {
+      operation &&
+      (op == CSSMathOperator::kMultiply ? operation->IsMultiplyOrDivide()
+                                        : operation->IsAddOrSubtract())) {
     const CSSMathOperator operation_op = operation->OperatorType();
     is_in_nesting |= operation->IsNestedCalc();
     // Nest from the left (first op) to the right (second op).
@@ -472,16 +480,20 @@ void CombineNumericChildrenFromNode(const CSSMathExpressionNode* root,
   }
   // If we have numeric with double value - combine under one unit type.
   if (IsNumericNodeWithDoubleValue(root)) {
-    double value = op == CSSMathOperator::kAdd ? root->DoubleValue()
-                                               : -root->DoubleValue();
+    double value = op == CSSMathOperator::kSubtract ? -root->DoubleValue()
+                                                    : root->DoubleValue();
     if (auto it = numeric_children.find(unit_type);
         it != numeric_children.end()) {
-      it->value += value;
+      if (op == CSSMathOperator::kMultiply) {
+        it->value *= value;
+      } else {
+        it->value += value;
+      }
     } else {
       numeric_children.insert(unit_type, value);
     }
   }
-  // Save all non add/sub operations.
+  // Save all non add/sub (or non-mul, respectively) operations.
   all_children.emplace_back(op, root);
 }
 
@@ -495,7 +507,9 @@ void CollectNumericChildrenFromNode(const CSSMathExpressionNode* root,
                                     bool is_in_nesting = false) {
   // Go deeper inside the operation node if possible.
   if (auto* operation = DynamicTo<CSSMathExpressionOperation>(root);
-      operation && operation->IsAddOrSubtract()) {
+      operation &&
+      (op == CSSMathOperator::kMultiply ? operation->IsMultiplyOrDivide()
+                                        : operation->IsAddOrSubtract())) {
     const CSSMathOperator operation_op = operation->OperatorType();
     is_in_nesting |= operation->IsNestedCalc();
     // Nest from the left (first op) to the right (second op).
@@ -526,9 +540,10 @@ void CollectNumericChildrenFromNode(const CSSMathExpressionNode* root,
   complex_children.emplace_back(op, root);
 }
 
-CSSMathExpressionNode* AddNodeToSumNode(CSSMathExpressionNode* sum_node,
-                                        const CSSMathExpressionNode* node,
-                                        CSSMathOperator op) {
+CSSMathExpressionNode* AddNodeToSumOrProductNode(
+    CSSMathExpressionNode* sum_node,
+    const CSSMathExpressionNode* node,
+    CSSMathOperator op) {
   // If the sum node is nullptr, create and return the numeric literal node.
   if (!sum_node) {
     return MaybeNegateFirstNode(op, node)->Copy();
@@ -556,11 +571,11 @@ CSSMathExpressionNode* AddNodeToSumNode(CSSMathExpressionNode* sum_node,
                                                           sum_node->Category());
 }
 
-CSSMathExpressionNode* AddNodesVectorToSumNode(
+CSSMathExpressionNode* AddNodesVectorToSumOrProductNode(
     CSSMathExpressionNode* sum_node,
     const base::span<CSSMathExpressionNodeWithOperator>& vector) {
   for (const auto& [op, node] : vector) {
-    sum_node = AddNodeToSumNode(sum_node, node, op);
+    sum_node = AddNodeToSumOrProductNode(sum_node, node, op);
   }
   return sum_node;
 }
@@ -569,9 +584,9 @@ CSSMathExpressionNode* AddNodesVectorToSumNode(
 // https://drafts.csswg.org/css-values-4/#sort-a-calculations-children
 // As in Blink the math expression tree is binary, we need to collect all the
 // elements of this tree together and create a new tree as a result.
-CSSMathExpressionNode* MaybeSortSumNode(
+CSSMathExpressionNode* MaybeSortSumOrProductNode(
     const CSSMathExpressionOperation* root) {
-  CHECK(root->IsAddOrSubtract());
+  CHECK(root->IsAddOrSubtract() || root->IsMultiplyOrDivide());
   CHECK_EQ(root->GetOperands().size(), 2u);
   // Hash map of vectors of numeric literal values with double value with the
   // same unit type.
@@ -581,22 +596,25 @@ CSSMathExpressionNode* MaybeSortSumNode(
   // Collect all the numeric literal with double value in one vector.
   // Note: using kAdd here as the operator for the first child
   // (e.g. a - b = +a - b, a + b = +a + b)
-  CollectNumericChildrenFromNode(root, CSSMathOperator::kAdd, numeric_children,
-                                 complex_children, false);
+  CollectNumericChildrenFromNode(root,
+                                 root->IsAddOrSubtract()
+                                     ? CSSMathOperator::kAdd
+                                     : CSSMathOperator::kMultiply,
+                                 numeric_children, complex_children, false);
   // Form the final node.
   CSSMathExpressionNode* final_node = nullptr;
   // From spec: If nodes contains a number, remove it from nodes and append it
   // to ret.
   if (auto it = numeric_children.find(CSSPrimitiveValue::UnitType::kNumber);
       it != numeric_children.end()) {
-    final_node = AddNodesVectorToSumNode(final_node, *it->value);
+    final_node = AddNodesVectorToSumOrProductNode(final_node, *it->value);
     numeric_children.erase(it);
   }
   // From spec: If nodes contains a percentage, remove it from nodes and append
   // it to ret.
   if (auto it = numeric_children.find(CSSPrimitiveValue::UnitType::kPercentage);
       it != numeric_children.end()) {
-    final_node = AddNodesVectorToSumNode(final_node, *it->value);
+    final_node = AddNodesVectorToSumOrProductNode(final_node, *it->value);
     numeric_children.erase(it);
   }
   // Now, sort the rest numeric values alphabatically.
@@ -616,11 +634,11 @@ CSSMathExpressionNode* MaybeSortSumNode(
   std::sort(keys.begin(), keys.end(), comp);
   // Now, add those numeric nodes in the sorted order.
   for (const auto& unit_type : keys) {
-    final_node =
-        AddNodesVectorToSumNode(final_node, *numeric_children.at(unit_type));
+    final_node = AddNodesVectorToSumOrProductNode(
+        final_node, *numeric_children.at(unit_type));
   }
   // Now, add all the complex (non-numerics with double value) values.
-  final_node = AddNodesVectorToSumNode(final_node, complex_children);
+  final_node = AddNodesVectorToSumOrProductNode(final_node, complex_children);
   return final_node;
 }
 
@@ -628,9 +646,9 @@ CSSMathExpressionNode* MaybeSortSumNode(
 // https://drafts.csswg.org/css-values-4/#calc-simplification
 // As in Blink the math expression tree is binary, we need to collect all the
 // elements of this tree together and create a new tree as a result.
-CSSMathExpressionNode* MaybeSimplifySumNode(
+CSSMathExpressionNode* MaybeSimplifySumOrProductNode(
     const CSSMathExpressionOperation* root) {
-  CHECK(root->IsAddOrSubtract());
+  CHECK(root->IsAddOrSubtract() || root->IsMultiplyOrDivide());
   CHECK_EQ(root->GetOperands().size(), 2u);
   // Hash map of numeric literal values of the same type, that can be
   // combined together.
@@ -638,16 +656,18 @@ CSSMathExpressionNode* MaybeSimplifySumNode(
   // Vector of all non add/sub operation children.
   UnitsVector all_children;
   // Collect all the numeric literal values together.
-  // Note: using kAdd here as the operator for the first child
+  // Note: using kAdd/kMultiply here as the operator for the first child
   // (e.g. a - b = +a - b, a + b = +a + b)
-  CombineNumericChildrenFromNode(root, CSSMathOperator::kAdd, numeric_children,
-                                 all_children);
+  const bool is_multiply = root->IsMultiplyOrDivide();
+  CombineNumericChildrenFromNode(
+      root, is_multiply ? CSSMathOperator::kMultiply : CSSMathOperator::kAdd,
+      numeric_children, all_children);
   // Form the final node.
   HashSet<CSSPrimitiveValue::UnitType> used_units;
   CSSMathExpressionNode* final_node = nullptr;
   for (const auto& child : all_children) {
-    auto [op, node] =
-        MaybeReplaceNodeWithCombined(child.node, child.op, numeric_children);
+    auto [op, node] = MaybeReplaceNodeWithCombined(
+        child.node, child.op, numeric_children, is_multiply);
     CSSPrimitiveValue::UnitType unit_type = node->ResolvedUnitType();
     // Skip already used unit types, as they have been already combined.
     if (IsNumericNodeWithDoubleValue(node)) {
@@ -2621,8 +2641,8 @@ String CSSMathExpressionOperation::CustomCSSText() const {
       // https://drafts.csswg.org/css-values-4/#sort-a-calculations-children
       // we should sort the dimensions of the sum node.
       const CSSMathExpressionOperation* operation = this;
-      if (IsAddOrSubtract()) {
-        const CSSMathExpressionNode* node = MaybeSortSumNode(this);
+      if (IsAddOrSubtract() || IsMultiplyOrDivide()) {
+        const CSSMathExpressionNode* node = MaybeSortSumOrProductNode(this);
         // Note: we can hit here, since CSS Typed OM doesn't currently follow
         // the same simplifications as CSS Values spec.
         // https://github.com/w3c/csswg-drafts/issues/9451
@@ -4305,6 +4325,12 @@ class CSSMathExpressionNodeParser {
       }
     }
 
+    if (auto* operation = DynamicTo<CSSMathExpressionOperation>(result)) {
+      if (operation->IsMultiplyOrDivide()) {
+        result = MaybeSimplifySumOrProductNode(operation);
+      }
+    }
+
     return result;
   }
 
@@ -4353,7 +4379,7 @@ class CSSMathExpressionNodeParser {
 
     if (auto* operation = DynamicTo<CSSMathExpressionOperation>(result)) {
       if (operation->IsAddOrSubtract()) {
-        result = MaybeSimplifySumNode(operation);
+        result = MaybeSimplifySumOrProductNode(operation);
       }
     }
 
