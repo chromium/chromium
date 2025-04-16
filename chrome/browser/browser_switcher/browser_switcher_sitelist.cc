@@ -145,15 +145,16 @@ class DefaultModeRule : public Rule {
 
     // The parsed URL might start with "ftp://XXX/" or "ftp://". Remove that
     // prefix.
-    if (base::StartsWith(spec, placeholder,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      spec = spec.substr(placeholder.size());
+    auto remainder = base::RemovePrefix(spec, placeholder,
+                                        base::CompareCase::INSENSITIVE_ASCII);
+    if (remainder) {
+      spec = *remainder;
     }
-    if (base::StartsWith(spec, placeholder_scheme,
-                         base::CompareCase::INSENSITIVE_ASCII)) {
-      spec = spec.substr(strlen(placeholder_scheme));
+    remainder = base::RemovePrefix(spec, placeholder_scheme,
+                                   base::CompareCase::INSENSITIVE_ASCII);
+    if (remainder) {
+      spec = *remainder;
     }
-
     canonical_ = std::string(spec);
   }
 
