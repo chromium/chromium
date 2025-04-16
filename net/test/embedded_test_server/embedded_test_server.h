@@ -163,10 +163,6 @@ class EmbeddedTestServer {
     // A certificate that is signed by an intermediate certificate.
     CERT_OK_BY_INTERMEDIATE,
 
-    // A certificate with invalid notBefore and notAfter times. Windows'
-    // certificate library will not parse this certificate.
-    CERT_BAD_VALIDITY,
-
     // A certificate that covers a number of test names. See [test_names] in
     // net/data/ssl/scripts/ee.cnf. More may be added by editing this list and
     // and rerunning net/data/ssl/scripts/generate-test-certs.sh.

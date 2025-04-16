@@ -96,8 +96,6 @@ base::FilePath BaseTestServer::SSLOptions::GetCertificateFile() const {
       // This chain uses its own dedicated test root certificate to avoid
       // side-effects that may affect testing.
       return base::FilePath(FILE_PATH_LITERAL("redundant-server-chain.pem"));
-    case CERT_BAD_VALIDITY:
-      return base::FilePath(FILE_PATH_LITERAL("bad_validity.pem"));
     case CERT_KEY_USAGE_RSA_ENCIPHERMENT:
       return base::FilePath(
           FILE_PATH_LITERAL("key_usage_rsa_keyencipherment.pem"));

@@ -899,8 +899,6 @@ std::string EmbeddedTestServer::GetCertificateName() const {
       return "sha1_leaf.pem";
     case CERT_OK_BY_INTERMEDIATE:
       return "ok_cert_by_intermediate.pem";
-    case CERT_BAD_VALIDITY:
-      return "bad_validity.pem";
     case CERT_TEST_NAMES:
       return "test_names.pem";
     case CERT_KEY_USAGE_RSA_ENCIPHERMENT:
