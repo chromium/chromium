@@ -243,7 +243,7 @@ class ClientSideDetectionService
   // Resets the session that's created by the on-device model. This occurs when
   // there is a new page navigation and at the start and end of
   // |InquireOnDeviceModel|.
-  void ResetOnDeviceSession();
+  void ResetOnDeviceSession(bool inquiry_complete);
 
   // Called from the host class when the proper requirements are met to inquire
   // the on-device model.

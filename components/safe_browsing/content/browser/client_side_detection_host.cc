@@ -717,7 +717,7 @@ void ClientSideDetectionHost::MaybeStartPreClassification(
   }
 
   // Cancel any ongoing on device sessions.
-  csd_service_->ResetOnDeviceSession();
+  csd_service_->ResetOnDeviceSession(/*inquiry_complete=*/false);
 
   // If we navigate away and there currently is a pending phishing report
   // request we have to cancel it to make sure we don't display an interstitial

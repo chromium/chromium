@@ -853,6 +853,18 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest"
+    enum="BooleanExists" expires_after="2026-04-14">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether or not the on-device model session was alive when a new
+    request happens. This is logged when a new request happens through a new
+    preclassification check or a new on device model inquiry and the current
+    existing session will be destroyed.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.OnDeviceModelSessionCreationSuccess"
     enum="BooleanSuccess" expires_after="2025-12-11">
   <owner>andysjlim@chromium.org</owner>

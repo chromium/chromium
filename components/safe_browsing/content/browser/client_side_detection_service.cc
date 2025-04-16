@@ -98,6 +98,11 @@ void LogOnDeviceModelExecutionParse(bool success) {
       "SBClientPhishing.OnDeviceModelResponseParseSuccess", success);
 }
 
+void LogOnDeviceModelSessionAliveOnNewRequest(bool is_alive) {
+  base::UmaHistogramBoolean(
+      "SBClientPhishing.OnDeviceModelSessionAliveOnNewRequest", is_alive);
+}
+
 ClientSideDetectionService::CacheState::CacheState(bool phish, base::Time time)
     : is_phishing(phish), timestamp(time) {}
 
@@ -826,7 +831,7 @@ ClientSideDetectionService::RegisterCallbackForModelUpdates(
   return client_side_phishing_model_->RegisterCallback(callback);
 }
 
-void ClientSideDetectionService::ResetOnDeviceSession() {
+void ClientSideDetectionService::ResetOnDeviceSession(bool inquiry_complete) {
   // Because of the use of DeleteSoon below, we can't guarantee that session_
   // is still available when the callback is invoked.
   if (session_) {
@@ -836,6 +841,9 @@ void ClientSideDetectionService::ResetOnDeviceSession() {
     // crbug.com/384774788 is fixed.
     content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE,
                                                    std::move(session_));
+    if (!inquiry_complete) {
+      LogOnDeviceModelSessionAliveOnNewRequest(true);
+    }
   }
 }
 
@@ -854,7 +862,10 @@ void ClientSideDetectionService::InquireOnDeviceModel(
   // Close off the previous session if session's model execution from a previous
   // call into InquireOnDeviceModel is still happening.
   if (session_) {
+    LogOnDeviceModelSessionAliveOnNewRequest(true);
     session_.reset();
+  } else {
+    LogOnDeviceModelSessionAliveOnNewRequest(false);
   }
 
   base::TimeTicks session_creation_start_time = base::TimeTicks::Now();
@@ -917,7 +928,7 @@ void ClientSideDetectionService::ModelExecutionCallback(
 
   LogOnDeviceModelExecutionParse(true);
 
-  ResetOnDeviceSession();
+  ResetOnDeviceSession(/*inquiry_complete=*/true);
 
   if (inquire_on_device_model_callback_) {
     std::move(inquire_on_device_model_callback_).Run(scam_detection_response);
