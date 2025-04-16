@@ -1659,7 +1659,7 @@ Unknown properties are collapsed to zero. -->
   <int value="3" label="Open new tab incognito"/>
   <int value="4" label="Open new window"/>
   <int value="5" label="Reload tab"/>
-  <int value="6" label="Reload tab, bypassing cache (not implemented)"/>
+  <int value="6" label="Reload tab, bypassing cache"/>
   <int value="7" label="Move to tab left"/>
   <int value="8" label="Move to tab right"/>
   <int value="9" label="Move to specific tab"/>
