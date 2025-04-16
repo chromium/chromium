@@ -1314,12 +1314,13 @@ void TabStrip::OnGroupClosed(const tab_groups::TabGroupId& group) {
 
 void TabStrip::SetSplit(int split_index,
                         std::optional<split_tabs::SplitTabId> split_id) {
-  tab_at(split_index)->SetSplit(split_id);
+  Tab* tab = tab_at(split_index);
+  tab->SetSplit(split_id);
 
   // If a split is removed an the tab no longer has the mouse hovered, hide any
   // hover effects.
-  if (!split_id.has_value() && !tab_at(split_index)->mouse_hovered()) {
-    HideHover(tab_at(split_index), TabStyle::HideHoverStyle::kGradual);
+  if (!split_id.has_value() && !tab->mouse_hovered()) {
+    HideHover(tab, TabStyle::HideHoverStyle::kImmediate);
   }
 
   InvalidateLayout();
