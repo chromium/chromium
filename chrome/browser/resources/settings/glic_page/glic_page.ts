@@ -22,7 +22,7 @@ import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getAiLearnMoreUrl} from '../ai_page/ai_learn_more_url_util.js';
-import {AiEnterpriseFeaturePrefName} from '../ai_page/constants.js';
+import {AiEnterpriseFeaturePrefName, AiPageActions} from '../ai_page/constants.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
@@ -220,6 +220,11 @@ export class SettingsGlicPageElement extends SettingsGlicPageElementBase {
         this.enterprisePref_,
         loadTimeData.getString('glicKeyboardShortcutLearnMoreUrl'),
         loadTimeData.getString('glicKeyboardShortcutLearnMoreManagedUrl'));
+  }
+
+  private onLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        AiPageActions.GLIC_SHORTCUTS_LEARN_MORE_CLICKED);
   }
 }
 

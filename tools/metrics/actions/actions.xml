@@ -35391,6 +35391,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Settings.AiPage.GlicShortcuts.LearnMoreClicked">
+  <owner>sanaakbani@google.com</owner>
+  <owner>iwells@chromium.org</owner>
+  <description>
+    Logged when the user clicks on the 'Learn more about shortcuts' link inside
+    the keyboard shortcuts description from chrome://settings.
+  </description>
+</action>
+
 <action name="Settings.AiPage.HistorySearch.Disabled">
   <owner>zalmashni@google.com</owner>
   <owner>rainhard@chromium.org</owner>

@@ -5,6 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import type {CrCollapseElement} from 'chrome://settings/lazy_load.js';
+import {AiPageActions} from 'chrome://settings/lazy_load.js';
 import type {SettingsGlicPageElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, GlicBrowserProxyImpl, loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, resetRouterForTesting, Router, routes, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -52,6 +53,10 @@ suite('GlicPage', function() {
 
   function $<T extends HTMLElement = HTMLElement>(id: string): T|null {
     return page.shadowRoot!.querySelector<T>(`#${id}`);
+  }
+
+  async function assertFeatureInteractionMetrics(action: AiPageActions) {
+    assertEquals(action, await metricsBrowserProxy.whenCalled('recordAction'));
   }
 
   async function clickToggle() {
@@ -436,11 +441,15 @@ suite('GlicPage', function() {
       await verifyUserAction('Glic.Settings.TabContext.Disabled');
     });
 
-    test('keyboardShortcutLearnMore', () => {
+    test('keyboardShortcutLearnMore', async () => {
       assertTrue($<SettingsToggleButtonElement>('launcherToggle')!.checked);
       const learnMoreLink = page.shadowRoot!.querySelector('a');
       assertTrue(!!learnMoreLink);
       assertEquals(learnMoreLink.href, 'https://google.com/');
+
+      learnMoreLink.click();
+      await assertFeatureInteractionMetrics(
+          AiPageActions.GLIC_SHORTCUTS_LEARN_MORE_CLICKED);
     });
 
     test('keyboardShortcutLearnMoreManaged', () => {
