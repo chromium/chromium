@@ -31,14 +31,15 @@ limitations under the License.
 #include <unistd.h>
 #endif
 
+#include <cstdint>
 #include <memory>
 #include <string>
 
 #include "absl/memory/memory.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
-#include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
+#include "tensorflow_lite_support/cc/port/statusor.h"
 
 namespace tflite {
 namespace task {
@@ -53,13 +54,13 @@ using ::tflite::support::TfLiteSupportStatus;
 // Gets the offset aligned to page size for mapping given files into memory by
 // file descriptor correctly, as according to mmap(2), the offset used in mmap
 // must be a multiple of sysconf(_SC_PAGE_SIZE).
-int64 GetPageSizeAlignedOffset(int64 offset) {
+int64_t GetPageSizeAlignedOffset(int64_t offset) {
 #ifdef _WIN32
   // mmap is not used on Windows
   return -1;
 #else
-  int64 aligned_offset = offset;
-  int64 page_size = sysconf(_SC_PAGE_SIZE);
+  int64_t aligned_offset = offset;
+  int64_t page_size = sysconf(_SC_PAGE_SIZE);
   if (offset % page_size != 0) {
     aligned_offset = offset / page_size * page_size;
   }

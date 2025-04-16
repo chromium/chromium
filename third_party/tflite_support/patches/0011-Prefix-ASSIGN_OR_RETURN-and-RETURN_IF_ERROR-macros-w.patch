@@ -1,15 +1,13 @@
-From a531e55610df260911dfa8038014d19dcff570d7 Mon Sep 17 00:00:00 2001
-From: Daniel Cheng <dcheng@chromium.org>
-Date: Wed, 20 Sep 2023 09:07:05 -0700
-Subject: [PATCH 10/10] Prefix ASSIGN_OR_RETURN and RETURN_IF_ERROR macros with
+From 0f99e06a87cef65c506a464e028126178003bcb3 Mon Sep 17 00:00:00 2001
+From: Mike Wittman <wittman@chromium.org>
+Date: Tue, 15 Apr 2025 17:39:14 -0700
+Subject: [PATCH 11/11] Prefix ASSIGN_OR_RETURN and RETURN_IF_ERROR macros with
  TFLITE_.
 
 Chrome's //base contains macros with the same name but with different
 definitions. Prefix the third-party ones to avoid the conflict.
-
-Change-Id: I5e4fd29433981b000555669ec3c16e8219ab44f4
 ---
- .../cc/port/default/status_macros.h           |  30 ++--
+ .../cc/port/default/status_macros.h           |  34 ++--
  .../cc/port/default/tflite_wrapper.cc         |  30 ++--
  .../cc/task/audio/audio_classifier.cc         |  12 +-
  .../cc/task/audio/audio_embedder.cc           |  12 +-
@@ -63,8 +61,6 @@ Change-Id: I5e4fd29433981b000555669ec3c16e8219ab44f4
  .../test/task/vision/object_detector_test.cc  |  14 +-
  .../cc/text/tokenizers/tokenizer_utils.cc     |   6 +-
  .../cc/utils/jni_utils.cc                     |   2 +-
- .../sentencepiece_detokenizer_op.cc           |   6 +-
- .../sentencepiece_tokenizer_op.cc             |  14 +-
  .../audio/desktop/audio_classifier_lib.cc     |   8 +-
  .../text/desktop/bert_nl_classifier_demo.cc   |   2 +-
  .../desktop/bert_question_answerer_demo.cc    |   2 +-
@@ -80,10 +76,10 @@ Change-Id: I5e4fd29433981b000555669ec3c16e8219ab44f4
  .../metadata/cc/metadata_extractor.cc         |  12 +-
  .../scann_ondevice/cc/index.cc                |   4 +-
  .../scann_ondevice/cc/index_builder.cc        |   2 +-
- 71 files changed, 499 insertions(+), 499 deletions(-)
+ 69 files changed, 491 insertions(+), 491 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/status_macros.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/status_macros.h
-index 8970a0e3ca3a2..14029a1f02124 100644
+index 8970a0e3ca3a2..5c6ec60211e26 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/status_macros.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/port/default/status_macros.h
 @@ -25,11 +25,11 @@ limitations under the License.
@@ -135,7 +131,8 @@ index 8970a0e3ca3a2..14029a1f02124 100644
 +//   TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<T> ptr, MaybeGetPtr(arg));
  //
  // Example: Assigning to a map. Because of C preprocessor
- // limitation, the type used in ASSIGN_OR_RETURN cannot contain comma, so
+-// limitation, the type used in ASSIGN_OR_RETURN cannot contain comma, so
++// limitation, the type used in TFLITE_ASSIGN_OR_RETURN cannot contain comma, so
  // wrap lhs in parentheses:
 -//   ASSIGN_OR_RETURN((absl::flat_hash_map<Foo, Bar> my_map), GetMap());
 +//   TFLITE_ASSIGN_OR_RETURN((absl::flat_hash_map<Foo, Bar> my_map), GetMap());
@@ -157,6 +154,15 @@ index 8970a0e3ca3a2..14029a1f02124 100644
    TFLITE_STATUS_MACROS_IMPL_GET_VARIADIC_(                         \
        (__VA_ARGS__, TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_3_, \
         TFLITE_STATUS_MACROS_IMPL_ASSIGN_OR_RETURN_2_))             \
+@@ -135,7 +135,7 @@ constexpr bool TFLSHasPotentialConditionalOperator(const char* lhs, int index) {
+         #lhs[0] != '(' || #lhs[sizeof(#lhs) - 2] != ')' ||                \
+             !TFLSHasPotentialConditionalOperator(#lhs, sizeof(#lhs) - 2), \
+         "Identified potential conditional operator, consider not "        \
+-        "using ASSIGN_OR_RETURN");                                        \
++        "using TFLITE_ASSIGN_OR_RETURN");                                        \
+   }                                                                       \
+   TFLITE_STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED(lhs) =        \
+       std::move(statusor).value()
 @@ -203,7 +203,7 @@ constexpr bool TFLSHasPotentialConditionalOperator(const char* lhs, int index) {
  // because it thinks you might want the else to bind to the first if.  This
  // leads to problems with code like:
@@ -274,10 +280,10 @@ index 70fedca9a3f22..f579669e87e03 100644
      cancel_flag_.Set(false);
      return absl::CancelledError("cancelled before Invoke() was called");
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/audio/audio_classifier.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/audio/audio_classifier.cc
-index 4b1439dcc0719..995ea7b101a7b 100644
+index ee1308d06391b..3b9589b2de939 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/audio/audio_classifier.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/audio/audio_classifier.cc
-@@ -77,16 +77,16 @@ CreatePostprocessor(TfLiteEngine* engine,
+@@ -76,16 +76,16 @@ CreatePostprocessor(TfLiteEngine* engine,
  StatusOr<std::unique_ptr<AudioClassifier>> AudioClassifier::CreateFromOptions(
      const AudioClassifierOptions& options,
      std::unique_ptr<tflite::OpResolver> resolver) {
@@ -297,7 +303,7 @@ index 4b1439dcc0719..995ea7b101a7b 100644
  
    return audio_classifier;
  }
-@@ -108,7 +108,7 @@ absl::Status AudioClassifier::Init(
+@@ -107,7 +107,7 @@ absl::Status AudioClassifier::Init(
    options_ = std::move(options);
  
    // Create preprocessor, assuming having only 1 input tensor.
@@ -306,7 +312,7 @@ index 4b1439dcc0719..995ea7b101a7b 100644
                                        GetTfLiteEngine(), {0}));
  
    // Assuming all output tensors share the same option. This is an limitation in
-@@ -117,7 +117,7 @@ absl::Status AudioClassifier::Init(
+@@ -116,7 +116,7 @@ absl::Status AudioClassifier::Init(
        GetTfLiteEngine()->OutputCount(GetTfLiteEngine()->interpreter());
    postprocessors_.reserve(output_count);
    for (int i = 0; i < output_count; i++) {
@@ -315,7 +321,7 @@ index 4b1439dcc0719..995ea7b101a7b 100644
                                                           options_.get()));
      postprocessors_.emplace_back(std::move(processor));
    }
-@@ -140,7 +140,7 @@ AudioClassifier::Postprocess(
+@@ -139,7 +139,7 @@ AudioClassifier::Postprocess(
      // ClassificationPostprocessor doesn't set head name for backward
      // compatibility, so we set it here manually.
      classification->set_head_name(processor->GetHeadName());
@@ -579,10 +585,10 @@ index fe2217620be1a..1945f0172099f 100644
                           *score_calibration_process_unit
                                ->options_as_ScoreCalibrationOptions(),
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
-index 680e65de03403..f969f4dcc05ab 100644
+index 119af1de6783c..934ed71e45032 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/external_file_handler.cc
-@@ -77,7 +77,7 @@ ExternalFileHandler::CreateFromExternalFile(const ExternalFile* external_file) {
+@@ -78,7 +78,7 @@ ExternalFileHandler::CreateFromExternalFile(const ExternalFile* external_file) {
    std::unique_ptr<ExternalFileHandler> handler =
        absl::WrapUnique(new ExternalFileHandler(external_file));
  
@@ -716,10 +722,10 @@ index 08b79b8dba5f2..a722c091651fc 100644
    data->Resize(num, T());
    T* pdata = data->mutable_data();
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-index 0b9af59afdc79..44421ea1df463 100644
+index e7a82cf5c6218..f2dbb7e5ec376 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/tflite_engine.cc
-@@ -111,7 +111,7 @@ absl::Status TfLiteEngine::InitializeFromModelFileHandler(
+@@ -121,7 +121,7 @@ absl::Status TfLiteEngine::InitializeFromModelFileHandler(
      }
    }
  
@@ -728,7 +734,7 @@ index 0b9af59afdc79..44421ea1df463 100644
        model_metadata_extractor_,
        tflite::metadata::ModelMetadataExtractor::CreateFromModelBuffer(
            buffer_data, buffer_size));
-@@ -128,7 +128,7 @@ absl::Status TfLiteEngine::BuildModelFromFlatBuffer(
+@@ -138,7 +138,7 @@ absl::Status TfLiteEngine::BuildModelFromFlatBuffer(
    }
    external_file_ = std::make_unique<ExternalFile>();
    external_file_->set_file_content(std::string(buffer_data, buffer_size));
@@ -737,7 +743,7 @@ index 0b9af59afdc79..44421ea1df463 100644
        model_file_handler_,
        ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
    return InitializeFromModelFileHandler(compute_settings);
-@@ -145,7 +145,7 @@ absl::Status TfLiteEngine::BuildModelFromFile(
+@@ -155,7 +155,7 @@ absl::Status TfLiteEngine::BuildModelFromFile(
      external_file_ = std::make_unique<ExternalFile>();
    }
    external_file_->set_file_name(file_name);
@@ -746,7 +752,7 @@ index 0b9af59afdc79..44421ea1df463 100644
        model_file_handler_,
        ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
    return InitializeFromModelFileHandler(compute_settings);
-@@ -162,7 +162,7 @@ absl::Status TfLiteEngine::BuildModelFromFileDescriptor(
+@@ -172,7 +172,7 @@ absl::Status TfLiteEngine::BuildModelFromFileDescriptor(
      external_file_ = std::make_unique<ExternalFile>();
    }
    external_file_->mutable_file_descriptor_meta()->set_fd(file_descriptor);
@@ -755,7 +761,7 @@ index 0b9af59afdc79..44421ea1df463 100644
        model_file_handler_,
        ExternalFileHandler::CreateFromExternalFile(external_file_.get()));
    return InitializeFromModelFileHandler(compute_settings);
-@@ -175,7 +175,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
+@@ -185,7 +185,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
      return CreateStatusWithPayload(StatusCode::kInternal,
                                     "Model already built");
    }
@@ -764,7 +770,7 @@ index 0b9af59afdc79..44421ea1df463 100644
                     ExternalFileHandler::CreateFromExternalFile(external_file));
    return InitializeFromModelFileHandler(compute_settings);
  }
-@@ -187,7 +187,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
+@@ -197,7 +197,7 @@ absl::Status TfLiteEngine::BuildModelFromExternalFileProto(
                                     "Model already built");
    }
    external_file_ = std::move(external_file);
@@ -1337,10 +1343,10 @@ index f60a556dbbe1b..71068366d96f5 100644
    return response;
  }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc
-index 52c898dacb9ca..6b85f361b6047 100644
+index 20f63d8696f5e..16e1f17ecb86c 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc
-@@ -83,15 +83,15 @@ StatusOr<std::vector<core::Category>> BertNLClassifier::Postprocess(
+@@ -92,15 +92,15 @@ StatusOr<std::vector<core::Category>> BertNLClassifier::Postprocess(
  StatusOr<std::unique_ptr<BertNLClassifier>> BertNLClassifier::CreateFromOptions(
      const BertNLClassifierOptions& options,
      std::unique_ptr<tflite::OpResolver> resolver) {
@@ -1359,7 +1365,7 @@ index 52c898dacb9ca..6b85f361b6047 100644
    return std::move(bert_nl_classifier);
  }
  
-@@ -100,9 +100,9 @@ absl::Status BertNLClassifier::Initialize(
+@@ -109,9 +109,9 @@ absl::Status BertNLClassifier::Initialize(
    options_ = std::move(options);
  
    // Create preprocessor.
@@ -1524,7 +1530,7 @@ index 114a721ee40ef..917479e9f6041 100644
        // O tag
        if (!SlotRepr::IsO(tag_str_i)) {
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.cc
-index 6643cf6f4e95d..1c582721b6c1c 100644
+index 2a643a94b055e..815657a685575 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/clu_lib/slot_tagging_output.cc
 @@ -64,7 +64,7 @@ DecodeSlotChunksPredictOnFirstSubword(
@@ -1945,10 +1951,10 @@ index 52b0041039acf..439dfa4873459 100644
  }
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h
-index 76a03671b54af..1d86136da193d 100644
+index 5301a929cd5fc..9b8cd40a49713 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/core/base_vision_task_api.h
-@@ -73,7 +73,7 @@ class BaseVisionTaskApi
+@@ -72,7 +72,7 @@ class BaseVisionTaskApi
    // already successfully initialized before calling this method.
    virtual absl::Status CheckAndSetInputs() {
      // BaseTaskApi always assume having a single input.
@@ -2012,10 +2018,10 @@ index b5b57f21e939f..1bcaee2b86ddc 100644
                           *score_calibration_process_unit
                                ->options_as_ScoreCalibrationOptions(),
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.cc
-index aa1e7707dd99b..60cd7abb83374 100644
+index 75d7a8813e1df..ab14c748f6e53 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_classifier.cc
-@@ -52,20 +52,20 @@ using ::tflite::task::core::TfLiteEngine;
+@@ -51,20 +51,20 @@ using ::tflite::task::core::TfLiteEngine;
  StatusOr<std::unique_ptr<ImageClassifier>> ImageClassifier::CreateFromOptions(
      const ImageClassifierOptions& options,
      std::unique_ptr<tflite::OpResolver> resolver) {
@@ -2039,7 +2045,7 @@ index aa1e7707dd99b..60cd7abb83374 100644
                       TaskAPIFactory::CreateFromBaseOptions<ImageClassifier>(
                           &options_copy->base_options(), std::move(resolver)));
    } else {
-@@ -77,7 +77,7 @@ StatusOr<std::unique_ptr<ImageClassifier>> ImageClassifier::CreateFromOptions(
+@@ -76,7 +76,7 @@ StatusOr<std::unique_ptr<ImageClassifier>> ImageClassifier::CreateFromOptions(
          TfLiteSupportStatus::kInvalidArgumentError);
    }
  
@@ -2048,7 +2054,7 @@ index aa1e7707dd99b..60cd7abb83374 100644
  
    return image_classifier;
  }
-@@ -125,18 +125,18 @@ absl::Status ImageClassifier::Init(
+@@ -124,18 +124,18 @@ absl::Status ImageClassifier::Init(
  
    // Perform pre-initialization actions (by default, sets the process engine for
    // image pre-processing to kLibyuv as a sane default).
@@ -2072,7 +2078,7 @@ index aa1e7707dd99b..60cd7abb83374 100644
  
    return absl::OkStatus();
  }
-@@ -177,7 +177,7 @@ absl::Status ImageClassifier::CheckAndSetOutputs() {
+@@ -176,7 +176,7 @@ absl::Status ImageClassifier::CheckAndSetOutputs() {
        const tflite::TensorMetadata* output_tensor =
            output_tensor_metadata->Get(i);
  
@@ -2081,7 +2087,7 @@ index aa1e7707dd99b..60cd7abb83374 100644
            ClassificationHead head,
            BuildClassificationHead(*metadata_extractor, *output_tensor,
                                    options_->display_names_locale()));
-@@ -364,7 +364,7 @@ absl::Status ImageClassifier::InitScoreCalibrations() {
+@@ -363,7 +363,7 @@ absl::Status ImageClassifier::InitScoreCalibrations() {
            StatusCode::kInternal, "Could not create score calibration object.");
      }
  
@@ -2090,16 +2096,16 @@ index aa1e7707dd99b..60cd7abb83374 100644
          classification_heads_[i].calibration_params.value()));
    }
  
-@@ -407,7 +407,7 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
+@@ -406,7 +406,7 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
  
      const TfLiteTensor* output_tensor = output_tensors[i];
      if (has_uint8_outputs_) {
--      ASSIGN_OR_RETURN(const uint8* output_data,
-+      TFLITE_ASSIGN_OR_RETURN(const uint8* output_data,
-                        AssertAndReturnTypedTensor<uint8>(output_tensor));
+-      ASSIGN_OR_RETURN(const uint8_t* output_data,
++      TFLITE_ASSIGN_OR_RETURN(const uint8_t* output_data,
+                        AssertAndReturnTypedTensor<uint8_t>(output_tensor));
        for (int j = 0; j < head.label_map_items.size(); ++j) {
          score_pairs.emplace_back(j, output_tensor->params.scale *
-@@ -415,7 +415,7 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
+@@ -414,7 +414,7 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
                                           output_tensor->params.zero_point));
        }
      } else {
@@ -2108,7 +2114,7 @@ index aa1e7707dd99b..60cd7abb83374 100644
                         AssertAndReturnTypedTensor<float>(output_tensor));
        for (int j = 0; j < head.label_map_items.size(); ++j) {
          score_pairs.emplace_back(j, output_data[j]);
-@@ -501,7 +501,7 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
+@@ -500,7 +500,7 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
      }
    }
  
@@ -2206,10 +2212,10 @@ index fb8bdf4f36446..6b577cd961f61 100644
        SearchPostprocessor::Create(GetTfLiteEngine(), 0,
                                    std::make_unique<processor::SearchOptions>(
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_segmenter.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_segmenter.cc
-index c9dad866f1a68..8bef73b9759ff 100644
+index 4fba50ac1dd5f..d44d64c7e92b2 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_segmenter.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/image_segmenter.cc
-@@ -117,7 +117,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
+@@ -116,7 +116,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
    if (labels_filename.empty()) {
      return std::vector<LabelMapItem>();
    }
@@ -2218,7 +2224,7 @@ index c9dad866f1a68..8bef73b9759ff 100644
                     metadata_extractor.GetAssociatedFile(labels_filename));
    const std::string display_names_filename =
        ModelMetadataExtractor::FindFirstAssociatedFileName(
-@@ -125,7 +125,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
+@@ -124,7 +124,7 @@ StatusOr<std::vector<LabelMapItem>> GetLabelMapIfAny(
            locale);
    absl::string_view display_names_file = {};
    if (!display_names_filename.empty()) {
@@ -2227,7 +2233,7 @@ index c9dad866f1a68..8bef73b9759ff 100644
                                               display_names_filename));
    }
    return BuildLabelMapFromFiles(labels_file, display_names_file);
-@@ -164,20 +164,20 @@ absl::Status ImageSegmenter::SanityCheckOptions(
+@@ -163,20 +163,20 @@ absl::Status ImageSegmenter::SanityCheckOptions(
  StatusOr<std::unique_ptr<ImageSegmenter>> ImageSegmenter::CreateFromOptions(
      const ImageSegmenterOptions& options,
      std::unique_ptr<tflite::OpResolver> resolver) {
@@ -2251,7 +2257,7 @@ index c9dad866f1a68..8bef73b9759ff 100644
                       TaskAPIFactory::CreateFromBaseOptions<ImageSegmenter>(
                           &options_copy->base_options(), std::move(resolver)));
    } else {
-@@ -189,7 +189,7 @@ StatusOr<std::unique_ptr<ImageSegmenter>> ImageSegmenter::CreateFromOptions(
+@@ -188,7 +188,7 @@ StatusOr<std::unique_ptr<ImageSegmenter>> ImageSegmenter::CreateFromOptions(
          TfLiteSupportStatus::kInvalidArgumentError);
    }
  
@@ -2260,7 +2266,7 @@ index c9dad866f1a68..8bef73b9759ff 100644
  
    return image_segmenter;
  }
-@@ -201,14 +201,14 @@ absl::Status ImageSegmenter::Init(
+@@ -200,14 +200,14 @@ absl::Status ImageSegmenter::Init(
  
    // Perform pre-initialization actions (by default, sets the process engine for
    // image pre-processing to kLibyuv as a sane default).
@@ -2279,7 +2285,7 @@ index c9dad866f1a68..8bef73b9759ff 100644
  
    return absl::OkStatus();
  }
-@@ -288,7 +288,7 @@ absl::Status ImageSegmenter::CheckAndSetOutputs() {
+@@ -287,7 +287,7 @@ absl::Status ImageSegmenter::CheckAndSetOutputs() {
                            output_tensor_metadata->size()),
            TfLiteSupportStatus::kMetadataInconsistencyError);
      }
@@ -2288,7 +2294,7 @@ index c9dad866f1a68..8bef73b9759ff 100644
          label_map_,
          GetLabelMapIfAny(*metadata_extractor, *output_tensor_metadata->Get(0),
                           options_->display_names_locale()));
-@@ -391,7 +391,7 @@ StatusOr<SegmentationResult> ImageSegmenter::Postprocess(
+@@ -390,7 +390,7 @@ StatusOr<SegmentationResult> ImageSegmenter::Postprocess(
          int class_index = 0;
          float max_confidence = 0.0f;
          for (int d = 0; d < output_depth_; ++d) {
@@ -2297,7 +2303,7 @@ index c9dad866f1a68..8bef73b9759ff 100644
                const float confidence,
                GetOutputConfidence(*output_tensor, tensor_x, tensor_y, d));
            if (confidence > max_confidence) {
-@@ -419,7 +419,7 @@ StatusOr<SegmentationResult> ImageSegmenter::Postprocess(
+@@ -418,7 +418,7 @@ StatusOr<SegmentationResult> ImageSegmenter::Postprocess(
                            /*to_x=*/&tensor_x,
                            /*to_y=*/&tensor_y);
          for (int d = 0; d < output_depth_; ++d) {
@@ -2306,13 +2312,13 @@ index c9dad866f1a68..8bef73b9759ff 100644
                float confidence,
                GetOutputConfidence(*output_tensor, tensor_x, tensor_y, d));
            confidence_masks->mutable_confidence_mask(d)->add_value(confidence);
-@@ -435,12 +435,12 @@ StatusOr<float> ImageSegmenter::GetOutputConfidence(
+@@ -434,12 +434,12 @@ StatusOr<float> ImageSegmenter::GetOutputConfidence(
      const TfLiteTensor& output_tensor, int x, int y, int depth) {
    int index = output_width_ * output_depth_ * y + output_depth_ * x + depth;
    if (has_uint8_outputs_) {
--    ASSIGN_OR_RETURN(const uint8* data,
-+    TFLITE_ASSIGN_OR_RETURN(const uint8* data,
-                      AssertAndReturnTypedTensor<uint8>(&output_tensor));
+-    ASSIGN_OR_RETURN(const uint8_t* data,
++    TFLITE_ASSIGN_OR_RETURN(const uint8_t* data,
+                      AssertAndReturnTypedTensor<uint8_t>(&output_tensor));
      return output_tensor.params.scale *
             (static_cast<int>(data[index]) - output_tensor.params.zero_point);
    } else {
@@ -2527,19 +2533,19 @@ index 0a4d5f7553ee9..a8c221a6dac64 100644
  
    return results;
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.cc
-index 1854cf546d599..e12700079f601 100644
+index f99099ae7b474..dd668eaf359c1 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_common_utils.cc
-@@ -120,7 +120,7 @@ StatusOr<const uint8*> GetUvRawBuffer(const FrameBuffer& buffer) {
+@@ -121,7 +121,7 @@ StatusOr<const uint8_t*> GetUvRawBuffer(const FrameBuffer& buffer) {
      return absl::InvalidArgumentError(
          "Only support getting biplanar UV buffer from NV12/NV21 frame buffer.");
    }
 -  ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
 +  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData yuv_data,
                     FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
-   const uint8* uv_buffer = buffer.format() == FrameBuffer::Format::kNV12
-                                ? yuv_data.u_buffer
-@@ -192,8 +192,8 @@ absl::Status ValidateBufferFormat(const FrameBuffer& buffer) {
+   const uint8_t* uv_buffer = buffer.format() == FrameBuffer::Format::kNV12
+                                  ? yuv_data.u_buffer
+@@ -193,8 +193,8 @@ absl::Status ValidateBufferFormat(const FrameBuffer& buffer) {
  
  absl::Status ValidateBufferFormats(const FrameBuffer& buffer1,
                                     const FrameBuffer& buffer2) {
@@ -2550,7 +2556,7 @@ index 1854cf546d599..e12700079f601 100644
    return absl::OkStatus();
  }
  
-@@ -391,7 +391,7 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFromRawBuffer(
+@@ -392,7 +392,7 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFromRawBuffer(
        return CreateFromOnePlaneNVRawBuffer(buffer, dimension, target_format,
                                             orientation, timestamp);
      case FrameBuffer::Format::kYV12: {
@@ -2559,7 +2565,7 @@ index 1854cf546d599..e12700079f601 100644
                         GetUvPlaneDimension(dimension, target_format));
        return CreateFromYuvRawBuffer(
            /*y_plane=*/buffer,
-@@ -401,7 +401,7 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFromRawBuffer(
+@@ -402,7 +402,7 @@ StatusOr<std::unique_ptr<FrameBuffer>> CreateFromRawBuffer(
            /*pixel_stride_uv=*/1, orientation, timestamp);
      }
      case FrameBuffer::Format::kYV21: {
@@ -2569,7 +2575,7 @@ index 1854cf546d599..e12700079f601 100644
        return CreateFromYuvRawBuffer(
            /*y_plane=*/buffer, /*u_plane=*/buffer + dimension.Size(),
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc
-index 9298c60395286..653ff01f331ef 100644
+index ce7a293662f6a..9a6adf4aa7623 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/frame_buffer_utils.cc
 @@ -398,22 +398,22 @@ absl::Status FrameBufferUtils::Execute(const FrameBuffer& buffer,
@@ -2630,10 +2636,10 @@ index 9298c60395286..653ff01f331ef 100644
    return absl::OkStatus();
  }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc
-index 392df5e40c662..b0355a2b69e26 100644
+index de846dda7fd1d..c573dfc35c270 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/image_tensor_specs.cc
-@@ -90,7 +90,7 @@ StatusOr<const ImageProperties*> GetImagePropertiesIfAny(
+@@ -91,7 +91,7 @@ StatusOr<const ImageProperties*> GetImagePropertiesIfAny(
  
  StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
      const TensorMetadata& tensor_metadata) {
@@ -2642,7 +2648,7 @@ index 392df5e40c662..b0355a2b69e26 100644
        const tflite::ProcessUnit* normalization_process_unit,
        ModelMetadataExtractor::FindFirstProcessUnit(
            tensor_metadata, tflite::ProcessUnitOptions_NormalizationOptions));
-@@ -140,14 +140,14 @@ StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
+@@ -141,14 +141,14 @@ StatusOr<absl::optional<NormalizationOptions>> GetNormalizationOptionsIfAny(
  StatusOr<ImageTensorSpecs> BuildInputImageTensorSpecs(
      const TfLiteEngine::Interpreter& interpreter,
      const tflite::metadata::ModelMetadataExtractor& metadata_extractor) {
@@ -2683,10 +2689,10 @@ index 0a0b1b93423fe..c9910c0073d05 100644
  }
  
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
-index 623326d5cba49..f697ab800cb12 100644
+index 162fad5a8796b..074c089715508 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/vision/utils/libyuv_frame_buffer_utils.cc
-@@ -47,7 +47,7 @@ namespace {
+@@ -46,7 +46,7 @@ namespace {
  // Supported output format includes RGB24 and YV21.
  absl::Status ConvertFromNv12(const FrameBuffer& buffer,
                               FrameBuffer* output_buffer) {
@@ -2695,7 +2701,7 @@ index 623326d5cba49..f697ab800cb12 100644
                     FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
    switch (output_buffer->format()) {
      case FrameBuffer::Format::kRGB: {
-@@ -83,7 +83,7 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
+@@ -82,7 +82,7 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
      }
      case FrameBuffer::Format::kYV12:
      case FrameBuffer::Format::kYV21: {
@@ -2704,7 +2710,7 @@ index 623326d5cba49..f697ab800cb12 100644
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
        int ret = libyuv::NV12ToI420(
            yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
-@@ -100,13 +100,13 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
+@@ -99,13 +99,13 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
        break;
      }
      case FrameBuffer::Format::kNV21: {
@@ -2712,7 +2718,7 @@ index 623326d5cba49..f697ab800cb12 100644
 +      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
        libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
-                         const_cast<uint8*>(output_data.y_buffer),
+                         const_cast<uint8_t*>(output_data.y_buffer),
                          output_data.y_row_stride, buffer.dimension().width,
                          buffer.dimension().height);
 -      ASSIGN_OR_RETURN(
@@ -2720,7 +2726,7 @@ index 623326d5cba49..f697ab800cb12 100644
            const FrameBuffer::Dimension uv_plane_dimension,
            GetUvPlaneDimension(buffer.dimension(), buffer.format()));
        libyuv::SwapUVPlane(yuv_data.u_buffer, yuv_data.uv_row_stride,
-@@ -134,7 +134,7 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
+@@ -133,7 +133,7 @@ absl::Status ConvertFromNv12(const FrameBuffer& buffer,
  // Supported output format includes RGB24 and YV21.
  absl::Status ConvertFromNv21(const FrameBuffer& buffer,
                               FrameBuffer* output_buffer) {
@@ -2729,7 +2735,7 @@ index 623326d5cba49..f697ab800cb12 100644
                     FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
    switch (output_buffer->format()) {
      case FrameBuffer::Format::kRGB: {
-@@ -170,7 +170,7 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
+@@ -169,7 +169,7 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
      }
      case FrameBuffer::Format::kYV12:
      case FrameBuffer::Format::kYV21: {
@@ -2738,7 +2744,7 @@ index 623326d5cba49..f697ab800cb12 100644
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
        int ret = libyuv::NV21ToI420(
            yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.v_buffer,
-@@ -187,13 +187,13 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
+@@ -186,13 +186,13 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
        break;
      }
      case FrameBuffer::Format::kNV12: {
@@ -2746,7 +2752,7 @@ index 623326d5cba49..f697ab800cb12 100644
 +      TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
        libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
-                         const_cast<uint8*>(output_data.y_buffer),
+                         const_cast<uint8_t*>(output_data.y_buffer),
                          output_data.y_row_stride, buffer.dimension().width,
                          buffer.dimension().height);
 -      ASSIGN_OR_RETURN(
@@ -2754,7 +2760,7 @@ index 623326d5cba49..f697ab800cb12 100644
            const FrameBuffer::Dimension uv_plane_dimension,
            GetUvPlaneDimension(buffer.dimension(), buffer.format()));
        libyuv::SwapUVPlane(yuv_data.v_buffer, yuv_data.uv_row_stride,
-@@ -224,7 +224,7 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
+@@ -223,7 +223,7 @@ absl::Status ConvertFromNv21(const FrameBuffer& buffer,
  // Supported output format includes RGB24, NV12, and NV21.
  absl::Status ConvertFromYv(const FrameBuffer& buffer,
                             FrameBuffer* output_buffer) {
@@ -2763,7 +2769,7 @@ index 623326d5cba49..f697ab800cb12 100644
                     FrameBuffer::GetYuvDataFromFrameBuffer(buffer));
    switch (output_buffer->format()) {
      case FrameBuffer::Format::kRGB: {
-@@ -259,7 +259,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
+@@ -258,7 +258,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
        break;
      }
      case FrameBuffer::Format::kNV12: {
@@ -2772,7 +2778,7 @@ index 623326d5cba49..f697ab800cb12 100644
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
        int ret = libyuv::I420ToNV12(
            yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
-@@ -275,7 +275,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
+@@ -274,7 +274,7 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
        break;
      }
      case FrameBuffer::Format::kNV21: {
@@ -2781,7 +2787,7 @@ index 623326d5cba49..f697ab800cb12 100644
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
        int ret = libyuv::I420ToNV21(
            yuv_data.y_buffer, yuv_data.y_row_stride, yuv_data.u_buffer,
-@@ -300,9 +300,9 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
+@@ -299,9 +299,9 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
      }
      case FrameBuffer::Format::kYV12:
      case FrameBuffer::Format::kYV21: {
@@ -2793,7 +2799,7 @@ index 623326d5cba49..f697ab800cb12 100644
            const FrameBuffer::Dimension uv_plane_dimension,
            GetUvPlaneDimension(buffer.dimension(), buffer.format()));
        libyuv::CopyPlane(yuv_data.y_buffer, yuv_data.y_row_stride,
-@@ -333,9 +333,9 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
+@@ -332,9 +332,9 @@ absl::Status ConvertFromYv(const FrameBuffer& buffer,
  absl::Status ResizeYv(
      const FrameBuffer& buffer, FrameBuffer* output_buffer,
      libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
@@ -2805,7 +2811,7 @@ index 623326d5cba49..f697ab800cb12 100644
                     FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
    // TODO(b/151217096): Choose the optimal image resizing filter to optimize
    // the model inference performance.
-@@ -360,9 +360,9 @@ absl::Status ResizeYv(
+@@ -359,9 +359,9 @@ absl::Status ResizeYv(
  absl::Status ResizeNv(
      const FrameBuffer& buffer, FrameBuffer* output_buffer,
      libyuv::FilterMode interpolation = libyuv::FilterMode::kFilterBilinear) {
@@ -2815,38 +2821,38 @@ index 623326d5cba49..f697ab800cb12 100644
 -  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
 +  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                     FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
-   const uint8* src_uv = input_data.u_buffer;
-   const uint8* dst_uv = output_data.u_buffer;
-@@ -391,7 +391,7 @@ absl::Status ResizeNv(
+   const uint8_t* src_uv = input_data.u_buffer;
+   const uint8_t* dst_uv = output_data.u_buffer;
+@@ -390,7 +390,7 @@ absl::Status ResizeNv(
  // in `dest_argb`.
- absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8* dest_argb,
+ absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8_t* dest_argb,
                                int dest_stride_argb) {
 -  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
 +  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
    if (buffer.format() != FrameBuffer::Format::kRGB) {
      return CreateStatusWithPayload(StatusCode::kInternal,
                                     "RGB input format is expected.",
-@@ -428,7 +428,7 @@ absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8* dest_argb,
+@@ -427,7 +427,7 @@ absl::Status ConvertRgbToArgb(const FrameBuffer& buffer, uint8_t* dest_argb,
  // stores the conversion result in `output_buffer`.
- absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
+ absl::Status ConvertArgbToRgb(uint8_t* src_argb, int src_stride_argb,
                                FrameBuffer* output_buffer) {
 -  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
 +  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(*output_buffer));
    if (output_buffer->format() != FrameBuffer::Format::kRGB) {
      return absl::InternalError("RGB input format is expected.");
    }
-@@ -464,7 +464,7 @@ absl::Status ConvertArgbToRgb(uint8* src_argb, int src_stride_argb,
+@@ -463,7 +463,7 @@ absl::Status ConvertArgbToRgb(uint8_t* src_argb, int src_stride_argb,
  // memory) format and stores the conversion result in `dest_argb`.
- absl::Status ConvertRgbaToArgb(const FrameBuffer& buffer, uint8* dest_argb,
+ absl::Status ConvertRgbaToArgb(const FrameBuffer& buffer, uint8_t* dest_argb,
                                 int dest_stride_argb) {
 -  RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
 +  TFLITE_RETURN_IF_ERROR(ValidateBufferPlaneMetadata(buffer));
    if (buffer.format() != FrameBuffer::Format::kRGBA) {
      return CreateStatusWithPayload(
          StatusCode::kInternal, "RGBA input format is expected.",
-@@ -529,15 +529,15 @@ absl::Status ConvertFromRgb(const FrameBuffer& buffer,
+@@ -528,15 +528,15 @@ absl::Status ConvertFromRgb(const FrameBuffer& buffer,
          output_buffer->format() == FrameBuffer::Format::kNV21) {
-       tmp_yuv_buffer = absl::make_unique<uint8[]>(
+       tmp_yuv_buffer = absl::make_unique<uint8_t[]>(
            GetFrameBufferByteSize(buffer.dimension(), output_buffer->format()));
 -      ASSIGN_OR_RETURN(
 +      TFLITE_ASSIGN_OR_RETURN(
@@ -2863,16 +2869,16 @@ index 623326d5cba49..f697ab800cb12 100644
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
      }
      int ret = libyuv::RAWToI420(
-@@ -592,7 +592,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
+@@ -591,7 +591,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
                                                      FrameBuffer::Format::kRGBA);
-       auto argb_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
+       auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
        const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
 -      RETURN_IF_ERROR(
 +      TFLITE_RETURN_IF_ERROR(
            ConvertRgbaToArgb(buffer, argb_buffer.get(), argb_row_bytes));
  
        // Convert ARGB to kGRAY
-@@ -609,7 +609,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
+@@ -608,7 +608,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
        break;
      }
      case FrameBuffer::Format::kNV12: {
@@ -2881,7 +2887,7 @@ index 623326d5cba49..f697ab800cb12 100644
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
        int ret = libyuv::ABGRToNV12(
            buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-@@ -624,7 +624,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
+@@ -623,7 +623,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
        break;
      }
      case FrameBuffer::Format::kNV21: {
@@ -2890,7 +2896,7 @@ index 623326d5cba49..f697ab800cb12 100644
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
        int ret = libyuv::ABGRToNV21(
            buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-@@ -640,7 +640,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
+@@ -639,7 +639,7 @@ absl::Status ConvertFromRgba(const FrameBuffer& buffer,
      }
      case FrameBuffer::Format::kYV12:
      case FrameBuffer::Format::kYV21: {
@@ -2899,16 +2905,16 @@ index 623326d5cba49..f697ab800cb12 100644
                         FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
        int ret = libyuv::ABGRToI420(
            buffer.plane(0).buffer, buffer.plane(0).stride.row_stride_bytes,
-@@ -729,7 +729,7 @@ absl::Status RotateRgb(const FrameBuffer& buffer, int angle_deg,
+@@ -728,7 +728,7 @@ absl::Status RotateRgb(const FrameBuffer& buffer, int angle_deg,
        GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
-   auto argb_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
+   auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
    const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
 -  RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 +  TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
  
    // Rotate ARGB
-   auto argb_rotated_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
-@@ -776,9 +776,9 @@ absl::Status RotateGray(const FrameBuffer& buffer, int angle_deg,
+   auto argb_rotated_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
+@@ -775,9 +775,9 @@ absl::Status RotateGray(const FrameBuffer& buffer, int angle_deg,
  // Rotates YV12/YV21 frame buffer.
  absl::Status RotateYv(const FrameBuffer& buffer, int angle_deg,
                        FrameBuffer* output_buffer) {
@@ -2920,7 +2926,7 @@ index 623326d5cba49..f697ab800cb12 100644
                     FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
    int ret = libyuv::I420Rotate(
        input_data.y_buffer, input_data.y_row_stride, input_data.u_buffer,
-@@ -807,19 +807,19 @@ absl::Status RotateNv(const FrameBuffer& buffer, int angle_deg,
+@@ -806,20 +806,20 @@ absl::Status RotateNv(const FrameBuffer& buffer, int angle_deg,
                                     "kNV12 or kNV21 input formats are expected.",
                                     TfLiteSupportStatus::kImageProcessingError);
    }
@@ -2932,7 +2938,8 @@ index 623326d5cba49..f697ab800cb12 100644
                     FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
    const int rotated_buffer_size = GetFrameBufferByteSize(
        output_buffer->dimension(), FrameBuffer::Format::kYV21);
-   auto rotated_yuv_raw_buffer = absl::make_unique<uint8[]>(rotated_buffer_size);
+   auto rotated_yuv_raw_buffer =
+       absl::make_unique<uint8_t[]>(rotated_buffer_size);
 -  ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> rotated_yuv_buffer,
 +  TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<FrameBuffer> rotated_yuv_buffer,
                     CreateFromRawBuffer(
@@ -2978,10 +2985,10 @@ index 623326d5cba49..f697ab800cb12 100644
    // bounding box with odd X or Y starting positions.
    int crop_offset_chroma = input_data.uv_row_stride * (y0 / 2) +
                             input_data.uv_pixel_stride * (x0 / 2);
--  ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
--  ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
-+  TFLITE_ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
-+  TFLITE_ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
+-  ASSIGN_OR_RETURN(const uint8_t* input_chroma_buffer, GetUvRawBuffer(buffer));
+-  ASSIGN_OR_RETURN(const uint8_t* output_chroma_buffer,
++  TFLITE_ASSIGN_OR_RETURN(const uint8_t* input_chroma_buffer, GetUvRawBuffer(buffer));
++  TFLITE_ASSIGN_OR_RETURN(const uint8_t* output_chroma_buffer,
                     GetUvRawBuffer(*output_buffer));
    libyuv::CopyPlane(
        input_chroma_buffer + crop_offset_chroma, input_data.uv_row_stride,
@@ -3017,7 +3024,7 @@ index 623326d5cba49..f697ab800cb12 100644
    // TODO(b/152629712): Investigate the impact of color shifting caused by the
 @@ -1119,7 +1119,7 @@ absl::Status ResizeRgb(
        GetFrameBufferByteSize(buffer.dimension(), FrameBuffer::Format::kRGBA);
-   auto argb_buffer = absl::make_unique<uint8[]>(argb_buffer_size);
+   auto argb_buffer = absl::make_unique<uint8_t[]>(argb_buffer_size);
    const int argb_row_bytes = buffer.dimension().width * kRgbaPixelBytes;
 -  RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
 +  TFLITE_RETURN_IF_ERROR(ConvertRgbToArgb(buffer, argb_buffer.get(), argb_row_bytes));
@@ -3034,10 +3041,10 @@ index 623326d5cba49..f697ab800cb12 100644
 -  ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
 +  TFLITE_ASSIGN_OR_RETURN(FrameBuffer::YuvData output_data,
                     FrameBuffer::GetYuvDataFromFrameBuffer(*output_buffer));
--  ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
--  ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
-+  TFLITE_ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
-+  TFLITE_ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
+-  ASSIGN_OR_RETURN(const uint8_t* input_chroma_buffer, GetUvRawBuffer(buffer));
+-  ASSIGN_OR_RETURN(const uint8_t* output_chroma_buffer,
++  TFLITE_ASSIGN_OR_RETURN(const uint8_t* input_chroma_buffer, GetUvRawBuffer(buffer));
++  TFLITE_ASSIGN_OR_RETURN(const uint8_t* output_chroma_buffer,
                     GetUvRawBuffer(*output_buffer));
  
    int ret = libyuv::NV12Mirror(
@@ -3069,10 +3076,10 @@ index 623326d5cba49..f697ab800cb12 100644
                      output_data.y_row_stride, buffer.dimension().width,
                      -output_buffer->dimension().height);
    // Flip UV plane vertically by passing a negative height.
--  ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
--  ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
-+  TFLITE_ASSIGN_OR_RETURN(const uint8* input_chroma_buffer, GetUvRawBuffer(buffer));
-+  TFLITE_ASSIGN_OR_RETURN(const uint8* output_chroma_buffer,
+-  ASSIGN_OR_RETURN(const uint8_t* input_chroma_buffer, GetUvRawBuffer(buffer));
+-  ASSIGN_OR_RETURN(const uint8_t* output_chroma_buffer,
++  TFLITE_ASSIGN_OR_RETURN(const uint8_t* input_chroma_buffer, GetUvRawBuffer(buffer));
++  TFLITE_ASSIGN_OR_RETURN(const uint8_t* output_chroma_buffer,
                     GetUvRawBuffer(*output_buffer));
 -  ASSIGN_OR_RETURN(const FrameBuffer::Dimension uv_plane_dimension,
 +  TFLITE_ASSIGN_OR_RETURN(const FrameBuffer::Dimension uv_plane_dimension,
@@ -3256,7 +3263,7 @@ index 2ea2c578f0d40..8cc04ca191fdc 100644
        return image_classifier;
      }
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_segmenter_test.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_segmenter_test.cc
-index 712c9a3dead7e..1c49b3630f91c 100644
+index d025dd62f695c..c6dff4b845e8f 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_segmenter_test.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/test/task/vision/image_segmenter_test.cc
 @@ -386,16 +386,16 @@ class PostprocessTest : public tflite::testing::Test {
@@ -3388,56 +3395,6 @@ index 8508f89a5cd71..8bbc4892c1706 100644
        return Delegate::GPU;
      default:
        break;
-diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_detokenizer_op.cc b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_detokenizer_op.cc
-index 273ccc8506811..a2939b0e95e4a 100644
---- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_detokenizer_op.cc
-+++ b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_detokenizer_op.cc
-@@ -31,11 +31,11 @@ REGISTER_OP("TFSentencepieceDetokenizeOp")
-     .Output("output: string")
-     .SetShapeFn([](tensorflow::shape_inference::InferenceContext* c) {
-       shape_inference::ShapeHandle unused;
--      TF_RETURN_IF_ERROR(c->WithRank(c->input(1), 1, &unused));
--      TF_RETURN_IF_ERROR(c->WithRank(c->input(2), 1, &unused));
-+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(1), 1, &unused));
-+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(2), 1, &unused));
- 
-       shape_inference::DimensionHandle dim;
--      TF_RETURN_IF_ERROR(c->Subtract(c->NumElements(c->input(2)), 1, &dim));
-+      TF_TFLITE_RETURN_IF_ERROR(c->Subtract(c->NumElements(c->input(2)), 1, &dim));
-       c->set_output(0, c->Vector(dim));
-       return OkStatus();
-     });
-diff --git a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer_op.cc b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer_op.cc
-index f922efa883775..7fd3442d9a791 100644
---- a/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer_op.cc
-+++ b/third_party/tflite_support/src/tensorflow_lite_support/custom_ops/kernel/sentencepiece/sentencepiece_tokenizer_op.cc
-@@ -42,19 +42,19 @@ REGISTER_OP("TFSentencepieceTokenizeOp")
-     .Output("output_splits: Tsplits")
-     .SetShapeFn([](tensorflow::shape_inference::InferenceContext* c) {
-       tensorflow::shape_inference::ShapeHandle unused;
--      TF_RETURN_IF_ERROR(c->WithRank(c->input(1), 1, &unused));
--      TF_RETURN_IF_ERROR(c->WithRank(c->input(2), 0, &unused));
--      TF_RETURN_IF_ERROR(c->WithRank(c->input(3), 0, &unused));
--      TF_RETURN_IF_ERROR(c->WithRank(c->input(4), 0, &unused));
--      TF_RETURN_IF_ERROR(c->WithRank(c->input(5), 0, &unused));
--      TF_RETURN_IF_ERROR(c->WithRank(c->input(6), 0, &unused));
-+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(1), 1, &unused));
-+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(2), 0, &unused));
-+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(3), 0, &unused));
-+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(4), 0, &unused));
-+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(5), 0, &unused));
-+      TF_TFLITE_RETURN_IF_ERROR(c->WithRank(c->input(6), 0, &unused));
- 
-       c->set_output(
-           0, c->Vector(
-                  tensorflow::shape_inference::InferenceContext::kUnknownDim));
- 
-       tensorflow::shape_inference::DimensionHandle num_splits;
--      TF_RETURN_IF_ERROR(c->Add(c->NumElements(c->input(1)), 1, &num_splits));
-+      TF_TFLITE_RETURN_IF_ERROR(c->Add(c->NumElements(c->input(1)), 1, &num_splits));
-       c->set_output(1, c->Vector(num_splits));
-       return tensorflow::OkStatus();
-     });
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_lib.cc b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_lib.cc
 index d739cb55f26a5..8ed0ea3d6955b 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/audio/desktop/audio_classifier_lib.cc
@@ -3567,7 +3524,7 @@ index 68c347c2639bb..92b9ffc8adf2b 100644
    auto end_search = steady_clock::now();
    std::string delegate =
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_classifier_demo.cc b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_classifier_demo.cc
-index f29bd2de9c535..2650607b13191 100644
+index ce7856e981629..6f03185988e78 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_classifier_demo.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_classifier_demo.cc
 @@ -125,11 +125,11 @@ void DisplayResult(const ClassificationResult& result) {
@@ -3640,7 +3597,7 @@ index 50d615a486751..d5f0cb1233457 100644
        ImageEmbedder::CosineSimilarity(
            image_embedder->GetEmbeddingByIndex(first_embedding_result, 0)
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_searcher_demo.cc b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_searcher_demo.cc
-index b661447614bc7..0ef54df645447 100644
+index 7003aac20a9f6..0a10d1de5e0f1 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_searcher_demo.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_searcher_demo.cc
 @@ -106,11 +106,11 @@ void DisplayResult(const processor::SearchResult& result) {
@@ -3667,7 +3624,7 @@ index b661447614bc7..0ef54df645447 100644
    auto end_search = steady_clock::now();
    std::string delegate =
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_segmenter_demo.cc b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_segmenter_demo.cc
-index 5a566ecbcf921..bebbd44431c90 100644
+index 5736bea024873..1ed31817ae483 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_segmenter_demo.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/image_segmenter_demo.cc
 @@ -104,7 +104,7 @@ absl::Status EncodeMaskToPngFile(const SegmentationResult& result) {
@@ -3716,7 +3673,7 @@ index 5a566ecbcf921..bebbd44431c90 100644
    // Cleanup and return.
    ImageDataFree(&image);
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/object_detector_demo.cc b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/object_detector_demo.cc
-index 20f7403207c2e..28d9243e32dd8 100644
+index 85f5b9d23ef6d..f636fb757c9f7 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/object_detector_demo.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/examples/task/vision/desktop/object_detector_demo.cc
 @@ -151,7 +151,7 @@ absl::Status EncodeResultToPngFile(const DetectionResult& result,
@@ -3774,7 +3731,7 @@ index 1b08e56ed509b..44254c23a83d4 100644
  
    return CreateFromYuvRawBuffer(
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
-index d208da4e03780..4b3f816183c8f 100644
+index bb42c6140dcd8..c0c43bafe2c43 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
 @@ -79,7 +79,7 @@ tflite::support::StatusOr<ZipFileInfo> GetCurrentZipFileInfo(
@@ -3822,7 +3779,7 @@ index d208da4e03780..4b3f816183c8f 100644
    return extractor;
  }
  
-@@ -261,7 +261,7 @@ absl::Status ModelMetadataExtractor::ExtractAssociatedFiles(
+@@ -262,7 +262,7 @@ absl::Status ModelMetadataExtractor::ExtractAssociatedFiles(
    if (global_info.number_entry > 0) {
      int error = unzGoToFirstFile(zf);
      while (error == UNZ_OK) {
@@ -3865,5 +3822,5 @@ index fe5d1ef1175e4..94c85334f0574 100644
    leveldb::Options options;
    options.compression =
 -- 
-2.42.0.515.g380fc7ccd1-goog
+2.49.0.777.g153de2bbd5-goog
 

@@ -21,7 +21,7 @@ limitations under the License.
 #include <type_traits>
 #include <vector>
 
-#include "Eigen/Core"  // from @eigen
+#include "Eigen/Core"  // from @eigen_archive
 #include "tensorflow_lite_support/scann_ondevice/cc/core/simd_utils.h"
 
 namespace tflite {
@@ -37,7 +37,7 @@ void RearrangeLUT(const LutType* input_data, int batch_elems, int batch_size,
     simd_sizes = {8, 4};
 #elif defined __SSE__
     simd_sizes = {4};
-#elif defined __ARM_NEON__
+#elif defined __ARM_NEON
     simd_sizes = {4};
 #endif
   } else {
@@ -45,7 +45,7 @@ void RearrangeLUT(const LutType* input_data, int batch_elems, int batch_size,
     simd_sizes = {16, 8};
 #elif defined __SSE4_1__
     simd_sizes = {8};
-#elif defined __ARM_NEON__
+#elif defined __ARM_NEON
     simd_sizes = {8};
 #endif
   }
@@ -195,7 +195,7 @@ void IndexTableSum(const uint8_t* indices, size_t num_chunks,
       indices, num_chunks, num_outputs, lookup_table, batch_size, num_centers,
       min, max, i, output);
 #endif
-#ifdef __ARM_NEON__
+#ifdef __ARM_NEON
   i = IndexTableSumSimdBatch<SimdInt16x8, LutType>(
       indices, num_chunks, num_outputs, lookup_table, batch_size, num_centers,
       min, max, i, output);
@@ -222,7 +222,7 @@ inline void IndexTableSum<float>(const uint8_t* indices, size_t num_chunks,
       indices, num_chunks, num_outputs, lookup_table, batch_size, num_centers,
       min, max, i, output);
 #endif
-#ifdef __ARM_NEON__
+#ifdef __ARM_NEON
   i = IndexTableSumSimdBatch<SimdFloat32x4, float>(
       indices, num_chunks, num_outputs, lookup_table, batch_size, num_centers,
       min, max, i, output);

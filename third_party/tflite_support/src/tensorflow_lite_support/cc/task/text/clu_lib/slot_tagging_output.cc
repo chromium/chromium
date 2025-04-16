@@ -125,8 +125,7 @@ absl::Status SlotModulePopulateResponse(
       mention->set_start(chunk.start);
       mention->set_end(chunk.exclusive_end);
       if (chunk.start >= chunk.exclusive_end) {
-        return absl::InternalError(
-            absl::StrCat("Empty span: ", slot->DebugString()));
+        return absl::InternalError(absl::StrCat("Empty span: ", *slot));
       }
     }
 

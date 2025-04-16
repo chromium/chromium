@@ -8,7 +8,6 @@ package(
 py_binary(
     name = "zip_files",
     srcs = ["zip_files.py"],
-    python_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
         "@absl_py//absl:app",

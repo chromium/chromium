@@ -11,19 +11,19 @@ exports_files(["metadata_schema.fbs"])
 
 flatbuffer_py_library(
     name = "schema_py",
-    srcs = ["@org_tensorflow//tensorflow/lite/schema:schema.fbs"],
+    srcs = ["@org_tensorflow//tensorflow/compiler/mlir/lite/schema:schema.fbs"],
 )
 
 # Generic schema for inference on device.
 flatbuffer_android_library(
     name = "schema_fbs_android",
-    srcs = ["@org_tensorflow//tensorflow/lite/schema:schema.fbs"],
+    srcs = ["@org_tensorflow//tensorflow/compiler/mlir/lite/schema:schema.fbs"],
     custom_package = "org.tensorflow.lite.schema",
 )
 
 flatbuffer_java_library(
     name = "schema_fbs_java",
-    srcs = ["@org_tensorflow//tensorflow/lite/schema:schema.fbs"],
+    srcs = ["@org_tensorflow//tensorflow/compiler/mlir/lite/schema:schema.fbs"],
     custom_package = "org.tensorflow.lite.schema",
 )
 

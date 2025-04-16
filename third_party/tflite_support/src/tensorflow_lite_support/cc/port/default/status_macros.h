@@ -75,7 +75,7 @@ limitations under the License.
 //   TFLITE_ASSIGN_OR_RETURN(std::unique_ptr<T> ptr, MaybeGetPtr(arg));
 //
 // Example: Assigning to a map. Because of C preprocessor
-// limitation, the type used in ASSIGN_OR_RETURN cannot contain comma, so
+// limitation, the type used in TFLITE_ASSIGN_OR_RETURN cannot contain comma, so
 // wrap lhs in parentheses:
 //   TFLITE_ASSIGN_OR_RETURN((absl::flat_hash_map<Foo, Bar> my_map), GetMap());
 // Or use auto if the type is obvious enough:
@@ -135,7 +135,7 @@ constexpr bool TFLSHasPotentialConditionalOperator(const char* lhs, int index) {
         #lhs[0] != '(' || #lhs[sizeof(#lhs) - 2] != ')' ||                \
             !TFLSHasPotentialConditionalOperator(#lhs, sizeof(#lhs) - 2), \
         "Identified potential conditional operator, consider not "        \
-        "using ASSIGN_OR_RETURN");                                        \
+        "using TFLITE_ASSIGN_OR_RETURN");                                        \
   }                                                                       \
   TFLITE_STATUS_MACROS_IMPL_UNPARENTHESIZE_IF_PARENTHESIZED(lhs) =        \
       std::move(statusor).value()

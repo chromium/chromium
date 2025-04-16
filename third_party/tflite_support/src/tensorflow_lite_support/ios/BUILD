@@ -1,6 +1,10 @@
 # TensorFlow Lite Task Library
 
 load(
+    "@build_bazel_rules_apple//apple:ios.bzl",
+    "ios_static_framework",
+)
+load(
     "@org_tensorflow//tensorflow/lite/ios:ios.bzl",
     "TFL_MINIMUM_OS_VERSION",
     "tflite_ios_framework",
@@ -9,10 +13,6 @@ load(
     "//tensorflow_lite_support/ios:ios.bzl",
     "TFL_TASK_MINIMUM_OS_VERSION",
     "strip_api_include_path_prefix",
-)
-load(
-    "@build_bazel_rules_apple//apple:ios.bzl",
-    "ios_static_framework",
 )
 
 package(

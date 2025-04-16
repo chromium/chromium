@@ -15,6 +15,7 @@ limitations under the License.
 
 #include "tensorflow_lite_support/c/task/processor/segmentation_result.h"
 
+#include <cstdlib>
 #include <memory>
 
 #ifdef __cplusplus

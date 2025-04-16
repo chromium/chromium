@@ -20,7 +20,6 @@ limitations under the License.
 #include <glog/logging.h>
 #include "tensorflow_lite_support/cc/port/gmock.h"
 #include "tensorflow_lite_support/cc/port/gtest.h"
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/proto2.h"
 #include "tensorflow_lite_support/cc/port/status_matchers.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"

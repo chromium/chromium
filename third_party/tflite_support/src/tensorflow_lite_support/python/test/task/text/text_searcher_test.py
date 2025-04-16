@@ -75,18 +75,18 @@ _BERT_SEARCHER_MODEL = 'mobilebert_searcher.tflite'
 _BERT_INDEX = 'mobilebert_index.ldb'
 _EXPECTED_BERT_SEARCH_RESULT = _SearchResult(nearest_neighbors=[
     _NearestNeighbor(
-        metadata=bytearray(b'The weather was excellent.'), distance=0.0),
+        metadata=bytearray(b'The weather was excellent.'), distance=0.002212),
     _NearestNeighbor(
-        metadata=bytearray(b'It was a sunny day.'), distance=0.115369),
+        metadata=bytearray(b'It was a sunny day.'), distance=0.109374),
     _NearestNeighbor(
         metadata=bytearray(b'The sun was shining on that day.'),
-        distance=0.230017),
+        distance=0.217592),
     _NearestNeighbor(
         metadata=bytearray(b'He was very happy with his newly bought car.'),
-        distance=0.324563),
+        distance=0.308592),
     _NearestNeighbor(
         metadata=bytearray(b'The cat is chasing after the mouse.'),
-        distance=0.966928)
+        distance=0.949748)
 ])
 
 _USE_EMBEDDER_MODEL = 'universal_sentence_encoder_qa_with_metadata.tflite'

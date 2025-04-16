@@ -19,18 +19,28 @@ limitations under the License.
 #include <unistd.h>
 #endif
 
-#include <memory>
+#include <stddef.h>
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/match.h"  // from @com_google_absl
 #include "absl/strings/str_cat.h"  // from @com_google_absl
-#include "tensorflow/lite/builtin_ops.h"
-#include "tensorflow/lite/kernels/register.h"
-#include "tensorflow/lite/stderr_reporter.h"
+#include "tensorflow/lite/c/c_api.h"
+#include "tensorflow/lite/core/api/error_reporter.h"
+#include "tensorflow/lite/core/api/op_resolver.h"
+#include "tensorflow/lite/interpreter_builder.h"
+#include "tensorflow/lite/model_builder.h"
 #include "tensorflow/lite/tools/verifier.h"
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
+#include "tensorflow_lite_support/cc/task/core/proto/external_file_proto_inc.h"
+#include "tensorflow_lite_support/metadata/cc/metadata_extractor.h"
 
 namespace tflite {
 namespace task {

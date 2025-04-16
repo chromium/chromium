@@ -20,7 +20,6 @@ limitations under the License.
 #include "absl/strings/string_view.h"  // from @com_google_absl
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow_lite_support/cc/common.h"
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/task/core/task_api_factory.h"
 #include "tensorflow_lite_support/cc/task/core/task_utils.h"
@@ -407,8 +406,8 @@ StatusOr<ClassificationResult> ImageClassifier::Postprocess(
 
     const TfLiteTensor* output_tensor = output_tensors[i];
     if (has_uint8_outputs_) {
-      TFLITE_ASSIGN_OR_RETURN(const uint8* output_data,
-                       AssertAndReturnTypedTensor<uint8>(output_tensor));
+      TFLITE_ASSIGN_OR_RETURN(const uint8_t* output_data,
+                       AssertAndReturnTypedTensor<uint8_t>(output_tensor));
       for (int j = 0; j < head.label_map_items.size(); ++j) {
         score_pairs.emplace_back(j, output_tensor->params.scale *
                                         (static_cast<int>(output_data[j]) -

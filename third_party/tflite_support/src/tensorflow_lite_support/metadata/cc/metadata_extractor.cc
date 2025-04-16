@@ -192,6 +192,7 @@ absl::Status ModelMetadataExtractor::InitFromModelBuffer(
         "The model is not a valid FlatBuffer buffer.",
         TfLiteSupportStatus::kInvalidFlatBufferError);
   }
+
   model_ = tflite::GetModel(buffer_data);
   if (model_->metadata() == nullptr) {
     // Not all models have metadata, which is OK. `GetModelMetadata()` then
