@@ -55,7 +55,6 @@
 #include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
-#include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -575,18 +574,6 @@ void IndexedDBContextImpl::ResetCachesForTesting(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-void IndexedDBContextImpl::WriteToIndexedDBForTesting(
-    const BucketLocator& bucket_locator,
-    const std::string& key,
-    const std::string& value,
-    base::OnceClosure callback) {
-  DCHECK(BucketContextExists(bucket_locator.id));
-  bucket_contexts_.find(bucket_locator.id)
-      ->second.AsyncCall(&BucketContext::WriteToIndexedDBForTesting)
-      .WithArgs(key, value)
-      .Then(std::move(callback));
-}
-
 void IndexedDBContextImpl::GetPathForBlobForTesting(
     const BucketLocator& bucket_locator,
     int64_t database_id,
@@ -633,11 +620,6 @@ void IndexedDBContextImpl::GetSchedulingPriorityForTesting(
 void IndexedDBContextImpl::BindMockFailureSingletonForTesting(
     mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
   pending_failure_injector_ = std::move(receiver);
-}
-
-void IndexedDBContextImpl::GetDatabaseKeysForTesting(
-    GetDatabaseKeysForTestingCallback callback) {
-  std::move(callback).Run(SchemaVersionKey::Encode(), DataVersionKey::Encode());
 }
 
 std::optional<BucketLocator> IndexedDBContextImpl::LookUpBucket(

@@ -539,8 +539,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   void SetExecuteJournalCleaningOnNoTransactionsForTesting() {
     execute_journal_cleaning_on_no_txns_ = true;
   }
-  void WriteToIndexedDBForTesting(const std::string& key,
-                                  const std::string& value);
 
   const LevelDBCleanupScheduler& GetLevelDBCleanupSchedulerForTesting() const {
     return level_db_cleanup_scheduler_;

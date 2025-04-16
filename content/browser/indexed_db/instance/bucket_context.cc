@@ -786,12 +786,6 @@ void BucketContext::FlushBackingStoreForTesting() {
   backing_store()->FlushForTesting();
 }
 
-void BucketContext::WriteToIndexedDBForTesting(const std::string& key,
-                                               const std::string& value) {
-  leveldb_backing_store()->WriteToIndexedDBForTesting(key, value);  // IN-TEST
-  ForceClose(/*doom=*/true);
-}
-
 void BucketContext::BindMockFailureSingletonForTesting(
     mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver) {
   level_db::BindMockFailureSingletonForTesting(std::move(receiver));  // IN-TEST

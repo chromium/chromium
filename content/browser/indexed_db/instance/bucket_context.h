@@ -288,8 +288,6 @@ class CONTENT_EXPORT BucketContext
   BucketContext* GetReferenceForTesting();
 
   void FlushBackingStoreForTesting();
-  void WriteToIndexedDBForTesting(const std::string& key,
-                                  const std::string& value);
   void BindMockFailureSingletonForTesting(
       mojo::PendingReceiver<storage::mojom::MockFailureInjector> receiver);
 

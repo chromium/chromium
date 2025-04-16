@@ -4102,13 +4102,6 @@ BackingStore::Transaction::OpenIndexCursor(
   return cursor;
 }
 
-void BackingStore::WriteToIndexedDBForTesting(const std::string& key,
-                                              const std::string& value) {
-  std::string value_copy = value;
-  Status s(db_->Put(key, &value_copy));
-  CHECK(s.ok()) << s.ToString();
-}
-
 bool BackingStore::IsBlobCleanupPending() {
   return journal_cleaning_timer_.IsRunning();
 }
