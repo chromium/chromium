@@ -10,7 +10,6 @@
 
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_browsertest_platform_delegate.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -27,7 +26,6 @@ class GURL;
 
 namespace extensions {
 class Extension;
-class ExtensionBrowserTestPlatformDelegate;
 
 #if BUILDFLAG(IS_ANDROID)
 using ExtensionApiTestBase = ExtensionPlatformBrowserTest;
@@ -187,10 +185,6 @@ class ExtensionApiTest : public ExtensionApiTestBase {
   // created using UseHttpsTestServer() and then called with
   // embedded_test_server().
   std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
-
-  // A delegate to handle platform-specific behavior.
-  // TODO(devlin): Hoist this up to ExtensionPlatformBrowserTest?
-  ExtensionBrowserTestPlatformDelegate platform_delegate_;
 };
 
 }  // namespace extensions

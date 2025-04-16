@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/extension_browser_test_util.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/profiles/profile.h"
@@ -211,6 +212,7 @@ class ExtensionPlatformBrowserTest::TestTabModel : public TabModel {
 ExtensionPlatformBrowserTest::ExtensionPlatformBrowserTest(
     ContextType context_type)
     : context_type_(context_type),
+      platform_delegate_(*this),
       // TODO(crbug.com/40261741): Move this ScopedCurrentChannel down into
       // tests that specifically require it.
       current_channel_(version_info::Channel::UNKNOWN),
@@ -315,7 +317,15 @@ void ExtensionPlatformBrowserTest::SetUpOnMainThread() {
     web_contents_ = web_contents->GetWeakPtr();
   }
 
-  test_notification_observer_ = CreateTestNotificationObserver();
+  test_notification_observer_ =
+      std::make_unique<ExtensionTestNotificationObserver>(profile());
+
+  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
+  if (updater->enabled()) {
+    updater->SetExtensionCacheForTesting(test_extension_cache_.get());
+  }
+
+  platform_delegate_.SetUpOnMainThread();
 }
 
 void ExtensionPlatformBrowserTest::TearDown() {
@@ -1020,13 +1030,19 @@ bool ExtensionPlatformBrowserTest::WaitForExtensionNotIdle(
   return test_notification_observer_->WaitForExtensionNotIdle(extension_id);
 }
 
-std::unique_ptr<ExtensionTestNotificationObserver>
-ExtensionPlatformBrowserTest::CreateTestNotificationObserver() {
-  return std::make_unique<ExtensionTestNotificationObserver>(profile());
+bool ExtensionPlatformBrowserTest::WaitForPageActionVisibilityChangeTo(
+    int count) {
+  return platform_delegate_.WaitForPageActionVisibilityChangeTo(count);
+}
+
+const Extension* ExtensionPlatformBrowserTest::LoadAndLaunchApp(
+    const base::FilePath& path,
+    bool uses_guest_view) {
+  return platform_delegate_.LoadAndLaunchApp(path, uses_guest_view);
 }
 
 Profile* ExtensionPlatformBrowserTest::profile() {
-  return chrome_test_utils::GetProfile(this);
+  return platform_delegate_.GetProfile();
 }
 
 content::WebContents* ExtensionPlatformBrowserTest::web_contents() {

@@ -28,10 +28,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
-class Profile;
-
 namespace extensions {
-class ChromeExtensionTestNotificationObserver;
 class ExtensionBrowserTestPlatformDelegate;
 class ExtensionService;
 
@@ -55,37 +52,11 @@ class ExtensionBrowserTest : public ExtensionPlatformBrowserTest {
 
   // Useful accessors.
   ExtensionService* extension_service();
-  ExtensionRegistrar* extension_registrar();
 
   // InProcessBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override;
-  void SetUpOnMainThread() override;
-
-  // ExtensionPlatformBrowserTest:
-  std::unique_ptr<ExtensionTestNotificationObserver>
-  CreateTestNotificationObserver() final;
-  Profile* profile() final;
-
-  // Loads and launches the app from |path|, and returns it. Waits until the
-  // launched app's WebContents has been created and finished loading. If the
-  // app uses a guest view this will create two WebContents (one for the host
-  // and one for the guest view). `uses_guest_view` is used to wait for the
-  // second WebContents.
-  const Extension* LoadAndLaunchApp(const base::FilePath& path,
-                                    bool uses_guest_view = false);
-
-  // Wait for the number of visible page actions to change to |count|.
-  bool WaitForPageActionVisibilityChangeTo(int count);
 
  private:
-  // A convenience method to get the ExtensionTestNotificationObserver as its
-  // Chrome-side implementation.
-  ChromeExtensionTestNotificationObserver*
-  GetChromeExtensionTestNotificationObserver();
-
-  // The default profile to be used.
-  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_ = nullptr;
-
   ExtensionUpdater::ScopedSkipScheduledCheckForTest skip_scheduled_check_;
 
   // Allows MV2 extensions to be loaded.

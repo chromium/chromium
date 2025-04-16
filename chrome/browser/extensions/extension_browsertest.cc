@@ -27,11 +27,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/extensions/chrome_extension_test_notification_observer.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_platform_browsertest.h"
@@ -92,77 +87,12 @@ ExtensionService* ExtensionBrowserTest::extension_service() {
   return ExtensionSystem::Get(profile())->extension_service();
 }
 
-std::unique_ptr<ExtensionTestNotificationObserver>
-ExtensionBrowserTest::CreateTestNotificationObserver() {
-  return browser() ? std::make_unique<ChromeExtensionTestNotificationObserver>(
-                         browser())
-                   : std::make_unique<ChromeExtensionTestNotificationObserver>(
-                         profile());
-}
-
-ExtensionRegistrar* ExtensionBrowserTest::extension_registrar() {
-  return ExtensionRegistrar::Get(profile());
-}
-
-Profile* ExtensionBrowserTest::profile() {
-  if (!profile_) {
-    if (browser()) {
-      profile_ = browser()->profile();
-    } else {
-      profile_ = ProfileManager::GetLastUsedProfile();
-    }
-  }
-  return profile_;
-}
-
 void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
   ExtensionPlatformBrowserTest::SetUpCommandLine(command_line);
 
   if (ShouldAllowMV2Extensions()) {
     mv2_enabler_.emplace();
   }
-}
-
-void ExtensionBrowserTest::SetUpOnMainThread() {
-  ExtensionPlatformBrowserTest::SetUpOnMainThread();
-
-  ExtensionUpdater* updater = ExtensionUpdater::Get(profile());
-  if (updater->enabled()) {
-    updater->SetExtensionCacheForTesting(extension_cache());
-  }
-
-  content::URLDataSource::Add(profile(),
-                              std::make_unique<ThemeSource>(profile()));
-}
-
-const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
-    const base::FilePath& path,
-    bool uses_guest_view) {
-  const Extension* app = LoadExtension(path);
-  CHECK(app);
-  content::CreateAndLoadWebContentsObserver app_loaded_observer(
-      /*num_expected_contents=*/uses_guest_view ? 2 : 1);
-  apps::AppLaunchParams params(
-      app->id(), apps::LaunchContainer::kLaunchContainerNone,
-      WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromTest);
-  params.command_line = *base::CommandLine::ForCurrentProcess();
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->BrowserAppLauncher()
-      ->LaunchAppWithParamsForTesting(std::move(params));
-  app_loaded_observer.Wait();
-
-  return app;
-}
-
-bool ExtensionBrowserTest::WaitForPageActionVisibilityChangeTo(int count) {
-  return GetChromeExtensionTestNotificationObserver()
-      ->WaitForPageActionVisibilityChangeTo(count);
-}
-
-ChromeExtensionTestNotificationObserver*
-ExtensionBrowserTest::GetChromeExtensionTestNotificationObserver() {
-  return static_cast<ChromeExtensionTestNotificationObserver*>(
-      test_notification_observer());
 }
 
 }  // namespace extensions

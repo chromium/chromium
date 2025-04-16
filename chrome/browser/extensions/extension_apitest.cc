@@ -64,7 +64,7 @@ const char kEmbeddedTestServerPort[] = "testServer.port";
 }  // namespace
 
 ExtensionApiTest::ExtensionApiTest(ContextType context_type)
-    : ExtensionApiTestBase(context_type), platform_delegate_(*this) {
+    : ExtensionApiTestBase(context_type) {
   net::test_server::RegisterDefaultHandlers(embedded_test_server());
 }
 
@@ -194,7 +194,7 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
 }
 
 void ExtensionApiTest::OpenURL(const GURL& url, bool open_in_incognito) {
-  platform_delegate_.OpenURL(url, open_in_incognito);
+  platform_delegate().OpenURL(url, open_in_incognito);
 }
 
 bool ExtensionApiTest::OpenTestURL(const GURL& url, bool open_in_incognito) {

@@ -12,6 +12,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browser_test_util.h"
+#include "chrome/browser/extensions/extension_browsertest_platform_delegate.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "extensions/browser/browsertest_util.h"
@@ -36,7 +37,6 @@ class WebContents;
 
 namespace extensions {
 class Extension;
-class ExtensionBrowserTestPlatformDelegate;
 class ExtensionCache;
 class ExtensionHost;
 class ExtensionRegistrar;
@@ -321,10 +321,10 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
   // Wait for the extension to not be idle.
   bool WaitForExtensionNotIdle(const ExtensionId& extension_id);
 
-  // Creates the ExtensionTestNotificationObserver to use; this allows other
-  // implementations to use a more specialized variant.
-  virtual std::unique_ptr<ExtensionTestNotificationObserver>
-  CreateTestNotificationObserver();
+  // These match the methods in ExtensionBrowserTestPlatformDelegate:
+  const Extension* LoadAndLaunchApp(const base::FilePath& path,
+                                    bool uses_guest_view = false);
+  bool WaitForPageActionVisibilityChangeTo(int count);
 
   // Lower case to match the style of InProcessBrowserTest.
   virtual Profile* profile();
@@ -343,7 +343,9 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
     return test_notification_observer_.get();
   }
 
-  ExtensionCache* extension_cache() { return test_extension_cache_.get(); }
+  ExtensionBrowserTestPlatformDelegate& platform_delegate() {
+    return platform_delegate_;
+  }
 
   // Set to "chrome/test/data/extensions". Derived classes may override.
   base::FilePath test_data_dir_;
@@ -372,6 +374,8 @@ class ExtensionPlatformBrowserTest : public PlatformBrowserTest,
       Extension::InitFromValueFlags creation_flags,
       bool wait_for_idle,
       bool grant_permissions);
+
+  ExtensionBrowserTestPlatformDelegate platform_delegate_;
 
   // Temporary directory for testing.
   base::ScopedTempDir temp_dir_;
