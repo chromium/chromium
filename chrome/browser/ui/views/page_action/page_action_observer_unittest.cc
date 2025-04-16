@@ -76,7 +76,7 @@ using MockPageActionModelFactory =
 
 class PageActionObserverTest : public ::testing::Test {
  public:
-  PageActionObserverTest() : tab_(&profile_) {}
+  PageActionObserverTest() : tab_(nullptr) {}
 
   void SetUp() override {
     controller_ = std::make_unique<PageActionController>(
@@ -90,9 +90,7 @@ class PageActionObserverTest : public ::testing::Test {
   MockPageActionModelFactory& factory() { return model_factory_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   MockPageActionObserver observer_;
-  TestingProfile profile_;
   FakeTabInterface tab_;
   MockPageActionModelFactory model_factory_;
   NoopPageActionMetricsRecorderFactory metrics_factory_;

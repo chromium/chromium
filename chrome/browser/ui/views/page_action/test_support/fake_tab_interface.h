@@ -8,13 +8,13 @@
 #include "base/callback_list.h"
 #include "chrome/browser/ui/tabs/test/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/test_web_contents_factory.h"
 
 class TestingProfile;
 
 namespace content {
+class TestWebContentsFactory;
 class WebContents;
-}
+}  // namespace content
 
 namespace page_actions {
 
@@ -35,11 +35,11 @@ class FakeTabInterface : public tabs::MockTabInterface {
   void Deactivate();
 
  private:
-  content::TestWebContentsFactory web_contents_factory_;
+  // Only created if a non-null profile is provided.
+  std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
   // Owned by `web_contents_factory_`.
   raw_ptr<content::WebContents> web_contents_;
 
-  raw_ptr<content::WebContents> contents_;
   bool is_activated_ = false;
   base::RepeatingCallbackList<void(TabInterface*)> activation_callbacks_;
   base::RepeatingCallbackList<void(TabInterface*)> deactivation_callbacks_;
