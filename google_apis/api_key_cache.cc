@@ -68,8 +68,9 @@ static std::string CalculateKeyValue(const char* baked_in_value,
     // Don't allow using the environment to override API keys for official
     // Google Chrome builds. There have been reports of mangled environments
     // affecting users (crbug.com/710575).
-    if (environment->GetVar(environment_variable_name, &temp)) {
-      key_value = temp;
+    if (auto maybe_key_value = environment->GetVar(environment_variable_name);
+        maybe_key_value.has_value()) {
+      key_value = *maybe_key_value;
       VLOG(1) << "Overriding API key " << environment_variable_name
               << " with value " << key_value << " from environment variable.";
     }

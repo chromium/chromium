@@ -59,12 +59,8 @@ std::atomic<bool> g_mojo_ipcz_enabled{true};
 bool g_mojo_ipcz_force_disabled = false;
 
 std::optional<std::string> GetMojoIpczEnvVar() {
-  std::string value;
   auto env = base::Environment::Create();
-  if (!env->GetVar("MOJO_IPCZ", &value)) {
-    return std::nullopt;
-  }
-  return value;
+  return env->GetVar("MOJO_IPCZ");
 }
 
 // Allows MojoIpcz to be forcibly enabled if and only if MOJO_IPCZ=1 in the

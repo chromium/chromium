@@ -359,10 +359,9 @@ void HeadlessContentMainDelegate::InitLogging(
     }
   }
 
-  std::string filename;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (env->GetVar(kLogFileName, &filename) && !filename.empty()) {
-    log_path = base::FilePath::FromUTF8Unsafe(filename);
+  if (std::optional<std::string> filename = env->GetVar(kLogFileName)) {
+    log_path = base::FilePath::FromUTF8Unsafe(filename.value());
   }
 
   // On Windows, having non canonical forward slashes in log file name causes
