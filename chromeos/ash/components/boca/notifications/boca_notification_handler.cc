@@ -93,20 +93,12 @@ void BocaNotificationHandler::HandleCaptionNotification(
     if (notification) {
       return;
     }
-    message_center->RemoveNotification(kSessionNotificationId,
-                                       /*by_user=*/false);
     message_center->AddNotification(CreateBaseNotificationForMessage(
         kCaptionNotificationId,
         IDS_BOCA_MICROPHONE_IN_USE_NOTIFICATION_MESSAGE));
   } else {
     message_center->RemoveNotification(kCaptionNotificationId,
                                        /*by_user=*/false);
-
-    if (is_session_started_) {
-      message_center->AddNotification(CreateBaseNotificationForMessage(
-          kSessionNotificationId,
-          IDS_BOCA_CONNECTED_TO_CLASS_NOTIFICATION_MESSAGE));
-    }
   }
 }
 
