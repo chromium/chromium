@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
-import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.feature_engagement.Tracker;
@@ -148,106 +147,9 @@ public class ToolbarTablet extends ToolbarLayout implements OnClickListener {
     public void onNativeLibraryReady() {
         super.onNativeLibraryReady();
         mHomeButton.setOnClickListener(this);
-        mHomeButton.setOnKeyListener(
-                (view, keyCode, keyEvent) -> {
-                    if (KeyNavigationUtil.isTab(keyEvent)) {
-                        if (mBackButtonCoordinator.isFocusable()) {
-                            return mBackButtonCoordinator.focus();
-                        } else if (mForwardButton.isFocusable()) {
-                            return mForwardButton.requestFocus();
-                        } else {
-                            return findViewById(R.id.refresh_button).requestFocus();
-                        }
-                    }
-
-                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                        return findViewById(R.id.menu_button).requestFocus();
-                    }
-
-                    return false;
-                });
-
-        mBackButtonCoordinator.setOnKeyListener(
-                (view, keyCode, keyEvent) -> {
-                    if (KeyNavigationUtil.isTab(keyEvent)) {
-                        if (mForwardButton.isFocusable()) {
-                            return findViewById(R.id.forward_button).requestFocus();
-                        } else {
-                            return findViewById(R.id.refresh_button).requestFocus();
-                        }
-                    }
-
-                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                        if (mHomeButton.getVisibility() == VISIBLE) {
-                            return findViewById(R.id.home_button).requestFocus();
-                        } else {
-                            return findViewById(R.id.menu_button).requestFocus();
-                        }
-                    }
-
-                    return false;
-                });
 
         mForwardButton.setOnClickListener(this);
         mForwardButton.setLongClickable(true);
-        mForwardButton.setOnKeyListener(
-                (view, keyCode, keyEvent) -> {
-                    if (KeyNavigationUtil.isTab(keyEvent)) {
-                        return findViewById(R.id.refresh_button).requestFocus();
-                    }
-
-                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                        if (mBackButtonCoordinator.isFocusable()) {
-                            return mBackButtonCoordinator.focus();
-                        } else if (mHomeButton.getVisibility() == VISIBLE) {
-                            return findViewById(R.id.home_button).requestFocus();
-                        } else {
-                            return findViewById(R.id.menu_button).requestFocus();
-                        }
-                    }
-
-                    return false;
-                });
-
-        mReloadButtonCoordinator.setOnKeyListener(
-                (view, keyCode, keyEvent) -> {
-                    if (KeyNavigationUtil.isTab(keyEvent)) {
-                        return findViewById(R.id.url_bar).requestFocus();
-                    }
-
-                    if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                        if (mForwardButton.isFocusable()) {
-                            return mForwardButton.requestFocus();
-                        } else if (mBackButtonCoordinator.isFocusable()) {
-                            return mBackButtonCoordinator.focus();
-                        } else if (mHomeButton.getVisibility() == VISIBLE) {
-                            return findViewById(R.id.home_button).requestFocus();
-                        } else {
-                            return findViewById(R.id.menu_button).requestFocus();
-                        }
-                    }
-
-                    return false;
-                });
-
-        getMenuButtonCoordinator()
-                .setOnKeyListener(
-                        (view, keyCode, keyEvent) -> {
-                            if (KeyNavigationUtil.isTab(keyEvent)) {
-                                return getCurrentTabView().requestFocus();
-                            }
-
-                            if (KeyNavigationUtil.isBackwardTab(keyEvent)) {
-                                return findViewById(R.id.url_bar).requestFocus();
-                            }
-
-                            if (KeyNavigationUtil.isActionUp(keyEvent)
-                                    && KeyNavigationUtil.isEnter(keyEvent)) {
-                                return getMenuButtonCoordinator().onEnterKeyPress();
-                            }
-
-                            return false;
-                        });
     }
 
     @Override
