@@ -213,7 +213,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="1957557050935255529">Läser in PDF …</translation>
 <translation id="1959679933317802873">Väntar på innehåll</translation>
 <translation id="1960290143419248813">Uppdateringar av Chrome stöds inte längre för den här versionen av Android</translation>
-<translation id="1963056249988316027">Identitetskontroll är aktiverad och din identitet kan inte verifieras</translation>
+<translation id="1963056249988316027">Identitetskoll är aktiverad och din identitet kan inte verifieras</translation>
 <translation id="1963976881984600709">Standardskydd</translation>
 <translation id="1966710179511230534">Uppdatera dina inloggningsuppgifter.</translation>
 <translation id="1969037871259811890">Du loggas inte ut från Google-kontot när du raderar webbinformationen. Om du vill göra det ska du <ph name="BEGIN_LINK1" />logga ut från Chrome<ph name="END_LINK1" />.</translation>
@@ -567,7 +567,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3622349720008044802">Hantera fönster</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 webbplats}other{+ # webbplatser}}</translation>
 <translation id="3631987586758005671">Delas med <ph name="DEVICE_NAME" /></translation>
-<translation id="363484704507524488">Du kan hantera identitetskontrollen i inställningarna för stöldskydd. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /></translation>
+<translation id="363484704507524488">Du kan hantera identitetskollen i inställningarna för stöldskydd. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome kan bara kontrollera dina lösenord om du sparar dem</translation>
 <translation id="363596933471559332">Logga in automatiskt på webbplatser med hjälp av lagrade inloggningsuppgifter. När funktionen är inaktiverad måste du verifiera dina uppgifter varje gång du besöker webbplatsen innan du kan logga in.</translation>
 <translation id="3636940436873918441">Föredragna språk</translation>
