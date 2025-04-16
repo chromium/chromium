@@ -633,15 +633,19 @@ class DisruptiveNotificationPermissionsRevocationBrowserTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/410697652): Re-enable the test when it's fixed.
 // Test that revocation is happening correctly when auto-revoke is on.
 IN_PROC_BROWSER_TEST_F(DisruptiveNotificationPermissionsRevocationBrowserTest,
-                       DISABLED_TestRevokeDisruptiveNotificationPermissions) {
+                       TestRevokeDisruptiveNotificationPermissions) {
   auto* hcsm =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   auto* service =
       RevokedPermissionsServiceFactory::GetForProfile(browser()->profile());
   GURL url = embedded_test_server()->GetURL("/title1.html");
+
+  // Force for the initial safety check to be complete before setting up a
+  // disruptive notification. Otherwise, sometimes the check is finished before
+  // and sometimes after the setup which causes flakes.
+  safety_hub_test_util::UpdateRevokedPermissionsServiceAsync(service);
 
   // Set up a disruptive notification permission.
   hcsm->SetContentSettingDefaultScope(
