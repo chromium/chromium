@@ -104,7 +104,6 @@ class ActorToolsTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromSourceDirectory(kActorTestDataPath);
     ASSERT_TRUE(embedded_test_server()->Start());
 
     actor_coordinator_ =
@@ -152,10 +151,18 @@ class ActorToolsTest : public InProcessBrowserTest {
   std::unique_ptr<ActorCoordinator> actor_coordinator_;
 };
 
+// ===============================================
+// Please keep the tests in this file grouped by tool.
+// ===============================================
+
+// ===============================================
+// Click Tool
+// ===============================================
+
 // Basic test to ensure sending a click to an element works.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_SentToElement) {
   const GURL url =
-      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Send a click to the document body.
@@ -196,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_SentToElement) {
 // Sending a click to an element that doesn't exist fails.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_NonExistentElement) {
   const GURL url =
-      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Use a random node id that doesn't exist.
@@ -213,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_NonExistentElement) {
 // Sending a click to a disabled element should fail without dispatching events.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_DisabledElement) {
   const GURL url =
-      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> button_id =
@@ -233,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_DisabledElement) {
 // dispatching events.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
   const GURL url =
-      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::optional<int> button_id =
@@ -249,10 +256,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ClickTool_OffscreenElement) {
   EXPECT_EQ("", EvalJs(web_contents(), "mouse_event_log.join(',')"));
 }
 
+// ===============================================
+// Type Tool
+// ===============================================
+
 // Basic test of the TypeTool - ensure typed string is entered into an input
 // box.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInput) {
-  const GURL url = embedded_test_server()->GetURL("/input.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::string typed_string = "test";
@@ -271,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_TextInput) {
 
 // TypeTool fails when target is non-existent.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_NonExistentNode) {
-  const GURL url = embedded_test_server()->GetURL("/input.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   std::string typed_string = "test";
@@ -287,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_NonExistentNode) {
 
 // Ensure type tool sends the expected events to an input box.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_Events) {
-  const GURL url = embedded_test_server()->GetURL("/input.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // The log starts empty.
@@ -317,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_Events) {
 // Ensure the type tool can be used without text to send an enter key in an
 // input.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EmptyText) {
-  const GURL url = embedded_test_server()->GetURL("/input.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // The log starts empty.
@@ -342,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_EmptyText) {
 
 // Ensure the type tool correctly sends the enter key after input if specified.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
-  const GURL url = embedded_test_server()->GetURL("/input.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/input.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // The log starts empty.
@@ -388,9 +399,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_FollowByEnter) {
       EvalJs(web_contents(), "input_event_log.join(',')"));
 }
 
+// ===============================================
+// Mouse Move Tool
+// ===============================================
+
 // Test the MouseMove tool fails on a non-existent content node.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_NonExistentNode) {
-  const GURL url = embedded_test_server()->GetURL("/mouse_log.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts empty.
@@ -406,7 +421,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_NonExistentNode) {
 
 // Test basic movements using MouseMove tool generates the expected events.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
-  const GURL url = embedded_test_server()->GetURL("/mouse_log.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts empty.
@@ -443,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_Events) {
 
 // Test mouse move returns failure if a target is offscreen.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
-  const GURL url = embedded_test_server()->GetURL("/mouse_log.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/mouse_log.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts empty.
@@ -484,8 +499,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, MouseMoveTool_TargetOutsideViewport) {
             EvalJs(web_contents(), "event_log.join(',')"));
 }
 
+// ===============================================
+// Scroll Tool
+// ===============================================
+
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
-  const GURL url = embedded_test_server()->GetURL("/scrollable_page.html");
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   int scroll_offset_y = 50;
@@ -511,7 +531,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_ScrollOnPage) {
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
-  const GURL url = embedded_test_server()->GetURL("/scrollable_page.html");
+  const GURL url =
+      embedded_test_server()->GetURL("/actor/scrollable_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Use a random node id that doesn't exist.
@@ -526,9 +547,13 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, ScrollTool_FailOnInvalidNodeID) {
   EXPECT_EQ(0, EvalJs(web_contents(), "window.scrollY"));
 }
 
+// ===============================================
+// Drag and Release Tool
+// ===============================================
+
 // Test the drag and release tool by moving the thumb on a range slider control.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Range) {
-  const GURL url = embedded_test_server()->GetURL("/drag.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   gfx::RectF range_rect = GetBoundingClientRect(*main_frame(), "#range");
@@ -553,7 +578,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Range) {
 
 // Ensure the drag tool sends the expected mouse down, move and up events.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Events) {
-  const GURL url = embedded_test_server()->GetURL("/drag.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // The dragLogger starts in the bottom right of the viewport. Scroll it to the
@@ -587,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Events) {
 
 // Ensure coordinates outside of the viewport are rejected.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Offscreen) {
-  const GURL url = embedded_test_server()->GetURL("/drag.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/drag.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   // Log starts off empty.
@@ -636,10 +661,16 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, DragAndReleaseTool_Offscreen) {
   EXPECT_EQ(50, GetRangeValue(*main_frame(), "#offscreenRange"));
 }
 
+// ===============================================
+// Navigate Tool
+// ===============================================
+
 // Basic test of the NavigateTool.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool) {
-  const GURL url_start = embedded_test_server()->GetURL("/blank.html?start");
-  const GURL url_target = embedded_test_server()->GetURL("/blank.html?target");
+  const GURL url_start =
+      embedded_test_server()->GetURL("/actor/blank.html?start");
+  const GURL url_target =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_start));
 
   BrowserAction action;
@@ -654,10 +685,16 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, NavigateTool) {
   EXPECT_EQ(web_contents()->GetURL(), url_target);
 }
 
+// ===============================================
+// History Tool
+// ===============================================
+
 // Basic test of the HistoryTool going back.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_Back) {
-  const GURL url_first = embedded_test_server()->GetURL("/blank.html?start");
-  const GURL url_second = embedded_test_server()->GetURL("/blank.html?target");
+  const GURL url_first =
+      embedded_test_server()->GetURL("/actor/blank.html?start");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -670,8 +707,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_Back) {
 
 // Basic test of the HistoryTool going forward
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_Forward) {
-  const GURL url_first = embedded_test_server()->GetURL("/blank.html?start");
-  const GURL url_second = embedded_test_server()->GetURL("/blank.html?target");
+  const GURL url_first =
+      embedded_test_server()->GetURL("/actor/blank.html?start");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -692,8 +731,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackNoBFCache) {
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
 
-  const GURL url_first = embedded_test_server()->GetURL("/blank.html?start");
-  const GURL url_second = embedded_test_server()->GetURL("/blank.html?target");
+  const GURL url_first =
+      embedded_test_server()->GetURL("/actor/blank.html?start");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -707,8 +748,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackNoBFCache) {
 // Test that tool fails validation if there's no further session history in the
 // direction of travel.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_FailNoSessionHistory) {
-  const GURL url_first = embedded_test_server()->GetURL("/blank.html?first");
-  const GURL url_second = embedded_test_server()->GetURL("/blank.html?second");
+  const GURL url_first =
+      embedded_test_server()->GetURL("/actor/blank.html?first");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/blank.html?second");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -737,8 +780,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_FailNoSessionHistory) {
 
 // Test history tool across same document navigations
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackSameDocument) {
-  const GURL url_first = embedded_test_server()->GetURL("/blank.html");
-  const GURL url_second = embedded_test_server()->GetURL("/blank.html#foo");
+  const GURL url_first = embedded_test_server()->GetURL("/actor/blank.html");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/blank.html#foo");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -760,10 +804,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BackSameDocument) {
 // Test history tool across same document navigations
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_BasicIframeBack) {
   const GURL main_frame_url =
-      embedded_test_server()->GetURL("/simple_iframe.html");
-  const GURL child_frame_url_1 = embedded_test_server()->GetURL("/blank.html");
+      embedded_test_server()->GetURL("/actor/simple_iframe.html");
+  const GURL child_frame_url_1 =
+      embedded_test_server()->GetURL("/actor/blank.html");
   const GURL child_frame_url_2 =
-      embedded_test_server()->GetURL("/blank.html?next");
+      embedded_test_server()->GetURL("/actor/blank.html?next");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
@@ -792,8 +837,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_SlowBack) {
       web_contents(), content::BackForwardCache::DisableForTestingReason::
                           TEST_REQUIRES_NO_CACHING);
 
-  const GURL url_first = embedded_test_server()->GetURL("/blank.html?start");
-  const GURL url_second = embedded_test_server()->GetURL("/blank.html?target");
+  const GURL url_first =
+      embedded_test_server()->GetURL("/actor/blank.html?start");
+  const GURL url_second =
+      embedded_test_server()->GetURL("/actor/blank.html?target");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_first));
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url_second));
 
@@ -815,15 +862,15 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_SlowBack) {
 // Test a case where history back causes navigation in two frames.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_ConcurrentNavigations) {
   const GURL main_frame_url =
-      embedded_test_server()->GetURL("/concurrent_navigations.html");
+      embedded_test_server()->GetURL("/actor/concurrent_navigations.html");
   const GURL child_frame_1_start_url =
-      embedded_test_server()->GetURL("/blank.html?A1");
+      embedded_test_server()->GetURL("/actor/blank.html?A1");
   const GURL child_frame_1_target_url =
-      embedded_test_server()->GetURL("/blank.html?A2");
+      embedded_test_server()->GetURL("/actor/blank.html?A2");
   const GURL child_frame_2_start_url =
-      embedded_test_server()->GetURL("/blank.html?B1");
+      embedded_test_server()->GetURL("/actor/blank.html?B1");
   const GURL child_frame_2_target_url =
-      embedded_test_server()->GetURL("/blank.html?B2");
+      embedded_test_server()->GetURL("/actor/blank.html?B2");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), main_frame_url));
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
@@ -869,10 +916,14 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, HistoryTool_ConcurrentNavigations) {
   EXPECT_EQ(web_contents()->GetURL(), main_frame_url);
 }
 
+// ===============================================
+// History Tool
+// ===============================================
+
 // Test that the SelectTool can select an ordinary <option> in a <select>
 // element.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_OptionSelected) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -915,7 +966,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_OptionSelected) {
 // Test that the SelectTool causes the change and input events to fire on the
 // <select> element.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_Events) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -938,7 +989,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_Events) {
 // Test that attempting to select a value that does not exist in the <option>
 // list fails and does not change the current selection.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonExistentValueFails) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -961,7 +1012,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonExistentValueFails) {
 // Test that attempting to select a value corresponding to a non-<option>
 // element fails. The select tool should only target valid options.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonOptionNodeValueFails) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string non_options_select_id = "#nonOptionsSelect";
@@ -1011,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_NonOptionNodeValueFails) {
 
 // Test that matching option values is case-sensitive.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ValueIsCaseSensitive) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -1035,7 +1086,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ValueIsCaseSensitive) {
 
 // Test that attempting to select a disabled <option> fails.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptionFails) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string plain_select_id = "#plainSelect";
@@ -1057,7 +1108,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptionFails) {
 
 // Test that attempting to select a <option> in a disabled <optgroup> fails.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptGroupFails) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string group_select_id = "#groupedSelect";
@@ -1081,7 +1132,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledOptGroupFails) {
 // Test that attempting to select any option in a disabled <select> element
 // fails.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledSelectFails) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string disabled_select_id = "#disabledSelect";
@@ -1103,7 +1154,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_DisabledSelectFails) {
 
 // Test that options within <optgroup> elements can be selected.
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_GroupedOptionSelected) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string grouped_select_id = "#groupedSelect";
@@ -1136,7 +1187,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_GroupedOptionSelected) {
 // Test that an option can be selected in a <select> element rendered as a
 // listbox (size attribute > 1).
 IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ListboxOptionSelected) {
-  const GURL url = embedded_test_server()->GetURL("/select_tool.html");
+  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
 
   const std::string listbox_select_id = "#listboxSelect";

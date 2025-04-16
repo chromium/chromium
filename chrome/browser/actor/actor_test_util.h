@@ -17,8 +17,6 @@ class RenderFrameHost;
 
 namespace actor {
 
-inline constexpr char kActorTestDataPath[] = "chrome/test/data/actor";
-
 optimization_guide::proto::BrowserAction MakeClick(int content_node_id);
 optimization_guide::proto::BrowserAction MakeHistoryBack();
 optimization_guide::proto::BrowserAction MakeHistoryForward();

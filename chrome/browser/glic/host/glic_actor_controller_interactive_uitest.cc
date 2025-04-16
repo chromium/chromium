@@ -41,8 +41,6 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   ~GlicActorControllerUiTest() override = default;
 
   void SetUpOnMainThread() override {
-    embedded_test_server()->ServeFilesFromSourceDirectory(
-        actor::kActorTestDataPath);
     test::InteractiveGlicTest::SetUpOnMainThread();
   }
 
@@ -138,7 +136,8 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
   // Starts a new task by executing the initial navigate to `task_url` to create
   // a new tab. The new tab can then be referenced by `kNewActorTabId`.
   auto StartTaskInNewTab(const GURL& task_url) {
-    const GURL start_url = embedded_test_server()->GetURL("/blank.html?start");
+    const GURL start_url =
+        embedded_test_server()->GetURL("/actor/blank.html?start");
     std::string startNavigateProto =
         EncodeActionProto(actor::MakeNavigate(task_url.spec()));
 
@@ -156,9 +155,10 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, OpensNewTabOnFirstNavigate) {
-  const GURL start_url = embedded_test_server()->GetURL("/blank.html?start");
+  const GURL start_url =
+      embedded_test_server()->GetURL("/actor/blank.html?start");
   const GURL task_url =
-      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   std::string navigateProto =
       EncodeActionProto(actor::MakeNavigate(task_url.spec()));
 
@@ -173,9 +173,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, OpensNewTabOnFirstNavigate) {
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
                        UsesExistingActorTabOnSubsequentNavigate) {
   const GURL task_url =
-      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   const GURL second_navigate_url =
-      embedded_test_server()->GetURL("/blank.html?second");
+      embedded_test_server()->GetURL("/actor/blank.html?second");
   std::string secondNavigateProto =
       EncodeActionProto(actor::MakeNavigate(second_navigate_url.spec()));
 
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
 // proto.
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, DISABLED_ActionSucceeds) {
   const GURL task_url =
-      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   std::string encodedProto =
       EncodeActionProto(actor::MakeClick(kContentNodeId));
 
@@ -205,9 +205,9 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionProtoInvalid) {
   std::string encodedProto = base::Base64Encode("invalid serialized bytes");
   RunTestSequence(
       InstrumentTab(kActiveTabId),
-      NavigateWebContents(
-          kActiveTabId,
-          embedded_test_server()->GetURL("/page_with_clickable_element.html")),
+      NavigateWebContents(kActiveTabId,
+                          embedded_test_server()->GetURL(
+                              "/actor/page_with_clickable_element.html")),
       OpenGlicWindow(GlicWindowMode::kAttached),
       ExecuteActionExpectingError(
           encodedProto, UpdatedContextOptions(),
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionProtoInvalid) {
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
   const GURL task_url =
-      embedded_test_server()->GetURL("/page_with_clickable_element.html");
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
   std::string encodedProto =
       EncodeActionProto(actor::MakeClick(kContentNodeId));
 
@@ -228,8 +228,8 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, ActionTargetNotFound) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest, HistoryTool) {
-  const GURL url_1 = embedded_test_server()->GetURL("/blank.html?1");
-  const GURL url_2 = embedded_test_server()->GetURL("/blank.html?2");
+  const GURL url_1 = embedded_test_server()->GetURL("/actor/blank.html?1");
+  const GURL url_2 = embedded_test_server()->GetURL("/actor/blank.html?2");
   std::string navigateUrl2Proto =
       EncodeActionProto(actor::MakeNavigate(url_2.spec()));
   std::string backProto = EncodeActionProto(actor::MakeHistoryBack());
